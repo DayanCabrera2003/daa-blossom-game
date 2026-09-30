@@ -11,7 +11,11 @@ const draw = (seed: number, count: number): number[] => {
 
 describe('createRng', () => {
   it('is deterministic: the same seed yields the same sequence', () => {
-    fc.assert(fc.property(fc.integer(), (seed) => expect(draw(seed, 20)).toEqual(draw(seed, 20))));
+    fc.assert(
+      fc.property(fc.integer(), (seed) => {
+        expect(draw(seed, 20)).toEqual(draw(seed, 20));
+      }),
+    );
   });
 
   it('different seeds yield different sequences', () => {
