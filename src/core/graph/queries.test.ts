@@ -39,6 +39,7 @@ describe('graph queries', () => {
 
   it('rejects vertices outside the graph', () => {
     expect(() => neighbors(graph, 4)).toThrow(InvariantError);
+    expect(() => neighbors(graph, 1.5)).toThrow(InvariantError);
     expect(() => hasEdge(graph, -1, 0)).toThrow(InvariantError);
   });
 
