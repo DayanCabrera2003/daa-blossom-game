@@ -1,4 +1,5 @@
 import { invariant } from '../shared/invariant';
+import { neighbors } from './queries';
 import type { Graph, VertexId } from './types';
 
 /**
@@ -34,7 +35,7 @@ export function connectedComponents(
     while (stack.length > 0) {
       const u = stack.pop() as VertexId;
       component.push(u);
-      for (const w of graph.adjacency[u] ?? []) {
+      for (const w of neighbors(graph, u)) {
         if (!visited[w] && !removed.has(w)) {
           visited[w] = true;
           stack.push(w);

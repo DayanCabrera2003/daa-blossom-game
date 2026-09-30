@@ -1,3 +1,4 @@
+import { neighbors } from './queries';
 import type { Graph, VertexId } from './types';
 
 /**
@@ -29,7 +30,7 @@ export function bipartition(graph: Graph): Bipartition {
 
     for (let head = 0; head < queue.length; head++) {
       const u = queue[head] as VertexId;
-      for (const v of graph.adjacency[u] ?? []) {
+      for (const v of neighbors(graph, u)) {
         if (depth[v] === -1) {
           depth[v] = (depth[u] as number) + 1;
           parent[v] = u;
