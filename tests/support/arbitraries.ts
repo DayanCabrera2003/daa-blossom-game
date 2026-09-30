@@ -1,6 +1,8 @@
 import fc from 'fast-check';
 import { createGraph } from '../../src/core/graph/createGraph';
 import type { Edge, Graph } from '../../src/core/graph/types';
+import { createMatching } from '../../src/core/matching/createMatching';
+import type { Matching } from '../../src/core/matching/types';
 import { unwrap } from '../../src/core/shared/result';
 
 /** Every unordered pair of distinct vertices among `n`, i.e. the edges of the complete graph K_n. */
@@ -23,4 +25,31 @@ export const graphArb = ({ minN = 0, maxN = 10 } = {}): fc.Arbitrary<Graph> =>
 export const graphWithVertexArb = ({ maxN = 10 } = {}): fc.Arbitrary<[Graph, number]> =>
   graphArb({ minN: 1, maxN }).chain((graph) =>
     fc.tuple(fc.constant(graph), fc.integer({ min: 0, max: graph.n - 1 })),
+  );
+
+/** Keeps each edge unless it clashes with one already kept: always yields a matching. */
+const greedyMatching = (graph: Graph, edges: readonly Edge[]): Matching => {
+  const used = new Set<number>();
+  const pairs = edges.filter(([u, v]) => {
+    if (used.has(u) || used.has(v)) return false;
+    used.add(u).add(v);
+    return true;
+  });
+  return unwrap(createMatching(graph, pairs));
+};
+
+/** Arbitrary matching of `graph`: greedy over a random ordering of a random subset of its edges. */
+export const matchingArb = (graph: Graph): fc.Arbitrary<Matching> =>
+  fc.shuffledSubarray([...graph.edges]).map((edges) => greedyMatching(graph, edges));
+
+/** Arbitrary graph together with one matching of it. */
+export const graphWithMatchingArb = ({ maxN = 10 } = {}): fc.Arbitrary<[Graph, Matching]> =>
+  graphArb({ maxN }).chain((graph) => fc.tuple(fc.constant(graph), matchingArb(graph)));
+
+/** Arbitrary graph together with two independent matchings of it (for M ⊕ M′ properties). */
+export const graphWithTwoMatchingsArb = ({ maxN = 10 } = {}): fc.Arbitrary<
+  [Graph, Matching, Matching]
+> =>
+  graphArb({ maxN }).chain((graph) =>
+    fc.tuple(fc.constant(graph), matchingArb(graph), matchingArb(graph)),
   );
