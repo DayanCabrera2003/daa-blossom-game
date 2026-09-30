@@ -1,4 +1,5 @@
 import { err, ok, type Result } from '../shared/result';
+import { edgeKey } from './queries';
 import type { Edge, Graph, VertexId } from './types';
 
 /** Why a vertex count and edge list do not describe a simple undirected graph. */
@@ -28,7 +29,7 @@ export function createGraph(n: number, rawEdges: readonly Edge[]): Result<Graph,
     if (a === b) return err({ code: 'selfLoop', vertex: a });
 
     const normalized: Edge = a < b ? [a, b] : [b, a];
-    const key = `${normalized[0]}-${normalized[1]}`;
+    const key = edgeKey(a, b);
     if (seen.has(key)) return err({ code: 'duplicateEdge', edge: normalized });
     seen.add(key);
     edges.push(normalized);
