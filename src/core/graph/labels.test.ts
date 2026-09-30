@@ -46,6 +46,13 @@ describe('sprout labels', () => {
     });
   });
 
+  it('reports an unknown name in either end of a vine', () => {
+    expect(toEdges(labels, [['x', 'R']])).toEqual({
+      ok: false,
+      error: { code: 'unknownName', name: 'x' },
+    });
+  });
+
   it('reports the first unknown name in a vine', () => {
     expect(toEdges(labels, [['R', 'x']])).toEqual({
       ok: false,
