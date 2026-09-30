@@ -1,9 +1,8 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { graphArb } from '../../../tests/support/arbitraries';
+import { graphWithMatchingArb } from '../../../tests/support/arbitraries';
 import { createGraph } from '../graph/createGraph';
 import { unwrap } from '../shared/result';
-import { createMatching } from './createMatching';
 import { validateMate } from './validate';
 
 // Triangle 0-1-2 plus an isolated vertex 3.
@@ -53,20 +52,9 @@ describe('validateMate', () => {
 
   it('property: every matching built from edges passes validation', () => {
     fc.assert(
-      fc.property(
-        graphArb().chain((g) => fc.tuple(fc.constant(g), fc.shuffledSubarray([...g.edges]))),
-        ([g, edges]) => {
-          // Greedily keep the edges that do not clash, so the result is a matching.
-          const used = new Set<number>();
-          const pairs = edges.filter(([u, v]) => {
-            if (used.has(u) || used.has(v)) return false;
-            used.add(u).add(v);
-            return true;
-          });
-          const matching = unwrap(createMatching(g, pairs));
-          expect(validateMate(g, matching.mate).ok).toBe(true);
-        },
-      ),
+      fc.property(graphWithMatchingArb(), ([g, matching]) => {
+        expect(validateMate(g, matching.mate).ok).toBe(true);
+      }),
     );
   });
 });
