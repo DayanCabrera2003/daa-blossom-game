@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { download } from '@services/download';
 import { exportLog } from '@services/exportLog';
-import { unlockedLevels } from '@services/progress';
+import { unlockedLevels, visibleLevels } from '@services/progress';
 import { Button } from '../view/Button';
 import { PALETTE } from '../view/palette';
 import { CANVAS_HEIGHT } from '../scale/integerZoom';
@@ -19,17 +19,20 @@ export class HubScene extends Phaser.Scene {
 
   create(): void {
     const { catalog, t, save, teacherMode, playtest, clock } = contextOf(this);
-    const entries = catalog.map((level) => ({ id: level.data.id, draft: level.data.draft }));
-    const open = unlockedLevels(entries, save, teacherMode);
     this.add.text(8, 6, t('hub.title'), textStyle(12, PALETTE.lit));
 
-    const chapters = [...new Set(catalog.map((level) => level.data.id.split('.')[0] as string))];
+    // Drafts (test levels of chapters not yet written) are shown in teacher mode only.
+    const shown = visibleLevels(
+      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
+      teacherMode,
+    );
+    const open = unlockedLevels(shown, save, teacherMode);
+    const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] as string))];
     chapters.forEach((chapter, row) => {
       const y = 30 + 22 * row;
       this.add.text(8, y, t('hub.chapter', { number: chapter }), textStyle(8));
       let x = 80;
-      for (const level of catalog.filter((l) => l.data.id.startsWith(`${chapter}.`))) {
-        const id = level.data.id;
+      for (const { id } of shown.filter((level) => level.id.startsWith(`${chapter}.`))) {
         const stars = save.levels[id]?.stars ?? 0;
         const label = open.has(id) ? `${id} ${'★'.repeat(stars)}` : `${id} ·`;
         const button = new Button(this, x, y, label, () =>
