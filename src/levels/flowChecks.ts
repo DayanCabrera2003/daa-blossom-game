@@ -1,3 +1,4 @@
+import { maximumSize } from '@core/edmonds/fast/maximum';
 import { nameOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
@@ -15,6 +16,13 @@ export type FlowProblem =
   | { readonly code: 'notebookMissing'; readonly step: number }
   | { readonly code: 'mirrorMissing'; readonly step: number }
   | { readonly code: 'pieceOutsideTangle'; readonly step: number; readonly sprout: string }
+  /** A bet whose numbers (1 to `range`) leave out the most lanterns the garden holds. */
+  | {
+      readonly code: 'betOutOfRange';
+      readonly step: number;
+      readonly range: number;
+      readonly optimum: number;
+    }
   | {
       readonly code: 'demoRefused';
       readonly step: number;
@@ -49,7 +57,8 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
 /**
  * The checks of a level script (plan 03, phase 1) that the schema cannot see: every question has a
  * right answer, the notebook step has a notebook to show, the steps of the pond have a reflection,
- * a `count` asks about a sprout that is in the tangle, and every demo is accepted by the rules.
+ * a `count` asks about a sprout that is in the tangle, a bet offers the right number among its
+ * own (a bet nobody can win is no bet), and every demo is accepted by the rules.
  *
  * Lanterns never move outside a play step, so the player's lanterns at a `count` are those the
  * level starts with, or, after a play step, those the reference solution leaves.
@@ -70,6 +79,14 @@ export function checkFlow(level: Level): FlowProblem[] {
           problems.push({ code: 'noCorrectOption', step });
         }
         break;
+      case 'bet': {
+        // A bet offers 1 to its range; the right one is what the core says the garden holds.
+        const optimum = maximumSize(level.graph);
+        if (optimum < 1 || optimum > flowStep.range) {
+          problems.push({ code: 'betOutOfRange', step, range: flowStep.range, optimum });
+        }
+        break;
+      }
       case 'notebook':
         if (data.notebook === undefined) problems.push({ code: 'notebookMissing', step });
         break;

@@ -137,6 +137,23 @@ describe('the checks of a level script', () => {
     ]);
   });
 
+  it('a bet offers the most lanterns the garden holds among its numbers, 1 to its range', () => {
+    // The pond holds 4 lanterns: three on the path A…F and G=H.
+    const bet = (range: number) => ({ step: 'bet', prompt: 'ch2.1.sauce.01', range });
+    expect(flowProblemsOf({ ...pond, flow: [bet(4)] })).toEqual([]);
+    expect(flowProblemsOf({ ...pond, flow: [{ step: 'mirror' }, bet(3)] })).toEqual([
+      { code: 'betOutOfRange', step: 1, range: 3, optimum: 4 },
+    ]);
+  });
+
+  it('a bet on a garden that holds no lantern can never be won', () => {
+    const bare = { ...pond, vines: [], lanterns: [], mirror: undefined };
+    const bet = { step: 'bet', prompt: 'ch2.1.sauce.01', range: 2 };
+    expect(flowProblemsOf({ ...bare, flow: [bet] })).toEqual([
+      { code: 'betOutOfRange', step: 0, range: 2, optimum: 0 },
+    ]);
+  });
+
   it('a demo is replayed from the start of the level, with every action allowed', () => {
     const demo = {
       step: 'replay',

@@ -25,6 +25,9 @@ describe('readable level problems', () => {
         reason: { code: 'notAdjacent', u: 0, v: 2 },
       }),
     ).toBe('script step 3: demo move 1 is refused by the rules: notAdjacent {"u":0,"v":2}');
+    expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
+      'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
+    );
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
     );
