@@ -30,6 +30,13 @@ export class Button {
     return this.panel.width;
   }
 
+  /** Moves the button so that its panel's top-left corner is at (x, y). */
+  moveTo(x: number, y: number): this {
+    this.panel.setPosition(x, y - 1);
+    this.text.setPosition(x + 2, y);
+    return this;
+  }
+
   /** Greys the button out when its action is not available now. */
   setEnabled(enabled: boolean): this {
     this.enabled = enabled;
