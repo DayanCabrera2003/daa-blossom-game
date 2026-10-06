@@ -1,8 +1,10 @@
-// check-levels: the level integrity checks, as a readable report for authors and for CI.
+// check-levels: the level integrity checks, and the walkthrough of each level played through the
+// interface, as a readable report for authors and for CI.
 // Usage: npm run check-levels. Exits with code 1 if any level has a problem.
+import { playWalkthrough } from '@game/systems/walkthrough';
 import { checkIntegrity } from '@levels/integrity';
 import { loadLevel } from '@levels/loader';
-import { describeLoadError, describeProblem } from './describeProblem';
+import { describeLoadError, describeProblem, describeWalkthroughProblem } from './describeProblem';
 import { expectedPath, readLevelFiles } from './levelFiles';
 
 const files = readLevelFiles();
@@ -20,7 +22,13 @@ for (const { path, json } of files) {
     const twin = seen.get(id);
     if (twin !== undefined) problems.push(`level ${id} is also defined in ${twin}`);
     seen.set(id, path);
-    problems.push(...checkIntegrity(level.value).map(describeProblem));
+    const integrity = checkIntegrity(level.value);
+    problems.push(...integrity.map(describeProblem));
+    // A sound level must also be finished through the interface, script included.
+    if (integrity.length === 0) {
+      const { problem } = playWalkthrough(level.value);
+      if (problem !== null) problems.push(describeWalkthroughProblem(problem));
+    }
   }
 
   if (problems.length === 0) {

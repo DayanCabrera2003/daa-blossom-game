@@ -1,4 +1,5 @@
 // Turns level problems into one-line messages for the check-levels report.
+import type { WalkthroughProblem } from '@game/systems/walkthrough';
 import type { IntegrityProblem } from '@levels/integrity';
 import type { LoadError } from '@levels/loader';
 
@@ -41,6 +42,22 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} counts the piece through ${problem.sprout}, which is in no thread or loop`;
     case 'demoRefused':
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
+  }
+}
+
+/** One readable line for a walkthrough that does not play through the interface. */
+export function describeWalkthroughProblem(problem: WalkthroughProblem): string {
+  switch (problem.code) {
+    case 'moveRefused':
+      return `walkthrough entry ${problem.entry + 1} is refused while playing: ${withDetails(problem.reason)}`;
+    case 'gestureImpossible':
+      return `walkthrough entry ${problem.entry + 1} cannot be made with gestures: ${problem.message}`;
+    case 'gestureMismatch':
+      return `walkthrough entry ${problem.entry + 1}: the gestures make a different move`;
+    case 'inputIgnored':
+      return `walkthrough entry ${problem.entry + 1} is an input the script is not waiting for`;
+    case 'unfinished':
+      return `the walkthrough ends with the script still waiting at step ${problem.step + 1}`;
   }
 }
 

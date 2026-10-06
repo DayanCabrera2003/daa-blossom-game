@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { describeLoadError, describeProblem } from '../tools/describeProblem';
+import {
+  describeLoadError,
+  describeProblem,
+  describeWalkthroughProblem,
+} from '../tools/describeProblem';
 
 describe('readable level problems', () => {
   it('explains integrity problems in one line each', () => {
@@ -50,6 +54,24 @@ describe('readable level problems', () => {
     );
     expect(describeLoadError({ code: 'badLabel', error: { code: 'unknownName', name: 'z' } })).toBe(
       'badLabel: {"code":"unknownName","name":"z"}',
+    );
+  });
+
+  it('explains why a walkthrough does not play through', () => {
+    expect(
+      describeWalkthroughProblem({ code: 'moveRefused', entry: 2, reason: { code: 'notNow' } }),
+    ).toBe('walkthrough entry 3 is refused while playing: notNow');
+    expect(
+      describeWalkthroughProblem({ code: 'gestureImpossible', entry: 0, message: 'hidden vine' }),
+    ).toBe('walkthrough entry 1 cannot be made with gestures: hidden vine');
+    expect(describeWalkthroughProblem({ code: 'gestureMismatch', entry: 4 })).toBe(
+      'walkthrough entry 5: the gestures make a different move',
+    );
+    expect(describeWalkthroughProblem({ code: 'inputIgnored', entry: 1 })).toBe(
+      'walkthrough entry 2 is an input the script is not waiting for',
+    );
+    expect(describeWalkthroughProblem({ code: 'unfinished', step: 3 })).toBe(
+      'the walkthrough ends with the script still waiting at step 4',
     );
   });
 });
