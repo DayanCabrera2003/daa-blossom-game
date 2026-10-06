@@ -44,6 +44,12 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} bets from 1 to ${problem.range} lanterns, but the garden holds ${problem.optimum}: nobody can win it`;
     case 'demoRefused':
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'badCounterexample':
+      return `notebook statement ${problem.option + 1}: its counterexample is no garden: ${withDetails(problem.error)}`;
+    case 'counterexampleLocked':
+      return `notebook statement ${problem.option + 1}: its counterexample uses "${problem.action}", which this level does not allow`;
+    case 'counterexampleUnbeatable':
+      return `notebook statement ${problem.option + 1}: its lanterns already hold the most, so no better reflection can be drawn`;
   }
 }
 

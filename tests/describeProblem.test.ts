@@ -28,6 +28,15 @@ describe('readable level problems', () => {
     expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
       'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
     );
+    expect(
+      describeProblem({
+        code: 'badCounterexample',
+        option: 1,
+        error: { code: 'badLabel', error: { code: 'unknownName', name: 'z' } },
+      }),
+    ).toBe(
+      'notebook statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
+    );
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
     );
@@ -47,6 +56,8 @@ describe('readable level problems', () => {
       { code: 'notebookMissing', step: 3 },
       { code: 'mirrorMissing', step: 0 },
       { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
+      { code: 'counterexampleLocked', option: 1, action: 'fold' },
+      { code: 'counterexampleUnbeatable', option: 2 },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

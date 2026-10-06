@@ -8,6 +8,7 @@ import type { Level } from './build';
 import { checkFlow, type FlowProblem } from './flowChecks';
 import { isFlowInput } from './flowInput';
 import { referencedLines } from './lines';
+import { checkNotebook, type NotebookProblem } from './notebookChecks';
 
 /** Something wrong with a level that the schema alone cannot see. */
 export type IntegrityProblem =
@@ -22,7 +23,8 @@ export type IntegrityProblem =
   | { readonly code: 'solutionOverWater'; readonly used: number; readonly budget: number }
   | { readonly code: 'foreignLine'; readonly line: string }
   | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string }
-  | FlowProblem;
+  | FlowProblem
+  | NotebookProblem;
 
 /**
  * The integrity checks of a level (plan 01, phase 10), shared by the test suite and
@@ -74,7 +76,7 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     problems.push({ code: 'solutionOverWater', used: state.waterUsed, budget: data.water });
   }
 
-  problems.push(...checkFlow(level));
+  problems.push(...checkFlow(level), ...checkNotebook(level));
 
   for (const line of referencedLines(data)) {
     if (!line.startsWith(`ch${data.id}.`)) problems.push({ code: 'foreignLine', line });

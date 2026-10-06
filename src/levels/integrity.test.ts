@@ -136,6 +136,34 @@ describe('level integrity', () => {
     ]);
   });
 
+  it('a counterexample is checked as a garden, and its lines belong to the level', () => {
+    const notebook = {
+      prompt: 'ch1.1.notebook.00',
+      options: [
+        { line: 'ch1.1.notebook.01', correct: true },
+        {
+          line: 'ch1.1.notebook.02',
+          correct: false,
+          counterexample: {
+            mode: 'play',
+            line: 'ch2.2.sauce.07',
+            sprouts: [{ label: 'a', x: 100, y: 100 }],
+            vines: [['a', 'a']],
+            actions: ['join'],
+          },
+        },
+      ],
+    };
+    expect(problemsOf({ ...trap, notebook })).toEqual([
+      {
+        code: 'badCounterexample',
+        option: 1,
+        error: { code: 'badGraph', error: expect.anything() },
+      },
+      { code: 'foreignLine', line: 'ch2.2.sauce.07' },
+    ]);
+  });
+
   it('a play step needs a victory to end, and a victory needs a play step to be reached', () => {
     expect(problemsOf({ ...trap, victory: undefined })).toEqual([{ code: 'playWithoutVictory' }]);
     const noPlay = { ...trap, flow: [{ step: 'say', lines: ['ch1.1.sauce.00'] }] };
