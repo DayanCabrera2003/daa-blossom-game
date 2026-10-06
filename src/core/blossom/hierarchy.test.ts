@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { baseVertex, members } from './hierarchy';
+import { createGraph } from '../graph/createGraph';
+import { createMatching } from '../matching/createMatching';
+import { unwrap } from '../shared/result';
+import { contract, openLayer } from './contract';
+import { baseVertex, members, nestingDepth, outermostNode } from './hierarchy';
 import type { Blossom, GardenNode } from './types';
 
 const sprout = (vertex: number): GardenNode => ({ kind: 'sprout', vertex });
@@ -45,5 +49,44 @@ describe('blossom hierarchy', () => {
     expect(baseVertex(f2)).toBe(0);
     const outer: Blossom = { ...f2, cycle: [f1, ...f2.cycle.slice(1)] };
     expect(baseVertex(outer)).toBe(2);
+  });
+});
+
+describe('layers of a folded garden', () => {
+  // Level 5.1 folded twice: F1 = {b, c, d} inside F2 = {R, a, F1, g, h}; t stays outside.
+  const wild = unwrap(
+    createGraph(8, [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [2, 4],
+      [3, 5],
+      [5, 6],
+      [0, 6],
+      [1, 7],
+    ]),
+  );
+  const lanterns = unwrap(
+    createMatching(wild, [
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ]),
+  );
+  const first = contract(openLayer(wild, lanterns), [2, 3, 4]).layer;
+  const second = contract(first, [0, 1, 2, 3, 4]).layer;
+
+  it('a sprout lives in the outermost flower that contains it', () => {
+    expect(outermostNode(second, 3)).toBe(second.nodes[0]);
+    expect(outermostNode(first, 3)).toBe(first.nodes[2]);
+    expect(outermostNode(second, 7)).toEqual({ kind: 'sprout', vertex: 7 });
+  });
+
+  it('counts how many flowers wrap a sprout (zoom levels of the Layers view)', () => {
+    expect([0, 1, 2, 3, 4, 5, 6, 7].map((v) => nestingDepth(second, v))).toEqual([
+      1, 1, 2, 2, 2, 1, 1, 0,
+    ]);
+    expect(nestingDepth(openLayer(wild, lanterns), 3)).toBe(0);
   });
 });
