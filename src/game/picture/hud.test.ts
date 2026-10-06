@@ -2,6 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import { pondLevel } from '../../../tests/support/pondGarden';
 import { initialPointer } from '../input/pointer';
 import { HINT_DELAY_MS } from '../systems/hints';
 import { act, respond, startSession, undoSession } from '../systems/levelSession';
@@ -132,5 +133,18 @@ describe('the picture of the HUD', () => {
     expect(hudPicture(won, pointer, 0).goal).toEqual({ key: 'hud.bet', params: { count: 2 } });
     const shown = respond(betting(true), { type: 'bet', value: 2 }, 0).session;
     expect(hudPicture(shown, pointer, 0).goal).toEqual({ key: 'hud.goal', params: { count: 1 } });
+  });
+
+  it('with the reflection shown, the goal sets your lanterns against it; a tie dissolves it', () => {
+    const pointer = initialPointer('lanterns');
+    const hidden = startSession(pondLevel([{ step: 'separate' }, { step: 'mirror' }]), 0);
+    expect(hudPicture(hidden, pointer, 0).goal).toEqual({ key: 'hud.goal', params: { count: 6 } });
+    const shown = startSession(pondLevel(), 0);
+    expect(hudPicture(shown, pointer, 0).goal).toEqual({
+      key: 'hud.mirror',
+      params: { yours: 5, mirror: 6 },
+    });
+    const tied = act(shown, { type: 'chain', path: [0, 1, 2, 3, 4, 5] }, 0).session;
+    expect(hudPicture(tied, pointer, 0).goal).toEqual({ key: 'hud.goal', params: { count: 6 } });
   });
 });

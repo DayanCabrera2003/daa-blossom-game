@@ -1,5 +1,6 @@
 import { isExposed, size } from '@core/matching/queries';
 import type { VertexId } from '@core/graph/types';
+import type { Matching } from '@core/matching/types';
 import { itemAt } from '@core/shared/itemAt';
 import { SPROUT_AREA } from '@levels/fields';
 import type { Point } from '../input/target';
@@ -44,6 +45,15 @@ export interface PondPicture {
   } | null;
 }
 
+/** The reflection on screen now: the level's, once its `mirror` step is behind; null otherwise. */
+export function shownReflection(session: LevelSession): Matching | null {
+  const { mirror } = session.level;
+  return mirror !== null && isPast(session.flow, 'mirror') ? mirror : null;
+}
+
+/** Whether you light as many lanterns as the reflection: then it has nothing more to show. */
+export const ties = (yours: Matching, mirror: Matching): boolean => size(yours) >= size(mirror);
+
 /** The box around the sprouts of a piece. */
 function boxOf(piece: Piece, at: (v: VertexId) => Point): Box {
   const points = piece.sprouts.map(at);
@@ -63,9 +73,9 @@ export function pondPicture(
   positions: readonly Point[],
   labels: readonly string[],
 ): PondPicture | null {
-  const { mirror } = session.level;
+  const mirror = shownReflection(session);
+  if (mirror === null) return null;
   const { flow } = session;
-  if (mirror === null || !isPast(flow, 'mirror')) return null;
   const yours = garden(session).matching;
   const at = (v: VertexId): Point => itemAt(positions, v);
   const pieces = pondPieces(yours, mirror);
@@ -114,7 +124,7 @@ export function pondPicture(
     sprouts,
     offsets,
     separated,
-    dissolved: size(yours) >= size(mirror),
+    dissolved: ties(yours, mirror),
     degree,
   };
 }

@@ -6,6 +6,7 @@ import { canRedo, canUndo } from '../systems/history';
 import { garden, isHintAvailable, type LevelSession } from '../systems/levelSession';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
+import { shownReflection, ties } from './pond';
 
 /** An interface text to show, as a key of `content/` and its parameters. */
 export interface TextRef {
@@ -37,9 +38,16 @@ export interface HudPicture {
 /**
  * The goal on the top bar: the number of lanterns when it is visible; when hidden, the question, or
  * once a bet is made the bet itself (plan 03, decision 4). The real value is told by the mentor
- * when the level is won, so the bar keeps recalling the bet.
+ * when the level is won, so the bar keeps recalling the bet. With the reflection in the pond, your
+ * lanterns against its own (plan 03, phase 7).
  */
 function goalText(session: LevelSession): TextRef {
+  // While the reflection is shown, the bar sets your lanterns against it, until you tie.
+  const mirror = shownReflection(session);
+  const yours = garden(session).matching;
+  if (mirror !== null && !ties(yours, mirror)) {
+    return { key: 'hud.mirror', params: { yours: size(yours), mirror: size(mirror) } };
+  }
   const { goal } = session.level.data;
   if (goal.visible) return { key: 'hud.goal', params: { count: goal.value } };
   const { bet } = session.flow;

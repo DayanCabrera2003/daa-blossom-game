@@ -88,6 +88,7 @@ const UI = {
   'hud.goal': ['count'],
   'hud.goalHidden': [],
   'hud.bet': ['count'],
+  'hud.mirror': ['yours', 'mirror'],
   'hud.lanterns': ['count'],
   'hud.water': ['used', 'budget'],
   'hud.waterNoBudget': ['used'],
