@@ -13,10 +13,22 @@ export interface LevelSummary {
   readonly hints: number;
   /** "Terminé" pressed with the most lanterns lit (right), or without reason (wrong). */
   readonly claims: { readonly right: number; readonly wrong: number };
+  /** Options of a question (`ask`) or numbers of a `count` that were not the right one. */
+  readonly wrongAnswers: number;
+  /** Bets placed, and how many guessed the lanterns the garden holds (informal ones included). */
+  readonly bets: { readonly made: number; readonly right: number };
+  /** False statements chosen in the notebook question. */
+  readonly notebookWrong: number;
+  /** Counterexample gardens opened. */
+  readonly counterexamples: number;
+  /** Drawn reflections checked, by whether they beat the garden. */
+  readonly mirrorChecks: { readonly beating: number; readonly notBeating: number };
 }
 
 type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
   claims: { right: number; wrong: number };
+  bets: { made: number; right: number };
+  mirrorChecks: { beating: number; notBeating: number };
 };
 
 const freshTally = (level: string): Tally => ({
@@ -29,6 +41,11 @@ const freshTally = (level: string): Tally => ({
   refusals: 0,
   hints: 0,
   claims: { right: 0, wrong: 0 },
+  wrongAnswers: 0,
+  bets: { made: 0, right: 0 },
+  notebookWrong: 0,
+  counterexamples: 0,
+  mirrorChecks: { beating: 0, notBeating: 0 },
 });
 
 /**
@@ -83,6 +100,23 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
       case 'claim':
         if (entry.right) counts.claims.right += 1;
         else counts.claims.wrong += 1;
+        break;
+      case 'answer':
+        if (!entry.right) counts.wrongAnswers += 1;
+        break;
+      case 'bet':
+        counts.bets.made += 1;
+        if (entry.right) counts.bets.right += 1;
+        break;
+      case 'notebook':
+        if (!entry.right) counts.notebookWrong += 1;
+        break;
+      case 'counterexample':
+        counts.counterexamples += 1;
+        break;
+      case 'mirrorCheck':
+        if (entry.beats) counts.mirrorChecks.beating += 1;
+        else counts.mirrorChecks.notBeating += 1;
         break;
       case 'history':
         break;

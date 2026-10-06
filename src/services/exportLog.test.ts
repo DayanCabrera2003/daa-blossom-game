@@ -5,6 +5,7 @@ import { appendEntry, emptyLog } from './playtestLog';
 const played = [
   { kind: 'levelStart', at: 1_000, level: '0.1' },
   { kind: 'claim', at: 2_000, level: '0.1', right: false },
+  { kind: 'answer', at: 2_500, level: '0.1', step: 2, option: 1, right: false },
   { kind: 'levelEnd', at: 3_000, level: '0.1', outcome: 'won', stars: 3 },
 ] as const;
 const log = played.reduce(appendEntry, emptyLog());
@@ -16,7 +17,7 @@ describe('exporting the playtest log', () => {
     expect(exported.type).toBe('application/json');
   });
 
-  it('carries the summary of each level and the raw entries', () => {
+  it('carries the summary of each level, answers included, and the raw entries', () => {
     const exported = exportLog(log, Date.UTC(2026, 9, 6));
     expect(JSON.parse(exported.text)).toEqual({
       exportedAt: '2026-10-06T00:00:00.000Z',
@@ -31,6 +32,11 @@ describe('exporting the playtest log', () => {
           refusals: 0,
           hints: 0,
           claims: { right: 0, wrong: 1 },
+          wrongAnswers: 1,
+          bets: { made: 0, right: 0 },
+          notebookWrong: 0,
+          counterexamples: 0,
+          mirrorChecks: { beating: 0, notBeating: 0 },
         },
       ],
       log,
