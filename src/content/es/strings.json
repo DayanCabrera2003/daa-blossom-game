@@ -99,6 +99,9 @@
   "victory.hub": "Volver al jardín",
   "hub.title": "Florecer",
   "hub.chapter": "Capítulo {number}",
+  "hub.chapterName.0": "El Huerto",
+  "hub.chapterName.1": "El Prado",
+  "hub.chapterName.2": "El Estanque",
   "hub.locked": "Todavía cerrado",
   "hub.exportLog": "Exportar registro de prueba"
 }

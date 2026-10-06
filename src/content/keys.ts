@@ -1,6 +1,7 @@
 import type { BlossomError } from '@core/blossom/isBlossom';
 import type { PathError } from '@core/matching/paths';
 import type { ActionType } from '@core/rules/actions';
+import { NAMED_CHAPTERS } from '@game/picture/chapterTitle';
 import type { RefusalCode } from '@game/systems/refusal';
 
 /**
@@ -145,4 +146,6 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...prefixed('reason.notAFlower.', BLOSSOM_ERRORS),
   ...prefixed('action.', ACTIONS),
   ...UI,
+  // The name of each named chapter, over its levels in the hub.
+  ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
 };
