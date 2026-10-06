@@ -1,0 +1,71 @@
+{
+  "id": "2.1",
+  "sprouts": [
+    { "label": "1", "x": 90, "y": 70 },
+    { "label": "2", "x": 150, "y": 70 },
+    { "label": "3", "x": 210, "y": 70 },
+    { "label": "4", "x": 270, "y": 70 },
+    { "label": "5", "x": 330, "y": 70 },
+    { "label": "6", "x": 390, "y": 70 },
+    { "label": "a", "x": 110, "y": 150 },
+    { "label": "b", "x": 180, "y": 150 },
+    { "label": "c", "x": 180, "y": 210 },
+    { "label": "d", "x": 110, "y": 210 },
+    { "label": "e", "x": 300, "y": 180 },
+    { "label": "f", "x": 370, "y": 180 }
+  ],
+  "vines": [
+    ["1", "2"],
+    ["2", "3"],
+    ["3", "4"],
+    ["4", "5"],
+    ["5", "6"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "a"],
+    ["e", "f"]
+  ],
+  "lanterns": [
+    ["2", "3"],
+    ["4", "5"],
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"]
+  ],
+  "mirror": [
+    ["1", "2"],
+    ["3", "4"],
+    ["5", "6"],
+    ["b", "c"],
+    ["d", "a"],
+    ["e", "f"]
+  ],
+  "goal": { "visible": true, "value": 6 },
+  "hints": [{ "line": "ch2.1.sauce.11" }, { "line": "ch2.1.sauce.12", "highlight": ["3"] }],
+  "flow": [
+    { "step": "say", "lines": ["ch2.1.sauce.00"] },
+    { "step": "mirror" },
+    { "step": "say", "lines": ["ch2.1.sauce.01"] },
+    { "step": "explore" },
+    {
+      "step": "ask",
+      "prompt": "ch2.1.sauce.02",
+      "options": [
+        { "line": "ch2.1.gardener.03", "correct": false, "reply": "ch2.1.sauce.08" },
+        { "line": "ch2.1.gardener.04", "correct": true, "reply": "ch2.1.sauce.07" },
+        { "line": "ch2.1.gardener.05", "correct": false, "reply": "ch2.1.sauce.08" },
+        { "line": "ch2.1.gardener.06", "correct": false, "reply": "ch2.1.sauce.08" }
+      ],
+      "retry": true
+    },
+    { "step": "say", "lines": ["ch2.1.sauce.09"] },
+    { "step": "separate" },
+    { "step": "say", "lines": ["ch2.1.sauce.10"] }
+  ],
+  "solution": [
+    { "type": "tapSprout", "vertex": "3" },
+    { "type": "answer", "option": 1 },
+    { "type": "tapGarden" }
+  ]
+}
