@@ -7,7 +7,7 @@ import { createMatching } from '@core/matching/createMatching';
 import { size } from '@core/matching/queries';
 import type { Action, ActionType } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
-import { UNLOCKED_AT } from '@core/rules/permissions';
+import { actionsUnlockedBy, UNLOCKED_AT } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
 import { isVictory, type VictoryCondition } from '@core/rules/victory';
 import { unwrap } from '@core/shared/result';
@@ -164,5 +164,43 @@ describe("the mentor's next step (hint grade 3)", () => {
     expect(
       nextMove({ start: lit, solution: [], victory: { type: 'coverCertificate' } }, lit),
     ).toBeNull();
+  });
+
+  it('with a flower folded off the solution, it opens it before moving lanterns (4.6)', () => {
+    const level = levelById('4.6');
+    const folded = after(level, [...level.solution.slice(0, 5), { type: 'markRoot', vertex: 7 }]);
+    expect(folded.layer.nodes.length).toBeLessThan(folded.graph.n);
+    expect(nextMove(goalOf(level), folded)).toEqual({ type: 'unfold', blossom: 0 });
+    mentorPlays(goalOf(level), folded);
+  });
+
+  it('searching for a chain, it folds where two suns of one tree meet (4.1 to 4.4)', () => {
+    const level = levelById('4.1');
+    const start: GardenState = { ...level.start, allowed: new Set(actionsUnlockedBy('4.4')) };
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'chainFound' } };
+    let state = start;
+    const moves: Action[] = [];
+    while (!isVictory(state, goal.victory)) {
+      const move = nextMove(goal, state);
+      if (move === null) throw new Error('stuck');
+      moves.push(move);
+      const outcome = applyAction(state, move);
+      if (!outcome.ok) throw new Error(outcome.reason.code);
+      state = outcome.state;
+    }
+    expect(moves.some((move) => move.type === 'foldAt')).toBe(true);
+  });
+
+  it('where folding is still locked (4.1), it never suggests folding, and runs out of steps', () => {
+    const level = levelById('4.1');
+    const goal: MentorGoal = { start: level.start, solution: [], victory: { type: 'chainFound' } };
+    let state = level.start;
+    for (let move = nextMove(goal, state); move !== null; move = nextMove(goal, state)) {
+      expect(move.type).not.toBe('foldAt');
+      const outcome = applyAction(state, move);
+      if (!outcome.ok) throw new Error(`refused ${move.type}: ${outcome.reason.code}`);
+      state = outcome.state;
+    }
+    expect(isVictory(state, goal.victory)).toBe(false);
   });
 });
