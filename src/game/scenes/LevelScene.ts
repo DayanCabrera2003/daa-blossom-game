@@ -17,6 +17,7 @@ import {
 } from '../systems/levelController';
 import { garden } from '../systems/levelSession';
 import { playtestEntries } from '../systems/playtestEntries';
+import { questionAt } from '../systems/question';
 import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
 import { AnimationView } from '../view/AnimationView';
@@ -27,9 +28,11 @@ import { GardenView } from '../view/GardenView';
 import { HudView } from '../view/HudView';
 import { MarksView } from '../view/MarksView';
 import { ObjectsView } from '../view/ObjectsView';
+import { QuestionView } from '../view/QuestionView';
 import { SunSliderView } from '../view/SunSliderView';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
+import { VeilView } from '../view/VeilView';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import { contextOf, type GameContext } from './context';
 import { Presenter } from './presenter';
@@ -40,8 +43,8 @@ const HUD_REFRESH_MS = 500;
 /**
  * A level being played. The scene takes no decision: it forwards the player's presses, keys and
  * buttons to the level controller, shows the effects it answers with, and repaints every layer from
- * the pure pictures of the garden and the HUD. Dialogue, replays and the victory panel go through
- * the presenter (`presenter.ts`), which shows them in the order the presentation queue decides.
+ * the pure pictures of the garden and the HUD. Dialogue, questions, replays and the victory panel
+ * go through the presenter (`presenter.ts`), which shows them in the order the presentation queue decides.
  */
 export class LevelScene extends Phaser.Scene {
   private context!: GameContext;
@@ -62,7 +65,7 @@ export class LevelScene extends Phaser.Scene {
     dialogue: DialogueView;
   };
   private lastHudRefresh = 0;
-  /** Shows lines, replays and the victory panel one at a time, in the queue's order. */
+  /** Shows lines, questions, replays and the victory panel one at a time, in the queue's order. */
   private presenter!: Presenter;
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
@@ -113,12 +116,17 @@ export class LevelScene extends Phaser.Scene {
     };
     this.presenter = new Presenter(
       this,
-      { dialogue: this.views.dialogue },
+      { dialogue: this.views.dialogue, question: new QuestionView(this), veil: new VeilView(this) },
       {
         showDay: (state) => (state === null ? this.render() : this.renderReplayed(state)),
         stopAnimation: () => this.views.animation.finish(),
         victory: (stars) => this.offerNext(stars),
+        answer: (question, value) =>
+          this.dispatch(
+            question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
+          ),
       },
+      { t, line: this.context.line },
     );
     this.listen();
     this.ready = true;
@@ -197,12 +205,14 @@ export class LevelScene extends Phaser.Scene {
           this.time.now,
         );
         break;
-      case 'hint':
-        this.presenter.present({
-          kind: 'lines',
-          lines: [effect.content.generic ? t(effect.content.line) : line(effect.content.line)],
-        });
+      case 'hint': {
+        const { content } = effect;
+        this.presenter.hint(
+          [content.generic ? t(content.line) : line(content.line)],
+          content.option,
+        );
         break;
+      }
       case 'say':
         this.presenter.present({ kind: 'lines', lines: effect.lines.map(line) });
         break;
@@ -215,17 +225,32 @@ export class LevelScene extends Phaser.Scene {
       case 'won':
         this.win(effect.stars);
         break;
-      case 'play':
+      case 'ask':
+      case 'bet':
+      case 'count': {
+        // The options and right answers come from the core, on the lanterns as they are now.
+        const yours = garden(this.controller.session).matching;
+        const question = questionAt(this.level, effect.step, yours);
+        if (question !== null) this.presenter.present({ kind: 'question', question });
+        break;
+      }
       case 'answered':
+        this.presenter.answered();
+        break;
+      case 'reveal': {
+        const key = effect.bet === effect.right ? 'bet.revealRight' : 'bet.revealWrong';
+        this.presenter.present({
+          kind: 'lines',
+          lines: [t(key, { bet: effect.bet, count: effect.right })],
+        });
+        break;
+      }
+      case 'play':
       case 'sproutTapped':
         // Nothing to draw: the garden simply takes moves, or the answer is logged (phase 10).
         break;
       case 'sun':
         // Nothing to draw: the sun is already on the top bar, and moving it ends the step.
-        break;
-      case 'ask':
-      case 'bet':
-        // Questions and bets get their panel in plan 03, phase 4.
         break;
       case 'notebook':
         // The notebook is opened in plan 03, phase 6.
@@ -233,8 +258,7 @@ export class LevelScene extends Phaser.Scene {
       case 'mirror':
       case 'explore':
       case 'separate':
-      case 'count':
-        // The pond (reflection, tangle, threads and counts) is drawn in plan 03, phase 7.
+        // The pond (reflection, tangle and threads) is drawn in plan 03, phase 7.
         break;
       case 'draw':
         // The mirror challenge is drawn in plan 03, phase 8.
