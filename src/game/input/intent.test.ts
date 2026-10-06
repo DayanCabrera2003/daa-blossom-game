@@ -185,4 +185,18 @@ describe('the other tools', () => {
       selection: NO_SELECTION,
     });
   });
+
+  it('touching the selected sun again, or taking back the only sprout of a loop, lets go', () => {
+    const rooted = play(festival, [{ type: 'markRoot', vertex: 0 }]);
+    expect(tapAll(rooted, 'marks', [sprout(0), sprout(0)])).toEqual([null, null]);
+    expect(resolveTap(festival, 'foldLoop', { kind: 'loop', vertices: [2] }, sprout(2))).toEqual({
+      action: null,
+      selection: NO_SELECTION,
+    });
+  });
+
+  it('tools that act on a sprout ignore touches elsewhere', () => {
+    expect(tapAll(trap, 'inspect', [vine(0, 1)])).toEqual([null]);
+    expect(tapAll(trap, 'scarecrows', [{ kind: 'nothing' }])).toEqual([null]);
+  });
 });
