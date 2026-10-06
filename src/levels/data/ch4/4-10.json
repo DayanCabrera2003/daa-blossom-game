@@ -1,0 +1,32 @@
+{
+  "id": "4.10",
+  "sprouts": [
+    { "label": "R", "x": 50, "y": 135 },
+    { "label": "a", "x": 130, "y": 135 },
+    { "label": "b", "x": 210, "y": 135 },
+    { "label": "c", "x": 290, "y": 85 },
+    { "label": "d", "x": 290, "y": 185 },
+    { "label": "e", "x": 390, "y": 85 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "b"],
+    ["c", "e"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"]
+  ],
+  "goal": { "visible": true, "value": 3 },
+  "forbid": ["fold", "foldAt"],
+  "victory": { "type": "matchingSize", "value": 3 },
+  "script": ["ch4.10.sauce.00"],
+  "unlocks": { "actions": ["rotateStem"] },
+  "solution": [
+    { "type": "rotateStem", "stem": ["R", "a", "b"] },
+    { "type": "chain", "path": ["b", "d", "c", "e"] }
+  ]
+}
