@@ -279,6 +279,7 @@ describe('the script engine', () => {
     expect(advanceFlow(asking, { type: 'answer', option: 2, right: null }).effects).toEqual([]);
     const noting = startFlow([{ step: 'notebook' }], { notebook: [plainRight] }).flow;
     expect(advanceFlow(noting, { type: 'answer', option: 1, right: null }).effects).toEqual([]);
+    expect(advanceFlow(noting, { type: 'tap' })).toEqual({ flow: noting, effects: [] });
     const counting = start([
       { step: 'count', prompt: 'ch2.1.sauce.05', piece: 0, of: 'yours', range: 3 },
     ]).flow;
