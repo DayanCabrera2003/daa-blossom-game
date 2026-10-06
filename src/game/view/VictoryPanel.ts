@@ -2,9 +2,9 @@ import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import type { StarResult } from '../systems/stars';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
-import { Button } from '../view/Button';
-import { PALETTE } from '../view/palette';
-import { textStyle } from '../view/textStyle';
+import { Button } from './Button';
+import { PALETTE } from './palette';
+import { textStyle } from './textStyle';
 
 /** Shows the panel of a won level: its stars, and where to go next (none after the last level). */
 export function showVictoryPanel(

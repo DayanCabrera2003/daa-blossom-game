@@ -14,6 +14,7 @@ import {
   type UiEvent,
 } from '../systems/levelController';
 import { garden } from '../systems/levelSession';
+import type { StarResult } from '../systems/stars';
 import { AnimationView } from '../view/AnimationView';
 import { DialogueView } from '../view/DialogueView';
 import { FlowerView } from '../view/FlowerView';
@@ -25,8 +26,8 @@ import { ObjectsView } from '../view/ObjectsView';
 import { SunSliderView } from '../view/SunSliderView';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
+import { showVictoryPanel } from '../view/VictoryPanel';
 import { contextOf, type GameContext } from './context';
-import { showVictoryPanel } from './VictoryPanel';
 
 /** How often the HUD is refreshed while nothing happens, so a hint shows up when it is due. */
 const HUD_REFRESH_MS = 500;
@@ -162,19 +163,19 @@ export class LevelScene extends Phaser.Scene {
         ]);
         break;
       case 'won':
-        this.win(effect.stars.total, effect);
+        this.win(effect.stars);
         break;
     }
   }
 
   /** Records the win, then offers the next level (if any) or the hub. */
-  private win(stars: number, effect: Extract<Effect, { kind: 'won' }>): void {
+  private win(stars: StarResult): void {
     const id = this.level.data.id;
-    this.context.save = recordCompletion(this.context.save, id, stars);
+    this.context.save = recordCompletion(this.context.save, id, stars.total);
     writeSave(this.context.storage, this.context.save);
     const { catalog } = this.context;
     const next = catalog[catalog.findIndex((level) => level.data.id === id) + 1];
-    showVictoryPanel(this, this.context.t, effect.stars, {
+    showVictoryPanel(this, this.context.t, stars, {
       next: next === undefined ? null : () => this.scene.start('level', { levelId: next.data.id }),
       hub: () => this.scene.start('hub'),
     });
