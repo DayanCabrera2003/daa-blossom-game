@@ -17,8 +17,11 @@ import type { GardenState } from '../state';
  */
 export function foldAt(
   state: GardenState,
-  { from, to }: Extract<Action, { type: 'foldAt' }>,
+  action: Extract<Action, { type: 'foldAt' }>,
 ): ActionOutcome {
+  // A touched vine has no direction, and the loop's direction depends on which sun comes first;
+  // taking the smaller sprout first makes d–b and b–d fold exactly the same flower.
+  const [from, to] = action.from < action.to ? [action.from, action.to] : [action.to, action.from];
   const invalid = requireSprouts(state, [from, to]);
   if (invalid) return reject(invalid);
   if (!hasEdge(state.graph, from, to)) return reject({ code: 'notAdjacent', u: from, v: to });
