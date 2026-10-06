@@ -1,0 +1,31 @@
+{
+  "id": "4.9",
+  "sprouts": [
+    { "label": "R", "x": 80, "y": 135 },
+    { "label": "a", "x": 160, "y": 135 },
+    { "label": "b", "x": 240, "y": 135 },
+    { "label": "c", "x": 320, "y": 85 },
+    { "label": "d", "x": 320, "y": 185 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "b"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "maximum" },
+  "script": ["ch4.9.sauce.00"],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "foldAt", "from": "d", "to": "b" },
+    { "type": "declareDone" }
+  ]
+}

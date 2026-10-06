@@ -1,0 +1,45 @@
+{
+  "id": "7.4",
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 70 },
+    { "label": "a", "x": 110, "y": 70 },
+    { "label": "b", "x": 180, "y": 70 },
+    { "label": "c", "x": 230, "y": 30 },
+    { "label": "d", "x": 230, "y": 110 },
+    { "label": "R'", "x": 250, "y": 200 },
+    { "label": "a'", "x": 320, "y": 200 },
+    { "label": "b'", "x": 390, "y": 200 },
+    { "label": "c'", "x": 440, "y": 160 },
+    { "label": "d'", "x": 440, "y": 240 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "b"],
+    ["R'", "a'"],
+    ["a'", "b'"],
+    ["b'", "c'"],
+    ["c'", "d'"],
+    ["d'", "b'"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["a'", "b'"],
+    ["c'", "d'"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "tutteBergeCertificate" },
+  "script": ["ch7.4.sauce.00"],
+  "unlocks": { "codex": ["C12"] },
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markRoot", "vertex": "R'" },
+    { "type": "markMoon", "from": "R'", "to": "a'" },
+    { "type": "liftStone", "vertex": "a" },
+    { "type": "liftStone", "vertex": "a'" }
+  ]
+}

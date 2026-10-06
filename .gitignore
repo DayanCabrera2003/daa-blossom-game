@@ -1,0 +1,13 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+
+# Logs and editor noise
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Raw audio takes stay out of the repository
+assets-src/**/*.wav

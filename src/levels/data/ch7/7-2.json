@@ -1,0 +1,26 @@
+{
+  "id": "7.2",
+  "sprouts": [
+    { "label": "A", "x": 240, "y": 40 },
+    { "label": "B", "x": 330, "y": 105 },
+    { "label": "C", "x": 295, "y": 215 },
+    { "label": "D", "x": 185, "y": 215 },
+    { "label": "E", "x": 150, "y": 105 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "A"]
+  ],
+  "lanterns": [
+    ["A", "B"],
+    ["C", "D"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "tutteBergeCertificate" },
+  "script": ["ch7.2.oaks.00"],
+  "unlocks": { "actions": ["liftStone", "dropStone"] },
+  "solution": [{ "type": "declareDone" }]
+}
