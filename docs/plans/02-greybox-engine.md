@@ -174,6 +174,8 @@ Definición de "hecho" de cada fase: tests en verde, lint, formato y typecheck l
 | `view/ToastView.ts` | Mensajes amables de rechazo |
 | `view/DialogueView.ts` | Caja de diálogo: las líneas de `script` se muestran en orden al entrar en el nivel y avanzan con un toque (en greybox basta: solo se ven ids; el Plan 03 añade disparadores por línea al esquema, porque algunas van tras un evento, como `ch4.1.sauce.04` tras aplicar la cadena); las de las pistas, al pedirlas (texto por id, `⟨id⟩` si aún no existe) |
 
+> **Añadido al implementar (2026-10-06):** una carpeta pura `src/game/picture/` (con las mismas reglas que `input/` y `systems/`: sin Phaser, en la cobertura) decide **qué** se dibuja, y las vistas solo pintan primitivas. `picture/garden.ts`: brotes (farol, marca, selección, pista, cadena, piedra, espantapájaros), enredaderas (encendida, oculta por la niebla, interna de una flor), contornos de flores anidadas, grupos impares con piedras levantadas, vista previa de la cadena con su ganancia. `picture/hud.ts`: el modelo del HUD. `picture/reasonText.ts`: el texto amable de cada rechazo con los nombres de los brotes (incluido el paso exacto de una cadena o un ciclo). Vistas añadidas: `AnimationView` (reproduce el plan con `stepAt`), `layout.ts`, `Button.ts`, `textStyle.ts`. `HitTest` vive en `input/` (fase 3).
+
 **Tests clave:**
 - `animation/plan`: un `augment` de k enredaderas produce k saltos en orden; `finish` deja la vista en el estado final.
 - Vistas: verificación manual (fase 8), con capturas.
