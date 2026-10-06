@@ -101,4 +101,30 @@ describe('replaying a trace (the sun slider)', () => {
       flowers: [],
     });
   });
+
+  it("replays the player's own moves too: lighting, putting out, wiping the marks", () => {
+    const path = unwrap(
+      createGraph(3, [
+        [0, 1],
+        [1, 2],
+      ]),
+    );
+    const dark = emptyMatching(path);
+    const moves = [
+      { type: 'light', u: 0, v: 1 },
+      { type: 'labelOuter', vertex: 2, parent: null, root: 2 },
+      { type: 'putOut', u: 0, v: 1 },
+      { type: 'searchCleared' },
+      { type: 'light', u: 1, v: 2 },
+    ] as const;
+    expect(stateAt(dark, moves, 2)).toMatchObject({
+      mate: [1, 0, -1],
+      label: ['none', 'none', 'outer'],
+    });
+    expect(stateAt(dark, moves, 5)).toEqual({
+      mate: [-1, 2, 1],
+      label: ['none', 'none', 'none'],
+      flowers: [],
+    });
+  });
 });
