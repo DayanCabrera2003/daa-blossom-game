@@ -14,6 +14,7 @@ import {
 } from '../input/pointer';
 import type { Point } from '../input/target';
 import { availableTools, type ToolId } from '../input/tools';
+import { triedChain } from '../input/triedChain';
 import type { FlowEffect } from './flow';
 import type { HintContent } from './hintContent';
 import {
@@ -161,16 +162,10 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     case 'move': {
       const moved = pressMove(controller.pointer, state, positions, event.point);
       if (moved.rejection === null) return same({ pointer: moved.pointer });
-      const target = hitTest(state, positions, event.point);
-      const tried = [
-        ...(controller.pointer.chain ?? []),
-        ...(target.kind === 'sprout' ? [target.vertex] : []),
-      ];
+      const action = triedChain(controller.pointer.chain, hitTest(state, positions, event.point));
       return {
         controller: { ...controller, pointer: moved.pointer },
-        effects: [
-          { kind: 'rejected', reason: moved.rejection, action: { type: 'chain', path: tried } },
-        ],
+        effects: [{ kind: 'rejected', reason: moved.rejection, action }],
       };
     }
     case 'release': {
