@@ -71,3 +71,23 @@ export const bipartiteGraphArb = ({ maxN = 10 } = {}): fc.Arbitrary<Graph> =>
 /** Arbitrary bipartite graph together with one matching of it. */
 export const bipartiteWithMatchingArb = ({ maxN = 10 } = {}): fc.Arbitrary<[Graph, Matching]> =>
   bipartiteGraphArb({ maxN }).chain((graph) => fc.tuple(fc.constant(graph), matchingArb(graph)));
+
+/**
+ * Arbitrary graph with a random density: an edge probability p ∈ {5 %, 10 %, …, 95 %} is drawn
+ * first, then each vine is kept with probability p. Uniform edge subsets (`graphArb`) concentrate
+ * around density ½; this spreads the cases from near-empty gardens to near-complete ones.
+ */
+export const graphWithDensityArb = ({ maxN = 12 } = {}): fc.Arbitrary<Graph> =>
+  fc.tuple(fc.integer({ min: 0, max: maxN }), fc.integer({ min: 1, max: 19 })).chain(([n, p]) => {
+    const pairs = allPairs(n);
+    return fc
+      .array(fc.integer({ min: 0, max: 19 }), { minLength: pairs.length, maxLength: pairs.length })
+      .map((draws) =>
+        unwrap(
+          createGraph(
+            n,
+            pairs.filter((_, i) => (draws[i] as number) < p),
+          ),
+        ),
+      );
+  });
