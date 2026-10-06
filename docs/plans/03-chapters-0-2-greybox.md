@@ -212,7 +212,7 @@ Definición de "hecho" de cada fase: tests en verde, lint, formato y typecheck l
 
 ## Fase 9 — Los capítulos 0–2
 
-Se escribe en dos tandas: **F9a** (capítulos 0 y 1, con 1.5 sin su Cuaderno) justo después de la fase 5, y **F9b** (el Cuaderno de 1.5 y el capítulo 2) después de la fase 8.
+Se escribe en dos tandas: **F9a** (capítulos 0 y 1, con 1.5 sin su Cuaderno) justo después de la fase 5, y **F9b** (el capítulo 2) después de la fase 8. El Cuaderno de 1.5 se escribió en la fase 6, como primer caso real de contraejemplos.
 
 **Carpetas:** `src/levels/data/ch0`, `ch1`, `ch2`, `src/content/es/`
 
