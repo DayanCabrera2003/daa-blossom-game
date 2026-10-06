@@ -74,4 +74,10 @@ describe('readable trace lines', () => {
       '"Terminé"',
     ]);
   });
+
+  it('a search with nobody in the dark says so', () => {
+    expect(describeEvent({ type: 'searchStart', roots: [] }, name)).toBe(
+      'search starts: every sprout already has a lantern',
+    );
+  });
 });
