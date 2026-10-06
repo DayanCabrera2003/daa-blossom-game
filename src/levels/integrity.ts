@@ -9,6 +9,7 @@ import type { Level } from './build';
 
 /** Something wrong with a level that the schema alone cannot see. */
 export type IntegrityProblem =
+  | { readonly code: 'wonAtStart' }
   | { readonly code: 'goalMismatch'; readonly declared: number; readonly optimum: number }
   | { readonly code: 'victoryOutOfReach'; readonly value: number; readonly optimum: number }
   | { readonly code: 'solutionLocked'; readonly step: number; readonly action: ActionType }
@@ -39,6 +40,7 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
   const { data, start } = level;
   const optimum = size(fastEdmonds(level.graph));
 
+  if (isVictory(start, data.victory)) problems.push({ code: 'wonAtStart' });
   if (data.goal.visible && data.goal.value !== optimum) {
     problems.push({ code: 'goalMismatch', declared: data.goal.value, optimum });
   }

@@ -9,6 +9,8 @@ const withDetails = ({ code, ...details }: { readonly code: string }): string =>
 /** One readable line for an integrity problem. */
 export function describeProblem(problem: IntegrityProblem): string {
   switch (problem.code) {
+    case 'wonAtStart':
+      return 'the level is already won before the player does anything';
     case 'goalMismatch':
       return `goal says ${problem.declared} lanterns, but Edmonds finds ${problem.optimum}`;
     case 'victoryOutOfReach':
