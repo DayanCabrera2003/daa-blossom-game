@@ -236,6 +236,15 @@ Versión clásica O(n³) (array de bases + LCA), sin traza detallada pero con co
 | `handlers/<action>.ts` | Un archivo por acción; cada uno usa los validadores de fases 2–6 |
 | `victory.ts` | Evalúa condiciones declarativas: `matchingSize`, `maximum` (con "Terminé"), `validCover`, `validTutteBerge`, `augmentingPathShown`… |
 
+
+> **Notas de implementación (2026-10-06):**
+> - **El agua nunca bloquea:** se cuenta en `waterUsed` y es condición de estrella (GDD §1.3 "sin castigo", §5.4). No existe la razón `noWater`.
+> - Las acciones nombran **brotes originales**; tocar un pétalo es tocar su flor. Las marcas son un `AlternatingForest` real sobre la capa plegada y se aplican con `growStep`: el jugador y la receta siguen exactamente las mismas reglas. Buscando solo desde R se reproduce la traición de 4.1 (`sunMeetsSun` en d–b; c queda luna y c–e nunca se mira).
+> - Acciones finales: `join`, `split`, `passLantern`, `chain`, `rotateStem`, `inspect`, `markRoot`, `markMoon` (pone la luna y el sol de su pareja a la vez), `foldAt` (tocar el conflicto), `fold` (elegir un ciclo, solo fuera de una búsqueda), `unfold`, `placeScarecrow`/`removeScarecrow`, `liftStone`/`dropStone`, `declareDone`.
+> - Los movimientos de faroles exigen el jardín abierto (`flowersFolded`) y borran las marcas (`searchCleared`): una búsqueda vale para unos faroles concretos. Desplegar también borra las marcas pero conserva la cadena vista (`chainSeen`, en brotes originales).
+> - `blossom/unfold.ts` (`unfoldLayer`) es la inversa exacta de `contract`; `permissions.ts` traduce la tabla de §5.1 en `actionsUnlockedBy(levelId)`; `victory.ts` ofrece `matchingSize`, `maximum` (juzgado con Edmonds), `chainFound`, `coverCertificate` y `tutteBergeCertificate`.
+> - Propiedad extra: buscar por las reglas, **en cualquier orden** de miradas y pliegues, encuentra una cadena real o demuestra que no la hay (coincide con Bruto). Cubre la flor secreta de 7.9 ("plegar en otro orden no rompe nada").
+
 **Tests clave:**
 - Por acción: caso válido, cada `reason` de rechazo, y que el estado original no se muta.
 - Propiedad: cualquier secuencia de acciones aceptadas mantiene un emparejamiento válido.
