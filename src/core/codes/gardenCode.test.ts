@@ -70,6 +70,13 @@ describe('garden codes', () => {
       ok: false,
       error: { code: 'trailingData' },
     });
+    // Three sprouts announced, but the byte with their vine bits is missing.
+    expect(decodeGarden(raw(1, 3))).toEqual({ ok: false, error: { code: 'truncated' } });
+    // One vine, and a stray 1 after its lantern bit.
+    expect(decodeGarden(raw(1, 2, 0b10000000, 0b01000000))).toEqual({
+      ok: false,
+      error: { code: 'strayBits' },
+    });
     // Two sprouts with no vine, but a stray 1 in the padding bits.
     expect(decodeGarden(raw(1, 2, 0b01000000))).toEqual({
       ok: false,
