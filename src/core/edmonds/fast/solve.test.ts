@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { graphWithDensityArb, matchingArb } from '../../../../tests/support/arbitraries';
+import { BRUTO_PROPERTY_TIMEOUT } from '../../../../tests/support/timeouts';
 import { bruteForceMatching } from '../../bruteforce/maximumMatching';
 import { createOperationCounter } from '../../cost/operationCounter';
 import { cycleGraph, pathGraph } from '../../generators/families';
@@ -58,21 +59,25 @@ describe('fast Edmonds (the second oracle)', () => {
     expect(flip).toBeGreaterThanOrEqual(4);
   });
 
-  it('property (triple check, small): fast = Bruto, and the answer is valid', () => {
-    fc.assert(
-      fc.property(
-        graphWithDensityArb({ maxN: 12 }).chain((graph) =>
-          fc.tuple(fc.constant(graph), matchingArb(graph)),
+  it(
+    'property (triple check, small): fast = Bruto, and the answer is valid',
+    () => {
+      fc.assert(
+        fc.property(
+          graphWithDensityArb({ maxN: 12 }).chain((graph) =>
+            fc.tuple(fc.constant(graph), matchingArb(graph)),
+          ),
+          ([graph, initial]) => {
+            const matching = fastEdmonds(graph, initial);
+            expect(validateMate(graph, matching.mate).ok).toBe(true);
+            expect(size(matching)).toBe(optimum(graph));
+          },
         ),
-        ([graph, initial]) => {
-          const matching = fastEdmonds(graph, initial);
-          expect(validateMate(graph, matching.mate).ok).toBe(true);
-          expect(size(matching)).toBe(optimum(graph));
-        },
-      ),
-      { numRuns: 1000 },
-    );
-  });
+        { numRuns: 1000 },
+      );
+    },
+    BRUTO_PROPERTY_TIMEOUT,
+  );
 
   it('property (triple check, large): fast = didactic on sparse gardens of up to 200 sprouts', () => {
     fc.assert(

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { BRUTO_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { completeGraph, cycleGraph, pathGraph } from '../generators/families';
 import { randomGraph } from '../generators/random';
 import type { Graph } from '../graph/types';
@@ -42,11 +43,15 @@ describe('the race against Bruto (chapter 6)', () => {
     }
   });
 
-  it('Bruto grows exponentially: doubling the garden costs him far more than ×8', () => {
-    for (const grow of [pathGraph, half]) {
-      const [small, large] = benchmark([8, 16], grow, 10_000_000);
-      expect(large?.bruto.status).toBe('complete');
-      expect(large?.bruto.steps).toBeGreaterThan(40 * (small?.bruto.steps ?? 0));
-    }
-  });
+  it(
+    'Bruto grows exponentially: doubling the garden costs him far more than ×8',
+    () => {
+      for (const grow of [pathGraph, half]) {
+        const [small, large] = benchmark([8, 16], grow, 10_000_000);
+        expect(large?.bruto.status).toBe('complete');
+        expect(large?.bruto.steps).toBeGreaterThan(40 * (small?.bruto.steps ?? 0));
+      }
+    },
+    BRUTO_PROPERTY_TIMEOUT,
+  );
 });

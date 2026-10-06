@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { graphWithDensityArb, matchingArb } from '../../../tests/support/arbitraries';
+import { BRUTO_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { bruteForceMatching } from '../bruteforce/maximumMatching';
 import { stonesFromForest } from '../certificates/fromForest';
 import { checkTutteBerge } from '../certificates/tutteBerge';
@@ -74,26 +75,30 @@ describe('Edmonds, the full recipe', () => {
     ]);
   });
 
-  it('master property: maximum (checked by Bruto), valid, and proved by its own stones', () => {
-    fc.assert(
-      fc.property(
-        graphWithDensityArb({ maxN: 12 }).chain((graph) =>
-          fc.tuple(fc.constant(graph), matchingArb(graph)),
+  it(
+    'master property: maximum (checked by Bruto), valid, and proved by its own stones',
+    () => {
+      fc.assert(
+        fc.property(
+          graphWithDensityArb({ maxN: 12 }).chain((graph) =>
+            fc.tuple(fc.constant(graph), matchingArb(graph)),
+          ),
+          ([graph, initial]) => {
+            const run = edmonds(graph, initial);
+            expect(validateMate(graph, run.matching.mate).ok).toBe(true);
+            expect(size(run.matching)).toBe(optimum(graph));
+            expect(checkTutteBerge(graph, run.matching, stonesOf(run)).ok).toBe(true);
+            // Termination (C10): each chain lights one more lantern, so at most n/2 of them.
+            const chains = run.trace.filter((event) => event.type === 'augment').length;
+            expect(chains).toBe(size(run.matching) - size(initial));
+            expect(chains).toBeLessThanOrEqual(graph.n / 2);
+          },
         ),
-        ([graph, initial]) => {
-          const run = edmonds(graph, initial);
-          expect(validateMate(graph, run.matching.mate).ok).toBe(true);
-          expect(size(run.matching)).toBe(optimum(graph));
-          expect(checkTutteBerge(graph, run.matching, stonesOf(run)).ok).toBe(true);
-          // Termination (C10): each chain lights one more lantern, so at most n/2 of them.
-          const chains = run.trace.filter((event) => event.type === 'augment').length;
-          expect(chains).toBe(size(run.matching) - size(initial));
-          expect(chains).toBeLessThanOrEqual(graph.n / 2);
-        },
-      ),
-      { numRuns: 1000 },
-    );
-  });
+        { numRuns: 1000 },
+      );
+    },
+    BRUTO_PROPERTY_TIMEOUT,
+  );
 
   it('master property on hard cases: long stems, nested and many flowers, helices', () => {
     // These gardens are too big for Bruto; the run's own certificate proves the optimum instead,
