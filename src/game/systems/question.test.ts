@@ -1,6 +1,7 @@
 import type { Level } from '@levels/build';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import { pondLevel } from '../../../tests/support/pondGarden';
 import { hintedOption, questionAt } from './question';
 
 /**
@@ -107,6 +108,21 @@ describe('the questions of a script', () => {
     expect(question?.options.map((option) => option.value)).toEqual([0, 1, 2, 3]);
     expect(question?.right).toEqual([1]);
     expect(question?.preview).toBeNull();
+  });
+
+  it('2.2 counts each piece of the pond: the thread 2 yours and 3 its, the loop 2 and 2', () => {
+    const count = (piece: string, of: 'yours' | 'mirror') =>
+      ({ step: 'count', prompt: 'ch2.2.sauce.01', piece, of, range: 4 }) as const;
+    const level = pondLevel([
+      { step: 'mirror' },
+      { step: 'separate' },
+      count('1', 'yours'),
+      count('6', 'mirror'),
+      count('a', 'yours'),
+      count('c', 'mirror'),
+    ]);
+    const rights = [2, 3, 4, 5].map((index) => questionAt(level, index, yours(level))?.right);
+    expect(rights).toEqual([[2], [3], [2], [2]]);
   });
 
   it('a step that asks nothing, or past the end of the script, has no question', () => {
