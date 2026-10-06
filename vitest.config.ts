@@ -5,6 +5,8 @@ export default defineConfig({
   resolve: { alias: aliases },
   test: {
     include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
+    // Fixed fast-check seed by default; FC_SEED / FC_RUNS override it (tests/support/fastCheckSettings.ts).
+    setupFiles: ['tests/setup/fastCheck.ts'],
     coverage: {
       provider: 'v8',
       // Only the pure core is held to the coverage bar: it is the mathematical heart of the project.
