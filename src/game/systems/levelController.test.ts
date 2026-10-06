@@ -1,11 +1,18 @@
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import { gesturesFor } from '../input/gestures';
 import type { Point } from '../input/target';
 import { HINT_DELAY_MS } from './hints';
 import { garden } from './levelSession';
-import { startController, handle, type Controller, type UiEvent } from './levelController';
+import {
+  openController,
+  startController,
+  handle,
+  type Controller,
+  type UiEvent,
+} from './levelController';
 
 const levelById = (id: string): Level => {
   const level = catalog().find((l) => l.data.id === id);
@@ -161,5 +168,127 @@ describe('the level controller', () => {
       }
     }
     expect(won).toBe(true);
+  });
+});
+
+/** A path A–B–C–D with B=C lit and a reflection A=B, C=D, whose script is `flow`. */
+const scripted = (flow: unknown[]): Level => {
+  const plays = flow.some((step) => (step as { step: string }).step === 'play');
+  const loaded = loadLevel({
+    id: '2.9',
+    sprouts: [
+      { label: 'A', x: 100, y: 100 },
+      { label: 'B', x: 200, y: 100 },
+      { label: 'C', x: 300, y: 100 },
+      { label: 'D', x: 400, y: 100 },
+    ],
+    vines: [
+      ['A', 'B'],
+      ['B', 'C'],
+      ['C', 'D'],
+    ],
+    lanterns: [['B', 'C']],
+    mirror: [
+      ['A', 'B'],
+      ['C', 'D'],
+    ],
+    goal: { visible: false },
+    ...(plays ? { victory: { type: 'matchingSize', value: 1 } } : {}),
+    flow,
+    solution: [{ type: 'tapGarden' }],
+  });
+  if (!loaded.ok) throw new Error('fixture does not load');
+  return loaded.value;
+};
+const question = {
+  step: 'ask',
+  prompt: 'ch2.9.sauce.01',
+  options: [
+    { line: 'ch2.9.sauce.02', correct: false },
+    { line: 'ch2.9.sauce.03', correct: true },
+  ],
+};
+
+describe('the level controller runs the script', () => {
+  it('opens with the effects of the first steps', () => {
+    const opened = openController(levelById('4.6'), 0);
+    expect(opened.effects).toEqual([{ kind: 'say', lines: ['ch4.6.sauce.00'] }, { kind: 'play' }]);
+    expect(opened.controller).toEqual(startController(levelById('4.6'), 0));
+  });
+
+  it('answers and bets reach the script; finishing it is the win, with its stars', () => {
+    const level = scripted([{ step: 'bet', prompt: 'ch2.9.sauce.04', range: 3 }, question]);
+    const { controller, effects } = feed(startController(level, 0), [
+      { kind: 'bet', value: 2 },
+      { kind: 'answer', option: 1 },
+    ]);
+    expect(effects).toEqual([
+      { kind: 'answered', step: 0, value: 2, correct: true },
+      {
+        kind: 'ask',
+        step: 1,
+        prompt: 'ch2.9.sauce.01',
+        options: ['ch2.9.sauce.02', 'ch2.9.sauce.03'],
+      },
+      { kind: 'answered', step: 1, value: 1, correct: true },
+      { kind: 'won', stars: { total: 3, noHints: true, withinWater: null } },
+    ]);
+    expect(controller.session.won?.total).toBe(3);
+  });
+
+  it('under a question, a touch on the garden is no move: it is refused with notNow', () => {
+    const level = scripted([question, { step: 'play' }]);
+    const p = (v: number) => spot(level, v);
+    const { controller, effects } = feed(startController(level, 0), [
+      { kind: 'tool', tool: 'lanterns' },
+      ...touch({ x: (p(1).x + p(2).x) / 2, y: p(1).y }),
+    ]);
+    expect(effects).toMatchObject([{ kind: 'rejected', reason: { code: 'notNow' } }]);
+    expect(garden(controller.session)).toBe(level.start);
+  });
+
+  it('a press on the garden while separating is a touch for the script, not a move', () => {
+    const level = scripted([{ step: 'separate' }, question]);
+    const { effects } = feed(startController(level, 0), [
+      { kind: 'press', point: { x: 250, y: 200 } },
+    ]);
+    expect(effects.map((effect) => effect.kind)).toEqual(['ask']);
+    const tapped = handle(startController(level, 0), { kind: 'tapGarden' }, 0);
+    expect(tapped.effects.map((effect) => effect.kind)).toEqual(['ask']);
+  });
+
+  it('while exploring, a press on a sprout is a touch on it; elsewhere it is nothing', () => {
+    const level = scripted([{ step: 'explore' }, question]);
+    const missed = feed(startController(level, 0), [{ kind: 'press', point: { x: 250, y: 200 } }]);
+    expect(missed.effects).toEqual([]);
+    const { effects } = feed(startController(level, 0), [{ kind: 'press', point: spot(level, 2) }]);
+    expect(effects.map((effect) => effect.kind)).toEqual(['sproutTapped', 'ask']);
+    expect(
+      handle(startController(level, 0), { kind: 'tapSprout', vertex: 1 }, 0).effects[0],
+    ).toEqual({ kind: 'sproutTapped', vertex: 1 });
+  });
+
+  it('moving the sun through the day ends the sun step; a sun that stays put does not', () => {
+    const level = scripted([{ step: 'play' }, { step: 'sun' }, question]);
+    const p = (v: number) => spot(level, v);
+    const won = feed(startController(level, 0), [
+      { kind: 'tool', tool: 'lanterns' },
+      ...touch({ x: (p(1).x + p(2).x) / 2, y: p(1).y }),
+      ...touch(p(0)),
+      ...touch(p(1)),
+    ]).controller;
+    expect(handle(won, { kind: 'redo' }, 0).effects).toEqual([]);
+    expect(handle(won, { kind: 'undo' }, 0).effects.map((effect) => effect.kind)).toEqual(['ask']);
+    expect(handle(won, { kind: 'seek', fraction: 0 }, 0).effects.map((e) => e.kind)).toEqual([
+      'ask',
+    ]);
+  });
+
+  it('drawing a reflection is accepted but does nothing yet (plan 03, phase 8)', () => {
+    const level = scripted([{ step: 'draw', attempts: 1 }]);
+    const controller = startController(level, 0);
+    for (const event of [{ kind: 'drawToggle', u: 0, v: 1 }, { kind: 'checkMirror' }] as const) {
+      expect(handle(controller, event, 0)).toEqual({ controller, effects: [] });
+    }
   });
 });

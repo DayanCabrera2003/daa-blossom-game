@@ -1,5 +1,6 @@
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
+import { invariant } from '@core/shared/invariant';
 import type { TraceEvent } from '@core/trace/events';
 import type { Level } from '@levels/build';
 import { hitTest } from '../input/HitTest';
@@ -13,16 +14,20 @@ import {
 } from '../input/pointer';
 import type { Point } from '../input/target';
 import { availableTools, type ToolId } from '../input/tools';
+import type { FlowEffect } from './flow';
 import type { HintContent } from './hintContent';
 import {
   act,
   askHint,
   garden,
+  openSession,
   redoSession,
+  respond,
   seekSession,
-  startSession,
+  stepNow,
   undoSession,
   type LevelSession,
+  type ScriptInput,
 } from './levelSession';
 import type { Refusal } from './refusal';
 import type { StarResult } from './stars';
@@ -42,10 +47,23 @@ export type UiEvent =
   | { readonly kind: 'press' | 'move' | 'release'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
   | { readonly kind: 'undo' | 'redo' | 'hint' | 'done' }
-  | { readonly kind: 'seek'; readonly fraction: number };
+  | { readonly kind: 'seek'; readonly fraction: number }
+  /** An option of the question on screen (its index), or the number picked in a count. */
+  | { readonly kind: 'answer'; readonly option: number }
+  | { readonly kind: 'bet'; readonly value: number }
+  /** A touch on the garden or on a sprout, for the steps that wait for one. */
+  | { readonly kind: 'tapGarden' }
+  | { readonly kind: 'tapSprout'; readonly vertex: VertexId }
+  /** The mirror challenge: a vine put in or out of the drawn reflection, and the check of it. */
+  | { readonly kind: 'drawToggle'; readonly u: VertexId; readonly v: VertexId }
+  | { readonly kind: 'checkMirror' };
 
-/** What the scene has to show after an event. */
+/**
+ * What the scene has to show after an event: the answers to moves and hints, and the effects of the
+ * script, except that the end of the script reaches the scene as the win, with its stars.
+ */
 export type Effect =
+  | Exclude<FlowEffect, { readonly kind: 'finished' }>
   | { readonly kind: 'rejected'; readonly reason: Refusal; readonly action: Action }
   | {
       readonly kind: 'animate';
@@ -59,29 +77,63 @@ export type Effect =
 /** The controller after an event, and what the scene has to show for it. */
 export type Step = { controller: Controller; effects: Effect[] };
 
-/** A level screen as the level starts, holding the first tool it unlocks. */
-export function startController(level: Level, now: number): Controller {
+/** The effects of the script as the scene sees them: its end is the win, with the stars it fixed. */
+function shown(session: LevelSession, effects: readonly FlowEffect[]): Effect[] {
+  return effects.map((effect): Effect => {
+    if (effect.kind !== 'finished') return effect;
+    invariant(session.won !== null, 'a finished script fixes the stars');
+    return { kind: 'won', stars: session.won };
+  });
+}
+
+/** A level screen as the level starts, holding the first tool it unlocks, and what its script opens with. */
+export function openController(level: Level, now: number): Step {
   const [first = 'lanterns'] = availableTools(level.start.allowed);
+  const { session, effects } = openSession(level, now);
   return {
-    session: startSession(level, now),
-    pointer: initialPointer(first),
-    highlight: [],
-    positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
+    controller: {
+      session,
+      pointer: initialPointer(first),
+      highlight: [],
+      positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
+    },
+    effects: shown(session, effects),
   };
 }
 
-/** Tries a move: refused, it is reported; accepted, it is animated, puts out hint glows, may win. */
+/** A level screen as the level starts, holding the first tool it unlocks. */
+export const startController = (level: Level, now: number): Controller =>
+  openController(level, now).controller;
+
+/** Gives the script an input of the player; the controller keeps everything else. */
+function tell(controller: Controller, input: ScriptInput, now: number): Step {
+  const { session, effects } = respond(controller.session, input, now);
+  return { controller: { ...controller, session }, effects: shown(session, effects) };
+}
+
+/** A move through the day (undo, redo, the sun): when the shown state changes, the sun moved. */
+function travel(controller: Controller, session: LevelSession, now: number): Step {
+  const moved = session.history.cursor !== controller.session.history.cursor;
+  const next = { ...controller, session };
+  return moved ? tell(next, { type: 'sunMoved' }, now) : { controller: next, effects: [] };
+}
+
+/**
+ * Tries a move: refused, it is reported; accepted, it is animated, puts out hint glows, and may win
+ * the play step, which moves the script on.
+ */
 function apply(controller: Controller, action: Action, now: number): Step {
-  const before = controller.session.won;
-  const { session, outcome } = act(controller.session, action, now);
+  const { session, outcome, effects: flowEffects } = act(controller.session, action, now);
   if (!outcome.ok) {
     return {
       controller: { ...controller, session },
       effects: [{ kind: 'rejected', reason: outcome.reason, action }],
     };
   }
-  const effects: Effect[] = [{ kind: 'animate', action, events: outcome.events }];
-  if (before === null && session.won !== null) effects.push({ kind: 'won', stars: session.won });
+  const effects: Effect[] = [
+    { kind: 'animate', action, events: outcome.events },
+    ...shown(session, flowEffects),
+  ];
   return { controller: { ...controller, session, highlight: [] }, effects };
 }
 
@@ -94,8 +146,18 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     effects: [],
   });
   switch (event.kind) {
-    case 'press':
+    case 'press': {
+      // Steps that wait for a touch take the press themselves: it is never a move.
+      const step = stepNow(controller.session)?.step;
+      if (step === 'separate') return tell(controller, { type: 'tap' }, now);
+      if (step === 'explore') {
+        const target = hitTest(state, positions, event.point);
+        return target.kind === 'sprout'
+          ? tell(controller, { type: 'tapSprout', vertex: target.vertex }, now)
+          : same({});
+      }
       return same({ pointer: pressStart(controller.pointer, state, positions, event.point) });
+    }
     case 'move': {
       const moved = pressMove(controller.pointer, state, positions, event.point);
       if (moved.rejection === null) return same({ pointer: moved.pointer });
@@ -121,15 +183,26 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     case 'tool':
       return same({ pointer: chooseTool(controller.pointer, event.tool) });
     case 'undo':
-      return same({ session: undoSession(controller.session) });
+      return travel(controller, undoSession(controller.session), now);
     case 'redo':
-      return same({ session: redoSession(controller.session) });
+      return travel(controller, redoSession(controller.session), now);
     case 'seek': {
       const steps = controller.session.history.states.length;
-      return same({
-        session: seekSession(controller.session, stepAtFraction(event.fraction, steps)),
-      });
+      const step = stepAtFraction(event.fraction, steps);
+      return travel(controller, seekSession(controller.session, step), now);
     }
+    case 'answer':
+      return tell(controller, { type: 'answer', option: event.option }, now);
+    case 'bet':
+      return tell(controller, { type: 'bet', value: event.value }, now);
+    case 'tapGarden':
+      return tell(controller, { type: 'tap' }, now);
+    case 'tapSprout':
+      return tell(controller, { type: 'tapSprout', vertex: event.vertex }, now);
+    case 'drawToggle':
+    case 'checkMirror':
+      // The mirror challenge is drawn and checked in plan 03, phase 8; until then they do nothing.
+      return same({});
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
     case 'hint': {
