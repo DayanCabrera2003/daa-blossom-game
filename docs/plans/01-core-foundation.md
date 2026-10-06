@@ -285,6 +285,12 @@ Se puede posponer hasta el greybox del capítulo 6 sin bloquear nada.
 | `tests/levels.test.ts` | Integridad de **todos** los niveles |
 | `tools/check-levels.ts` | La misma comprobación por consola con informe legible; en CI |
 
+> **Notas de implementación (2026-10-06):**
+> - Los archivos de nivel nombran los brotes por **etiqueta**, como el GDD, también en la solución de referencia (`{ "type": "chain", "path": ["R","a","b","d","c","e"] }`); `levels/build.ts` los traduce a ids. Las acciones permitidas son las desbloqueadas hasta el nivel (`actionsUnlockedBy`) menos `forbid` (4.10 cierra Plegar).
+> - `toGardenState.ts` se llamó `build.ts` (`buildLevel`), porque construye más que el estado: etiquetas, grafo, estado inicial y solución con ids. Las comprobaciones viven en `levels/integrity.ts`, compartidas por `tests/levels.test.ts` y `tools/check-levels.ts` (`npm run check-levels`, también en CI).
+> - Comprobaciones añadidas a las seis del plan: la solución respeta el presupuesto de agua si existe; las líneas de diálogo empiezan por `ch<id>.`; lo que un nivel desbloquea coincide con la tabla de `rules/permissions.ts`; el archivo vive donde dice su id (`ch4/4-10.json`) y no hay ids repetidos.
+> - Fixtures: 0.1, 1.1, 4.1, 4.3, 4.6, 4.7, 4.9, 4.10, 5.1, 7.2, 7.3, 7.4. **Pendientes de mecánica:** 2.1 (reflejo del estanque y la pregunta "¿cuántos hilos?") y 7.1 (victoria "intentarlo y aceptar que no cierra"); se diseñan con el greybox de sus capítulos. 7.2 ocupa el lugar de 7.1 como nivel con certificado.
+
 **Integridad por nivel:**
 1. Pasa el esquema.
 2. El grafo y el emparejamiento inicial son válidos.
