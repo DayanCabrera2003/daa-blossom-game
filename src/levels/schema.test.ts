@@ -29,6 +29,22 @@ describe('level schema', () => {
       unlocks: { actions: ['join', 'split'], codex: [] },
     });
     expect(parsed.notebook).toBeUndefined();
+    expect(parsed.mirror).toBeUndefined();
+  });
+
+  it('a level without a script is played until won', () => {
+    expect(levelSchema.parse(twoSprouts).flow).toEqual([{ step: 'play', reactions: [] }]);
+  });
+
+  it('reads the script and the reflection of a level', () => {
+    const parsed = levelSchema.parse({
+      ...twoSprouts,
+      flow: [{ step: 'say', lines: ['ch0.1.sauce.00'] }, { step: 'mirror' }, { step: 'play' }],
+      mirror: [['A', 'B']],
+    });
+    expect(parsed.flow.map((step) => step.step)).toEqual(['say', 'mirror', 'play']);
+    expect(parsed.mirror).toEqual([['A', 'B']]);
+    expect(levelSchema.safeParse({ ...twoSprouts, flow: [{ step: 'jump' }] }).success).toBe(false);
   });
 
   it('reads solutions written with sprout names', () => {

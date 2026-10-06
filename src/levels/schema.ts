@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { actionType, label, levelAction, lineId, vine } from './fields';
+import { flowSchema } from './flow';
 
 /**
  * The shape of a level file (`levels/data/chN/N-M.json`), the single source of truth of a level's
@@ -54,6 +55,8 @@ export const levelSchema = z.strictObject({
   vines: z.array(vine),
   /** Lanterns lit when the level starts. */
   lanterns: z.array(vine).default([]),
+  /** The lanterns of the reflection in the pond (chapter 2), shown by a `mirror` step. */
+  mirror: z.array(vine).optional(),
   goal,
   fog: z.boolean().default(false),
   /** Water budget for the extra star; null when the level does not count water. */
@@ -68,6 +71,8 @@ export const levelSchema = z.strictObject({
   /** Lines spoken during the level, in order. */
   script: z.array(lineId).default([]),
   notebook: notebook.optional(),
+  /** What happens in the level, in order; played until won when the level writes no script. */
+  flow: flowSchema,
   /** What finishing the level unlocks: actions and Codex entries (C1…C14). */
   unlocks: z
     .strictObject({
