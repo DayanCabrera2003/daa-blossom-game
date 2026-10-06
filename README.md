@@ -23,7 +23,10 @@ npm run dev        # start the dev server
 npm test           # run the test suite
 npm run lint       # lint the code
 npm run typecheck  # type-check without emitting
+npm run test:explore  # property tests with a random seed and 2000 cases each
 ```
+
+Property-based tests use a fixed seed by default, so every run (and CI) is reproducible. When a property fails, fast-check prints its seed; replay it with `FC_SEED=<seed> npm test`. `FC_RUNS=<n>` sets the number of cases per property.
 
 ## License
 
