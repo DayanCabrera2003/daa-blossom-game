@@ -19,6 +19,7 @@
     "coverage": "vitest run --coverage",
     "lint": "eslint .",
     "check-levels": "tsx tools/check-levels.ts",
+    "solve": "tsx tools/solve.ts",
     "format": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\""
   },
