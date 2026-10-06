@@ -1,6 +1,5 @@
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
-import type { RejectReason } from '@core/rules/reasons';
 import type { TraceEvent } from '@core/trace/events';
 import type { Level } from '@levels/build';
 import { hitTest } from '../input/HitTest';
@@ -25,6 +24,7 @@ import {
   undoSession,
   type LevelSession,
 } from './levelSession';
+import type { Refusal } from './refusal';
 import type { StarResult } from './stars';
 import { stepAtFraction } from './sun';
 
@@ -46,7 +46,7 @@ export type UiEvent =
 
 /** What the scene has to show after an event. */
 export type Effect =
-  | { readonly kind: 'rejected'; readonly reason: RejectReason; readonly action: Action }
+  | { readonly kind: 'rejected'; readonly reason: Refusal; readonly action: Action }
   | {
       readonly kind: 'animate';
       /** The move accepted, for the playtest log. */

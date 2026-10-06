@@ -1,9 +1,9 @@
-import type { RejectReason } from '@core/rules/reasons';
 import type { PlaytestEntry } from '@services/playtestLog';
 import type { Controller, Step, UiEvent } from './levelController';
+import type { Refusal } from './refusal';
 
 /** A refusal as one stable code, with the sub-reason of a bad chain or loop (`invalidPath.x`). */
-const reasonCode = (reason: RejectReason): string =>
+const reasonCode = (reason: Refusal): string =>
   'error' in reason ? `${reason.code}.${reason.error.code}` : reason.code;
 
 /** The history moves worth logging, by the event that makes them. */
