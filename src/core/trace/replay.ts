@@ -1,5 +1,5 @@
 import type { VertexId } from '../graph/types';
-import { flipAlong } from '../matching/augment';
+import { flipAlong, flipEdges } from '../matching/augment';
 import type { Matching } from '../matching/types';
 import type { ForestLabel } from '../search/forest';
 import { invariant } from '../shared/invariant';
@@ -30,7 +30,8 @@ export interface GardenSnapshot {
  * - `labelOuter` / `labelInner` mark one sprout;
  * - `contract` folds: its members all shine as suns, and the flowers it swallows record it;
  * - `expand` opens a flower: those directly inside it come back to the top;
- * - `augment` passes the lanterns along its chain;
+ * - `augment` passes the lanterns along its chain; `light` and `putOut` toggle one lantern;
+ * - `searchCleared` wipes the marks (the player changed the lanterns mid-search);
  * - the rest (scans, conflicts, endings) change nothing the garden shows.
  */
 export function stateAt(
@@ -83,6 +84,13 @@ export function stateAt(
         break;
       case 'augment':
         matching = flipAlong(matching, event.path);
+        break;
+      case 'light':
+      case 'putOut':
+        matching = flipEdges(matching, [[event.u, event.v]]);
+        break;
+      case 'searchCleared':
+        label = label.map(() => 'none');
         break;
       default:
         break;
