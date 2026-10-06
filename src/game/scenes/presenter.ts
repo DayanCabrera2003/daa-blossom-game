@@ -15,11 +15,12 @@ import {
   type Stage,
   type StageTurn,
 } from '../systems/presentation';
-import type { Question } from '../systems/question';
+import type { Question, QuestionOption } from '../systems/question';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
 import type { DialogueView } from '../view/DialogueView';
-import type { QuestionView, ShownQuestion } from '../view/QuestionView';
+import type { NotebookView, ShownNotebook } from '../view/NotebookView';
+import type { QuestionView, ShownOption, ShownQuestion } from '../view/QuestionView';
 import type { VeilView } from '../view/VeilView';
 
 /** A day replaying itself on screen: its states, its timing, when it began and what shows now. */
@@ -34,6 +35,7 @@ interface Replaying {
 export interface PresenterViews {
   readonly dialogue: DialogueView;
   readonly question: QuestionView;
+  readonly notebook: NotebookView;
   readonly veil: VeilView;
 }
 
@@ -53,12 +55,15 @@ export interface PresenterHooks {
   readonly victory: (stars: StarResult) => void;
   /** The player chose an option (its value) of the question on screen. */
   readonly answer: (question: Question, value: number) => void;
+  /** Opens the garden that refutes the false notebook statement `option`. */
+  readonly counterexample: (option: number) => void;
 }
 
 /**
- * Shows the items of the presentation queue on the level screen, one at a time (plan 03, phases 3
- * and 4): lines in the dialogue box, a question in its panel (a bet maybe under the veil), the
- * replayed day on the garden, the victory panel. It opens each when the queue says so, and moves
+ * Shows the items of the presentation queue on the level screen, one at a time (plan 03, phases 3,
+ * 4 and 6): lines in the dialogue box, a question in its panel (a bet maybe under the veil, the
+ * notebook on its page), a counterexample in its own screen, the replayed day on the garden, the
+ * victory panel. It opens each when the queue says so, and moves
  * the queue on when it is over. The order is decided by the pure queue (`systems/presentation.ts`);
  * this only carries it out.
  */
@@ -95,8 +100,14 @@ export class Presenter {
   /** The question on screen was answered: its panel (and a bet's veil) goes, and the queue moves on. */
   answered(): void {
     this.views.question.close();
+    this.views.notebook.close();
     this.views.veil.uncover();
     this.start(answerShowing(this.stage));
+  }
+
+  /** The player came back from a counterexample: the queue moves on (to the notebook, again). */
+  counterexampleOver(): void {
+    this.start(finishShowing(this.stage));
   }
 
   /**
@@ -135,6 +146,9 @@ export class Presenter {
       case 'question':
         this.ask(start.question);
         break;
+      case 'counterexample':
+        this.hooks.counterexample(start.option);
+        break;
       case 'victory':
         this.hooks.victory(start.stars);
         break;
@@ -146,6 +160,10 @@ export class Presenter {
    * long, then veils it while the player bets (1.6).
    */
   private ask(question: Question): void {
+    if (question.kind === 'notebook') {
+      this.views.notebook.show(this.page(question), (value) => this.hooks.answer(question, value));
+      return;
+    }
     const open = () => {
       if (question.preview !== null) this.views.veil.cover(this.texts.t('bet.veil'));
       this.views.question.show(this.shown(question), (value) => this.hooks.answer(question, value));
@@ -160,10 +178,26 @@ export class Presenter {
     return {
       prompt: line(question.prompt),
       footer: t(question.kind === 'bet' ? 'bet.choose' : 'question.choose'),
-      options: question.options.map((option) => ({
-        value: option.value,
-        label: option.line === null ? String(option.value) : line(option.line),
-      })),
+      options: question.options.map((option) => this.option(option)),
+    };
+  }
+
+  /** An option in the player's words: a written one translated, a number as itself. */
+  private option(option: QuestionOption): ShownOption {
+    return {
+      value: option.value,
+      label: option.line === null ? String(option.value) : this.texts.line(option.line),
+    };
+  }
+
+  /** The notebook question in the player's words: the page's name, the statement, its endings. */
+  private page(question: Question): ShownNotebook {
+    const { t, line } = this.texts;
+    return {
+      title: t('notebook.title'),
+      prompt: line(question.prompt),
+      footer: t('notebook.choose'),
+      options: question.options.map((option) => this.option(option)),
     };
   }
 

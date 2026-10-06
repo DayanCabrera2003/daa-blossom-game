@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
 import { visibleLevels } from '@services/progress';
-import { recordCompletion, writeSave } from '@services/save';
+import { recordCompletion, recordNotebook, writeSave } from '@services/save';
 import { planAnimation } from '../animation/plan';
 import type { Point } from '../input/target';
 import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../picture/garden';
@@ -27,6 +27,7 @@ import { FogView } from '../view/FogView';
 import { GardenView } from '../view/GardenView';
 import { HudView } from '../view/HudView';
 import { MarksView } from '../view/MarksView';
+import { NotebookView } from '../view/NotebookView';
 import { ObjectsView } from '../view/ObjectsView';
 import { QuestionView } from '../view/QuestionView';
 import { SunSliderView } from '../view/SunSliderView';
@@ -116,7 +117,12 @@ export class LevelScene extends Phaser.Scene {
     };
     this.presenter = new Presenter(
       this,
-      { dialogue: this.views.dialogue, question: new QuestionView(this), veil: new VeilView(this) },
+      {
+        dialogue: this.views.dialogue,
+        question: new QuestionView(this),
+        notebook: new NotebookView(this),
+        veil: new VeilView(this),
+      },
       {
         showDay: (state) => (state === null ? this.render() : this.renderReplayed(state)),
         stopAnimation: () => this.views.animation.finish(),
@@ -125,6 +131,7 @@ export class LevelScene extends Phaser.Scene {
           this.dispatch(
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
+        counterexample: (option) => this.openCounterexample(option),
       },
       { t, line: this.context.line },
     );
@@ -227,7 +234,8 @@ export class LevelScene extends Phaser.Scene {
         break;
       case 'ask':
       case 'bet':
-      case 'count': {
+      case 'count':
+      case 'notebook': {
         // The options and right answers come from the core, on the lanterns as they are now.
         const yours = garden(this.controller.session).matching;
         const question = questionAt(this.level, effect.step, yours);
@@ -252,8 +260,11 @@ export class LevelScene extends Phaser.Scene {
       case 'sun':
         // Nothing to draw: the sun is already on the top bar, and moving it ends the step.
         break;
-      case 'notebook':
-        // The notebook is opened in plan 03, phase 6.
+      case 'counterexample':
+        this.presenter.present({ kind: 'counterexample', option: effect.option });
+        break;
+      case 'written':
+        this.writeNotebook();
         break;
       case 'mirror':
       case 'explore':
@@ -280,6 +291,20 @@ export class LevelScene extends Phaser.Scene {
       ]);
     }
     this.scene.start('hub');
+  }
+
+  /** Writes the level's statement in the player's notebook, saved at once, and says so. */
+  private writeNotebook(): void {
+    this.context.save = recordNotebook(this.context.save, this.level.data.id);
+    writeSave(this.context.storage, this.context.save);
+    this.views.toast.show(this.context.t('notebook.written'));
+  }
+
+  /** Opens the garden that refutes the false notebook statement `option`. */
+  private openCounterexample(option: number): void {
+    // The counterexample screen comes in its own commit; until then the notebook opens again.
+    void option;
+    this.presenter.counterexampleOver();
   }
 
   /** Records the win at once; the victory panel waits its turn behind any lines or replay. */
