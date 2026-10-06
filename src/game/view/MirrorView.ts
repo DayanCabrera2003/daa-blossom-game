@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import type { Point } from '../input/target';
-import type { PondPicture } from '../picture/pond';
+import type { PondPicture } from '../picture/tangle';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { SPROUT_RADIUS } from './GardenView';
 import { LAYOUT } from './layout';
