@@ -182,12 +182,13 @@ Definición de "hecho" de cada fase: tests en verde, lint, formato y typecheck l
 | Archivo | Responsabilidad |
 |---|---|
 | `systems/pond.ts` | Pura: las piezas de `tus faroles ⊕ reflejo` (`decomposeSymmetricDifference`), la pieza que contiene un brote (así la nombra `count.piece`), cuántos faroles de cada lado tiene cada pieza, el **grado** de un brote en la maraña (enredaderas suyas en `tus faroles ⊕ reflejo`: 0, 1 o 2; es lo que 2.1 llama "hilos") y cuál es la pieza ganadora. En el código, `strand` es una enredadera de la maraña y `piece` un hilo o bucle completo |
-| `picture/pond.ts` | Pura: el dibujo del reflejo: enredaderas ámbar, plateadas o desvanecidas; con la maraña separada, el desplazamiento de cada pieza; el número de hilos sobre el brote tocado |
+| `picture/pond.ts` | Pura: el dibujo del reflejo: enredaderas ámbar, plateadas o desvanecidas; con la maraña separada, el desplazamiento de cada pieza; el número de hilos sobre el brote tocado; el reflejo disuelto cuando empatas |
+| `picture/pondLayout.ts` | Pura: adónde se aleja cada pieza al separarse (en fila o en columna, sin solaparse y dentro del jardín) |
 | `view/MirrorView.ts` | Pinta el reflejo y anima la separación |
 | `picture/hud.ts` | Con reflejo, el objetivo muestra "Tú: N · Reflejo: M"; con empate, el reflejo se disuelve |
 
 **Tests clave:**
-- Jardín de 2.1: tres piezas tras quitar la pareja común (`e=f` desaparece); el hilo `1…6` tiene 2 tuyos y 3 del reflejo; el bucle `a…d`, 2 y 2.
+- Jardín de 2.1: de sus tres partes quedan dos piezas tras quitar la pareja común (`e=f` desaparece); el hilo `1…6` tiene 2 tuyos y 3 del reflejo; el bucle `a…d`, 2 y 2.
 - Ningún brote tiene grado mayor que 2 en la maraña (propiedad sobre jardines y pares de emparejamientos aleatorios).
 - 2.3: el hilo ganador empieza y termina en brotes a oscuras de tu jardín, y aplicarlo como `chain` es aceptado por las reglas.
 
