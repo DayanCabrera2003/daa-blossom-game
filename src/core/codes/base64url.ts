@@ -17,7 +17,7 @@ export function encodeBase64Url(bytes: Uint8Array): string {
   let out = '';
   for (let i = 0; i < bytes.length; i += 3) {
     const chunk = [bytes[i], bytes[i + 1], bytes[i + 2]];
-    const word = ((chunk[0] ?? 0) << 16) | ((chunk[1] ?? 0) << 8) | (chunk[2] ?? 0);
+    const word = ((bytes[i] as number) << 16) | ((chunk[1] ?? 0) << 8) | (chunk[2] ?? 0);
     const chars = chunk.filter((byte) => byte !== undefined).length + 1;
     for (let k = 0; k < chars; k++) out += ALPHABET[(word >> (18 - 6 * k)) & 63];
   }
