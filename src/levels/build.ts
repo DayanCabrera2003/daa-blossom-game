@@ -6,7 +6,8 @@ import type { Action } from '@core/rules/actions';
 import { actionsUnlockedBy } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
 import { err, ok, type Result } from '@core/shared/result';
-import type { LevelAction, LevelData } from './schema';
+import type { LevelAction } from './fields';
+import type { LevelData } from './schema';
 
 /** A level ready to play: its data, and the core objects built from it. */
 export interface Level {

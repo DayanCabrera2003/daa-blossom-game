@@ -1,23 +1,11 @@
-import type { ActionType } from '@core/rules/actions';
-import { UNLOCKED_AT } from '@core/rules/permissions';
 import { z } from 'zod';
+import { actionType, label, levelAction, lineId, vine } from './fields';
 
 /**
  * The shape of a level file (`levels/data/chN/N-M.json`), the single source of truth of a level's
  * logic. Files name sprouts by their labels (`"R"`, `"a"`…), as the design document
  * does; `build.ts` turns names into ids. Objects are strict so a typo is an error, never ignored.
  */
-
-/** Every action of the game, taken from the unlock table so the two can never drift apart. */
-const actionType = z.enum(Object.keys(UNLOCKED_AT) as [ActionType, ...ActionType[]]);
-
-/** A sprout's name as written in the level. */
-const label = z.string().min(1);
-
-/** A dialogue line id, which is also the name of its voice file: `ch4.11.sauce.03`. */
-const lineId = z
-  .string()
-  .regex(/^ch\d+\.\d+\.[a-z]+\.\d{2}$/, 'expected a line id like ch4.11.sauce.03');
 
 /**
  * A sprout and where it sits on the 480×270 canvas: inside the garden area, clear of the HUD bars
@@ -28,29 +16,6 @@ const sprout = z.strictObject({
   x: z.number().int().min(8).max(472),
   y: z.number().int().min(28).max(226),
 });
-
-const vine = z.tuple([label, label]);
-const path = z.array(label).min(1);
-
-/** A player action as a level writes it: the same as `core/rules/actions.ts`, with names. */
-const levelAction = z.discriminatedUnion('type', [
-  z.strictObject({ type: z.literal('join'), u: label, v: label }),
-  z.strictObject({ type: z.literal('split'), u: label, v: label }),
-  z.strictObject({ type: z.literal('passLantern'), from: label, to: label }),
-  z.strictObject({ type: z.literal('chain'), path }),
-  z.strictObject({ type: z.literal('rotateStem'), stem: path }),
-  z.strictObject({ type: z.literal('inspect'), vertex: label }),
-  z.strictObject({ type: z.literal('markRoot'), vertex: label }),
-  z.strictObject({ type: z.literal('markMoon'), from: label, to: label }),
-  z.strictObject({ type: z.literal('foldAt'), from: label, to: label }),
-  z.strictObject({ type: z.literal('fold'), loop: path }),
-  z.strictObject({ type: z.literal('unfold'), blossom: z.number().int().min(0) }),
-  z.strictObject({ type: z.literal('placeScarecrow'), vertex: label }),
-  z.strictObject({ type: z.literal('removeScarecrow'), vertex: label }),
-  z.strictObject({ type: z.literal('liftStone'), vertex: label }),
-  z.strictObject({ type: z.literal('dropStone'), vertex: label }),
-  z.strictObject({ type: z.literal('declareDone') }),
-]);
 
 /** The declarative victory condition (`core/rules/victory.ts`). */
 const victory = z.discriminatedUnion('type', [
@@ -118,6 +83,3 @@ export const levelSchema = z.strictObject({
 
 /** A level file after validation, defaults filled in. */
 export type LevelData = z.infer<typeof levelSchema>;
-
-/** One action of a reference solution, with sprout names. */
-export type LevelAction = LevelData['solution'][number];
