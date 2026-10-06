@@ -13,6 +13,14 @@ describe('readable level problems', () => {
         reason: { code: 'notAdjacent', u: 0, v: 2 },
       }),
     ).toBe('solution step 2 is refused by the rules: notAdjacent {"u":0,"v":2}');
+    expect(
+      describeProblem({
+        code: 'demoRefused',
+        step: 2,
+        move: 0,
+        reason: { code: 'notAdjacent', u: 0, v: 2 },
+      }),
+    ).toBe('script step 3: demo move 1 is refused by the rules: notAdjacent {"u":0,"v":2}');
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
     );
@@ -28,6 +36,10 @@ describe('readable level problems', () => {
       { code: 'unlockMismatch', action: 'chain', unlockedAt: '1.3' },
       { code: 'playWithoutVictory' },
       { code: 'victoryWithoutPlay' },
+      { code: 'noCorrectOption', step: 2 },
+      { code: 'notebookMissing', step: 3 },
+      { code: 'mirrorMissing', step: 0 },
+      { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

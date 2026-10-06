@@ -31,6 +31,16 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `line ${problem.line} belongs to another level`;
     case 'unlockMismatch':
       return `unlocks "${problem.action}", but the rules unlock it at ${problem.unlockedAt}`;
+    case 'noCorrectOption':
+      return `script step ${problem.step + 1} asks a question with no right answer`;
+    case 'notebookMissing':
+      return `script step ${problem.step + 1} opens the notebook, but the level has no notebook question`;
+    case 'mirrorMissing':
+      return `script step ${problem.step + 1} needs the reflection, but the level has no mirror`;
+    case 'pieceOutsideTangle':
+      return `script step ${problem.step + 1} counts the piece through ${problem.sprout}, which is in no thread or loop`;
+    case 'demoRefused':
+      return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
   }
 }
 

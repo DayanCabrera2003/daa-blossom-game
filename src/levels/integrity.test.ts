@@ -153,6 +153,11 @@ describe('level integrity', () => {
     expect(problemsOf(talk)).toEqual([]);
   });
 
+  it('the checks of the script are part of the integrity of the level', () => {
+    const notebookless = { ...trap, flow: [{ step: 'play' }, { step: 'notebook' }] };
+    expect(problemsOf(notebookless)).toEqual([{ code: 'notebookMissing', step: 1 }]);
+  });
+
   it('what a level unlocks must match the unlock table of the rules', () => {
     const wrong = { ...trap, unlocks: { actions: ['chain'] } };
     expect(problemsOf(wrong)).toContainEqual({

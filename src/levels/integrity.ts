@@ -5,6 +5,7 @@ import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { RejectReason } from '@core/rules/reasons';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from './build';
+import { checkFlow, type FlowProblem } from './flowChecks';
 import { isFlowInput } from './flowInput';
 import { referencedLines } from './lines';
 
@@ -20,7 +21,8 @@ export type IntegrityProblem =
   | { readonly code: 'solutionFallsShort' }
   | { readonly code: 'solutionOverWater'; readonly used: number; readonly budget: number }
   | { readonly code: 'foreignLine'; readonly line: string }
-  | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string };
+  | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string }
+  | FlowProblem;
 
 /**
  * The integrity checks of a level (plan 01, phase 10), shared by the test suite and
@@ -71,6 +73,8 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
   if (replayed && data.water !== null && state.waterUsed > data.water) {
     problems.push({ code: 'solutionOverWater', used: state.waterUsed, budget: data.water });
   }
+
+  problems.push(...checkFlow(level));
 
   for (const line of referencedLines(data)) {
     if (!line.startsWith(`ch${data.id}.`)) problems.push({ code: 'foreignLine', line });
