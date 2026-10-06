@@ -3,15 +3,19 @@ import { computeStars } from './stars';
 
 describe('stars when a level is won (GDD §5.4)', () => {
   it('completing always gives the first star, which hints never take away (§5.3)', () => {
-    expect(computeStars({ hintsOpened: 3, waterSpent: 9, waterBudget: 2 })).toEqual({
-      total: 1,
-      noHints: false,
-      withinWater: false,
-    });
+    expect(computeStars({ hintsOpened: 3, waterSpent: 9, waterBudget: 2, betRight: null })).toEqual(
+      {
+        total: 1,
+        noHints: false,
+        withinWater: false,
+      },
+    );
   });
 
   it('a star for not opening any hint', () => {
-    expect(computeStars({ hintsOpened: 0, waterSpent: 0, waterBudget: null })).toEqual({
+    expect(
+      computeStars({ hintsOpened: 0, waterSpent: 0, waterBudget: null, betRight: null }),
+    ).toEqual({
       total: 2,
       noHints: true,
       withinWater: null,
@@ -19,13 +23,26 @@ describe('stars when a level is won (GDD §5.4)', () => {
   });
 
   it('a star for staying within the water, in levels that have a budget', () => {
-    expect(computeStars({ hintsOpened: 0, waterSpent: 18, waterBudget: 18 })).toEqual({
+    expect(
+      computeStars({ hintsOpened: 0, waterSpent: 18, waterBudget: 18, betRight: null }),
+    ).toEqual({
       total: 3,
       noHints: true,
       withinWater: true,
     });
-    expect(computeStars({ hintsOpened: 1, waterSpent: 19, waterBudget: 18 }).withinWater).toBe(
-      false,
-    );
+    expect(
+      computeStars({ hintsOpened: 1, waterSpent: 19, waterBudget: 18, betRight: null }).withinWater,
+    ).toBe(false);
+  });
+
+  it('a star for a right formal bet (GDD §5.4); a wrong or informal one takes nothing', () => {
+    const played = { hintsOpened: 1, waterSpent: 0, waterBudget: null };
+    expect(computeStars({ ...played, betRight: true })).toEqual({
+      total: 2,
+      noHints: false,
+      withinWater: null,
+    });
+    expect(computeStars({ ...played, betRight: false }).total).toBe(1);
+    expect(computeStars({ ...played, betRight: null }).total).toBe(1);
   });
 });

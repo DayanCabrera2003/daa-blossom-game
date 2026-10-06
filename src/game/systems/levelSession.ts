@@ -89,6 +89,7 @@ export function act(
           hintsOpened: session.hints.opened,
           waterSpent,
           waterBudget: level.data.water,
+          betRight: null,
         })
       : null);
   return {
