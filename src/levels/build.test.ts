@@ -66,6 +66,15 @@ describe('building a level', () => {
     ).toMatchObject({ error: { code: 'badLabel', error: { name: 'W' } } });
   });
 
+  it('also finds unknown names inside paths and among the starting lanterns', () => {
+    expect(
+      buildLevel({ ...rotate, solution: [{ type: 'chain', path: ['R', 'a', 'X'] }] }),
+    ).toMatchObject({ error: { code: 'badLabel', error: { name: 'X' } } });
+    expect(buildLevel({ ...rotate, lanterns: [['a', 'Y']] })).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'Y' } },
+    });
+  });
+
   it('rejects repeated sprout names', () => {
     const twins = { ...rotate, sprouts: [rotate.sprouts[0], rotate.sprouts[0]] } as LevelData;
     expect(buildLevel(twins)).toMatchObject({

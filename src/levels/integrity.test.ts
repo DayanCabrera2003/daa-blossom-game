@@ -91,6 +91,19 @@ describe('level integrity', () => {
     expect(problemsOf(foreign)).toContainEqual({ code: 'foreignLine', line: 'ch2.4.sauce.01' });
   });
 
+  it('notebook lines belong to their own level too', () => {
+    const notebook = {
+      prompt: 'ch1.1.notebook.00',
+      options: [
+        { line: 'ch1.1.notebook.01', correct: true },
+        { line: 'ch2.2.notebook.02', correct: false },
+      ],
+    };
+    expect(problemsOf({ ...trap, notebook })).toEqual([
+      { code: 'foreignLine', line: 'ch2.2.notebook.02' },
+    ]);
+  });
+
   it('what a level unlocks must match the unlock table of the rules', () => {
     const wrong = { ...trap, unlocks: { actions: ['chain'] } };
     expect(problemsOf(wrong)).toContainEqual({
