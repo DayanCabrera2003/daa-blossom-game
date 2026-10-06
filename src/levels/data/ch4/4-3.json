@@ -26,13 +26,14 @@
     ["e", "f"]
   ],
   "goal": { "visible": true, "value": 4 },
-  "victory": { "type": "chainFound" },
+  "victory": { "type": "matchingSize", "value": 4 },
   "script": ["ch4.3.sauce.00"],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },
     { "type": "markMoon", "from": "b", "to": "c" },
     { "type": "markMoon", "from": "d", "to": "e" },
-    { "type": "markMoon", "from": "f", "to": "T" }
+    { "type": "markMoon", "from": "f", "to": "T" },
+    { "type": "chain", "path": ["R", "a", "b", "c", "d", "e", "f", "T"] }
   ]
 }
