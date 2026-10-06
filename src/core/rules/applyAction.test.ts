@@ -20,6 +20,7 @@ import type { Action, ActionType } from './actions';
 import { applyAction } from './applyAction';
 import { UNLOCKED_AT } from './permissions';
 import { createGardenState, type GardenState } from './state';
+import { isVictory } from './victory';
 
 const EVERY_ACTION = Object.keys(UNLOCKED_AT) as ActionType[];
 
@@ -105,6 +106,38 @@ describe('applying an action', () => {
       ok: false,
       reason: { code: 'alreadyMarked', vertex: 0 },
     });
+  });
+
+  it('"Terminé" is a claim about this very moment: any other accepted move withdraws it', () => {
+    const claimed = play(festival, [{ type: 'declareDone' }]);
+    expect(claimed.declaredDone).toBe(true);
+    expect(play(claimed, [{ type: 'declareDone' }]).declaredDone).toBe(true);
+    expect(play(claimed, [{ type: 'placeScarecrow', vertex: 2 }]).declaredDone).toBe(false);
+    expect(play(claimed, [{ type: 'split', u: 1, v: 2 }]).declaredDone).toBe(false);
+    // A refused move changes nothing, so the claim stands.
+    expect(applyAction(claimed, { type: 'join', u: 0, v: 2 }).ok).toBe(false);
+  });
+
+  it('level 4.9: a wrong "Terminé", then the right lanterns, still needs a new "Terminé"', () => {
+    const closed = unwrap(
+      createGraph(5, [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [2, 4],
+      ]),
+    );
+    const start = createGardenState({
+      graph: closed,
+      matching: unwrap(createMatching(closed, [[1, 2]])),
+      allowed: EVERY_ACTION,
+    });
+    const wrong = play(start, [{ type: 'declareDone' }]);
+    expect(isVictory(wrong, { type: 'maximum' })).toBe(false);
+    const fixed = play(wrong, [{ type: 'join', u: 3, v: 4 }]);
+    expect(isVictory(fixed, { type: 'maximum' })).toBe(false);
+    expect(isVictory(play(fixed, [{ type: 'declareDone' }]), { type: 'maximum' })).toBe(true);
   });
 
   it('never modifies the garden it is given', () => {
