@@ -7,6 +7,7 @@ import { planAnimation } from '../animation/plan';
 import type { Point } from '../input/target';
 import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../picture/garden';
 import { hudPicture } from '../picture/hud';
+import { pondPicture } from '../picture/pond';
 import { reasonText } from '../picture/reasonText';
 import {
   handle,
@@ -27,6 +28,7 @@ import { FogView } from '../view/FogView';
 import { GardenView } from '../view/GardenView';
 import { HudView } from '../view/HudView';
 import { MarksView } from '../view/MarksView';
+import { MirrorView } from '../view/MirrorView';
 import { NotebookView } from '../view/NotebookView';
 import { ObjectsView } from '../view/ObjectsView';
 import { QuestionView } from '../view/QuestionView';
@@ -59,6 +61,7 @@ export class LevelScene extends Phaser.Scene {
     objects: ObjectsView;
     garden: GardenView;
     marks: MarksView;
+    mirror: MirrorView;
     animation: AnimationView;
     hud: HudView;
     toolbar: ToolbarView;
@@ -103,6 +106,7 @@ export class LevelScene extends Phaser.Scene {
       objects: new ObjectsView(this),
       garden: new GardenView(this),
       marks: new MarksView(this),
+      mirror: new MirrorView(this, t),
       animation: new AnimationView(this),
       hud: new HudView(this, t, {
         done: () => this.dispatch({ kind: 'done' }),
@@ -146,6 +150,7 @@ export class LevelScene extends Phaser.Scene {
   override update(time: number): void {
     if (!this.ready) return;
     this.views.animation.update(time);
+    this.views.mirror.update(time);
     this.presenter.update(time);
     if (time - this.lastHudRefresh > HUD_REFRESH_MS) {
       this.lastHudRefresh = time;
@@ -270,7 +275,7 @@ export class LevelScene extends Phaser.Scene {
       case 'mirror':
       case 'explore':
       case 'separate':
-        // The pond (reflection, tangle and threads) is drawn in plan 03, phase 7.
+        // Nothing to queue: the pond is painted from the session on every render.
         break;
       case 'draw':
         // The mirror challenge is drawn in plan 03, phase 8.
@@ -350,6 +355,8 @@ export class LevelScene extends Phaser.Scene {
       highlight,
       chain: pointer.chain,
     });
+    const pond = pondPicture(session, this.controller.positions, this.labels);
+    this.views.mirror.render(pond, this.time.now);
     this.renderHud();
   }
 
