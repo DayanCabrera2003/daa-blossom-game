@@ -86,31 +86,30 @@ const takesHistory = (session: LevelSession): boolean =>
   takesMoves(session) || stepNow(session)?.step === 'sun';
 
 /**
- * Feeds a signal to the script. A step that begins restarts the wait for a hint; the script that
- * finishes fixes the stars, counting the hints of the whole level.
+ * The stars, fixed the moment the script is over: they count the hints opened in the whole level,
+ * the water spent and the bet. Once fixed, they never change.
  */
+const starsAt = (session: LevelSession, flow: FlowState): StarResult | null =>
+  session.won ??
+  (isFinished(flow)
+    ? computeStars({
+        hintsOpened: session.hints.opened,
+        waterSpent: session.waterSpent,
+        waterBudget: session.level.data.water,
+        betRight: betRight(flow),
+      })
+    : null);
+
+/** Feeds a signal to the script; a step that begins restarts the wait for a hint. */
 function advance(
   session: LevelSession,
   signal: FlowSignal,
   now: number,
 ): { session: LevelSession; effects: FlowEffect[] } {
-  const next = advanceFlow(session.flow, signal);
-  if (next.flow.index === session.flow.index)
-    return { session: { ...session, flow: next.flow }, effects: next.effects };
-  const won =
-    session.won ??
-    (isFinished(next.flow)
-      ? computeStars({
-          hintsOpened: session.hints.opened,
-          waterSpent: session.waterSpent,
-          waterBudget: session.level.data.water,
-          betRight: betRight(next.flow),
-        })
-      : null);
-  return {
-    session: { ...session, flow: next.flow, hints: afterAccepted(session.hints, now), won },
-    effects: next.effects,
-  };
+  const { flow, effects } = advanceFlow(session.flow, signal);
+  if (flow.index === session.flow.index) return { session: { ...session, flow }, effects };
+  const hints = afterAccepted(session.hints, now);
+  return { session: { ...session, flow, hints, won: starsAt(session, flow) }, effects };
 }
 
 /** A session at the start of `level`, at time `now` (milliseconds), with what its script opens with. */
@@ -119,7 +118,7 @@ export function openSession(
   now: number,
 ): { session: LevelSession; effects: FlowEffect[] } {
   const notebook = level.data.notebook?.options.map((option) => option.correct) ?? [];
-  const started = startFlow(level.flow, { notebook });
+  const { flow, effects } = startFlow(level.flow, { notebook });
   const session: LevelSession = {
     level,
     history: startHistory(level.start),
@@ -128,18 +127,10 @@ export function openSession(
     claims: { right: 0, wrong: 0 },
     waterSpent: 0,
     won: null,
-    flow: started.flow,
+    flow,
   };
   // A script that is over at once (only lines) completes the level as it opens.
-  const won = isFinished(started.flow)
-    ? computeStars({
-        hintsOpened: 0,
-        waterSpent: 0,
-        waterBudget: level.data.water,
-        betRight: null,
-      })
-    : null;
-  return { session: { ...session, won }, effects: started.effects };
+  return { session: { ...session, won: starsAt(session, flow) }, effects };
 }
 
 /** A session at the start of `level`, at time `now` (milliseconds). */
@@ -161,8 +152,9 @@ export function act(
   action: Action,
   now: number,
 ): { session: LevelSession; outcome: MoveOutcome; effects: FlowEffect[] } {
-  if (!takesMoves(session))
+  if (!takesMoves(session)) {
     return { session, outcome: { ok: false, reason: NOT_NOW }, effects: [] };
+  }
   const before = garden(session);
   const outcome = applyAction(before, action);
   if (!outcome.ok) {
