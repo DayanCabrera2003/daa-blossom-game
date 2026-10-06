@@ -386,3 +386,87 @@ describe('a level session follows its script', () => {
     expect(respond(explored.session, { type: 'tap' }, 0).session.won).not.toBeNull();
   });
 });
+
+/**
+ * A garden in the style of 1.4 (GDD): A in the dark; branch 1 `A–B=C–D=E`, with E a dead end;
+ * branch 2 `A–F=G–H`, with H in the dark. Three lanterns lit; the play step is won with four, and
+ * reacts as `reactions` say.
+ */
+const alley = (reactions: unknown[]): Level => {
+  const loaded = loadLevel({
+    id: '1.4',
+    sprouts: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, i) => ({
+      label,
+      x: 40 + 50 * i,
+      y: 135,
+    })),
+    vines: [
+      ['A', 'B'],
+      ['B', 'C'],
+      ['C', 'D'],
+      ['D', 'E'],
+      ['A', 'F'],
+      ['F', 'G'],
+      ['G', 'H'],
+    ],
+    lanterns: [
+      ['B', 'C'],
+      ['D', 'E'],
+      ['F', 'G'],
+    ],
+    goal: { visible: true, value: 4 },
+    victory: { type: 'matchingSize', value: 4 },
+    flow: [{ step: 'play', reactions }],
+    solution: [{ type: 'chain', path: ['A', 'F', 'G', 'H'] }],
+  });
+  if (!loaded.ok) throw new Error('fixture does not load');
+  return loaded.value;
+};
+/** The dead-end chain A…E (gain 0) and the chain A…H that lights the fourth lantern. */
+const deadEnd: Action = { type: 'chain', path: [0, 1, 2, 3, 4] };
+const lucky: Action = { type: 'chain', path: [0, 5, 6, 7] };
+const sauce = { on: 'gainZeroChain', say: ['ch1.4.sauce.01'] };
+
+describe('a level session reacts while the player plays', () => {
+  it('1.4: the dead-end chain makes the mentor speak once; repeating it after undo does not', () => {
+    const level = alley([sauce]);
+    const first = act(startSession(level, 0), deadEnd, 0);
+    expect(first.outcome.ok).toBe(true);
+    expect(first.effects).toEqual([{ kind: 'say', lines: ['ch1.4.sauce.01'] }]);
+    const again = act(undoSession(first.session), deadEnd, 0);
+    expect(again.outcome.ok).toBe(true);
+    expect(again.effects).toEqual([]);
+  });
+
+  it('a chain that lights a lantern is no dead end: it only wins', () => {
+    const won = act(startSession(alley([sauce]), 0), lucky, 0);
+    expect(won.effects).toEqual([{ kind: 'finished' }]);
+  });
+
+  it('a lanterns reaction speaks once, the first time the garden reaches that many', () => {
+    const level = alley([{ on: 'lanterns', value: 2, say: ['ch1.4.sauce.02'] }]);
+    const split: Action = { type: 'split', u: 1, v: 2 };
+    const join: Action = { type: 'join', u: 1, v: 2 };
+    const reached = act(startSession(level, 0), split, 0);
+    expect(reached.effects).toEqual([{ kind: 'say', lines: ['ch1.4.sauce.02'] }]);
+    const back = act(reached.session, join, 0);
+    expect(back.effects).toEqual([]);
+    expect(act(back.session, split, 0).effects).toEqual([]);
+  });
+
+  it('what the mentor says to the winning move comes before the end of the play step', () => {
+    const level = alley([{ on: 'lanterns', value: 4, say: ['ch1.4.sauce.03'] }]);
+    expect(act(startSession(level, 0), lucky, 0).effects).toEqual([
+      { kind: 'say', lines: ['ch1.4.sauce.03'] },
+      { kind: 'finished' },
+    ]);
+  });
+
+  it('once the script is over, the garden is free but no longer reacts', () => {
+    const level = alley([sauce]);
+    const won = act(startSession(level, 0), lucky, 0).session;
+    const free = act(undoSession(won), deadEnd, 0);
+    expect(free.outcome.ok).toBe(true);
+    expect(free.effects).toEqual([]);
+  });
+});

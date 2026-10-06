@@ -30,6 +30,7 @@ import {
 import { current, push, redo, seek, startHistory, undo, type History } from './history';
 import { nextMove } from './nextMove';
 import { hintedOption, questionAt } from './question';
+import { reactionsTo, type FiredReaction } from './reactions';
 import { NOT_NOW, type Refusal } from './refusal';
 import { computeStars, type StarResult } from './stars';
 
@@ -55,6 +56,11 @@ export interface LevelSession {
   /** Set when the script finishes (with the default script, when the level is won), with its stars. */
   readonly won: StarResult | null;
   readonly flow: FlowState;
+  /**
+   * The reactions of play steps already fired. Kept apart from the history of the garden, so
+   * undoing a move never lets its reaction fire again: each fires once in a play of the level.
+   */
+  readonly reactions: readonly FiredReaction[];
 }
 
 /** The answer of a move: applied (for the animation queue), or refused and why. */
@@ -129,6 +135,7 @@ export function openSession(
     waterSpent: 0,
     won: null,
     flow,
+    reactions: [],
   };
   // A script that is over at once (only lines) completes the level as it opens.
   return { session: { ...session, won: starsAt(session, flow) }, effects };
@@ -142,11 +149,35 @@ export const startSession = (level: Level, now: number): LevelSession =>
 export const garden = (session: LevelSession): GardenState => current(session.history);
 
 /**
+ * What the mentor says to an accepted move from `before` to `after`: the reactions of the play step
+ * it fires, as one `say` effect, and the session that remembers they fired. No reactions outside a
+ * play step: once the script is over, the garden no longer answers.
+ */
+function react(
+  session: LevelSession,
+  action: Action,
+  before: GardenState,
+  after: GardenState,
+): { session: LevelSession; effects: FlowEffect[] } {
+  const play = stepNow(session);
+  if (play?.step !== 'play') return { session, effects: [] };
+  const step = session.flow.index;
+  const { reactions } = play;
+  const turn = reactionsTo({ step, reactions }, session.reactions, { action, before, after });
+  if (turn.lines.length === 0) return { session, effects: [] };
+  return {
+    session: { ...session, reactions: turn.fired },
+    effects: [{ kind: 'say', lines: turn.lines }],
+  };
+}
+
+/**
  * Tries a move. Outside the play step it is refused with `notNow`, which is no mistake: it neither
  * counts as a refusal nor brings a hint closer. A refusal of the rules changes no garden: it is
  * counted and its reason goes back to the view. An accepted move is recorded in the history
- * (dropping any undone future) and counts as progress for the hints; while playing, it may win the
- * play step, which is checked after every accepted move.
+ * (dropping any undone future) and counts as progress for the hints; while playing, the mentor may
+ * react to it, and it may win the play step, which is checked after every accepted move. What the
+ * mentor says to the move comes before whatever winning brings.
  */
 export function act(
   session: LevelSession,
@@ -177,8 +208,9 @@ export function act(
         ? { ...session.claims, right: session.claims.right + 1 }
         : { ...session.claims, wrong: session.claims.wrong + 1 };
   const waterSpent = session.waterSpent + Math.max(0, after.waterUsed - before.waterUsed);
+  const reacted = react(session, action, before, after);
   const moved: LevelSession = {
-    ...session,
+    ...reacted.session,
     history: push(session.history, after),
     hints: afterAccepted(session.hints, now),
     claims,
@@ -188,8 +220,9 @@ export function act(
   const { victory } = session.level.data;
   const won =
     stepNow(session)?.step === 'play' && victory !== undefined && isVictory(after, victory);
-  if (!won) return { session: moved, outcome, effects: [] };
-  return { ...advance(moved, { type: 'won' }, now), outcome };
+  if (!won) return { session: moved, outcome, effects: reacted.effects };
+  const advanced = advance(moved, { type: 'won' }, now);
+  return { session: advanced.session, outcome, effects: [...reacted.effects, ...advanced.effects] };
 }
 
 /**
