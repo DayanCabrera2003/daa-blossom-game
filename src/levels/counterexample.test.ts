@@ -1,7 +1,8 @@
 import { size } from '@core/matching/queries';
 import { applyAction } from '@core/rules/applyAction';
 import { describe, expect, it } from 'vitest';
-import { buildCounterexample } from './counterexample';
+import { catalog } from './catalog';
+import { buildCounterexample, counterexampleAt } from './counterexample';
 import { counterexampleSchema } from './notebook';
 
 /** Four sprouts in a row with the middle pair lit: a chain from end to end lights one more. */
@@ -64,5 +65,25 @@ describe('building a counterexample', () => {
       ok: false,
       error: { code: 'badLabel' },
     });
+  });
+});
+
+describe('the counterexample of a statement', () => {
+  const byId = (id: string) => {
+    const level = catalog().find((candidate) => candidate.data.id === id);
+    if (level === undefined) throw new Error(`no level ${id}`);
+    return level;
+  };
+
+  it('is built from the level’s notebook, for the false statements that carry one', () => {
+    const level = byId('1.5');
+    expect(counterexampleAt(level, 1)?.start.graph.n).toBe(6);
+    expect(counterexampleAt(level, 2)?.start.graph.n).toBe(10);
+  });
+
+  it('is none for a true statement, a statement not on offer, or a level with no notebook', () => {
+    expect(counterexampleAt(byId('1.5'), 0)).toBeNull();
+    expect(counterexampleAt(byId('1.5'), 7)).toBeNull();
+    expect(counterexampleAt(byId('0.1'), 1)).toBeNull();
   });
 });
