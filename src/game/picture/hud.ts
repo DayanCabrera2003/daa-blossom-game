@@ -15,7 +15,10 @@ export interface TextRef {
 
 /** Everything the HUD shows at one moment. */
 export interface HudPicture {
-  /** "This garden can light N lanterns", or the question when the goal is hidden (GDD §5.2). */
+  /**
+   * "This garden can light N lanterns", or when the goal is hidden the question (GDD §5.2), or the
+   * bet made.
+   */
   readonly goal: TextRef;
   readonly lanterns: number;
   /** Water spent and budget, in levels with fog or a budget; null elsewhere. */
@@ -31,15 +34,27 @@ export interface HudPicture {
   readonly won: StarResult | null;
 }
 
+/**
+ * The goal on the top bar: the number of lanterns when it is visible; when hidden, the question, or
+ * once a bet is made the bet itself (plan 03, decision 4). The real value is told by the mentor
+ * when the level is won, so the bar keeps recalling the bet.
+ */
+function goalText(session: LevelSession): TextRef {
+  const { goal } = session.level.data;
+  if (goal.visible) return { key: 'hud.goal', params: { count: goal.value } };
+  const { bet } = session.flow;
+  return bet === null
+    ? { key: 'hud.goalHidden', params: {} }
+    : { key: 'hud.bet', params: { count: bet.value } };
+}
+
 /** The picture of the HUD for a session, the tool in hand, at time `now`. */
 export function hudPicture(session: LevelSession, pointer: PointerState, now: number): HudPicture {
   const state = garden(session);
   const { data } = session.level;
   const { history } = session;
   return {
-    goal: data.goal.visible
-      ? { key: 'hud.goal', params: { count: data.goal.value } }
-      : { key: 'hud.goalHidden', params: {} },
+    goal: goalText(session),
     lanterns: size(state.matching),
     water:
       data.fog || data.water !== null ? { used: session.waterSpent, budget: data.water } : null,

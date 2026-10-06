@@ -4,7 +4,7 @@ import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import { initialPointer } from '../input/pointer';
 import { HINT_DELAY_MS } from '../systems/hints';
-import { act, startSession, undoSession } from '../systems/levelSession';
+import { act, respond, startSession, undoSession } from '../systems/levelSession';
 import { hudPicture } from './hud';
 
 const levelById = (id: string): Level => {
@@ -95,5 +95,36 @@ describe('the picture of the HUD', () => {
       expect(at(id)).toMatchObject({ sun: null, canUndo: true });
     }
     for (const id of ['0.5', '1.1']) expect(at(id).sun).toEqual({ fraction: 1, steps: 2 });
+  });
+
+  it('with a bet made and the goal hidden, the HUD recalls the bet (1.6)', () => {
+    const betting = (visible: boolean) => {
+      const loaded = loadLevel({
+        id: '1.6',
+        sprouts: [
+          { label: 'A', x: 100, y: 100 },
+          { label: 'B', x: 200, y: 100 },
+        ],
+        vines: [['A', 'B']],
+        goal: visible ? { visible: true, value: 1 } : { visible: false },
+        flow: [{ step: 'bet', prompt: 'ch1.6.sauce.01', range: 3 }, { step: 'play' }],
+        victory: { type: 'matchingSize', value: 1 },
+        solution: [
+          { type: 'bet', value: 2 },
+          { type: 'join', u: 'A', v: 'B' },
+        ],
+      });
+      if (!loaded.ok) throw new Error('fixture does not load');
+      return startSession(loaded.value, 0);
+    };
+    const pointer = initialPointer('lanterns');
+    const hidden = betting(false);
+    expect(hudPicture(hidden, pointer, 0).goal).toEqual({ key: 'hud.goalHidden', params: {} });
+    const bet = respond(hidden, { type: 'bet', value: 2 }, 0).session;
+    expect(hudPicture(bet, pointer, 0).goal).toEqual({ key: 'hud.bet', params: { count: 2 } });
+    const won = act(bet, { type: 'join', u: 0, v: 1 }, 0).session;
+    expect(hudPicture(won, pointer, 0).goal).toEqual({ key: 'hud.bet', params: { count: 2 } });
+    const shown = respond(betting(true), { type: 'bet', value: 2 }, 0).session;
+    expect(hudPicture(shown, pointer, 0).goal).toEqual({ key: 'hud.goal', params: { count: 1 } });
   });
 });
