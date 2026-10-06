@@ -392,12 +392,12 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 
 #### 1.4 Callejón
 - **Jardín:** A libre. Rama 1: `A–B=C–D=E`, E sin más vecinos. Rama 2: `A–F=G–H`, H libre.
-- **Objetivo:** visible, 3 (hay 2).
+- **Objetivo:** visible, 4 (hay 3: B=C, D=E y F=G).
 - **Enseña:** una cadena que termina en un brote con farol y sin salida no gana nada, solo mueve la oscuridad. El jugador la prueba, el juego la aplica con **ganancia 0** en gris (A con luz, E sin ella). Debe deshacer y encontrar la rama 2.
 - **Por qué aquí:** fija la condición "empieza y termina en solitario". Además establece que las cadenas de ganancia 0 son legales, lo que hará falta en 4.10 (girar el tallo).
 - **Guion:** Sauce: "Eli se quedó sin luz para que Ana la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras."
 - **Pistas:** (1) "¿La cadena terminó en alguien que ya tenía farol?" (2) H brilla. (3) —
-- **Victoria:** 3 faroles.
+- **Victoria:** 4 faroles.
 
 #### 1.5 Dos solitarios
 - **Jardín:** dos cadenas independientes que comparten un tramo confuso visualmente. Ejemplo: `P–a=b–Q` (P, Q libres) y `R–c=d–e=f–S` (R, S libres), con enredaderas cruzadas `b–c` y `d–Q` como distractores.
