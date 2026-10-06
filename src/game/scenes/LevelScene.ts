@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
+import { visibleLevels } from '@services/progress';
 import { recordCompletion, writeSave } from '@services/save';
 import { planAnimation } from '../animation/plan';
 import type { Point } from '../input/target';
@@ -206,10 +207,15 @@ export class LevelScene extends Phaser.Scene {
     const id = this.level.data.id;
     this.context.save = recordCompletion(this.context.save, id, stars.total);
     writeSave(this.context.storage, this.context.save);
-    const { catalog } = this.context;
-    const next = catalog[catalog.findIndex((level) => level.data.id === id) + 1];
+    // The next level the player can see: outside teacher mode, drafts are skipped.
+    const { catalog, teacherMode } = this.context;
+    const shown = visibleLevels(
+      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
+      teacherMode,
+    );
+    const next = shown[shown.findIndex((level) => level.id === id) + 1];
     showVictoryPanel(this, this.context.t, stars, {
-      next: next === undefined ? null : () => this.scene.start('level', { levelId: next.data.id }),
+      next: next === undefined ? null : () => this.scene.start('level', { levelId: next.id }),
       hub: () => this.scene.start('hub'),
     });
   }
