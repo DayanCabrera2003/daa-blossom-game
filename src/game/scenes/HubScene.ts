@@ -19,11 +19,8 @@ export class HubScene extends Phaser.Scene {
 
   create(): void {
     const { catalog, t, save, teacherMode, playtest, clock } = contextOf(this);
-    const open = unlockedLevels(
-      catalog.map((level) => level.data.id),
-      save,
-      teacherMode,
-    );
+    const entries = catalog.map((level) => ({ id: level.data.id, draft: level.data.draft }));
+    const open = unlockedLevels(entries, save, teacherMode);
     this.add.text(8, 6, t('hub.title'), textStyle(12, PALETTE.lit));
 
     const chapters = [...new Set(catalog.map((level) => level.data.id.split('.')[0] as string))];
