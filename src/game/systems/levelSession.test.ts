@@ -285,6 +285,31 @@ describe('a level session follows its script', () => {
     expect(askHint(waiting, 10 * HINT_DELAY_MS)).toBeNull();
   });
 
+  it('1.8-like: every answer to "how do you know?" is valid and leads to the same line', () => {
+    const level = scripted([
+      { step: 'play' },
+      {
+        step: 'ask',
+        prompt: 'ch2.9.sauce.01',
+        options: [
+          { line: 'ch2.9.sauce.02', correct: true, reply: 'ch2.9.sauce.05' },
+          { line: 'ch2.9.sauce.03', correct: true, reply: 'ch2.9.sauce.05' },
+          { line: 'ch2.9.sauce.04', correct: true, reply: 'ch2.9.sauce.05' },
+        ],
+      },
+    ]);
+    const asked = playAll(startSession(level, 0), toTwo);
+    for (const option of [0, 1, 2]) {
+      const answered = respond(asked, { type: 'answer', option }, 0);
+      expect(answered.effects).toEqual([
+        { kind: 'answered', step: 1, value: option, correct: true },
+        { kind: 'say', lines: ['ch2.9.sauce.05'] },
+        { kind: 'finished' },
+      ]);
+      expect(answered.session.won).not.toBeNull();
+    }
+  });
+
   it('the wait for a hint starts again with each step', () => {
     const level = scripted([{ step: 'play' }, question]);
     const asked = playAll(startSession(level, 0), toTwo, 80_000);
