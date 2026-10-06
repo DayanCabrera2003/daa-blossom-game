@@ -151,6 +151,18 @@ describe('the script engine', () => {
     expect(betRight(advanceFlow(casual.flow, { type: 'bet', value: 2, right: 2 }).flow)).toBeNull();
   });
 
+  it('winning after a bet reveals the real value, before the steps that follow', () => {
+    const betting = start([bet(false), play, say('ch1.6.sauce.02')]);
+    const placed = advanceFlow(betting.flow, { type: 'bet', value: 5, right: 4 });
+    expect(advanceFlow(placed.flow, { type: 'won' }).effects).toEqual([
+      { kind: 'reveal', bet: 5, right: 4 },
+      { kind: 'say', lines: ['ch1.6.sauce.02'] },
+      { kind: 'finished' },
+    ]);
+    const unbet = advanceFlow(start([play, bet(false)]).flow, { type: 'won' });
+    expect(unbet.effects.map((effect) => effect.kind)).toEqual(['bet']);
+  });
+
   it('the sun step ends when the sun moves', () => {
     const { flow, effects } = start([{ step: 'sun' }]);
     expect(effects).toEqual([{ kind: 'sun' }]);

@@ -63,6 +63,7 @@ describe('playing the reference walkthrough of a level without a scene', () => {
       'answered',
       'play',
       'animate',
+      'reveal',
       'sun',
       'ask',
       'answered',

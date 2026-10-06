@@ -66,6 +66,8 @@ export type FlowEffect =
       readonly preview: number | null;
       readonly informal: boolean;
     }
+  /** The play step was won after a bet: the mentor tells the bet against the real value. */
+  | { readonly kind: 'reveal'; readonly bet: number; readonly right: number }
   /** Waiting for the player to move the sun. */
   | { readonly kind: 'sun' }
   /** The day replays itself: the player's own, or the demo moves from the start of the level. */
@@ -98,9 +100,13 @@ export interface FlowState {
   readonly index: number;
   /** Every answer and bet, in the order given. */
   readonly answers: readonly FlowAnswer[];
-  /** The bet placed, if any; an informal bet is kept but earns nothing. */
+  /**
+   * The bet placed, if any, and the right value the core gave for it; an informal bet is kept but
+   * earns nothing.
+   */
   readonly bet: {
     readonly value: number;
+    readonly right: number;
     readonly correct: boolean;
     readonly informal: boolean;
   } | null;
@@ -224,8 +230,14 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
   const next = (from: FlowTurn): FlowTurn => enter(from.flow, flow.index + 1, from.effects);
 
   switch (step.step) {
-    case 'play':
-      return signal.type === 'won' ? enter(flow, flow.index + 1, []) : unchanged;
+    case 'play': {
+      if (signal.type !== 'won') return unchanged;
+      // The goal stays hidden after a bet until the win; then the mentor tells the real value.
+      const { bet } = flow;
+      const reveal: FlowEffect[] =
+        bet === null ? [] : [{ kind: 'reveal', bet: bet.value, right: bet.right }];
+      return enter(flow, flow.index + 1, reveal);
+    }
     case 'sun':
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'separate':
@@ -261,7 +273,7 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       if (signal.type !== 'bet') return unchanged;
       const correct = signal.value === signal.right;
       const given = answered(flow, signal.value, correct);
-      const bet = { value: signal.value, correct, informal: step.informal };
+      const bet = { value: signal.value, right: signal.right, correct, informal: step.informal };
       return next({ ...given, flow: { ...given.flow, bet } });
     }
     case 'draw': {
