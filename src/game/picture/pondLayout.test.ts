@@ -67,6 +67,28 @@ describe('the pieces of the tangle drifting apart', () => {
     expect(shifted[0]?.x0).toBe(AREA.x0);
   });
 
+  it('a line that only fits without the extra drift is laid out tight instead of overflowing', () => {
+    // Found by exploration: with the drift the row is one pixel too long, and so is the column.
+    const corner = { x0: 8, y0: 28, x1: 8, y1: 28 };
+    const boxes = [corner, corner, { x0: 363, y0: 169, x1: 441, y1: 195 }];
+    const shifted = driftApart(boxes, AREA).map((offset, i) => moved(boxes[i] as Box, offset));
+    expect(shifted.every(inside)).toBe(true);
+    shifted.forEach((a, i) => shifted.slice(i + 1).forEach((b) => expect(apart(a, b)).toBe(true)));
+  });
+
+  it('pieces that overflow even where they were are packed one after another', () => {
+    // Found by exploration: three pieces start at the same x, so neither drifting nor staying fits.
+    const boxes = [
+      { x0: 237, y0: 82, x1: 302, y1: 113 },
+      { x0: 237, y0: 82, x1: 312, y1: 115 },
+      { x0: 8, y0: 82, x1: 8, y1: 115 },
+      { x0: 237, y0: 28, x1: 285, y1: 28 },
+    ];
+    const shifted = driftApart(boxes, AREA).map((offset, i) => moved(boxes[i] as Box, offset));
+    expect(shifted.every(inside)).toBe(true);
+    shifted.forEach((a, i) => shifted.slice(i + 1).forEach((b) => expect(apart(a, b)).toBe(true)));
+  });
+
   it('a few small pieces anywhere in the garden always end apart and inside it', () => {
     const box = fc
       .record({

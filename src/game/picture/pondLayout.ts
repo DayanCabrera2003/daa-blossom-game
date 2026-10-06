@@ -30,14 +30,16 @@ const span = (box: Box, axis: Axis): [number, number] =>
 
 /**
  * Lines the pieces up along one axis, in the order they already have on it: each drifts outwards
- * from the middle of the line and is pushed on until it clears the previous one by the gap; then the
- * whole line shifts back inside the garden, starting at its edge when it is too long to fit.
- * Returns the moves along the axis, by piece, and whether the line fits.
+ * from the middle of the line by `drift` (or, `packed`, follows the previous one with just the gap,
+ * wherever it was) and is pushed on until it clears the previous one by the gap; then the whole line
+ * shifts back inside the garden, starting at its edge when it is too long to fit. Returns the moves
+ * along the axis, by piece, and whether the line fits.
  */
-function lineUp(
+function lineUpWith(
   boxes: readonly Box[],
   area: Box,
   axis: Axis,
+  drift: number | 'packed',
 ): { readonly moves: number[]; readonly fits: boolean } {
   const order = boxes
     .map((_, i) => i)
@@ -48,7 +50,12 @@ function lineUp(
   let first = Infinity;
   order.forEach((piece, rank) => {
     const [from, to] = span(itemAt(boxes, piece), axis);
-    const start = Math.max(from + (rank - middle) * DRIFT, end + PIECE_GAP);
+    const start =
+      drift === 'packed'
+        ? rank === 0
+          ? from
+          : end + PIECE_GAP
+        : Math.max(from + (rank - middle) * drift, end + PIECE_GAP);
     starts[piece] = start;
     first = Math.min(first, start);
     end = start + (to - from);
@@ -58,6 +65,22 @@ function lineUp(
   const shift = !fits || first < low ? low - first : end > high ? high - end : 0;
   const moves = boxes.map((box, i) => itemAt(starts, i) + shift - span(box, axis)[0]);
   return { moves, fits };
+}
+
+/**
+ * The pieces lined up along one axis, in the first way that fits: with the extra drift, so the
+ * separation shows; else near where they were; else packed one after another with only the gap,
+ * which fits whenever the pieces and their gaps fit at all.
+ */
+function lineUp(
+  boxes: readonly Box[],
+  area: Box,
+  axis: Axis,
+): { readonly moves: number[]; readonly fits: boolean } {
+  const drifting = lineUpWith(boxes, area, axis, DRIFT);
+  if (drifting.fits) return drifting;
+  const still = lineUpWith(boxes, area, axis, 0);
+  return still.fits ? still : lineUpWith(boxes, area, axis, 'packed');
 }
 
 /**
