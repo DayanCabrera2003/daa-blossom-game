@@ -1,5 +1,6 @@
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import { HINT_DELAY_MS } from './hints';
 import { handle, startController, type Controller, type UiEvent } from './levelController';
@@ -118,5 +119,46 @@ describe('playtest entries of a step', () => {
       'redo',
       'seek',
     ]);
+  });
+});
+
+describe('playtest entries of a scripted level', () => {
+  const loaded = loadLevel({
+    id: '2.9',
+    sprouts: [
+      { label: 'A', x: 100, y: 100 },
+      { label: 'B', x: 200, y: 100 },
+    ],
+    vines: [['A', 'B']],
+    goal: { visible: false },
+    flow: [
+      {
+        step: 'ask',
+        prompt: 'ch2.9.sauce.01',
+        options: [
+          { line: 'ch2.9.sauce.02', correct: false },
+          { line: 'ch2.9.sauce.03', correct: true },
+        ],
+        retry: true,
+      },
+    ],
+    solution: [{ type: 'answer', option: 1 }],
+  });
+  if (!loaded.ok) throw new Error('fixture does not load');
+  const level = loaded.value;
+
+  it('a move under a question is logged as refused with notNow', () => {
+    const { entries } = play(startController(level, 0), [...touch(level, 0), ...touch(level, 1)]);
+    expect(entries).toEqual([
+      { kind: 'refused', at: 0, level: '2.9', action: 'join', reason: 'notNow' },
+    ]);
+  });
+
+  it('answers are not logged yet (plan 03, phase 10); finishing the script is the win', () => {
+    const { entries } = play(startController(level, 0), [
+      { kind: 'answer', option: 0 },
+      { kind: 'answer', option: 1 },
+    ]);
+    expect(entries).toEqual([{ kind: 'levelEnd', at: 0, level: '2.9', outcome: 'won', stars: 2 }]);
   });
 });
