@@ -54,7 +54,32 @@ const count = (piece: string) => ({
 
 describe('the checks of a level script', () => {
   it('a sound script has no problems', () => {
-    expect(flowProblemsOf({ ...pond, flow: [...pond.flow, count('C')] })).toEqual([]);
+    const sound = {
+      ...pond,
+      flow: [
+        ...pond.flow,
+        count('C'),
+        {
+          step: 'ask',
+          prompt: 'ch2.1.sauce.01',
+          options: [
+            { line: 'ch2.1.sauce.02', correct: true },
+            { line: 'ch2.1.sauce.03', correct: false },
+          ],
+        },
+        { step: 'replay' },
+        { step: 'replay', demo: [{ type: 'chain', path: ['A', 'B', 'C', 'D', 'E', 'F'] }] },
+        { step: 'notebook' },
+      ],
+      notebook: {
+        prompt: 'ch2.1.notebook.00',
+        options: [
+          { line: 'ch2.1.notebook.01', correct: true },
+          { line: 'ch2.1.notebook.02', correct: false },
+        ],
+      },
+    };
+    expect(flowProblemsOf(sound)).toEqual([]);
   });
 
   it('a question needs a right answer', () => {
