@@ -3,7 +3,7 @@ import { isUiUnlocked } from '@levels/uiUnlocks';
 import type { PointerState } from '../input/pointer';
 import { availableTools, type ToolId } from '../input/tools';
 import { canRedo, canUndo } from '../systems/history';
-import { garden, isHintAvailable, type LevelSession } from '../systems/levelSession';
+import { garden, isHintAvailable, stepNow, type LevelSession } from '../systems/levelSession';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
 import { shownReflection, ties } from './pond';
@@ -33,18 +33,25 @@ export interface HudPicture {
   readonly tools: readonly ToolId[];
   readonly tool: ToolId;
   readonly won: StarResult | null;
+  /** Whether the drawn reflection can be checked now: in the mirror challenge only. */
+  readonly canCheckMirror: boolean;
 }
 
 /**
  * The goal on the top bar: the number of lanterns when it is visible; when hidden, the question, or
  * once a bet is made the bet itself (plan 03, decision 4). The real value is told by the mentor
  * when the level is won, so the bar keeps recalling the bet. With the reflection in the pond, your
- * lanterns against its own (plan 03, phase 7).
+ * lanterns against its own (plan 03, phase 7), or against the one drawn in the mirror challenge.
  */
 function goalText(session: LevelSession): TextRef {
+  const yours = garden(session).matching;
+  // In the mirror challenge, the bar sets your lanterns against the reflection being drawn.
+  if (stepNow(session)?.step === 'draw') {
+    const drawn = size(session.challenge.draft);
+    return { key: 'hud.mirror', params: { yours: size(yours), mirror: drawn } };
+  }
   // While the reflection is shown, the bar sets your lanterns against it, until you tie.
   const mirror = shownReflection(session);
-  const yours = garden(session).matching;
   if (mirror !== null && !ties(yours, mirror)) {
     return { key: 'hud.mirror', params: { yours: size(yours), mirror: size(mirror) } };
   }
@@ -79,5 +86,6 @@ export function hudPicture(session: LevelSession, pointer: PointerState, now: nu
     tools: availableTools(state.allowed),
     tool: pointer.tool,
     won: session.won,
+    canCheckMirror: stepNow(session)?.step === 'draw',
   };
 }

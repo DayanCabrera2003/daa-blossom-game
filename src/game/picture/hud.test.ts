@@ -5,7 +5,14 @@ import { describe, expect, it } from 'vitest';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { initialPointer } from '../input/pointer';
 import { HINT_DELAY_MS } from '../systems/hints';
-import { act, respond, startSession, undoSession } from '../systems/levelSession';
+import {
+  act,
+  checkDrawnMirror,
+  drawInMirror,
+  respond,
+  startSession,
+  undoSession,
+} from '../systems/levelSession';
 import { hudPicture } from './hud';
 
 const levelById = (id: string): Level => {
@@ -29,6 +36,7 @@ describe('the picture of the HUD', () => {
       tools: ['lanterns'],
       tool: 'lanterns',
       won: null,
+      canCheckMirror: false,
     });
   });
 
@@ -146,5 +154,14 @@ describe('the picture of the HUD', () => {
     });
     const tied = act(shown, { type: 'chain', path: [0, 1, 2, 3, 4, 5] }, 0).session;
     expect(hudPicture(tied, pointer, 0).goal).toEqual({ key: 'hud.goal', params: { count: 6 } });
+  });
+  it('in the mirror challenge, your lanterns against the drawing, and the check at hand', () => {
+    const pointer = initialPointer('lanterns');
+    const drawing = drawInMirror(startSession(pondLevel([{ step: 'draw', attempts: 1 }]), 0), 0, 1);
+    const hud = hudPicture(drawing.session, pointer, 0);
+    expect(hud.goal).toEqual({ key: 'hud.mirror', params: { yours: 5, mirror: 1 } });
+    expect(hud.canCheckMirror).toBe(true);
+    expect(hudPicture(startSession(pondLevel(), 0), pointer, 0).canCheckMirror).toBe(false);
+    expect(checkDrawnMirror(drawing.session, 0).check?.kind).toBe('notBetter');
   });
 });

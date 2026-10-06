@@ -1,7 +1,13 @@
 import { catalog } from '@levels/catalog';
 import { describe, expect, it } from 'vitest';
 import { POND, POND_SPROUTS, pondLevel } from '../../../tests/support/pondGarden';
-import { act, respond, startSession } from '../systems/levelSession';
+import {
+  act,
+  checkDrawnMirror,
+  drawInMirror,
+  respond,
+  startSession,
+} from '../systems/levelSession';
 import { pondPicture } from './pond';
 
 const positions = POND_SPROUTS.map(({ x, y }) => ({ x, y }));
@@ -104,5 +110,20 @@ describe('the picture of the pond', () => {
     // Your lanterns are now the reflection's on the thread: only the loop is left in the tangle.
     expect(after?.strands.filter((strand) => strand.side === 'shared')).toHaveLength(4);
     expect(after?.offsets).toHaveLength(1);
+  });
+  it('in the mirror challenge it shows the drawing, then each better check, separated', () => {
+    const level = pondLevel([{ step: 'draw', attempts: 2 }]);
+    const drawing = drawInMirror(startSession(level, 0), id('1'), id('2')).session;
+    expect(pondPicture(drawing, positions, labels)?.strands).toEqual([
+      { a: positions[id('1')], b: positions[id('2')], side: 'mirror', piece: null },
+    ]);
+    // The reflection's own lanterns beat yours by the thread 1…6.
+    const better = ['3=4', '5=6', 'a=b', 'c=d', 'e=f']
+      .map((pair) => pair.split('=').map(id))
+      .reduce((s, [u = 0, v = 0]) => drawInMirror(s, u, v).session, drawing);
+    const checked = checkDrawnMirror(better, 0).session;
+    const picture = pondPicture(checked, positions, labels);
+    expect(picture?.separated).toBe(true);
+    expect(picture?.winning).toBe(0);
   });
 });
