@@ -82,7 +82,7 @@ describe('layer boundaries', () => {
 
 describe('pure game logic', () => {
   // Decisions of the game live in pure folders; only scenes and views may draw with Phaser.
-  const PURE = ['input', 'systems', 'animation', 'scale'];
+  const PURE = ['input', 'systems', 'animation', 'scale', 'picture'];
 
   it.each(PURE)('src/game/%s may not import Phaser', async (folder) => {
     expect(
