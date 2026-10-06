@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import type { VertexId } from '@core/graph/types';
+import { itemAt } from '@core/shared/itemAt';
 import { stepAt, totalDuration, type AnimationStep } from '../animation/plan';
 import type { Point } from '../input/target';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
@@ -46,7 +47,7 @@ export class AnimationView {
       return;
     }
     const step = this.steps[at.index] as AnimationStep;
-    const p = (v: VertexId) => this.positions[v] as Point;
+    const p = (v: VertexId): Point => itemAt(this.positions, v);
     const pulse = 1 - at.progress;
     switch (step.kind) {
       case 'hop': {

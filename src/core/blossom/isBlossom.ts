@@ -3,6 +3,7 @@ import type { Graph, VertexId } from '../graph/types';
 import { isMatchedEdge } from '../matching/queries';
 import type { Matching } from '../matching/types';
 import { err, ok, type Result } from '../shared/result';
+import { itemAt } from '../shared/itemAt';
 
 /**
  * Why a loop of sprouts is not a flower. Indices point into the given loop so the game can
@@ -42,7 +43,7 @@ export function checkBlossom(
     seen.add(vertex);
   }
 
-  const at = (index: number): VertexId => loop[(index + loop.length) % loop.length] as VertexId;
+  const at = (index: number): VertexId => itemAt(loop, (index + loop.length) % loop.length);
   const lit: boolean[] = [];
   for (let index = 0; index < loop.length; index++) {
     if (!hasEdge(graph, at(index), at(index + 1))) return err({ code: 'notAdjacent', index });

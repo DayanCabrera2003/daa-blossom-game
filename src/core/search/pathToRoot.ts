@@ -1,6 +1,7 @@
 import type { VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
 import { NO_VERTEX, type AlternatingForest } from './forest';
+import { itemAt } from '../shared/itemAt';
 
 /**
  * The sprouts from `v` up to the root of its tree, `v` first. Parent links alternate lit and dark
@@ -15,7 +16,7 @@ export function pathToRoot(forest: AlternatingForest, v: VertexId): VertexId[] {
   const path: VertexId[] = [v];
   let current = v;
   while (forest.parent[current] !== NO_VERTEX) {
-    current = forest.parent[current] as VertexId;
+    current = itemAt(forest.parent, current);
     path.push(current);
   }
   return path;

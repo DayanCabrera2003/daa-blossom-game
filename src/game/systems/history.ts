@@ -1,3 +1,4 @@
+import { itemAt } from '@core/shared/itemAt';
 /**
  * The states a level has gone through and which one is shown. Undo, redo and the sun (GDD 0.5) are
  * all moves of the same cursor, so there is never a second position to keep in step. Acting with
@@ -12,7 +13,7 @@ export interface History<T> {
 export const startHistory = <T>(first: T): History<T> => ({ states: [first], cursor: 0 });
 
 /** The state shown now. */
-export const current = <T>(history: History<T>): T => history.states[history.cursor] as T;
+export const current = <T>(history: History<T>): T => itemAt(history.states, history.cursor);
 
 /** Whether there is a state before the shown one, or after it. */
 export const canUndo = <T>(history: History<T>): boolean => history.cursor > 0;

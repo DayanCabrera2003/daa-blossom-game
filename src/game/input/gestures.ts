@@ -8,6 +8,7 @@ import { FLOWER_PADDING, hitTest } from './HitTest';
 import { chooseTool, pressEnd, pressMove, pressStart, type PointerState } from './pointer';
 import type { Point } from './target';
 import { TOOL_ACTIONS, type ToolId } from './tools';
+import { itemAt } from '@core/shared/itemAt';
 
 /**
  * What a player does with hand and mouse: take a tool, press and drag through some points (a
@@ -34,7 +35,7 @@ function vinePoint(
   u: VertexId,
   v: VertexId,
 ): Point {
-  const [a, b] = [positions[u] as Point, positions[v] as Point];
+  const [a, b] = [itemAt(positions, u), itemAt(positions, v)];
   const [lo, hi] = u < v ? [u, v] : [v, u];
   for (const t of [0.5, 0.4, 0.6, 0.3, 0.7, 0.2, 0.8]) {
     const point = { x: a.x + t * (b.x - a.x), y: a.y + t * (b.y - a.y) };
@@ -49,7 +50,7 @@ function flowerPoint(state: GardenState, positions: readonly Point[], blossom: n
   const flower = state.layer.nodes.find((node) => node.kind === 'blossom' && node.id === blossom);
   invariant(flower !== undefined, `flower ${blossom} is not folded on top`);
   const outline = flowerOutline(
-    members(flower).map((v) => positions[v] as Point),
+    members(flower).map((v) => itemAt(positions, v)),
     FLOWER_PADDING,
   );
   const point = interiorCandidates(outline).find((candidate) => {
@@ -67,7 +68,7 @@ export function gesturesFor(
   action: Action,
 ): Gesture[] {
   if (action.type === 'declareDone') return [{ kind: 'done' }];
-  const at = (v: VertexId): Point => positions[v] as Point;
+  const at = (v: VertexId): Point => itemAt(positions, v);
   const touch = (point: Point): Gesture => ({ kind: 'press', points: [point] });
   const tool: Gesture = { kind: 'tool', tool: toolOf(action) };
   switch (action.type) {
@@ -85,7 +86,7 @@ export function gesturesFor(
     case 'rotateStem':
       return [tool, { kind: 'press', points: action.stem.map(at) }];
     case 'fold':
-      return [tool, ...[...action.loop, action.loop[0] as VertexId].map((v) => touch(at(v)))];
+      return [tool, ...[...action.loop, itemAt(action.loop, 0)].map((v) => touch(at(v)))];
     case 'unfold':
       return [tool, touch(flowerPoint(state, positions, action.blossom))];
     case 'inspect':
@@ -120,7 +121,7 @@ export function perform(
         pointer,
         state,
         positions,
-        gesture.points[gesture.points.length - 1] as Point,
+        itemAt(gesture.points, gesture.points.length - 1),
       );
       pointer = released.pointer;
       if (released.action !== null) actions.push(released.action);

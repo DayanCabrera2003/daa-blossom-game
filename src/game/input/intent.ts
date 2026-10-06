@@ -6,6 +6,7 @@ import { extendLoop } from './loopSelection';
 import { NO_SELECTION, type Selection } from './selection';
 import type { Target } from './target';
 import type { ToolId } from './tools';
+import { itemAt } from '@core/shared/itemAt';
 
 /** What one touch does: an action for the rules (or none yet) and the selection after it. */
 export interface TapOutcome {
@@ -18,7 +19,7 @@ const hold = (selection: Selection): TapOutcome => ({ action: null, selection })
 
 /** Whether the sprout belongs to a sun of the player's search (itself, or the flower holding it). */
 const isSun = (state: GardenState, v: VertexId): boolean =>
-  state.search?.label[state.layer.nodeOf[v] as VertexId] === 'outer';
+  state.search?.label[itemAt(state.layer.nodeOf, v)] === 'outer';
 
 /**
  * Lanterns (GDD §5.1, 0.1–1.1): touching a lit vine puts it out; a sprout in the dark is touched

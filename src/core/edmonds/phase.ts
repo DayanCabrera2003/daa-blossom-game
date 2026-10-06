@@ -7,6 +7,7 @@ import type { Matching } from '../matching/types';
 import type { AlternatingForest } from '../search/forest';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { searchWithFlowers } from './search';
+import { itemAt } from '../shared/itemAt';
 
 /** How a phase ended: one more lantern, or a proof-carrying failed search. */
 export type PhaseOutcome =
@@ -45,7 +46,7 @@ export function runPhase(
     return { kind: 'maximum', layer: outcome.layer, forest: outcome.forest };
   }
   const path = expandPath(outcome.layer, outcome.path);
-  const onPath = outcome.path.map((id) => outcome.layer.nodes[id] as GardenNode);
+  const onPath = outcome.path.map((id) => itemAt(outcome.layer.nodes, id));
   recordExpansions(onPath, new Set(path), recorder);
   recorder.record({ type: 'augment', path });
   return { kind: 'augmented', matching: flipAlong(matching, path) };

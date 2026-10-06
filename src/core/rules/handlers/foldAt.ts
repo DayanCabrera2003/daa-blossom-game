@@ -2,13 +2,13 @@ import { contract } from '../../blossom/contract';
 import { findOddCycle } from '../../blossom/detect';
 import { foldForest } from '../../edmonds/foldForest';
 import { hasEdge } from '../../graph/queries';
-import type { VertexId } from '../../graph/types';
 import { invariant } from '../../shared/invariant';
 import { contractEvent } from '../../trace/contractEvent';
 import type { Action } from '../actions';
 import { requireSprouts } from '../checks';
 import { accept, reject, type ActionOutcome } from '../outcome';
 import type { GardenState } from '../state';
+import { itemAt } from '../../shared/itemAt';
 
 /**
  * Fold at the conflict (level 4.4): the player touches the vine where two suns of one tree meet.
@@ -26,8 +26,8 @@ export function foldAt(
   if (invalid) return reject(invalid);
   if (!hasEdge(state.graph, from, to)) return reject({ code: 'notAdjacent', u: from, v: to });
   const { layer, search } = state;
-  const u = layer.nodeOf[from] as VertexId;
-  const x = layer.nodeOf[to] as VertexId;
+  const u = itemAt(layer.nodeOf, from);
+  const x = itemAt(layer.nodeOf, to);
   const sunsOfOneTree =
     search !== null &&
     u !== x &&

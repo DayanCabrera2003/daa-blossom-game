@@ -1,7 +1,8 @@
 import { baseVertex } from '../blossom/hierarchy';
-import type { GardenNode, Layer } from '../blossom/types';
+import type { Layer } from '../blossom/types';
 import type { VertexId } from '../graph/types';
 import type { AlternatingForest } from '../search/forest';
+import { itemAt } from '../shared/itemAt';
 
 /**
  * The stones handed over by a failed search (level 7.4, Códex C12): every moon of the final forest,
@@ -16,7 +17,7 @@ import type { AlternatingForest } from '../search/forest';
 export function stonesFromForest(layer: Layer, forest: AlternatingForest): VertexId[] {
   const stones: VertexId[] = [];
   forest.label.forEach((label, id) => {
-    if (label === 'inner') stones.push(baseVertex(layer.nodes[id] as GardenNode));
+    if (label === 'inner') stones.push(baseVertex(itemAt(layer.nodes, id)));
   });
   return stones.sort((a, b) => a - b);
 }

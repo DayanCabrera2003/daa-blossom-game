@@ -1,5 +1,6 @@
 import type { VertexId } from '@core/graph/types';
 import type { TraceEvent } from '@core/trace/events';
+import { itemAt } from '@core/shared/itemAt';
 
 /** How long each kind of step lasts, in milliseconds (greybox values, tuned at the art phase). */
 export const DURATIONS = {
@@ -59,7 +60,7 @@ function stepsOf(event: TraceEvent): AnimationStep[] {
     case 'augment':
       return event.path.slice(1).map((to, i) => ({
         kind: 'hop',
-        from: event.path[i] as VertexId,
+        from: itemAt(event.path, i),
         to,
         duration: DURATIONS.hop,
       }));

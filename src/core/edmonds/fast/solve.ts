@@ -3,6 +3,7 @@ import { neighbors } from '../../graph/queries';
 import type { Graph, VertexId } from '../../graph/types';
 import { emptyMatching } from '../../matching/createMatching';
 import { UNMATCHED, type Matching } from '../../matching/types';
+import { itemAt } from '../../shared/itemAt';
 
 const NONE = -1;
 
@@ -36,15 +37,15 @@ export function fastEdmonds(
   const lowestCommonAncestor = (a: VertexId, b: VertexId): VertexId => {
     const seen = new Array<boolean>(n).fill(false);
     for (let v = a; ;) {
-      v = base[v] as VertexId;
+      v = itemAt(base, v);
       seen[v] = true;
       if (mate[v] === UNMATCHED) break;
-      v = parent[mate[v] as VertexId] as VertexId;
+      v = itemAt(parent, itemAt(mate, v));
     }
     for (let v = b; ;) {
-      v = base[v] as VertexId;
+      v = itemAt(base, v);
       if (seen[v]) return v;
-      v = parent[mate[v] as VertexId] as VertexId;
+      v = itemAt(parent, itemAt(mate, v));
     }
   };
 
@@ -53,13 +54,13 @@ export function fastEdmonds(
     let v = start;
     let child = startChild;
     while (base[v] !== flowerBase) {
-      const partner = mate[v] as VertexId;
-      inFlower[base[v] as VertexId] = true;
-      inFlower[base[partner] as VertexId] = true;
+      const partner = itemAt(mate, v);
+      inFlower[itemAt(base, v)] = true;
+      inFlower[itemAt(base, partner)] = true;
       // The moon on this side can now also be left towards `child`: the other way round the loop.
       parent[v] = child;
       child = partner;
-      v = parent[partner] as VertexId;
+      v = itemAt(parent, partner);
     }
   };
 
@@ -73,12 +74,12 @@ export function fastEdmonds(
     queue = [root];
 
     for (let head = 0; head < queue.length; head++) {
-      const v = queue[head] as VertexId;
+      const v = itemAt(queue, head);
       for (const to of neighbors(graph, v)) {
         counter.count('scan');
         if (base[v] === base[to] || mate[v] === to) continue;
         const toIsSun =
-          to === root || (mate[to] !== UNMATCHED && parent[mate[to] as VertexId] !== NONE);
+          to === root || (mate[to] !== UNMATCHED && parent[itemAt(mate, to)] !== NONE);
         if (toIsSun) {
           // Two suns of this tree: fold every flower on the loop into one with the common base.
           const flowerBase = lowestCommonAncestor(v, to);
@@ -86,7 +87,7 @@ export function fastEdmonds(
           markPath(v, flowerBase, to);
           markPath(to, flowerBase, v);
           for (let i = 0; i < n; i++) {
-            if (!inFlower[base[i] as VertexId]) continue;
+            if (!inFlower[itemAt(base, i)]) continue;
             base[i] = flowerBase;
             counter.count('rebase');
             if (!inTree[i]) {
@@ -100,7 +101,7 @@ export function fastEdmonds(
           parent[to] = v;
           counter.count('label');
           if (mate[to] === UNMATCHED) return to;
-          const partner = mate[to] as VertexId;
+          const partner = itemAt(mate, to);
           inTree[partner] = true;
           counter.count('label');
           queue.push(partner);
@@ -114,8 +115,8 @@ export function fastEdmonds(
     if (mate[root] !== UNMATCHED) continue;
     // Pass the lanterns back from the dark end of the chain to the root.
     for (let v = findChain(root); v !== NONE;) {
-      const previous = parent[v] as VertexId;
-      const next = mate[previous] as VertexId;
+      const previous = itemAt(parent, v);
+      const next = itemAt(mate, previous);
       mate[v] = previous;
       mate[previous] = v;
       counter.count('flip');

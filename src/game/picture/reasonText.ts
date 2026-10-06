@@ -2,6 +2,7 @@ import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import type { RejectReason } from '@core/rules/reasons';
 import type { Translate } from '@services/i18n';
+import { itemAt } from '@core/shared/itemAt';
 
 /** The sprouts a refused action went through: its chain, stem or loop (empty otherwise). */
 const sequenceOf = (action: Action): readonly VertexId[] =>
@@ -26,7 +27,7 @@ export function reasonText(
 ): string {
   const name = (v: VertexId): string => labels[v] ?? String(v);
   const sequence = sequenceOf(action);
-  const at = (index: number): string => name(sequence[index % sequence.length] as VertexId);
+  const at = (index: number): string => name(itemAt(sequence, index % sequence.length));
 
   switch (reason.code) {
     case 'actionLocked':

@@ -3,6 +3,7 @@ import type { Graph, VertexId } from '../graph/types';
 import { err, ok, type Result } from '../shared/result';
 import { isExposed, isMatchedEdge } from './queries';
 import type { Matching } from './types';
+import { itemAt } from '../shared/itemAt';
 
 /**
  * Why a sequence of sprouts is not the kind of path asked for. Indices point into the path so the
@@ -48,8 +49,8 @@ export function checkAlternatingPath(
   let firstEdgeMatched: boolean | null = null;
   let previousMatched: boolean | null = null;
   for (let index = 0; index + 1 < path.length; index++) {
-    const u = path[index] as VertexId;
-    const v = path[index + 1] as VertexId;
+    const u = itemAt(path, index);
+    const v = itemAt(path, index + 1);
     if (!hasEdge(graph, u, v)) return err({ code: 'notAdjacent', index });
     const matched = isMatchedEdge(matching, u, v);
     if (matched === previousMatched) return err({ code: 'notAlternating', index });
@@ -73,7 +74,7 @@ export function checkAugmentingPath(
   const alternating = checkAlternatingPath(graph, matching, path);
   if (!alternating.ok) return alternating;
   if (path.length < 2) return err({ code: 'tooShort' });
-  for (const vertex of [path[0], path[path.length - 1]] as VertexId[]) {
+  for (const vertex of [itemAt(path, 0), itemAt(path, path.length - 1)]) {
     if (!isExposed(matching, vertex)) return err({ code: 'endpointNotExposed', vertex });
   }
   return alternating;
@@ -91,7 +92,7 @@ export function checkStem(
 ): Result<AlternatingPath, PathError> {
   const alternating = checkAlternatingPath(graph, matching, path);
   if (!alternating.ok) return alternating;
-  const root = path[0] as VertexId;
+  const root = itemAt(path, 0);
   if (!isExposed(matching, root)) return err({ code: 'endpointNotExposed', vertex: root });
   const edges = path.length - 1;
   if (edges % 2 !== 0) return err({ code: 'wrongParity', edges });

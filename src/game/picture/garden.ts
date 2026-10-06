@@ -9,6 +9,7 @@ import { flowerOutline } from '../input/flowerShape';
 import { FLOWER_PADDING } from '../input/HitTest';
 import { NO_SELECTION, type Selection } from '../input/selection';
 import type { Point } from '../input/target';
+import { itemAt } from '@core/shared/itemAt';
 
 /** A sprout as drawn. */
 export interface SproutPicture {
@@ -81,7 +82,7 @@ export function gardenPicture(
   labels: readonly string[],
   extras: PointingExtras,
 ): GardenPicture {
-  const at = (v: VertexId): Point => positions[v] as Point;
+  const at = (v: VertexId): Point => itemAt(positions, v);
   const { layer, search, revealed } = state;
   const selected = new Set(
     extras.selection.kind === 'sprout'
@@ -91,7 +92,7 @@ export function gardenPicture(
         : [],
   );
   const markOf = (v: VertexId): 'sun' | 'moon' | null => {
-    const label = search?.label[layer.nodeOf[v] as VertexId];
+    const label = search?.label[itemAt(layer.nodeOf, v)];
     return label === 'outer' ? 'sun' : label === 'inner' ? 'moon' : null;
   };
 

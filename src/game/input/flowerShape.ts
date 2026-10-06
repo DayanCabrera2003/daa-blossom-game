@@ -1,4 +1,5 @@
 import type { Point } from './target';
+import { itemAt } from '@core/shared/itemAt';
 
 const cross = (o: Point, a: Point, b: Point): number =>
   (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
@@ -17,7 +18,7 @@ export function convexHull(points: readonly Point[]): Point[] {
     for (const p of list) {
       while (
         chain.length >= 2 &&
-        cross(chain[chain.length - 2] as Point, chain[chain.length - 1] as Point, p) <= 0
+        cross(itemAt(chain, chain.length - 2), itemAt(chain, chain.length - 1), p) <= 0
       ) {
         chain.pop();
       }
@@ -59,8 +60,8 @@ export function flowerOutline(petals: readonly Point[], padding: number): Point[
 export function insidePolygon(point: Point, polygon: readonly Point[]): boolean {
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const a = polygon[i] as Point;
-    const b = polygon[j] as Point;
+    const a = itemAt(polygon, i);
+    const b = itemAt(polygon, j);
     if (
       a.y > point.y !== b.y > point.y &&
       point.x < ((b.x - a.x) * (point.y - a.y)) / (b.y - a.y) + a.x

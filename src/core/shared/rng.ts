@@ -1,4 +1,5 @@
 import { invariant } from './invariant';
+import { itemAt } from './itemAt';
 
 /**
  * Seeded pseudo-random generator. The core never calls `Math.random`: every random choice
@@ -41,14 +42,14 @@ export function createRng(seed: number): Rng {
     const result = [...items];
     for (let i = result.length - 1; i > 0; i--) {
       const j = int(i + 1);
-      [result[i], result[j]] = [result[j] as T, result[i] as T];
+      [result[i], result[j]] = [itemAt(result, j), itemAt(result, i)];
     }
     return result;
   };
 
   const pick = <T>(items: readonly T[]): T => {
     invariant(items.length > 0, 'cannot pick from an empty array');
-    return items[int(items.length)] as T;
+    return itemAt(items, int(items.length));
   };
 
   return { next, int, shuffle, pick };

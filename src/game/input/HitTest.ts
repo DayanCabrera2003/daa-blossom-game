@@ -3,6 +3,7 @@ import type { VertexId } from '@core/graph/types';
 import type { GardenState } from '@core/rules/state';
 import { flowerOutline, insidePolygon } from './flowerShape';
 import type { Point, Target } from './target';
+import { itemAt } from '@core/shared/itemAt';
 
 /** How far from a sprout's centre a touch still lands on it (its circle has radius 8). */
 export const SPROUT_HIT_RADIUS = 10;
@@ -26,7 +27,7 @@ const toSegment = (p: Point, a: Point, b: Point): number => {
  * flowers are offered: nested flowers open from the outside in (5.2).
  */
 export function hitTest(state: GardenState, positions: readonly Point[], point: Point): Target {
-  const at = (v: VertexId): Point => positions[v] as Point;
+  const at = (v: VertexId): Point => itemAt(positions, v);
   const distanceTo = (v: VertexId): number => Math.hypot(point.x - at(v).x, point.y - at(v).y);
 
   const sprouts = positions.map((_, v) => v).filter((v) => distanceTo(v) <= SPROUT_HIT_RADIUS);

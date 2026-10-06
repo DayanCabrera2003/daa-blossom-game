@@ -12,6 +12,7 @@ import type { GardenState } from '@core/rules/state';
 import { isVictory, type VictoryCondition } from '@core/rules/victory';
 import { bipartiteMatching } from '@core/search/bipartiteMatching';
 import { createRecorder } from '@core/trace/recorder';
+import { itemAt } from '@core/shared/itemAt';
 
 /** What the mentor needs to know about a level: where it starts, how it is solved, how it is won. */
 export interface MentorGoal {
@@ -74,7 +75,7 @@ function lightMore(state: GardenState): Action | null {
     ([u, v]) => isExposed(state.matching, u) && isExposed(state.matching, v),
   );
   if (free !== undefined) return { type: 'join', u: free[0], v: free[1] };
-  return { type: 'passLantern', from: chain[0] as VertexId, to: chain[1] as VertexId };
+  return { type: 'passLantern', from: itemAt(chain, 0), to: itemAt(chain, 1) };
 }
 
 /** Moving placed objects towards `target`: take away extras first, then add what is missing. */

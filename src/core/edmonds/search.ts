@@ -1,7 +1,7 @@
 import { contract, openLayer } from '../blossom/contract';
 import { findOddCycle } from '../blossom/detect';
 import { baseVertex } from '../blossom/hierarchy';
-import type { GardenNode, Layer } from '../blossom/types';
+import type { Layer } from '../blossom/types';
 import { vineBetween } from '../blossom/vineBetween';
 import { neighbors } from '../graph/queries';
 import type { Graph, VertexId } from '../graph/types';
@@ -13,6 +13,7 @@ import { growStep } from '../search/growForest';
 import { contractEvent } from '../trace/contractEvent';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { foldForest } from './foldForest';
+import { itemAt } from '../shared/itemAt';
 
 /**
  * How a search with flowers ended. A chain is given in the ids of the folded garden it was found
@@ -46,11 +47,11 @@ export function searchWithFlowers(
   for (const root of roots)
     recorder.record({ type: 'labelOuter', vertex: root, parent: null, root });
 
-  const sproutOf = (id: VertexId): VertexId => baseVertex(layer.nodes[id] as GardenNode);
+  const sproutOf = (id: VertexId): VertexId => baseVertex(itemAt(layer.nodes, id));
   let queue: VertexId[] = [...roots];
   let head = 0;
   while (head < queue.length) {
-    const u = queue[head++] as VertexId;
+    const u = itemAt(queue, head++);
     for (const x of neighbors(layer.graph, u)) {
       const vine = vineBetween(layer, u, x);
       recorder.record({ type: 'scanEdge', from: vine[0], to: vine[1] });
@@ -58,7 +59,7 @@ export function searchWithFlowers(
 
       if (step.kind === 'grow') {
         forest = step.forest;
-        const root = sproutOf(forest.root[u] as VertexId);
+        const root = sproutOf(itemAt(forest.root, u));
         const moon = sproutOf(step.inner);
         recorder.record({ type: 'labelInner', vertex: moon, parent: vine[0], root });
         recorder.record({ type: 'labelOuter', vertex: sproutOf(step.outer), parent: moon, root });
@@ -76,7 +77,7 @@ export function searchWithFlowers(
         forest = foldForest(forest, before, layer, folded.blossom);
         // Pending suns are renamed; those swallowed by the flower are replaced by the flower.
         const rename = (id: VertexId): VertexId =>
-          layer.nodeOf[baseVertex(before.nodes[id] as GardenNode)] as VertexId;
+          itemAt(layer.nodeOf, baseVertex(itemAt(before.nodes, id)));
         const pending = queue.slice(head).map(rename);
         queue = [...new Set(pending.filter((id) => id !== folded.blossom)), folded.blossom];
         head = 0;

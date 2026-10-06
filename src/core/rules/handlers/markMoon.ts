@@ -1,6 +1,5 @@
 import { expandPath } from '../../blossom/expand';
 import { baseVertex } from '../../blossom/hierarchy';
-import type { GardenNode } from '../../blossom/types';
 import { hasEdge } from '../../graph/queries';
 import type { VertexId } from '../../graph/types';
 import { isMatchedEdge } from '../../matching/queries';
@@ -9,6 +8,7 @@ import type { Action } from '../actions';
 import { requireSprouts } from '../checks';
 import { accept, reject, type ActionOutcome } from '../outcome';
 import type { GardenState } from '../state';
+import { itemAt } from '../../shared/itemAt';
 
 /**
  * Look from a sun along a dark vine (level 3.1). The rules are those of the algorithm itself
@@ -31,14 +31,14 @@ export function markMoon(
   if (!hasEdge(state.graph, from, to)) return reject({ code: 'notAdjacent', u: from, v: to });
 
   const { layer, search } = state;
-  const u = layer.nodeOf[from] as VertexId;
-  const x = layer.nodeOf[to] as VertexId;
+  const u = itemAt(layer.nodeOf, from);
+  const x = itemAt(layer.nodeOf, to);
   if (u === x) return reject({ code: 'insideOneFlower', u: from, v: to });
   if (search?.label[u] !== 'outer') return reject({ code: 'notASun', vertex: from });
   if (isMatchedEdge(layer.matching, u, x)) return reject({ code: 'litVine', u: from, v: to });
 
   const step = growStep(layer.matching, search, u, x);
-  const sproutOf = (id: VertexId): VertexId => baseVertex(layer.nodes[id] as GardenNode);
+  const sproutOf = (id: VertexId): VertexId => baseVertex(itemAt(layer.nodes, id));
   switch (step.kind) {
     case 'alreadyInner':
       return reject({ code: 'alreadyMarked', vertex: to });
@@ -49,7 +49,7 @@ export function markMoon(
       return accept({ ...state, chainSeen: path }, [{ type: 'chainFound', path }]);
     }
     case 'grow': {
-      const root = sproutOf(step.forest.root[u] as VertexId);
+      const root = sproutOf(itemAt(step.forest.root, u));
       const moon = sproutOf(step.inner);
       return accept({ ...state, search: step.forest }, [
         { type: 'labelInner', vertex: moon, parent: from, root },
