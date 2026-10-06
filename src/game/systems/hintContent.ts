@@ -1,11 +1,6 @@
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
-
-/** A hint written for a level, with sprout ids. */
-export interface LevelHint {
-  readonly line: string;
-  readonly highlight: readonly VertexId[];
-}
+import type { LevelHint } from '@levels/build';
 
 /** What a hint shows: a line (a dialogue id, or a generic interface key), sprouts to glow, a move. */
 export interface HintContent {

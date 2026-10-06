@@ -41,6 +41,10 @@ describe('building a level', () => {
     ]);
   });
 
+  it('turns the names each hint highlights into ids', () => {
+    expect(unwrapLevel(rotate).hints).toEqual([{ line: 'ch4.10.sauce.01', highlight: [0, 2] }]);
+  });
+
   it('allows what has been unlocked by this level, minus what it keeps closed', () => {
     const { allowed } = unwrapLevel(rotate).start;
     expect(allowed.has('rotateStem')).toBe(true);

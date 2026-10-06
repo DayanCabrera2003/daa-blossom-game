@@ -1,6 +1,4 @@
 import { isMaximum } from '@core/edmonds/fast/maximum';
-import { idOf } from '@core/graph/labels';
-import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { ActionOutcome } from '@core/rules/outcome';
@@ -134,14 +132,10 @@ export function askHint(
   const opened = openHint(session.hints, now);
   if (opened === null) return null;
   const { level } = session;
-  const hints = level.data.hints.map((hint) => ({
-    line: hint.line,
-    highlight: hint.highlight.map((name) => idOf(level.labels, name) as VertexId),
-  }));
   const goal = { start: level.start, solution: level.solution, victory: level.data.victory };
   const step = opened.grade >= 2 ? nextMove(goal, garden(session)) : null;
   return {
     session: { ...session, hints: opened.hints },
-    hint: hintContent(hints, opened.grade, step),
+    hint: hintContent(level.hints, opened.grade, step),
   };
 }

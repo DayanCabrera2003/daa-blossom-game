@@ -17,6 +17,14 @@ export interface Level {
   readonly start: GardenState;
   /** The reference solution, with sprout ids. */
   readonly solution: readonly Action[];
+  /** The hints, each with the ids of the sprouts it lights up. */
+  readonly hints: readonly LevelHint[];
+}
+
+/** A hint of the level: the line the mentor says and the sprouts that glow with it. */
+export interface LevelHint {
+  readonly line: string;
+  readonly highlight: readonly VertexId[];
 }
 
 /** Why a schema-valid level file still does not describe a playable garden. */
@@ -76,10 +84,16 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
   const matching = createMatching(graph.value, lit.value);
   if (!matching.ok) return err({ code: 'badLanterns', error: matching.error });
 
+  const hints: LevelHint[] = [];
   for (const hint of data.hints) {
-    const unknown = hint.highlight.find((name) => idOf(labels.value, name) === undefined);
-    if (unknown !== undefined)
-      return err({ code: 'badLabel', error: { code: 'unknownName', name: unknown } });
+    const highlight: VertexId[] = [];
+    for (const name of hint.highlight) {
+      const vertex = idOf(labels.value, name);
+      if (vertex === undefined)
+        return err({ code: 'badLabel', error: { code: 'unknownName', name } });
+      highlight.push(vertex);
+    }
+    hints.push({ line: hint.line, highlight });
   }
 
   const solution: Action[] = [];
@@ -96,5 +110,5 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     fog: data.fog,
     allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
   });
-  return ok({ data, labels: labels.value, graph: graph.value, start, solution });
+  return ok({ data, labels: labels.value, graph: graph.value, start, solution, hints });
 }
