@@ -36,6 +36,49 @@ describe('referencedLines', () => {
     ]);
   });
 
+  it('lists the lines of the script, in the order its steps come', () => {
+    const scripted = levelSchema.parse({
+      ...talkative,
+      script: [],
+      notebook: undefined,
+      hints: [{ line: 'ch4.7.sauce.09' }],
+      flow: [
+        { step: 'say', lines: ['ch4.7.sauce.00', 'ch4.7.sauce.01'] },
+        {
+          step: 'play',
+          reactions: [
+            { on: 'gainZeroChain', say: ['ch4.7.sauce.02'] },
+            { on: 'lanterns', value: 1, say: ['ch4.7.sauce.03'] },
+          ],
+        },
+        {
+          step: 'ask',
+          prompt: 'ch4.7.sauce.04',
+          options: [
+            { line: 'ch4.7.sauce.05', correct: true, reply: 'ch4.7.sauce.06' },
+            { line: 'ch4.7.sauce.07', correct: false },
+          ],
+        },
+        { step: 'bet', prompt: 'ch4.7.sauce.08', range: 3 },
+        { step: 'count', prompt: 'ch4.7.sauce.10', piece: 'A', of: 'yours', range: 2 },
+        { step: 'sun' },
+      ],
+    });
+    expect(referencedLines(scripted)).toEqual([
+      'ch4.7.sauce.00',
+      'ch4.7.sauce.01',
+      'ch4.7.sauce.02',
+      'ch4.7.sauce.03',
+      'ch4.7.sauce.04',
+      'ch4.7.sauce.05',
+      'ch4.7.sauce.06',
+      'ch4.7.sauce.07',
+      'ch4.7.sauce.08',
+      'ch4.7.sauce.10',
+      'ch4.7.sauce.09',
+    ]);
+  });
+
   it('is empty for a level that says nothing', () => {
     const silent = { ...talkative, hints: [], script: [], notebook: undefined };
     expect(referencedLines(silent)).toEqual([]);
