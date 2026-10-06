@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+/**
+ * The format of the log. Entries are only ever added as new kinds, never changed, so every log an
+ * earlier build wrote still reads under this schema: the version moves only when an entry changes
+ * shape, together with a migration of the old one.
+ */
 const LOG_VERSION = 1;
 
 /** Milliseconds since the epoch, from the injected clock. */
@@ -38,6 +43,50 @@ const entrySchema = z.discriminatedUnion('kind', [
     at,
     level,
     move: z.enum(['undo', 'redo', 'seek']),
+  }),
+  /** An option of an `ask`, or a number in a `count`: the step of the script that asked. */
+  z.strictObject({
+    kind: z.literal('answer'),
+    at,
+    level,
+    step: z.number().int().min(0),
+    option: z.number().int().min(0),
+    right: z.boolean(),
+  }),
+  /** A bet on the lanterns the garden holds; an informal one earns no star (GDD §5.4). */
+  z.strictObject({
+    kind: z.literal('bet'),
+    at,
+    level,
+    value: z.number().int().min(0),
+    right: z.boolean(),
+    informal: z.boolean(),
+  }),
+  /** A statement chosen in the notebook question, true or false. */
+  z.strictObject({
+    kind: z.literal('notebook'),
+    at,
+    level,
+    option: z.number().int().min(0),
+    right: z.boolean(),
+  }),
+  /** The garden that refutes the false notebook statement `option` was opened. */
+  z.strictObject({
+    kind: z.literal('counterexample'),
+    at,
+    level,
+    option: z.number().int().min(0),
+  }),
+  /**
+   * A drawn reflection was checked: whether it beats the garden, and whether it counted as a new
+   * attempt (a better one not checked before).
+   */
+  z.strictObject({
+    kind: z.literal('mirrorCheck'),
+    at,
+    level,
+    beats: z.boolean(),
+    counted: z.boolean(),
   }),
 ]);
 

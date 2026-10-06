@@ -42,6 +42,25 @@ describe('playtest log', () => {
     expect(parseLog(log)).toEqual(log);
   });
 
+  it('reads back the answers, bets, notebook choices, counterexamples and mirror checks', () => {
+    const log = {
+      version: 1,
+      entries: [
+        { kind: 'answer', at: 1, level: '1.2', step: 3, option: 0, right: false },
+        { kind: 'bet', at: 2, level: '1.6', value: 4, right: true, informal: false },
+        { kind: 'notebook', at: 3, level: '1.9', option: 2, right: false },
+        { kind: 'counterexample', at: 4, level: '1.9', option: 2 },
+        { kind: 'mirrorCheck', at: 5, level: '2.4', beats: true, counted: true },
+      ],
+    };
+    expect(parseLog(log)).toEqual(log);
+  });
+
+  it('still reads a log written before answers were recorded: the new entries only add kinds', () => {
+    const older = { version: 1, entries: [{ kind: 'levelStart', at: 0, level: '0.1' }] };
+    expect(parseLog(older)).toEqual(older);
+  });
+
   it('rejects what is not a log of this version', () => {
     expect(parseLog({ version: 2, entries: [] })).toBeNull();
     expect(parseLog({ version: 1, entries: [{ kind: 'dance', at: 0 }] })).toBeNull();
