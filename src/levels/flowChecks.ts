@@ -2,12 +2,12 @@ import { nameOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
 import type { Matching } from '@core/matching/types';
-import type { Action, ActionType } from '@core/rules/actions';
+import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
-import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
 import type { Level } from './build';
+import { demoStart } from './demoStart';
 
 /** Something wrong with the script of a level; `step` is the index of the step in the script. */
 export type FlowProblem =
@@ -21,9 +21,6 @@ export type FlowProblem =
       readonly move: number;
       readonly reason: RejectReason;
     };
-
-/** Every action of the game: a demo is shown with all of them allowed. */
-const EVERY_ACTION = Object.keys(UNLOCKED_AT) as ActionType[];
 
 /** Plays moves from a garden; the first refusal stops it, with the index of the refused move. */
 function replay(
@@ -95,8 +92,7 @@ export function checkFlow(level: Level): FlowProblem[] {
       }
       case 'replay': {
         if (flowStep.demo === undefined) break;
-        const open = { ...start, allowed: new Set(EVERY_ACTION) };
-        const { refused } = replay(open, flowStep.demo);
+        const { refused } = replay(demoStart(start), flowStep.demo);
         if (refused !== null) problems.push({ code: 'demoRefused', step, ...refused });
         break;
       }

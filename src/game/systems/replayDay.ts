@@ -1,12 +1,9 @@
-import type { Action, ActionType } from '@core/rules/actions';
+import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
-import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { GardenState } from '@core/rules/state';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
-
-/** Every action of the game: a demo is played with all of them allowed. */
-const EVERY_ACTION: ReadonlySet<ActionType> = new Set(Object.keys(UNLOCKED_AT) as ActionType[]);
+import { demoStart } from '@levels/demoStart';
 
 /**
  * The states a replayed day walks through, dawn to dusk (plan 03, phase 3). Without a demo it is
@@ -20,7 +17,7 @@ export function dayToReplay(
   demo: readonly Action[] | null,
 ): readonly GardenState[] {
   if (demo === null) return playerDay;
-  let state: GardenState = { ...level.start, allowed: EVERY_ACTION };
+  let state = demoStart(level.start);
   const day = [state];
   for (const action of demo) {
     const outcome = applyAction(state, action);
