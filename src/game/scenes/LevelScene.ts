@@ -9,7 +9,7 @@ import { hudPicture } from '../picture/hud';
 import { reasonText } from '../picture/reasonText';
 import {
   handle,
-  startController,
+  openController,
   type Controller,
   type Effect,
   type UiEvent,
@@ -80,11 +80,12 @@ export class LevelScene extends Phaser.Scene {
     }
     this.level = level;
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
-    this.controller = startController(level, this.time.now);
+    const opened = openController(level, this.time.now);
+    this.controller = opened.controller;
     this.context.playtest.record([
       { kind: 'levelStart', at: this.context.clock(), level: level.data.id },
     ]);
-    const { t, line } = this.context;
+    const { t } = this.context;
     this.views = {
       fog: new FogView(this),
       flowers: new FlowerView(this),
@@ -106,10 +107,9 @@ export class LevelScene extends Phaser.Scene {
     };
     this.listen();
     this.ready = true;
+    // The script opens the level: its first lines, then whatever step waits for the player.
+    for (const effect of opened.effects) this.show(effect);
     this.render();
-    // Until the script engine runs the whole flow, the scene only voices its opening say step.
-    const [opening] = level.flow;
-    this.views.dialogue.say(opening?.step === 'say' ? opening.lines.map(line) : []);
   }
 
   override update(time: number): void {
@@ -182,8 +182,36 @@ export class LevelScene extends Phaser.Scene {
           effect.content.generic ? t(effect.content.line) : line(effect.content.line),
         ]);
         break;
+      case 'say':
+        this.views.dialogue.say(effect.lines.map(line));
+        break;
       case 'won':
         this.win(effect.stars);
+        break;
+      case 'play':
+      case 'answered':
+      case 'sproutTapped':
+        // Nothing to draw: the garden simply takes moves, or the answer is logged (phase 10).
+        break;
+      case 'sun':
+      case 'replay':
+        // The sun as a step and the replayed day are drawn in plan 03, phase 3.
+        break;
+      case 'ask':
+      case 'bet':
+        // Questions and bets get their panel in plan 03, phase 4.
+        break;
+      case 'notebook':
+        // The notebook is opened in plan 03, phase 6.
+        break;
+      case 'mirror':
+      case 'explore':
+      case 'separate':
+      case 'count':
+        // The pond (reflection, tangle, threads and counts) is drawn in plan 03, phase 7.
+        break;
+      case 'draw':
+        // The mirror challenge is drawn in plan 03, phase 8.
         break;
     }
   }
