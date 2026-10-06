@@ -1,5 +1,5 @@
 import type { VertexId } from '../graph/types';
-import type { GardenNode } from './types';
+import type { GardenNode, Layer } from './types';
 
 /** Every original sprout inside a node (itself, for a sprout), in ascending order. */
 export function members(node: GardenNode): VertexId[] {
@@ -20,4 +20,23 @@ export function baseVertex(node: GardenNode): VertexId {
   let current = node;
   while (current.kind === 'blossom') current = current.cycle[0] as GardenNode;
   return current.vertex;
+}
+
+/** The folded node holding sprout `v`: its outermost flower, or the sprout itself if unfolded. */
+export function outermostNode(layer: Layer, v: VertexId): GardenNode {
+  return layer.nodes[layer.nodeOf[v] as VertexId] as GardenNode;
+}
+
+/**
+ * How many flowers wrap sprout `v`, from the outermost down to the sprout (0 if it is not inside
+ * any): the number of zoom steps the "Layers" view needs to reach it (level 5.2).
+ */
+export function nestingDepth(layer: Layer, v: VertexId): number {
+  let depth = 0;
+  let current = outermostNode(layer, v);
+  while (current.kind === 'blossom') {
+    depth++;
+    current = current.cycle.find((child) => members(child).includes(v)) as GardenNode;
+  }
+  return depth;
 }
