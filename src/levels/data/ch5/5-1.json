@@ -29,7 +29,7 @@
   ],
   "goal": { "visible": true, "value": 4 },
   "victory": { "type": "matchingSize", "value": 4 },
-  "script": ["ch5.1.sauce.00"],
+  "flow": [{ "step": "say", "lines": ["ch5.1.sauce.00"] }, { "step": "play" }],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },

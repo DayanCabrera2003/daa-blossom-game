@@ -33,7 +33,7 @@
   ],
   "goal": { "visible": false },
   "victory": { "type": "tutteBergeCertificate" },
-  "script": ["ch7.4.sauce.00"],
+  "flow": [{ "step": "say", "lines": ["ch7.4.sauce.00"] }, { "step": "play" }],
   "unlocks": { "codex": ["C12"] },
   "solution": [
     { "type": "markRoot", "vertex": "R" },

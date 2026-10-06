@@ -107,7 +107,9 @@ export class LevelScene extends Phaser.Scene {
     this.listen();
     this.ready = true;
     this.render();
-    this.views.dialogue.say(level.data.script.map(line));
+    // Until the script engine runs the whole flow, the scene only voices its opening say step.
+    const [opening] = level.flow;
+    this.views.dialogue.say(opening?.step === 'say' ? opening.lines.map(line) : []);
   }
 
   override update(time: number): void {

@@ -36,6 +36,6 @@
   "goal": { "visible": false },
   "victory": { "type": "tutteBergeCertificate" },
   "hints": [{ "line": "ch7.3.sauce.01" }, { "line": "ch7.3.sauce.02", "highlight": ["C"] }],
-  "script": ["ch7.3.oaks.00"],
+  "flow": [{ "step": "say", "lines": ["ch7.3.oaks.00"] }, { "step": "play" }],
   "solution": [{ "type": "liftStone", "vertex": "C" }, { "type": "declareDone" }]
 }

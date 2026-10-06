@@ -28,7 +28,7 @@
     { "line": "ch4.1.sauce.02", "highlight": ["e"] },
     { "line": "ch4.1.sauce.03", "highlight": ["R", "a", "b", "d"] }
   ],
-  "script": ["ch4.1.sauce.00", "ch4.1.sauce.04"],
+  "flow": [{ "step": "say", "lines": ["ch4.1.sauce.00", "ch4.1.sauce.04"] }, { "step": "play" }],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },

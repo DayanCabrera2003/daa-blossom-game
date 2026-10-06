@@ -31,6 +31,36 @@ describe('level integrity (every level file)', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('the levels written before scripts open with the lines they always said, then play', () => {
+    const opening: Record<string, string[]> = {
+      '0.1': ['ch0.1.sauce.00'],
+      '1.1': ['ch1.1.sauce.00'],
+      '4.1': ['ch4.1.sauce.00', 'ch4.1.sauce.04'],
+      '4.3': ['ch4.3.sauce.00'],
+      '4.6': ['ch4.6.sauce.00'],
+      '4.7': ['ch4.7.sauce.00'],
+      '4.9': ['ch4.9.sauce.00'],
+      '4.10': ['ch4.10.sauce.00'],
+      '5.1': ['ch5.1.sauce.00'],
+      '7.2': ['ch7.2.oaks.00'],
+      '7.3': ['ch7.3.oaks.00'],
+      '7.4': ['ch7.4.sauce.00'],
+    };
+    for (const { json } of files) {
+      const level = loadLevel(json);
+      if (!level.ok) continue;
+      const lines = opening[level.value.data.id];
+      if (lines === undefined) continue;
+      expect({ id: level.value.data.id, flow: level.value.data.flow }).toEqual({
+        id: level.value.data.id,
+        flow: [
+          { step: 'say', lines },
+          { step: 'play', reactions: [] },
+        ],
+      });
+    }
+  });
+
   describe.each(files)('$path', ({ path, json }) => {
     it('loads, sits where its id says, and is sound', () => {
       const level = loadLevel(json);

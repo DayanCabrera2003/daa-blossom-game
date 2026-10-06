@@ -21,7 +21,7 @@
   ],
   "goal": { "visible": false },
   "victory": { "type": "maximum" },
-  "script": ["ch4.9.sauce.00"],
+  "flow": [{ "step": "say", "lines": ["ch4.9.sauce.00"] }, { "step": "play" }],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },
