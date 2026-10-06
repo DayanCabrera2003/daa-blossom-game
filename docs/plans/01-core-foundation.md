@@ -161,7 +161,7 @@ Aquí nace el bosque alternante (sol/luna) en el caso sin ciclos impares. Se hac
 - 4.9: flor sin salida ⇒ tras contraer no hay camino aumentante.
 - 4.10: `rotateStem` sobre `R–a=b` produce `R=a–b`, tamaño igual.
 - 5.1 (anidadas): camino final `t–a=b–d=c–g=h–R`.
-- Propiedad (lema de la flor, C8): en grafos aleatorios, para cada flor encontrada, `ν(G) − |M| === ν(G/B) − |M/B|` usando el oráculo.
+- Propiedad (lema de la flor, C8): en grafos aleatorios, para cada flor encontrada, `|M|` es máximo en `G` **si y solo si** `|M/B|` lo es en `G/B`, y además `ν(G/B) − |M/B| ≤ ν(G) − |M|`, usando el oráculo. La igualdad de déficits **no** se cumple en general: plegar puede esconder capacidad sobrante (contraejemplo fijado en `contract.test.ts`: triángulo con base expuesta cuyos tres pétalos tienen vecinos propios; faltan 3 faroles en `G` y solo 2 en `G/B`). Lo que nunca esconde es una cadena.
 - Propiedad: `liftPath` siempre devuelve un camino aumentante válido en `G`.
 - Propiedad: `expand(contract(x))` recupera el grafo original.
 
