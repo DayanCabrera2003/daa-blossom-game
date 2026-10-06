@@ -14,6 +14,7 @@ import {
   type UiEvent,
 } from '../systems/levelController';
 import { garden } from '../systems/levelSession';
+import { playtestEntries } from '../systems/playtestEntries';
 import type { StarResult } from '../systems/stars';
 import { AnimationView } from '../view/AnimationView';
 import { DialogueView } from '../view/DialogueView';
@@ -79,6 +80,9 @@ export class LevelScene extends Phaser.Scene {
     this.level = level;
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
     this.controller = startController(level, this.time.now);
+    this.context.playtest.record([
+      { kind: 'levelStart', at: this.context.clock(), level: level.data.id },
+    ]);
     const { t, line } = this.context;
     this.views = {
       fog: new FogView(this),
@@ -92,7 +96,7 @@ export class LevelScene extends Phaser.Scene {
         undo: () => this.dispatch({ kind: 'undo' }),
         redo: () => this.dispatch({ kind: 'redo' }),
         hint: () => this.dispatch({ kind: 'hint' }),
-        back: () => this.scene.start('hub'),
+        back: () => this.leave(),
       }),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
       sun: new SunSliderView(this, (fraction) => this.dispatch({ kind: 'seek', fraction })),
@@ -142,13 +146,16 @@ export class LevelScene extends Phaser.Scene {
     keys?.on('keydown-Y', (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey) this.dispatch({ kind: 'redo' });
     });
-    keys?.on('keydown-ESC', () => this.scene.start('hub'));
+    keys?.on('keydown-ESC', () => this.leave());
   }
 
   /** One event through the controller; a new move ends any animation still playing. */
   private dispatch(event: UiEvent): void {
     if (event.kind !== 'move') this.views.animation.finish();
     const step = handle(this.controller, event, this.time.now);
+    this.context.playtest.record(
+      playtestEntries(this.controller, event, step, this.context.clock()),
+    );
     this.controller = step.controller;
     for (const effect of step.effects) this.show(effect);
     this.render();
@@ -176,6 +183,22 @@ export class LevelScene extends Phaser.Scene {
         this.win(effect.stars);
         break;
     }
+  }
+
+  /** Back to the hub; a level left unwon is logged as left. */
+  private leave(): void {
+    if (this.controller.session.won === null) {
+      this.context.playtest.record([
+        {
+          kind: 'levelEnd',
+          at: this.context.clock(),
+          level: this.level.data.id,
+          outcome: 'left',
+          stars: null,
+        },
+      ]);
+    }
+    this.scene.start('hub');
   }
 
   /** Records the win, then offers the next level (if any) or the hub. */
