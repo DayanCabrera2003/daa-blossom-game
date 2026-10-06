@@ -22,6 +22,7 @@
   "reason.noSuchFlower": "Esa flor no está cerrada.",
   "reason.alreadyPlaced": "{vertex} ya tiene uno.",
   "reason.notPlaced": "{vertex} no tiene nada que quitar.",
+  "reason.notNow": "Ahora no toca mover faroles: el jardín espera otra cosa.",
   "reason.invalidPath.empty": "Arrastra desde un brote.",
   "reason.invalidPath.vertexOutOfRange": "Ese brote no está en este jardín.",
   "reason.invalidPath.repeatedVertex": "La cadena ya pasó por {vertex}.",

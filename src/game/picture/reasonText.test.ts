@@ -1,6 +1,7 @@
 import strings from '@content/es/strings.json';
 import type { Action } from '@core/rules/actions';
 import type { RejectReason } from '@core/rules/reasons';
+import { NOT_NOW, type Refusal } from '../systems/refusal';
 import { createTranslator } from '@services/i18n';
 import { describe, expect, it } from 'vitest';
 import { reasonText } from './reasonText';
@@ -8,7 +9,7 @@ import { reasonText } from './reasonText';
 const t = createTranslator(strings);
 // Level 1.3: S–a=b–c=d–T with distractors b–x=y and c–z.
 const labels = ['S', 'a', 'b', 'c', 'd', 'T', 'x', 'y', 'z'];
-const say = (reason: RejectReason, action: Action = { type: 'declareDone' }) =>
+const say = (reason: Refusal, action: Action = { type: 'declareDone' }) =>
   reasonText(reason, action, labels, t);
 
 describe("why a move was refused, in the garden's words", () => {
@@ -77,5 +78,9 @@ describe("why a move was refused, in the garden's words", () => {
     expect(reasonText({ code: 'alreadyLit', vertex: 12 }, stem, labels, t)).toBe(
       '12 ya tiene farol: un farol es para dos.',
     );
+  });
+
+  it('a move outside the play step is refused kindly, without naming anything', () => {
+    expect(say(NOT_NOW)).toBe('Ahora no toca mover faroles: el jardín espera otra cosa.');
   });
 });

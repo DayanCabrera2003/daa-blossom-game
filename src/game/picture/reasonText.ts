@@ -1,8 +1,8 @@
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
-import type { RejectReason } from '@core/rules/reasons';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
+import type { Refusal } from '../systems/refusal';
 
 /** The sprouts a refused action went through: its chain, stem or loop (empty otherwise). */
 const sequenceOf = (action: Action): readonly VertexId[] =>
@@ -20,7 +20,7 @@ const sequenceOf = (action: Action): readonly VertexId[] =>
  * chain or a loop point at a position in it, which is turned back into the sprouts at that spot.
  */
 export function reasonText(
-  reason: RejectReason,
+  reason: Refusal,
   action: Action,
   labels: readonly string[],
   t: Translate,

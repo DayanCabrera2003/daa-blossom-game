@@ -1,19 +1,19 @@
 import type { BlossomError } from '@core/blossom/isBlossom';
 import type { PathError } from '@core/matching/paths';
 import type { ActionType } from '@core/rules/actions';
-import type { RejectCode } from '@core/rules/reasons';
+import type { RefusalCode } from '@game/systems/refusal';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
  * counts). `tests/content.test.ts` checks each locale against this list: nothing missing, nothing
  * left over, the same parameters. Codes from the core are listed with `satisfies Record<…>`, so
- * TypeScript fails here if a rejection code, a path or flower sub-error, or an action is added or
+ * TypeScript fails here if a refusal code, a path or flower sub-error, or an action is added or
  * removed without its text.
  */
 
 type Params = readonly string[];
 
-/** Why an action was refused (`core/rules/reasons.ts`). */
+/** Why an action was refused (`core/rules/reasons.ts`, and the game's own in `game/systems/refusal.ts`). */
 const REASONS = {
   actionLocked: ['action'],
   vertexOutOfRange: [],
@@ -38,7 +38,8 @@ const REASONS = {
   noSuchFlower: [],
   alreadyPlaced: ['vertex'],
   notPlaced: ['vertex'],
-} as const satisfies Record<RejectCode, Params>;
+  notNow: [],
+} as const satisfies Record<RefusalCode, Params>;
 
 /** Where a dragged chain goes wrong (`core/matching/paths.ts`), named by the sprouts involved. */
 const PATH_ERRORS = {
