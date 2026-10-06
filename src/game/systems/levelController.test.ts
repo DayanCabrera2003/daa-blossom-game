@@ -350,3 +350,62 @@ describe('the sun as a step (0.5)', () => {
     expect(undone.effects.map((effect) => effect.kind)).toEqual(['won']);
   });
 });
+
+describe('reactions during play (1.4)', () => {
+  /** A in the dark; `A–B=C–D=E` ends in a dead end, `A–F=G–H` in H, in the dark. */
+  const alley = (): Level => {
+    const loaded = loadLevel({
+      id: '1.4',
+      sprouts: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, i) => ({
+        label,
+        x: 40 + 50 * i,
+        y: 135,
+      })),
+      vines: [
+        ['A', 'B'],
+        ['B', 'C'],
+        ['C', 'D'],
+        ['D', 'E'],
+        ['A', 'F'],
+        ['F', 'G'],
+        ['G', 'H'],
+      ],
+      lanterns: [
+        ['B', 'C'],
+        ['D', 'E'],
+        ['F', 'G'],
+      ],
+      goal: { visible: true, value: 4 },
+      victory: { type: 'matchingSize', value: 4 },
+      flow: [{ step: 'play', reactions: [{ on: 'gainZeroChain', say: ['ch1.4.sauce.01'] }] }],
+      solution: [{ type: 'chain', path: ['A', 'F', 'G', 'H'] }],
+    });
+    if (!loaded.ok) throw new Error('fixture does not load');
+    return loaded.value;
+  };
+
+  /** The events of the gestures that make `path` as a chain in the garden of `controller`. */
+  const chainEvents = (controller: Controller, path: number[]): UiEvent[] =>
+    gesturesFor(garden(controller.session), controller.positions, { type: 'chain', path }).flatMap(
+      (gesture): UiEvent[] =>
+        gesture.kind === 'tool'
+          ? [{ kind: 'tool', tool: gesture.tool }]
+          : gesture.kind === 'done'
+            ? [{ kind: 'done' }]
+            : [
+                { kind: 'press', point: gesture.points[0] as Point },
+                ...gesture.points.slice(1).map((point): UiEvent => ({ kind: 'move', point })),
+                { kind: 'release', point: gesture.points[gesture.points.length - 1] as Point },
+              ],
+    );
+
+  it('dragging the dead-end chain is animated, then the mentor speaks, only the first time', () => {
+    const start = startController(alley(), 0);
+    const first = feed(start, chainEvents(start, [0, 1, 2, 3, 4]));
+    expect(first.effects.map((effect) => effect.kind)).toEqual(['animate', 'say']);
+    expect(first.effects[1]).toEqual({ kind: 'say', lines: ['ch1.4.sauce.01'] });
+    const undone = handle(first.controller, { kind: 'undo' }, 0).controller;
+    const again = feed(undone, chainEvents(undone, [0, 1, 2, 3, 4]));
+    expect(again.effects.map((effect) => effect.kind)).toEqual(['animate']);
+  });
+});
