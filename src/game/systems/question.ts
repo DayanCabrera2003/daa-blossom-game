@@ -4,23 +4,26 @@ import type { Level } from '@levels/build';
 import { rightBet, rightCount } from './answerKey';
 
 /**
- * The questions of a script as the player sees them (plan 03, phase 4): what is asked, the options
- * on offer and which of them are right. Pure. The right answers that depend on the garden (a bet,
- * a count) come from the core through `answerKey.ts`, never from the level file. What the mentor
- * says after an answer is the reply of the option, which the script engine says on its own.
+ * The questions of a script as the player sees them (plan 03, phases 4 and 6): what is asked, the
+ * options on offer and which of them are right. Pure. The right answers that depend on the garden
+ * (a bet, a count) come from the core through `answerKey.ts`, never from the level file. What the
+ * mentor says after an answer is the reply of the option, which the script engine says on its own.
  */
 
 /** One option of a question. */
 export interface QuestionOption {
-  /** What choosing it gives the script: the option's index in an ask, the number in a bet or count. */
+  /**
+   * What choosing it gives the script: the option's index in an ask or the notebook, the number in a
+   * bet or count.
+   */
   readonly value: number;
   /** The line id of a written option; null for a number, which shows as itself. */
   readonly line: string | null;
 }
 
-/** A question on screen: an ask, a bet or a count. */
+/** A question on screen: an ask, a bet, a count or the notebook. */
 export interface Question {
-  readonly kind: 'ask' | 'bet' | 'count';
+  readonly kind: 'ask' | 'bet' | 'count' | 'notebook';
   /** The index of the step that asks, in the script. */
   readonly step: number;
   readonly prompt: string;
@@ -72,6 +75,18 @@ export function questionAt(level: Level, index: number, yours: Matching): Questi
         options: numbers(0, step.range),
         right: [rightCount(yours, level.mirror, step)],
       };
+    case 'notebook': {
+      // Level integrity gives every notebook step the notebook question of its level.
+      const { notebook } = level.data;
+      invariant(notebook !== undefined, 'a notebook step needs the notebook of its level');
+      return {
+        ...base,
+        kind: 'notebook',
+        prompt: notebook.prompt,
+        options: notebook.options.map((option, value) => ({ value, line: option.line })),
+        right: notebook.options.flatMap((option, value) => (option.correct ? [value] : [])),
+      };
+    }
     default:
       return null;
   }

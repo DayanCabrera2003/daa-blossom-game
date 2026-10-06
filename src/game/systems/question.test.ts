@@ -8,7 +8,7 @@ import { hintedOption, questionAt } from './question';
  * level claims a goal of 4 lanterns: a bet must ignore it and ask the core. The reflection lights
  * H–L1 and P–Q, so the tangle with no lanterns of yours is those two pairs.
  */
-const scripted = (flow: unknown[]): Level => {
+const scripted = (flow: unknown[], extra: object = {}): Level => {
   const loaded = loadLevel({
     id: '1.6',
     sprouts: [
@@ -32,6 +32,7 @@ const scripted = (flow: unknown[]): Level => {
     goal: { visible: true, value: 4 },
     flow,
     solution: [{ type: 'tapGarden' }],
+    ...extra,
   });
   if (!loaded.ok) throw new Error('fixture does not load');
   return loaded.value;
@@ -41,6 +42,28 @@ const scripted = (flow: unknown[]): Level => {
 const yours = (level: Level) => level.start.matching;
 
 describe('the questions of a script', () => {
+  it('the notebook offers its statements, by index; its right one is the true statement', () => {
+    const notebook = {
+      prompt: 'ch1.6.notebook.00',
+      options: [
+        { line: 'ch1.6.notebook.01', correct: false, reply: 'ch1.6.sauce.05' },
+        { line: 'ch1.6.notebook.02', correct: true },
+      ],
+    };
+    const level = scripted([{ step: 'notebook' }], { notebook });
+    expect(questionAt(level, 0, yours(level))).toEqual({
+      kind: 'notebook',
+      step: 0,
+      prompt: 'ch1.6.notebook.00',
+      options: [
+        { value: 0, line: 'ch1.6.notebook.01' },
+        { value: 1, line: 'ch1.6.notebook.02' },
+      ],
+      right: [1],
+      preview: null,
+    });
+  });
+
   it('an ask offers its written options, by index; its right ones are those marked right', () => {
     const level = scripted([
       {
