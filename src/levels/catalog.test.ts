@@ -38,6 +38,7 @@ describe('the level catalog', () => {
     expect(catalog().map((level) => level.data.id)).toEqual([
       '0.1',
       '0.2',
+      '0.3',
       '1.1',
       '4.1',
       '4.3',
