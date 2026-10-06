@@ -121,12 +121,14 @@ describe('playing the reference walkthrough of a level without a scene', () => {
     });
   });
 
-  it('the mirror challenge is not drawn yet: its inputs leave the step waiting (phase 8)', () => {
+  it('the mirror challenge plays through its drawn reflections and their checks', () => {
     const level = scripted(
       [{ step: 'draw', attempts: 1 }],
       [{ type: 'drawMirror', lanterns: [['A', 'B']] }, { type: 'checkMirror' }],
     );
-    expect(playWalkthrough(level).problem).toEqual({ code: 'unfinished', step: 0 });
+    expect(playWalkthrough(level).problem).toBeNull();
+    const short = scripted([{ step: 'draw', attempts: 2 }], [{ type: 'checkMirror' }]);
+    expect(playWalkthrough(short).problem).toEqual({ code: 'unfinished', step: 0 });
   });
 
   it('every level of the catalog plays through', () => {

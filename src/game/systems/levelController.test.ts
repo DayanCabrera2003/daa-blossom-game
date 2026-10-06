@@ -284,12 +284,51 @@ describe('the level controller runs the script', () => {
     ]);
   });
 
-  it('drawing a reflection is accepted but does nothing yet (plan 03, phase 8)', () => {
+  it('in the mirror challenge, touching a vine draws it in silver; nothing else moves', () => {
     const level = scripted([{ step: 'draw', attempts: 1 }]);
-    const controller = startController(level, 0);
-    for (const event of [{ kind: 'drawToggle', u: 0, v: 1 }, { kind: 'checkMirror' }] as const) {
-      expect(handle(controller, event, 0)).toEqual({ controller, effects: [] });
-    }
+    const middle = { x: 150, y: 100 };
+    const { controller, effects } = feed(startController(level, 0), touch(middle));
+    expect(effects).toEqual([]);
+    expect(controller.session.challenge.draft.mate).toEqual([1, 0, -1, -1]);
+    expect(garden(controller.session)).toBe(level.start);
+    // A touch on a sprout or on nothing draws nothing.
+    const still = feed(controller, [...touch({ x: 100, y: 100 }), ...touch({ x: 150, y: 200 })]);
+    expect(still.controller.session.challenge).toBe(controller.session.challenge);
+  });
+
+  it('a second silver lantern on a sprout is refused with its reason', () => {
+    const level = scripted([{ step: 'draw', attempts: 1 }]);
+    const { effects } = feed(startController(level, 0), [
+      { kind: 'drawToggle', u: 0, v: 1 },
+      { kind: 'drawToggle', u: 1, v: 2 },
+    ]);
+    expect(effects).toEqual([{ kind: 'drawRefused', reason: { code: 'twoSilver', vertex: 1 } }]);
+  });
+
+  it('each check of the drawing is shown; a better one may finish the challenge', () => {
+    const level = scripted([{ step: 'draw', attempts: 1 }]);
+    const weak = feed(startController(level, 0), [
+      { kind: 'drawToggle', u: 0, v: 1 },
+      { kind: 'checkMirror' },
+    ]);
+    expect(weak.effects).toEqual([
+      { kind: 'mirrorChecked', check: { kind: 'notBetter', drawn: 1, yours: 1, spared: false } },
+    ]);
+    const better = feed(weak.controller, [
+      { kind: 'drawToggle', u: 2, v: 3 },
+      { kind: 'checkMirror' },
+    ]);
+    expect(better.effects.map((effect) => effect.kind)).toEqual(['mirrorChecked', 'won']);
+    const [checked] = better.effects;
+    expect(checked?.kind === 'mirrorChecked' && checked.check).toMatchObject({
+      kind: 'better',
+      piece: { sprouts: [0, 1, 2, 3] },
+    });
+    // Once the challenge is over, the drawing is refused and checks show nothing.
+    expect(handle(better.controller, { kind: 'checkMirror' }, 0).effects).toEqual([]);
+    expect(handle(better.controller, { kind: 'drawToggle', u: 0, v: 1 }, 0).effects).toEqual([
+      { kind: 'drawRefused', reason: { code: 'notNow' } },
+    ]);
   });
 });
 

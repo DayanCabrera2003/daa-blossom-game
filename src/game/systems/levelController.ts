@@ -20,6 +20,8 @@ import type { HintContent } from './hintContent';
 import {
   act,
   askHint,
+  checkDrawnMirror,
+  drawInMirror,
   garden,
   openSession,
   redoSession,
@@ -30,6 +32,7 @@ import {
   type LevelSession,
   type ScriptInput,
 } from './levelSession';
+import type { MirrorCheck } from './mirrorChallenge';
 import type { Refusal } from './refusal';
 import type { StarResult } from './stars';
 import { stepAtFraction } from './sun';
@@ -73,6 +76,10 @@ export type Effect =
       readonly events: readonly TraceEvent[];
     }
   | { readonly kind: 'hint'; readonly content: HintContent }
+  /** A touch on the drawn reflection was refused (no move of the rules: no action to name). */
+  | { readonly kind: 'drawRefused'; readonly reason: Refusal }
+  /** The drawn reflection was checked: what the check found, to show over the garden. */
+  | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
 /** The controller after an event, and what the scene has to show for it. */
@@ -138,6 +145,26 @@ function apply(controller: Controller, action: Action, now: number): Step {
   return { controller: { ...controller, session, highlight: [] }, effects };
 }
 
+/** A touch on the vine u–v of the reflection drawn in the mirror challenge. */
+function drawToggle(controller: Controller, u: VertexId, v: VertexId): Step {
+  const { session, refusal } = drawInMirror(controller.session, u, v);
+  return {
+    controller: { ...controller, session },
+    effects: refusal === null ? [] : [{ kind: 'drawRefused', reason: refusal }],
+  };
+}
+
+/** Checks the drawn reflection: the check comes first, then whatever it moves the script on to. */
+function checkMirror(controller: Controller, now: number): Step {
+  const { session, check, effects } = checkDrawnMirror(controller.session, now);
+  const next = { ...controller, session };
+  if (check === null) return { controller: next, effects: [] };
+  return {
+    controller: next,
+    effects: [{ kind: 'mirrorChecked', check }, ...shown(session, effects)],
+  };
+}
+
 /** Handles one event of the level screen at time `now` (milliseconds). Pure. */
 export function handle(controller: Controller, event: UiEvent, now: number): Step {
   const state = garden(controller.session);
@@ -157,6 +184,11 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
           ? tell(controller, { type: 'tapSprout', vertex: target.vertex }, now)
           : same({});
       }
+      // In the mirror challenge, a touch on a vine draws it in silver (or takes it out).
+      if (step === 'draw') {
+        const target = hitTest(state, positions, event.point);
+        return target.kind === 'vine' ? drawToggle(controller, target.u, target.v) : same({});
+      }
       return same({ pointer: pressStart(controller.pointer, state, positions, event.point) });
     }
     case 'move': {
@@ -169,6 +201,8 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       };
     }
     case 'release': {
+      // The press of the mirror challenge was the whole touch: lanterns never move under it.
+      if (stepNow(controller.session)?.step === 'draw') return same({});
       const released = pressEnd(controller.pointer, state, positions, event.point);
       const next = { ...controller, pointer: released.pointer };
       return released.action === null
@@ -195,9 +229,9 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     case 'tapSprout':
       return tell(controller, { type: 'tapSprout', vertex: event.vertex }, now);
     case 'drawToggle':
+      return drawToggle(controller, event.u, event.v);
     case 'checkMirror':
-      // The mirror challenge is drawn and checked in plan 03, phase 8; until then they do nothing.
-      return same({});
+      return checkMirror(controller, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
     case 'hint': {
