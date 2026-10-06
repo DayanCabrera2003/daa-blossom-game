@@ -5,9 +5,9 @@ import type { Graph, VertexId } from '../graph/types';
 import { flipAlong } from '../matching/augment';
 import type { Matching } from '../matching/types';
 import type { AlternatingForest } from '../search/forest';
+import { itemAt } from '../shared/itemAt';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { searchWithFlowers } from './search';
-import { itemAt } from '../shared/itemAt';
 
 /** How a phase ended: one more lantern, or a proof-carrying failed search. */
 export type PhaseOutcome =

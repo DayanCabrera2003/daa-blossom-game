@@ -1,10 +1,10 @@
 import type { VertexId } from '../graph/types';
 import { UNMATCHED } from '../matching/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { baseVertex, members } from './hierarchy';
 import { projectGraph } from './projectGraph';
 import type { GardenNode, Layer } from './types';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * Opens one folded flower of the garden, the exact inverse of `contract` (levels 4.5, 5.2): its

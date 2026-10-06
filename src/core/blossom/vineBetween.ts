@@ -1,9 +1,9 @@
 import { neighbors } from '../graph/queries';
 import type { VertexId } from '../graph/types';
 import { isMatchedEdge } from '../matching/queries';
+import { itemAt } from '../shared/itemAt';
 import { baseVertex, members } from './hierarchy';
 import type { Layer, OrientedEdge } from './types';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * The original vine that joins folded nodes `a` and `b`, oriented from `a`. If they share a

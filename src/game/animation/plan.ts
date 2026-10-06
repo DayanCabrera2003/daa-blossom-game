@@ -1,6 +1,6 @@
 import type { VertexId } from '@core/graph/types';
-import type { TraceEvent } from '@core/trace/events';
 import { itemAt } from '@core/shared/itemAt';
+import type { TraceEvent } from '@core/trace/events';
 
 /** How long each kind of step lasts, in milliseconds (greybox values, tuned at the art phase). */
 export const DURATIONS = {

@@ -3,12 +3,12 @@ import { findOddCycle } from '../../blossom/detect';
 import { foldForest } from '../../edmonds/foldForest';
 import { hasEdge } from '../../graph/queries';
 import { invariant } from '../../shared/invariant';
+import { itemAt } from '../../shared/itemAt';
 import { contractEvent } from '../../trace/contractEvent';
 import type { Action } from '../actions';
 import { requireSprouts } from '../checks';
 import { accept, reject, type ActionOutcome } from '../outcome';
 import type { GardenState } from '../state';
-import { itemAt } from '../../shared/itemAt';
 
 /**
  * Fold at the conflict (level 4.4): the player touches the vine where two suns of one tree meet.

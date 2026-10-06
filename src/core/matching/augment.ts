@@ -1,7 +1,7 @@
 import type { Edge, VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
-import { UNMATCHED, type Matching } from './types';
 import { itemAt } from '../shared/itemAt';
+import { UNMATCHED, type Matching } from './types';
 
 /**
  * Symmetric difference M ⊕ E: every lit vine of E is put out and every dark vine of E is lit.

@@ -8,12 +8,12 @@ import type { Graph, VertexId } from '../graph/types';
 import { exposedVertices } from '../matching/queries';
 import type { Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { plantForest, type AlternatingForest } from '../search/forest';
 import { growStep } from '../search/growForest';
 import { contractEvent } from '../trace/contractEvent';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { foldForest } from './foldForest';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * How a search with flowers ended. A chain is given in the ids of the folded garden it was found

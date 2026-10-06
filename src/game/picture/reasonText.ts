@@ -1,8 +1,8 @@
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import type { RejectReason } from '@core/rules/reasons';
-import type { Translate } from '@services/i18n';
 import { itemAt } from '@core/shared/itemAt';
+import type { Translate } from '@services/i18n';
 
 /** The sprouts a refused action went through: its chain, stem or loop (empty otherwise). */
 const sequenceOf = (action: Action): readonly VertexId[] =>

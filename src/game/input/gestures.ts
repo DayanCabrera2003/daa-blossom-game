@@ -3,12 +3,12 @@ import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import type { GardenState } from '@core/rules/state';
 import { invariant } from '@core/shared/invariant';
+import { itemAt } from '@core/shared/itemAt';
 import { flowerOutline, interiorCandidates } from './flowerShape';
 import { FLOWER_PADDING, hitTest } from './HitTest';
 import { chooseTool, pressEnd, pressMove, pressStart, type PointerState } from './pointer';
 import type { Point } from './target';
 import { TOOL_ACTIONS, type ToolId } from './tools';
-import { itemAt } from '@core/shared/itemAt';
 
 /**
  * What a player does with hand and mouse: take a tool, press and drag through some points (a

@@ -1,8 +1,8 @@
 import type { VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import type { AlternatingForest } from '../search/forest';
 import { pathToRoot } from '../search/pathToRoot';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * The flower closed by a vine between two suns `u` and `x` of the same tree (levels 4.2, 4.4).

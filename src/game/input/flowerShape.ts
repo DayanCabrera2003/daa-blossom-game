@@ -1,5 +1,5 @@
-import type { Point } from './target';
 import { itemAt } from '@core/shared/itemAt';
+import type { Point } from './target';
 
 const cross = (o: Point, a: Point, b: Point): number =>
   (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);

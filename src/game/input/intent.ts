@@ -2,11 +2,11 @@ import type { VertexId } from '@core/graph/types';
 import { isExposed, isMatchedEdge } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import type { GardenState } from '@core/rules/state';
+import { itemAt } from '@core/shared/itemAt';
 import { extendLoop } from './loopSelection';
 import { NO_SELECTION, type Selection } from './selection';
 import type { Target } from './target';
 import type { ToolId } from './tools';
-import { itemAt } from '@core/shared/itemAt';
 
 /** What one touch does: an action for the rules (or none yet) and the selection after it. */
 export interface TapOutcome {

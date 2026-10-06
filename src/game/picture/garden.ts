@@ -4,12 +4,12 @@ import { oddComponents } from '@core/certificates/oddComponents';
 import type { VertexId } from '@core/graph/types';
 import { isExposed, isMatchedEdge } from '@core/matching/queries';
 import type { GardenState } from '@core/rules/state';
+import { itemAt } from '@core/shared/itemAt';
 import { chainGain } from '../input/dragChain';
 import { flowerOutline } from '../input/flowerShape';
 import { FLOWER_PADDING } from '../input/HitTest';
 import { NO_SELECTION, type Selection } from '../input/selection';
 import type { Point } from '../input/target';
-import { itemAt } from '@core/shared/itemAt';
 
 /** A sprout as drawn. */
 export interface SproutPicture {

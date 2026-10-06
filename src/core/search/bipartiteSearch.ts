@@ -2,11 +2,11 @@ import { neighbors } from '../graph/queries';
 import type { Graph, VertexId } from '../graph/types';
 import { exposedVertices } from '../matching/queries';
 import type { Matching } from '../matching/types';
+import { itemAt } from '../shared/itemAt';
 import { err, ok, type Result } from '../shared/result';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { plantForest, type AlternatingForest } from './forest';
 import { growStep } from './growForest';
-import { itemAt } from '../shared/itemAt';
 
 /** How a search without blossoms ended. Both carry the forest at that moment. */
 export type SearchOutcome =

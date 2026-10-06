@@ -2,10 +2,10 @@ import { hasEdge } from '../graph/queries';
 import type { VertexId } from '../graph/types';
 import { mateOf } from '../matching/queries';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { baseVertex } from './hierarchy';
 import type { Layer } from './types';
 import { walkToBase } from './walk';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * Lifts a chain of the folded garden `upper` (= `lower` with `blossom` folded) to a chain of

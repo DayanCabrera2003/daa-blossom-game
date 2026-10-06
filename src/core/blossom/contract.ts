@@ -1,11 +1,11 @@
 import type { Graph, VertexId } from '../graph/types';
 import { UNMATCHED, type Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { checkBlossom } from './isBlossom';
 import { projectGraph } from './projectGraph';
 import type { Blossom, GardenNode, Layer } from './types';
 import { vineBetween } from './vineBetween';
-import { itemAt } from '../shared/itemAt';
 
 /** The garden with nothing folded: every sprout is its own node. */
 export function openLayer(graph: Graph, matching: Matching): Layer {

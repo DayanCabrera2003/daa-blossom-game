@@ -1,9 +1,9 @@
 import { hasEdge } from '../graph/queries';
 import type { Graph, VertexId } from '../graph/types';
+import { itemAt } from '../shared/itemAt';
 import { err, ok, type Result } from '../shared/result';
 import { isExposed, isMatchedEdge } from './queries';
 import type { Matching } from './types';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * Why a sequence of sprouts is not the kind of path asked for. Indices point into the path so the

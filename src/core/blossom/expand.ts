@@ -1,11 +1,11 @@
 import type { VertexId } from '../graph/types';
 import { mateOf } from '../matching/queries';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { members } from './hierarchy';
 import type { Blossom, GardenNode, Layer } from './types';
 import { vineBetween } from './vineBetween';
 import { walkToBase } from './walk';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * The sprouts from sprout `x` inside `node` to the node's base sprout, along an even alternating

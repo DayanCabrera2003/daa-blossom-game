@@ -1,7 +1,7 @@
 import type { VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
-import { NO_VERTEX, type AlternatingForest } from './forest';
 import { itemAt } from '../shared/itemAt';
+import { NO_VERTEX, type AlternatingForest } from './forest';
 
 /**
  * The sprouts from `v` up to the root of its tree, `v` first. Parent links alternate lit and dark

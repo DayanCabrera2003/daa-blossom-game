@@ -4,11 +4,11 @@ import { hasEdge } from '../../graph/queries';
 import type { VertexId } from '../../graph/types';
 import { isMatchedEdge } from '../../matching/queries';
 import { growStep } from '../../search/growForest';
+import { itemAt } from '../../shared/itemAt';
 import type { Action } from '../actions';
 import { requireSprouts } from '../checks';
 import { accept, reject, type ActionOutcome } from '../outcome';
 import type { GardenState } from '../state';
-import { itemAt } from '../../shared/itemAt';
 
 /**
  * Look from a sun along a dark vine (level 3.1). The rules are those of the algorithm itself

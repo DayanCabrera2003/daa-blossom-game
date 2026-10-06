@@ -11,9 +11,9 @@ import { applyAction } from '@core/rules/applyAction';
 import { sameGarden } from '@core/rules/sameGarden';
 import type { GardenState } from '@core/rules/state';
 import { isVictory, type VictoryCondition } from '@core/rules/victory';
+import { itemAt } from '@core/shared/itemAt';
 import { bipartiteMatching } from '@core/search/bipartiteMatching';
 import { createRecorder } from '@core/trace/recorder';
-import { itemAt } from '@core/shared/itemAt';
 
 /** What the mentor needs to know about a level: where it starts, how it is solved, how it is won. */
 export interface MentorGoal {

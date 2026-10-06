@@ -1,8 +1,8 @@
 import { edgeKey } from '../graph/queries';
 import type { Edge, VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
-import { UNMATCHED, type Matching } from './types';
 import { itemAt } from '../shared/itemAt';
+import { UNMATCHED, type Matching } from './types';
 
 /**
  * One connected piece of M ⊕ M′: a thread (path) or a loop (cycle) in the Mirror Pond.

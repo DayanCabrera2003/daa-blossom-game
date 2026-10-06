@@ -1,11 +1,11 @@
 import { baseVertex } from '../../blossom/hierarchy';
 import { isExposed } from '../../matching/queries';
 import { plantForest } from '../../search/forest';
+import { itemAt } from '../../shared/itemAt';
 import type { Action } from '../actions';
 import { requireSprouts } from '../checks';
 import { accept, reject, type ActionOutcome } from '../outcome';
 import type { GardenState } from '../state';
-import { itemAt } from '../../shared/itemAt';
 
 /**
  * Mark a root (level 3.1): "a lonely sprout you start from is a sun". The sprout, or the flower

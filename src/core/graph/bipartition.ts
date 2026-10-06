@@ -1,6 +1,6 @@
+import { itemAt } from '../shared/itemAt';
 import { neighbors } from './queries';
 import type { Graph, VertexId } from './types';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * Either a two-colouring (bees and flowers: every vine joins opposite sides) or an odd cycle

@@ -2,9 +2,9 @@ import type { VertexId } from '../graph/types';
 import { isExposed, mateOf } from '../matching/queries';
 import type { Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import type { AlternatingForest, ForestLabel } from './forest';
 import { pathToRoot } from './pathToRoot';
-import { itemAt } from '../shared/itemAt';
 
 /**
  * What a sun finds when it looks along one vine (Códex C4). These are the rules the player

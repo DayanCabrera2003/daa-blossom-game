@@ -1,6 +1,6 @@
 import type { VertexId } from '../graph/types';
-import type { GardenNode, Layer } from './types';
 import { itemAt } from '../shared/itemAt';
+import type { GardenNode, Layer } from './types';
 
 /** Every original sprout inside a node (itself, for a sprout), in ascending order. */
 export function members(node: GardenNode): VertexId[] {

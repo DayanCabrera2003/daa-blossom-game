@@ -2,8 +2,8 @@ import { hasEdge } from '../graph/queries';
 import type { Graph, VertexId } from '../graph/types';
 import { isMatchedEdge } from '../matching/queries';
 import type { Matching } from '../matching/types';
-import { err, ok, type Result } from '../shared/result';
 import { itemAt } from '../shared/itemAt';
+import { err, ok, type Result } from '../shared/result';
 
 /**
  * Why a loop of sprouts is not a flower. Indices point into the given loop so the game can
