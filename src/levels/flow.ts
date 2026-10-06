@@ -1,3 +1,5 @@
+import type { VertexId } from '@core/graph/types';
+import type { Action } from '@core/rules/actions';
 import { z } from 'zod';
 import { label, levelAction, lineId } from './fields';
 
@@ -90,3 +92,9 @@ export const flowSchema = z
 
 /** One step of a script, as the level file writes it (sprouts by name). */
 export type FlowStep = z.infer<typeof flowStep>;
+
+/** One step of a built script: the sprouts it names are ids. */
+export type LevelStep =
+  | Exclude<FlowStep, { step: 'count' } | { step: 'replay' }>
+  | (Omit<Extract<FlowStep, { step: 'count' }>, 'piece'> & { readonly piece: VertexId })
+  | { readonly step: 'replay'; readonly demo?: readonly Action[] };

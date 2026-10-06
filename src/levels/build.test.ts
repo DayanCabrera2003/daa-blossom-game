@@ -96,6 +96,43 @@ describe('building a level', () => {
   });
 });
 
+describe('the script of a level', () => {
+  it('is "play until won" when the level writes none', () => {
+    expect(unwrapLevel(rotate).flow).toEqual([{ step: 'play', reactions: [] }]);
+  });
+
+  it('names sprouts by id: the piece a count asks about and the moves of a demo', () => {
+    const scripted = levelSchema.parse({
+      ...rotate,
+      flow: [
+        { step: 'say', lines: ['ch4.10.sauce.00'] },
+        { step: 'replay', demo: [{ type: 'join', u: 'R', v: 'a' }] },
+        { step: 'replay' },
+        { step: 'count', prompt: 'ch4.10.sauce.02', piece: 'c', of: 'yours', range: 3 },
+        { step: 'play' },
+      ],
+    });
+    expect(unwrapLevel(scripted).flow).toEqual([
+      { step: 'say', lines: ['ch4.10.sauce.00'] },
+      { step: 'replay', demo: [{ type: 'join', u: 0, v: 1 }] },
+      { step: 'replay' },
+      { step: 'count', prompt: 'ch4.10.sauce.02', piece: 3, of: 'yours', range: 3 },
+      { step: 'play', reactions: [] },
+    ]);
+  });
+
+  it('says which name in the script is unknown', () => {
+    const count = { step: 'count', prompt: 'ch4.10.sauce.02', piece: 'q', of: 'yours', range: 3 };
+    expect(buildLevel(levelSchema.parse({ ...rotate, flow: [count] }))).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'q' } },
+    });
+    const demo = { step: 'replay', demo: [{ type: 'join', u: 'R', v: 'k' }] };
+    expect(buildLevel(levelSchema.parse({ ...rotate, flow: [demo] }))).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'k' } },
+    });
+  });
+});
+
 describe('the reflection of a level', () => {
   it('is null when the level has none', () => {
     expect(unwrapLevel(rotate).mirror).toBeNull();

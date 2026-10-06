@@ -8,7 +8,8 @@ import { actionsUnlockedBy } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
 import { err, ok, type Result } from '@core/shared/result';
 import type { LevelData } from './schema';
-import { toAction } from './translate';
+import type { LevelStep } from './flow';
+import { toActions, toLevelStep } from './translate';
 
 /** A level ready to play: its data, and the core objects built from it. */
 export interface Level {
@@ -19,6 +20,8 @@ export interface Level {
   readonly start: GardenState;
   /** The lanterns of the reflection in the pond (chapter 2); null when the level has none. */
   readonly mirror: Matching | null;
+  /** What happens in the level, in order, with sprout ids. */
+  readonly flow: readonly LevelStep[];
   /** The reference solution, with sprout ids. */
   readonly solution: readonly Action[];
   /** The hints, each with the ids of the sprouts it lights up. */
@@ -78,12 +81,15 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     hints.push({ line: hint.line, highlight });
   }
 
-  const solution: Action[] = [];
-  for (const step of data.solution) {
-    const action = toAction(labels.value, step);
-    if (!action.ok) return err({ code: 'badLabel', error: action.error });
-    solution.push(action.value);
+  const flow: LevelStep[] = [];
+  for (const step of data.flow) {
+    const built = toLevelStep(labels.value, step);
+    if (!built.ok) return err({ code: 'badLabel', error: built.error });
+    flow.push(built.value);
   }
+
+  const solution = toActions(labels.value, data.solution);
+  if (!solution.ok) return err({ code: 'badLabel', error: solution.error });
 
   const forbidden = new Set(data.forbid);
   const start = createGardenState({
@@ -92,5 +98,14 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     fog: data.fog,
     allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
   });
-  return ok({ data, labels: labels.value, graph: graph.value, start, mirror, solution, hints });
+  return ok({
+    data,
+    labels: labels.value,
+    graph: graph.value,
+    start,
+    mirror,
+    flow,
+    solution: solution.value,
+    hints,
+  });
 }
