@@ -1,7 +1,6 @@
-import { fastEdmonds } from '@core/edmonds/fast/solve';
+import { isMaximum } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
-import { size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { ActionOutcome } from '@core/rules/outcome';
@@ -80,7 +79,7 @@ export function act(
   const claims =
     action.type !== 'declareDone'
       ? session.claims
-      : size(after.matching) === size(fastEdmonds(after.graph))
+      : isMaximum(after.graph, after.matching)
         ? { ...session.claims, right: session.claims.right + 1 }
         : { ...session.claims, wrong: session.claims.wrong + 1 };
   const waterSpent = session.waterSpent + Math.max(0, after.waterUsed - before.waterUsed);

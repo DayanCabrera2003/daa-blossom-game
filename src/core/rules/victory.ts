@@ -1,6 +1,6 @@
 import { checkTutteBerge } from '../certificates/tutteBerge';
 import { checkVertexCover } from '../certificates/vertexCover';
-import { fastEdmonds } from '../edmonds/fast/solve';
+import { isMaximum } from '../edmonds/fast/maximum';
 import { size } from '../matching/queries';
 import type { GardenState } from './state';
 
@@ -32,7 +32,7 @@ export function isVictory(state: GardenState, condition: VictoryCondition): bool
     case 'matchingSize':
       return lanterns >= condition.value;
     case 'maximum':
-      return state.declaredDone && lanterns === size(fastEdmonds(state.graph));
+      return state.declaredDone && isMaximum(state.graph, state.matching);
     case 'chainFound':
       return state.chainSeen !== null;
     case 'coverCertificate':

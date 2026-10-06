@@ -2,7 +2,7 @@ import { stonesFromForest } from '@core/certificates/fromForest';
 import { checkTutteBerge } from '@core/certificates/tutteBerge';
 import { checkVertexCover, koenigCover } from '@core/certificates/vertexCover';
 import { runPhase } from '@core/edmonds/phase';
-import { fastEdmonds } from '@core/edmonds/fast/solve';
+import { isMaximum } from '@core/edmonds/fast/maximum';
 import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
 import { isExposed, size } from '@core/matching/queries';
@@ -131,7 +131,7 @@ export function nextMove(goal: MentorGoal, state: GardenState): Action | null {
 function computedStep(goal: MentorGoal, state: GardenState): Action | null {
   if (goal.victory.type === 'chainFound') return searchStep(state);
 
-  if (size(state.matching) < size(fastEdmonds(state.graph))) return lightMore(state);
+  if (!isMaximum(state.graph, state.matching)) return lightMore(state);
 
   switch (goal.victory.type) {
     case 'tutteBergeCertificate': {
