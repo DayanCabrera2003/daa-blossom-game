@@ -1,0 +1,74 @@
+{
+  "id": "2.2",
+  "sprouts": [
+    { "label": "1", "x": 90, "y": 70 },
+    { "label": "2", "x": 150, "y": 70 },
+    { "label": "3", "x": 210, "y": 70 },
+    { "label": "4", "x": 270, "y": 70 },
+    { "label": "5", "x": 330, "y": 70 },
+    { "label": "6", "x": 390, "y": 70 },
+    { "label": "a", "x": 110, "y": 150 },
+    { "label": "b", "x": 180, "y": 150 },
+    { "label": "c", "x": 180, "y": 210 },
+    { "label": "d", "x": 110, "y": 210 },
+    { "label": "e", "x": 300, "y": 180 },
+    { "label": "f", "x": 370, "y": 180 }
+  ],
+  "vines": [
+    ["1", "2"],
+    ["2", "3"],
+    ["3", "4"],
+    ["4", "5"],
+    ["5", "6"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "a"],
+    ["e", "f"]
+  ],
+  "lanterns": [
+    ["2", "3"],
+    ["4", "5"],
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"]
+  ],
+  "mirror": [
+    ["1", "2"],
+    ["3", "4"],
+    ["5", "6"],
+    ["b", "c"],
+    ["d", "a"],
+    ["e", "f"]
+  ],
+  "goal": { "visible": true, "value": 6 },
+  "hints": [{ "line": "ch2.2.sauce.12" }, { "line": "ch2.2.sauce.13" }],
+  "flow": [
+    { "step": "say", "lines": ["ch2.2.sauce.00"] },
+    { "step": "mirror" },
+    { "step": "separate" },
+    { "step": "count", "prompt": "ch2.2.sauce.01", "piece": "a", "of": "yours", "range": 4 },
+    { "step": "count", "prompt": "ch2.2.sauce.02", "piece": "a", "of": "mirror", "range": 4 },
+    { "step": "say", "lines": ["ch2.2.sauce.03"] },
+    { "step": "count", "prompt": "ch2.2.sauce.04", "piece": "1", "of": "yours", "range": 4 },
+    { "step": "count", "prompt": "ch2.2.sauce.05", "piece": "1", "of": "mirror", "range": 4 },
+    { "step": "say", "lines": ["ch2.2.sauce.06"] },
+    {
+      "step": "ask",
+      "prompt": "ch2.2.sauce.07",
+      "options": [
+        { "line": "ch2.2.gardener.08", "correct": false, "reply": "ch2.2.sauce.10" },
+        { "line": "ch2.2.gardener.09", "correct": true, "reply": "ch2.2.sauce.11" }
+      ],
+      "retry": true
+    }
+  ],
+  "solution": [
+    { "type": "tapGarden" },
+    { "type": "answer", "option": 2 },
+    { "type": "answer", "option": 2 },
+    { "type": "answer", "option": 2 },
+    { "type": "answer", "option": 3 },
+    { "type": "answer", "option": 1 }
+  ]
+}
