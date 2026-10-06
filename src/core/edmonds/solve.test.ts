@@ -5,6 +5,13 @@ import { bruteForceMatching } from '../bruteforce/maximumMatching';
 import { stonesFromForest } from '../certificates/fromForest';
 import { checkTutteBerge } from '../certificates/tutteBerge';
 import { cycleGraph, pathGraph } from '../generators/families';
+import {
+  helix as helixOf,
+  longStemFlower,
+  manyFlowers,
+  nestedFlowers,
+} from '../generators/hardCases';
+import { fastEdmonds } from './fast/solve';
 import { createGraph } from '../graph/createGraph';
 import type { Graph } from '../graph/types';
 import { size } from '../matching/queries';
@@ -85,6 +92,32 @@ describe('Edmonds, the full recipe', () => {
         },
       ),
       { numRuns: 1000 },
+    );
+  });
+
+  it('master property on hard cases: long stems, nested and many flowers, helices', () => {
+    // These gardens are too big for Bruto; the run's own certificate proves the optimum instead,
+    // and the fast version is a second, independent opinion.
+    const hardCase = fc.oneof(
+      fc.integer({ min: 0, max: 25 }).map(longStemFlower),
+      fc.integer({ min: 1, max: 12 }).map(nestedFlowers),
+      fc.integer({ min: 1, max: 15 }).map(helixOf),
+      fc.integer({ min: 1, max: 10 }).map(manyFlowers),
+    );
+    fc.assert(
+      fc.property(
+        hardCase.chain((generated) =>
+          fc.tuple(fc.constant(generated), matchingArb(generated.graph)),
+        ),
+        ([{ graph, matching }, random]) => {
+          for (const initial of [matching, random]) {
+            const run = edmonds(graph, initial);
+            expect(validateMate(graph, run.matching.mate).ok).toBe(true);
+            expect(checkTutteBerge(graph, run.matching, stonesOf(run)).ok).toBe(true);
+            expect(size(run.matching)).toBe(size(fastEdmonds(graph)));
+          }
+        },
+      ),
     );
   });
 });
