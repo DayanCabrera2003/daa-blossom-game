@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { graphWithMatchingArb } from '../../../tests/support/arbitraries';
 import { fastEdmonds } from '@core/edmonds/fast/solve';
-import { pathGraph } from '@core/generators/families';
+import { cycleGraph, pathGraph } from '@core/generators/families';
 import { createMatching } from '@core/matching/createMatching';
 import { size } from '@core/matching/queries';
 import type { Action, ActionType } from '@core/rules/actions';
@@ -120,5 +120,49 @@ describe("the mentor's next step (hint grade 3)", () => {
         mentorPlays({ start, solution: [], victory }, start, 10 * graph.n + 10);
       }),
     );
+  });
+
+  it('scarecrows: takes away the wrong one, places the right ones, then says "Terminé" (3.7)', () => {
+    // 1–2–3–4–5 as 0..4, two lanterns lit, a scarecrow on the wrong sprout.
+    const path = pathGraph(5);
+    const start = createGardenState({
+      graph: path,
+      matching: unwrap(
+        createMatching(path, [
+          [0, 1],
+          [2, 3],
+        ]),
+      ),
+      allowed: ['placeScarecrow', 'removeScarecrow', 'declareDone'],
+    });
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'coverCertificate' } };
+    const misplaced = { ...start, scarecrows: [0] };
+    expect(nextMove(goal, misplaced)).toEqual({ type: 'removeScarecrow', vertex: 0 });
+    mentorPlays(goal, misplaced);
+    expect(nextMove(goal, { ...start, scarecrows: [1, 3] })).toEqual({ type: 'declareDone' });
+  });
+
+  it('stones: lifts the moons of the failed search when no solution guides it (7.3)', () => {
+    const level = levelById('7.3');
+    const goal: MentorGoal = { start: level.start, solution: [], victory: level.data.victory };
+    expect(nextMove(goal, level.start)).toEqual({ type: 'liftStone', vertex: 0 });
+    mentorPlays(goal, level.start);
+  });
+
+  it('when nothing it may do leads anywhere, it says nothing rather than something wrong', () => {
+    // A garden with no chain to find: the search runs out of looks.
+    const path = pathGraph(2);
+    const start = createGardenState({
+      graph: path,
+      matching: unwrap(createMatching(path, [[0, 1]])),
+      allowed: ['markRoot', 'markMoon', 'foldAt'],
+    });
+    expect(nextMove({ start, solution: [], victory: { type: 'chainFound' } }, start)).toBeNull();
+    // Scarecrows cannot prove anything in a garden with an odd loop: no target to aim at.
+    const triangle = createGardenState({ graph: cycleGraph(3), allowed: ['placeScarecrow'] });
+    const lit = { ...triangle, matching: unwrap(createMatching(cycleGraph(3), [[0, 1]])) };
+    expect(
+      nextMove({ start: lit, solution: [], victory: { type: 'coverCertificate' } }, lit),
+    ).toBeNull();
   });
 });
