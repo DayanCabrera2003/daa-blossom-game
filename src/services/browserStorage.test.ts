@@ -28,4 +28,10 @@ describe('browser storage', () => {
     store.setItem('k', 'v');
     expect(store.getItem('k')).toBe('v');
   });
+
+  it('by default looks for the real localStorage, and copes when there is none (as here, in Node)', () => {
+    const store = browserStorage();
+    store.setItem('florecer.test', '1');
+    expect(store.getItem('florecer.test')).toBe('1');
+  });
 });
