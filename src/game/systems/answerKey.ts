@@ -1,9 +1,8 @@
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import type { VertexId } from '@core/graph/types';
-import { isMatchedEdge } from '@core/matching/queries';
-import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
 import type { Matching } from '@core/matching/types';
 import type { Level } from '@levels/build';
+import { lanternsOn, pieceOf, pondPieces } from './pond';
 
 /**
  * The right answers to the numeric questions of a script, as the core computes them from the
@@ -24,10 +23,6 @@ export function rightCount(
   mirror: Matching,
   question: { readonly piece: VertexId; readonly of: 'yours' | 'mirror' },
 ): number {
-  const piece = decomposeSymmetricDifference(yours, mirror).find((candidate) =>
-    candidate.vertices.includes(question.piece),
-  );
-  if (piece === undefined) return 0;
-  const side = question.of === 'yours' ? yours : mirror;
-  return piece.edges.filter(([u, v]) => isMatchedEdge(side, u, v)).length;
+  const piece = pieceOf(pondPieces(yours, mirror), question.piece);
+  return piece === null ? 0 : lanternsOn(piece, question.of);
 }
