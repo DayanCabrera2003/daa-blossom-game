@@ -49,16 +49,22 @@ describe('fold at the conflict (level 4.4)', () => {
   it('touching d–b folds the triangle into a flower that shines as a sun', () => {
     const outcome = foldAt(betrayed, { type: 'foldAt', from: 4, to: 2 });
     expect(outcome.ok && outcome.events).toEqual([
-      { type: 'oddCycleFound', vine: [4, 2] },
+      { type: 'oddCycleFound', vine: [2, 4] },
       {
         type: 'contract',
         blossom: 0,
         base: 2,
-        cycle: [2, 3, 4].map((vertex) => ({ kind: 'sprout', vertex })),
+        cycle: [2, 4, 3].map((vertex) => ({ kind: 'sprout', vertex })),
       },
     ]);
     // Folded garden: R a F e = 0 1 2 3.
     expect(outcome.ok && outcome.state.search?.label).toEqual(['outer', 'inner', 'outer', 'none']);
+  });
+
+  it('the order of the touch does not matter: d–b and b–d fold the same flower', () => {
+    expect(foldAt(betrayed, { type: 'foldAt', from: 2, to: 4 })).toEqual(
+      foldAt(betrayed, { type: 'foldAt', from: 4, to: 2 }),
+    );
   });
 
   it('from the flower, c–e is explored and the chain appears, already unfolded', () => {
