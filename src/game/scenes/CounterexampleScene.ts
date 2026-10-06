@@ -182,13 +182,26 @@ export class CounterexampleScene extends Phaser.Scene {
   }
 
   private show(effect: CounterexampleEffect): void {
-    if (effect.kind === 'rejected') {
-      const { t } = this.context;
-      this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
-      return;
+    const { t, line } = this.context;
+    switch (effect.kind) {
+      case 'rejected':
+        this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
+        break;
+      case 'drawRefused':
+        this.views.toast.show(reasonText(effect.reason, null, this.labels, t));
+        break;
+      case 'animate': {
+        const steps = planAnimation(effect.events);
+        this.views.animation.play(steps, this.controller.positions, this.time.now);
+        break;
+      }
+      case 'say':
+        this.views.dialogue.say([line(effect.line)]);
+        break;
+      case 'mirrorChecked':
+        // The check is painted from the controller on every render.
+        break;
     }
-    const steps = planAnimation(effect.events);
-    this.views.animation.play(steps, this.controller.positions, this.time.now);
   }
 
   /** Back to the notebook: this screen closes and the level screen asks again. */

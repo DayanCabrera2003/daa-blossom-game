@@ -1,3 +1,4 @@
+import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
@@ -16,14 +17,22 @@ import { hitTest } from '../input/HitTest';
 import { availableTools, type ToolId } from '../input/tools';
 import { triedChain } from '../input/triedChain';
 import { current, push, redo, startHistory, undo, type History } from './history';
+import {
+  checkMirror,
+  drawVine,
+  startChallenge,
+  type MirrorChallenge,
+  type MirrorCheck,
+} from './mirrorChallenge';
 import type { Refusal } from './refusal';
 
 /**
  * The screen of a notebook counterexample (plan 03, phase 6): a small garden the player touches
  * with the same input and the same core rules as a level, to see a false statement fail. Pure, like
  * the level controller, but simpler: there is no script, no victory and no hint, only moves, undo
- * and redo. A `mirrorDraw` garden takes no garden touches; drawing its reflection is plan 03,
- * phase 8.
+ * and redo. A `mirrorDraw` garden (2.4 c) takes no lantern moves: the player draws a reflection over
+ * it, as in the mirror challenge, and each better one shows the chain it leaves, which the mentor
+ * names with the garden's `found` line.
  */
 
 /** Everything the counterexample screen remembers: its garden's day, the pointer, the sprouts. */
@@ -32,18 +41,30 @@ export interface CounterexampleController {
   readonly history: History<GardenState>;
   readonly pointer: PointerState;
   readonly positions: readonly Point[];
+  /** The reflection drawn over a `mirrorDraw` garden; null in a garden to play. */
+  readonly challenge: MirrorChallenge | null;
 }
 
 /** What the player did on the counterexample screen. */
 export type CounterexampleEvent =
   | { readonly kind: 'press' | 'move' | 'release'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
-  | { readonly kind: 'undo' | 'redo' };
+  | { readonly kind: 'undo' | 'redo' }
+  /** In a `mirrorDraw` garden: a vine put in or out of the drawn reflection, and the check of it. */
+  | { readonly kind: 'drawToggle'; readonly u: VertexId; readonly v: VertexId }
+  | { readonly kind: 'checkMirror' };
 
-/** What the screen has to show after an event: a refused move, or an accepted one to animate. */
+/**
+ * What the screen has to show after an event: a refused move, or an accepted one to animate; in a
+ * `mirrorDraw` garden, a refused touch on the drawing, a check, and the line said when it finds
+ * the chain.
+ */
 export type CounterexampleEffect =
   | { readonly kind: 'rejected'; readonly reason: Refusal; readonly action: Action }
-  | { readonly kind: 'animate'; readonly action: Action; readonly events: readonly TraceEvent[] };
+  | { readonly kind: 'animate'; readonly action: Action; readonly events: readonly TraceEvent[] }
+  | { readonly kind: 'drawRefused'; readonly reason: Refusal }
+  | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
+  | { readonly kind: 'say'; readonly line: string };
 
 /** The controller after an event, and what to show for it. */
 export type CounterexampleStep = {
@@ -59,6 +80,8 @@ export function openCounterexample(counterexample: Counterexample): Counterexamp
     history: startHistory(counterexample.start),
     pointer: initialPointer(first),
     positions: counterexample.data.sprouts.map(({ x, y }) => ({ x, y })),
+    challenge:
+      counterexample.mode === 'mirrorDraw' ? startChallenge(counterexample.start.graph) : null,
   };
 }
 
@@ -78,6 +101,43 @@ function apply(controller: CounterexampleController, action: Action): Counterexa
   };
 }
 
+/**
+ * The events of a `mirrorDraw` garden: a touch on a vine (or `drawToggle`) draws it, a check shows
+ * what it found and, when the reflection beats the garden, the mentor says the `found` line. Its
+ * lanterns never move, so drags, tools, undo and redo do nothing.
+ */
+function handleDrawing(
+  controller: CounterexampleController,
+  challenge: MirrorChallenge,
+  event: CounterexampleEvent,
+): CounterexampleStep {
+  const garden = shownGarden(controller);
+  const toggle = (u: VertexId, v: VertexId): CounterexampleStep => {
+    const drawn = drawVine(challenge, garden.graph, u, v);
+    return drawn.ok
+      ? { controller: { ...controller, challenge: drawn.value }, effects: [] }
+      : { controller, effects: [{ kind: 'drawRefused', reason: drawn.error }] };
+  };
+  switch (event.kind) {
+    case 'press': {
+      const target = hitTest(garden, controller.positions, event.point);
+      return target.kind === 'vine' ? toggle(target.u, target.v) : { controller, effects: [] };
+    }
+    case 'drawToggle':
+      return toggle(event.u, event.v);
+    case 'checkMirror': {
+      const checked = checkMirror(challenge, garden.matching);
+      const effects: CounterexampleEffect[] = [{ kind: 'mirrorChecked', check: checked.check }];
+      const { found } = controller.counterexample;
+      if (checked.check.kind === 'better' && found !== null)
+        effects.push({ kind: 'say', line: found });
+      return { controller: { ...controller, challenge: checked.challenge }, effects };
+    }
+    default:
+      return { controller, effects: [] };
+  }
+}
+
 /** Handles one event of the counterexample screen. */
 export function handleCounterexample(
   controller: CounterexampleController,
@@ -87,7 +147,7 @@ export function handleCounterexample(
     controller: { ...controller, ...next },
     effects: [],
   });
-  if (controller.counterexample.mode === 'mirrorDraw') return { controller, effects: [] };
+  if (controller.challenge !== null) return handleDrawing(controller, controller.challenge, event);
   const state = shownGarden(controller);
   const { pointer, positions } = controller;
   switch (event.kind) {
@@ -115,5 +175,9 @@ export function handleCounterexample(
       return same({ history: undo(controller.history) });
     case 'redo':
       return same({ history: redo(controller.history) });
+    case 'drawToggle':
+    case 'checkMirror':
+      // A garden to play has no reflection to draw.
+      return same({});
   }
 }

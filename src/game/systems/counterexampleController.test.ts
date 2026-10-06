@@ -1,3 +1,4 @@
+import { checkAugmentingPath } from '@core/matching/paths';
 import { size } from '@core/matching/queries';
 import { buildCounterexample, type Counterexample } from '@levels/counterexample';
 import { counterexampleSchema } from '@levels/notebook';
@@ -122,9 +123,49 @@ describe('the screen of a counterexample', () => {
     expect(marking.pointer.tool).toBe('marks');
   });
 
-  it('a garden to draw a reflection on takes no garden touches (the drawing is phase 8)', () => {
+  it('a garden to draw a reflection on takes no lantern moves: a touch on a vine draws it', () => {
     const drawn = built({ mode: 'mirrorDraw', ...rowOfSix, found: 'ch2.4.sauce.05' });
     const opened = openCounterexample(drawn);
-    expect(send(opened, drag(0, 5))).toEqual({ controller: opened, effects: [] });
+    const dragged = send(opened, drag(0, 5));
+    expect(dragged.effects).toEqual([]);
+    expect(shownGarden(dragged.controller)).toBe(drawn.start);
+    // The middle of the vine a–b, then of b–c: b would hold two silver lanterns.
+    const touched = send(opened, [
+      { kind: 'press', point: { x: 120, y: 130 } },
+      { kind: 'release', point: { x: 120, y: 130 } },
+      { kind: 'press', point: { x: 180, y: 130 } },
+    ]);
+    expect(touched.controller.challenge?.draft.mate).toEqual([1, 0, -1, -1, -1, -1]);
+    expect(touched.effects).toEqual([
+      { kind: 'drawRefused', reason: { code: 'twoSilver', vertex: 1 } },
+    ]);
+  });
+
+  it('a mirrorDraw check finds a chain of its garden, and the mentor says its found line', () => {
+    const drawn = built({ mode: 'mirrorDraw', ...rowOfSix, found: 'ch2.4.sauce.05' });
+    const weak = send(openCounterexample(drawn), [
+      { kind: 'drawToggle', u: 0, v: 1 },
+      { kind: 'checkMirror' },
+    ]);
+    expect(weak.effects.map((effect) => effect.kind)).toEqual(['mirrorChecked']);
+    const better = send(weak.controller, [
+      { kind: 'drawToggle', u: 2, v: 3 },
+      { kind: 'drawToggle', u: 4, v: 5 },
+      { kind: 'checkMirror' },
+    ]);
+    const [checked, said] = better.effects;
+    expect(said).toEqual({ kind: 'say', line: 'ch2.4.sauce.05' });
+    expect(checked?.kind).toBe('mirrorChecked');
+    if (checked?.kind !== 'mirrorChecked' || checked.check.kind !== 'better') return;
+    const { graph, matching } = drawn.start;
+    expect(checkAugmentingPath(graph, matching, checked.check.piece.sprouts).ok).toBe(true);
+  });
+
+  it('a garden to play takes no drawing', () => {
+    const opened = openCounterexample(playable);
+    expect(opened.challenge).toBeNull();
+    for (const event of [{ kind: 'drawToggle', u: 0, v: 1 }, { kind: 'checkMirror' }] as const) {
+      expect(handleCounterexample(opened, event)).toEqual({ controller: opened, effects: [] });
+    }
   });
 });
