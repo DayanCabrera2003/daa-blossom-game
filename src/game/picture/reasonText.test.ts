@@ -18,6 +18,12 @@ describe("why a move was refused, in the garden's words", () => {
     expect(say({ code: 'alreadyLit', vertex: 3 })).toBe('c ya tiene farol: un farol es para dos.');
   });
 
+  it('answers a touch on the drawn reflection, which is no move of the rules', () => {
+    expect(reasonText({ code: 'twoSilver', vertex: 3 }, null, labels, t)).toBe(
+      'c ya tiene un farol plateado: quítaselo antes de darle otro.',
+    );
+  });
+
   it('points at the exact step of a chain that goes wrong (the distractor of 1.3)', () => {
     const chain: Action = { type: 'chain', path: [0, 1, 2, 3, 8] };
     expect(say({ code: 'invalidPath', error: { code: 'notAlternating', index: 3 } }, chain)).toBe(

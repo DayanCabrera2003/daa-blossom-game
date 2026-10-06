@@ -23,6 +23,7 @@
   "reason.alreadyPlaced": "{vertex} ya tiene uno.",
   "reason.notPlaced": "{vertex} no tiene nada que quitar.",
   "reason.notNow": "Ahora no toca mover faroles: el jardín espera otra cosa.",
+  "reason.twoSilver": "{vertex} ya tiene un farol plateado: quítaselo antes de darle otro.",
   "reason.invalidPath.empty": "Arrastra desde un brote.",
   "reason.invalidPath.vertexOutOfRange": "Ese brote no está en este jardín.",
   "reason.invalidPath.repeatedVertex": "La cadena ya pasó por {vertex}.",

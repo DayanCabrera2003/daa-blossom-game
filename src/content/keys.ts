@@ -39,6 +39,7 @@ const REASONS = {
   alreadyPlaced: ['vertex'],
   notPlaced: ['vertex'],
   notNow: [],
+  twoSilver: ['vertex'],
 } as const satisfies Record<RefusalCode, Params>;
 
 /** Where a dragged chain goes wrong (`core/matching/paths.ts`), named by the sprouts involved. */

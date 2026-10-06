@@ -5,23 +5,26 @@ import type { Translate } from '@services/i18n';
 import type { Refusal } from '../systems/refusal';
 
 /** The sprouts a refused action went through: its chain, stem or loop (empty otherwise). */
-const sequenceOf = (action: Action): readonly VertexId[] =>
-  action.type === 'chain'
-    ? action.path
-    : action.type === 'rotateStem'
-      ? action.stem
-      : action.type === 'fold'
-        ? action.loop
-        : [];
+const sequenceOf = (action: Action | null): readonly VertexId[] =>
+  action === null
+    ? []
+    : action.type === 'chain'
+      ? action.path
+      : action.type === 'rotateStem'
+        ? action.stem
+        : action.type === 'fold'
+          ? action.loop
+          : [];
 
 /**
  * Why a move was refused, as the player reads it (GDD §2.10: "si es inválido, el juego lo rechaza y
  * explica por qué"): the text of the reason with the names of the sprouts involved. Errors inside a
  * chain or a loop point at a position in it, which is turned back into the sprouts at that spot.
+ * A refusal that answers no action (a touch on the drawn reflection) comes with `action` null.
  */
 export function reasonText(
   reason: Refusal,
-  action: Action,
+  action: Action | null,
   labels: readonly string[],
   t: Translate,
 ): string {
@@ -47,6 +50,7 @@ export function reasonText(
     case 'alreadyMarked':
     case 'alreadyPlaced':
     case 'notPlaced':
+    case 'twoSilver':
       return t(`reason.${reason.code}`, { vertex: name(reason.vertex) });
     case 'invalidPath': {
       const error = reason.error;
