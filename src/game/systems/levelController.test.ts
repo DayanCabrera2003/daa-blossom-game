@@ -42,13 +42,19 @@ describe('the level controller', () => {
     expect(controller.highlight).toEqual([]);
   });
 
-  it('two touches join two sprouts: the move is applied and its events animated', () => {
+  it('two touches join two sprouts: the move is applied, and animated with its events', () => {
     const { controller, effects } = feed(startController(trap, 0), [
       ...touch(at(0)),
       ...touch(at(1)),
     ]);
     expect(garden(controller.session).matching.mate).toEqual([1, 0, -1, -1]);
-    expect(effects).toEqual([{ kind: 'animate', events: [{ type: 'light', u: 0, v: 1 }] }]);
+    expect(effects).toEqual([
+      {
+        kind: 'animate',
+        action: { type: 'join', u: 0, v: 1 },
+        events: [{ type: 'light', u: 0, v: 1 }],
+      },
+    ]);
   });
 
   it('a refused move comes back with its reason and the move tried, and changes nothing', () => {

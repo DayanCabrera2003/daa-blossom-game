@@ -47,7 +47,12 @@ export type UiEvent =
 /** What the scene has to show after an event. */
 export type Effect =
   | { readonly kind: 'rejected'; readonly reason: RejectReason; readonly action: Action }
-  | { readonly kind: 'animate'; readonly events: readonly TraceEvent[] }
+  | {
+      readonly kind: 'animate';
+      /** The move accepted, for the playtest log. */
+      readonly action: Action;
+      readonly events: readonly TraceEvent[];
+    }
   | { readonly kind: 'hint'; readonly content: HintContent }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
@@ -74,7 +79,7 @@ function apply(controller: Controller, action: Action, now: number): Step {
       effects: [{ kind: 'rejected', reason: outcome.reason, action }],
     };
   }
-  const effects: Effect[] = [{ kind: 'animate', events: outcome.events }];
+  const effects: Effect[] = [{ kind: 'animate', action, events: outcome.events }];
   if (before === null && session.won !== null) effects.push({ kind: 'won', stars: session.won });
   return { controller: { ...controller, session, highlight: [] }, effects };
 }
