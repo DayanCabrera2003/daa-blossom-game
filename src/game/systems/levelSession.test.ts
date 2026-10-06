@@ -13,6 +13,7 @@ import {
   respond,
   seekSession,
   startSession,
+  stepNow,
   undoSession,
   redoSession,
   type LevelSession,
@@ -283,6 +284,32 @@ describe('a level session follows its script', () => {
     const waiting = respond(asked, { type: 'answer', option: 1 }, late).session;
     expect(isHintAvailable(waiting, 10 * HINT_DELAY_MS)).toBe(false);
     expect(askHint(waiting, 10 * HINT_DELAY_MS)).toBeNull();
+  });
+
+  it('a grade-3 hint under a question points at its right option, and never gives a bet away', () => {
+    const level = scripted([
+      question,
+      { step: 'count', prompt: 'ch2.9.sauce.06', piece: 'A', of: 'mirror', range: 3 },
+      { step: 'bet', prompt: 'ch2.9.sauce.05', range: 3 },
+    ]);
+    const third = (from: LevelSession) => {
+      let session = from;
+      let hint = null;
+      for (let k = 1; k <= 3; k++) {
+        const opened = askHint(session, k * HINT_DELAY_MS);
+        if (opened === null) throw new Error('hint not offered');
+        ({ session, hint } = opened);
+      }
+      return hint;
+    };
+    const asking = startSession(level, 0);
+    expect(third(asking)).toMatchObject({ move: null, option: 1 });
+    const counting = respond(asking, { type: 'answer', option: 1 }, 0).session;
+    expect(third(counting)).toMatchObject({ move: null, option: 2 });
+    const betting = respond(counting, { type: 'answer', option: 2 }, 0).session;
+    expect(stepNow(betting)?.step).toBe('bet');
+    expect(isHintAvailable(betting, 10 * HINT_DELAY_MS)).toBe(false);
+    expect(askHint(betting, 10 * HINT_DELAY_MS)).toBeNull();
   });
 
   it('1.8-like: every answer to "how do you know?" is valid and leads to the same line', () => {

@@ -29,6 +29,7 @@ import {
 } from './hints';
 import { current, push, redo, seek, startHistory, undo, type History } from './history';
 import { nextMove } from './nextMove';
+import { hintedOption, questionAt } from './question';
 import { NOT_NOW, type Refusal } from './refusal';
 import { computeStars, type StarResult } from './stars';
 
@@ -237,7 +238,8 @@ export function isHintAvailable(session: LevelSession, now: number): boolean {
 
 /**
  * Opens the hint on offer: the next grade, with the level's own line and sprouts when it has them,
- * and at grade 3 the mentor's step for the garden as it is now. Null if no hint is on offer.
+ * and at grade 3 the mentor's step for the garden as it is now, or under a question the right
+ * option. Null if no hint is on offer.
  */
 export function askHint(
   session: LevelSession,
@@ -254,8 +256,11 @@ export function askHint(
     opened.grade >= 2 && current.step === 'play' && victory !== undefined
       ? nextMove({ start: level.start, solution: level.solution, victory }, garden(session))
       : null;
+  // Under a question, the mentor points at a right option instead (never at a bet's).
+  const question = questionAt(level, session.flow.index, garden(session).matching);
+  const option = question === null ? null : hintedOption(question);
   return {
     session: { ...session, hints: opened.hints },
-    hint: hintContent(level.hints, opened.grade, step),
+    hint: hintContent(level.hints, opened.grade, step, option),
   };
 }
