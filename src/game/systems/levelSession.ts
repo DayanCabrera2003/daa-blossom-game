@@ -1,4 +1,7 @@
 import { isMaximum } from '@core/edmonds/fast/maximum';
+import { matchedEdges } from '@core/matching/queries';
+import type { Matching } from '@core/matching/types';
+import { invariant } from '@core/shared/invariant';
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
@@ -18,7 +21,7 @@ import {
   type FlowSignal,
   type FlowState,
 } from './flow';
-import { hintContent, type HintContent } from './hintContent';
+import { hintContent, type HintContent, type MentorReflection } from './hintContent';
 import {
   afterAccepted,
   afterRejected,
@@ -28,7 +31,17 @@ import {
   type HintState,
 } from './hints';
 import { current, push, redo, seek, startHistory, undo, type History } from './history';
+import {
+  betterReflection,
+  checkMirror,
+  drawReflection,
+  drawVine,
+  startChallenge,
+  type MirrorChallenge,
+  type MirrorCheck,
+} from './mirrorChallenge';
 import { nextMove } from './nextMove';
+import { winningPiece } from './pond';
 import { hintedOption, questionAt } from './question';
 import { reactionsTo, type FiredReaction } from './reactions';
 import { NOT_NOW, type Refusal } from './refusal';
@@ -41,7 +54,8 @@ import { computeStars, type StarResult } from './stars';
  *
  * What is accepted depends on the step of the script (plan 03, phase 2): garden moves only while
  * playing, so the lanterns never change under a question that depends on them; undo, redo and the
- * sun while playing or waiting for the sun. Once the script is over the garden is free again, as it
+ * sun while playing or waiting for the sun. The reflection of the mirror challenge is drawn and
+ * checked only in its `draw` step. Once the script is over the garden is free again, as it
  * always was after a win, but nothing more can be won.
  */
 export interface LevelSession {
@@ -61,6 +75,8 @@ export interface LevelSession {
    * undoing a move never lets its reaction fire again: each fires once in a play of the level.
    */
   readonly reactions: readonly FiredReaction[];
+  /** The reflection drawn in the mirror challenge (2.4) and its checks; untouched elsewhere. */
+  readonly challenge: MirrorChallenge;
 }
 
 /** The answer of a move: applied (for the animation queue), or refused and why. */
@@ -141,6 +157,7 @@ export function openSession(
     won: null,
     flow,
     reactions: [],
+    challenge: startChallenge(level.start.graph),
   };
   // A script that is over at once (only lines) completes the level as it opens.
   return { session: { ...session, won: starsAt(session, flow) }, effects };
@@ -297,8 +314,73 @@ export function askHint(
   // Under a question, the mentor points at a right option instead (never at a bet's).
   const question = questionAt(level, session.flow.index, garden(session).matching);
   const option = question === null ? null : hintedOption(question);
+  // In the mirror challenge, the mentor offers a better reflection, and at grade 3 draws it.
+  const offer = current.step === 'draw' && opened.grade >= 2 ? mentorOffer(session) : null;
+  const hint = hintContent(level.hints, opened.grade, step, option, offer?.reflection ?? null);
+  const { challenge } = session;
   return {
-    session: { ...session, hints: opened.hints },
-    hint: hintContent(level.hints, opened.grade, step, option),
+    session: {
+      ...session,
+      hints: opened.hints,
+      challenge:
+        offer !== null && hint.mirror !== null
+          ? drawReflection(challenge, offer.better)
+          : challenge,
+    },
+    hint,
   };
+}
+
+/**
+ * The better reflection the mentor offers in the mirror challenge: your lanterns turned over along
+ * a chain the core finds, with that chain. Null when your garden is already the best, which level
+ * integrity keeps out of a mirror challenge.
+ */
+function mentorOffer(
+  session: LevelSession,
+): { readonly better: Matching; readonly reflection: MentorReflection } | null {
+  const yours = garden(session).matching;
+  const better = betterReflection(session.level.start.graph, yours);
+  if (better === null) return null;
+  const piece = winningPiece(yours, better);
+  invariant(piece !== null, 'a better reflection wins on some thread (Berge)');
+  return { better, reflection: { lanterns: matchedEdges(better), chain: piece.sprouts } };
+}
+
+/**
+ * A touch on the vine u–v of the reflection drawn in the mirror challenge: drawn or taken out, or
+ * refused (a sprout would hold two silver lanterns). Outside the `draw` step it is refused with
+ * `notNow`, like a move under a question.
+ */
+export function drawInMirror(
+  session: LevelSession,
+  u: VertexId,
+  v: VertexId,
+): { session: LevelSession; refusal: Refusal | null } {
+  if (stepNow(session)?.step !== 'draw') return { session, refusal: NOT_NOW };
+  const drawn = drawVine(session.challenge, session.level.start.graph, u, v);
+  return drawn.ok
+    ? { session: { ...session, challenge: drawn.value }, refusal: null }
+    : { session, refusal: drawn.error };
+}
+
+/**
+ * Checks the drawn reflection against your lanterns, in the `draw` step only (elsewhere nothing
+ * happens and the check is null). A better reflection not checked before is one more attempt; once
+ * the checks that do not win reach the limit, the step is over anyway.
+ */
+export function checkDrawnMirror(
+  session: LevelSession,
+  now: number,
+): { session: LevelSession; check: MirrorCheck | null; effects: FlowEffect[] } {
+  if (stepNow(session)?.step !== 'draw') return { session, check: null, effects: [] };
+  const { challenge, check } = checkMirror(session.challenge, garden(session).matching);
+  const signal: FlowSignal =
+    check.kind === 'better'
+      ? { type: 'mirrorChecked', better: check.fresh }
+      : check.spared
+        ? { type: 'mirrorSpared' }
+        : { type: 'mirrorChecked', better: false };
+  const advanced = advance({ ...session, challenge }, signal, now);
+  return { ...advanced, check };
 }
