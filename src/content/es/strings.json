@@ -85,6 +85,7 @@
   "notebook.choose": "Toca lo que es verdad.",
   "notebook.written": "Escrito en tu Cuaderno.",
   "counterexample.back": "Volver al Cuaderno",
+  "pond.strands": "Hilos: {count}",
   "victory.title": "¡Jardín iluminado!",
   "victory.stars": "Estrellas: {count}",
   "victory.next": "Siguiente jardín",
