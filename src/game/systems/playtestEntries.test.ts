@@ -2,9 +2,15 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import { rightCount } from './answerKey';
 import { HINT_DELAY_MS } from './hints';
 import { handle, startController, type Controller, type UiEvent } from './levelController';
+import { garden } from './levelSession';
 import { playtestEntries } from './playtestEntries';
+import type { Piece } from './pond';
+
+/** A thread where a reflection wins, for checks built by hand. */
+const PIECE: Piece = { kind: 'thread', sprouts: [0, 1], strands: [], gain: 1 };
 
 const levelById = (id: string): Level => {
   const level = catalog().find((l) => l.data.id === id);
@@ -154,11 +160,142 @@ describe('playtest entries of a scripted level', () => {
     ]);
   });
 
-  it('answers are not logged yet (plan 03, phase 10); finishing the script is the win', () => {
-    const { entries } = play(startController(level, 0), [
-      { kind: 'answer', option: 0 },
-      { kind: 'answer', option: 1 },
+  it('a wrong answer then the right one are both logged, with the step that asked', () => {
+    const { entries } = play(
+      startController(level, 0),
+      [
+        { kind: 'answer', option: 0 },
+        { kind: 'answer', option: 1 },
+      ],
+      7,
+    );
+    expect(entries).toEqual([
+      { kind: 'answer', at: 7, level: '2.9', step: 0, option: 0, right: false },
+      { kind: 'answer', at: 7, level: '2.9', step: 0, option: 1, right: true },
+      { kind: 'levelEnd', at: 7, level: '2.9', outcome: 'won', stars: 2 },
     ]);
-    expect(entries).toEqual([{ kind: 'levelEnd', at: 0, level: '2.9', outcome: 'won', stars: 2 }]);
+  });
+
+  it('an option the question does not have is no answer and logs nothing', () => {
+    expect(play(startController(level, 0), [{ kind: 'answer', option: 5 }]).entries).toEqual([]);
+  });
+});
+
+/** A small level whose script is only `flow`, over a garden of two sprouts. */
+const scripted = (flow: unknown[], extra: Record<string, unknown> = {}): Level => {
+  const loaded = loadLevel({
+    id: '1.9',
+    sprouts: [
+      { label: 'A', x: 100, y: 100 },
+      { label: 'B', x: 200, y: 100 },
+    ],
+    vines: [['A', 'B']],
+    goal: { visible: false },
+    flow,
+    solution: [{ type: 'answer', option: 0 }],
+    ...extra,
+  });
+  if (!loaded.ok) throw new Error('fixture does not load');
+  return loaded.value;
+};
+
+describe('playtest entries of bets, counts and the notebook', () => {
+  it('a bet is logged with its value, whether it was right and whether it was informal', () => {
+    const bet = scripted([{ step: 'bet', prompt: 'ch1.9.sauce.00', range: 3, informal: true }]);
+    const { entries } = play(startController(bet, 0), [{ kind: 'bet', value: 1 }], 3);
+    expect(entries).toEqual([
+      { kind: 'bet', at: 3, level: '1.9', value: 1, right: true, informal: true },
+      { kind: 'levelEnd', at: 3, level: '1.9', outcome: 'won', stars: 2 },
+    ]);
+  });
+
+  it('a number in a count is logged as an answer, right or not', () => {
+    const pond = levelById('2.2');
+    const opened = play(startController(pond, 0), [{ kind: 'tapGarden' }]).controller;
+    const step = opened.session.flow.index;
+    const question = opened.session.flow.steps[step];
+    if (question?.step !== 'count' || pond.mirror === null) throw new Error('2.2 counts first');
+    const right = rightCount(garden(opened.session).matching, pond.mirror, question);
+    const wrong = right === 0 ? 1 : 0;
+    const { entries } = play(opened, [
+      { kind: 'answer', option: wrong },
+      { kind: 'answer', option: right },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'answer', at: 0, level: '2.2', step, option: wrong, right: false },
+      { kind: 'answer', at: 0, level: '2.2', step, option: right, right: true },
+    ]);
+  });
+
+  it('a false notebook statement is logged, and so is the counterexample it opens', () => {
+    const counterexample = {
+      mode: 'play',
+      line: 'ch1.9.sauce.02',
+      sprouts: [
+        { label: 'A', x: 90, y: 120 },
+        { label: 'B', x: 150, y: 120 },
+      ],
+      vines: [['A', 'B']],
+      lanterns: [],
+      actions: ['join'],
+    };
+    const notebook = scripted([{ step: 'notebook' }], {
+      notebook: {
+        prompt: 'ch1.9.notebook.00',
+        options: [
+          { line: 'ch1.9.notebook.01', correct: true },
+          { line: 'ch1.9.notebook.02', correct: false, counterexample },
+          { line: 'ch1.9.notebook.03', correct: false },
+        ],
+      },
+    });
+    const { entries } = play(startController(notebook, 0), [
+      { kind: 'answer', option: 1 },
+      { kind: 'answer', option: 2 },
+      { kind: 'answer', option: 0 },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'notebook', at: 0, level: '1.9', option: 1, right: false },
+      { kind: 'counterexample', at: 0, level: '1.9', option: 1 },
+      { kind: 'notebook', at: 0, level: '1.9', option: 2, right: false },
+      { kind: 'notebook', at: 0, level: '1.9', option: 0, right: true },
+      { kind: 'levelEnd', at: 0, level: '1.9', outcome: 'won', stars: 2 },
+    ]);
+  });
+});
+
+describe('playtest entries of the mirror challenge', () => {
+  const mirror = levelById('2.4');
+
+  it('a check that does not beat the garden is logged as neither beating nor counted', () => {
+    const { entries } = play(startController(mirror, 0), [{ kind: 'checkMirror' }], 4);
+    expect(entries).toEqual([
+      { kind: 'mirrorCheck', at: 4, level: '2.4', beats: false, counted: false },
+    ]);
+  });
+
+  it('a better reflection counts once; checked again, it beats but does not count', () => {
+    const before = startController(mirror, 0);
+    const checked = (fresh: boolean) =>
+      playtestEntries(
+        before,
+        { kind: 'checkMirror' },
+        {
+          controller: before,
+          effects: [
+            {
+              kind: 'mirrorChecked',
+              check: { kind: 'better', pieces: [], piece: PIECE, fresh },
+            },
+          ],
+        },
+        0,
+      );
+    expect(checked(true)).toEqual([
+      { kind: 'mirrorCheck', at: 0, level: '2.4', beats: true, counted: true },
+    ]);
+    expect(checked(false)).toEqual([
+      { kind: 'mirrorCheck', at: 0, level: '2.4', beats: true, counted: false },
+    ]);
   });
 });
