@@ -22,6 +22,8 @@ export const PALETTE = {
   chainGain: 0xf2a541,
   chainNone: 0x9aa3b2,
   chainWrong: 0xe5735a,
+  mirror: 0xc9d4e3,
+  water: 0x15283d,
   panel: 0x2e2a24,
   panelEdge: 0x7a6a52,
   button: 0x4b4136,
