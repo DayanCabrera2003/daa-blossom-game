@@ -6,6 +6,7 @@ import { catalog } from '@levels/catalog';
 import { browserStorage } from '@services/browserStorage';
 import { createTranslator } from '@services/i18n';
 import { createLines } from '@services/lines';
+import { playtestRecorder } from '@services/playtestRecorder';
 import { loadSave } from '@services/save';
 import { requestedLevel } from '@services/startLevel';
 import { isTeacherMode } from '@services/teacherMode';
@@ -15,6 +16,9 @@ import { provideContext } from './game/scenes/context';
 import { integerZoom } from './game/scale/integerZoom';
 
 const storage = browserStorage();
+const clock = (): number => Date.now();
+const playtest = playtestRecorder(storage);
+playtest.record([{ kind: 'sessionStart', at: clock() }]);
 const zoomForWindow = (): number => integerZoom(window.innerWidth, window.innerHeight);
 const game = new Phaser.Game(gameConfig(document.body, zoomForWindow()));
 const levels = catalog();
@@ -29,5 +33,7 @@ provideContext(game, {
     levels.map((level) => level.data.id),
   ),
   save: loadSave(storage),
+  playtest,
+  clock,
 });
 window.addEventListener('resize', () => game.scale.setZoom(zoomForWindow()));
