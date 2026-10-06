@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './scale/integerZoom';
 import { BootScene } from './scenes/BootScene';
+import { CounterexampleScene } from './scenes/CounterexampleScene';
 import { HubScene } from './scenes/HubScene';
 import { LevelScene } from './scenes/LevelScene';
 
@@ -19,6 +20,6 @@ export function gameConfig(parent: HTMLElement, zoom: number): Phaser.Types.Core
     roundPixels: true,
     backgroundColor: '#1d2433',
     scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [BootScene, HubScene, LevelScene],
+    scene: [BootScene, HubScene, LevelScene, CounterexampleScene],
   };
 }

@@ -116,6 +116,7 @@ const UI = {
   'notebook.title': [],
   'notebook.choose': [],
   'notebook.written': [],
+  'counterexample.back': [],
   'victory.title': [],
   'victory.stars': ['count'],
   'victory.next': [],

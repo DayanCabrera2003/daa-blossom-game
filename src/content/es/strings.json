@@ -84,6 +84,7 @@
   "notebook.title": "Cuaderno del Jardinero",
   "notebook.choose": "Toca lo que es verdad.",
   "notebook.written": "Escrito en tu Cuaderno.",
+  "counterexample.back": "Volver al Cuaderno",
   "victory.title": "¡Jardín iluminado!",
   "victory.stars": "Estrellas: {count}",
   "victory.next": "Siguiente jardín",

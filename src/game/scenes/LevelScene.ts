@@ -35,6 +35,7 @@ import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
 import { VeilView } from '../view/VeilView';
 import { showVictoryPanel } from '../view/VictoryPanel';
+import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
 import { Presenter } from './presenter';
 
@@ -300,11 +301,21 @@ export class LevelScene extends Phaser.Scene {
     this.views.toast.show(this.context.t('notebook.written'));
   }
 
-  /** Opens the garden that refutes the false notebook statement `option`. */
+  /**
+   * Opens the garden that refutes the false notebook statement `option` in its own screen, while
+   * this one sleeps as it is; coming back wakes it and the notebook asks again.
+   */
   private openCounterexample(option: number): void {
-    // The counterexample screen comes in its own commit; until then the notebook opens again.
-    void option;
-    this.presenter.counterexampleOver();
+    const data: CounterexampleSceneData = {
+      levelId: this.level.data.id,
+      option,
+      back: () => {
+        this.scene.wake();
+        this.presenter.counterexampleOver();
+      },
+    };
+    this.scene.launch('counterexample', data);
+    this.scene.sleep();
   }
 
   /** Records the win at once; the victory panel waits its turn behind any lines or replay. */
