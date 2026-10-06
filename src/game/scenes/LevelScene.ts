@@ -275,7 +275,7 @@ export class LevelScene extends Phaser.Scene {
       }
       case 'play':
       case 'sproutTapped':
-        // Nothing to draw: the garden simply takes moves, or the answer is logged (phase 10).
+        // Nothing to draw: the garden simply takes moves, or the touched sprout is painted.
         break;
       case 'sun':
         // Nothing to draw: the sun is already on the top bar, and moving it ends the step.
