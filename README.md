@@ -24,6 +24,8 @@ npm test           # run the test suite
 npm run lint       # lint the code
 npm run typecheck  # type-check without emitting
 npm run check-levels  # check every level file against the rules and Edmonds
+npm run solve -- 4.6  # readable trace, result and proof for a level id or a garden code
+npm run bench      # steps of the recipe, the fast version and Bruto per garden size
 npm run test:explore  # property tests with a random seed and 2000 cases each
 ```
 
