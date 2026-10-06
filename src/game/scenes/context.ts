@@ -15,6 +15,8 @@ export interface GameContext {
   readonly line: LineText;
   readonly storage: KeyValueStore;
   readonly teacherMode: boolean;
+  /** A level to open straight away (teacher mode, `?level=`), or null to start at the hub. */
+  readonly startLevel: string | null;
   save: SaveData;
 }
 
