@@ -1,5 +1,6 @@
 {
   "id": "4.6",
+  "draft": true,
   "sprouts": [
     { "label": "R", "x": 40, "y": 135 },
     { "label": "a", "x": 110, "y": 135 },
