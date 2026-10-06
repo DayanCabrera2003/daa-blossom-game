@@ -20,13 +20,16 @@ export const lineId = z
   .regex(/^ch\d+\.\d+\.[a-z]+\.\d{2}$/, 'expected a line id like ch4.11.sauce.03');
 
 /**
- * A sprout and where it sits on the 480×270 canvas: inside the garden area, clear of the HUD bars
- * (the goal and the sun on top, tools and buttons in two rows at the bottom) and of the edges.
+ * Where sprouts may sit on the 480×270 canvas: inside the garden area, clear of the HUD bars (the
+ * goal and the sun on top, tools and buttons in two rows at the bottom) and of the edges.
  */
+export const SPROUT_AREA = { x0: 8, x1: 472, y0: 28, y1: 226 } as const;
+
+/** A sprout and where it sits, inside `SPROUT_AREA`. */
 export const sprout = z.strictObject({
   label,
-  x: z.number().int().min(8).max(472),
-  y: z.number().int().min(28).max(226),
+  x: z.number().int().min(SPROUT_AREA.x0).max(SPROUT_AREA.x1),
+  y: z.number().int().min(SPROUT_AREA.y0).max(SPROUT_AREA.y1),
 });
 
 /** A vine, or a lantern on it, between two named sprouts. */
