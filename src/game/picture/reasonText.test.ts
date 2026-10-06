@@ -68,4 +68,14 @@ describe("why a move was refused, in the garden's words", () => {
       expect(text).not.toMatch(/[{}⟨⟩]/);
     }
   });
+
+  it('points into a stem being rotated too, and names unnamed sprouts by their number', () => {
+    const stem: Action = { type: 'rotateStem', stem: [0, 1, 2, 3] };
+    expect(say({ code: 'invalidPath', error: { code: 'wrongParity', edges: 3 } }, stem)).toBe(
+      'Esa cadena dejaría a alguien con dos faroles.',
+    );
+    expect(reasonText({ code: 'alreadyLit', vertex: 12 }, stem, labels, t)).toBe(
+      '12 ya tiene farol: un farol es para dos.',
+    );
+  });
 });

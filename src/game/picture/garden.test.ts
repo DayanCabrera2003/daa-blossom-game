@@ -124,4 +124,9 @@ describe('the picture of the garden', () => {
     expect(NO_EXTRAS).toEqual({ selection: NO_SELECTION, highlight: [], chain: null });
     expect(picture(festival.start).chain).toBeNull();
   });
+
+  it('a sprout without a name (a random garden) shows its number', () => {
+    const { sprouts } = gardenPicture(festival.start, placesOf(festival), [], NO_EXTRAS);
+    expect(sprouts.map((s) => s.label)).toEqual(['0', '1', '2', '3', '4', '5']);
+  });
 });
