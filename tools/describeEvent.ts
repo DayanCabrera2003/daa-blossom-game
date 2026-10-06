@@ -13,7 +13,9 @@ const child = (ref: NodeRef, name: Namer): string =>
 export function describeEvent(event: TraceEvent, name: Namer): string {
   switch (event.type) {
     case 'searchStart':
-      return `search starts from the dark: ${event.roots.map(name).join(', ')}`;
+      return event.roots.length === 0
+        ? 'search starts: every sprout already has a lantern'
+        : `search starts from the dark: ${event.roots.map(name).join(', ')}`;
     case 'labelOuter':
       return event.parent === null
         ? `sun on ${name(event.vertex)} (a root)`
