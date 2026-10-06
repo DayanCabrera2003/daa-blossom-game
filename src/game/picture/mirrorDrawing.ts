@@ -2,7 +2,8 @@ import type { Matching } from '@core/matching/types';
 import { itemAt } from '@core/shared/itemAt';
 import type { Point } from '../input/target';
 import { drawnPairs } from '../input/mirrorDraft';
-import type { MirrorChallenge } from '../systems/mirrorChallenge';
+import type { MirrorChallenge, MirrorCheck } from '../systems/mirrorChallenge';
+import type { TextRef } from './hud';
 import { tanglePicture, type PondPicture } from './tangle';
 
 /**
@@ -38,4 +39,15 @@ export function drawingPicture(
     degree: null,
     winning: null,
   };
+}
+
+/**
+ * What the player reads after a check: a reflection that does not beat you ("ese no te gana"), the
+ * chain a better one leaves, or a reflection already tried, which counts no more.
+ */
+export function checkText(check: MirrorCheck): TextRef {
+  if (check.kind === 'notBetter') {
+    return { key: 'mirror.notBetter', params: { drawn: check.drawn, yours: check.yours } };
+  }
+  return { key: check.fresh ? 'mirror.chain' : 'mirror.again', params: {} };
 }

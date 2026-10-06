@@ -3,7 +3,7 @@ import { createMatching } from '@core/matching/createMatching';
 import { unwrap } from '@core/shared/result';
 import { describe, expect, it } from 'vitest';
 import { checkMirror, drawVine, startChallenge } from '../systems/mirrorChallenge';
-import { drawingPicture } from './mirrorDrawing';
+import { checkText, drawingPicture } from './mirrorDrawing';
 
 /** A row 0–1–2–3 with the middle vine lit, and a lone pair 4–5 far below it, also lit. */
 const graph = unwrap(
@@ -75,5 +75,26 @@ describe('the picture of the mirror challenge', () => {
       'shared',
     ]);
     expect(picture.sprouts.map((sprout) => sprout.label)).toEqual(['A', 'B', 'C', 'D']);
+  });
+
+  it('each check is told in words: not better, a chain, or a reflection already tried', () => {
+    const weak = checkMirror(drawn([[0, 1]]), yours);
+    expect(checkText(weak.check)).toEqual({
+      key: 'mirror.notBetter',
+      params: { drawn: 1, yours: 2 },
+    });
+    const better = checkMirror(
+      drawn([
+        [0, 1],
+        [2, 3],
+        [4, 5],
+      ]),
+      yours,
+    );
+    expect(checkText(better.check)).toEqual({ key: 'mirror.chain', params: {} });
+    expect(checkText(checkMirror(better.challenge, yours).check)).toEqual({
+      key: 'mirror.again',
+      params: {},
+    });
   });
 });
