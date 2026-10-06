@@ -8,6 +8,7 @@ import type { VertexId } from '@core/graph/types';
 import { isExposed, size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
+import { sameGarden } from '@core/rules/sameGarden';
 import type { GardenState } from '@core/rules/state';
 import { isVictory, type VictoryCondition } from '@core/rules/victory';
 import { bipartiteMatching } from '@core/search/bipartiteMatching';
@@ -21,26 +22,12 @@ export interface MentorGoal {
   readonly victory: VictoryCondition;
 }
 
-/** The parts of a garden the player changes; water spent is left out on purpose. */
-const fingerprint = (state: GardenState): string =>
-  JSON.stringify([
-    state.matching.mate,
-    state.layer.nodes,
-    state.search,
-    state.revealed,
-    state.scarecrows,
-    state.stones,
-    state.chainSeen,
-    state.declaredDone,
-  ]);
-
 /** The next step of the reference solution, if the garden is where some prefix of it leads. */
 function onTheSolution(goal: MentorGoal, state: GardenState): Action | null {
-  const target = fingerprint(state);
   let replayed = goal.start;
   let next: Action | null = null;
   for (const step of goal.solution) {
-    if (fingerprint(replayed) === target) next = step;
+    if (sameGarden(replayed, state)) next = step;
     const outcome = applyAction(replayed, step);
     if (!outcome.ok) break;
     replayed = outcome.state;
