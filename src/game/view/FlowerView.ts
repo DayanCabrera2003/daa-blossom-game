@@ -29,7 +29,7 @@ export class FlowerView {
     }
     while (this.numbers.length < flowers.length) {
       this.numbers.push(
-        this.scene.add.text(0, 0, '', textStyle(7, PALETTE.flower)).setOrigin(0.5, 1).setDepth(11),
+        this.scene.add.text(0, 0, '', textStyle(8, PALETTE.flower)).setOrigin(0.5, 1).setDepth(11),
       );
     }
     this.numbers.forEach((text, i) => {

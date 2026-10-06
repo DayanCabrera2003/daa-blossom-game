@@ -2,8 +2,9 @@ import type Phaser from 'phaser';
 import { css, PALETTE } from './palette';
 
 /**
- * Greybox text: a small monospace face rendered at a high resolution so it stays sharp under the
- * whole-number zoom of the canvas. The pixel font of the final game is chosen at the art phase.
+ * Greybox text: a small monospace face. The canvas is 480×270 pixels scaled up, so a text is as
+ * many canvas pixels high as its size: below 8 it stops being legible (GDD §4.1 sets 8 as the
+ * smallest size). The pixel font of the final game is chosen at the art phase.
  */
 export function textStyle(
   size = 8,

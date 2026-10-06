@@ -30,7 +30,7 @@ export class HudView {
     actions: HudActions,
   ) {
     this.goal = scene.add.text(LAYOUT.margin, LAYOUT.topY, '', textStyle()).setDepth(100);
-    this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(7)).setDepth(100);
+    this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
     const order = ['back', 'hint', 'redo', 'undo', 'done'] as const;
     let x = CANVAS_WIDTH - LAYOUT.margin;
     const made: Partial<Record<(typeof order)[number], Button>> = {};

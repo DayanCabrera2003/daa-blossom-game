@@ -89,7 +89,7 @@ export class GardenView {
 
   private drawLabels(sprouts: readonly SproutPicture[]): void {
     while (this.labels.length < sprouts.length) {
-      this.labels.push(this.scene.add.text(0, 0, '', textStyle(7)).setOrigin(0.5, 0).setDepth(31));
+      this.labels.push(this.scene.add.text(0, 0, '', textStyle(8)).setOrigin(0.5, 0).setDepth(31));
     }
     sprouts.forEach((s, i) =>
       this.labels[i]?.setText(s.label).setPosition(s.x, s.y + SPROUT_RADIUS + 1),

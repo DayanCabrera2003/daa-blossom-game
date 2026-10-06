@@ -33,7 +33,7 @@ export class DialogueView {
       .text(x + 6, y + 5, '', { ...textStyle(8), wordWrap: { width: width - 12 } })
       .setDepth(201);
     this.hint = scene.add
-      .text(x + width - 4, y + height - 3, continueLabel, textStyle(6))
+      .text(x + width - 4, y + height - 3, continueLabel, textStyle(8))
       .setOrigin(1, 1)
       .setDepth(201);
     this.setVisible(false);
