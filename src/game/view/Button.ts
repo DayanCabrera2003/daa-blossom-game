@@ -37,6 +37,13 @@ export class Button {
     return this;
   }
 
+  /** Puts the button above other layers (panels drawn on top of the HUD). */
+  setDepth(depth: number): this {
+    this.panel.setDepth(depth);
+    this.text.setDepth(depth + 1);
+    return this;
+  }
+
   /** Greys the button out when its action is not available now. */
   setEnabled(enabled: boolean): this {
     this.enabled = enabled;
