@@ -184,6 +184,13 @@ La versión que usa el juego: sigue la demostración paso a paso (buscar → ple
 | `certificates/tutteBerge.ts` | Cota `(n + |U| − odd(G−U)) / 2`, `verifyCertificate(G, M, U)` ⇒ `M` máximo demostrado |
 | `certificates/fromForest.ts` | `U` = lunas del bosque final (7.4: "la búsqueda que fracasó te entrega las piedras") |
 
+
+> **Notas de implementación (2026-10-06):**
+> - Los eventos de la traza nombran siempre brotes **originales** (y flores por su `id`), nunca ids del grafo plegado, que cambian con cada pliegue. Eventos añadidos: `oddCycleFound`, `contract` (con la base y los hijos como `NodeRef`) y `expand`. `liftPath` y `rotateStem` no son eventos del algoritmo: girar el tallo es una acción del jugador y llegará con el reducer (fase 8).
+> - La búsqueda **continúa** tras plegar (`edmonds/foldForest.ts` traslada el bosque al jardín plegado y la flor entra en la cola como un sol): cada brote se marca una sola vez por búsqueda.
+> - Solo se emite `expand` para las flores que la cadena atraviesa, de fuera hacia dentro (nivel 4.8).
+> - Nombres finales: `edmonds(graph, initial?)` en `solve.ts` devuelve `{ matching, trace, steps, finalLayer, finalForest }`; `checkTutteBerge` y `tutteBergeBound` en `tutteBerge.ts`; `stonesFromForest(layer, forest)` en `fromForest.ts`; `stateAt(initial, trace, k)` en `replay.ts`.
+
 **Tests clave:**
 - **Propiedad maestra:** miles de grafos aleatorios (n ≤ 12, varias densidades, semilla fija): `size(edmonds) === bruteForce`, emparejamiento válido, y el certificado del bosque final **cuadra exactamente**.
 - Propiedad: `stateAt(trace, trace.length)` coincide con el resultado final; `stateAt(trace, 0)` con el estado inicial.
