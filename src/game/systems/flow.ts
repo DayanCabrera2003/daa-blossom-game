@@ -108,8 +108,8 @@ export interface FlowState {
   readonly attempts: number;
 }
 
-/** The answer to the engine: the script after a signal, and what to show for it. */
-export type FlowStep = { flow: FlowState; effects: FlowEffect[] };
+/** One turn of the engine: the script after a signal, and what to show for it. */
+export type FlowTurn = { flow: FlowState; effects: FlowEffect[] };
 
 /** The step being played, or null once the script is finished. */
 export const currentStep = (flow: FlowState): LevelStep | null => flow.steps[flow.index] ?? null;
@@ -177,7 +177,7 @@ const AT_ONCE: ReadonlySet<LevelStep['step']> = new Set(['say', 'replay', 'mirro
  * Opens the step at `index` and every step after it that finishes at once, until one waits for the
  * player or the script ends.
  */
-function enter(flow: FlowState, index: number, effects: FlowEffect[]): FlowStep {
+function enter(flow: FlowState, index: number, effects: FlowEffect[]): FlowTurn {
   let at = index;
   for (;;) {
     const step = flow.steps[at];
@@ -195,7 +195,7 @@ function enter(flow: FlowState, index: number, effects: FlowEffect[]): FlowStep 
 export function startFlow(
   steps: readonly LevelStep[],
   key: { readonly notebook: readonly boolean[] },
-): FlowStep {
+): FlowTurn {
   const flow: FlowState = {
     steps,
     notebook: key.notebook,
@@ -208,7 +208,7 @@ export function startFlow(
 }
 
 /** Records an answer to the current step, with the effect that reports it. */
-function answered(flow: FlowState, value: number, correct: boolean): FlowStep {
+function answered(flow: FlowState, value: number, correct: boolean): FlowTurn {
   const answer = { step: flow.index, value, correct };
   return {
     flow: { ...flow, answers: [...flow.answers, answer] },
@@ -217,11 +217,11 @@ function answered(flow: FlowState, value: number, correct: boolean): FlowStep {
 }
 
 /** Feeds one signal to the current step. A signal the step does not wait for changes nothing. */
-export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowStep {
+export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
   const step = currentStep(flow);
-  const unchanged: FlowStep = { flow, effects: [] };
+  const unchanged: FlowTurn = { flow, effects: [] };
   if (step === null) return unchanged;
-  const next = (from: FlowStep): FlowStep => enter(from.flow, flow.index + 1, from.effects);
+  const next = (from: FlowTurn): FlowTurn => enter(from.flow, flow.index + 1, from.effects);
 
   switch (step.step) {
     case 'play':
