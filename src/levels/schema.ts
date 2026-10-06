@@ -1,23 +1,14 @@
 import { z } from 'zod';
-import { actionType, label, levelActionOptions, lineId, vine } from './fields';
+import { actionType, label, levelActionOptions, lineId, sprout, vine } from './fields';
 import { flowSchema } from './flow';
 import { flowInputOptions } from './flowInput';
+import { notebookSchema } from './notebook';
 
 /**
  * The shape of a level file (`levels/data/chN/N-M.json`), the single source of truth of a level's
  * logic. Files name sprouts by their labels (`"R"`, `"a"`…), as the design document
  * does; `build.ts` turns names into ids. Objects are strict so a typo is an error, never ignored.
  */
-
-/**
- * A sprout and where it sits on the 480×270 canvas: inside the garden area, clear of the HUD bars
- * (the goal and the sun on top, tools and buttons in two rows at the bottom) and of the edges.
- */
-const sprout = z.strictObject({
-  label,
-  x: z.number().int().min(8).max(472),
-  y: z.number().int().min(28).max(226),
-});
 
 /** The declarative victory condition (`core/rules/victory.ts`). */
 const victory = z.discriminatedUnion('type', [
@@ -33,15 +24,6 @@ const goal = z.discriminatedUnion('visible', [
   z.strictObject({ visible: z.literal(true), value: z.number().int().min(0) }),
   z.strictObject({ visible: z.literal(false) }),
 ]);
-
-/** A notebook question (GDD §5.5): a prompt and options, at least one of them right. */
-const notebook = z.strictObject({
-  prompt: lineId,
-  options: z
-    .array(z.strictObject({ line: lineId, correct: z.boolean() }))
-    .min(2)
-    .refine((options) => options.some((option) => option.correct), 'no option is correct'),
-});
 
 export const levelSchema = z.strictObject({
   /** `chapter.level`, e.g. `4.10`. */
@@ -70,7 +52,7 @@ export const levelSchema = z.strictObject({
   hints: z
     .array(z.strictObject({ line: lineId, highlight: z.array(label).default([]) }))
     .default([]),
-  notebook: notebook.optional(),
+  notebook: notebookSchema.optional(),
   /** What happens in the level, in order; played until won when the level writes no script. */
   flow: flowSchema,
   /** What finishing the level unlocks: actions and Codex entries (C1…C14). */

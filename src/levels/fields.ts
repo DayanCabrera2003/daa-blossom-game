@@ -3,9 +3,9 @@ import { UNLOCKED_AT } from '@core/rules/permissions';
 import { z } from 'zod';
 
 /**
- * The small pieces every part of a level file is written with: sprout names, dialogue line ids,
- * vines and player actions. Shared by the level schema and the schema of its script, so both read
- * names and lines the same way.
+ * The small pieces every part of a level file is written with: sprouts and their names, dialogue
+ * line ids, vines and player actions. Shared by the level schema, the schema of its script and that
+ * of its notebook, so all of them read names and lines the same way.
  */
 
 /** Every action of the game, taken from the unlock table so the two can never drift apart. */
@@ -18,6 +18,16 @@ export const label = z.string().min(1);
 export const lineId = z
   .string()
   .regex(/^ch\d+\.\d+\.[a-z]+\.\d{2}$/, 'expected a line id like ch4.11.sauce.03');
+
+/**
+ * A sprout and where it sits on the 480×270 canvas: inside the garden area, clear of the HUD bars
+ * (the goal and the sun on top, tools and buttons in two rows at the bottom) and of the edges.
+ */
+export const sprout = z.strictObject({
+  label,
+  x: z.number().int().min(8).max(472),
+  y: z.number().int().min(28).max(226),
+});
 
 /** A vine, or a lantern on it, between two named sprouts. */
 export const vine = z.tuple([label, label]);
