@@ -3,6 +3,7 @@ import {
   emptySave,
   loadSave,
   recordCompletion,
+  recordNotebook,
   SAVE_KEY,
   writeSave,
   type KeyValueStore,
@@ -24,6 +25,29 @@ describe('saved progress', () => {
   it('keeps the best result of a level', () => {
     const twice = recordCompletion(recordCompletion(emptySave(), '1.1', 3), '1.1', 1);
     expect(twice.levels['1.1']).toEqual({ stars: 3 });
+  });
+
+  it('a new player has written nothing in the notebook', () => {
+    expect(emptySave()).toEqual({ version: 2, levels: {}, notebook: [] });
+  });
+
+  it('writes a statement in the notebook once, keeping the order it was written in', () => {
+    const notes = recordNotebook(recordNotebook(recordNotebook(emptySave(), '1.5'), '2.4'), '1.5');
+    expect(notes.notebook).toEqual(['1.5', '2.4']);
+  });
+
+  it('a save of version 1 keeps all its progress, with an empty notebook', () => {
+    const v1 = '{"version":1,"levels":{"0.1":{"stars":3},"1.2":{"stars":1}}}';
+    expect(loadSave(memoryStore({ [SAVE_KEY]: v1 }))).toEqual({
+      version: 2,
+      levels: { '0.1': { stars: 3 }, '1.2': { stars: 1 } },
+      notebook: [],
+    });
+  });
+
+  it('a damaged notebook is no excuse to lose the save: it starts afresh like any damage', () => {
+    const bad = '{"version":2,"levels":{},"notebook":[7]}';
+    expect(loadSave(memoryStore({ [SAVE_KEY]: bad }))).toEqual(emptySave());
   });
 
   it('never fails on damaged or foreign data: it starts afresh', () => {

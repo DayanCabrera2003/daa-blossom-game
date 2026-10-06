@@ -9,28 +9,42 @@ export interface KeyValueStore {
 /** Where progress is kept in the browser. */
 export const SAVE_KEY = 'florecer.save';
 
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2 as const;
+
+/** Each completed level with its best number of stars; the same in every version. */
+const levels = z.record(z.string(), z.strictObject({ stars: z.number().int().min(0).max(3) }));
 
 const saveSchema = z.strictObject({
   version: z.literal(SAVE_VERSION),
-  levels: z.record(z.string(), z.strictObject({ stars: z.number().int().min(0).max(3) })),
+  levels,
+  /** The levels whose notebook statement the player wrote (GDD §5.5), in the order written. */
+  notebook: z.array(z.string()),
 });
 
-/** Progress of a player: each completed level with its best number of stars. */
+/**
+ * The saves of older versions, each turned into the current one without losing progress. Version
+ * 1 had no notebook: it comes back with an empty one.
+ */
+const olderSaves = z
+  .strictObject({ version: z.literal(1), levels })
+  .transform((save) => ({ version: SAVE_VERSION, levels: save.levels, notebook: [] as string[] }));
+
+/** Progress of a player: each completed level with its best number of stars, and the notebook. */
 export type SaveData = z.infer<typeof saveSchema>;
 
 /** A player who has not completed anything yet. */
-export const emptySave = (): SaveData => ({ version: SAVE_VERSION, levels: {} });
+export const emptySave = (): SaveData => ({ version: SAVE_VERSION, levels: {}, notebook: [] });
 
 /**
- * Reads the saved progress. Anything unreadable (no save, damaged JSON, another version, storage
- * refused in private mode) gives a fresh start: losing progress is better than a broken game.
+ * Reads the saved progress; a save of an older version is migrated to the current one. Anything
+ * unreadable (no save, damaged JSON, an unknown version, storage refused in private mode) gives a
+ * fresh start: losing progress is better than a broken game.
  */
 export function loadSave(store: KeyValueStore): SaveData {
   try {
     const raw = store.getItem(SAVE_KEY);
     if (raw === null) return emptySave();
-    const parsed = saveSchema.safeParse(JSON.parse(raw));
+    const parsed = z.union([saveSchema, olderSaves]).safeParse(JSON.parse(raw));
     return parsed.success ? parsed.data : emptySave();
   } catch {
     return emptySave();
@@ -50,4 +64,11 @@ export function writeSave(store: KeyValueStore, save: SaveData): void {
 export function recordCompletion(save: SaveData, levelId: string, stars: number): SaveData {
   const best = Math.max(stars, save.levels[levelId]?.stars ?? 0);
   return { ...save, levels: { ...save.levels, [levelId]: { stars: best } } };
+}
+
+/** The progress after writing a level's statement in the notebook; each level is written once. */
+export function recordNotebook(save: SaveData, levelId: string): SaveData {
+  return save.notebook.includes(levelId)
+    ? save
+    : { ...save, notebook: [...save.notebook, levelId] };
 }
