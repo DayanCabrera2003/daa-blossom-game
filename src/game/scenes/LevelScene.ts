@@ -1,10 +1,13 @@
 import Phaser from 'phaser';
+import type { GardenState } from '@core/rules/state';
+import { itemAt } from '@core/shared/itemAt';
 import type { Level } from '@levels/build';
 import { visibleLevels } from '@services/progress';
 import { recordCompletion, writeSave } from '@services/save';
 import { planAnimation } from '../animation/plan';
+import { planReplay, replayAt, type ReplayPlan } from '../animation/replay';
 import type { Point } from '../input/target';
-import { gardenPicture } from '../picture/garden';
+import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../picture/garden';
 import { hudPicture } from '../picture/hud';
 import { reasonText } from '../picture/reasonText';
 import {
@@ -16,7 +19,18 @@ import {
 } from '../systems/levelController';
 import { garden } from '../systems/levelSession';
 import { playtestEntries } from '../systems/playtestEntries';
+import {
+  blocksInput,
+  emptyStage,
+  finishShowing,
+  present,
+  type Presentation,
+  type Stage,
+  type StageTurn,
+} from '../systems/presentation';
+import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
+import { fractionOfStep } from '../systems/sun';
 import { AnimationView } from '../view/AnimationView';
 import { DialogueView } from '../view/DialogueView';
 import { FlowerView } from '../view/FlowerView';
@@ -34,10 +48,19 @@ import { contextOf, type GameContext } from './context';
 /** How often the HUD is refreshed while nothing happens, so a hint shows up when it is due. */
 const HUD_REFRESH_MS = 500;
 
+/** A day replaying itself on screen: its states, its timing, when it began and what shows now. */
+interface Replaying {
+  readonly day: readonly GardenState[];
+  readonly plan: ReplayPlan;
+  readonly startedAt: number;
+  cursor: number;
+}
+
 /**
  * A level being played. The scene takes no decision: it forwards the player's presses, keys and
  * buttons to the level controller, shows the effects it answers with, and repaints every layer from
- * the pure pictures of the garden and the HUD.
+ * the pure pictures of the garden and the HUD. Dialogue, replays and the victory panel go through
+ * the presentation queue (`systems/presentation.ts`), which decides the order they show in.
  */
 export class LevelScene extends Phaser.Scene {
   private context!: GameContext;
@@ -58,6 +81,10 @@ export class LevelScene extends Phaser.Scene {
     dialogue: DialogueView;
   };
   private lastHudRefresh = 0;
+  /** What is shown on its own now (lines, a replay, the victory panel) and what waits its turn. */
+  private stage: Stage = emptyStage;
+  /** The day replaying now, if any; while it plays, the garden takes no input. */
+  private replaying: Replaying | null = null;
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -72,6 +99,8 @@ export class LevelScene extends Phaser.Scene {
   create(data: { levelId: string }): void {
     this.ready = false;
     this.lastHudRefresh = 0;
+    this.stage = emptyStage;
+    this.replaying = null;
     this.context = contextOf(this);
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
     if (level === undefined) {
@@ -115,6 +144,7 @@ export class LevelScene extends Phaser.Scene {
   override update(time: number): void {
     if (!this.ready) return;
     this.views.animation.update(time);
+    if (this.replaying !== null) this.replayFrame(time);
     if (time - this.lastHudRefresh > HUD_REFRESH_MS) {
       this.lastHudRefresh = time;
       this.renderHud();
@@ -152,8 +182,12 @@ export class LevelScene extends Phaser.Scene {
     keys?.on('keydown-ESC', () => this.leave());
   }
 
-  /** One event through the controller; a new move ends any animation still playing. */
+  /**
+   * One event through the controller; a new move ends any animation still playing. While the day
+   * replays, the player's input waits: nothing reaches the controller.
+   */
   private dispatch(event: UiEvent): void {
+    if (blocksInput(this.stage)) return;
     if (event.kind !== 'move') this.views.animation.finish();
     const step = handle(this.controller, event, this.time.now);
     this.context.playtest.record(
@@ -178,13 +212,19 @@ export class LevelScene extends Phaser.Scene {
         );
         break;
       case 'hint':
-        this.views.dialogue.say([
-          effect.content.generic ? t(effect.content.line) : line(effect.content.line),
-        ]);
+        this.present({
+          kind: 'lines',
+          lines: [effect.content.generic ? t(effect.content.line) : line(effect.content.line)],
+        });
         break;
       case 'say':
-        this.views.dialogue.say(effect.lines.map(line));
+        this.present({ kind: 'lines', lines: effect.lines.map(line) });
         break;
+      case 'replay': {
+        const { level, history } = this.controller.session;
+        this.present({ kind: 'replay', day: dayToReplay(level, history.states, effect.demo) });
+        break;
+      }
       case 'won':
         this.win(effect.stars);
         break;
@@ -194,8 +234,7 @@ export class LevelScene extends Phaser.Scene {
         // Nothing to draw: the garden simply takes moves, or the answer is logged (phase 10).
         break;
       case 'sun':
-      case 'replay':
-        // The sun as a step and the replayed day are drawn in plan 03, phase 3.
+        // Nothing to draw: the sun is already on the top bar, and moving it ends the step.
         break;
       case 'ask':
       case 'bet':
@@ -232,11 +271,66 @@ export class LevelScene extends Phaser.Scene {
     this.scene.start('hub');
   }
 
-  /** Records the win, then offers the next level (if any) or the hub. */
+  /** Queues an item to show on its own; it starts at once if nothing else is showing. */
+  private present(item: Presentation): void {
+    this.start(present(this.stage, [item]));
+  }
+
+  /** Takes a turn of the queue and starts the item it puts on screen, if any. */
+  private start({ stage, start }: StageTurn): void {
+    this.stage = stage;
+    if (start === null) return;
+    switch (start.kind) {
+      case 'lines':
+        this.views.dialogue.say(start.lines, () => this.start(finishShowing(this.stage)));
+        break;
+      case 'replay':
+        // The replay owns the garden from dawn; any move animation still playing gives way.
+        this.views.animation.finish();
+        this.replaying = {
+          day: start.day,
+          plan: planReplay(start.day.length),
+          startedAt: this.time.now,
+          cursor: 0,
+        };
+        this.replayFrame(this.time.now);
+        break;
+      case 'victory':
+        this.offerNext(start.stars);
+        break;
+    }
+  }
+
+  /**
+   * Shows the state of the replayed day due at `time`, with the sun where it stands; once dusk is
+   * reached, the garden shows the player's real day again and the queue moves on.
+   */
+  private replayFrame(time: number): void {
+    const replaying = this.replaying;
+    if (replaying === null) return;
+    const elapsed = time - replaying.startedAt;
+    if (elapsed >= replaying.plan.duration) {
+      this.replaying = null;
+      this.render();
+      this.start(finishShowing(this.stage));
+      return;
+    }
+    replaying.cursor = replayAt(replaying.plan, elapsed);
+    this.renderGarden(itemAt(replaying.day, replaying.cursor), NO_EXTRAS);
+    this.renderHud();
+  }
+
+  /** Records the win at once; the victory panel waits its turn behind any lines or replay. */
   private win(stars: StarResult): void {
     const id = this.level.data.id;
     this.context.save = recordCompletion(this.context.save, id, stars.total);
     writeSave(this.context.storage, this.context.save);
+    this.present({ kind: 'victory', stars });
+  }
+
+  /** Shows the victory panel, offering the next level (if any) or the hub. */
+  private offerNext(stars: StarResult): void {
+    const id = this.level.data.id;
     // The next level the player can see: outside teacher mode, drafts are skipped.
     const { catalog, teacherMode } = this.context;
     const shown = visibleLevels(
@@ -250,25 +344,37 @@ export class LevelScene extends Phaser.Scene {
     });
   }
 
+  /** Repaints the garden as the session shows it, with what the player is pointing at. */
   private render(): void {
-    const { session, pointer, highlight, positions } = this.controller;
-    const picture = gardenPicture(garden(session), positions, this.labels, {
+    const { session, pointer, highlight } = this.controller;
+    this.renderGarden(garden(session), {
       selection: pointer.selection,
       highlight,
       chain: pointer.chain,
     });
+    this.renderHud();
+  }
+
+  /** Repaints every layer of the garden from one state of it. */
+  private renderGarden(state: GardenState, extras: PointingExtras): void {
+    const picture = gardenPicture(state, this.controller.positions, this.labels, extras);
     this.views.fog.render(picture);
     this.views.flowers.render(picture.flowers);
     this.views.objects.render(picture);
     this.views.garden.render(picture);
     this.views.marks.render(picture.sprouts);
-    this.renderHud();
   }
 
+  /** Repaints the HUD; while the day replays, the sun follows the replay instead of the session. */
   private renderHud(): void {
     const hud = hudPicture(this.controller.session, this.controller.pointer, this.time.now);
     this.views.hud.render(hud);
     this.views.toolbar.render(hud.tools, hud.tool);
-    this.views.sun.render(hud.sun);
+    const { replaying } = this;
+    this.views.sun.render(
+      replaying === null || hud.sun === null
+        ? hud.sun
+        : { fraction: fractionOfStep(replaying.cursor, replaying.day.length) },
+    );
   }
 }
