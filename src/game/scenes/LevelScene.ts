@@ -56,12 +56,20 @@ export class LevelScene extends Phaser.Scene {
     dialogue: DialogueView;
   };
   private lastHudRefresh = 0;
+  /**
+   * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
+   * is reset on each create(); it stays false when the level id is unknown and the scene is
+   * already leaving for the hub, so update() never reaches views that were not built.
+   */
+  private ready = false;
 
   constructor() {
     super('level');
   }
 
   create(data: { levelId: string }): void {
+    this.ready = false;
+    this.lastHudRefresh = 0;
     this.context = contextOf(this);
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
     if (level === undefined) {
@@ -92,11 +100,13 @@ export class LevelScene extends Phaser.Scene {
       dialogue: new DialogueView(this, t('dialogue.continue')),
     };
     this.listen();
+    this.ready = true;
     this.render();
     this.views.dialogue.say(level.data.script.map(line));
   }
 
   override update(time: number): void {
+    if (!this.ready) return;
     this.views.animation.update(time);
     if (time - this.lastHudRefresh > HUD_REFRESH_MS) {
       this.lastHudRefresh = time;
