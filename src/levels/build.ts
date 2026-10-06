@@ -7,8 +7,8 @@ import type { Action } from '@core/rules/actions';
 import { actionsUnlockedBy } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
 import { err, ok, type Result } from '@core/shared/result';
-import type { LevelAction } from './fields';
 import type { LevelData } from './schema';
+import { toAction } from './translate';
 
 /** A level ready to play: its data, and the core objects built from it. */
 export interface Level {
@@ -37,39 +37,6 @@ export type BuildError =
   | { readonly code: 'badGraph'; readonly error: GraphError }
   | { readonly code: 'badLanterns'; readonly error: MatchingError }
   | { readonly code: 'badMirror'; readonly error: MatchingError };
-
-const SPROUT_FIELDS = ['u', 'v', 'from', 'to', 'vertex'] as const;
-const PATH_FIELDS = ['path', 'stem', 'loop'] as const;
-
-/**
- * Translates one solution step from names to ids. Every action keeps its shape; only the fields
- * that name sprouts change, so the translation is done field by field. TypeScript cannot follow a
- * field-wise rewrite over a union, hence the single cast at the end, safe by construction.
- */
-function toAction(labels: Labels, step: LevelAction): Result<Action, LabelError> {
-  const translated: Record<string, unknown> = { ...step };
-  const id = (name: string): VertexId | LabelError =>
-    idOf(labels, name) ?? { code: 'unknownName', name };
-  for (const field of SPROUT_FIELDS) {
-    const name = (step as Record<string, unknown>)[field];
-    if (typeof name !== 'string') continue;
-    const vertex = id(name);
-    if (typeof vertex !== 'number') return err(vertex);
-    translated[field] = vertex;
-  }
-  for (const field of PATH_FIELDS) {
-    const names = (step as Record<string, unknown>)[field];
-    if (!Array.isArray(names)) continue;
-    const vertices: VertexId[] = [];
-    for (const name of names as string[]) {
-      const vertex = id(name);
-      if (typeof vertex !== 'number') return err(vertex);
-      vertices.push(vertex);
-    }
-    translated[field] = vertices;
-  }
-  return ok(translated as Action);
-}
 
 /**
  * Builds the playable level from its validated file: labels, garden, starting lanterns, the
