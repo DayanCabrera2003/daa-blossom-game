@@ -46,9 +46,17 @@ describe('level schema', () => {
     expect(levelSchema.safeParse({ ...twoSprouts, id: '0-1' }).success).toBe(false);
   });
 
-  it('keeps sprouts inside the 480×270 canvas', () => {
-    const outside = { ...twoSprouts, sprouts: [{ label: 'A', x: 500, y: 10 }] };
-    expect(levelSchema.safeParse(outside).success).toBe(false);
+  it('keeps sprouts inside the garden area, clear of the HUD bars (x 8–472, y 28–226)', () => {
+    const at = (x: number, y: number) => ({
+      ...twoSprouts,
+      sprouts: [{ label: 'A', x, y }, twoSprouts.sprouts[1]],
+    });
+    expect(levelSchema.safeParse(at(500, 100)).success).toBe(false);
+    expect(levelSchema.safeParse(at(100, 20)).success).toBe(false);
+    expect(levelSchema.safeParse(at(100, 235)).success).toBe(false);
+    expect(levelSchema.safeParse(at(4, 100)).success).toBe(false);
+    expect(levelSchema.safeParse(at(8, 28)).success).toBe(true);
+    expect(levelSchema.safeParse(at(472, 226)).success).toBe(true);
   });
 
   it('only knows the actions of the game', () => {
