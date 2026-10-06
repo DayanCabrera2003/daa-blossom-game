@@ -30,6 +30,11 @@ export class Button {
     return this.panel.width;
   }
 
+  /** Height on the canvas, to lay rows of buttons out. */
+  get height(): number {
+    return this.panel.height;
+  }
+
   /** Moves the button so that its panel's top-left corner is at (x, y). */
   moveTo(x: number, y: number): this {
     this.panel.setPosition(x, y - 1);
