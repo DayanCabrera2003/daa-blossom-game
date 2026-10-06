@@ -6,6 +6,7 @@ import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { RejectReason } from '@core/rules/reasons';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from './build';
+import { referencedLines } from './lines';
 
 /** Something wrong with a level that the schema alone cannot see. */
 export type IntegrityProblem =
@@ -18,16 +19,6 @@ export type IntegrityProblem =
   | { readonly code: 'solutionOverWater'; readonly used: number; readonly budget: number }
   | { readonly code: 'foreignLine'; readonly line: string }
   | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string };
-
-/** Every dialogue line a level names: hints, script and notebook. */
-const linesOf = (level: Level): string[] => {
-  const { hints, script, notebook } = level.data;
-  return [
-    ...hints.map((hint) => hint.line),
-    ...script,
-    ...(notebook ? [notebook.prompt, ...notebook.options.map((option) => option.line)] : []),
-  ];
-};
 
 /**
  * The integrity checks of a level (plan 01, phase 10), shared by the test suite and
@@ -69,7 +60,7 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     problems.push({ code: 'solutionOverWater', used: state.waterUsed, budget: data.water });
   }
 
-  for (const line of linesOf(level)) {
+  for (const line of referencedLines(data)) {
     if (!line.startsWith(`ch${data.id}.`)) problems.push({ code: 'foreignLine', line });
   }
   for (const action of data.unlocks.actions) {
