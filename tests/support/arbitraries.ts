@@ -53,3 +53,21 @@ export const graphWithTwoMatchingsArb = ({ maxN = 10 } = {}): fc.Arbitrary<
   graphArb({ maxN }).chain((graph) =>
     fc.tuple(fc.constant(graph), matchingArb(graph), matchingArb(graph)),
   );
+
+/**
+ * Arbitrary bipartite graph (bees and flowers): each vertex gets a random side and edges are any
+ * subset of the vines joining opposite sides. Sides are interleaved, not split by id ranges, so
+ * nothing downstream can accidentally rely on vertex order to find the bipartition.
+ */
+export const bipartiteGraphArb = ({ maxN = 10 } = {}): fc.Arbitrary<Graph> =>
+  fc
+    .integer({ min: 0, max: maxN })
+    .chain((n) => fc.array(fc.boolean(), { minLength: n, maxLength: n }))
+    .chain((side) => {
+      const crossing = allPairs(side.length).filter(([u, v]) => side[u] !== side[v]);
+      return fc.subarray(crossing).map((edges) => unwrap(createGraph(side.length, edges)));
+    });
+
+/** Arbitrary bipartite graph together with one matching of it. */
+export const bipartiteWithMatchingArb = ({ maxN = 10 } = {}): fc.Arbitrary<[Graph, Matching]> =>
+  bipartiteGraphArb({ maxN }).chain((graph) => fc.tuple(fc.constant(graph), matchingArb(graph)));
