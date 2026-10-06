@@ -96,6 +96,43 @@ describe('building a level', () => {
   });
 });
 
+describe('the reflection of a level', () => {
+  it('is null when the level has none', () => {
+    expect(unwrapLevel(rotate).mirror).toBeNull();
+  });
+
+  it('is built as a set of lanterns of the same garden', () => {
+    const mirror = unwrapLevel({
+      ...rotate,
+      mirror: [
+        ['R', 'a'],
+        ['b', 'd'],
+        ['c', 'e'],
+      ],
+    }).mirror;
+    expect(mirror?.mate).toEqual([1, 0, 4, 5, 2, 3]);
+  });
+
+  it('rejects a reflection with two lanterns on one sprout, or on a missing vine', () => {
+    const twice = {
+      ...rotate,
+      mirror: [
+        ['a', 'b'],
+        ['b', 'c'],
+      ] as [string, string][],
+    };
+    expect(buildLevel(twice)).toMatchObject({
+      error: { code: 'badMirror', error: { code: 'alreadyMatched', vertex: 2 } },
+    });
+    expect(buildLevel({ ...rotate, mirror: [['R', 'e']] })).toMatchObject({
+      error: { code: 'badMirror', error: { code: 'notAnEdge' } },
+    });
+    expect(buildLevel({ ...rotate, mirror: [['R', 'Z']] })).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'Z' } },
+    });
+  });
+});
+
 /** The built level; a build error here is a test bug. */
 function unwrapLevel(data: LevelData) {
   const result = buildLevel(data);

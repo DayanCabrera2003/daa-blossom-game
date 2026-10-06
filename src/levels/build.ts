@@ -2,6 +2,7 @@ import { createGraph, type GraphError } from '@core/graph/createGraph';
 import { createLabels, idOf, toEdges, type LabelError, type Labels } from '@core/graph/labels';
 import type { Graph, VertexId } from '@core/graph/types';
 import { createMatching, type MatchingError } from '@core/matching/createMatching';
+import type { Matching } from '@core/matching/types';
 import type { Action } from '@core/rules/actions';
 import { actionsUnlockedBy } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
@@ -16,6 +17,8 @@ export interface Level {
   readonly graph: Graph;
   /** The garden as the level starts: lanterns, fog and unlocked actions in place. */
   readonly start: GardenState;
+  /** The lanterns of the reflection in the pond (chapter 2); null when the level has none. */
+  readonly mirror: Matching | null;
   /** The reference solution, with sprout ids. */
   readonly solution: readonly Action[];
   /** The hints, each with the ids of the sprouts it lights up. */
@@ -32,7 +35,8 @@ export interface LevelHint {
 export type BuildError =
   | { readonly code: 'badLabel'; readonly error: LabelError }
   | { readonly code: 'badGraph'; readonly error: GraphError }
-  | { readonly code: 'badLanterns'; readonly error: MatchingError };
+  | { readonly code: 'badLanterns'; readonly error: MatchingError }
+  | { readonly code: 'badMirror'; readonly error: MatchingError };
 
 const SPROUT_FIELDS = ['u', 'v', 'from', 'to', 'vertex'] as const;
 const PATH_FIELDS = ['path', 'stem', 'loop'] as const;
@@ -69,7 +73,8 @@ function toAction(labels: Labels, step: LevelAction): Result<Action, LabelError>
 
 /**
  * Builds the playable level from its validated file: labels, garden, starting lanterns, the
- * actions it allows (those unlocked by its id, minus `forbid`) and its solution with ids.
+ * reflection (a valid set of lanterns of the same garden), the actions it allows (those unlocked by
+ * its id, minus `forbid`) and its solution with ids.
  */
 export function buildLevel(data: LevelData): Result<Level, BuildError> {
   const labels = createLabels(data.sprouts.map((sprout) => sprout.label));
@@ -84,6 +89,15 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
   if (!lit.ok) return err({ code: 'badLabel', error: lit.error });
   const matching = createMatching(graph.value, lit.value);
   if (!matching.ok) return err({ code: 'badLanterns', error: matching.error });
+
+  let mirror: Matching | null = null;
+  if (data.mirror !== undefined) {
+    const reflected = toEdges(labels.value, data.mirror);
+    if (!reflected.ok) return err({ code: 'badLabel', error: reflected.error });
+    const built = createMatching(graph.value, reflected.value);
+    if (!built.ok) return err({ code: 'badMirror', error: built.error });
+    mirror = built.value;
+  }
 
   const hints: LevelHint[] = [];
   for (const hint of data.hints) {
@@ -111,5 +125,5 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     fog: data.fog,
     allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
   });
-  return ok({ data, labels: labels.value, graph: graph.value, start, solution, hints });
+  return ok({ data, labels: labels.value, graph: graph.value, start, mirror, solution, hints });
 }
