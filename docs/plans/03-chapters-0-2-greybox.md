@@ -200,9 +200,13 @@ Definición de "hecho" de cada fase: tests en verde, lint, formato y typecheck l
 
 | Archivo | Responsabilidad |
 |---|---|
-| `input/mirrorDraft.ts` | Pura: el reflejo que dibuja el jugador; tocar una enredadera la pone o la quita en plateado, y nunca deja un brote con dos faroles plateados (se rechaza con un motivo amable) |
-| `systems/mirrorChallenge.ts` | Pura: comprobar un reflejo dibujado: si no tiene más faroles que tu jardín, "ese no te gana" (no cuenta como intento); si tiene más, el hilo ganador, que siempre es una cadena para tu jardín (lema de Berge). Para no atascar a nadie: la pista de grado 3 dibuja un reflejo mejor (tu jardín ⊕ una cadena que da el núcleo), y tras 6 comprobaciones que no ganan el paso cuenta igualmente como terminado con una línea de Sauce |
-| `view/MirrorView.ts` | Modo dibujo y resultado de cada comprobación |
+| `input/mirrorDraft.ts` | Pura: el reflejo que dibuja el jugador; tocar una enredadera (la propia enredadera, como al apagar un farol o plegar, vía `HitTest`) la pone o la quita en plateado, y nunca deja un brote con dos faroles plateados (se rechaza con un motivo amable, `twoSilver`) |
+| `systems/mirrorChallenge.ts` | Pura: comprobar un reflejo dibujado: si no tiene más faroles que tu jardín, "ese no te gana" (no cuenta como intento); si tiene más, el hilo ganador, que siempre es una cadena para tu jardín (lema de Berge). Un reflejo mejor ya comprobado vuelve a mostrar su hilo pero no cuenta otra vez. Para no atascar a nadie: la pista de grado 2 ilumina la cadena y la de grado 3 dibuja un reflejo mejor (tu jardín ⊕ una cadena que da el núcleo, `runPhase`), y tras 6 comprobaciones que no ganan el paso cuenta igualmente como terminado con una línea de Sauce (`mirror.spared`) |
+| `systems/levelSession.ts`, `levelController.ts` | Durante `draw`, un toque en una enredadera es `drawToggle` y "Comprobar" es `checkMirror`; fuera de `draw`, dibujar se rechaza con `notNow`. Tus faroles y el día no cambian mientras dibujas |
+| `picture/tangle.ts`, `picture/mirrorDrawing.ts` | Puras: la maraña de dos conjuntos de faroles (compartida con el estanque) y el dibujo del reto: los faroles plateados mientras dibujas; tras una comprobación mejor, la maraña separada con el hilo ganador señalado, hasta el siguiente toque |
+| `view/MirrorView.ts`, `view/HudView.ts` | Modo dibujo y resultado de cada comprobación (el hilo ganador brilla); el botón "Comprobar" y "Tú: N · Reflejo: M" con el reflejo dibujado |
+| `levels/flowChecks.ts` | Integridad: un paso `draw` exige que tus faroles en ese momento no sean ya los máximos (`drawUnbeatable`) |
+| `game/scenes/CounterexampleScene.ts` | Los contraejemplos `mirrorDraw` se juegan igual (dibujar, "Comprobar") y Sauce dice su línea `found` cada vez que aparece la cadena |
 
 **Tests clave:**
 - Propiedad: para todo jardín y todo emparejamiento M′ mayor que M, la comprobación devuelve un hilo que es camino aumentante de M (`isAugmentingPath` del núcleo).
