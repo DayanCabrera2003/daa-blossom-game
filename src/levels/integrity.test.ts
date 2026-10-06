@@ -33,6 +33,18 @@ describe('level integrity', () => {
     expect(problemsOf(trap)).toEqual([]);
   });
 
+  it('a level must not be won before the player does anything', () => {
+    const alreadyLit = {
+      ...trap,
+      lanterns: [
+        ['A', 'B'],
+        ['C', 'D'],
+      ],
+      solution: [{ type: 'split', u: 'A', v: 'B' }],
+    };
+    expect(problemsOf(alreadyLit)).toContainEqual({ code: 'wonAtStart' });
+  });
+
   it('the declared goal must be the true optimum, computed by Edmonds', () => {
     expect(problemsOf({ ...trap, goal: { visible: true, value: 3 } })).toContainEqual({
       code: 'goalMismatch',

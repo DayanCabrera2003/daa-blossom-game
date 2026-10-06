@@ -20,6 +20,7 @@ describe('readable level problems', () => {
 
   it('every kind of problem has a message', () => {
     const problems = [
+      { code: 'wonAtStart' },
       { code: 'victoryOutOfReach', value: 4, optimum: 3 },
       { code: 'solutionLocked', step: 0, action: 'chain' },
       { code: 'solutionOverWater', used: 5, budget: 4 },
