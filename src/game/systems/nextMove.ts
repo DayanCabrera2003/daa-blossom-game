@@ -100,7 +100,9 @@ function searchStep(state: GardenState): Action | null {
       const look: Action = { type: 'markMoon', from, to };
       const outcome = applyAction(state, look);
       if (outcome.ok) return look;
-      if (outcome.reason.code === 'sunMeetsSun') return { type: 'foldAt', from, to };
+      if (outcome.reason.code === 'sunMeetsSun' && state.allowed.has('foldAt')) {
+        return { type: 'foldAt', from, to };
+      }
       if (outcome.reason.code === 'vineHidden' && state.allowed.has('inspect')) {
         return { type: 'inspect', vertex: from };
       }
@@ -120,6 +122,13 @@ export function nextMove(goal: MentorGoal, state: GardenState): Action | null {
   if (isVictory(state, goal.victory)) return null;
   const scripted = onTheSolution(goal, state);
   if (scripted !== null) return scripted;
+  // A computed step is only offered if the rules take it now (e.g. no folding before 4.4).
+  const computed = computedStep(goal, state);
+  return computed !== null && accepted(state, computed) ? computed : null;
+}
+
+/** The step for the level's victory when the garden is off the reference solution. */
+function computedStep(goal: MentorGoal, state: GardenState): Action | null {
   if (goal.victory.type === 'chainFound') return searchStep(state);
 
   if (size(state.matching) < size(fastEdmonds(state.graph))) return lightMore(state);
