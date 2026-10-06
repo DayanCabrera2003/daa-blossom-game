@@ -43,7 +43,24 @@ export type TraceEvent =
   /** The forest stopped growing without a chain: the current matching is the best (Berge). */
   | { readonly type: 'searchFailed' }
   /** The algorithm finished with this many lanterns lit. */
-  | { readonly type: 'done'; readonly size: number };
+  | { readonly type: 'done'; readonly size: number }
+  // Player moves (the reducer). Lantern moves along a path reuse `augment`.
+  /** A lantern is lit between two sprouts (Join, level 0.1). */
+  | { readonly type: 'light'; readonly u: VertexId; readonly v: VertexId }
+  /** A lantern is put out (Split, level 0.1). */
+  | { readonly type: 'putOut'; readonly u: VertexId; readonly v: VertexId }
+  /** The fog lifts around a sprout, showing its vines; it costs a drop of water (level 3.1). */
+  | { readonly type: 'inspect'; readonly vertex: VertexId; readonly vines: readonly VertexId[] }
+  /** The player's marks reached a chain (a lonely moon, or two trees touching: 3.1, 3.4). */
+  | { readonly type: 'chainFound'; readonly path: readonly VertexId[] }
+  /** The lanterns changed, so the marks of the search no longer apply and are wiped. */
+  | { readonly type: 'searchCleared' }
+  /** A scarecrow is placed on or taken off a sprout (level 3.7). */
+  | { readonly type: 'scarecrow'; readonly vertex: VertexId; readonly placed: boolean }
+  /** A stone is lifted from or put back on a sprout (level 7.2). */
+  | { readonly type: 'stone'; readonly vertex: VertexId; readonly lifted: boolean }
+  /** The player says the garden is finished ("Terminé", from level 1.8). */
+  | { readonly type: 'declareDone' };
 
 /** A child of a flower, named stably: an original sprout or an earlier flower by its id. */
 export type NodeRef =
