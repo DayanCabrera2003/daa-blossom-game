@@ -1,0 +1,23 @@
+{
+  "id": "1.1",
+  "sprouts": [
+    { "label": "A", "x": 60, "y": 60 },
+    { "label": "B", "x": 200, "y": 135 },
+    { "label": "C", "x": 280, "y": 135 },
+    { "label": "D", "x": 420, "y": 210 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"]
+  ],
+  "goal": { "visible": true, "value": 2 },
+  "victory": { "type": "matchingSize", "value": 2 },
+  "script": ["ch1.1.sauce.00"],
+  "unlocks": { "actions": ["passLantern"] },
+  "solution": [
+    { "type": "join", "u": "B", "v": "C" },
+    { "type": "passLantern", "from": "A", "to": "B" },
+    { "type": "join", "u": "C", "v": "D" }
+  ]
+}
