@@ -1,8 +1,15 @@
 import { TEXT_PARAMS } from '@content/keys';
+import lines from '@content/es/lines.json';
 import strings from '@content/es/strings.json';
+import { catalog } from '@levels/catalog';
+import { referencedLines } from '@levels/lines';
 import { describe, expect, it } from 'vitest';
 
 const table: Record<string, string> = strings;
+const lineTable: Record<string, string> = lines;
+
+/** Words that belong to the Codex only (GDD §2, principle 2). */
+const MATHEMATICS = /grafo|arista|v[ée]rtice|emparejamiento|camino aumentante/i;
 
 /** The `{name}` placeholders of a text, sorted. */
 const placeholders = (text: string): string[] =>
@@ -39,8 +46,26 @@ describe('interface text (content/es/strings.json)', () => {
   });
 
   it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
-    const forbidden = /grafo|arista|v[ée]rtice|emparejamiento|camino aumentante/i;
-    const offending = Object.entries(table).filter(([, text]) => forbidden.test(text));
+    const offending = Object.entries(table).filter(([, text]) => MATHEMATICS.test(text));
+    expect(offending).toEqual([]);
+  });
+});
+
+describe('dialogue lines (content/es/lines.json)', () => {
+  it('every line a level refers to has a text', () => {
+    const missing = catalog().flatMap((level) =>
+      referencedLines(level.data).filter((id) => !(id in lineTable)),
+    );
+    expect(missing).toEqual([]);
+  });
+
+  it('no line is left over without a level that speaks it', () => {
+    const spoken = new Set(catalog().flatMap((level) => referencedLines(level.data)));
+    expect(Object.keys(lineTable).filter((id) => !spoken.has(id))).toEqual([]);
+  });
+
+  it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
+    const offending = Object.entries(lineTable).filter(([, text]) => MATHEMATICS.test(text));
     expect(offending).toEqual([]);
   });
 });
