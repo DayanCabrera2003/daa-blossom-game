@@ -7,26 +7,15 @@ import {
   writeSave,
   type KeyValueStore,
 } from './save';
-
-/** An in-memory stand-in for localStorage. */
-const memory = (
-  initial: Record<string, string> = {},
-): KeyValueStore & { data: Map<string, string> } => {
-  const data = new Map(Object.entries(initial));
-  return {
-    data,
-    getItem: (key) => data.get(key) ?? null,
-    setItem: (key, value) => void data.set(key, value),
-  };
-};
+import { memoryStore } from '../../tests/support/memoryStore';
 
 describe('saved progress', () => {
   it('a new player starts with nothing completed', () => {
-    expect(loadSave(memory())).toEqual(emptySave());
+    expect(loadSave(memoryStore())).toEqual(emptySave());
   });
 
   it('what is written comes back', () => {
-    const store = memory();
+    const store = memoryStore();
     const save = recordCompletion(emptySave(), '0.1', 2);
     writeSave(store, save);
     expect(loadSave(store)).toEqual(save);
@@ -38,11 +27,13 @@ describe('saved progress', () => {
   });
 
   it('never fails on damaged or foreign data: it starts afresh', () => {
-    expect(loadSave(memory({ [SAVE_KEY]: '{not json' }))).toEqual(emptySave());
-    expect(loadSave(memory({ [SAVE_KEY]: '{"version":99,"levels":{}}' }))).toEqual(emptySave());
-    expect(loadSave(memory({ [SAVE_KEY]: '{"version":1,"levels":{"0.1":{"stars":-2}}}' }))).toEqual(
+    expect(loadSave(memoryStore({ [SAVE_KEY]: '{not json' }))).toEqual(emptySave());
+    expect(loadSave(memoryStore({ [SAVE_KEY]: '{"version":99,"levels":{}}' }))).toEqual(
       emptySave(),
     );
+    expect(
+      loadSave(memoryStore({ [SAVE_KEY]: '{"version":1,"levels":{"0.1":{"stars":-2}}}' })),
+    ).toEqual(emptySave());
   });
 
   it('never fails if the browser refuses storage (private mode)', () => {
