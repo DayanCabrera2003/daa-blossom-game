@@ -382,12 +382,12 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 #### 1.3 Brigada
 - **Jardín:** cadena escondida entre distractores.
   `S–a=b–c=d–T` con S y T libres. Distractores: `b–x=y` (y sin más vecinos), `c–z` (z libre).
-- **Objetivo:** visible, 3 (hay 2 al inicio).
+- **Objetivo:** visible, 4 (hay 3 al inicio: a=b, c=d y x=y).
 - **Enseña:** la acción **Cadena**: arrastrar desde S por `S–a`, `a=b`, `b–c`, `c=d`, `d–T`. Al soltar, cascada automática. El distractor `c–z` es una trampa para quien cree que cualquier camino sirve: la herramienta no deja pasar de `b–c` a `c–z` porque serían dos enredaderas apagadas seguidas ("Cleo ya tiene farol: tiene que dárselo a alguien antes de pedir otro").
 - **Por qué aquí:** convierte la cadena manual en herramienta. La regla de alternancia no se explica: la impone la física del jardín.
 - **Guion:** Sauce: "Arrastra desde alguien a oscuras. Los faroles saben deslizarse solos."
 - **Pistas:** (1) "Empieza por Sami." (2) el camino correcto se insinúa. (3) el mentor traza hasta la mitad.
-- **Victoria:** 3 faroles.
+- **Victoria:** 4 faroles.
 - **Desbloquea:** acción **Cadena**.
 
 #### 1.4 Callejón
