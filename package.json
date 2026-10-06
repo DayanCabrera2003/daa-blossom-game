@@ -18,6 +18,7 @@
     "test:explore": "FC_SEED=random FC_RUNS=2000 vitest run",
     "coverage": "vitest run --coverage",
     "lint": "eslint .",
+    "check-levels": "tsx tools/check-levels.ts",
     "format": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\""
   },
