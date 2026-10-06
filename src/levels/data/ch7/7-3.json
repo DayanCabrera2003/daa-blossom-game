@@ -36,5 +36,5 @@
   "victory": { "type": "tutteBergeCertificate" },
   "hints": [{ "line": "ch7.3.sauce.01" }, { "line": "ch7.3.sauce.02", "highlight": ["C"] }],
   "script": ["ch7.3.oaks.00"],
-  "solution": [{ "type": "liftStone", "vertex": "C" }]
+  "solution": [{ "type": "liftStone", "vertex": "C" }, { "type": "declareDone" }]
 }

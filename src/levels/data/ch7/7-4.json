@@ -40,6 +40,7 @@
     { "type": "markRoot", "vertex": "R'" },
     { "type": "markMoon", "from": "R'", "to": "a'" },
     { "type": "liftStone", "vertex": "a" },
-    { "type": "liftStone", "vertex": "a'" }
+    { "type": "liftStone", "vertex": "a'" },
+    { "type": "declareDone" }
   ]
 }
