@@ -7,6 +7,7 @@ import { neighbors } from '../graph/queries';
 import type { Graph, VertexId } from '../graph/types';
 import { exposedVertices } from '../matching/queries';
 import type { Matching } from '../matching/types';
+import { invariant } from '../shared/invariant';
 import { plantForest, type AlternatingForest } from '../search/forest';
 import { growStep } from '../search/growForest';
 import type { NodeRef } from '../trace/events';
@@ -75,15 +76,14 @@ export function searchWithFlowers(
         const before = layer;
         const folded = contract(before, findOddCycle(forest, u, x));
         layer = folded.layer;
-        const flower = layer.nodes[folded.blossom] as GardenNode;
-        if (flower.kind === 'blossom') {
-          recorder.record({
-            type: 'contract',
-            blossom: flower.id,
-            base: baseVertex(flower),
-            cycle: flower.cycle.map(refOf),
-          });
-        }
+        const flower = layer.nodes[folded.blossom];
+        invariant(flower?.kind === 'blossom', 'a fold must produce a flower');
+        recorder.record({
+          type: 'contract',
+          blossom: flower.id,
+          base: baseVertex(flower),
+          cycle: flower.cycle.map(refOf),
+        });
         forest = foldForest(forest, before, layer, folded.blossom);
         // Pending suns are renamed; those swallowed by the flower are replaced by the flower.
         const rename = (id: VertexId): VertexId =>

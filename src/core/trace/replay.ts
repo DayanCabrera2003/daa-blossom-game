@@ -43,8 +43,12 @@ export function stateAt(
   let label = new Array<ForestLabel>(initial.mate.length).fill('none');
   let flowers = new Map<number, FlowerSnapshot>();
 
-  const sproutsOf = (ref: NodeRef): VertexId[] =>
-    ref.kind === 'sprout' ? [ref.vertex] : [...(flowers.get(ref.id)?.members ?? [])];
+  const sproutsOf = (ref: NodeRef): VertexId[] => {
+    if (ref.kind === 'sprout') return [ref.vertex];
+    const inner = flowers.get(ref.id);
+    invariant(inner !== undefined, `flower ${ref.id} is folded before it exists`);
+    return [...inner.members];
+  };
 
   for (const event of trace.slice(0, k)) {
     switch (event.type) {
