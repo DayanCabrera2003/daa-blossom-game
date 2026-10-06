@@ -13,7 +13,7 @@ const trap = {
   ],
   goal: { visible: true, value: 2 },
   victory: { type: 'matchingSize', value: 2 },
-  script: ['ch1.1.sauce.00'],
+  flow: [{ step: 'say', lines: ['ch1.1.sauce.00'] }, { step: 'play' }],
   unlocks: { actions: ['passLantern'] },
   solution: [
     { type: 'join', u: 'A', v: 'B' },
@@ -106,7 +106,7 @@ describe('level integrity', () => {
       id: '3.1',
       fog: true,
       water: 1,
-      script: [],
+      flow: [{ step: 'play' }],
       unlocks: { actions: [] },
       solution: [
         { type: 'inspect', vertex: 'A' },

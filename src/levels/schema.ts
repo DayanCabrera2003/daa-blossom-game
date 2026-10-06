@@ -69,8 +69,6 @@ export const levelSchema = z.strictObject({
   hints: z
     .array(z.strictObject({ line: lineId, highlight: z.array(label).default([]) }))
     .default([]),
-  /** Lines spoken during the level, in order. */
-  script: z.array(lineId).default([]),
   notebook: notebook.optional(),
   /** What happens in the level, in order; played until won when the level writes no script. */
   flow: flowSchema,

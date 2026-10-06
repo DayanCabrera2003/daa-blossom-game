@@ -12,7 +12,7 @@ const twoSprouts = {
   goal: { visible: true, value: 1 },
   victory: { type: 'matchingSize', value: 1 },
   hints: [{ line: 'ch0.1.sauce.01', highlight: ['A', 'B'] }],
-  script: ['ch0.1.sauce.00'],
+  flow: [{ step: 'say', lines: ['ch0.1.sauce.00'] }, { step: 'play' }],
   unlocks: { actions: ['join', 'split'] },
   solution: [{ type: 'join', u: 'A', v: 'B' }],
 };
@@ -32,8 +32,16 @@ describe('level schema', () => {
     expect(parsed.mirror).toBeUndefined();
   });
 
+  it('opening lines live in a say step of the script, not in a field of their own', () => {
+    expect(levelSchema.safeParse({ ...twoSprouts, script: ['ch0.1.sauce.00'] }).success).toBe(
+      false,
+    );
+  });
+
   it('a level without a script is played until won', () => {
-    expect(levelSchema.parse(twoSprouts).flow).toEqual([{ step: 'play', reactions: [] }]);
+    expect(levelSchema.parse({ ...twoSprouts, flow: undefined }).flow).toEqual([
+      { step: 'play', reactions: [] },
+    ]);
   });
 
   it('reads the script and the reflection of a level', () => {
@@ -97,7 +105,7 @@ describe('level schema', () => {
   });
 
   it('dialogue lines follow the id format of the voice files', () => {
-    const badLine = { ...twoSprouts, script: ['sauce says hi'] };
+    const badLine = { ...twoSprouts, hints: [{ line: 'sauce says hi' }] };
     expect(levelSchema.safeParse(badLine).success).toBe(false);
   });
 

@@ -35,7 +35,6 @@ export function referencedLines(level: LevelData): string[] {
       : [level.notebook.prompt, ...level.notebook.options.map((option) => option.line)];
   return [
     ...new Set([
-      ...level.script,
       ...level.flow.flatMap(stepLines),
       ...level.hints.map((hint) => hint.line),
       ...notebook,

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { referencedLines } from './lines';
 import { levelSchema } from './schema';
 
-/** A level that speaks in every place a level can: script, hints and notebook. */
+/** A level that speaks in its script, its hints and its notebook. */
 const talkative = levelSchema.parse({
   id: '4.7',
   sprouts: [
@@ -13,7 +13,7 @@ const talkative = levelSchema.parse({
   goal: { visible: true, value: 1 },
   victory: { type: 'matchingSize', value: 1 },
   hints: [{ line: 'ch4.7.sauce.01' }, { line: 'ch4.7.sauce.02', highlight: ['A'] }],
-  script: ['ch4.7.sauce.00', 'ch4.7.sauce.01'],
+  flow: [{ step: 'say', lines: ['ch4.7.sauce.00', 'ch4.7.sauce.01'] }, { step: 'play' }],
   notebook: {
     prompt: 'ch4.7.notebook.00',
     options: [
@@ -39,7 +39,6 @@ describe('referencedLines', () => {
   it('lists the lines of the script, in the order its steps come', () => {
     const scripted = levelSchema.parse({
       ...talkative,
-      script: [],
       notebook: undefined,
       hints: [{ line: 'ch4.7.sauce.09' }],
       flow: [
@@ -80,7 +79,12 @@ describe('referencedLines', () => {
   });
 
   it('is empty for a level that says nothing', () => {
-    const silent = { ...talkative, hints: [], script: [], notebook: undefined };
+    const silent = {
+      ...talkative,
+      hints: [],
+      flow: [{ step: 'play' as const, reactions: [] }],
+      notebook: undefined,
+    };
     expect(referencedLines(silent)).toEqual([]);
   });
 });
