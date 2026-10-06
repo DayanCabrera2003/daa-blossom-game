@@ -73,4 +73,27 @@ describe('the picture of the HUD', () => {
     const looked = act(startSession(foggy.value, 0), { type: 'inspect', vertex: 0 }, 0).session;
     expect(hudPicture(looked, initialPointer('inspect'), 0).water).toEqual({ used: 1, budget: 4 });
   });
+
+  it('hides the sun before level 0.5, where it unlocks; undo and redo are there from 0.1', () => {
+    const at = (id: string) => {
+      const loaded = loadLevel({
+        id,
+        sprouts: [
+          { label: 'A', x: 100, y: 100 },
+          { label: 'B', x: 200, y: 100 },
+        ],
+        vines: [['A', 'B']],
+        goal: { visible: true, value: 1 },
+        victory: { type: 'matchingSize', value: 1 },
+        solution: [{ type: 'join', u: 'A', v: 'B' }],
+      });
+      if (!loaded.ok) throw new Error('fixture does not load');
+      const played = act(startSession(loaded.value, 0), { type: 'join', u: 0, v: 1 }, 0).session;
+      return hudPicture(played, initialPointer('lanterns'), 0);
+    };
+    for (const id of ['0.1', '0.2', '0.3', '0.4']) {
+      expect(at(id)).toMatchObject({ sun: null, canUndo: true });
+    }
+    for (const id of ['0.5', '1.1']) expect(at(id).sun).toEqual({ fraction: 1, steps: 2 });
+  });
 });

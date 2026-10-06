@@ -1,4 +1,5 @@
 import { size } from '@core/matching/queries';
+import { isUiUnlocked } from '@levels/uiUnlocks';
 import type { PointerState } from '../input/pointer';
 import { availableTools, type ToolId } from '../input/tools';
 import { canRedo, canUndo } from '../systems/history';
@@ -23,8 +24,8 @@ export interface HudPicture {
   readonly canRedo: boolean;
   readonly canDeclareDone: boolean;
   readonly hintAvailable: boolean;
-  /** The sun on its slider, and how many states the day has. */
-  readonly sun: { readonly fraction: number; readonly steps: number };
+  /** The sun on its slider, and how many states the day has; null before it unlocks (0.5). */
+  readonly sun: { readonly fraction: number; readonly steps: number } | null;
   readonly tools: readonly ToolId[];
   readonly tool: ToolId;
   readonly won: StarResult | null;
@@ -46,10 +47,12 @@ export function hudPicture(session: LevelSession, pointer: PointerState, now: nu
     canRedo: canRedo(history),
     canDeclareDone: state.allowed.has('declareDone'),
     hintAvailable: isHintAvailable(session, now),
-    sun: {
-      fraction: fractionOfStep(history.cursor, history.states.length),
-      steps: history.states.length,
-    },
+    sun: isUiUnlocked('sun', data.id)
+      ? {
+          fraction: fractionOfStep(history.cursor, history.states.length),
+          steps: history.states.length,
+        }
+      : null,
     tools: availableTools(state.allowed),
     tool: pointer.tool,
     won: session.won,

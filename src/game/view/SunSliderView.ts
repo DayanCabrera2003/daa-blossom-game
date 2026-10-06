@@ -5,14 +5,20 @@ import { PALETTE } from './palette';
 /**
  * The sun of the top bar (GDD 0.5): a slider over the day. Dragging the sun moves through the
  * history; the scene turns the position into a step (`systems/sun.ts`) and seeks the session.
+ * Before the level where it unlocks, neither the track nor the sun is shown.
  */
 export class SunSliderView {
+  private readonly track: Phaser.GameObjects.Graphics;
   private readonly knob: Phaser.GameObjects.Arc;
   private dragging = false;
 
   constructor(scene: Phaser.Scene, seek: (fraction: number) => void) {
     const { x0, x1, y } = LAYOUT.sunTrack;
-    scene.add.graphics().setDepth(100).lineStyle(1, PALETTE.panelEdge).lineBetween(x0, y, x1, y);
+    this.track = scene.add
+      .graphics()
+      .setDepth(100)
+      .lineStyle(1, PALETTE.panelEdge)
+      .lineBetween(x0, y, x1, y);
     this.knob = scene.add
       .circle(x1, y, 4, PALETTE.sun)
       .setDepth(101)
@@ -27,8 +33,11 @@ export class SunSliderView {
     this.knob.on('dragend', () => (this.dragging = false));
   }
 
-  render(sun: { readonly fraction: number }): void {
-    if (this.dragging) return;
+  /** Places the sun on its track, or hides both while the sun is locked (`null`). */
+  render(sun: { readonly fraction: number } | null): void {
+    this.track.setVisible(sun !== null);
+    this.knob.setVisible(sun !== null);
+    if (sun === null || this.dragging) return;
     const { x0, x1 } = LAYOUT.sunTrack;
     this.knob.x = x0 + sun.fraction * (x1 - x0);
   }
