@@ -156,7 +156,31 @@ describe('folding a flower', () => {
     expectQuotient(second.layer);
   });
 
-  it('property (flower lemma, C8): folding keeps the number of missing lanterns', () => {
+  it('folding may hide spare room, but never a chain: missing lanterns can drop', () => {
+    // A dark-based triangle 0–3=2–0 whose three sprouts each have a private neighbor (5, 1, 4),
+    // plus 1–7 and 6–7. G fits 4 lanterns (0=5, 2=4, 3=1, 6=7), 3 more than |M| = 1; folded, the
+    // flower can light only one lantern outwards, so G/B fits 2 and misses only 2.
+    const garden = unwrap(
+      createGraph(8, [
+        [0, 2],
+        [0, 3],
+        [0, 5],
+        [0, 7],
+        [1, 2],
+        [1, 3],
+        [1, 7],
+        [2, 3],
+        [2, 4],
+        [6, 7],
+      ]),
+    );
+    const lantern = unwrap(createMatching(garden, [[2, 3]]));
+    const folded = contract(openLayer(garden, lantern), [0, 3, 2]).layer;
+    expect(optimum(garden) - size(lantern)).toBe(3);
+    expect(optimum(folded.graph) - size(folded.matching)).toBe(2);
+  });
+
+  it('property (flower lemma, C8): M is maximum in G exactly when M/B is maximum in G/B', () => {
     fc.assert(
       fc.property(graphWithMatchingArb({ maxN: 9 }), ([graph, matching]) => {
         let layer = openLayer(graph, matching);
@@ -169,9 +193,12 @@ describe('folding a flower', () => {
           const folded = contract(layer, loop).layer;
           expectQuotient(folded);
           expect(size(folded.matching)).toBe(size(layer.matching) - (loop.length - 1) / 2);
-          expect(optimum(folded.graph) - size(folded.matching)).toBe(
-            optimum(layer.graph) - size(layer.matching),
-          );
+          const missing = optimum(layer.graph) - size(layer.matching);
+          const missingFolded = optimum(folded.graph) - size(folded.matching);
+          // Any matching of G/B unfolds to one of G with k more lanterns, so folding never adds
+          // missing lanterns; and the lemma: none are missing in G/B iff none are missing in G.
+          expect(missingFolded).toBeLessThanOrEqual(missing);
+          expect(missingFolded === 0).toBe(missing === 0);
           layer = folded;
         }
       }),
