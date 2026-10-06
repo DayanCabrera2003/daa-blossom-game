@@ -202,8 +202,14 @@ Definición de "hecho" de cada fase: tests en verde, lint, formato y typecheck l
 
 | Archivo | Responsabilidad |
 |---|---|
-| `playtestLog.ts` | Registro local de la sesión: inicio y fin de nivel, acciones aceptadas y rechazadas (código), pistas pedidas, "Terminé" pulsados, tiempo por nivel (GDD §10, Hito A); se guarda en `localStorage` |
-| `exportLog.ts` | Exporta el registro como JSON descargable desde el hub |
+| `playtestLog.ts` | Modelo del registro (esquema zod): inicio de sesión, inicio y fin de nivel (ganado o abandonado), jugadas aceptadas por tipo, rechazos por código, pistas con su grado, "Terminé" correcto o sin razón, deshacer/rehacer/sol |
+| `playtestSummary.ts` | Reconstruye por nivel: partidas, victorias, mejores estrellas, tiempo, jugadas, rechazos, pistas y "Terminé" (GDD §10, Hito A) |
+| `playtestStore.ts` | Guarda y lee el registro en `localStorage` (`florecer.playtest`); si el navegador lo niega, el juego sigue |
+| `playtestRecorder.ts` | El registro de este navegador mientras se juega: añade entradas y las guarda al instante |
+| `exportLog.ts` | El archivo JSON que se envía: resumen por nivel y entradas en bruto, con fecha en el nombre |
+| `download.ts` | Descarga un archivo en la máquina del jugador (enlace temporal; dependencias inyectadas) |
+
+Además, `game/systems/playtestEntries.ts` (puro) traduce cada paso del controlador en entradas del registro; `LevelScene` las graba, y el hub tiene el botón "Exportar registro de prueba".
 
 **Tests clave:** reloj inyectado; el registro reconstruye tiempo por nivel, pistas y "Terminé" sin razón (pulsado cuando el emparejamiento no es máximo).
 
@@ -212,6 +218,8 @@ Nada sale del navegador del jugador: el registro solo se comparte si él exporta
 ---
 
 ## Fase 8 — Verificación jugable
+
+**La hace el autor en persona** (decisión tomada al cerrar la fase 7): ni capturas automáticas ni scripts de navegador.
 
 - Recorrer en el navegador los 12 niveles de prueba siguiendo su solución de referencia y con al menos un error por nivel (comprobar que el rechazo se explica bien).
 - Comprobar deshacer, rehacer y el sol en 4.6 y 5.1; la niebla con un nivel de prueba temporal; piedras y grupos impares en 7.3 y 7.4.
