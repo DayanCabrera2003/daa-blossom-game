@@ -1,8 +1,9 @@
+import type { Edge } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level, WalkthroughEntry } from '@levels/build';
 import { isFlowInput, type FlowInput } from '@levels/flowInput';
-import { gesturesFor, type Gesture } from '../input/gestures';
+import { gesturesFor, vinePoint, type Gesture } from '../input/gestures';
 import { isFinished } from './flow';
 import {
   handle,
@@ -17,7 +18,8 @@ import type { Refusal } from './refusal';
 /**
  * Plays a level's reference walkthrough through the level controller, with no scene: every move as
  * the touches and drags a player would make where the sprouts really are, every script input as
- * the interface event the scene would send. A level whose walkthrough does not finish its script
+ * the interface event the scene would send; a reflection of the mirror challenge as touches on its
+ * vines. A level whose walkthrough does not finish its script
  * never reaches the browser (plan 03, §0): the playability test and `check-levels` both run this.
  */
 
@@ -53,8 +55,11 @@ function gestureEvents(gesture: Gesture): UiEvent[] {
   ];
 }
 
-/** The interface events that give the script an input. */
-function inputEvents(input: FlowInput): UiEvent[] {
+/**
+ * The interface events that give the script an input; a drawn reflection is touched where its vines
+ * really are instead (`drawEvents`).
+ */
+function inputEvents(input: Exclude<FlowInput, { readonly type: 'drawMirror' }>): UiEvent[] {
   switch (input.type) {
     case 'answer':
       return [{ kind: 'answer', option: input.option }];
@@ -66,8 +71,6 @@ function inputEvents(input: FlowInput): UiEvent[] {
       return [{ kind: 'tapGarden' }];
     case 'tapSprout':
       return [{ kind: 'tapSprout', vertex: input.vertex }];
-    case 'drawMirror':
-      return input.lanterns.map(([u, v]): UiEvent => ({ kind: 'drawToggle', u, v }));
     case 'checkMirror':
       return [{ kind: 'checkMirror' }];
   }
@@ -127,6 +130,49 @@ function moveEvents(controller: Controller, action: Action): UiEvent[] | string 
   }
 }
 
+/**
+ * The touches that draw a reflection in the mirror challenge, one on each of its vines as the
+ * garden shows them now, or why some vine cannot be touched.
+ */
+function drawEvents(controller: Controller, vines: readonly Edge[]): UiEvent[] | string {
+  try {
+    const state = garden(controller.session);
+    return vines.flatMap(([u, v]): UiEvent[] => {
+      const point = vinePoint(state, controller.positions, u, v);
+      return [
+        { kind: 'press', point },
+        { kind: 'release', point },
+      ];
+    });
+  } catch (error) {
+    return error instanceof Error ? error.message : String(error);
+  }
+}
+
+/** Plays a drawn reflection; a touch the challenge refuses is a refused move. */
+function playDrawing(
+  controller: Controller,
+  vines: readonly Edge[],
+  index: number,
+  now: number,
+): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
+  const events = drawEvents(controller, vines);
+  if (typeof events === 'string') {
+    return {
+      controller,
+      effects: [],
+      problem: { code: 'gestureImpossible', entry: index, message: events },
+    };
+  }
+  const played = feed(controller, events, now);
+  const refused = played.effects.find((effect) => effect.kind === 'drawRefused');
+  return {
+    ...played,
+    problem:
+      refused === undefined ? null : { code: 'moveRefused', entry: index, reason: refused.reason },
+  };
+}
+
 /** Plays one entry; returns where it leaves the controller, or the problem it ran into. */
 function playEntry(
   controller: Controller,
@@ -135,6 +181,7 @@ function playEntry(
   now: number,
 ): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
   if (isFlowInput(entry)) {
+    if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
     const played = feed(controller, inputEvents(entry), now);
     const ignored = ANSWERED.has(entry.type) && played.effects.length === 0;
     return { ...played, problem: ignored ? { code: 'inputIgnored', entry: index } : null };

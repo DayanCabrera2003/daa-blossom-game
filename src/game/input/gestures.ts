@@ -28,8 +28,11 @@ const toolOf = (action: Action): ToolId => {
   return tool;
 };
 
-/** A point on the vine u–v that a touch lands on: its middle, or the nearest spot along it that works. */
-function vinePoint(
+/**
+ * A point on the vine u–v that a touch lands on: its middle, or the nearest spot along it that
+ * works. Throws when sprouts or other vines hide the whole vine.
+ */
+export function vinePoint(
   state: GardenState,
   positions: readonly Point[],
   u: VertexId,

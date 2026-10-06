@@ -131,6 +131,45 @@ describe('playing the reference walkthrough of a level without a scene', () => {
     expect(playWalkthrough(short).problem).toEqual({ code: 'unfinished', step: 0 });
   });
 
+  it('a reflection is drawn with touches on its vines: a hidden vine or a refusal is reported', () => {
+    const refused = scripted(
+      [{ step: 'draw', attempts: 1 }],
+      [
+        {
+          type: 'drawMirror',
+          lanterns: [
+            ['A', 'B'],
+            ['B', 'C'],
+          ],
+        },
+        { type: 'checkMirror' },
+      ],
+    );
+    expect(playWalkthrough(refused).problem).toEqual({
+      code: 'moveRefused',
+      entry: 0,
+      reason: { code: 'twoSilver', vertex: 1 },
+    });
+    // C sits on the vine A–B, so the vine cannot be touched apart from its sprouts.
+    const loaded = loadLevel({
+      id: '2.9',
+      sprouts: [
+        { label: 'A', x: 100, y: 100 },
+        { label: 'B', x: 120, y: 100 },
+        { label: 'C', x: 110, y: 100 },
+      ],
+      vines: [['A', 'B']],
+      goal: { visible: false },
+      flow: [{ step: 'draw', attempts: 1 }],
+      solution: [{ type: 'drawMirror', lanterns: [['A', 'B']] }, { type: 'checkMirror' }],
+    });
+    if (!loaded.ok) throw new Error('fixture does not load');
+    expect(playWalkthrough(loaded.value).problem).toMatchObject({
+      code: 'gestureImpossible',
+      entry: 0,
+    });
+  });
+
   it('every level of the catalog plays through', () => {
     for (const level of catalog()) expect(playWalkthrough(level).problem).toBeNull();
   });
