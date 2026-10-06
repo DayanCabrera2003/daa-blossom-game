@@ -137,6 +137,20 @@ describe('the checks of a level script', () => {
     ]);
   });
 
+  it('the mirror challenge needs lanterns that a better reflection can beat', () => {
+    // The pond's lanterns leave the chain A…F; A=B, C=D, E=F and G=H leave none to find.
+    expect(flowProblemsOf({ ...pond, flow: [{ step: 'draw', attempts: 3 }] })).toEqual([]);
+    const full = [
+      ['A', 'B'],
+      ['C', 'D'],
+      ['E', 'F'],
+      ['G', 'H'],
+    ];
+    expect(
+      flowProblemsOf({ ...pond, lanterns: full, flow: [{ step: 'draw', attempts: 3 }] }),
+    ).toEqual([{ code: 'drawUnbeatable', step: 0 }]);
+  });
+
   it('a bet offers the most lanterns the garden holds among its numbers, 1 to its range', () => {
     // The pond holds 4 lanterns: three on the path A…F and G=H.
     const bet = (range: number) => ({ step: 'bet', prompt: 'ch2.1.sauce.01', range });

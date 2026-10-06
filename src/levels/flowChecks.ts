@@ -1,4 +1,4 @@
-import { maximumSize } from '@core/edmonds/fast/maximum';
+import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
 import { nameOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
@@ -16,6 +16,8 @@ export type FlowProblem =
   | { readonly code: 'notebookMissing'; readonly step: number }
   | { readonly code: 'mirrorMissing'; readonly step: number }
   | { readonly code: 'pieceOutsideTangle'; readonly step: number; readonly sprout: string }
+  /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
+  | { readonly code: 'drawUnbeatable'; readonly step: number }
   /** A bet whose numbers (1 to `range`) leave out the most lanterns the garden holds. */
   | {
       readonly code: 'betOutOfRange';
@@ -58,9 +60,10 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
  * The checks of a level script (plan 03, phase 1) that the schema cannot see: every question has a
  * right answer, the notebook step has a notebook to show, the steps of the pond have a reflection,
  * a `count` asks about a sprout that is in the tangle, a bet offers the right number among its
- * own (a bet nobody can win is no bet), and every demo is accepted by the rules.
+ * own (a bet nobody can win is no bet), a mirror challenge can be won (a better reflection
+ * exists), and every demo is accepted by the rules.
  *
- * Lanterns never move outside a play step, so the player's lanterns at a `count` are those the
+ * Lanterns never move outside a play step, so the player's lanterns at a `count` or a `draw` are those the
  * level starts with, or, after a play step, those the reference solution leaves.
  */
 export function checkFlow(level: Level): FlowProblem[] {
@@ -107,6 +110,11 @@ export function checkFlow(level: Level): FlowProblem[] {
         }
         break;
       }
+      case 'draw':
+        if (isMaximum(level.graph, afterPlay ? played : start.matching)) {
+          problems.push({ code: 'drawUnbeatable', step });
+        }
+        break;
       case 'replay': {
         if (flowStep.demo === undefined) break;
         const { refused } = replay(demoStart(start), flowStep.demo);
