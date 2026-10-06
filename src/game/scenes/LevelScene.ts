@@ -7,6 +7,7 @@ import { planAnimation } from '../animation/plan';
 import type { Point } from '../input/target';
 import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../picture/garden';
 import { hudPicture } from '../picture/hud';
+import { checkText } from '../picture/mirrorDrawing';
 import { pondPicture } from '../picture/pond';
 import { reasonText } from '../picture/reasonText';
 import {
@@ -114,6 +115,7 @@ export class LevelScene extends Phaser.Scene {
         redo: () => this.dispatch({ kind: 'redo' }),
         hint: () => this.dispatch({ kind: 'hint' }),
         back: () => this.leave(),
+        checkMirror: () => this.dispatch({ kind: 'checkMirror' }),
       }),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
       sun: new SunSliderView(this, (fraction) => this.dispatch({ kind: 'seek', fraction })),
@@ -211,6 +213,18 @@ export class LevelScene extends Phaser.Scene {
       case 'rejected':
         this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
         break;
+      case 'drawRefused':
+        this.views.toast.show(reasonText(effect.reason, null, this.labels, t));
+        break;
+      case 'mirrorChecked': {
+        // What the check found is painted from the session; here it is told, and a player who
+        // could not beat the garden is let go with a word from the mentor.
+        const { key, params } = checkText(effect.check);
+        this.views.toast.show(t(key, params));
+        if (effect.check.kind === 'notBetter' && effect.check.spared)
+          this.presenter.present({ kind: 'lines', lines: [t('mirror.spared')] });
+        break;
+      }
       case 'animate':
         this.views.animation.play(
           planAnimation(effect.events),
@@ -275,10 +289,8 @@ export class LevelScene extends Phaser.Scene {
       case 'mirror':
       case 'explore':
       case 'separate':
-        // Nothing to queue: the pond is painted from the session on every render.
-        break;
       case 'draw':
-        // The mirror challenge is drawn in plan 03, phase 8.
+        // Nothing to queue: the pond, and the reflection drawn in it, are painted from the session.
         break;
     }
   }

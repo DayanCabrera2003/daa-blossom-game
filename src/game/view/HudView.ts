@@ -13,16 +13,22 @@ export interface HudActions {
   readonly redo: () => void;
   readonly hint: () => void;
   readonly back: () => void;
+  /** Checks the reflection drawn in the mirror challenge. */
+  readonly checkMirror: () => void;
 }
 
 /**
  * The greybox HUD: the goal (or the question, when it is hidden), lanterns lit and water spent on
- * top; "Terminé", undo, redo, hint and back at the bottom right, greyed out when not available.
+ * top; "Terminé", undo, redo, hint and back at the bottom right, greyed out when not available, and
+ * "Comprobar" beside them in the mirror challenge.
  */
 export class HudView {
   private readonly goal: Phaser.GameObjects.Text;
   private readonly status: Phaser.GameObjects.Text;
-  private readonly buttons: Record<'done' | 'undo' | 'redo' | 'hint' | 'back', Button>;
+  private readonly buttons: Record<
+    'done' | 'undo' | 'redo' | 'hint' | 'back' | 'checkMirror',
+    Button
+  >;
 
   constructor(
     scene: Phaser.Scene,
@@ -31,11 +37,11 @@ export class HudView {
   ) {
     this.goal = scene.add.text(LAYOUT.margin, LAYOUT.topY, '', textStyle()).setDepth(100);
     this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
-    const order = ['back', 'hint', 'redo', 'undo', 'done'] as const;
+    const order = ['back', 'hint', 'redo', 'undo', 'done', 'checkMirror'] as const;
     let x = CANVAS_WIDTH - LAYOUT.margin;
     const made: Partial<Record<(typeof order)[number], Button>> = {};
     for (const name of order) {
-      const label = t(name === 'done' ? 'hud.done' : `hud.${name}`);
+      const label = t(`hud.${name}`);
       const button = new Button(scene, 0, LAYOUT.bottomY, label, actions[name]);
       x -= button.width + 3;
       made[name] = button.moveTo(x, LAYOUT.bottomY);
@@ -57,5 +63,6 @@ export class HudView {
     this.buttons.redo.setEnabled(hud.canRedo);
     this.buttons.hint.setEnabled(hud.hintAvailable);
     this.buttons.done.setVisible(hud.canDeclareDone);
+    this.buttons.checkMirror.setVisible(hud.canCheckMirror);
   }
 }
