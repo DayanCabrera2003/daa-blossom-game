@@ -216,7 +216,9 @@ Versión clásica O(n³) (array de bases + LCA), sin traza detallada pero con co
 - **Triple verificación:** didáctica = rápida = fuerza bruta (n ≤ 12); didáctica = rápida (n hasta 200).
 - Propiedad de costo: los pasos crecen polinomialmente (ajuste: `steps(2n) / steps(n)` acotado por ~8 en familias fijas) y los de Bruto exponencialmente.
 
-**Decisión abierta:** la versión didáctica con contracción explícita puede costar más que O(n³). Opciones: (a) el Códex analiza la versión rápida y lo dice explícitamente, o (b) optimizar la didáctica hasta O(n³). Propuesta: (a), con una nota honesta en C11.
+**Decidido (fase 7): (a).** La versión didáctica, con contracción explícita (reconstruye el grafo plegado en cada pliegue), cuesta O(n²·m); C11 analiza la versión rápida O(n³) y lo dice explícitamente. Medido al duplicar el jardín (16 → 32 → 64): la rápida crece ×1.6–×4.5 y la didáctica ×2.5–×4 en caminos, ciclos, completos y aleatorios; Bruto, ×47 en caminos y ×5600 en G(n, ½) de 8 a 16 brotes, y no termina con 20 brotes en 10⁷ pasos.
+
+> **Notas de implementación (2026-10-06):** `fastEdmonds(graph, initial?, counter?)` hace una búsqueda por raíz (cada raíz se busca una sola vez); el contador distingue `scan`, `label`, `rebase` y `flip`. `generators/random.ts` (G(n, p) con semilla) se adelantó desde la fase 11 porque la triple verificación lo necesita. `race(graph, budget)` exige que las tres respuestas coincidan (un desacuerdo es un bug, nunca un punto de la gráfica).
 
 ---
 
@@ -338,6 +340,6 @@ Al cerrar N3: merge `develop → main`, tag `v0.1.0-core`, y el plan 02 (motor d
 
 ## Decisiones abiertas
 
-1. Costo de la versión didáctica vs. la rápida (fase 7): propuesta (a).
+1. ~~Costo de la versión didáctica vs. la rápida~~ **Decidido (fase 7): (a)**, C11 analiza la rápida y explica la diferencia.
 2. ~~Orden de exploración de la búsqueda (BFS o DFS)~~ **Decidido (fase 4): BFS**, soles en cola en orden ascendente; más predecible y fácil de narrar.
 3. Licencia del código.
