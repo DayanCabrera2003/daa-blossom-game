@@ -16,7 +16,7 @@ export default defineConfig({
         'src/core/**/*.ts',
         'src/levels/**/*.ts',
         'src/services/**/*.ts',
-        'src/game/{input,systems,animation,scale}/**/*.ts',
+        'src/game/{input,systems,animation,scale,picture}/**/*.ts',
       ],
       exclude: ['src/**/*.test.ts', 'src/**/types.ts'],
       thresholds: { lines: 95, branches: 95, functions: 95, statements: 95 },

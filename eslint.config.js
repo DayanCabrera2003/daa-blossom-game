@@ -82,7 +82,7 @@ export default tseslint.config(
   {
     // Pure game logic: decisions live here and are unit tested; only scenes and views may draw.
     // A later block replaces the earlier no-restricted-imports options, so ui/ is forbidden again.
-    files: ['src/game/{input,systems,animation,scale}/**/*.ts'],
+    files: ['src/game/{input,systems,animation,scale,picture}/**/*.ts'],
     rules: {
       'no-restricted-imports': forbidLayers(
         ['ui'],
