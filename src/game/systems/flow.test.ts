@@ -5,6 +5,7 @@ import {
   betRight,
   currentStep,
   isFinished,
+  isPast,
   startFlow,
   type FlowEffect,
   type FlowSignal,
@@ -192,6 +193,24 @@ describe('the script engine', () => {
     const tapped = advanceFlow(flow, { type: 'tapSprout', vertex: 3 });
     expect(tapped.effects).toEqual([{ kind: 'sproutTapped', vertex: 3 }, { kind: 'separate' }]);
     expect(advanceFlow(tapped.flow, { type: 'tap' }).effects).toEqual([{ kind: 'finished' }]);
+  });
+
+  it('remembers the sprout touched to explore, and which steps are behind', () => {
+    const steps: LevelStep[] = [{ step: 'mirror' }, { step: 'explore' }, { step: 'separate' }];
+    const { flow } = start(steps);
+    expect(flow.touched).toBeNull();
+    expect([isPast(flow, 'mirror'), isPast(flow, 'explore'), isPast(flow, 'separate')]).toEqual([
+      true,
+      false,
+      false,
+    ]);
+    const tapped = advanceFlow(flow, { type: 'tapSprout', vertex: 3 }).flow;
+    expect(tapped.touched).toBe(3);
+    // Once explore is over, a touch on a sprout no longer changes the one remembered.
+    expect(advanceFlow(tapped, { type: 'tapSprout', vertex: 5 }).flow.touched).toBe(3);
+    const separated = advanceFlow(tapped, { type: 'tap' }).flow;
+    expect(isPast(separated, 'separate')).toBe(true);
+    expect(isPast(separated, 'draw')).toBe(false);
   });
 
   it('a count always asks again until the number the core gives', () => {

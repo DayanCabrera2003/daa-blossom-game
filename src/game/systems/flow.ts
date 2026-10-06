@@ -125,6 +125,8 @@ export interface FlowState {
   } | null;
   /** Better reflections checked in the current `draw` step. */
   readonly attempts: number;
+  /** The sprout touched to explore the tangle (2.1), whose strands stay shown; null before. */
+  readonly touched: VertexId | null;
 }
 
 /** One turn of the engine: the script after a signal, and what to show for it. */
@@ -135,6 +137,10 @@ export const currentStep = (flow: FlowState): LevelStep | null => flow.steps[flo
 
 /** Whether every step of the script is over. */
 export const isFinished = (flow: FlowState): boolean => flow.index >= flow.steps.length;
+
+/** Whether a step of this kind is behind: before the current step, or anywhere once it is over. */
+export const isPast = (flow: FlowState, kind: LevelStep['step']): boolean =>
+  flow.steps.slice(0, flow.index).some((step) => step.step === kind);
 
 /** Whether a formal bet was right; null without a bet, or with an informal one (GDD §5.4). */
 export const betRight = (flow: FlowState): boolean | null =>
@@ -222,6 +228,7 @@ export function startFlow(
     answers: [],
     bet: null,
     attempts: 0,
+    touched: null,
   };
   return enter(flow, 0, []);
 }
@@ -257,7 +264,9 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       return signal.type === 'tap' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'explore':
       return signal.type === 'tapSprout'
-        ? enter(flow, flow.index + 1, [{ kind: 'sproutTapped', vertex: signal.vertex }])
+        ? enter({ ...flow, touched: signal.vertex }, flow.index + 1, [
+            { kind: 'sproutTapped', vertex: signal.vertex },
+          ])
         : unchanged;
     case 'ask': {
       if (signal.type !== 'answer') return unchanged;
