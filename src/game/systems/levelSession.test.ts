@@ -157,7 +157,7 @@ describe('a level session', () => {
  * A path A–B–C–D whose script is `flow`; the play step (if any) is won with two lanterns, and the
  * reflection lights A–B and C–D.
  */
-const scripted = (flow: unknown[]): Level => {
+const scripted = (flow: unknown[], extra: object = {}): Level => {
   const loaded = loadLevel({
     id: '2.9',
     sprouts: [
@@ -182,6 +182,7 @@ const scripted = (flow: unknown[]): Level => {
       : {}),
     flow,
     solution: [{ type: 'tapGarden' }],
+    ...extra,
   });
   if (!loaded.ok) throw new Error('fixture does not load');
   return loaded.value;
@@ -240,6 +241,45 @@ describe('a level session follows its script', () => {
     const right = respond(wrong.session, { type: 'answer', option: 1 }, 0);
     expect(right.effects.map((effect) => effect.kind)).toEqual(['answered', 'finished']);
     expect(right.session.won).toEqual({ total: 2, noHints: true, withinWater: null });
+  });
+
+  it('the notebook ends only with the right statement; false ones are refuted or answered', () => {
+    const notebook = {
+      prompt: 'ch2.9.notebook.00',
+      options: [
+        {
+          line: 'ch2.9.notebook.01',
+          correct: false,
+          counterexample: {
+            mode: 'play',
+            line: 'ch2.9.sauce.05',
+            sprouts: [
+              { label: 'a', x: 100, y: 100 },
+              { label: 'b', x: 200, y: 100 },
+            ],
+            vines: [['a', 'b']],
+            actions: ['join'],
+          },
+        },
+        { line: 'ch2.9.notebook.02', correct: false, reply: 'ch2.9.sauce.06' },
+        { line: 'ch2.9.notebook.03', correct: true },
+      ],
+    };
+    const level = scripted([{ step: 'notebook' }], { notebook });
+    const opened = openSession(level, 0);
+    expect(opened.effects).toEqual([{ kind: 'notebook', step: 0 }]);
+    const refuted = respond(opened.session, { type: 'answer', option: 0 }, 0);
+    expect(refuted.effects.map((effect) => effect.kind)).toEqual([
+      'answered',
+      'counterexample',
+      'notebook',
+    ]);
+    const answered = respond(refuted.session, { type: 'answer', option: 1 }, 0);
+    expect(answered.effects.map((effect) => effect.kind)).toEqual(['answered', 'say', 'notebook']);
+    expect(answered.session.won).toBeNull();
+    const right = respond(answered.session, { type: 'answer', option: 2 }, 0);
+    expect(right.effects.map((effect) => effect.kind)).toEqual(['answered', 'written', 'finished']);
+    expect(right.session.won).not.toBeNull();
   });
 
   it('outside the play step, moves are refused with notNow and change nothing', () => {
