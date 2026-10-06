@@ -17,6 +17,7 @@ import {
   type CounterexampleEffect,
   type CounterexampleEvent,
 } from '../systems/counterexampleController';
+import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
 import { AnimationView } from '../view/AnimationView';
 import { Button } from '../view/Button';
@@ -54,6 +55,8 @@ export interface CounterexampleSceneData {
 export class CounterexampleScene extends Phaser.Scene {
   private context!: GameContext;
   private controller!: CounterexampleController;
+  /** The level whose notebook opened this garden, for the playtest log. */
+  private levelId = '';
   private labels: readonly string[] = [];
   private views!: {
     fog: FogView;
@@ -90,6 +93,7 @@ export class CounterexampleScene extends Phaser.Scene {
       'the level opens only the counterexamples of its own notebook',
     );
     this.controller = openCounterexample(counterexample);
+    this.levelId = data.levelId;
     this.labels = counterexample.data.sprouts.map((sprout) => sprout.label);
 
     // The false statement stays on top, so the player knows what the garden answers.
@@ -189,6 +193,9 @@ export class CounterexampleScene extends Phaser.Scene {
   private dispatch(event: CounterexampleEvent): void {
     if (event.kind !== 'move') this.views.animation.finish();
     const step = handleCounterexample(this.controller, event);
+    this.context.playtest.record(
+      counterexampleEntries(this.levelId, step.effects, this.context.clock()),
+    );
     this.controller = step.controller;
     for (const effect of step.effects) this.show(effect);
     this.render();
