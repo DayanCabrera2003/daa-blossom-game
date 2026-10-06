@@ -19,6 +19,11 @@ describe('which levels are open', () => {
     expect(unlockedLevels(ids, save, false).has('4.1')).toBe(true);
   });
 
+  it('completing the last level opens nothing beyond the catalog', () => {
+    const save = recordCompletion(emptySave(), '5.1', 3);
+    expect(unlockedLevels(ids, save, false)).toEqual(new Set(['0.1', '5.1']));
+  });
+
   it('teacher mode opens everything', () => {
     expect(unlockedLevels(ids, emptySave(), true)).toEqual(new Set(ids));
   });
