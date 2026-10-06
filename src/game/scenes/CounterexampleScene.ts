@@ -6,6 +6,7 @@ import { planAnimation } from '../animation/plan';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { gardenPicture } from '../picture/garden';
+import { checkText, drawingPicture } from '../picture/mirrorDrawing';
 import { reasonText } from '../picture/reasonText';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import {
@@ -25,6 +26,7 @@ import { FogView } from '../view/FogView';
 import { GardenView } from '../view/GardenView';
 import { LAYOUT } from '../view/layout';
 import { MarksView } from '../view/MarksView';
+import { MirrorView } from '../view/MirrorView';
 import { ObjectsView } from '../view/ObjectsView';
 import { PALETTE } from '../view/palette';
 import { textStyle } from '../view/textStyle';
@@ -45,7 +47,8 @@ export interface CounterexampleSceneData {
  * The garden that refutes a false notebook statement (GDD §5.5, plan 03, phase 6), opened over the
  * sleeping level screen. The statement stays on top, the mentor presents the garden, and the player
  * moves lanterns with the counterexample's tools under the core's rules, with no victory, until
- * "Volver al Cuaderno" takes them back to the question. Every decision is the pure controller's
+ * "Volver al Cuaderno" takes them back to the question. In a `mirrorDraw` garden (2.4 c) the player
+ * draws a reflection instead, checks it with "Comprobar", and sees the chain it leaves. Every decision is the pure controller's
  * (`systems/counterexampleController.ts`); this scene forwards touches and draws what it answers.
  */
 export class CounterexampleScene extends Phaser.Scene {
@@ -58,6 +61,7 @@ export class CounterexampleScene extends Phaser.Scene {
     objects: ObjectsView;
     garden: GardenView;
     marks: MarksView;
+    mirror: MirrorView;
     animation: AnimationView;
     toolbar: ToolbarView;
     toast: ToastView;
@@ -65,6 +69,7 @@ export class CounterexampleScene extends Phaser.Scene {
     lanterns: Phaser.GameObjects.Text;
     undo: Button;
     redo: Button;
+    check: Button;
   };
   /** Whether a press started on this screen: the touch that opened it must not end here as a tap. */
   private pressing = false;
@@ -101,6 +106,7 @@ export class CounterexampleScene extends Phaser.Scene {
       objects: new ObjectsView(this),
       garden: new GardenView(this),
       marks: new MarksView(this),
+      mirror: new MirrorView(this, t),
       animation: new AnimationView(this),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
       toast: new ToastView(this),
@@ -115,10 +121,14 @@ export class CounterexampleScene extends Phaser.Scene {
 
   override update(time: number): void {
     this.views.animation.update(time);
+    this.views.mirror.update(time);
   }
 
-  /** Undo, redo and the way back, at the bottom right as on the level screen. */
-  private buttons(back: () => void): { undo: Button; redo: Button } {
+  /**
+   * Undo, redo and the way back, at the bottom right as on the level screen; "Comprobar" for a
+   * drawn reflection, shown only in a `mirrorDraw` garden.
+   */
+  private buttons(back: () => void): { undo: Button; redo: Button; check: Button } {
     const { t } = this.context;
     const leave = new Button(this, 0, LAYOUT.bottomY, t('counterexample.back'), () =>
       this.leave(back),
@@ -129,12 +139,15 @@ export class CounterexampleScene extends Phaser.Scene {
     const undo = new Button(this, 0, LAYOUT.bottomY, t('hud.undo'), () =>
       this.dispatch({ kind: 'undo' }),
     );
+    const check = new Button(this, 0, LAYOUT.bottomY, t('hud.checkMirror'), () =>
+      this.dispatch({ kind: 'checkMirror' }),
+    );
     let x = CANVAS_WIDTH - LAYOUT.margin;
-    for (const button of [leave, redo, undo]) {
+    for (const button of [leave, redo, undo, check]) {
       x -= button.width + 3;
       button.moveTo(x, LAYOUT.bottomY);
     }
-    return { undo, redo };
+    return { undo, redo, check };
   }
 
   /** Pointer and keys go to the controller; touches on buttons and on the dialogue stay theirs. */
@@ -198,9 +211,12 @@ export class CounterexampleScene extends Phaser.Scene {
       case 'say':
         this.views.dialogue.say([line(effect.line)]);
         break;
-      case 'mirrorChecked':
-        // The check is painted from the controller on every render.
+      case 'mirrorChecked': {
+        // What the check found is painted from the controller on every render; here it is told.
+        const { key, params } = checkText(effect.check);
+        this.views.toast.show(t(key, params));
         break;
+      }
     }
   }
 
@@ -210,7 +226,10 @@ export class CounterexampleScene extends Phaser.Scene {
     back();
   }
 
-  /** Repaints the garden, the lanterns lit, the tools and what undo and redo can do. */
+  /**
+   * Repaints the garden, the lanterns lit, the tools and what undo and redo can do; in a
+   * `mirrorDraw` garden, the drawn reflection and your lanterns against it instead.
+   */
   private render(): void {
     const { controller } = this;
     const state = shownGarden(controller);
@@ -226,9 +245,20 @@ export class CounterexampleScene extends Phaser.Scene {
     this.views.garden.render(picture);
     this.views.marks.render(picture.sprouts);
     this.views.toolbar.render(availableTools(state.allowed), pointer.tool);
-    const { history } = controller;
-    this.views.lanterns.setText(this.context.t('hud.lanterns', { count: size(state.matching) }));
-    this.views.undo.setEnabled(canUndo(history));
-    this.views.redo.setEnabled(canRedo(history));
+    const { history, challenge } = controller;
+    const { t } = this.context;
+    const drawing =
+      challenge === null
+        ? null
+        : drawingPicture(state.matching, challenge, controller.positions, this.labels);
+    this.views.mirror.render(drawing, this.time.now);
+    this.views.lanterns.setText(
+      challenge === null
+        ? t('hud.lanterns', { count: size(state.matching) })
+        : t('hud.mirror', { yours: size(state.matching), mirror: size(challenge.draft) }),
+    );
+    this.views.undo.setEnabled(canUndo(history)).setVisible(challenge === null);
+    this.views.redo.setEnabled(canRedo(history)).setVisible(challenge === null);
+    this.views.check.setVisible(challenge !== null);
   }
 }
