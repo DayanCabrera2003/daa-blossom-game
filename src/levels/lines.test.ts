@@ -36,6 +36,51 @@ describe('referencedLines', () => {
     ]);
   });
 
+  it('lists what the notebook says: each statement, its reply and the lines of its garden', () => {
+    const garden = {
+      sprouts: [{ label: 'a', x: 100, y: 100 }],
+      vines: [],
+    };
+    const refuted = levelSchema.parse({
+      ...talkative,
+      hints: [],
+      flow: [{ step: 'play' }],
+      notebook: {
+        prompt: 'ch4.7.notebook.00',
+        options: [
+          { line: 'ch4.7.notebook.01', correct: true, reply: 'ch4.7.sauce.05' },
+          {
+            line: 'ch4.7.notebook.02',
+            correct: false,
+            counterexample: { mode: 'play', line: 'ch4.7.sauce.06', ...garden, actions: ['join'] },
+          },
+          {
+            line: 'ch4.7.notebook.03',
+            correct: false,
+            reply: 'ch4.7.sauce.07',
+            counterexample: {
+              mode: 'mirrorDraw',
+              line: 'ch4.7.sauce.08',
+              found: 'ch4.7.sauce.09',
+              ...garden,
+            },
+          },
+        ],
+      },
+    });
+    expect(referencedLines(refuted)).toEqual([
+      'ch4.7.notebook.00',
+      'ch4.7.notebook.01',
+      'ch4.7.sauce.05',
+      'ch4.7.notebook.02',
+      'ch4.7.sauce.06',
+      'ch4.7.notebook.03',
+      'ch4.7.sauce.07',
+      'ch4.7.sauce.08',
+      'ch4.7.sauce.09',
+    ]);
+  });
+
   it('lists the lines of the script, in the order its steps come', () => {
     const scripted = levelSchema.parse({
       ...talkative,
