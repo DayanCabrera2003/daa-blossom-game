@@ -25,6 +25,7 @@ describe('level schema', () => {
       fog: false,
       water: null,
       forbid: [],
+      draft: false,
       unlocks: { actions: ['join', 'split'], codex: [] },
     });
     expect(parsed.notebook).toBeUndefined();
@@ -87,5 +88,10 @@ describe('level schema', () => {
 
   it('a level needs a reference solution', () => {
     expect(levelSchema.safeParse({ ...twoSprouts, solution: [] }).success).toBe(false);
+  });
+
+  it('marks a test level of a chapter not yet written as a draft', () => {
+    expect(levelSchema.parse({ ...twoSprouts, draft: true }).draft).toBe(true);
+    expect(levelSchema.safeParse({ ...twoSprouts, draft: 'yes' }).success).toBe(false);
   });
 });

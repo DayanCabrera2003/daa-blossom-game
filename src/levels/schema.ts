@@ -81,6 +81,11 @@ export const levelSchema = z.strictObject({
   id: z.string().regex(/^\d+\.\d+$/, 'expected chapter.level, like 4.10'),
   /** Sprouts in id order: the n-th sprout is vertex n. */
   sprouts: z.array(sprout).min(1),
+  /**
+   * A test level of a chapter not yet written: it still passes every integrity check, but only
+   * teacher mode shows it, so playtesters never reach it.
+   */
+  draft: z.boolean().default(false),
   vines: z.array(vine),
   /** Lanterns lit when the level starts. */
   lanterns: z.array(vine).default([]),
