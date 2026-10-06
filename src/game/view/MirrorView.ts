@@ -26,7 +26,9 @@ const progress = (since: number | null, now: number, ms: number): number =>
  * tangle in amber, the reflection's in silver, the pairs both light faded out; the strands of the
  * sprout touched to explore above it. When the tangle separates, the garden sinks under the water
  * and each piece, sprouts and all, drifts to where the picture puts it; when you tie, the whole
- * reflection fades away. It paints the picture and times these two changes, nothing more.
+ * reflection fades away. In the mirror challenge (plan 03, phase 8) it paints the drawing in
+ * silver, and each better check as a separated tangle with its winning thread glowing. It paints
+ * the picture and times these two changes, nothing more.
  */
 export class MirrorView {
   private readonly layer: Phaser.GameObjects.Container;
@@ -101,6 +103,9 @@ export class MirrorView {
           g.lineStyle(4, PALETTE.background, 1).lineBetween(a.x, a.y, b.x, b.y);
         g.lineStyle(1, PALETTE.mirror, 0.25).lineBetween(a.x, a.y, b.x, b.y);
       } else {
+        // The winning thread of a check glows under its strands, so the chain is pointed at.
+        if (strand.piece !== null && strand.piece === picture.winning)
+          g.lineStyle(7, PALETTE.highlight, 0.6).lineBetween(a.x, a.y, b.x, b.y);
         const colour = strand.side === 'yours' ? PALETTE.lit : PALETTE.mirror;
         g.lineStyle(3, colour, 1).lineBetween(a.x, a.y, b.x, b.y);
       }
