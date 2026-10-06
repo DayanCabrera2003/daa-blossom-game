@@ -56,7 +56,8 @@ export type Effect =
   | { readonly kind: 'hint'; readonly content: HintContent }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
-type Step = { controller: Controller; effects: Effect[] };
+/** The controller after an event, and what the scene has to show for it. */
+export type Step = { controller: Controller; effects: Effect[] };
 
 /** A level screen as the level starts, holding the first tool it unlocks. */
 export function startController(level: Level, now: number): Controller {
