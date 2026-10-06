@@ -26,6 +26,17 @@ export function applyAction(state: GardenState, action: Action): ActionOutcome {
   if (!state.allowed.has(action.type)) {
     return reject({ code: 'actionLocked', action: action.type });
   }
+  const outcome = dispatch(state, action);
+  // "Terminé" claims the garden as it is now; any other accepted move withdraws the claim, so it
+  // has to be made again (a wrong claim followed by a fix must not win by itself, level 4.9).
+  if (outcome.ok && action.type !== 'declareDone' && outcome.state.declaredDone) {
+    return { ...outcome, state: { ...outcome.state, declaredDone: false } };
+  }
+  return outcome;
+}
+
+/** Hands an unlocked action to its handler. */
+function dispatch(state: GardenState, action: Action): ActionOutcome {
   switch (action.type) {
     case 'join':
       return join(state, action);
