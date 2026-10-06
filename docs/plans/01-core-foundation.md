@@ -134,7 +134,9 @@ Aquí nace el bosque alternante (sol/luna) en el caso sin ciclos impares. Se hac
 - Propiedad: en grafos bipartitos aleatorios, `size(bipartiteMatching) === bruteForce` y `|koenigCover| === size` y la cobertura es válida (König, C5).
 - Propiedad: cada vértice se etiqueta a lo sumo una vez por búsqueda (base del O(m) de C4).
 - Invariantes del bosque tras cada evento: raíces expuestas, soles a distancia par, lunas impar, cada luna tiene exactamente un hijo (su pareja).
-- Nivel 4.1 (`R–a, a=b, b–c, c=d, d–b, c–e`) **no** es bipartito: la búsqueda bipartita devuelve el error `oddCycleConflict` con el vértice en conflicto (la "traición"), no un resultado falso.
+- Un sol–sol del mismo árbol (ciclo impar) hace que la búsqueda bipartita devuelva el error `oddCycleConflict` con la arista en conflicto, nunca un resultado falso. Caso de prueba: la flor con tallo `R–a=b, b–c=d–b` (el jardín de 4.1 sin la salida `c–e`).
+- Nivel 4.1 completo (`R–a, a=b, b–c, c=d, d–b, c–e`): como el bosque crece desde **todos** los expuestos, el árbol de `e` alcanza a `d` y `b–d` une soles de árboles distintos, así que la búsqueda encuentra `R–a=b–d=c–e`. La "traición" de 4.1 es la del jugador que busca solo desde R (regla que el reducer de la fase 8 modela con una sola raíz), no la del algoritmo.
+- Propiedad: en cualquier grafo, la búsqueda bipartita devuelve conflicto o un resultado correcto (camino aumentante válido, o "sin camino" solo si el emparejamiento es máximo).
 
 ---
 
@@ -330,5 +332,5 @@ Al cerrar N3: merge `develop → main`, tag `v0.1.0-core`, y el plan 02 (motor d
 ## Decisiones abiertas
 
 1. Costo de la versión didáctica vs. la rápida (fase 7): propuesta (a).
-2. Orden de exploración de la búsqueda (BFS o DFS): afecta qué flores ve el jugador en el sol. Propuesta: BFS, más predecible y fácil de narrar.
+2. ~~Orden de exploración de la búsqueda (BFS o DFS)~~ **Decidido (fase 4): BFS**, soles en cola en orden ascendente; más predecible y fácil de narrar.
 3. Licencia del código.
