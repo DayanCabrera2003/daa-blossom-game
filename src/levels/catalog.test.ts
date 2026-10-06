@@ -37,6 +37,7 @@ describe('the level catalog', () => {
   it('holds every level of the game, in order, all loaded', () => {
     expect(catalog().map((level) => level.data.id)).toEqual([
       '0.1',
+      '0.2',
       '1.1',
       '4.1',
       '4.3',

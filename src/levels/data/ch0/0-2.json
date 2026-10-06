@@ -1,0 +1,17 @@
+{
+  "id": "0.2",
+  "sprouts": [
+    { "label": "A", "x": 160, "y": 135 },
+    { "label": "B", "x": 240, "y": 135 },
+    { "label": "C", "x": 320, "y": 135 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"]
+  ],
+  "goal": { "visible": true, "value": 1 },
+  "victory": { "type": "matchingSize", "value": 1 },
+  "hints": [{ "line": "ch0.2.sauce.01" }],
+  "flow": [{ "step": "play" }, { "step": "say", "lines": ["ch0.2.sauce.00"] }],
+  "solution": [{ "type": "join", "u": "A", "v": "B" }]
+}
