@@ -83,7 +83,8 @@ export function act(
   const waterSpent = session.waterSpent + Math.max(0, after.waterUsed - before.waterUsed);
   const won =
     session.won ??
-    (isVictory(after, level.data.victory)
+    // Without a victory the garden never wins the level: its script ends it (plan 03, phase 2).
+    (level.data.victory !== undefined && isVictory(after, level.data.victory)
       ? computeStars({
           hintsOpened: session.hints.opened,
           waterSpent,
@@ -132,8 +133,12 @@ export function askHint(
   const opened = openHint(session.hints, now);
   if (opened === null) return null;
   const { level } = session;
-  const goal = { start: level.start, solution: level.solution, victory: level.data.victory };
-  const step = opened.grade >= 2 ? nextMove(goal, garden(session)) : null;
+  const { victory } = level.data;
+  // The mentor's step leads to the victory; a level without one has no step to give.
+  const step =
+    opened.grade >= 2 && victory !== undefined
+      ? nextMove({ start: level.start, solution: level.solution, victory }, garden(session))
+      : null;
   return {
     session: { ...session, hints: opened.hints },
     hint: hintContent(level.hints, opened.grade, step),

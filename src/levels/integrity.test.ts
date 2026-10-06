@@ -136,6 +136,23 @@ describe('level integrity', () => {
     ]);
   });
 
+  it('a play step needs a victory to end, and a victory needs a play step to be reached', () => {
+    expect(problemsOf({ ...trap, victory: undefined })).toEqual([{ code: 'playWithoutVictory' }]);
+    const noPlay = { ...trap, flow: [{ step: 'say', lines: ['ch1.1.sauce.00'] }] };
+    expect(problemsOf(noPlay)).toEqual([{ code: 'victoryWithoutPlay' }]);
+  });
+
+  it('a level that is only talk has no victory to check', () => {
+    const talk = {
+      ...trap,
+      victory: undefined,
+      lanterns: [['A', 'B']],
+      flow: [{ step: 'say', lines: ['ch1.1.sauce.00'] }],
+      solution: [{ type: 'tapGarden' }],
+    };
+    expect(problemsOf(talk)).toEqual([]);
+  });
+
   it('what a level unlocks must match the unlock table of the rules', () => {
     const wrong = { ...trap, unlocks: { actions: ['chain'] } };
     expect(problemsOf(wrong)).toContainEqual({

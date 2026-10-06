@@ -32,11 +32,14 @@ const mentorPlays = (goal: MentorGoal, from: GardenState, limit = 200): number =
   throw new Error('the mentor did not finish');
 };
 
-const goalOf = (level: Level): MentorGoal => ({
-  start: level.start,
-  solution: level.solution,
-  victory: level.data.victory,
-});
+/** The mentor's goal in a level; only levels with a victory have one. */
+const goalOf = (level: Level): MentorGoal => {
+  const { victory } = level.data;
+  if (victory === undefined) throw new Error(`level ${level.data.id} has no victory`);
+  return { start: level.start, solution: level.solution, victory };
+};
+/** The levels the mentor can win: those whose script has a victory to reach. */
+const winnable = () => catalog().filter((level) => level.data.victory !== undefined);
 const levelById = (id: string): Level => {
   const level = catalog().find((l) => l.data.id === id);
   if (level === undefined) throw new Error(`no level ${id}`);
@@ -50,7 +53,7 @@ const after = (level: Level, actions: Action[]): GardenState =>
   }, level.start);
 
 describe("the mentor's next step (hint grade 3)", () => {
-  it.each(catalog().map((level) => [level.data.id, level] as const))(
+  it.each(winnable().map((level) => [level.data.id, level] as const))(
     'wins level %s from the start, with moves the rules accept',
     (_, level) => {
       expect(mentorPlays(goalOf(level), level.start)).toBeGreaterThan(0);
@@ -144,7 +147,7 @@ describe("the mentor's next step (hint grade 3)", () => {
 
   it('stones: lifts the moons of the failed search when no solution guides it (7.3)', () => {
     const level = levelById('7.3');
-    const goal: MentorGoal = { start: level.start, solution: [], victory: level.data.victory };
+    const goal: MentorGoal = { ...goalOf(level), solution: [] };
     expect(nextMove(goal, level.start)).toEqual({ type: 'liftStone', vertex: 0 });
     mentorPlays(goal, level.start);
   });

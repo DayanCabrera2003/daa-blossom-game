@@ -28,6 +28,8 @@ describe.each(catalog().map((level) => [level.data.id, level] as const))('level 
       if (!outcome.ok) return;
       state = outcome.state;
     }
-    expect(isVictory(state, level.data.victory)).toBe(true);
+    // A level without a victory is ended by its script, which these moves do not play.
+    const { victory } = level.data;
+    expect(victory === undefined || isVictory(state, victory)).toBe(true);
   });
 });

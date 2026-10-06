@@ -87,6 +87,30 @@ describe('a level session', () => {
     expect(askHint(startSession(level, 0), 1)).toBeNull();
   });
 
+  it('a level without a victory is never won by moves, and its mentor proposes none', () => {
+    const talk = loadLevel({
+      id: '2.2',
+      sprouts: [
+        { label: 'A', x: 100, y: 100 },
+        { label: 'B', x: 200, y: 100 },
+      ],
+      vines: [['A', 'B']],
+      goal: { visible: false },
+      flow: [{ step: 'say', lines: ['ch2.2.sauce.00'] }],
+      solution: [{ type: 'tapGarden' }],
+    });
+    if (!talk.ok) throw new Error('fixture does not load');
+    const played = playAll(startSession(talk.value, 0), [{ type: 'join', u: 0, v: 1 }]);
+    expect(played.won).toBeNull();
+    let session = played;
+    for (let k = 1; k <= 3; k++) {
+      const opened = askHint(session, k * HINT_DELAY_MS);
+      if (opened === null) throw new Error('hint not offered');
+      session = opened.session;
+      expect(opened.hint.move).toBeNull();
+    }
+  });
+
   it('water spent in the session is not given back by undoing (the water star)', () => {
     const foggy = loadLevel({
       id: '3.1',

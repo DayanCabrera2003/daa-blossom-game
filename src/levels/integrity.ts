@@ -10,6 +10,8 @@ import { referencedLines } from './lines';
 
 /** Something wrong with a level that the schema alone cannot see. */
 export type IntegrityProblem =
+  | { readonly code: 'playWithoutVictory' }
+  | { readonly code: 'victoryWithoutPlay' }
   | { readonly code: 'wonAtStart' }
   | { readonly code: 'goalMismatch'; readonly declared: number; readonly optimum: number }
   | { readonly code: 'victoryOutOfReach'; readonly value: number; readonly optimum: number }
@@ -30,13 +32,19 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
   const problems: IntegrityProblem[] = [];
   const { data, start } = level;
   const optimum = maximumSize(level.graph);
+  const { victory } = data;
 
-  if (isVictory(start, data.victory)) problems.push({ code: 'wonAtStart' });
+  // The play step ends when the victory holds; without one of the two, the other is meaningless.
+  const plays = level.flow.some((step) => step.step === 'play');
+  if (plays && victory === undefined) problems.push({ code: 'playWithoutVictory' });
+  if (!plays && victory !== undefined) problems.push({ code: 'victoryWithoutPlay' });
+
+  if (victory !== undefined && isVictory(start, victory)) problems.push({ code: 'wonAtStart' });
   if (data.goal.visible && data.goal.value !== optimum) {
     problems.push({ code: 'goalMismatch', declared: data.goal.value, optimum });
   }
-  if (data.victory.type === 'matchingSize' && data.victory.value > optimum) {
-    problems.push({ code: 'victoryOutOfReach', value: data.victory.value, optimum });
+  if (victory?.type === 'matchingSize' && victory.value > optimum) {
+    problems.push({ code: 'victoryOutOfReach', value: victory.value, optimum });
   }
 
   let state = start;
@@ -57,7 +65,9 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     }
     state = outcome.state;
   }
-  if (replayed && !isVictory(state, data.victory)) problems.push({ code: 'solutionFallsShort' });
+  if (replayed && victory !== undefined && !isVictory(state, victory)) {
+    problems.push({ code: 'solutionFallsShort' });
+  }
   if (replayed && data.water !== null && state.waterUsed > data.water) {
     problems.push({ code: 'solutionOverWater', used: state.waterUsed, budget: data.water });
   }

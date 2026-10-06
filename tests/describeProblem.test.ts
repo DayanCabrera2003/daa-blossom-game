@@ -26,6 +26,8 @@ describe('readable level problems', () => {
       { code: 'solutionOverWater', used: 5, budget: 4 },
       { code: 'foreignLine', line: 'ch2.1.sauce.00' },
       { code: 'unlockMismatch', action: 'chain', unlockedAt: '1.3' },
+      { code: 'playWithoutVictory' },
+      { code: 'victoryWithoutPlay' },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

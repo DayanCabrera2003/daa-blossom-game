@@ -64,7 +64,8 @@ export const levelSchema = z.strictObject({
   water: z.number().int().min(0).nullable().default(null),
   /** Actions unlocked by now that this level keeps closed (4.10 closes folding). */
   forbid: z.array(actionType).default([]),
-  victory,
+  /** When the play step is won; required exactly when the script has a play step. */
+  victory: victory.optional(),
   /** Hints: a voiced line and the sprouts to highlight (GDD §5.3). */
   hints: z
     .array(z.strictObject({ line: lineId, highlight: z.array(label).default([]) }))

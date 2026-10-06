@@ -81,6 +81,10 @@ describe('level schema', () => {
     expect(levelSchema.safeParse(onlyInputs).success).toBe(true);
   });
 
+  it('a level may have no victory: its script, not a garden, decides when it ends', () => {
+    expect(levelSchema.parse({ ...twoSprouts, victory: undefined }).victory).toBeUndefined();
+  });
+
   it('rejects level ids that are not chapter.level', () => {
     expect(levelSchema.safeParse({ ...twoSprouts, id: '0-1' }).success).toBe(false);
   });
