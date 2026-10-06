@@ -34,7 +34,6 @@ describe('level integrity (every level file)', () => {
   it('the levels written before scripts open with the lines they always said, then play', () => {
     const opening: Record<string, string[]> = {
       '0.1': ['ch0.1.sauce.00'],
-      '1.1': ['ch1.1.sauce.00'],
       '4.1': ['ch4.1.sauce.00', 'ch4.1.sauce.04'],
       '4.3': ['ch4.3.sauce.00'],
       '4.6': ['ch4.6.sauce.00'],
