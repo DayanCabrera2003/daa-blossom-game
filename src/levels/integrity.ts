@@ -1,5 +1,4 @@
-import { fastEdmonds } from '@core/edmonds/fast/solve';
-import { size } from '@core/matching/queries';
+import { maximumSize } from '@core/edmonds/fast/maximum';
 import type { ActionType } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import { UNLOCKED_AT } from '@core/rules/permissions';
@@ -29,7 +28,7 @@ export type IntegrityProblem =
 export function checkIntegrity(level: Level): IntegrityProblem[] {
   const problems: IntegrityProblem[] = [];
   const { data, start } = level;
-  const optimum = size(fastEdmonds(level.graph));
+  const optimum = maximumSize(level.graph);
 
   if (isVictory(start, data.victory)) problems.push({ code: 'wonAtStart' });
   if (data.goal.visible && data.goal.value !== optimum) {
