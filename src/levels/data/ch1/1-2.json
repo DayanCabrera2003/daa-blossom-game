@@ -1,0 +1,46 @@
+{
+  "id": "1.2",
+  "sprouts": [
+    { "label": "A", "x": 50, "y": 60 },
+    { "label": "B", "x": 150, "y": 135 },
+    { "label": "C", "x": 210, "y": 135 },
+    { "label": "D", "x": 280, "y": 135 },
+    { "label": "E", "x": 340, "y": 135 },
+    { "label": "F", "x": 430, "y": 210 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "F"]
+  ],
+  "lanterns": [
+    ["B", "C"],
+    ["D", "E"]
+  ],
+  "goal": { "visible": true, "value": 3 },
+  "victory": { "type": "matchingSize", "value": 3 },
+  "hints": [
+    { "line": "ch1.2.sauce.01" },
+    { "line": "ch1.2.sauce.02", "highlight": ["A"] },
+    { "line": "ch1.2.sauce.03" }
+  ],
+  "flow": [
+    { "step": "play" },
+    {
+      "step": "replay",
+      "demo": [
+        { "type": "passLantern", "from": "A", "to": "B" },
+        { "type": "passLantern", "from": "C", "to": "D" },
+        { "type": "join", "u": "E", "v": "F" }
+      ]
+    },
+    { "step": "say", "lines": ["ch1.2.sauce.00"] }
+  ],
+  "solution": [
+    { "type": "passLantern", "from": "A", "to": "B" },
+    { "type": "passLantern", "from": "C", "to": "D" },
+    { "type": "join", "u": "E", "v": "F" }
+  ]
+}
