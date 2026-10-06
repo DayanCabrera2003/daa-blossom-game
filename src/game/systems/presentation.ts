@@ -3,9 +3,10 @@ import type { Question } from './question';
 import type { StarResult } from './stars';
 
 /**
- * The order the player sees things in on the level screen (plan 03, phases 3 and 4). Lines of
- * dialogue, questions, the replayed day and the victory panel never overlap: each waits until the
- * one before it is over (the lines closed, the question answered, the replay finished). Pure: the scene shows what this says to start and
+ * The order the player sees things in on the level screen (plan 03, phases 3, 4 and 6). Lines of
+ * dialogue, questions, counterexamples, the replayed day and the victory panel never overlap: each
+ * waits until the one before it is over (the lines closed, the question answered, the player back
+ * from the counterexample, the replay finished). Pure: the scene shows what this says to start and
  * reports back when it is over. Toasts and move animations are not queued; they show at once.
  */
 
@@ -17,6 +18,11 @@ export type Presentation =
   | { readonly kind: 'question'; readonly question: Question }
   /** The day replaying itself through these states, dawn to dusk; the garden takes no input. */
   | { readonly kind: 'replay'; readonly day: readonly GardenState[] }
+  /**
+   * The garden that refutes a false notebook statement (`option`), in a screen of its own; over when
+   * the player goes back to the notebook.
+   */
+  | { readonly kind: 'counterexample'; readonly option: number }
   /** The victory panel; the level ends with it, so nothing after it ever shows. */
   | { readonly kind: 'victory'; readonly stars: StarResult };
 
