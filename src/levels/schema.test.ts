@@ -59,6 +59,20 @@ describe('level schema', () => {
     expect(parsed.solution).toHaveLength(3);
   });
 
+  it('reads the script inputs of a walkthrough between its moves', () => {
+    const parsed = levelSchema.parse({
+      ...twoSprouts,
+      solution: [
+        { type: 'answer', option: 0 },
+        { type: 'join', u: 'A', v: 'B' },
+        { type: 'seekSun', fraction: 0 },
+      ],
+    });
+    expect(parsed.solution.map((entry) => entry.type)).toEqual(['answer', 'join', 'seekSun']);
+    const onlyInputs = { ...twoSprouts, solution: [{ type: 'tapGarden' }] };
+    expect(levelSchema.safeParse(onlyInputs).success).toBe(true);
+  });
+
   it('rejects level ids that are not chapter.level', () => {
     expect(levelSchema.safeParse({ ...twoSprouts, id: '0-1' }).success).toBe(false);
   });

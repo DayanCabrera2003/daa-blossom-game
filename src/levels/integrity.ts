@@ -5,6 +5,7 @@ import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { RejectReason } from '@core/rules/reasons';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from './build';
+import { isFlowInput } from './flowInput';
 import { referencedLines } from './lines';
 
 /** Something wrong with a level that the schema alone cannot see. */
@@ -40,7 +41,9 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
 
   let state = start;
   let replayed = true;
-  for (const [step, action] of level.solution.entries()) {
+  for (const [step, action] of level.walkthrough.entries()) {
+    // Script inputs never change the lanterns; steps are numbered as the file writes them.
+    if (isFlowInput(action)) continue;
     if (!start.allowed.has(action.type)) {
       problems.push({ code: 'solutionLocked', step, action: action.type });
       replayed = false;

@@ -96,6 +96,48 @@ describe('building a level', () => {
   });
 });
 
+describe('the walkthrough of a level', () => {
+  const walked = levelSchema.parse({
+    ...rotate,
+    solution: [
+      { type: 'answer', option: 1 },
+      { type: 'rotateStem', stem: ['R', 'a', 'b'] },
+      { type: 'tapSprout', vertex: 'c' },
+      { type: 'drawMirror', lanterns: [['R', 'a']] },
+      { type: 'chain', path: ['b', 'd', 'c', 'e'] },
+      { type: 'checkMirror' },
+    ],
+  });
+
+  it('keeps every entry in order, with ids', () => {
+    expect(unwrapLevel(walked).walkthrough).toEqual([
+      { type: 'answer', option: 1 },
+      { type: 'rotateStem', stem: [0, 1, 2] },
+      { type: 'tapSprout', vertex: 3 },
+      { type: 'drawMirror', lanterns: [[0, 1]] },
+      { type: 'chain', path: [2, 4, 3, 5] },
+      { type: 'checkMirror' },
+    ]);
+  });
+
+  it('gives the moves alone as the solution', () => {
+    expect(unwrapLevel(walked).solution).toEqual([
+      { type: 'rotateStem', stem: [0, 1, 2] },
+      { type: 'chain', path: [2, 4, 3, 5] },
+    ]);
+  });
+
+  it('says which sprout a script input names wrongly', () => {
+    const tap = levelSchema.parse({ ...rotate, solution: [{ type: 'tapSprout', vertex: 'y' }] });
+    expect(buildLevel(tap)).toMatchObject({ error: { code: 'badLabel', error: { name: 'y' } } });
+    const draw = levelSchema.parse({
+      ...rotate,
+      solution: [{ type: 'drawMirror', lanterns: [['R', 'x']] }],
+    });
+    expect(buildLevel(draw)).toMatchObject({ error: { code: 'badLabel', error: { name: 'x' } } });
+  });
+});
+
 describe('the script of a level', () => {
   it('is "play until won" when the level writes none', () => {
     expect(unwrapLevel(rotate).flow).toEqual([{ step: 'play', reactions: [] }]);

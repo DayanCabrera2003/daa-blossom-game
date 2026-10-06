@@ -39,3 +39,13 @@ export type FlowInput =
   | Exclude<LevelFlowInput, { type: 'tapSprout' } | { type: 'drawMirror' }>
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
   | { readonly type: 'drawMirror'; readonly lanterns: readonly Edge[] };
+
+/** The tag of a script input. */
+export type FlowInputType = LevelFlowInput['type'];
+
+const INPUT_TYPES: ReadonlySet<string> = new Set(FLOW_INPUT_TYPES);
+
+/** Whether a walkthrough entry is a script input rather than a garden move. */
+export const isFlowInput = <T extends { readonly type: string }>(
+  entry: T,
+): entry is Extract<T, { readonly type: FlowInputType }> => INPUT_TYPES.has(entry.type);

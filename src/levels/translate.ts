@@ -1,9 +1,10 @@
-import { idOf, type LabelError, type Labels } from '@core/graph/labels';
+import { idOf, toEdges, type LabelError, type Labels } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { err, ok, type Result } from '@core/shared/result';
 import type { LevelAction } from './fields';
 import type { FlowStep, LevelStep } from './flow';
+import { isFlowInput, type FlowInput, type LevelFlowInput } from './flowInput';
 
 /*
  * Turns what a level file writes with sprout names into the same thing with sprout ids, as the
@@ -76,4 +77,28 @@ export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, L
     default:
       return ok(step);
   }
+}
+
+/** Translates one script input of a walkthrough: the sprout touched, the reflection drawn. */
+function toFlowInput(labels: Labels, input: LevelFlowInput): Result<FlowInput, LabelError> {
+  switch (input.type) {
+    case 'tapSprout': {
+      const vertex = named(labels, input.vertex);
+      return vertex.ok ? ok({ type: 'tapSprout', vertex: vertex.value }) : vertex;
+    }
+    case 'drawMirror': {
+      const lanterns = toEdges(labels, input.lanterns);
+      return lanterns.ok ? ok({ type: 'drawMirror', lanterns: lanterns.value }) : lanterns;
+    }
+    default:
+      return ok(input);
+  }
+}
+
+/** Translates one entry of a walkthrough, a garden move or a script input. */
+export function toWalkthroughEntry(
+  labels: Labels,
+  entry: LevelAction | LevelFlowInput,
+): Result<Action | FlowInput, LabelError> {
+  return isFlowInput(entry) ? toFlowInput(labels, entry) : toAction(labels, entry);
 }

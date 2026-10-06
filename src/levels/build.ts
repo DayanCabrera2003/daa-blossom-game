@@ -9,7 +9,11 @@ import { createGardenState, type GardenState } from '@core/rules/state';
 import { err, ok, type Result } from '@core/shared/result';
 import type { LevelData } from './schema';
 import type { LevelStep } from './flow';
-import { toActions, toLevelStep } from './translate';
+import { isFlowInput, type FlowInput } from './flowInput';
+import { toLevelStep, toWalkthroughEntry } from './translate';
+
+/** One entry of a walkthrough: a garden move, or an input the script asks for. */
+export type WalkthroughEntry = Action | FlowInput;
 
 /** A level ready to play: its data, and the core objects built from it. */
 export interface Level {
@@ -22,8 +26,10 @@ export interface Level {
   readonly mirror: Matching | null;
   /** What happens in the level, in order, with sprout ids. */
   readonly flow: readonly LevelStep[];
-  /** The reference solution, with sprout ids. */
+  /** The moves of the reference walkthrough, with sprout ids. */
   readonly solution: readonly Action[];
+  /** The whole reference walkthrough in order, moves and script inputs, with sprout ids. */
+  readonly walkthrough: readonly WalkthroughEntry[];
   /** The hints, each with the ids of the sprouts it lights up. */
   readonly hints: readonly LevelHint[];
 }
@@ -88,8 +94,13 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     flow.push(built.value);
   }
 
-  const solution = toActions(labels.value, data.solution);
-  if (!solution.ok) return err({ code: 'badLabel', error: solution.error });
+  const walkthrough: WalkthroughEntry[] = [];
+  for (const entry of data.solution) {
+    const built = toWalkthroughEntry(labels.value, entry);
+    if (!built.ok) return err({ code: 'badLabel', error: built.error });
+    walkthrough.push(built.value);
+  }
+  const solution = walkthrough.filter((entry): entry is Action => !isFlowInput(entry));
 
   const forbidden = new Set(data.forbid);
   const start = createGardenState({
@@ -105,7 +116,8 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     start,
     mirror,
     flow,
-    solution: solution.value,
+    solution,
+    walkthrough,
     hints,
   });
 }

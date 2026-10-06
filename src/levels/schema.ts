@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { actionType, label, levelAction, lineId, vine } from './fields';
+import { actionType, label, levelActionOptions, lineId, vine } from './fields';
 import { flowSchema } from './flow';
+import { flowInputOptions } from './flowInput';
 
 /**
  * The shape of a level file (`levels/data/chN/N-M.json`), the single source of truth of a level's
@@ -82,8 +83,13 @@ export const levelSchema = z.strictObject({
         .default([]),
     })
     .default({ actions: [], codex: [] }),
-  /** A reference solution, replayed by the integrity checks with the real rules. */
-  solution: z.array(levelAction).min(1),
+  /**
+   * The reference walkthrough: the moves, replayed by the integrity checks with the real rules, and
+   * between them the inputs the script asks for (answers, bets, the sun, touches). At least one entry.
+   */
+  solution: z
+    .array(z.discriminatedUnion('type', [...levelActionOptions, ...flowInputOptions]))
+    .min(1),
 });
 
 /** A level file after validation, defaults filled in. */

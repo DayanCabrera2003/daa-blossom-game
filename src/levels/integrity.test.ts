@@ -75,6 +75,26 @@ describe('level integrity', () => {
     });
   });
 
+  it('script inputs in the solution leave the garden alone, and count as steps', () => {
+    const answered = {
+      ...trap,
+      solution: [{ type: 'answer', option: 0 }, ...trap.solution, { type: 'tapGarden' }],
+    };
+    expect(problemsOf(answered)).toEqual([]);
+    const refused = {
+      ...trap,
+      solution: [
+        { type: 'bet', value: 2 },
+        { type: 'join', u: 'A', v: 'C' },
+      ],
+    };
+    expect(problemsOf(refused)).toContainEqual({
+      code: 'solutionRefused',
+      step: 1,
+      reason: { code: 'notAdjacent', u: 0, v: 2 },
+    });
+  });
+
   it('the solution must actually win', () => {
     const short = { ...trap, solution: [{ type: 'join', u: 'B', v: 'C' }] };
     expect(problemsOf(short)).toContainEqual({ code: 'solutionFallsShort' });
