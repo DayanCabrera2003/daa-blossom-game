@@ -1,0 +1,41 @@
+{
+  "id": "4.7",
+  "sprouts": [
+    { "label": "R", "x": 30, "y": 135 },
+    { "label": "a", "x": 90, "y": 135 },
+    { "label": "b", "x": 150, "y": 135 },
+    { "label": "c", "x": 210, "y": 135 },
+    { "label": "d", "x": 270, "y": 135 },
+    { "label": "e", "x": 340, "y": 75 },
+    { "label": "f", "x": 340, "y": 195 },
+    { "label": "T", "x": 430, "y": 75 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "e"],
+    ["e", "f"],
+    ["f", "d"],
+    ["e", "T"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"]
+  ],
+  "goal": { "visible": true, "value": 4 },
+  "victory": { "type": "matchingSize", "value": 4 },
+  "script": ["ch4.7.sauce.00"],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "markMoon", "from": "d", "to": "e" },
+    { "type": "foldAt", "from": "f", "to": "d" },
+    { "type": "markMoon", "from": "e", "to": "T" },
+    { "type": "unfold", "blossom": 0 },
+    { "type": "chain", "path": ["R", "a", "b", "c", "d", "f", "e", "T"] }
+  ]
+}
