@@ -5,6 +5,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { graphWithTwoMatchingsArb } from '../../../tests/support/arbitraries';
 import { POND, pondLevel } from '../../../tests/support/pondGarden';
+import { act, garden, startSession } from './levelSession';
 import { degreeIn, lanternsOn, pieceOf, pondPieces, sharedPairs, winningPiece } from './pond';
 
 const level = pondLevel();
@@ -66,6 +67,15 @@ describe('the pond: your lanterns against the reflection', () => {
     expect(isExposed(yours, first) && isExposed(yours, last)).toBe(true);
     const outcome = applyAction(level.start, { type: 'chain', path: winner.sprouts });
     expect(outcome.ok).toBe(true);
+  });
+
+  it('played in 2.3, the winning thread ties you with the reflection and wins the level', () => {
+    const winner = winningPiece(yours, mirror);
+    invariant(winner !== null, 'the reflection holds one more lantern');
+    const played = act(startSession(level, 0), { type: 'chain', path: winner.sprouts }, 0);
+    expect(played.outcome.ok).toBe(true);
+    expect(played.session.won).not.toBeNull();
+    expect(winningPiece(garden(played.session).matching, mirror)).toBeNull();
   });
 
   it('no piece wins once you tie: the reflection is no better than your garden', () => {
