@@ -23,6 +23,7 @@ npm run dev        # start the dev server
 npm test           # run the test suite
 npm run lint       # lint the code
 npm run typecheck  # type-check without emitting
+npm run check-levels  # check every level file against the rules and Edmonds
 npm run test:explore  # property tests with a random seed and 2000 cases each
 ```
 
