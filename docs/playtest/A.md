@@ -96,7 +96,7 @@ Se recomienda el build de producción o Pages: es lo que verá un jugador real.
 - Sentarse detrás o al lado, sin tocar el ratón ni señalar la pantalla.
 - No intervenir salvo un fallo técnico (el juego se cuelga, la página no carga).
 - Si la persona se queda en silencio, recordar una sola vez: "¿Qué estás pensando?"
-- Las pistas del juego existen para esto: si pregunta, se le puede recordar que el juego tiene un botón de pista, sin decir cuándo usarlo. **Propuesta:** decirlo solo si lleva más de 3 minutos parada sin moverse.
+- Las pistas son parte del juego: él mismo las ofrece tras 90 segundos sin avanzar o tres intentos rechazados. El observador no las menciona; si la persona pregunta, se responde como a cualquier otra pregunta ("¿Qué crees tú?").
 
 ### Qué anotar a mano (el registro no lo ve)
 
