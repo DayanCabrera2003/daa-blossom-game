@@ -1,5 +1,4 @@
-import { createGraph, type GraphError } from '@core/graph/createGraph';
-import { createLabels, idOf, toEdges, type LabelError, type Labels } from '@core/graph/labels';
+import { idOf, toEdges, type Labels } from '@core/graph/labels';
 import type { Graph, VertexId } from '@core/graph/types';
 import { createMatching, type MatchingError } from '@core/matching/createMatching';
 import type { Matching } from '@core/matching/types';
@@ -10,6 +9,7 @@ import { err, ok, type Result } from '@core/shared/result';
 import type { LevelData } from './schema';
 import type { LevelStep } from './flow';
 import { isFlowInput, type FlowInput } from './flowInput';
+import { buildGarden, type GardenError } from './garden';
 import { toLevelStep, toWalkthroughEntry } from './translate';
 
 /** One entry of a walkthrough: a garden move, or an input the script asks for. */
@@ -42,10 +42,7 @@ export interface LevelHint {
 
 /** Why a schema-valid level file still does not describe a playable garden. */
 export type BuildError =
-  | { readonly code: 'badLabel'; readonly error: LabelError }
-  | { readonly code: 'badGraph'; readonly error: GraphError }
-  | { readonly code: 'badLanterns'; readonly error: MatchingError }
-  | { readonly code: 'badMirror'; readonly error: MatchingError };
+  GardenError | { readonly code: 'badMirror'; readonly error: MatchingError };
 
 /**
  * Builds the playable level from its validated file: labels, garden, starting lanterns, the
@@ -53,33 +50,28 @@ export type BuildError =
  * its id, minus `forbid`) and its solution with ids.
  */
 export function buildLevel(data: LevelData): Result<Level, BuildError> {
-  const labels = createLabels(data.sprouts.map((sprout) => sprout.label));
-  if (!labels.ok) return err({ code: 'badLabel', error: labels.error });
-
-  const vines = toEdges(labels.value, data.vines);
-  if (!vines.ok) return err({ code: 'badLabel', error: vines.error });
-  const graph = createGraph(data.sprouts.length, vines.value);
-  if (!graph.ok) return err({ code: 'badGraph', error: graph.error });
-
-  const lit = toEdges(labels.value, data.lanterns);
-  if (!lit.ok) return err({ code: 'badLabel', error: lit.error });
-  const matching = createMatching(graph.value, lit.value);
-  if (!matching.ok) return err({ code: 'badLanterns', error: matching.error });
+  const built = buildGarden({
+    names: data.sprouts.map((sprout) => sprout.label),
+    vines: data.vines,
+    lanterns: data.lanterns,
+  });
+  if (!built.ok) return built;
+  const { labels, graph, matching } = built.value;
 
   let mirror: Matching | null = null;
   if (data.mirror !== undefined) {
-    const reflected = toEdges(labels.value, data.mirror);
+    const reflected = toEdges(labels, data.mirror);
     if (!reflected.ok) return err({ code: 'badLabel', error: reflected.error });
-    const built = createMatching(graph.value, reflected.value);
-    if (!built.ok) return err({ code: 'badMirror', error: built.error });
-    mirror = built.value;
+    const reflection = createMatching(graph, reflected.value);
+    if (!reflection.ok) return err({ code: 'badMirror', error: reflection.error });
+    mirror = reflection.value;
   }
 
   const hints: LevelHint[] = [];
   for (const hint of data.hints) {
     const highlight: VertexId[] = [];
     for (const name of hint.highlight) {
-      const vertex = idOf(labels.value, name);
+      const vertex = idOf(labels, name);
       if (vertex === undefined)
         return err({ code: 'badLabel', error: { code: 'unknownName', name } });
       highlight.push(vertex);
@@ -89,14 +81,14 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
 
   const flow: LevelStep[] = [];
   for (const step of data.flow) {
-    const built = toLevelStep(labels.value, step);
+    const built = toLevelStep(labels, step);
     if (!built.ok) return err({ code: 'badLabel', error: built.error });
     flow.push(built.value);
   }
 
   const walkthrough: WalkthroughEntry[] = [];
   for (const entry of data.solution) {
-    const built = toWalkthroughEntry(labels.value, entry);
+    const built = toWalkthroughEntry(labels, entry);
     if (!built.ok) return err({ code: 'badLabel', error: built.error });
     walkthrough.push(built.value);
   }
@@ -104,15 +96,15 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
 
   const forbidden = new Set(data.forbid);
   const start = createGardenState({
-    graph: graph.value,
-    matching: matching.value,
+    graph,
+    matching,
     fog: data.fog,
     allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
   });
   return ok({
     data,
-    labels: labels.value,
-    graph: graph.value,
+    labels,
+    graph,
     start,
     mirror,
     flow,
