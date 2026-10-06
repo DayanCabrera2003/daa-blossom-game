@@ -4,7 +4,7 @@ import type { ToolId } from '../input/tools';
 import { Button } from './Button';
 import { LAYOUT } from './layout';
 
-/** The tools unlocked so far, at the bottom left; the one in hand is lit. */
+/** The tools unlocked so far, in their own row above the buttons; the one in hand is lit. */
 export class ToolbarView {
   private buttons: { tool: ToolId; button: Button }[] = [];
   private shown = '';
@@ -21,7 +21,7 @@ export class ToolbarView {
       for (const { button } of this.buttons) button.destroy();
       let x = LAYOUT.margin + 2;
       this.buttons = tools.map((tool) => {
-        const button = new Button(this.scene, x, LAYOUT.bottomY, this.t(`tool.${tool}`), () =>
+        const button = new Button(this.scene, x, LAYOUT.toolbarY, this.t(`tool.${tool}`), () =>
           this.choose(tool),
         );
         x += button.width + 3;
