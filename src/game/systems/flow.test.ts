@@ -293,6 +293,18 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('the mirror challenge also ends when the player is spared, whatever the attempts', () => {
+    const { flow } = start([{ step: 'draw', attempts: 3 }, say('ch0.1.sauce.00')]);
+    const tried = advanceFlow(flow, { type: 'mirrorChecked', better: true }).flow;
+    expect(advanceFlow(tried, { type: 'mirrorSpared' }).effects).toEqual([
+      { kind: 'say', lines: ['ch0.1.sauce.00'] },
+      { kind: 'finished' },
+    ]);
+    // Anywhere else, being spared means nothing.
+    const asking = start([ask(true)]).flow;
+    expect(advanceFlow(asking, { type: 'mirrorSpared' })).toEqual({ flow: asking, effects: [] });
+  });
+
   it('an option that is not on offer is no answer', () => {
     const asking = start([ask(true)]).flow;
     expect(advanceFlow(asking, { type: 'answer', option: 2, right: null }).effects).toEqual([]);

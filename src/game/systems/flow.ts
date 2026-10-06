@@ -36,7 +36,9 @@ export type FlowSignal =
   /** A touch on a sprout. */
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
   /** A drawn reflection was checked; `better` when it beats the player's garden. */
-  | { readonly type: 'mirrorChecked'; readonly better: boolean };
+  | { readonly type: 'mirrorChecked'; readonly better: boolean }
+  /** Too many checks did not win: the mirror challenge is over anyway (no one stays stuck). */
+  | { readonly type: 'mirrorSpared' };
 
 /** What the scene has to show; data only, line ids untranslated. */
 export type FlowEffect =
@@ -311,6 +313,7 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       return next({ ...given, flow: { ...given.flow, bet } });
     }
     case 'draw': {
+      if (signal.type === 'mirrorSpared') return enter(flow, flow.index + 1, []);
       if (signal.type !== 'mirrorChecked' || !signal.better) return unchanged;
       const attempts = flow.attempts + 1;
       return attempts >= step.attempts
