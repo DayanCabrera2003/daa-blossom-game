@@ -10,7 +10,7 @@ import type { Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
 import { plantForest, type AlternatingForest } from '../search/forest';
 import { growStep } from '../search/growForest';
-import type { NodeRef } from '../trace/events';
+import { contractEvent } from '../trace/contractEvent';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { foldForest } from './foldForest';
 
@@ -22,12 +22,6 @@ import { foldForest } from './foldForest';
 export type FlowerSearchOutcome =
   | { readonly kind: 'augmentingPath'; readonly layer: Layer; readonly path: readonly VertexId[] }
   | { readonly kind: 'noPath'; readonly layer: Layer; readonly forest: AlternatingForest };
-
-/** A folded node named stably, for the trace. */
-const refOf = (node: GardenNode): NodeRef =>
-  node.kind === 'sprout'
-    ? { kind: 'sprout', vertex: node.vertex }
-    : { kind: 'blossom', id: node.id };
 
 /**
  * One search of Edmonds' algorithm (Códex C10): the bipartite search of chapter 3 plus the fold of
@@ -78,12 +72,7 @@ export function searchWithFlowers(
         layer = folded.layer;
         const flower = layer.nodes[folded.blossom];
         invariant(flower?.kind === 'blossom', 'a fold must produce a flower');
-        recorder.record({
-          type: 'contract',
-          blossom: flower.id,
-          base: baseVertex(flower),
-          cycle: flower.cycle.map(refOf),
-        });
+        recorder.record(contractEvent(flower));
         forest = foldForest(forest, before, layer, folded.blossom);
         // Pending suns are renamed; those swallowed by the flower are replaced by the flower.
         const rename = (id: VertexId): VertexId =>
