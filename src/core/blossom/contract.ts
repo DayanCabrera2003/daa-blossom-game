@@ -1,9 +1,8 @@
-import { createGraph } from '../graph/createGraph';
-import type { Edge, Graph, VertexId } from '../graph/types';
+import type { Graph, VertexId } from '../graph/types';
 import { UNMATCHED, type Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
-import { unwrap } from '../shared/result';
 import { checkBlossom } from './isBlossom';
+import { projectGraph } from './projectGraph';
 import type { Blossom, GardenNode, Layer } from './types';
 import { vineBetween } from './vineBetween';
 
@@ -66,16 +65,6 @@ export function contract(
   const rename = (id: VertexId): VertexId =>
     inLoop.has(id) ? blossomId : (renamed[id] as VertexId);
 
-  const seen = new Set<string>();
-  const edges: Edge[] = [];
-  for (const [u, v] of layer.graph.edges) {
-    const [a, b] = [rename(u), rename(v)];
-    const key = `${Math.min(a, b)}-${Math.max(a, b)}`;
-    if (a === b || seen.has(key)) continue;
-    seen.add(key);
-    edges.push([a, b]);
-  }
-
   const mate = new Array<VertexId>(nodes.length).fill(UNMATCHED);
   layer.matching.mate.forEach((partner, id) => {
     if (partner === UNMATCHED || (inLoop.has(id) && inLoop.has(partner))) return;
@@ -85,7 +74,7 @@ export function contract(
   return {
     layer: {
       original: layer.original,
-      graph: unwrap(createGraph(nodes.length, edges)),
+      graph: projectGraph(layer.graph.edges, nodes.length, rename),
       matching: { mate },
       nodes,
       nodeOf: layer.nodeOf.map(rename),

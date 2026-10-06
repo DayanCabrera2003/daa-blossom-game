@@ -1,9 +1,8 @@
-import { createGraph } from '../graph/createGraph';
-import type { Edge, VertexId } from '../graph/types';
+import type { VertexId } from '../graph/types';
 import { UNMATCHED } from '../matching/types';
 import { invariant } from '../shared/invariant';
-import { unwrap } from '../shared/result';
 import { baseVertex, members } from './hierarchy';
+import { projectGraph } from './projectGraph';
 import type { GardenNode, Layer } from './types';
 
 /**
@@ -31,16 +30,6 @@ export function unfoldLayer(layer: Layer, blossom: VertexId): Layer {
     for (const v of members(node)) nodeOf[v] = id;
   });
 
-  const seen = new Set<string>();
-  const edges: Edge[] = [];
-  for (const [u, v] of layer.original.edges) {
-    const [a, b] = [nodeOf[u] as VertexId, nodeOf[v] as VertexId];
-    const key = `${Math.min(a, b)}-${Math.max(a, b)}`;
-    if (a === b || seen.has(key)) continue;
-    seen.add(key);
-    edges.push([a, b]);
-  }
-
   const mate = new Array<VertexId>(nodes.length).fill(UNMATCHED);
   const pair = (a: VertexId, b: VertexId): void => {
     mate[a] = b;
@@ -60,7 +49,7 @@ export function unfoldLayer(layer: Layer, blossom: VertexId): Layer {
 
   return {
     original: layer.original,
-    graph: unwrap(createGraph(nodes.length, edges)),
+    graph: projectGraph(layer.original.edges, nodes.length, (v) => nodeOf[v] as VertexId),
     matching: { mate },
     nodes,
     nodeOf,
