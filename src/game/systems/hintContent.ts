@@ -10,6 +10,8 @@ export interface HintContent {
   readonly highlight: readonly VertexId[];
   /** Only at grade 3: the step the mentor takes for the player. */
   readonly move: Action | null;
+  /** Only at grade 3, under a question: the option the mentor points at (its value). */
+  readonly option: number | null;
 }
 
 /** The sprouts an action involves, each once, in ascending order. */
@@ -27,12 +29,14 @@ export function sproutsOf(action: Action): VertexId[] {
 /**
  * The content of hint grade `grade` (GDD §5.3: a nudge, a direction, the mentor's first step).
  * The k-th hint written in the level is grade k; when a level has fewer, the generic line of that
- * grade is used, and from grade 2 on the sprouts of the mentor's step glow instead.
+ * grade is used, and from grade 2 on the sprouts of the mentor's step glow instead. Under a
+ * question there is no step to take: grade 3 points at `option` instead, when it is given.
  */
 export function hintContent(
   hints: readonly LevelHint[],
   grade: number,
   mentorStep: Action | null,
+  option: number | null = null,
 ): HintContent {
   const written = hints[grade - 1];
   const highlight =
@@ -46,5 +50,6 @@ export function hintContent(
     generic: written === undefined,
     highlight,
     move: grade >= 3 ? mentorStep : null,
+    option: grade >= 3 ? option : null,
   };
 }
