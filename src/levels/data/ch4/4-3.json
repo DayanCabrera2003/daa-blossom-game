@@ -1,0 +1,38 @@
+{
+  "id": "4.3",
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 135 },
+    { "label": "a", "x": 100, "y": 135 },
+    { "label": "b", "x": 160, "y": 135 },
+    { "label": "c", "x": 220, "y": 75 },
+    { "label": "d", "x": 280, "y": 135 },
+    { "label": "e", "x": 220, "y": 195 },
+    { "label": "f", "x": 340, "y": 195 },
+    { "label": "T", "x": 420, "y": 195 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "e"],
+    ["e", "b"],
+    ["e", "f"],
+    ["f", "T"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"]
+  ],
+  "goal": { "visible": true, "value": 4 },
+  "victory": { "type": "chainFound" },
+  "script": ["ch4.3.sauce.00"],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "markMoon", "from": "d", "to": "e" },
+    { "type": "markMoon", "from": "f", "to": "T" }
+  ]
+}
