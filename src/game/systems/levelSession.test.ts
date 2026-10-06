@@ -50,7 +50,10 @@ describe('a level session', () => {
   it('undo, redo and the sun move through the day; acting in the past drops the future', () => {
     const level = levelById('1.1');
     const played = playAll(startSession(level, 0), level.solution);
-    expect(garden(undoSession(played)).matching).toEqual(garden(seekSession(played, 2)).matching);
+    const beforeLast = level.solution.length - 1;
+    expect(garden(undoSession(played)).matching).toEqual(
+      garden(seekSession(played, beforeLast)).matching,
+    );
     expect(garden(seekSession(played, 0))).toBe(level.start);
     expect(redoSession(undoSession(played)).history).toEqual(played.history);
     const branched = playAll(seekSession(played, 0), [{ type: 'join', u: 0, v: 1 }]);

@@ -46,7 +46,13 @@ describe('the picture of the HUD', () => {
     );
     const back = undoSession(played);
     const hud = hudPicture(back, initialPointer('lanterns'), 0);
-    expect(hud).toMatchObject({ canUndo: true, canRedo: true, sun: { fraction: 2 / 3, steps: 4 } });
+    // One step back from the end of a day of `moves` moves, which holds `moves + 1` gardens.
+    const moves = level.solution.length;
+    expect(hud).toMatchObject({
+      canUndo: true,
+      canRedo: true,
+      sun: { fraction: (moves - 1) / moves, steps: moves + 1 },
+    });
     expect(hudPicture(played, initialPointer('lanterns'), 0).won).not.toBeNull();
   });
 
