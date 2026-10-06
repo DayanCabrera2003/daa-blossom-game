@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
+import { download } from '@services/download';
+import { exportLog } from '@services/exportLog';
 import { unlockedLevels } from '@services/progress';
 import { Button } from '../view/Button';
 import { PALETTE } from '../view/palette';
+import { CANVAS_HEIGHT } from '../scale/integerZoom';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
 
@@ -15,7 +18,7 @@ export class HubScene extends Phaser.Scene {
   }
 
   create(): void {
-    const { catalog, t, save, teacherMode } = contextOf(this);
+    const { catalog, t, save, teacherMode, playtest, clock } = contextOf(this);
     const open = unlockedLevels(
       catalog.map((level) => level.data.id),
       save,
@@ -39,5 +42,10 @@ export class HubScene extends Phaser.Scene {
         x += button.width + 4;
       }
     });
+
+    // Playtesters send this file back; nothing leaves the browser otherwise (GDD §10).
+    new Button(this, 8, CANVAS_HEIGHT - 18, t('hub.exportLog'), () =>
+      download(exportLog(playtest.current(), clock())),
+    );
   }
 }
