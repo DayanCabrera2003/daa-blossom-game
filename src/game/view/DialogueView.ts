@@ -13,6 +13,8 @@ export class DialogueView {
   private readonly text: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
   private queue: string[] = [];
+  /** Called once when the box closes after the lines it was given with. */
+  private onClosed: (() => void) | null = null;
 
   constructor(scene: Phaser.Scene, continueLabel: string) {
     const { x, y, width, height } = LAYOUT.dialogue;
@@ -44,9 +46,13 @@ export class DialogueView {
     return this.panel.visible;
   }
 
-  /** Queues lines to show after the current one. */
-  say(lines: readonly string[]): void {
+  /**
+   * Queues lines to show after the current one; `onClosed` runs once the box closes after the last
+   * of them (it replaces any earlier callback still pending).
+   */
+  say(lines: readonly string[], onClosed: (() => void) | null = null): void {
     this.queue.push(...lines);
+    this.onClosed = onClosed;
     if (!this.open) this.advance();
   }
 
@@ -54,6 +60,9 @@ export class DialogueView {
     const next = this.queue.shift();
     if (next === undefined) {
       this.setVisible(false);
+      const closed = this.onClosed;
+      this.onClosed = null;
+      closed?.();
       return;
     }
     this.text.setText(next);
