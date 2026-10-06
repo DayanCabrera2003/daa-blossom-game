@@ -80,6 +80,40 @@ describe('layer boundaries', () => {
   });
 });
 
+describe('pure game logic', () => {
+  // Decisions of the game live in pure folders; only scenes and views may draw with Phaser.
+  const PURE = ['input', 'systems', 'animation', 'scale'];
+
+  it.each(PURE)('src/game/%s may not import Phaser', async (folder) => {
+    expect(
+      await firedRules(
+        `src/game/${folder}/virtual.ts`,
+        "import Phaser from 'phaser';\nexport { Phaser };",
+      ),
+    ).toContain('no-restricted-imports');
+  });
+
+  it.each(PURE)('src/game/%s still may not import ui', async (folder) => {
+    expect(
+      await firedRules(
+        `src/game/${folder}/virtual.ts`,
+        "import { x } from '@ui/codex';\nexport { x };",
+      ),
+    ).toContain('no-restricted-imports');
+  });
+
+  it('views and scenes may draw with Phaser', async () => {
+    for (const folder of ['view', 'scenes']) {
+      expect(
+        await firedRules(
+          `src/game/${folder}/virtual.ts`,
+          "import Phaser from 'phaser';\nexport { Phaser };",
+        ),
+      ).not.toContain('no-restricted-imports');
+    }
+  });
+});
+
 describe('one responsibility per file', () => {
   const lines = (count: number): string =>
     Array.from({ length: count }, (_, i) => `export const v${i} = ${i};`).join('\n');
