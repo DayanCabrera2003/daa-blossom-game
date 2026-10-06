@@ -314,6 +314,12 @@ Se puede posponer hasta el greybox del capítulo 6 sin bloquear nada.
 | `tools/solve.ts` | CLI: `npm run solve -- <código>` imprime traza legible, resultado y certificado |
 | `tools/bench.ts` | CLI: tabla de pasos por tamaño (didáctica, rápida, Bruto) |
 
+> **Notas de implementación (2026-10-06):**
+> - El código de jardín vive en `core/codes/` (`base64url.ts`, `gardenCode.ts`) y no en `graph/`, porque también codifica el emparejamiento. Formato v1: versión, n (≤ 255), un bit por par de brotes y un bit por enredadera encendida, en base64url sin relleno. Es **canónico** (bits de relleno a cero, sin bytes sobrantes): un jardín tiene un único código. El de 4.1 ocupa 7 caracteres.
+> - `generators/hardCases.ts`: `longStemFlower`, `nestedFlowers` (k + 1 niveles: cada par nuevo se engancha a una **luna** de la flor anterior, que no puede cerrar un ciclo hasta que esa flor se pliega), `helix` y `manyFlowers`. Tienen una sola raíz para obligar a plegar: con más raíces la cadena rodearía las flores. Entran en la propiedad maestra comprobados con su propio certificado y con la versión rápida (son demasiado grandes para Bruto).
+> - `generators/random.ts` se adelantó a la fase 7.
+> - CLI: `npm run solve -- <código | id de nivel> [--scans]` (traza con nombres, resultado, piedras y certificado) y `npm run bench` (tabla de pasos en G(n, ½) con semilla n; Bruto se duerme a partir de 16 brotes con 10⁶ pasos).
+
 **Tests clave:**
 - Propiedad: `parse(serialize(x)) === x`; códigos inválidos se rechazan con motivo.
 - Cada generador de `hardCases` produce realmente la estructura prometida (p. ej. la búsqueda encuentra ≥ k flores anidadas).
