@@ -292,3 +292,61 @@ describe('the level controller runs the script', () => {
     }
   });
 });
+
+/** A 0.5-like level: light two lanterns on the path A–B–C–D, then move the sun through the day. */
+const sunLevel = (): Level => {
+  const loaded = loadLevel({
+    id: '0.5',
+    sprouts: [
+      { label: 'A', x: 100, y: 100 },
+      { label: 'B', x: 200, y: 100 },
+      { label: 'C', x: 300, y: 100 },
+      { label: 'D', x: 400, y: 100 },
+    ],
+    vines: [
+      ['A', 'B'],
+      ['B', 'C'],
+      ['C', 'D'],
+    ],
+    goal: { visible: true, value: 2 },
+    victory: { type: 'matchingSize', value: 2 },
+    flow: [{ step: 'play' }, { step: 'sun' }],
+    solution: [
+      { type: 'join', u: 'A', v: 'B' },
+      { type: 'join', u: 'C', v: 'D' },
+      { type: 'seekSun', fraction: 0 },
+    ],
+  });
+  if (!loaded.ok) throw new Error('fixture does not load');
+  return loaded.value;
+};
+
+describe('the sun as a step (0.5)', () => {
+  const level = sunLevel();
+  const p = (v: number) => spot(level, v);
+  const join = (u: number, v: number): UiEvent[] => [...touch(p(u)), ...touch(p(v))];
+
+  it('two lanterns are not enough: the level ends only once the sun moves', () => {
+    const lit = feed(startController(level, 0), [...join(0, 1), ...join(2, 3)]);
+    expect(lit.effects.map((effect) => effect.kind)).toEqual(['animate', 'animate', 'sun']);
+    expect(lit.controller.session.won).toBeNull();
+    const moved = handle(lit.controller, { kind: 'seek', fraction: 0.5 }, 0);
+    expect(moved.effects.map((effect) => effect.kind)).toEqual(['won']);
+    expect(moved.controller.session.won).not.toBeNull();
+  });
+
+  it('moving the sun before winning does not count: the step has not come yet', () => {
+    const early = feed(startController(level, 0), [
+      ...join(0, 1),
+      { kind: 'undo' },
+      { kind: 'redo' },
+      { kind: 'seek', fraction: 0 },
+      { kind: 'seek', fraction: 1 },
+      ...join(2, 3),
+    ]);
+    expect(early.effects.map((effect) => effect.kind)).toEqual(['animate', 'animate', 'sun']);
+    expect(early.controller.session.won).toBeNull();
+    const undone = handle(early.controller, { kind: 'undo' }, 0);
+    expect(undone.effects.map((effect) => effect.kind)).toEqual(['won']);
+  });
+});
