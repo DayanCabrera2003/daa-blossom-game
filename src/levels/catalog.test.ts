@@ -5,8 +5,8 @@ import { buildCatalog, catalog, compareLevelIds } from './catalog';
 const levelFile = (id: string) => ({
   id,
   sprouts: [
-    { label: 'A', x: 10, y: 10 },
-    { label: 'B', x: 50, y: 10 },
+    { label: 'A', x: 50, y: 100 },
+    { label: 'B', x: 100, y: 100 },
   ],
   vines: [['A', 'B']],
   goal: { visible: true, value: 1 },
