@@ -76,6 +76,37 @@ describe('applying an action', () => {
     expect(finished.layer.nodes.length).toBe(6);
   });
 
+  it('every action naming sprouts refuses one outside the garden', () => {
+    const outside: Action[] = [
+      { type: 'join', u: 0, v: 9 },
+      { type: 'split', u: 9, v: 0 },
+      { type: 'passLantern', from: 9, to: 0 },
+      { type: 'chain', path: [0, 9] },
+      { type: 'rotateStem', stem: [9] },
+      { type: 'inspect', vertex: 9 },
+      { type: 'markRoot', vertex: 9 },
+      { type: 'markMoon', from: 0, to: 9 },
+      { type: 'foldAt', from: 9, to: 0 },
+      { type: 'fold', loop: [0, 1, 9] },
+      { type: 'placeScarecrow', vertex: 9 },
+      { type: 'liftStone', vertex: 9 },
+    ];
+    for (const action of outside) {
+      expect(applyAction(festival, action)).toEqual({
+        ok: false,
+        reason: { code: 'vertexOutOfRange', vertex: 9 },
+      });
+    }
+  });
+
+  it('a sprout already marked does not start a second search', () => {
+    const rooted = play(festival, [{ type: 'markRoot', vertex: 0 }]);
+    expect(applyAction(rooted, { type: 'markRoot', vertex: 0 })).toEqual({
+      ok: false,
+      reason: { code: 'alreadyMarked', vertex: 0 },
+    });
+  });
+
   it('never modifies the garden it is given', () => {
     const before = structuredClone(festival);
     applyAction(festival, { type: 'markRoot', vertex: 0 });
