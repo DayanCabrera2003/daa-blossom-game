@@ -108,4 +108,26 @@ describe('what lies under the pointer', () => {
     });
     expect(hitTest(twice, wildPositions, { x: 140, y: 47 })).toEqual({ kind: 'vine', u: 1, v: 7 });
   });
+
+  it('between two close sprouts, the nearer one wins; between two vines, the nearer one', () => {
+    const close = unwrap(
+      createGraph(4, [
+        [0, 2],
+        [1, 3],
+      ]),
+    );
+    const state = createGardenState({ graph: close, allowed: [] });
+    const spots = [
+      { x: 100, y: 100 },
+      { x: 106, y: 100 },
+      { x: 100, y: 200 },
+      { x: 106, y: 200 },
+    ];
+    expect(hitTest(state, spots, { x: 104, y: 100 })).toEqual({ kind: 'sprout', vertex: 1 });
+    expect(hitTest(state, spots, { x: 104, y: 150 })).toEqual({ kind: 'vine', u: 1, v: 3 });
+  });
+
+  it('a touch outside every flower of a folded garden lands on nothing', () => {
+    expect(hitTest(folded, positions, { x: 10, y: 260 })).toEqual({ kind: 'nothing' });
+  });
 });

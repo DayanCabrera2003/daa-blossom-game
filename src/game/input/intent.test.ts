@@ -177,4 +177,12 @@ describe('the other tools', () => {
       { type: 'unfold', blossom: 0 },
     ]);
   });
+
+  it('touching empty ground with marks does nothing and lets go', () => {
+    const selected: Selection = { kind: 'sprout', vertex: 0 };
+    expect(resolveTap(festival, 'marks', selected, { kind: 'nothing' })).toEqual({
+      action: null,
+      selection: NO_SELECTION,
+    });
+  });
 });

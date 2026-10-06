@@ -77,4 +77,13 @@ describe('gestures: every action can be performed on the canvas', () => {
   it.each(cases)('%s', (_, state, action) => {
     expect(roundTrip(state, action)).toEqual([action]);
   });
+
+  it('says so when a vine cannot be touched because sprouts cover it', () => {
+    const covered = unwrap(createGraph(9, [[0, 1]]));
+    const crowded = createGardenState({ graph: covered, allowed: ['split'] });
+    const spots = [0, 100, 20, 30, 40, 50, 60, 70, 80].map((x) => ({ x, y: 0 }));
+    expect(() => gesturesFor(crowded, spots, { type: 'split', u: 0, v: 1 })).toThrow(
+      /cannot be touched/,
+    );
+  });
 });

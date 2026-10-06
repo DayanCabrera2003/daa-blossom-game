@@ -56,4 +56,16 @@ describe('flower outlines', () => {
       }),
     );
   });
+
+  it('the hull of fewer than three points is just those points, sorted', () => {
+    expect(
+      convexHull([
+        { x: 5, y: 1 },
+        { x: 1, y: 2 },
+      ]),
+    ).toEqual([
+      { x: 1, y: 2 },
+      { x: 5, y: 1 },
+    ]);
+  });
 });
