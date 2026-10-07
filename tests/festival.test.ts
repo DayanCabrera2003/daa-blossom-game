@@ -165,3 +165,22 @@ describe('4.3: even loops do not get in the way', () => {
     });
   });
 });
+
+describe('4.5: unfold', () => {
+  const level = levelOf('4.5');
+  const id = (name: string): VertexId => sproutOf(level, name);
+  const path = (names: string): VertexId[] => [...names].map(id);
+
+  it('a chain may not cross the folded flower, and inside it only one side works', () => {
+    const unfoldAt = level.solution.findIndex((move) => move.type === 'unfold');
+    const folded = play(level.start, level.solution.slice(0, unfoldAt));
+    expect(applyAction(folded, { type: 'chain', path: path('Rabdce') }).ok).toBe(false);
+    const opened = play(folded, [{ type: 'unfold', blossom: 0 }]);
+    // Cleo was reached asking: she has to give her lantern, so the side c–b breaks the chain.
+    expect(applyAction(opened, { type: 'chain', path: path('Rabce') })).toMatchObject({
+      ok: false,
+      reason: { code: 'invalidPath' },
+    });
+    expect(size(play(opened, [{ type: 'chain', path: path('Rabdce') }]).matching)).toBe(3);
+  });
+});
