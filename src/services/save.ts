@@ -9,7 +9,7 @@ export interface KeyValueStore {
 /** Where progress is kept in the browser. */
 export const SAVE_KEY = 'florecer.save';
 
-const SAVE_VERSION = 2 as const;
+const SAVE_VERSION = 3 as const;
 
 /** Each completed level with its best number of stars; the same in every version. */
 const levels = z.record(z.string(), z.strictObject({ stars: z.number().int().min(0).max(3) }));
@@ -19,21 +19,39 @@ const saveSchema = z.strictObject({
   levels,
   /** The levels whose notebook statement the player wrote (GDD §5.5), in the order written. */
   notebook: z.array(z.string()),
+  /** The mechanic cards the player has closed (GDD §5.11), each shown once, in the order seen. */
+  tutorialsSeen: z.array(z.string()),
 });
 
 /**
  * The saves of older versions, each turned into the current one without losing progress. Version
- * 1 had no notebook: it comes back with an empty one.
+ * 1 had no notebook and version 2 no mechanic cards: what is missing comes back empty.
  */
 const olderSaves = z
-  .strictObject({ version: z.literal(1), levels })
-  .transform((save) => ({ version: SAVE_VERSION, levels: save.levels, notebook: [] as string[] }));
+  .union([
+    z.strictObject({ version: z.literal(1), levels }),
+    z.strictObject({ version: z.literal(2), levels, notebook: z.array(z.string()) }),
+  ])
+  .transform((save) => ({
+    version: SAVE_VERSION,
+    levels: save.levels,
+    notebook: 'notebook' in save ? save.notebook : [],
+    tutorialsSeen: [] as string[],
+  }));
 
-/** Progress of a player: each completed level with its best number of stars, and the notebook. */
+/**
+ * Progress of a player: each completed level with its best number of stars, the notebook, and the
+ * mechanic cards already seen.
+ */
 export type SaveData = z.infer<typeof saveSchema>;
 
 /** A player who has not completed anything yet. */
-export const emptySave = (): SaveData => ({ version: SAVE_VERSION, levels: {}, notebook: [] });
+export const emptySave = (): SaveData => ({
+  version: SAVE_VERSION,
+  levels: {},
+  notebook: [],
+  tutorialsSeen: [],
+});
 
 /**
  * Reads the saved progress; a save of an older version is migrated to the current one. Anything
@@ -71,4 +89,11 @@ export function recordNotebook(save: SaveData, levelId: string): SaveData {
   return save.notebook.includes(levelId)
     ? save
     : { ...save, notebook: [...save.notebook, levelId] };
+}
+
+/** The progress after closing a mechanic card; each card is recorded once. */
+export function recordTutorialSeen(save: SaveData, card: string): SaveData {
+  return save.tutorialsSeen.includes(card)
+    ? save
+    : { ...save, tutorialsSeen: [...save.tutorialsSeen, card] };
 }
