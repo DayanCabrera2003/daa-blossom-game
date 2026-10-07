@@ -194,4 +194,19 @@ describe('level integrity', () => {
       unlockedAt: '1.3',
     });
   });
+
+  it('in a garden of bees and flowers, every vine joins a bee and a flower', () => {
+    const kinded = (kinds: string[]) => ({
+      ...trap,
+      sprouts: trap.sprouts.map((sprout, i) => ({ ...sprout, kind: kinds[i] })),
+    });
+    expect(problemsOf(kinded(['bee', 'flower', 'bee', 'flower']))).toEqual([]);
+    expect(problemsOf(kinded(['bee', 'flower', 'flower', 'bee']))).toEqual([
+      { code: 'sameKindVine', u: 'B', v: 'C', kind: 'flower' },
+    ]);
+    expect(problemsOf(kinded(['bee', 'bee', 'flower', 'flower']))).toEqual([
+      { code: 'sameKindVine', u: 'A', v: 'B', kind: 'bee' },
+      { code: 'sameKindVine', u: 'C', v: 'D', kind: 'flower' },
+    ]);
+  });
 });

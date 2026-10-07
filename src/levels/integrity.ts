@@ -7,6 +7,7 @@ import { isVictory } from '@core/rules/victory';
 import type { Level } from './build';
 import { checkFlow, type FlowProblem } from './flowChecks';
 import { isFlowInput } from './flowInput';
+import { sameKindVines, type KindClash } from './kinds';
 import { referencedLines } from './lines';
 import { checkNotebook, type NotebookProblem } from './notebookChecks';
 
@@ -23,6 +24,7 @@ export type IntegrityProblem =
   | { readonly code: 'solutionOverWater'; readonly used: number; readonly budget: number }
   | { readonly code: 'foreignLine'; readonly line: string }
   | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string }
+  | ({ readonly code: 'sameKindVine' } & KindClash)
   | FlowProblem
   | NotebookProblem;
 
@@ -74,6 +76,11 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
   }
   if (replayed && data.water !== null && state.waterUsed > data.water) {
     problems.push({ code: 'solutionOverWater', used: state.waterUsed, budget: data.water });
+  }
+
+  // A garden of bees and flowers is two-sided for real: no vine joins two of a kind.
+  for (const clash of sameKindVines(data.sprouts, data.vines)) {
+    problems.push({ code: 'sameKindVine', ...clash });
   }
 
   problems.push(...checkFlow(level), ...checkNotebook(level));

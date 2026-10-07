@@ -32,6 +32,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `line ${problem.line} belongs to another level`;
     case 'unlockMismatch':
       return `unlocks "${problem.action}", but the rules unlock it at ${problem.unlockedAt}`;
+    case 'sameKindVine':
+      return `vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
     case 'noCorrectOption':
       return `script step ${problem.step + 1} asks a question with no right answer`;
     case 'notebookMissing':
@@ -52,6 +54,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `notebook statement ${problem.option + 1}: its counterexample uses "${problem.action}", which this level does not allow`;
     case 'counterexampleUnbeatable':
       return `notebook statement ${problem.option + 1}: its lanterns already hold the most, so no better reflection can be drawn`;
+    case 'counterexampleSameKindVine':
+      return `notebook statement ${problem.option + 1}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
   }
 }
 
