@@ -1,6 +1,7 @@
 import type { Point } from '../input/target';
 import { describe, expect, it } from 'vitest';
 import { bloomLevel } from '../../../tests/support/fixtureLevels';
+import { HINT_DELAY_MS } from './hints';
 import { garden } from './levelSession';
 import { handle, startController, type Controller, type UiEvent } from './levelController';
 
@@ -75,5 +76,18 @@ describe('the level controller in the flower challenge (4.11)', () => {
       'say',
       'won',
     ]);
+  });
+
+  it('the third hint draws a chain for the player, which counts; drawing puts glows out', () => {
+    let controller = startController(level, 0);
+    const effects = [];
+    for (let k = 1; k <= 3; k++) {
+      const step = handle(controller, { kind: 'hint' }, k * HINT_DELAY_MS);
+      controller = step.controller;
+      effects.push(...step.effects.map((effect) => effect.kind));
+    }
+    expect(effects).toEqual(['hint', 'hint', 'hint', 'flowerDrawn']);
+    expect(controller.session.flower.chains).toBe(1);
+    expect(controller.highlight).toEqual([]);
   });
 });

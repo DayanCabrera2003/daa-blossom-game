@@ -1,4 +1,4 @@
-import type { VertexId } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { invariant } from '@core/shared/invariant';
 import type { TraceEvent } from '@core/trace/events';
@@ -45,6 +45,8 @@ export interface Controller {
   readonly pointer: PointerState;
   /** Sprouts glowing because of a hint; put out by the next accepted move. */
   readonly highlight: readonly VertexId[];
+  /** The vine glowing because of a hint (the conflict to point at); put out by the next answer. */
+  readonly vineGlow: Edge | null;
   readonly positions: readonly Point[];
 }
 
@@ -111,6 +113,7 @@ export function openController(level: Level, now: number): Step {
       session,
       pointer: initialPointer(first),
       highlight: [],
+      vineGlow: null,
       positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
     },
     effects: shown(session, effects),
@@ -121,10 +124,16 @@ export function openController(level: Level, now: number): Step {
 export const startController = (level: Level, now: number): Controller =>
   openController(level, now).controller;
 
-/** Gives the script an input of the player; the controller keeps everything else. */
+/**
+ * Gives the script an input of the player; an answer puts out the vine a hint made glow, and the
+ * controller keeps everything else.
+ */
 function tell(controller: Controller, input: ScriptInput, now: number): Step {
   const { session, effects } = respond(controller.session, input, now);
-  return { controller: { ...controller, session }, effects: shown(session, effects) };
+  return {
+    controller: { ...controller, session, vineGlow: null },
+    effects: shown(session, effects),
+  };
 }
 
 /** A move through the day (undo, redo, the sun): when the shown state changes, the sun moved. */
@@ -179,8 +188,9 @@ function checkMirror(controller: Controller, now: number): Step {
  */
 function drawChain(controller: Controller, path: readonly VertexId[], now: number): Step {
   const { session, attempt, effects } = drawInGarden(controller.session, path, now);
-  const next = { ...controller, session };
-  if (attempt === null) return { controller: next, effects: [] };
+  if (attempt === null) return { controller: { ...controller, session }, effects: [] };
+  // Like a move, a drawing puts out what a hint made glow.
+  const next = { ...controller, session, highlight: [] };
   return {
     controller: next,
     effects: [{ kind: 'flowerDrawn', attempt }, ...shown(session, effects)],
@@ -294,14 +304,25 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     case 'hint': {
       const opened = askHint(controller.session, now);
       if (opened === null) return same({});
+      const { hint } = opened;
       const shown: Step = {
-        controller: { ...controller, session: opened.session, highlight: opened.hint.highlight },
-        effects: [{ kind: 'hint', content: opened.hint }],
+        controller: {
+          ...controller,
+          session: opened.session,
+          highlight: hint.highlight,
+          vineGlow: hint.vine ?? controller.vineGlow,
+        },
+        effects: [{ kind: 'hint', content: hint }],
       };
-      if (opened.hint.move === null) return shown;
-      const made = apply(shown.controller, opened.hint.move, now);
+      // In the flower challenge, the mentor draws a chain for the player.
+      if (hint.chain !== null) {
+        const drawn = drawChain(shown.controller, hint.chain, now);
+        return { controller: drawn.controller, effects: [...shown.effects, ...drawn.effects] };
+      }
+      if (hint.move === null) return shown;
+      const made = apply(shown.controller, hint.move, now);
       return {
-        controller: { ...made.controller, highlight: opened.hint.highlight },
+        controller: { ...made.controller, highlight: hint.highlight },
         effects: [...shown.effects, ...made.effects],
       };
     }

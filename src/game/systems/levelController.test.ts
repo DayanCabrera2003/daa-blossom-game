@@ -317,6 +317,20 @@ describe('the level controller runs the script', () => {
     });
   });
 
+  it('while pointing at a vine, the third hint makes the conflict glow until it is touched', () => {
+    const level = betrayalLevel();
+    const opened = startController(level, 0);
+    const session = level.solution.reduce((s, action) => act(s, action, 0).session, opened.session);
+    let controller: Controller = { ...opened, session };
+    expect(controller.vineGlow).toBeNull();
+    for (let k = 1; k <= 3; k++)
+      controller = handle(controller, { kind: 'hint' }, k * HINT_DELAY_MS).controller;
+    expect(controller.vineGlow).toEqual([2, 4]);
+    expect(controller.session.flow.index).toBe(1);
+    const answered = handle(controller, { kind: 'pickVine', u: 4, v: 2 }, 0).controller;
+    expect(answered.vineGlow).toBeNull();
+  });
+
   it('in the mirror challenge, touching a vine draws it in silver; nothing else moves', () => {
     const level = scripted([{ step: 'draw', attempts: 1 }]);
     const middle = { x: 150, y: 100 };
