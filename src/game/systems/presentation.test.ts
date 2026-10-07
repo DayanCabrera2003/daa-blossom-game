@@ -97,4 +97,14 @@ describe('the order the player sees things in', () => {
     expect(hintsShowBeside(emptyStage)).toBe(false);
     expect(blocksInput(present(emptyStage, [asking]).stage)).toBe(false);
   });
+
+  it('a mechanic card shows before what it opens, and only closing it moves the queue on', () => {
+    const card: Presentation = { kind: 'tutorial', card: 'bet' };
+    const turn = present(emptyStage, [card, asking]);
+    expect(turn.start).toEqual(card);
+    expect(blocksInput(turn.stage)).toBe(false);
+    expect(hintsShowBeside(turn.stage)).toBe(false);
+    expect(answerShowing(turn.stage)).toEqual({ stage: turn.stage, start: null });
+    expect(finishShowing(turn.stage).start).toEqual(asking);
+  });
 });

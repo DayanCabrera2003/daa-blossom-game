@@ -1,17 +1,23 @@
 import type { GardenState } from '@core/rules/state';
+import type { CardId } from '@levels/cards/schema';
 import type { Question } from './question';
 import type { StarResult } from './stars';
 
 /**
- * The order the player sees things in on the level screen (plan 03, phases 3, 4 and 6). Lines of
- * dialogue, questions, counterexamples, the replayed day and the victory panel never overlap: each
- * waits until the one before it is over (the lines closed, the question answered, the player back
- * from the counterexample, the replay finished). Pure: the scene shows what this says to start and
+ * The order the player sees things in on the level screen (plan 03, phases 3, 4, 6 and 12).
+ * Mechanic cards, lines of dialogue, questions, counterexamples, the replayed day and the victory
+ * panel never overlap: each waits until the one before it is over (the card or the lines closed,
+ * the question answered, the player back from the counterexample, the replay finished). Pure: the scene shows what this says to start and
  * reports back when it is over. Toasts and move animations are not queued; they show at once.
  */
 
 /** Something shown on its own, until it is over. */
 export type Presentation =
+  /**
+   * A mechanic card (GDD §5.11), queued before whatever its moment opens; over when the player
+   * closes it, and its panel keeps the garden from taking touches meanwhile.
+   */
+  | { readonly kind: 'tutorial'; readonly card: CardId }
   /** Lines of dialogue, already translated; over when the player closes the box. */
   | { readonly kind: 'lines'; readonly lines: readonly string[] }
   /** A question or a bet, until it is answered; its panel keeps the garden from taking touches. */
