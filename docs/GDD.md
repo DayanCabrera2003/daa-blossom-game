@@ -703,8 +703,9 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 - **Victoria:** ver la ejecución completa.
 
 #### 6.3 La receta rota
-- **Jardín:** el de 4.6 (cinco pétalos).
-- **Enseña:** Bruto trae "una receta más corta" sin la tarjeta de plegar. El autómata la ejecuta, se detiene en 2 faroles y declara "terminé". El jugador, que ya resolvió ese jardín a mano, sabe que se puede 3. Repara la receta.
+- **Jardín:** el de 5.1 (una flor dentro de otra).
+- **Enseña:** Bruto trae "una receta más corta" sin la tarjeta de plegar. El autómata la ejecuta, se detiene en 3 faroles y declara "terminé". El jugador, que ya resolvió ese jardín a mano, sabe que se puede 4. Repara la receta.
+- **Por qué este jardín:** la receta busca desde todos los brotes a oscuras a la vez; en jardines como el de 4.6 dos búsquedas se encuentran y rodean la flor sin plegarla, y la receta rota acertaría por casualidad. En el de 5.1 no hay atajo: sin plegar, se queda corta.
 - **Por qué aquí:** el error de una receta se ve como comportamiento, no como texto. Reafirma por qué la flor es imprescindible.
 - **Guion:** Bruto: "¡Menos pasos! ¡Más rápido!" Sauce: "Más rápido para equivocarse."
 - **Victoria:** receta reparada y 3 faroles.
