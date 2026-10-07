@@ -157,5 +157,13 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
     case 'flowerChallenge':
       // Nothing to queue: the open and the folded garden are painted from the session.
       break;
+    case 'recipe':
+      // Nothing to queue: the recipe panel is painted from the session.
+      break;
+    case 'recipeChecked':
+      // A wrong recipe is told on the panel, painted from the session; a right one closes it, so
+      // it is told here.
+      if (effect.verdict.right) stage.toast.show(t('recipe.right'));
+      break;
   }
 };

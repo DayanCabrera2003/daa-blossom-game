@@ -4,6 +4,7 @@ import { NO_EXTRAS, type PointingExtras } from '../../picture/garden';
 import { hudPicture } from '../../picture/hud';
 import { layerPicture } from '../../picture/layerPicture';
 import { pondPicture } from '../../picture/pond';
+import { recipePicture } from '../../picture/recipePanel';
 import { sideBySidePicture } from '../../picture/sideBySide';
 import { splitBadges } from '../../picture/splitBadge';
 import type { FlowerAttempt } from '../../systems/flowerChallenge';
@@ -29,8 +30,8 @@ export interface RenderSource {
 }
 
 /**
- * Paints the level screen from the pure pictures of the garden, the pond, the flower challenge and
- * the HUD. It takes no decision: every layer is a picture of the controller as it is now (or of
+ * Paints the level screen from the pure pictures of the garden, the pond, the flower challenge, the
+ * recipe and the HUD. It takes no decision: every layer is a picture of the controller as it is now (or of
  * one state of a replayed day). It keeps only what timing needs: when the chain drawn in the flower
  * challenge started its moments, and when the HUD was last refreshed.
  */
@@ -74,6 +75,7 @@ export class LevelRenderer {
     const pond = pondPicture(session, controller.positions, this.look.labels);
     this.views.mirror.render(pond, now);
     this.renderSideBySide(now);
+    this.views.recipe.render(recipePicture(session));
     this.renderHud(now);
   }
 

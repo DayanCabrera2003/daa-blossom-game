@@ -12,6 +12,7 @@ import { MirrorView } from '../../view/MirrorView';
 import { NotebookView } from '../../view/NotebookView';
 import { ObjectsView } from '../../view/ObjectsView';
 import { QuestionView } from '../../view/QuestionView';
+import { RecipeView } from '../../view/RecipeView';
 import { SideBySideView } from '../../view/SideBySideView';
 import { SunSliderView } from '../../view/SunSliderView';
 import { ToastView } from '../../view/ToastView';
@@ -29,6 +30,7 @@ export interface LevelViews {
   readonly marks: MarksView;
   readonly mirror: MirrorView;
   readonly sideBySide: SideBySideView;
+  readonly recipe: RecipeView;
   readonly animation: AnimationView;
   readonly hud: HudView;
   readonly toolbar: ToolbarView;
@@ -65,6 +67,10 @@ export const buildLevelViews = (
     marks: new MarksView(scene),
     mirror: new MirrorView(scene, t),
     sideBySide: new SideBySideView(scene, t),
+    recipe: new RecipeView(scene, t, {
+      card: (card) => dispatch({ kind: 'recipeCard', card }),
+      check: () => dispatch({ kind: 'checkRecipe' }),
+    }),
     animation: new AnimationView(scene),
     hud: new HudView(scene, t, {
       done: () => dispatch({ kind: 'done' }),
