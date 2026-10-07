@@ -15,6 +15,7 @@ import { hudPicture } from '../picture/hud';
 import { checkText } from '../picture/mirrorDrawing';
 import { pondPicture } from '../picture/pond';
 import { reasonText } from '../picture/reasonText';
+import { sideBySidePicture } from '../picture/sideBySide';
 import { splitBadges } from '../picture/splitBadge';
 import {
   handle,
@@ -23,6 +24,7 @@ import {
   type Effect,
   type UiEvent,
 } from '../systems/levelController';
+import type { FlowerAttempt } from '../systems/flowerChallenge';
 import { garden } from '../systems/levelSession';
 import { playtestEntries } from '../systems/playtestEntries';
 import { questionAt } from '../systems/question';
@@ -41,6 +43,7 @@ import { MirrorView } from '../view/MirrorView';
 import { NotebookView } from '../view/NotebookView';
 import { ObjectsView } from '../view/ObjectsView';
 import { QuestionView } from '../view/QuestionView';
+import { SideBySideView } from '../view/SideBySideView';
 import { SunSliderView } from '../view/SunSliderView';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
@@ -74,6 +77,7 @@ export class LevelScene extends Phaser.Scene {
     garden: GardenView;
     marks: MarksView;
     mirror: MirrorView;
+    sideBySide: SideBySideView;
     animation: AnimationView;
     hud: HudView;
     toolbar: ToolbarView;
@@ -82,6 +86,11 @@ export class LevelScene extends Phaser.Scene {
     dialogue: DialogueView;
   };
   private lastHudRefresh = 0;
+  /** The last chain drawn in the flower challenge, and since when it shows, to time its moments. */
+  private cutShown: FlowerAttempt | null = null;
+  private cutSince = 0;
+  /** Whether the moments of the chain shown are still moving on. */
+  private cutMoving = false;
   /** Every mechanic card's demo, built once for the scene object Phaser reuses. */
   private cards: ReadonlyMap<CardId, CardDemo> | null = null;
   /** The cards the player has seen, or that wait their turn in this level: none is queued twice. */
@@ -103,6 +112,8 @@ export class LevelScene extends Phaser.Scene {
     fitCamera(this);
     this.ready = false;
     this.lastHudRefresh = 0;
+    this.cutShown = null;
+    this.cutMoving = false;
     this.context = contextOf(this);
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
     if (level === undefined) {
@@ -127,6 +138,7 @@ export class LevelScene extends Phaser.Scene {
       garden: new GardenView(this),
       marks: new MarksView(this),
       mirror: new MirrorView(this, t),
+      sideBySide: new SideBySideView(this, t),
       animation: new AnimationView(this),
       hud: new HudView(this, t, {
         done: () => this.dispatch({ kind: 'done' }),
@@ -178,6 +190,7 @@ export class LevelScene extends Phaser.Scene {
     if (!this.ready) return;
     this.views.animation.update(time);
     this.views.mirror.update(time);
+    if (this.cutMoving) this.renderSideBySide(time);
     this.presenter.update(time);
     if (time - this.lastHudRefresh > HUD_REFRESH_MS) {
       this.lastHudRefresh = time;
@@ -455,7 +468,23 @@ export class LevelScene extends Phaser.Scene {
     );
     const pond = pondPicture(session, this.controller.positions, this.labels);
     this.views.mirror.render(pond, this.time.now);
+    this.renderSideBySide(this.time.now);
     this.renderHud();
+  }
+
+  /**
+   * Repaints the flower challenge (4.11): the folded garden beside the open one, and the last chain
+   * drawn at the moment of the argument it has reached; a new chain starts its moments at `now`.
+   */
+  private renderSideBySide(now: number): void {
+    const { session, positions } = this.controller;
+    if (session.flower.shown !== this.cutShown) {
+      this.cutShown = session.flower.shown;
+      this.cutSince = now;
+    }
+    const picture = sideBySidePicture(session, positions, this.labels, now - this.cutSince);
+    this.views.sideBySide.render(picture);
+    this.cutMoving = (picture?.cut?.moment ?? 3) < 3;
   }
 
   /** Shows one state of a replayed day, with the sun where the replay stands. */
