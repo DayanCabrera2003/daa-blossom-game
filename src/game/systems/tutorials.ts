@@ -8,7 +8,8 @@ import { isUiUnlocked } from '@levels/uiUnlocks';
 /**
  * When each mechanic card shows (GDD §5.11): the first time its mechanic is open, once per player.
  * Tools and the sun are introduced as the level starts; the steps of a script (a bet, a question,
- * the notebook, the reflection, counting, drawing, pointing at a vine) when they are reached.
+ * the notebook, the reflection, counting, drawing, pointing at a vine, the flower challenge) when
+ * they are reached.
  * Pure: the scene asks what to show and the save remembers what was closed.
  */
 
@@ -47,6 +48,7 @@ export const STEP_CARD: Readonly<Partial<Record<LevelStep['step'], CardId>>> = {
   count: 'count',
   draw: 'draw',
   pickVine: 'pickVine',
+  flowerChallenge: 'flowerChallenge',
 };
 
 /**

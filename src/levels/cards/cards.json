@@ -249,6 +249,23 @@
     ]
   },
   {
+    "id": "flowerChallenge",
+    "sprouts": [
+      { "label": "e", "x": 24, "y": 14 },
+      { "label": "c", "x": 62, "y": 14 },
+      { "label": "d", "x": 62, "y": 42 },
+      { "label": "b", "x": 100, "y": 28 }
+    ],
+    "vines": [
+      ["e", "c"],
+      ["c", "d"],
+      ["d", "b"],
+      ["b", "c"]
+    ],
+    "lanterns": [["c", "d"]],
+    "steps": [{ "type": "drawChain", "path": ["e", "c", "d", "b"] }]
+  },
+  {
     "id": "scarecrows",
     "sprouts": [
       { "label": "a", "x": 20, "y": 27 },

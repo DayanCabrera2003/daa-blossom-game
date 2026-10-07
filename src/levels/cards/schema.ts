@@ -26,6 +26,7 @@ export const CARD_IDS = [
   'inspect',
   'marks',
   'pickVine',
+  'flowerChallenge',
   'scarecrows',
   'fold',
   'unfold',

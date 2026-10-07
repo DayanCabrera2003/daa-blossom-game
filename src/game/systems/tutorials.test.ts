@@ -7,6 +7,7 @@ import { CARD_IDS, type CardId } from '@levels/cards/schema';
 import { describe, expect, it } from 'vitest';
 import {
   betrayalLevel,
+  bloomLevel,
   festivalLevel,
   fivePetalsLevel,
   pentagonLevel,
@@ -129,6 +130,13 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(stepCard('pickVine', new Set(['pickVine']))).toBeNull();
     expect(helpCards(betrayalLevel(), 1)).toContain('pickVine');
     expect(helpCards(betrayalLevel(), 0)).not.toContain('pickVine');
+  });
+
+  it('the flower challenge brings its card when it is reached (4.11), and only the first time', () => {
+    expect(stepCard('flowerChallenge', new Set())).toBe('flowerChallenge');
+    expect(stepCard('flowerChallenge', new Set(['flowerChallenge']))).toBeNull();
+    expect(helpCards(bloomLevel(), 1)).toContain('flowerChallenge');
+    expect(helpCards(bloomLevel(), 0)).not.toContain('flowerChallenge');
   });
 
   it('every action that unlocks has a card, and every card has something that shows it', () => {
