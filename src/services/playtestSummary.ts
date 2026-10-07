@@ -25,6 +25,8 @@ export interface LevelSummary {
   readonly mirrorChecks: { readonly beating: number; readonly notBeating: number };
   /** Vines pointed at where the light went wrong (4.2), by whether they were the conflict. */
   readonly vinePicks: { readonly right: number; readonly wrong: number };
+  /** Chains drawn in the flower challenge (4.11), counted or refused as no chain. */
+  readonly flowerChains: { readonly counted: number; readonly refused: number };
 }
 
 type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
@@ -32,6 +34,7 @@ type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
   bets: { made: number; right: number };
   mirrorChecks: { beating: number; notBeating: number };
   vinePicks: { right: number; wrong: number };
+  flowerChains: { counted: number; refused: number };
 };
 
 const freshTally = (level: string): Tally => ({
@@ -50,6 +53,7 @@ const freshTally = (level: string): Tally => ({
   counterexamples: 0,
   mirrorChecks: { beating: 0, notBeating: 0 },
   vinePicks: { right: 0, wrong: 0 },
+  flowerChains: { counted: 0, refused: 0 },
 });
 
 /**
@@ -125,6 +129,10 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
       case 'pickVine':
         if (entry.right) counts.vinePicks.right += 1;
         else counts.vinePicks.wrong += 1;
+        break;
+      case 'flowerChain':
+        if (entry.counted) counts.flowerChains.counted += 1;
+        else counts.flowerChains.refused += 1;
         break;
       case 'history':
         break;

@@ -4,6 +4,7 @@ import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import {
   betrayalLevel,
+  bloomLevel,
   closedFlowerLevel,
   festivalLevel,
 } from '../../../tests/support/fixtureLevels';
@@ -225,6 +226,17 @@ describe('playtest entries of bets, counts and the notebook', () => {
     expect(entries).toEqual([
       { kind: 'pickVine', at: 0, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
       { kind: 'pickVine', at: 0, level: '4.2', step: 1, vine: ['b', 'd'], right: true },
+    ]);
+  });
+
+  it('each chain drawn in the flower challenge is logged by its names, counted or not (4.11)', () => {
+    const { entries } = play(startController(bloomLevel(), 0), [
+      { kind: 'drawChain', path: [6, 8] },
+      { kind: 'drawChain', path: [5, 6] },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'flowerChain', at: 0, level: '4.11', path: ['t', 'x'], counted: false },
+      { kind: 'flowerChain', at: 0, level: '4.11', path: ['e', 't'], counted: true },
     ]);
   });
 

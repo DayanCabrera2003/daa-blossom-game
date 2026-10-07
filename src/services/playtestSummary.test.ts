@@ -34,6 +34,7 @@ describe('playtest summary', () => {
       counterexamples: 0,
       mirrorChecks: { beating: 0, notBeating: 0 },
       vinePicks: { right: 0, wrong: 0 },
+      flowerChains: { counted: 0, refused: 0 },
     });
   });
 
@@ -120,6 +121,17 @@ describe('playtest summary', () => {
       ]),
     );
     expect(summary?.vinePicks).toEqual({ right: 1, wrong: 1 });
+  });
+
+  it('counts the chains drawn in the flower challenge per level, counted and refused (4.11)', () => {
+    const [summary] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.11' },
+        { kind: 'flowerChain', at: 1, level: '4.11', path: ['t', 'x'], counted: false },
+        { kind: 'flowerChain', at: 2, level: '4.11', path: ['e', 't'], counted: true },
+      ]),
+    );
+    expect(summary?.flowerChains).toEqual({ counted: 1, refused: 1 });
   });
 
   it('counts wrong notebook choices, counterexamples opened and mirror checks per level', () => {

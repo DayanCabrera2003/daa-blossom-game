@@ -100,6 +100,17 @@ const entrySchema = z.discriminatedUnion('kind', [
     vine: z.tuple([z.string(), z.string()]),
     right: z.boolean(),
   }),
+  /**
+   * A chain drawn in the flower challenge (4.11), by the names of its sprouts: a chain of the open
+   * garden counts; a drawing that is no chain is refused and does not.
+   */
+  z.strictObject({
+    kind: z.literal('flowerChain'),
+    at,
+    level,
+    path: z.array(z.string()),
+    counted: z.boolean(),
+  }),
 ]);
 
 const logSchema = z.strictObject({

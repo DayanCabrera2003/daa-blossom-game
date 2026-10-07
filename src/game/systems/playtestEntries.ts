@@ -49,8 +49,8 @@ export const mirrorCheckEntry = (check: MirrorCheck, at: number, level: string):
 /**
  * What the playtest log records for one step of a level (GDD §10, Hito A): moves accepted and
  * refused, "Terminé" right or without reason, hints opened, trips through the day, answers, bets
- * and notebook choices, vines pointed at, the counterexamples they open, reflections checked, and
- * the win. A counterexample is logged when the script opens it: the screen shows it in its turn,
+ * and notebook choices, vines pointed at, the counterexamples they open, reflections checked, chains
+ * drawn in the flower challenge, and the win. A counterexample is logged when the script opens it: the screen shows it in its turn,
  * after any lines before it.
  * Pointing, dragging and choosing tools are not recorded, nor history moves that go nowhere.
  * Pure: `before` is the controller the event reached, `step` what it answered, `at` the clock.
@@ -105,6 +105,12 @@ export function playtestEntries(
           vine: [name(u), name(v)],
           right: correct,
         });
+        break;
+      }
+      case 'flowerDrawn': {
+        const { attempt } = effect;
+        const path = attempt.path.map((v) => nameOf(before.session.level.labels, v));
+        entries.push({ kind: 'flowerChain', at, level, path, counted: attempt.kind === 'cut' });
         break;
       }
       case 'counterexample':
