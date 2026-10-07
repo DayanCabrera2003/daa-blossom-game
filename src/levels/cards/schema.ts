@@ -33,6 +33,7 @@ export const CARD_IDS = [
   'unfold',
   'layers',
   'rotateStem',
+  'recipe',
   'stones',
 ] as const;
 

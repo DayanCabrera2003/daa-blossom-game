@@ -194,6 +194,8 @@
   "tutorial.layers.body": "Con Capas, toca una flor cerrada para entrar y verla de cerca; dentro, toca otra flor para entrar más. Sal con Salir de la flor o con Esc.",
   "tutorial.rotateStem.title": "Girar el tallo",
   "tutorial.rotateStem.body": "Arrastra una cadena desde un brote a oscuras hasta la base de una flor: los faroles del tallo giran y la base queda a oscuras.",
+  "tutorial.recipe.title": "Tarjetas de receta",
+  "tutorial.recipe.body": "Toca una tarjeta suelta para ponerla en su sitio de la receta; tócala en la receta para devolverla. Cuando la tengas, pulsa «Comprobar».",
   "tutorial.stones.title": "Piedras",
   "tutorial.stones.body": "Con Piedras, toca un brote para levantarlo como una piedra. Tócalo otra vez para devolverlo.",
   "tutorial.ok": "Entendido"

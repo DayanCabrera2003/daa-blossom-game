@@ -13,6 +13,7 @@ import {
   lightLevel,
   nestedFlowersLevel,
   pentagonLevel,
+  recipeLevel,
   stemRotationLevel,
 } from '../../../tests/support/fixtureLevels';
 import {
@@ -161,6 +162,12 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(stepCard('flowerChallenge', new Set(['flowerChallenge']))).toBeNull();
     expect(helpCards(bloomLevel(), 1)).toContain('flowerChallenge');
     expect(helpCards(bloomLevel(), 0)).not.toContain('flowerChallenge');
+  });
+
+  it('the recipe brings its card when it is reached (6.1), and only the first time', () => {
+    expect(stepCard('recipe', new Set())).toBe('recipe');
+    expect(stepCard('recipe', new Set(['recipe']))).toBeNull();
+    expect(helpCards(recipeLevel(), 0)).toContain('recipe');
   });
 
   it('every action that unlocks has a card, and every card has something that shows it', () => {

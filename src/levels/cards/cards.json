@@ -391,6 +391,16 @@
     "steps": [{ "type": "rotateStem", "stem": ["R", "a", "b"] }]
   },
   {
+    "id": "recipe",
+    "sprouts": [
+      { "label": "a", "x": 30, "y": 27 },
+      { "label": "b", "x": 90, "y": 27 }
+    ],
+    "vines": [["a", "b"]],
+    "choices": { "count": 4, "kind": "lines" },
+    "steps": [{ "type": "recipe", "cards": ["markDarkSuns", "foldFlower", "finishKeepMoons"] }]
+  },
+  {
     "id": "stones",
     "sprouts": [
       { "label": "a", "x": 20, "y": 27 },
