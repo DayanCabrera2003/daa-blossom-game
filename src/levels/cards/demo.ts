@@ -139,7 +139,8 @@ interface Day {
  * Builds the demo of a card (GDD §5.11): its tiny garden, with every action open, and one frame per
  * step showing the gesture on the garden as it is, then a last frame with the result. Moves are
  * played by the rules and keep a day like the level's own, so undo, redo and the sun walk it as
- * they would in a level; script inputs only draw (a touch, a pick, silver lanterns).
+ * they would in a level; script inputs only draw (a touch, a pick, silver lanterns, the cards of a
+ * recipe as picks).
  */
 export function buildDemo(card: CardData): Result<CardDemo, DemoError> {
   const built = buildGarden({
@@ -275,6 +276,14 @@ function playInput(
     case 'checkMirror':
       frame({ kind: 'press', button: 'check' });
       return null;
+    case 'recipe': {
+      // The cards are the choices under the garden, picked one by one; then the check is pressed.
+      if (card.choices === undefined) return { kind: 'bad', why: 'noChoices' };
+      if (entry.cards.length > card.choices.count) return { kind: 'bad', why: 'choiceOutOfRange' };
+      for (const option of entry.cards.keys()) frame({ kind: 'pick', option });
+      frame({ kind: 'press', button: 'check' });
+      return null;
+    }
     case 'drawChain':
       // The flower challenge draws a chain without passing its lanterns.
       if (!checkAugmentingPath(state.graph, state.matching, entry.path).ok)

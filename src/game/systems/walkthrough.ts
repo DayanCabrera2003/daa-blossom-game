@@ -1,4 +1,5 @@
 import type { Edge, VertexId } from '@core/graph/types';
+import { placedCards, type RecipeCardId } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level, WalkthroughEntry } from '@levels/build';
@@ -12,14 +13,15 @@ import {
   type Effect,
   type UiEvent,
 } from './levelController';
-import { garden, stepNow } from './levelSession';
+import { garden, recipeBoardOf, stepNow } from './levelSession';
 import type { Refusal } from './refusal';
 
 /**
  * Plays a level's reference walkthrough through the level controller, with no scene: every move as
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
- * vines, a chain of the flower challenge as a drag through its sprouts, and the end of the light's
+ * vines, a chain of the flower challenge as a drag through its sprouts, a recipe as touches on its
+ * cards and "Comprobar", and the end of the light's
  * own search as the scene reports it, with no entry of its own. A level whose walkthrough does not
  * finish its script never reaches the browser (plan 03, §0): the playability test and
  * `check-levels` both run this.
@@ -62,7 +64,7 @@ function gestureEvents(gesture: Gesture): UiEvent[] {
  * really are instead (`drawEvents`), and so is a vine pointed at (`vineEvents`).
  */
 function inputEvents(
-  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' }>,
+  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' | 'recipe' }>,
 ): UiEvent[] {
   switch (input.type) {
     case 'answer':
@@ -87,6 +89,7 @@ const ANSWERED: ReadonlySet<FlowInput['type']> = new Set([
   'tapGarden',
   'tapSprout',
   'pickVine',
+  'recipe',
 ]);
 
 /**
@@ -168,6 +171,25 @@ function vineEvents(controller: Controller, u: number, v: number): UiEvent[] | s
 }
 
 /**
+ * The touches that leave exactly `cards` in the recipe on the table (the cards it holds and these
+ * lack are taken back first, then the missing ones are placed, each in its slot), then
+ * "Comprobar". Outside a recipe step there is no table: only the check is sent, which nothing waits
+ * for.
+ */
+function recipeEvents(controller: Controller, cards: readonly RecipeCardId[]): UiEvent[] {
+  const board = recipeBoardOf(controller.session);
+  const placed = board === null ? [] : placedCards(board.recipe);
+  const touched = [
+    ...placed.filter((card) => !cards.includes(card)),
+    ...cards.filter((card) => !placed.includes(card)),
+  ];
+  return [
+    ...touched.map((card): UiEvent => ({ kind: 'recipeCard', card })),
+    { kind: 'checkRecipe' },
+  ];
+}
+
+/**
  * Plays a chain drawn in the flower challenge as a drag through its sprouts. The drag must draw
  * exactly that chain: one the garden does not let the finger follow is a mismatch, and a drag that
  * draws nothing (it starts on a lit sprout, or outside the challenge) was not waited for.
@@ -222,7 +244,11 @@ function playEntry(
     if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
     if (entry.type === 'drawChain') return playChain(controller, entry.path, index, now);
     const events =
-      entry.type === 'pickVine' ? vineEvents(controller, entry.u, entry.v) : inputEvents(entry);
+      entry.type === 'pickVine'
+        ? vineEvents(controller, entry.u, entry.v)
+        : entry.type === 'recipe'
+          ? recipeEvents(controller, entry.cards)
+          : inputEvents(entry);
     if (typeof events === 'string') {
       return {
         controller,

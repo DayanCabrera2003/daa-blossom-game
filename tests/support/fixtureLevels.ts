@@ -3,10 +3,10 @@ import { loadLevel } from '@levels/loader';
 
 /**
  * Synthetic levels for tests that need a garden of chapters 4, 5 or 7: copies of the drafts those
- * chapters started from, so the tests keep their data when the level files are rewritten, and a
- * garden for the flower challenge (4.11). Each one
- * is loaded through the real loader, so it is validated exactly like a level file. The ids are kept,
- * because the tools a level opens follow its id.
+ * chapters started from, so the tests keep their data when the level files are rewritten, a
+ * garden for the flower challenge (4.11), and the recipe of chapter 6 before its files exist.
+ * Each one is loaded through the real loader, so it is validated exactly like a level file. The
+ * ids are kept, because the tools a level opens follow its id.
  */
 
 /** Loads a fixture; a fixture that does not load is a broken test, so it stops loudly. */
@@ -450,6 +450,86 @@ export const BLOOM = {
     { type: 'drawChain', path: ['e', 't'] },
   ],
 };
+
+/**
+ * The recipe with cards (GDD 6.1), until chapter 6 has its level files: a small garden, `R–a=b–c`,
+ * that the script does not touch, and a recipe built from nothing. The walkthrough first checks a
+ * recipe tempted by a distractor ("si x es luna, cámbiala a sol"), which is told and stays open,
+ * then the right one, with its cases in an order of its own.
+ */
+const RECIPE = {
+  id: '6.1',
+  sprouts: [
+    { label: 'R', x: 100, y: 135 },
+    { label: 'a', x: 200, y: 135 },
+    { label: 'b', x: 300, y: 135 },
+    { label: 'c', x: 400, y: 135 },
+  ],
+  vines: [
+    ['R', 'a'],
+    ['a', 'b'],
+    ['b', 'c'],
+  ],
+  lanterns: [['a', 'b']],
+  goal: { visible: false },
+  flow: [{ step: 'recipe' }],
+  solution: [
+    {
+      type: 'recipe',
+      cards: [
+        'markDarkSuns',
+        'chainToDark',
+        'growMoon',
+        'chainRootToRoot',
+        'foldFlower',
+        'moonToSun',
+        'finishKeepMoons',
+      ],
+    },
+    {
+      type: 'recipe',
+      cards: [
+        'markDarkSuns',
+        'moonNothing',
+        'foldFlower',
+        'chainRootToRoot',
+        'growMoon',
+        'chainToDark',
+        'finishKeepMoons',
+      ],
+    },
+  ],
+};
+
+/**
+ * The broken recipe (GDD 6.3) on the same garden: the right recipe arrives without the card that
+ * folds the flower, and the walkthrough puts it back.
+ */
+const BROKEN_RECIPE = {
+  ...RECIPE,
+  id: '6.3',
+  flow: [{ step: 'recipe', missing: ['sameTree'] }],
+  solution: [
+    {
+      type: 'recipe',
+      cards: [
+        'markDarkSuns',
+        'chainToDark',
+        'growMoon',
+        'chainRootToRoot',
+        'foldFlower',
+        'moonNothing',
+        'finishKeepMoons',
+      ],
+    },
+  ],
+};
+
+/** The level built from `RECIPE`. */
+export const recipeLevel = (): Level => load(RECIPE);
+
+/** The level built from `BROKEN_RECIPE`. */
+export const brokenRecipeLevel = (): Level => load(BROKEN_RECIPE);
 
 /** The level built from `BLOOM`. */
 export const bloomLevel = (): Level => load(BLOOM);

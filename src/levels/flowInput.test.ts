@@ -7,7 +7,7 @@ const flowInput = z.discriminatedUnion('type', flowInputOptions);
 const accepts = (input: unknown) => flowInput.safeParse(input).success;
 
 describe('the inputs a walkthrough gives the script', () => {
-  it('reads answers, bets, the sun, touches, the mirror challenge, a vine and a chain drawn', () => {
+  it('reads answers, bets, the sun, touches, the mirror challenge, a vine, a chain drawn and a recipe', () => {
     for (const input of [
       { type: 'answer', option: 1 },
       { type: 'bet', value: 4 },
@@ -18,6 +18,8 @@ describe('the inputs a walkthrough gives the script', () => {
       { type: 'checkMirror' },
       { type: 'pickVine', u: 'd', v: 'b' },
       { type: 'drawChain', path: ['e', 'c', 'b'] },
+      { type: 'recipe', cards: ['markDarkSuns', 'foldFlower'] },
+      { type: 'recipe', cards: [] },
     ]) {
       expect(accepts(input)).toBe(true);
     }
@@ -30,6 +32,7 @@ describe('the inputs a walkthrough gives the script', () => {
     expect(accepts({ type: 'tapGarden', vertex: 'a' })).toBe(false);
     expect(accepts({ type: 'pickVine', u: 'd' })).toBe(false);
     expect(accepts({ type: 'drawChain', path: ['e'] })).toBe(false);
+    expect(accepts({ type: 'recipe', cards: ['stir'] })).toBe(false);
   });
 
   it('no input shares its type with a player action, so the two never mix up', () => {

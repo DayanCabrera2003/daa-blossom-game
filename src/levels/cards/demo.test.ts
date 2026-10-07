@@ -123,6 +123,26 @@ describe('the demo of a mechanic card', () => {
     ).toMatchObject({ ok: false, error: { code: 'badStep', why: 'choiceOutOfRange' } });
   });
 
+  it('a recipe picks its cards from the choices, one by one, then presses the check', () => {
+    const choices = { count: 3, kind: 'lines' };
+    const cards = ['markDarkSuns', 'foldFlower'];
+    const demo = built({ ...path3, choices, steps: [{ type: 'recipe', cards }] });
+    expect(demo.frames.map((frame) => frame.gesture)).toEqual([
+      { kind: 'pick', option: 0 },
+      { kind: 'pick', option: 1 },
+      { kind: 'press', button: 'check' },
+      { kind: 'none' },
+    ]);
+    expect(buildDemo(card({ ...path3, steps: [{ type: 'recipe', cards }] }))).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'noChoices' },
+    });
+    const many = ['markDarkSuns', 'foldFlower', 'growMoon', 'moonNothing'];
+    expect(
+      buildDemo(card({ ...path3, choices, steps: [{ type: 'recipe', cards: many }] })),
+    ).toMatchObject({ ok: false, error: { code: 'badStep', why: 'choiceOutOfRange' } });
+  });
+
   it('touches on a sprout, a vine or the garden are shown, and change no lantern', () => {
     const demo = built({
       ...path3,

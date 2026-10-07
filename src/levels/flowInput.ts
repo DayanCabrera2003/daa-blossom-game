@@ -1,10 +1,12 @@
 import type { Edge, VertexId } from '@core/graph/types';
+import { RECIPE_CARD_IDS } from '@core/recipe/recipe';
 import { z } from 'zod';
 import { label, vine } from './fields';
 
 /**
  * What a player gives the script of a level besides garden moves: answers, bets, the sun, touches
- * (on the garden, a sprout or a vine), the mirror challenge and the chains of the flower challenge. A level's reference walkthrough (`solution`) writes them between its
+ * (on the garden, a sprout or a vine), the mirror challenge, the chains of the flower challenge and
+ * the recipe cards. A level's reference walkthrough (`solution`) writes them between its
  * moves, so a test can play the whole level, script included. None of these changes the lanterns.
  */
 
@@ -28,6 +30,11 @@ export const flowInputOptions = [
   z.strictObject({ type: z.literal('pickVine'), u: label, v: label }),
   /** A chain dragged through these sprouts in a `flowerChallenge` step, shown and never applied. */
   z.strictObject({ type: z.literal('drawChain'), path: z.array(label).min(2) }),
+  /**
+   * The recipe checked in a `recipe` step: exactly these cards are put in it (each in its slot,
+   * whatever was there taken back), then it is checked.
+   */
+  z.strictObject({ type: z.literal('recipe'), cards: z.array(z.enum(RECIPE_CARD_IDS)) }),
 ] as const;
 
 /** Every input type; none of them is the type of a player action. */
