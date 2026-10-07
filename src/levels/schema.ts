@@ -44,6 +44,11 @@ export const levelSchema = z.strictObject({
   fog: z.boolean().default(false),
   /** Water budget for the extra star; null when the level does not count water. */
   water: z.number().int().min(0).nullable().default(null),
+  /**
+   * The only sprouts a search may start from (4.1 searches from R alone, so its light can "lie");
+   * every sprout in the dark when absent.
+   */
+  roots: z.array(label).min(1).optional(),
   /** Actions unlocked by now that this level keeps closed (4.10 closes folding). */
   forbid: z.array(actionType).default([]),
   /** When the play step is won; required exactly when the script has a play step. */

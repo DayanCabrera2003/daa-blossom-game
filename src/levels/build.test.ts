@@ -57,6 +57,11 @@ describe('building a level', () => {
     expect(unwrapLevel({ ...rotate, fog: true }).start.revealed).toEqual(new Array(6).fill(false));
   });
 
+  it('turns the roots a search may start from into ids, any sprout in the dark by default', () => {
+    expect(unwrapLevel({ ...rotate, roots: ['R'] }).start.roots).toEqual([0]);
+    expect(unwrapLevel(rotate).start.roots).toBeNull();
+  });
+
   it('says which name is unknown, wherever it appears', () => {
     expect(buildLevel({ ...rotate, vines: [['R', 'z']] })).toEqual({
       ok: false,
@@ -68,6 +73,9 @@ describe('building a level', () => {
     expect(
       buildLevel({ ...rotate, hints: [{ line: 'ch4.10.sauce.01', highlight: ['W'] }] }),
     ).toMatchObject({ error: { code: 'badLabel', error: { name: 'W' } } });
+    expect(buildLevel({ ...rotate, roots: ['R', 'V'] })).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'V' } },
+    });
   });
 
   it('also finds unknown names inside paths and among the starting lanterns', () => {

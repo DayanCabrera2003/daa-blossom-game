@@ -17,6 +17,20 @@ function named(labels: Labels, name: string): Result<VertexId, LabelError> {
   return vertex === undefined ? err({ code: 'unknownName', name }) : ok(vertex);
 }
 
+/** The ids of a list of named sprouts, stopping at the first unknown name. */
+export function toSprouts(
+  labels: Labels,
+  names: readonly string[],
+): Result<VertexId[], LabelError> {
+  const vertices: VertexId[] = [];
+  for (const name of names) {
+    const vertex = named(labels, name);
+    if (!vertex.ok) return vertex;
+    vertices.push(vertex.value);
+  }
+  return ok(vertices);
+}
+
 const SPROUT_FIELDS = ['u', 'v', 'from', 'to', 'vertex'] as const;
 const PATH_FIELDS = ['path', 'stem', 'loop'] as const;
 
@@ -37,13 +51,9 @@ export function toAction(labels: Labels, step: LevelAction): Result<Action, Labe
   for (const field of PATH_FIELDS) {
     const names = (step as Record<string, unknown>)[field];
     if (!Array.isArray(names)) continue;
-    const vertices: VertexId[] = [];
-    for (const name of names as string[]) {
-      const vertex = named(labels, name);
-      if (!vertex.ok) return vertex;
-      vertices.push(vertex.value);
-    }
-    translated[field] = vertices;
+    const vertices = toSprouts(labels, names as string[]);
+    if (!vertices.ok) return vertices;
+    translated[field] = vertices.value;
   }
   return ok(translated as Action);
 }
