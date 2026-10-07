@@ -321,3 +321,25 @@ describe('4.11: the flower challenge', () => {
     expect(level.data.unlocks.codex).toEqual(['C6', 'C7', 'C8']);
   });
 });
+
+describe('4.12: mastery of the festival', () => {
+  const level = levelOf('4.12');
+
+  it('18 sprouts in the fog, with water to count and lanterns already lit', () => {
+    expect(level.graph.n).toBe(18);
+    expect(level.data.fog).toBe(true);
+    expect(level.data.water).not.toBeNull();
+    expect(size(level.start.matching)).toBeGreaterThan(0);
+  });
+
+  it('takes two rounds to the most lanterns, each with a flower of its own', () => {
+    const chains = level.solution.flatMap((move, at) => (move.type === 'chain' ? [at] : []));
+    expect(chains).toHaveLength(2);
+    const [first = 0] = chains;
+    const folds = (from: number, to: number) =>
+      level.solution.slice(from, to).filter((move) => move.type === 'foldAt').length;
+    expect(folds(0, first)).toBe(1);
+    expect(folds(first, level.solution.length)).toBe(1);
+    expect(maximumSize(level.graph)).toBe(size(level.start.matching) + 2);
+  });
+});
