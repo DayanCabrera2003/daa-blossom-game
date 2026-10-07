@@ -1,6 +1,6 @@
 import { isMaximum } from '@core/edmonds/fast/maximum';
 import type { RecipeVerdict } from '@core/recipe/check';
-import type { RecipeCardId } from '@core/recipe/recipe';
+import { RIGHT_RECIPE, withoutCases, type Recipe, type RecipeCardId } from '@core/recipe/recipe';
 import { matchedEdges } from '@core/matching/queries';
 import type { Matching } from '@core/matching/types';
 import { invariant } from '@core/shared/invariant';
@@ -14,6 +14,7 @@ import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
 import { countAnswer, rightBet, rightVine } from './answerKey';
+import { automatonDay } from './automaton';
 import {
   advanceFlow,
   betRight,
@@ -67,9 +68,10 @@ import { computeStars, type StarResult } from './stars';
  * What is accepted depends on the step of the script (plan 03, phase 2): garden moves only while
  * playing, so the lanterns never change under a question that depends on them; undo, redo and the
  * sun while playing or waiting for the sun. When the light searches by itself (4.1, 4.2), its
- * marks enter the day once the scene has shown them, as moves the rules accepted. The reflection of the mirror challenge is drawn and
- * checked only in its `draw` step, the chains of the flower challenge only in its own step, and the
- * recipe cards only in a `recipe` step. Once the script is over the garden is free again, as it
+ * marks enter the day once the scene has shown them, as moves the rules accepted; the automaton's
+ * run (6.2, 6.3) makes a new day of its own, from the level's starting lanterns. The reflection of
+ * the mirror challenge is drawn and checked only in its `draw` step, the chains of the flower
+ * challenge only in its own step, and the recipe cards only in a `recipe` step. Once the script is over the garden is free again, as it
  * always was after a win, but nothing more can be won.
  */
 export interface LevelSession {
@@ -113,7 +115,10 @@ export type ScriptInput =
   | { readonly type: 'tap' }
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
   | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
-  /** The light's own search has been shown to the end (sent by the scene, not by the player). */
+  /**
+   * The light's own search, or the automaton's run, has been shown to the end (sent by the scene,
+   * not by the player).
+   */
   | { readonly type: 'searched' };
 
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
@@ -306,6 +311,13 @@ export function respond(
       return advance(session, { ...input, right }, now);
     }
     case 'searched': {
+      // The automaton's run is a day of its own, from the lanterns the level starts with.
+      const run = automatonDayOf(session);
+      if (run !== null) {
+        const [dawn, ...moves] = run;
+        invariant(dawn !== undefined, 'a day has a dawn');
+        return advance({ ...session, history: moves.reduce(push, startHistory(dawn)) }, input, now);
+      }
       // The light's moves enter the day as moves accepted by the rules, so the sun replays them
       // and the steps after it (pointing at its conflict, 4.2) judge the garden it leaves.
       if (stepNow(session)?.step !== 'autoSearch') return { session, effects: [] };
@@ -513,4 +525,28 @@ export function checkRecipeNow(
     now,
   );
   return { ...advanced, verdict };
+}
+
+/**
+ * The recipe the automaton runs in the `automaton` step now: with `missing`, the fixed one (the
+ * right recipe without those cards, Bruto's in 6.3); otherwise the one the player wrote in the last
+ * `recipe` step before it, which that step let pass only when right, or the right recipe when the
+ * level has no recipe step of its own (6.2 runs what was written in 6.1). Null in any other step.
+ */
+function automatonRecipe(session: LevelSession): Recipe | null {
+  const step = stepNow(session);
+  if (step?.step !== 'automaton') return null;
+  if (step.missing !== undefined) return withoutCases(RIGHT_RECIPE, step.missing);
+  return session.recipe?.recipe ?? RIGHT_RECIPE;
+}
+
+/**
+ * The day of the automaton's run in the `automaton` step now, or null in any other step. Every run
+ * starts a new day from the lanterns the level starts with, not from the garden a run before it
+ * left: a repaired recipe is judged on the same garden as the broken one (6.3, 3 lanterns against
+ * 4), and the sun walks one whole run, from the first sun to "Terminé".
+ */
+export function automatonDayOf(session: LevelSession): readonly GardenState[] | null {
+  const recipe = automatonRecipe(session);
+  return recipe === null ? null : automatonDay(session.level.start, recipe);
 }
