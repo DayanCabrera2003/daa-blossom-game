@@ -17,7 +17,7 @@ import { describe, expect, it } from 'vitest';
  * the core. In 4.1 the light "lies": searched from R alone, without folding, the search ends with
  * no chain while the garden holds one more lantern. In 4.2 that search meets itself at d–b, closing
  * a loop of 3, and "the light is confused by any loop" is refuted by a loop of 4 that confuses
- * nobody.
+ * nobody, as 4.3 shows again on a garden of its own.
  */
 
 const levelOf = (id: string): Level => {
@@ -148,5 +148,20 @@ describe('4.2: sun and moon at once', () => {
     expect(applyAction(fromT, look('c', 'b'))).toMatchObject({ reason: { code: 'alreadyMarked' } });
     expect(findConflict(fromT.layer, fromT.search)).toBeNull();
     expect(applyAction(fromT, look('a', 'R'))).toMatchObject({ ok: true });
+  });
+});
+
+describe('4.3: even loops do not get in the way', () => {
+  const level = levelOf('4.3');
+  const id = (name: string): VertexId => sproutOf(level, name);
+
+  it('the search from R walks the loop of 4 without the light meeting itself', () => {
+    const searched = play(level.start, level.solution.slice(0, -1));
+    expect(findConflict(searched.layer, searched.search)).toBeNull();
+    expect(searched.chainSeen).not.toBeNull();
+    // b reaches e, a moon already: nothing strange.
+    expect(applyAction(searched, { type: 'markMoon', from: id('b'), to: id('e') })).toMatchObject({
+      reason: { code: 'alreadyMarked' },
+    });
   });
 });
