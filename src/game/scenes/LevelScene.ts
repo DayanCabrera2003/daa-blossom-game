@@ -1,21 +1,14 @@
 import Phaser from 'phaser';
-import type { GardenState } from '@core/rules/state';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
 import { cardDemos } from '@levels/cards/catalog';
 import type { CardDemo } from '@levels/cards/demo';
 import type { CardId } from '@levels/cards/schema';
-import type { SproutKind } from '@levels/fields';
 import { visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook, recordTutorialSeen, writeSave } from '@services/save';
 import { planAnimation } from '../animation/plan';
-import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../picture/garden';
-import { hudPicture } from '../picture/hud';
 import { checkText } from '../picture/mirrorDrawing';
-import { pondPicture } from '../picture/pond';
 import { reasonText } from '../picture/reasonText';
-import { sideBySidePicture } from '../picture/sideBySide';
-import { splitBadges } from '../picture/splitBadge';
 import {
   handle,
   openController,
@@ -23,7 +16,6 @@ import {
   type Effect,
   type UiEvent,
 } from '../systems/levelController';
-import type { FlowerAttempt } from '../systems/flowerChallenge';
 import { garden } from '../systems/levelSession';
 import { playtestEntries } from '../systems/playtestEntries';
 import { questionAt } from '../systems/question';
@@ -36,12 +28,10 @@ import type { ShownCard } from '../view/TutorialView';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
+import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
 import { Presenter } from './presenter';
-
-/** How often the HUD is refreshed while nothing happens, so a hint shows up when it is due. */
-const HUD_REFRESH_MS = 500;
 
 /**
  * A level being played. The scene takes no decision: it forwards the player's presses, keys and
@@ -54,15 +44,9 @@ export class LevelScene extends Phaser.Scene {
   private level!: Level;
   private controller!: Controller;
   private labels: readonly string[] = [];
-  /** Which sprouts are bees or flowers; empty in a garden that has none. */
-  private kinds: readonly (SproutKind | undefined)[] = [];
   private views!: LevelViews;
-  private lastHudRefresh = 0;
-  /** The last chain drawn in the flower challenge, and since when it shows, to time its moments. */
-  private cutShown: FlowerAttempt | null = null;
-  private cutSince = 0;
-  /** Whether the moments of the chain shown are still moving on. */
-  private cutMoving = false;
+  /** Paints every layer of the screen from the pure pictures of the garden and the HUD. */
+  private painter!: LevelRenderer;
   /** Every mechanic card's demo, built once for the scene object Phaser reuses. */
   private cards: ReadonlyMap<CardId, CardDemo> | null = null;
   /** The cards the player has seen, or that wait their turn in this level: none is queued twice. */
@@ -83,9 +67,6 @@ export class LevelScene extends Phaser.Scene {
   create(data: { levelId: string }): void {
     fitCamera(this);
     this.ready = false;
-    this.lastHudRefresh = 0;
-    this.cutShown = null;
-    this.cutMoving = false;
     this.context = contextOf(this);
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
     if (level === undefined) {
@@ -94,7 +75,6 @@ export class LevelScene extends Phaser.Scene {
     }
     this.level = level;
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
-    this.kinds = level.data.sprouts.map((sprout) => sprout.kind);
     this.cards ??= cardDemos();
     this.offered = new Set(this.context.save.tutorialsSeen);
     const opened = openController(level, this.time.now);
@@ -108,11 +88,20 @@ export class LevelScene extends Phaser.Scene {
       back: () => this.leave(),
       help: () => this.openHelp(),
     });
+    // A new painter for every level: its timing starts afresh with the level.
+    this.painter = new LevelRenderer(
+      this.views,
+      { labels: this.labels, kinds: level.data.sprouts.map((sprout) => sprout.kind) },
+      { controller: () => this.controller, replaySun: () => this.presenter.replaySun },
+    );
     this.presenter = new Presenter(
       this,
       buildPresenterViews(this, t, this.views.dialogue),
       {
-        showDay: (state) => (state === null ? this.render() : this.renderReplayed(state)),
+        showDay: (state) =>
+          state === null
+            ? this.painter.render(this.time.now)
+            : this.painter.renderReplayed(state, this.time.now),
         searched: () => this.forward({ kind: 'searched' }),
         stopAnimation: () => this.views.animation.finish(),
         victory: (stars) => this.offerNext(stars),
@@ -137,19 +126,15 @@ export class LevelScene extends Phaser.Scene {
     // lines, then whatever step waits for the player.
     this.offer(startCards(level, this.offered));
     for (const effect of opened.effects) this.show(effect);
-    this.render();
+    this.painter.render(this.time.now);
   }
 
   override update(time: number): void {
     if (!this.ready) return;
     this.views.animation.update(time);
-    this.views.mirror.update(time);
-    if (this.cutMoving) this.renderSideBySide(time);
+    this.painter.update(time);
     this.presenter.update(time);
-    if (time - this.lastHudRefresh > HUD_REFRESH_MS) {
-      this.lastHudRefresh = time;
-      this.renderHud();
-    }
+    this.painter.refreshHud(time);
   }
 
   /**
@@ -172,7 +157,7 @@ export class LevelScene extends Phaser.Scene {
     );
     this.controller = step.controller;
     for (const effect of step.effects) this.show(effect);
-    this.render();
+    this.painter.render(this.time.now);
   }
 
   private show(effect: Effect): void {
@@ -395,74 +380,5 @@ export class LevelScene extends Phaser.Scene {
       next: next === undefined ? null : () => this.scene.start('level', { levelId: next.id }),
       hub: () => this.scene.start('hub'),
     });
-  }
-
-  /** Repaints the garden as the session shows it, with what the player is pointing at. */
-  private render(): void {
-    const { session, pointer, highlight, vineGlow } = this.controller;
-    this.renderGarden(
-      garden(session),
-      { selection: pointer.selection, highlight, chain: pointer.chain, vineGlow },
-      splitBadges(session),
-    );
-    const pond = pondPicture(session, this.controller.positions, this.labels);
-    this.views.mirror.render(pond, this.time.now);
-    this.renderSideBySide(this.time.now);
-    this.renderHud();
-  }
-
-  /**
-   * Repaints the flower challenge (4.11): the folded garden beside the open one, and the last chain
-   * drawn at the moment of the argument it has reached; a new chain starts its moments at `now`.
-   */
-  private renderSideBySide(now: number): void {
-    const { session, positions } = this.controller;
-    if (session.flower.shown !== this.cutShown) {
-      this.cutShown = session.flower.shown;
-      this.cutSince = now;
-    }
-    const picture = sideBySidePicture(session, positions, this.labels, now - this.cutSince);
-    this.views.sideBySide.render(picture);
-    this.cutMoving = (picture?.cut?.moment ?? 3) < 3;
-  }
-
-  /** Shows one state of a replayed day, with the sun where the replay stands. */
-  private renderReplayed(state: GardenState): void {
-    this.renderGarden(state, NO_EXTRAS);
-    this.renderHud();
-  }
-
-  /**
-   * Repaints every layer of the garden from one state of it; the sprouts in `split` wear the split
-   * badge (4.2), which a replayed day never shows.
-   */
-  private renderGarden(
-    state: GardenState,
-    extras: PointingExtras,
-    split: readonly number[] = [],
-  ): void {
-    const picture = gardenPicture(
-      state,
-      this.controller.positions,
-      this.labels,
-      extras,
-      this.kinds,
-    );
-    this.views.fog.render(picture);
-    this.views.flowers.render(picture.flowers);
-    this.views.objects.render(picture);
-    this.views.garden.render(picture);
-    this.views.marks.render(picture.sprouts, split);
-  }
-
-  /** Repaints the HUD; while the day replays, the sun follows the replay instead of the session. */
-  private renderHud(): void {
-    const hud = hudPicture(this.controller.session, this.controller.pointer, this.time.now);
-    this.views.hud.render(hud);
-    this.views.toolbar.render(hud.tools, hud.tool);
-    const replayed = this.presenter.replaySun;
-    this.views.sun.render(
-      replayed === null || hud.sun === null ? hud.sun : { ...replayed, calling: false },
-    );
   }
 }
