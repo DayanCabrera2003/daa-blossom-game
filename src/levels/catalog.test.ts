@@ -41,8 +41,8 @@ describe('the level catalog', () => {
     expect([...ids].sort(compareLevelIds)).toEqual(ids);
   });
 
-  it('holds the written chapters 0 to 2 whole, with no draft among them', () => {
-    const early = catalog().filter((level) => compareLevelIds(level.data.id, '3.0') < 0);
+  it('holds the written chapters 0 to 3 whole, with no draft among them', () => {
+    const early = catalog().filter((level) => compareLevelIds(level.data.id, '4.0') < 0);
     expect(early.map((level) => level.data.id)).toEqual([
       '0.1',
       '0.2',
@@ -62,6 +62,15 @@ describe('the level catalog', () => {
       '2.2',
       '2.3',
       '2.4',
+      '3.1',
+      '3.2',
+      '3.3',
+      '3.4',
+      '3.5',
+      '3.6',
+      '3.7',
+      '3.8',
+      '3.9',
     ]);
     expect(early.filter((level) => level.data.draft)).toEqual([]);
   });
