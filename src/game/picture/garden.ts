@@ -84,6 +84,28 @@ const nestedPadding = (depth: number): number => Math.max(4, FLOWER_PADDING - 4 
 const GROUP_PADDING = 8;
 
 /**
+ * The outlines of the folded flowers among `nodes` (those on top have depth 0), each followed by
+ * the flowers inside it, around their petals drawn at `at`.
+ */
+export function flowerPictures(
+  nodes: readonly GardenNode[],
+  at: (v: VertexId) => Point,
+): FlowerPicture[] {
+  const flowers: FlowerPicture[] = [];
+  const walk = (node: GardenNode, depth: number): void => {
+    if (node.kind !== 'blossom') return;
+    flowers.push({
+      id: node.id,
+      depth,
+      outline: flowerOutline(members(node).map(at), nestedPadding(depth)),
+    });
+    for (const child of node.cycle) walk(child, depth + 1);
+  };
+  for (const node of nodes) walk(node, 0);
+  return flowers;
+}
+
+/**
  * The picture of a garden: what each sprout, vine and flower looks like now. The views only paint
  * it, so every visual decision (which vine shows lit, which sprout wears a moon, what the fog hides)
  * is made, and tested, here. `kinds` says which sprouts are bees or flowers; a garden that has
@@ -139,17 +161,7 @@ export function gardenPicture(
     glowing: glowing(u, v),
   }));
 
-  const flowers: FlowerPicture[] = [];
-  const walk = (node: GardenNode, depth: number): void => {
-    if (node.kind !== 'blossom') return;
-    flowers.push({
-      id: node.id,
-      depth,
-      outline: flowerOutline(members(node).map(at), nestedPadding(depth)),
-    });
-    for (const child of node.cycle) walk(child, depth + 1);
-  };
-  for (const node of layer.nodes) walk(node, 0);
+  const flowers = flowerPictures(layer.nodes, at);
 
   const oddGroups =
     state.stones.length === 0
