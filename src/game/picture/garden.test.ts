@@ -102,6 +102,13 @@ describe('the picture of the garden', () => {
     ).toBe(true);
   });
 
+  it('a vine a hint makes glow is told from the rest, touched from either end', () => {
+    const glowing = (extras: typeof NO_EXTRAS) =>
+      picture(festival.start, extras).vines.filter((vine) => vine.glowing);
+    expect(glowing({ ...NO_EXTRAS, vineGlow: [4, 2] })).toMatchObject([{ u: 2, v: 4 }]);
+    expect(glowing(NO_EXTRAS)).toEqual([]);
+  });
+
   it('stones and scarecrows sit on their sprouts; lifted stones outline the odd groups (7.3)', () => {
     const helix = helixLevel();
     const lifted = { ...helix.start, stones: [0], scarecrows: [4] };
@@ -120,7 +127,12 @@ describe('the picture of the garden', () => {
   });
 
   it('nothing pointed at by default', () => {
-    expect(NO_EXTRAS).toEqual({ selection: NO_SELECTION, highlight: [], chain: null });
+    expect(NO_EXTRAS).toEqual({
+      selection: NO_SELECTION,
+      highlight: [],
+      chain: null,
+      vineGlow: null,
+    });
     expect(picture(festival.start).chain).toBeNull();
   });
 

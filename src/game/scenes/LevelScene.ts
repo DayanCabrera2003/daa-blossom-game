@@ -447,10 +447,10 @@ export class LevelScene extends Phaser.Scene {
 
   /** Repaints the garden as the session shows it, with what the player is pointing at. */
   private render(): void {
-    const { session, pointer, highlight } = this.controller;
+    const { session, pointer, highlight, vineGlow } = this.controller;
     this.renderGarden(
       garden(session),
-      { selection: pointer.selection, highlight, chain: pointer.chain },
+      { selection: pointer.selection, highlight, chain: pointer.chain, vineGlow },
       splitBadges(session),
     );
     const pond = pondPicture(session, this.controller.positions, this.labels);

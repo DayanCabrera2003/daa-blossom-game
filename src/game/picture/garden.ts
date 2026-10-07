@@ -1,7 +1,7 @@
 import { members } from '@core/blossom/hierarchy';
 import type { GardenNode } from '@core/blossom/types';
 import { oddComponents } from '@core/certificates/oddComponents';
-import type { VertexId } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import { isExposed, isMatchedEdge } from '@core/matching/queries';
 import type { GardenState } from '@core/rules/state';
 import { itemAt } from '@core/shared/itemAt';
@@ -38,6 +38,8 @@ export interface VinePicture {
   readonly lit: boolean;
   readonly visible: boolean;
   readonly inFlower: boolean;
+  /** Glowing because of a hint: the vine to point at (4.2). */
+  readonly glowing: boolean;
 }
 
 /** The outline of a folded flower; depth 0 is a flower on top, deeper ones are nested inside. */
@@ -65,10 +67,17 @@ export interface PointingExtras {
   readonly selection: Selection;
   readonly highlight: readonly VertexId[];
   readonly chain: readonly VertexId[] | null;
+  /** The vine a hint makes glow, if any; screens without such hints leave it out. */
+  readonly vineGlow?: Edge | null;
 }
 
 /** Nothing selected, glowing or dragged. */
-export const NO_EXTRAS: PointingExtras = { selection: NO_SELECTION, highlight: [], chain: null };
+export const NO_EXTRAS: PointingExtras = {
+  selection: NO_SELECTION,
+  highlight: [],
+  chain: null,
+  vineGlow: null,
+};
 
 /** Margin of nested flower outlines, narrower the deeper they are, and of odd groups. */
 const nestedPadding = (depth: number): number => Math.max(4, FLOWER_PADDING - 4 * depth);
@@ -116,6 +125,9 @@ export function gardenPicture(
     stone: state.stones.includes(vertex),
   }));
 
+  const glow = extras.vineGlow ?? null;
+  const glowing = (u: VertexId, v: VertexId): boolean =>
+    glow !== null && ((glow[0] === u && glow[1] === v) || (glow[0] === v && glow[1] === u));
   const vines = state.graph.edges.map(([u, v]) => ({
     u,
     v,
@@ -124,6 +136,7 @@ export function gardenPicture(
     lit: isMatchedEdge(state.matching, u, v),
     visible: revealed === null || revealed[u] === true || revealed[v] === true,
     inFlower: layer.nodeOf[u] === layer.nodeOf[v],
+    glowing: glowing(u, v),
   }));
 
   const flowers: FlowerPicture[] = [];

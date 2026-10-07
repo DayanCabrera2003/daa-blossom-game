@@ -56,7 +56,8 @@ function dotted(graphics: Phaser.GameObjects.Graphics, a: Point, b: Point): void
 }
 
 /**
- * The garden itself in greybox: vines (dotted when dark, solid amber when lit, unseen under fog),
+ * The garden itself in greybox: vines (dotted when dark, solid amber when lit, unseen under fog,
+ * with a glow under the one a hint points at),
  * sprouts (cold blue in the dark, warm amber with a lantern; flowers as diamonds, bees and every
  * other sprout as circles), their names, the rings of what the player points at, and the chain
  * being dragged with what it would gain. Hit-testing still takes every sprout as a circle.
@@ -82,6 +83,9 @@ export class GardenView {
     const g = this.vines.clear();
     for (const vine of picture.vines) {
       if (!vine.visible) continue;
+      // A vine a hint points at glows under its own stroke.
+      if (vine.glowing)
+        g.lineStyle(5, PALETTE.highlight, 0.6).lineBetween(vine.a.x, vine.a.y, vine.b.x, vine.b.y);
       if (vine.lit) {
         g.lineStyle(2, PALETTE.lit, vine.inFlower ? 0.6 : 1).lineBetween(
           vine.a.x,
