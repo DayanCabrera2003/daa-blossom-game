@@ -553,7 +553,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 - **Jardín:** `R–a=b`, triángulo `b–c=d–b`, y `c–e` con e libre. R libre.
   Es decir: enredaderas `R–a, a=b, b–c, c=d, d–b, c–e`.
 - **Objetivo:** visible, 3 (hay 2).
-- **Enseña:** el jugador hace la búsqueda como aprendió: R sol, a luna, b sol, c luna (por b–c), d sol (por c=d). Desde d: `d–b` lleva a b, que ya es sol del mismo árbol; "ya marcado, lo dejo" (3.3). c es luna, así que no se exploran sus otras enredaderas. **La búsqueda declara: no hay cadena.** Pero el objetivo dice 3. El jugador busca a mano y encuentra `R–a=b–d=c–e`: da la vuelta al triángulo por el otro lado.
+- **Enseña:** el jugador enciende su luz desde R y **la luz busca sola**, a la vista y paso a paso, con las reglas que él mismo aprendió en el Invernadero (su procedimiento, automatizado y siempre en el mismo orden): R sol, a luna, b sol, c luna (por b–c), d sol (por c=d). Desde d: `d–b` lleva a b, que ya es sol del mismo árbol; "ya marcado, lo dejo" (3.3). c es luna, así que no se exploran sus otras enredaderas. **La búsqueda declara: no hay cadena.** Pero el objetivo dice 3. El jugador busca a mano y encuentra `R–a=b–d=c–e`: da la vuelta al triángulo por el otro lado.
 - **Por qué aquí:** es el momento didáctico más importante del juego. La herramienta en la que el jugador confía **miente**, y él lo comprueba con sus propias manos. No hay explicación hasta el nivel siguiente. Hay que dejar que duela.
 - **Guion:** al aplicar la cadena a mano, Sauce (despacio): "Tu luz dijo que no había cadena. Y la había. ¿Qué pasó?"
 - **Pistas:** (1) "El objetivo no miente. ¿Y si la luz sí?" (2) "Intenta llegar a Elo sin marcas, solo pasando faroles." (3) el mentor traza `R–a=b–d`.
@@ -561,7 +561,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 
 #### 4.2 Sol y luna a la vez
 - **Jardín:** el mismo.
-- **Enseña:** el mentor pregunta dónde se equivocó la luz. El jugador señala `d–b` (sol con sol, mismo árbol). Sauce: "Rodea el bucle por el otro lado." Ahora c es sol y d es luna: **cada brote del bucle puede ser sol o luna según por dónde llegues**. La insignia partida parpadea sobre c y d. Se cuenta el bucle: 3 brotes.
+- **Enseña:** la luz repite su búsqueda de 4.1, y el mentor pregunta dónde se equivocó. El jugador señala `d–b` (sol con sol, mismo árbol). Sauce: "Rodea el bucle por el otro lado." Ahora c es sol y d es luna: **cada brote del bucle puede ser sol o luna según por dónde llegues**. La insignia partida parpadea sobre c y d. Se cuenta el bucle: 3 brotes.
 - **Cuaderno:** "La luz se confunde cuando…" (a) "…encuentra un bucle con un número impar de brotes colgado de mi camino" ✔ (b) "…encuentra cualquier bucle" ✘ (se refuta en 4.3) (c) "…el jardín es muy grande" ✘.
 - **Victoria:** señalar la enredadera correcta y contar el bucle.
 
