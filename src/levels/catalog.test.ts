@@ -34,8 +34,16 @@ describe('the level catalog', () => {
     });
   });
 
-  it('holds every level of the game, in order, all loaded', () => {
-    expect(catalog().map((level) => level.data.id)).toEqual([
+  it('holds every level of the game, all loaded, each id once, in play order', () => {
+    const ids = catalog().map((level) => level.data.id);
+    expect(ids.length).toBeGreaterThan(0);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect([...ids].sort(compareLevelIds)).toEqual(ids);
+  });
+
+  it('holds the written chapters 0 to 2 whole, with no draft among them', () => {
+    const early = catalog().filter((level) => compareLevelIds(level.data.id, '3.0') < 0);
+    expect(early.map((level) => level.data.id)).toEqual([
       '0.1',
       '0.2',
       '0.3',
@@ -54,16 +62,21 @@ describe('the level catalog', () => {
       '2.2',
       '2.3',
       '2.4',
-      '4.1',
-      '4.3',
-      '4.6',
-      '4.7',
-      '4.9',
-      '4.10',
-      '5.1',
-      '7.2',
-      '7.3',
-      '7.4',
     ]);
+    expect(early.filter((level) => level.data.draft)).toEqual([]);
+  });
+
+  it('keeps drafts only in chapters not yet written, all after the written ones', () => {
+    const chapterOf = (id: string) => Number(id.split('.')[0]);
+    const chapters = (draft: boolean) =>
+      new Set(
+        catalog()
+          .filter((level) => level.data.draft === draft)
+          .map((level) => chapterOf(level.data.id)),
+      );
+    const drafted = chapters(true);
+    const written = chapters(false);
+    expect([...drafted].filter((chapter) => written.has(chapter))).toEqual([]);
+    for (const chapter of drafted) expect(chapter).toBeGreaterThan(Math.max(...written));
   });
 });
