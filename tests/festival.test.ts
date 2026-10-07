@@ -9,6 +9,7 @@ import { size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
+import { autoSearch } from '@core/search/autoSearch';
 import { searchStatus } from '@core/search/searchStatus';
 import { itemAt } from '@core/shared/itemAt';
 import { findConflict } from '@core/search/conflict';
@@ -62,6 +63,13 @@ const statusOf = (state: GardenState) =>
     foldAllowed: state.allowed.has('foldAt'),
   });
 
+/** The garden the light leaves when it searches by itself from `state`. */
+const lightOn = (state: GardenState): GardenState =>
+  play(state, autoSearch(state.layer, state.search, state.roots));
+
+/** The kinds of steps of a level's script, in order. */
+const stepsOf = (level: Level): string[] => level.flow.map((step) => step.step);
+
 describe('4.1: the festival begins (the light lies)', () => {
   const level = levelOf('4.1');
   const id = (name: string): VertexId => sproutOf(level, name);
@@ -80,8 +88,17 @@ describe('4.1: the festival begins (the light lies)', () => {
     expect(level.start.allowed.has('foldAt')).toBe(false);
   });
 
+  it('the light searches by itself first, then the player plays', () => {
+    expect(stepsOf(level)).toEqual(['say', 'autoSearch', 'say', 'play', 'say']);
+  });
+
+  it('the light searches exactly as the design walks through it, every time', () => {
+    expect(autoSearch(level.start.layer, null, level.start.roots)).toEqual(search);
+    expect(lightOn(level.start)).toEqual(play(level.start, search));
+  });
+
   it("R's whole search ends without a chain, while the goal says 3", () => {
-    const searched = play(level.start, search);
+    const searched = lightOn(level.start);
     expect(statusOf(searched)).toBe('exhausted');
     expect(searched.chainSeen).toBeNull();
     expect(applyAction(searched, { type: 'markMoon', from: id('d'), to: id('b') })).toMatchObject({
@@ -92,14 +109,14 @@ describe('4.1: the festival begins (the light lies)', () => {
     expect(maximumSize(level.graph)).toBe(3);
   });
 
-  it('yet the chain around the loop by the other side is there, found by hand', () => {
-    const lit = play(play(level.start, search), [
+  it('yet the chain around the loop by the other side is there, found by hand over the marks', () => {
+    const lit = play(lightOn(level.start), [
       { type: 'chain', path: ['R', 'a', 'b', 'd', 'c', 'e'].map(id) },
     ]);
     expect(size(lit.matching)).toBe(3);
   });
 
-  it('the lie depends on the order: looking along b–d before b–c finds the chain', () => {
+  it('a search by hand could look along b–d before b–c and find the chain: so the light searches', () => {
     const other = play(level.start, [
       { type: 'markRoot', vertex: id('R') },
       { type: 'markMoon', from: id('R'), to: id('a') },
@@ -114,8 +131,15 @@ describe('4.2: sun and moon at once', () => {
   const level = levelOf('4.2');
   const id = (name: string): VertexId => sproutOf(level, name);
 
-  it('the search the player repeats meets itself at d–b, closing a loop of 3', () => {
-    const searched = play(level.start, level.solution);
+  it('the light repeats its search of 4.1, with nothing for the player to play', () => {
+    expect(stepsOf(level)).toEqual(['autoSearch', 'pickVine', 'say', 'count', 'say', 'notebook']);
+    expect(level.data.victory).toBeUndefined();
+    expect(lightOn(level.start)).toEqual(lightOn(levelOf('4.1').start));
+  });
+
+  it('the light meets itself at d–b, closing a loop of 3, and ends without a chain', () => {
+    const searched = lightOn(level.start);
+    expect(searched.chainSeen).toBeNull();
     expect(statusOf(searched)).toBe('exhausted');
     const conflict = findConflict(searched.layer, searched.search);
     expect(conflict?.vine).toEqual([id('b'), id('d')]);

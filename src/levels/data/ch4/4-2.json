@@ -22,7 +22,6 @@
   ],
   "goal": { "visible": true, "value": 3 },
   "roots": ["R"],
-  "victory": { "type": "searchComplete" },
   "hints": [
     { "line": "ch4.2.sauce.01" },
     { "line": "ch4.2.sauce.02", "highlight": ["b", "c", "d"] },
@@ -70,8 +69,7 @@
     ]
   },
   "flow": [
-    { "step": "say", "lines": ["ch4.2.sauce.00"] },
-    { "step": "play" },
+    { "step": "autoSearch" },
     { "step": "pickVine", "prompt": "ch4.2.sauce.04", "reply": "ch4.2.sauce.05" },
     { "step": "say", "lines": ["ch4.2.sauce.06", "ch4.2.sauce.07"] },
     { "step": "count", "prompt": "ch4.2.sauce.08", "of": "loop", "range": 6 },
@@ -79,9 +77,6 @@
     { "step": "notebook" }
   ],
   "solution": [
-    { "type": "markRoot", "vertex": "R" },
-    { "type": "markMoon", "from": "R", "to": "a" },
-    { "type": "markMoon", "from": "b", "to": "c" },
     { "type": "pickVine", "u": "d", "v": "b" },
     { "type": "answer", "option": 3 },
     { "type": "answer", "option": 0 }

@@ -30,13 +30,10 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch4.1.sauce.00"] },
+    { "step": "autoSearch" },
+    { "step": "say", "lines": ["ch4.1.sauce.05"] },
     { "step": "play" },
     { "step": "say", "lines": ["ch4.1.sauce.04"] }
   ],
-  "solution": [
-    { "type": "markRoot", "vertex": "R" },
-    { "type": "markMoon", "from": "R", "to": "a" },
-    { "type": "markMoon", "from": "b", "to": "c" },
-    { "type": "chain", "path": ["R", "a", "b", "d", "c", "e"] }
-  ]
+  "solution": [{ "type": "chain", "path": ["R", "a", "b", "d", "c", "e"] }]
 }
