@@ -525,11 +525,47 @@ const BROKEN_RECIPE = {
   ],
 };
 
+/** Every right card of the recipe, as a walkthrough places them. */
+const RIGHT_CARDS = [
+  'markDarkSuns',
+  'chainToDark',
+  'growMoon',
+  'chainRootToRoot',
+  'foldFlower',
+  'moonNothing',
+  'finishKeepMoons',
+];
+
+/**
+ * The automaton on the garden of 5.1 (GDD 6.2, 6.3): the player writes the recipe, Bruto's runs
+ * without the fold card and stops at 3 lanterns, the player puts the card back, and the repaired
+ * recipe runs again from the same starting lanterns and reaches 4.
+ */
+export const AUTOMATON = {
+  ...NESTED_FLOWERS,
+  id: '6.3',
+  goal: { visible: false },
+  victory: undefined,
+  flow: [
+    { step: 'recipe' },
+    { step: 'automaton', missing: ['sameTree'] },
+    { step: 'recipe', missing: ['sameTree'] },
+    { step: 'automaton' },
+  ],
+  solution: [
+    { type: 'recipe', cards: RIGHT_CARDS },
+    { type: 'recipe', cards: RIGHT_CARDS },
+  ],
+};
+
 /** The level built from `RECIPE`. */
 export const recipeLevel = (): Level => load(RECIPE);
 
 /** The level built from `BROKEN_RECIPE`. */
 export const brokenRecipeLevel = (): Level => load(BROKEN_RECIPE);
+
+/** The level built from `AUTOMATON`. */
+export const automatonLevel = (): Level => load(AUTOMATON);
 
 /** The level built from `BLOOM`. */
 export const bloomLevel = (): Level => load(BLOOM);

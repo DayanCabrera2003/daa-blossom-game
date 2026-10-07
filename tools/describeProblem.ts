@@ -60,6 +60,10 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
     case 'lightRefused':
       return `script step ${problem.step + 1}: move ${problem.move + 1} of the light's own search is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'automatonRefused':
+      return `script step ${problem.step + 1}: move ${problem.move + 1} of the automaton's run is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'recipeCannotRun':
+      return `script step ${problem.step + 1} runs a recipe the automaton cannot run: only the fold card may be missing`;
     case 'notAFlower':
       return `the declared flower is no flower of the starting lanterns: ${withDetails(problem.error)}`;
     case 'flowerBaseLit':

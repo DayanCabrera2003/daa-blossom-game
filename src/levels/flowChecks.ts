@@ -1,5 +1,6 @@
 import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
-import { RECIPE_CASES } from '@core/recipe/recipe';
+import { RECIPE_CASES, RIGHT_RECIPE, withoutCases } from '@core/recipe/recipe';
+import { runOptionsOf, runRecipe } from '@core/recipe/run';
 import { nameOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
@@ -39,6 +40,15 @@ export type FlowProblem =
       readonly step: number;
       readonly range: number;
       readonly optimum: number;
+    }
+  /** An automaton step whose fixed recipe the automaton cannot run (only the fold may be missing). */
+  | { readonly code: 'recipeCannotRun'; readonly step: number }
+  /** A move of the automaton's run that the level's rules refuse (moves locked, fog, roots). */
+  | {
+      readonly code: 'automatonRefused';
+      readonly step: number;
+      readonly move: number;
+      readonly reason: RejectReason;
     }
   /** A move of the light's own search that the rules refuse (marks locked, fog, roots). */
   | {
@@ -85,12 +95,13 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
  * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
  * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
  * challenge has a flower and a chain to draw in the garden the level starts with, every demo is
- * accepted by the rules, and so is every move of the light's own search, and a recipe recalls only
- * levels that come before it.
+ * accepted by the rules, and so is every move of the light's own search and of the automaton's run
+ * (whose recipe must be one it can run), and a recipe recalls only levels that come before it.
  *
  * Lanterns and marks only move in a play step, where the reference solution is played, and when the
- * light searches by itself (4.1, 4.2), where its marks are added; so the garden at a `count`, a
- * `pickVine` or a `draw` is the one the steps before it leave.
+ * light searches by itself (4.1, 4.2), where its marks are added, and when the automaton runs from
+ * the level's starting lanterns (6.2, 6.3); so the garden at a `count`, a `pickVine` or a `draw` is
+ * the one the steps before it leave.
  */
 export function checkFlow(level: Level): FlowProblem[] {
   const problems: FlowProblem[] = [];
@@ -114,6 +125,18 @@ export function checkFlow(level: Level): FlowProblem[] {
           problems.push({ code: 'lightRefused', step, ...searched.refused });
         }
         garden = searched.state;
+        break;
+      }
+      case 'automaton': {
+        // Without `missing`, the player's recipe runs, which a recipe step lets pass only when right.
+        const options = runOptionsOf(withoutCases(RIGHT_RECIPE, flowStep.missing ?? []));
+        if (options === null) {
+          problems.push({ code: 'recipeCannotRun', step });
+          break;
+        }
+        const ran = replay(start, runRecipe(start, options));
+        if (ran.refused !== null) problems.push({ code: 'automatonRefused', step, ...ran.refused });
+        garden = ran.state;
         break;
       }
       case 'ask':

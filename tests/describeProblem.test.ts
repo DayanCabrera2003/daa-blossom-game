@@ -35,6 +35,19 @@ describe('readable level problems', () => {
     ).toBe(
       'script step 1: move 1 of the light\'s own search is refused by the rules: actionLocked {"action":"markRoot"}',
     );
+    expect(
+      describeProblem({
+        code: 'automatonRefused',
+        step: 1,
+        move: 1,
+        reason: { code: 'notARoot', vertex: 7 },
+      }),
+    ).toBe(
+      'script step 2: move 2 of the automaton\'s run is refused by the rules: notARoot {"vertex":7}',
+    );
+    expect(describeProblem({ code: 'recipeCannotRun', step: 0 })).toBe(
+      'script step 1 runs a recipe the automaton cannot run: only the fold card may be missing',
+    );
     expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
       'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
     );

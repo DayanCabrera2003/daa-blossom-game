@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BLOOM } from '../../tests/support/fixtureLevels';
+import { AUTOMATON, BLOOM } from '../../tests/support/fixtureLevels';
 import { checkFlow } from './flowChecks';
 import { loadLevel } from './loader';
 
@@ -256,6 +256,20 @@ describe('the checks of a level script', () => {
         move: 0,
         reason: { code: 'actionLocked', action: 'markRoot' },
       },
+    ]);
+  });
+
+  it('the automaton runs a recipe it can run, with the moves the level allows', () => {
+    expect(flowProblemsOf(AUTOMATON)).toEqual([]);
+    // Only the fold card may be missing: a recipe without its chains would not be the search.
+    const chainless = { ...AUTOMATON, flow: [{ step: 'automaton', missing: ['dark'] }] };
+    expect(flowProblemsOf({ ...chainless, solution: [{ type: 'tapGarden' }] })).toEqual([
+      { code: 'recipeCannotRun', step: 0 },
+    ]);
+    // The recipe starts from every dark sprout: a level searching from R alone refuses t.
+    expect(flowProblemsOf({ ...AUTOMATON, roots: ['R'] })).toEqual([
+      { code: 'automatonRefused', step: 1, move: 1, reason: { code: 'notARoot', vertex: 7 } },
+      { code: 'automatonRefused', step: 3, move: 1, reason: { code: 'notARoot', vertex: 7 } },
     ]);
   });
 
