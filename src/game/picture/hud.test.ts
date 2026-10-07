@@ -39,7 +39,20 @@ describe('the picture of the HUD', () => {
       won: null,
       canCheckMirror: false,
       prompt: null,
+      layers: null,
     });
+  });
+
+  it('hides the layers before 5.2; from 5.2 the tool is there and the depth entered is told', () => {
+    const early = startSession(closedFlowerLevel(), 0);
+    expect(hudPicture(early, initialPointer('marks'), 0).layers).toBeNull();
+    expect(hudPicture(early, initialPointer('marks'), 0).tools).not.toContain('layers');
+    const base = closedFlowerLevel();
+    const later = startSession({ ...base, data: { ...base.data, id: '5.2' } }, 0);
+    const outside = hudPicture(later, initialPointer('marks'), 0);
+    expect(outside.layers).toBe(0);
+    expect(outside.tools).toContain('layers');
+    expect(hudPicture(later, initialPointer('layers'), 0, 2).layers).toBe(2);
   });
 
   it('a hidden goal asks the question instead (4.9); "Terminé" is at hand', () => {
