@@ -1,4 +1,4 @@
-import { baseVertex, members } from '@core/blossom/hierarchy';
+import { baseVertex, members, nestingDepth, nodesWithin } from '@core/blossom/hierarchy';
 import type { Blossom, GardenNode } from '@core/blossom/types';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
@@ -8,6 +8,7 @@ import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { isUiUnlocked } from '@levels/uiUnlocks';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -110,5 +111,62 @@ describe('5.1: a flower inside another', () => {
     expect(others).toEqual([]);
     if (inner === undefined) throw new Error('F1 did not stay folded');
     expect(names(members(inner))).toEqual(sprouts('bcd'));
+  });
+});
+
+describe('5.2: layers', () => {
+  const level = levelOf('5.2');
+  const id = (name: string): VertexId => sproutOf(level, name);
+  const sorted = (list: string): VertexId[] => [...list].map(id).sort((a, b) => a - b);
+  const membersOf = (node: GardenNode | undefined): VertexId[] =>
+    node === undefined ? [] : members(node).sort((a, b) => a - b);
+
+  it('is searched from R alone and opens the layers, whose card shows as it starts', () => {
+    expect(level.data.draft).toBe(false);
+    expect(level.start.roots).toEqual([id('R')]);
+    expect(stepsOf(level)).toEqual(['say', 'play', 'say']);
+    expect(isUiUnlocked('layers', level.data.id)).toBe(true);
+    expect(isUiUnlocked('layers', levelOf('5.1').data.id)).toBe(false);
+  });
+
+  it('folds three flowers, each inside the next, and the chain leaves from the outermost', () => {
+    const folded = after(level, 'foldAt', 3);
+    const [outer, ...others] = flowersOf(folded);
+    expect(others).toEqual([]);
+    if (outer === undefined) throw new Error('no flower folded');
+    expect(baseVertex(outer)).toBe(id('R'));
+    // The innermost triangle sits three layers deep.
+    expect(nestingDepth(folded.layer, id('e'))).toBe(3);
+    const middle = innerFlowers(outer)[0];
+    const inner = middle === undefined ? undefined : innerFlowers(middle)[0];
+    expect(membersOf(outer)).toEqual(sorted('Rabcdefghij'));
+    expect(membersOf(middle)).toEqual(sorted('bcdefgh'));
+    expect(membersOf(inner)).toEqual(sorted('def'));
+    expect(after(level, 'markMoon', 6).chainSeen).not.toBeNull();
+  });
+
+  it('the layers enter one flower at a time, and each shows the next one still folded', () => {
+    const folded = after(level, 'foldAt', 3);
+    const flowerIds = (nodes: readonly GardenNode[] | null): number[] =>
+      (nodes ?? []).flatMap((node) => (node.kind === 'blossom' ? [node.id] : []));
+    const [outer] = flowerIds(folded.layer.nodes);
+    if (outer === undefined) throw new Error('no flower folded');
+    const [middle] = flowerIds(nodesWithin(folded.layer, [outer]));
+    if (middle === undefined) throw new Error('no flower inside the outer one');
+    const [inner] = flowerIds(nodesWithin(folded.layer, [outer, middle]));
+    if (inner === undefined) throw new Error('no flower inside the middle one');
+    const petals = nodesWithin(folded.layer, [outer, middle, inner]) ?? [];
+    expect(petals.map((node) => membersOf(node))).toEqual(
+      expect.arrayContaining([[id('d')], [id('e')], [id('f')]]),
+    );
+    expect(petals).toHaveLength(3);
+  });
+
+  it('unfolds from the outside in, and the chain crosses all three: 6 lanterns', () => {
+    const opened = after(level, 'unfold', 3);
+    expect(flowersOf(opened)).toEqual([]);
+    const lit = play(opened, level.solution.slice(level.solution.length - 1));
+    expect(size(lit.matching)).toBe(6);
+    expect(level.solution.at(-1)).toEqual({ type: 'chain', path: [...'tabcdfeghijR'].map(id) });
   });
 });
