@@ -662,7 +662,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 - **Desbloquea:** Capas.
 
 #### 5.3 El pétalo equivocado
-- **Jardín:** anidamiento donde el punto de entrada a la flor interior no es su base y el de salida tampoco; el lado correcto interior es el largo.
+- **Jardín:** anidamiento donde el punto de entrada a la flor interior no es su base (uno de los dos puntos de cruce siempre lo es: el único farol que sale de una flor es el de su base); el lado correcto interior es el largo.
 - **Enseña:** en una flor interior puede que entres por un pétalo y salgas por otro, y hay que ir de uno a otro alternando; sigue habiendo exactamente un lado válido.
 - **Cuaderno:** "Al desplegar una flor que está dentro de otra…" (a) "…entro por un pétalo, salgo por otro y solo un lado del bucle alterna bien" ✔ (b) "…siempre salgo por la base" ✘ contraejemplo (c) "…los dos lados sirven" ✘.
 - **Victoria:** cadena aplicada.
