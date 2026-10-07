@@ -2,6 +2,7 @@ import { TEXT_PARAMS } from '@content/keys';
 import lines from '@content/es/lines.json';
 import strings from '@content/es/strings.json';
 import { catalog } from '@levels/catalog';
+import { CARD_IDS } from '@levels/cards/schema';
 import { referencedLines } from '@levels/lines';
 import { describe, expect, it } from 'vitest';
 
@@ -67,5 +68,32 @@ describe('dialogue lines (content/es/lines.json)', () => {
   it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
     const offending = Object.entries(lineTable).filter(([, text]) => MATHEMATICS.test(text));
     expect(offending).toEqual([]);
+  });
+});
+
+/**
+ * Words that explain what a mechanic means or achieves: a card shows the gesture, never the idea
+ * (GDD §5.11, principles 1, 2 and 4); the player discovers the meaning and Sauce names it later.
+ */
+const IDEA =
+  /\bporque\b|\bpor qu[ée]\b|\bpara que\b|m[áa]xim|[óo]ptim|demuestr|garantiz|\bsiempre\b/i;
+
+describe('mechanic cards (content/es/strings.json, GDD §5.11)', () => {
+  const cardTexts = CARD_IDS.flatMap((id) => [`tutorial.${id}.title`, `tutorial.${id}.body`]);
+
+  it('every card has a title and a body', () => {
+    expect(cardTexts.filter((key) => !table[key])).toEqual([]);
+  });
+
+  it('tells the gesture, never the idea: no mathematics and no reason why', () => {
+    const offending = cardTexts.filter((key) => {
+      const text = table[key] ?? '';
+      return MATHEMATICS.test(text) || IDEA.test(text);
+    });
+    expect(offending).toEqual([]);
+  });
+
+  it('keeps each body to a few short lines', () => {
+    expect(CARD_IDS.filter((id) => (table[`tutorial.${id}.body`] ?? '').length > 180)).toEqual([]);
   });
 });

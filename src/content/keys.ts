@@ -3,6 +3,7 @@ import type { PathError } from '@core/matching/paths';
 import type { ActionType } from '@core/rules/actions';
 import { NAMED_CHAPTERS } from '@game/picture/chapterTitle';
 import type { RefusalCode } from '@game/systems/refusal';
+import { CARD_IDS } from '@levels/cards/schema';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
@@ -103,6 +104,7 @@ const UI = {
   'hud.redo': [],
   'hud.hint': [],
   'hud.back': [],
+  'hud.help': [],
   'tool.lanterns': [],
   'tool.marks': [],
   'tool.foldLoop': [],
@@ -138,6 +140,7 @@ const UI = {
   'hub.chapter': ['number'],
   'hub.locked': [],
   'hub.exportLog': [],
+  'tutorial.ok': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>
@@ -150,6 +153,13 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...prefixed('reason.notAFlower.', BLOSSOM_ERRORS),
   ...prefixed('action.', ACTIONS),
   ...UI,
+  // The title and the gesture of each mechanic card (GDD §5.11).
+  ...Object.fromEntries(
+    CARD_IDS.flatMap((id) => [
+      [`tutorial.${id}.title`, []],
+      [`tutorial.${id}.body`, []],
+    ]),
+  ),
   // The name of each named chapter, over its levels in the hub.
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
 };
