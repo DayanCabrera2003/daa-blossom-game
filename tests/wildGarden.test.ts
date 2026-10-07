@@ -8,6 +8,7 @@ import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { buildCounterexample } from '@levels/counterexample';
 import { isUiUnlocked } from '@levels/uiUnlocks';
 import { describe, expect, it } from 'vitest';
 
@@ -168,5 +169,83 @@ describe('5.2: layers', () => {
     const lit = play(opened, level.solution.slice(level.solution.length - 1));
     expect(size(lit.matching)).toBe(6);
     expect(level.solution.at(-1)).toEqual({ type: 'chain', path: [...'tabcdfeghijR'].map(id) });
+  });
+});
+
+describe('5.3: the wrong petal', () => {
+  const level = levelOf('5.3');
+  const id = (name: string): VertexId => sproutOf(level, name);
+  const sorted = (list: string): VertexId[] => [...list].map(id).sort((a, b) => a - b);
+  const chainAt = level.solution.findIndex((move) => move.type === 'chain');
+  const chain = level.solution[chainAt];
+  const path = chain?.type === 'chain' ? chain.path : [];
+
+  it('is searched from R alone and ends in the notebook', () => {
+    expect(level.data.draft).toBe(false);
+    expect(level.start.roots).toEqual([id('R')]);
+    expect(stepsOf(level)).toEqual(['say', 'play', 'say', 'notebook']);
+  });
+
+  it('folds the five petals around b, then the loop through them around R', () => {
+    const inner = flowersOf(after(level, 'foldAt'))[0];
+    if (inner === undefined) throw new Error('no flower folded');
+    expect(baseVertex(inner)).toBe(id('b'));
+    expect(members(inner).sort((a, b) => a - b)).toEqual(sorted('bcdef'));
+    const outer = flowersOf(after(level, 'foldAt', 2))[0];
+    if (outer === undefined) throw new Error('no flower folded');
+    expect(baseVertex(outer)).toBe(id('R'));
+    expect(innerFlowers(outer).map((flower) => baseVertex(flower))).toEqual([id('b')]);
+  });
+
+  it('the chain from t comes into the inner flower by f, a petal that is not its base', () => {
+    expect(path[0]).toBe(id('t'));
+    const petals = new Set(sorted('bcdef'));
+    const inside = path.flatMap((vertex, at) => (petals.has(vertex) ? [at] : []));
+    const entry = path[inside[0] ?? -1];
+    const exit = path[inside.at(-1) ?? -1];
+    expect(entry).toBe(id('f'));
+    expect(entry).not.toBe(id('b'));
+    // It leaves by the base b, along the lantern a=b: the only lantern out of the flower.
+    expect(exit).toBe(id('b'));
+    // In between it goes round the long side, all five petals one after the other.
+    expect(inside).toHaveLength(5);
+    expect((inside.at(-1) ?? 0) - (inside[0] ?? 0)).toBe(4);
+  });
+
+  it('inside, only the long side alternates: the short one f–b is refused', () => {
+    const opened = after(level, 'unfold', 2);
+    expect(flowersOf(opened)).toEqual([]);
+    const short = [...'thgfbaR'].map(id);
+    expect(applyAction(opened, { type: 'chain', path: short })).toMatchObject({
+      ok: false,
+      reason: { code: 'invalidPath' },
+    });
+    expect(size(play(opened, [{ type: 'chain', path }]).matching)).toBe(5);
+  });
+
+  it('(b): in the garden of 5.1 the chain from t leaves the inner flower by c, not by its base', () => {
+    const data = level.data.notebook?.options[1]?.counterexample;
+    if (data === undefined) throw new Error('statement (b) has no counterexample');
+    const built = buildCounterexample(data);
+    if (!built.ok) throw new Error('the counterexample does not build');
+    const { start, labels } = built.value;
+    const sprout = (name: string): VertexId => {
+      const vertex = idOf(labels, name);
+      if (vertex === undefined) throw new Error(`no sprout ${name}`);
+      return vertex;
+    };
+    const folded = play(start, [
+      { type: 'markRoot', vertex: sprout('R') },
+      { type: 'markMoon', from: sprout('R'), to: sprout('a') },
+      { type: 'markMoon', from: sprout('b'), to: sprout('c') },
+      { type: 'foldAt', from: sprout('d'), to: sprout('b') },
+    ]);
+    const inner = flowersOf(folded)[0];
+    if (inner === undefined) throw new Error('no flower folded');
+    expect(baseVertex(inner)).toBe(sprout('b'));
+    const chain = [...'tabdcghR'].map(sprout);
+    // From t, the chain comes in by the base b and goes out by c, towards g.
+    expect(chain.indexOf(sprout('c')) + 1).toBe(chain.indexOf(sprout('g')));
+    expect(size(play(start, [{ type: 'chain', path: chain }]).matching)).toBe(4);
   });
 });

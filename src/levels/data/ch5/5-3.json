@@ -1,0 +1,104 @@
+{
+  "id": "5.3",
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 135 },
+    { "label": "a", "x": 110, "y": 80 },
+    { "label": "b", "x": 190, "y": 80 },
+    { "label": "c", "x": 255, "y": 40 },
+    { "label": "d", "x": 335, "y": 70 },
+    { "label": "e", "x": 335, "y": 140 },
+    { "label": "f", "x": 255, "y": 150 },
+    { "label": "g", "x": 190, "y": 200 },
+    { "label": "h", "x": 110, "y": 200 },
+    { "label": "t", "x": 40, "y": 220 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "e"],
+    ["e", "f"],
+    ["f", "b"],
+    ["f", "g"],
+    ["g", "h"],
+    ["h", "R"],
+    ["h", "t"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"],
+    ["g", "h"]
+  ],
+  "goal": { "visible": true, "value": 5 },
+  "roots": ["R"],
+  "victory": { "type": "matchingSize", "value": 5 },
+  "hints": [
+    { "line": "ch5.3.sauce.01" },
+    { "line": "ch5.3.sauce.02", "highlight": ["f", "g"] },
+    { "line": "ch5.3.sauce.03" }
+  ],
+  "notebook": {
+    "prompt": "ch5.3.notebook.05",
+    "options": [
+      { "line": "ch5.3.notebook.06", "correct": true, "reply": "ch5.3.sauce.09" },
+      {
+        "line": "ch5.3.notebook.07",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch5.3.sauce.10",
+          "sprouts": [
+            { "label": "R", "x": 60, "y": 135 },
+            { "label": "a", "x": 140, "y": 75 },
+            { "label": "b", "x": 230, "y": 75 },
+            { "label": "c", "x": 300, "y": 135 },
+            { "label": "d", "x": 300, "y": 30 },
+            { "label": "g", "x": 230, "y": 200 },
+            { "label": "h", "x": 140, "y": 200 },
+            { "label": "t", "x": 140, "y": 30 }
+          ],
+          "vines": [
+            ["R", "a"],
+            ["a", "b"],
+            ["b", "c"],
+            ["c", "d"],
+            ["d", "b"],
+            ["c", "g"],
+            ["g", "h"],
+            ["h", "R"],
+            ["a", "t"]
+          ],
+          "lanterns": [
+            ["a", "b"],
+            ["c", "d"],
+            ["g", "h"]
+          ],
+          "actions": ["markRoot", "markMoon", "foldAt", "unfold", "chain"]
+        }
+      },
+      { "line": "ch5.3.notebook.08", "correct": false, "reply": "ch5.3.sauce.11" }
+    ]
+  },
+  "flow": [
+    { "step": "say", "lines": ["ch5.3.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch5.3.sauce.04"] },
+    { "step": "notebook" }
+  ],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "R", "to": "h" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "markMoon", "from": "b", "to": "f" },
+    { "type": "foldAt", "from": "d", "to": "e" },
+    { "type": "foldAt", "from": "g", "to": "f" },
+    { "type": "markMoon", "from": "h", "to": "t" },
+    { "type": "unfold", "blossom": 1 },
+    { "type": "unfold", "blossom": 0 },
+    { "type": "chain", "path": ["t", "h", "g", "f", "e", "d", "c", "b", "a", "R"] },
+    { "type": "answer", "option": 0 }
+  ]
+}
