@@ -2,7 +2,7 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 
 /**
  * Where the greybox HUD sits on the 480×270 canvas: a top bar (goal, lanterns, water, the sun) and
- * two bottom rows (the tools, then the buttons), so that all six tools and five buttons always
+ * two bottom rows (the tools, then the buttons), so that all six tools and seven buttons always
  * fit. Level files keep their sprouts between, in y 28–226 (enforced by the level schema). Questions
  * open over the garden, under the top bar and above the dialogue box.
  */

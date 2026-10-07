@@ -10,6 +10,7 @@ import {
   blocksInput,
   emptyStage,
   finishShowing,
+  hasCards,
   hintsShowBeside,
   present,
   type Presentation,
@@ -89,6 +90,11 @@ export class Presenter {
   /** Whether the player's input is held back now (while the day replays). */
   get blocksInput(): boolean {
     return blocksInput(this.stage);
+  }
+
+  /** Whether a mechanic card is open or waiting its turn. */
+  get cardsQueued(): boolean {
+    return hasCards(this.stage);
   }
 
   /** Where the sun stands in the day replaying now, or null when nothing replays. */

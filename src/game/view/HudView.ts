@@ -14,14 +14,16 @@ export interface HudActions {
   readonly redo: () => void;
   readonly hint: () => void;
   readonly back: () => void;
+  /** Opens again the mechanic cards of what the level has open ("?"). */
+  readonly help: () => void;
   /** Checks the reflection drawn in the mirror challenge. */
   readonly checkMirror: () => void;
 }
 
 /**
  * The greybox HUD: the goal (or the question, when it is hidden), lanterns lit and water spent on
- * top; "Terminé", undo, redo, hint and back at the bottom right, greyed out when not available, and
- * "Comprobar" beside them in the mirror challenge.
+ * top; "Terminé", undo, redo, hint, "?" (the mechanic cards again) and back at the bottom right,
+ * greyed out when not available, and "Comprobar" beside them in the mirror challenge.
  */
 export class HudView {
   private readonly goal: Phaser.GameObjects.Text;
@@ -29,7 +31,7 @@ export class HudView {
   /** What a waiting script step expects (drag the sun, touch a sprout…), centred under the goal. */
   private readonly prompt: Phaser.GameObjects.Text;
   private readonly buttons: Record<
-    'done' | 'undo' | 'redo' | 'hint' | 'back' | 'checkMirror',
+    'done' | 'undo' | 'redo' | 'hint' | 'help' | 'back' | 'checkMirror',
     Button
   >;
 
@@ -44,7 +46,7 @@ export class HudView {
       .text(CANVAS_WIDTH / 2, LAYOUT.secondY, '', textStyle(8, PALETTE.sun))
       .setOrigin(0.5, 0)
       .setDepth(100);
-    const order = ['back', 'hint', 'redo', 'undo', 'done', 'checkMirror'] as const;
+    const order = ['back', 'help', 'hint', 'redo', 'undo', 'done', 'checkMirror'] as const;
     let x = CANVAS_WIDTH - LAYOUT.margin;
     const made: Partial<Record<(typeof order)[number], Button>> = {};
     for (const name of order) {

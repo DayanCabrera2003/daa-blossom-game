@@ -26,7 +26,7 @@ import { playtestEntries } from '../systems/playtestEntries';
 import { questionAt } from '../systems/question';
 import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
-import { offerCards, startCards, stepCard } from '../systems/tutorials';
+import { helpCards, offerCards, startCards, stepCard } from '../systems/tutorials';
 import { AnimationView } from '../view/AnimationView';
 import { DialogueView } from '../view/DialogueView';
 import { fitCamera } from '../view/fitCamera';
@@ -129,6 +129,7 @@ export class LevelScene extends Phaser.Scene {
         redo: () => this.dispatch({ kind: 'redo' }),
         hint: () => this.dispatch({ kind: 'hint' }),
         back: () => this.leave(),
+        help: () => this.openHelp(),
         checkMirror: () => this.dispatch({ kind: 'checkMirror' }),
       }),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
@@ -322,6 +323,16 @@ export class LevelScene extends Phaser.Scene {
     const { cards, offered } = offerCards(this.offered, candidates);
     this.offered = offered;
     for (const card of cards) this.presenter.present({ kind: 'tutorial', card });
+  }
+
+  /**
+   * "?": the cards of what the level has open so far, again, one after another; seen or not, and
+   * not queued a second time while they are still showing.
+   */
+  private openHelp(): void {
+    if (this.presenter.cardsQueued) return;
+    for (const card of helpCards(this.level, this.controller.session.flow.index))
+      this.presenter.present({ kind: 'tutorial', card });
   }
 
   /** A mechanic card in the player's words, with its demo. */
