@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { BLOOM } from '../../tests/support/fixtureLevels';
 import { checkIntegrity } from './integrity';
 import { loadLevel } from './loader';
 
@@ -230,6 +231,13 @@ describe('level integrity', () => {
   it('the checks of the script are part of the integrity of the level', () => {
     const notebookless = { ...trap, flow: [{ step: 'play' }, { step: 'notebook' }] };
     expect(problemsOf(notebookless)).toEqual([{ code: 'notebookMissing', step: 1 }]);
+  });
+
+  it('the checks of the flower a level declares are part of its integrity', () => {
+    expect(problemsOf(BLOOM)).toEqual([]);
+    expect(problemsOf({ ...BLOOM, flower: ['c', 'd', 'f', 'g', 'b'] })).toEqual([
+      { code: 'flowerBaseNotFirst', base: 'b' },
+    ]);
   });
 
   it('what a level unlocks must match the unlock table of the rules', () => {

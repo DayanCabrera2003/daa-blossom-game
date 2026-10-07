@@ -26,6 +26,13 @@ export const lineId = z
 export const SPROUT_AREA = { x0: 8, x1: 472, y0: 28, y1: 226 } as const;
 
 /**
+ * A garden shown open and folded side by side (4.11): the open garden keeps to the left half of the
+ * sprout area, up to `x1`, and its folded copy is drawn `shift` pixels to the right, inside the
+ * right half.
+ */
+export const SIDE_BY_SIDE = { shift: 240, x1: SPROUT_AREA.x1 - 240 } as const;
+
+/**
  * What a sprout is in a garden of bees and flowers (chapter 3): a bee only pairs with a flower, so
  * the garden is two-sided without anybody saying so.
  */

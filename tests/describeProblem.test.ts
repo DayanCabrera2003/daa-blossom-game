@@ -40,6 +40,9 @@ describe('readable level problems', () => {
     expect(describeProblem({ code: 'sameKindVine', u: 'b', v: 'c', kind: 'flower' })).toBe(
       'vine b–c joins two flowers, but a bee only pairs with a flower',
     );
+    expect(describeProblem({ code: 'notAFlower', error: { code: 'evenLength', length: 4 } })).toBe(
+      'the declared flower is no flower of the starting lanterns: evenLength {"length":4}',
+    );
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
     );
@@ -65,6 +68,10 @@ describe('readable level problems', () => {
       { code: 'counterexampleUnbeatable', option: 2 },
       { code: 'sameKindVine', u: 'a', v: 'b', kind: 'bee' },
       { code: 'counterexampleSameKindVine', option: 1, u: 'a', v: 'b', kind: 'flower' },
+      { code: 'notAFlower', error: { code: 'evenLength', length: 4 } },
+      { code: 'flowerBaseLit', base: 'b' },
+      { code: 'flowerBaseNotFirst', base: 'b' },
+      { code: 'flowerOffSide', sprout: 't' },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

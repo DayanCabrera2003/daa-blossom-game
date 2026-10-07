@@ -3,7 +3,8 @@ import { loadLevel } from '@levels/loader';
 
 /**
  * Synthetic levels for tests that need a garden of chapters 4, 5 or 7: copies of the drafts those
- * chapters started from, so the tests keep their data when the level files are rewritten. Each one
+ * chapters started from, so the tests keep their data when the level files are rewritten, and a
+ * garden for the flower challenge (4.11). Each one
  * is loaded through the real loader, so it is validated exactly like a level file. The ids are kept,
  * because the tools a level opens follow its id.
  */
@@ -376,6 +377,52 @@ const TWO_COMPONENTS = {
     { type: 'declareDone' },
   ],
 };
+
+/**
+ * A garden like the one GDD 4.11 describes: the flower `b–c=d–f=g–b` with its base b in the dark,
+ * exits `c–e`, `d–h` and `g–t`, the lit pair `h=x` leading to t, and `e–t` outside it, so e and t
+ * are the two more sprouts in the dark. Sprouts `b c d f g e t h x` as 0…8, all in the left half of
+ * the canvas so the folded garden fits beside it. Exported as a file, for tests that vary it.
+ */
+export const BLOOM = {
+  id: '4.11',
+  sprouts: [
+    { label: 'b', x: 110, y: 75 },
+    { label: 'c', x: 60, y: 110 },
+    { label: 'd', x: 80, y: 165 },
+    { label: 'f', x: 140, y: 165 },
+    { label: 'g', x: 160, y: 110 },
+    { label: 'e', x: 16, y: 40 },
+    { label: 't', x: 216, y: 40 },
+    { label: 'h', x: 60, y: 215 },
+    { label: 'x', x: 180, y: 215 },
+  ],
+  vines: [
+    ['b', 'c'],
+    ['c', 'd'],
+    ['d', 'f'],
+    ['f', 'g'],
+    ['g', 'b'],
+    ['c', 'e'],
+    ['d', 'h'],
+    ['h', 'x'],
+    ['x', 't'],
+    ['g', 't'],
+    ['e', 't'],
+  ],
+  lanterns: [
+    ['c', 'd'],
+    ['f', 'g'],
+    ['h', 'x'],
+  ],
+  flower: ['b', 'c', 'd', 'f', 'g'],
+  goal: { visible: false },
+  flow: [{ step: 'say', lines: ['ch4.11.sauce.00'] }],
+  solution: [{ type: 'tapGarden' }],
+};
+
+/** The level built from `BLOOM`. */
+export const bloomLevel = (): Level => load(BLOOM);
 
 /** The level built from `FESTIVAL`. */
 export const festivalLevel = (): Level => load(FESTIVAL);

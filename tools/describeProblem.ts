@@ -50,6 +50,14 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} bets from 1 to ${problem.range} lanterns, but the garden holds ${problem.optimum}: nobody can win it`;
     case 'demoRefused':
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'notAFlower':
+      return `the declared flower is no flower of the starting lanterns: ${withDetails(problem.error)}`;
+    case 'flowerBaseLit':
+      return `the base ${problem.base} of the declared flower holds a lantern, but it must be in the dark`;
+    case 'flowerBaseNotFirst':
+      return `the declared flower must start at its base, ${problem.base}`;
+    case 'flowerOffSide':
+      return `sprout ${problem.sprout} sits in the right half, where the folded garden is drawn`;
     case 'badCounterexample':
       return `notebook statement ${problem.option + 1}: its counterexample is no garden: ${withDetails(problem.error)}`;
     case 'counterexampleLocked':

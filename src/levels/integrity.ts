@@ -6,6 +6,7 @@ import type { RejectReason } from '@core/rules/reasons';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from './build';
 import { checkFlow, type FlowProblem } from './flowChecks';
+import { checkFlower, type FlowerProblem } from './flowerChecks';
 import { isFlowInput } from './flowInput';
 import { sameKindVines, type KindClash } from './kinds';
 import { referencedLines } from './lines';
@@ -26,6 +27,7 @@ export type IntegrityProblem =
   | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string }
   | ({ readonly code: 'sameKindVine' } & KindClash)
   | FlowProblem
+  | FlowerProblem
   | NotebookProblem;
 
 /**
@@ -83,7 +85,7 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     problems.push({ code: 'sameKindVine', ...clash });
   }
 
-  problems.push(...checkFlow(level), ...checkNotebook(level));
+  problems.push(...checkFlow(level), ...checkFlower(level), ...checkNotebook(level));
 
   for (const line of referencedLines(data)) {
     if (!line.startsWith(`ch${data.id}.`)) problems.push({ code: 'foreignLine', line });
