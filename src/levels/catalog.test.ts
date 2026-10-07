@@ -41,8 +41,8 @@ describe('the level catalog', () => {
     expect([...ids].sort(compareLevelIds)).toEqual(ids);
   });
 
-  it('holds the written chapters 0 to 3 whole, with no draft among them', () => {
-    const early = catalog().filter((level) => compareLevelIds(level.data.id, '4.0') < 0);
+  it('holds the written chapters 0 to 4 whole, with no draft among them', () => {
+    const early = catalog().filter((level) => compareLevelIds(level.data.id, '5.0') < 0);
     expect(early.map((level) => level.data.id)).toEqual([
       '0.1',
       '0.2',
@@ -71,6 +71,18 @@ describe('the level catalog', () => {
       '3.7',
       '3.8',
       '3.9',
+      '4.1',
+      '4.2',
+      '4.3',
+      '4.4',
+      '4.5',
+      '4.6',
+      '4.7',
+      '4.8',
+      '4.9',
+      '4.10',
+      '4.11',
+      '4.12',
     ]);
     expect(early.filter((level) => level.data.draft)).toEqual([]);
   });
@@ -83,8 +95,7 @@ describe('the level catalog', () => {
           .filter((level) => level.data.draft === draft)
           .map((level) => chapterOf(level.data.id)),
       );
-    // Chapter 4 is being rewritten one level at a time, so for now it holds both kinds.
-    const drafted = new Set([...chapters(true)].filter((chapter) => chapter !== 4));
+    const drafted = chapters(true);
     const written = chapters(false);
     expect([...drafted].filter((chapter) => written.has(chapter))).toEqual([]);
     for (const chapter of drafted) expect(chapter).toBeGreaterThan(Math.max(...written));
