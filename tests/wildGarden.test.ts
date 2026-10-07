@@ -7,6 +7,7 @@ import { size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
+import { isVictory } from '@core/rules/victory';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
@@ -59,6 +60,10 @@ const innerFlowers = (node: GardenNode): Blossom[] =>
   node.kind === 'blossom'
     ? node.cycle.filter((child): child is Blossom => child.kind === 'blossom')
     : [];
+
+/** How many flowers deep a flower goes: 1 for a flower of sprouts only. */
+const foldDepth = (flower: Blossom): number =>
+  1 + Math.max(0, ...innerFlowers(flower).map((inner) => foldDepth(inner)));
 
 /** The kinds of steps of a level's script, in order. */
 const stepsOf = (level: Level): string[] => level.flow.map((step) => step.step);
@@ -308,5 +313,33 @@ describe('5.4: wild garden', () => {
     // From U, the inner flower holds the base of the outer one: both open at U.
     expect(baseVertex(second)).toBe(id('U'));
     expect(baseVertex(secondInner)).toBe(id('U'));
+  });
+});
+
+describe('5.5: mastery of the wild garden', () => {
+  const level = levelOf('5.5');
+
+  it('20 sprouts in the fog, with water to count and lanterns already lit', () => {
+    expect(level.graph.n).toBe(20);
+    expect(level.data.fog).toBe(true);
+    expect(level.data.water).not.toBeNull();
+    expect(size(level.start.matching)).toBeGreaterThan(0);
+    expect(level.data.goal.visible).toBe(false);
+  });
+
+  it('the reference reaches the most lanterns within the water, and says so', () => {
+    const end = play(level.start, level.solution);
+    expect(isVictory(end, { type: 'maximum' })).toBe(true);
+    expect(end.waterUsed).toBeLessThanOrEqual(level.data.water ?? -1);
+  });
+
+  it('on the way, one round folds three flowers one inside another', () => {
+    expect(lastFolds(level).some((flower) => flower !== null && foldDepth(flower) === 3)).toBe(
+      true,
+    );
+  });
+
+  it('opens the Codex on nested flowers', () => {
+    expect(level.data.unlocks.codex).toEqual(['C9']);
   });
 });
