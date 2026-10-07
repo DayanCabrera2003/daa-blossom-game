@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { actionType, label, levelActionOptions, lineId, sprout, vine } from './fields';
+import { actionType, label, levelActionOptions, lineId, sprouts, vine } from './fields';
 import { flowSchema } from './flow';
 import { flowInputOptions } from './flowInput';
 import { notebookSchema } from './notebook';
@@ -29,7 +29,7 @@ export const levelSchema = z.strictObject({
   /** `chapter.level`, e.g. `4.10`. */
   id: z.string().regex(/^\d+\.\d+$/, 'expected chapter.level, like 4.10'),
   /** Sprouts in id order: the n-th sprout is vertex n. */
-  sprouts: z.array(sprout).min(1),
+  sprouts,
   /**
    * A test level of a chapter not yet written: it still passes every integrity check, but only
    * teacher mode shows it, so playtesters never reach it.
