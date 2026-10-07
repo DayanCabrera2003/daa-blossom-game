@@ -34,6 +34,7 @@ export const CARD_IDS = [
   'layers',
   'rotateStem',
   'recipe',
+  'automaton',
   'stones',
 ] as const;
 

@@ -196,6 +196,8 @@
   "tutorial.rotateStem.body": "Arrastra una cadena desde un brote a oscuras hasta la base de una flor: los faroles del tallo giran y la base queda a oscuras.",
   "tutorial.recipe.title": "Tarjetas de receta",
   "tutorial.recipe.body": "Toca una tarjeta suelta para ponerla en su sitio de la receta; tócala en la receta para devolverla. Cuando la tengas, pulsa «Comprobar».",
+  "tutorial.automaton.title": "El jardinero mecánico",
+  "tutorial.automaton.body": "Mira cómo trabaja el jardinero mecánico: sigue la receta él solo, paso a paso, y tú no tocas nada. Cuando termine, mueve el sol para repasarlo.",
   "tutorial.stones.title": "Piedras",
   "tutorial.stones.body": "Con Piedras, toca un brote para levantarlo como una piedra. Tócalo otra vez para devolverlo.",
   "tutorial.ok": "Entendido"

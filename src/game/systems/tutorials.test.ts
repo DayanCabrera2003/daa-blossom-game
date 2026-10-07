@@ -14,6 +14,7 @@ import {
   nestedFlowersLevel,
   pentagonLevel,
   recipeLevel,
+  automatonLevel,
   stemRotationLevel,
 } from '../../../tests/support/fixtureLevels';
 import {
@@ -168,6 +169,13 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(stepCard('recipe', new Set())).toBe('recipe');
     expect(stepCard('recipe', new Set(['recipe']))).toBeNull();
     expect(helpCards(recipeLevel(), 0)).toContain('recipe');
+  });
+
+  it('the automaton brings its card when it first runs (6.2), and only the first time', () => {
+    expect(stepCard('automaton', new Set())).toBe('automaton');
+    expect(stepCard('automaton', new Set(['automaton']))).toBeNull();
+    expect(helpCards(automatonLevel(), 1)).toContain('automaton');
+    expect(helpCards(automatonLevel(), 0)).not.toContain('automaton');
   });
 
   it('every action that unlocks has a card, and every card has something that shows it', () => {

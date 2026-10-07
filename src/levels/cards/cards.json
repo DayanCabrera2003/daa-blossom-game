@@ -401,6 +401,31 @@
     "steps": [{ "type": "recipe", "cards": ["markDarkSuns", "foldFlower", "finishKeepMoons"] }]
   },
   {
+    "id": "automaton",
+    "sprouts": [
+      { "label": "a", "x": 12, "y": 30 },
+      { "label": "b", "x": 44, "y": 30 },
+      { "label": "c", "x": 76, "y": 30 },
+      { "label": "d", "x": 108, "y": 30 }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"],
+      ["c", "d"]
+    ],
+    "lanterns": [["b", "c"]],
+    "alone": true,
+    "steps": [
+      { "type": "markRoot", "vertex": "a" },
+      { "type": "markRoot", "vertex": "d" },
+      { "type": "markMoon", "from": "a", "to": "b" },
+      { "type": "markMoon", "from": "d", "to": "c" },
+      { "type": "chain", "path": ["d", "c", "b", "a"] },
+      { "type": "declareDone" },
+      { "type": "seekSun", "fraction": 0.5 }
+    ]
+  },
+  {
     "id": "stones",
     "sprouts": [
       { "label": "a", "x": 20, "y": 27 },
