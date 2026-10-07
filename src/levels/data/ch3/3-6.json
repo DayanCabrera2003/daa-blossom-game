@@ -1,0 +1,58 @@
+{
+  "id": "3.6",
+  "sprouts": [
+    { "label": "1", "x": 50, "y": 90, "kind": "bee" },
+    { "label": "2", "x": 130, "y": 60, "kind": "flower" },
+    { "label": "3", "x": 210, "y": 90, "kind": "bee" },
+    { "label": "4", "x": 290, "y": 60, "kind": "flower" },
+    { "label": "5", "x": 370, "y": 90, "kind": "bee" },
+    { "label": "S", "x": 60, "y": 180, "kind": "flower" },
+    { "label": "a", "x": 140, "y": 150, "kind": "bee" },
+    { "label": "b", "x": 220, "y": 150, "kind": "flower" },
+    { "label": "c", "x": 140, "y": 210, "kind": "bee" },
+    { "label": "d", "x": 220, "y": 210, "kind": "flower" },
+    { "label": "e", "x": 300, "y": 210, "kind": "bee" },
+    { "label": "f", "x": 380, "y": 210, "kind": "flower" }
+  ],
+  "vines": [
+    ["1", "2"],
+    ["2", "3"],
+    ["3", "4"],
+    ["4", "5"],
+    ["S", "a"],
+    ["a", "b"],
+    ["S", "c"],
+    ["c", "d"],
+    ["d", "e"],
+    ["e", "f"]
+  ],
+  "lanterns": [
+    ["2", "3"],
+    ["4", "5"],
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "searchExhausted" },
+  "hints": [
+    { "line": "ch3.6.sauce.01" },
+    { "line": "ch3.6.sauce.02", "highlight": ["1", "S"] },
+    { "line": "ch3.6.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch3.6.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch3.6.sauce.04"] }
+  ],
+  "solution": [
+    { "type": "markRoot", "vertex": "1" },
+    { "type": "markMoon", "from": "1", "to": "2" },
+    { "type": "markMoon", "from": "3", "to": "4" },
+    { "type": "markRoot", "vertex": "S" },
+    { "type": "markMoon", "from": "S", "to": "a" },
+    { "type": "markMoon", "from": "S", "to": "c" },
+    { "type": "markMoon", "from": "d", "to": "e" },
+    { "type": "declareDone" }
+  ]
+}
