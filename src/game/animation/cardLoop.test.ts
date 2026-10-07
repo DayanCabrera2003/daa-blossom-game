@@ -11,6 +11,11 @@ describe('the loop of a mechanic card demo', () => {
     expect(cardFrameAt(3, CARD_STEP_MS - 1)).toBe(0);
   });
 
+  it('a clock gone wrong (negative, endless) shows the first frame', () => {
+    expect(cardFrameAt(3, -50)).toBe(0);
+    expect(cardFrameAt(3, Number.POSITIVE_INFINITY)).toBe(0);
+  });
+
   it('always shows a frame of the demo, whatever the time', () => {
     fc.assert(
       fc.property(fc.integer({ min: 1, max: 12 }), fc.double({ noNaN: true }), (frames, t) => {
