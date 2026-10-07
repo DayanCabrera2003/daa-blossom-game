@@ -110,7 +110,8 @@ describe('the picture of the HUD', () => {
     for (const id of ['0.1', '0.2', '0.3', '0.4']) {
       expect(at(id)).toMatchObject({ sun: null, canUndo: true });
     }
-    for (const id of ['0.5', '1.1']) expect(at(id).sun).toEqual({ fraction: 1, steps: 2, calling: false });
+    for (const id of ['0.5', '1.1'])
+      expect(at(id).sun).toEqual({ fraction: 1, steps: 2, calling: false });
   });
 
   it('with a bet made and the goal hidden, the HUD recalls the bet (1.6)', () => {
