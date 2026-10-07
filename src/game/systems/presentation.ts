@@ -73,3 +73,7 @@ export const answerShowing = (stage: Stage): StageTurn =>
  * only beside an open question, which waits for the very answer the hint helps to find.
  */
 export const hintsShowBeside = (stage: Stage): boolean => stage.showing?.kind === 'question';
+
+/** Whether a mechanic card is on stage or waiting its turn. */
+export const hasCards = (stage: Stage): boolean =>
+  [stage.showing, ...stage.waiting].some((item) => item?.kind === 'tutorial');

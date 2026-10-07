@@ -4,6 +4,7 @@ import {
   blocksInput,
   emptyStage,
   finishShowing,
+  hasCards,
   hintsShowBeside,
   present,
   type Presentation,
@@ -106,5 +107,13 @@ describe('the order the player sees things in', () => {
     expect(hintsShowBeside(turn.stage)).toBe(false);
     expect(answerShowing(turn.stage)).toEqual({ stage: turn.stage, start: null });
     expect(finishShowing(turn.stage).start).toEqual(asking);
+  });
+
+  it('knows whether a mechanic card is on stage or waiting, so "?" never queues them twice', () => {
+    const card: Presentation = { kind: 'tutorial', card: 'sun' };
+    expect(hasCards(emptyStage)).toBe(false);
+    expect(hasCards(present(emptyStage, [lines('a')]).stage)).toBe(false);
+    expect(hasCards(present(emptyStage, [card]).stage)).toBe(true);
+    expect(hasCards(present(emptyStage, [lines('a'), card]).stage)).toBe(true);
   });
 });
