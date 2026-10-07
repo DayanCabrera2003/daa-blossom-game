@@ -24,8 +24,8 @@ export type DemoGesture =
   | { readonly kind: 'none' }
   /** Touches on these sprouts, one after another (joining, marking, placing…). */
   | { readonly kind: 'touch'; readonly sprouts: readonly VertexId[] }
-  /** A touch on the vine between two sprouts (putting a lantern out, folding where suns meet). */
-  | { readonly kind: 'vine'; readonly u: VertexId; readonly v: VertexId }
+  /** Touches on vines (putting a lantern out, folding where suns meet, drawing a reflection). */
+  | { readonly kind: 'vines'; readonly vines: readonly Edge[] }
   /** A drag through these sprouts (a chain, a stem). */
   | { readonly kind: 'drag'; readonly path: readonly VertexId[] }
   /** These sprouts chosen as a loop to fold. */
@@ -77,9 +77,9 @@ function gestureOf(state: GardenState, action: Action): DemoGesture {
     case 'join':
       return { kind: 'touch', sprouts: [action.u, action.v] };
     case 'split':
-      return { kind: 'vine', u: action.u, v: action.v };
+      return { kind: 'vines', vines: [[action.u, action.v]] };
     case 'foldAt':
-      return { kind: 'vine', u: action.from, v: action.to };
+      return { kind: 'vines', vines: [[action.from, action.to]] };
     case 'passLantern':
     case 'markMoon':
       return { kind: 'touch', sprouts: [action.from, action.to] };
@@ -211,7 +211,7 @@ function playInput(
       // The touches go to the vines added since the last drawing.
       const before = new Set(day.silver.map(([u, v]) => `${u}-${v}`));
       const added = entry.lanterns.filter(([u, v]) => !before.has(`${u}-${v}`));
-      frame({ kind: 'touch', sprouts: added.flat() });
+      frame({ kind: 'vines', vines: added });
       day.silver = entry.lanterns;
       return null;
     }

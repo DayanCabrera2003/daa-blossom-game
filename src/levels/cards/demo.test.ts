@@ -143,7 +143,7 @@ describe('the demo of a mechanic card', () => {
       steps: [{ type: 'drawMirror', lanterns: [['b', 'c']] }, { type: 'checkMirror' }],
     });
     expect(drawn.frames.map((frame) => frame.silver)).toEqual([[], [[1, 2]], [[1, 2]]]);
-    expect(itemAt(drawn.frames, 0).gesture).toEqual({ kind: 'touch', sprouts: [1, 2] });
+    expect(itemAt(drawn.frames, 0).gesture).toEqual({ kind: 'vines', vines: [[1, 2]] });
     expect(itemAt(drawn.frames, 1).gesture).toEqual({ kind: 'press', button: 'check' });
   });
 
@@ -162,7 +162,7 @@ describe('the demo of a mechanic card', () => {
         },
       ],
     });
-    expect(itemAt(drawn.frames, 1).gesture).toEqual({ kind: 'touch', sprouts: [2, 3] });
+    expect(itemAt(drawn.frames, 1).gesture).toEqual({ kind: 'vines', vines: [[2, 3]] });
   });
 
   it('silver lanterns that are not a valid set of lanterns are an error', () => {
@@ -235,7 +235,7 @@ describe('the demo of a mechanic card', () => {
       { kind: 'touch', sprouts: [0, 1, 2] },
       { kind: 'touch', sprouts: [0] },
       { kind: 'touch', sprouts: [0, 1] },
-      { kind: 'vine', u: 2, v: 0 },
+      { kind: 'vines', vines: [[2, 0]] },
       { kind: 'press', button: 'done' },
       { kind: 'none' },
     ]);
@@ -253,7 +253,7 @@ describe('the demo of a mechanic card', () => {
     });
     expect(placed.frames.map((frame) => frame.gesture).slice(0, 6)).toEqual([
       { kind: 'touch', sprouts: [0, 1] },
-      { kind: 'vine', u: 0, v: 1 },
+      { kind: 'vines', vines: [[0, 1]] },
       { kind: 'touch', sprouts: [1] },
       { kind: 'touch', sprouts: [1] },
       { kind: 'touch', sprouts: [2] },
