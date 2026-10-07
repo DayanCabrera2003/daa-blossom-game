@@ -8,6 +8,8 @@ import { compareLevelIds } from './catalog';
 export const UI_UNLOCKED_AT = {
   /** The sun of the top bar, the slider over the day. */
   sun: '0.5',
+  /** The layers: entering a folded flower to see the flowers nested inside it, and leaving. */
+  layers: '5.2',
 } as const;
 
 /** A piece of the interface that unlocks by level. */

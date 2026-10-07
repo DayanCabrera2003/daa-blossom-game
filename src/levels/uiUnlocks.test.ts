@@ -11,4 +11,10 @@ describe('the unlock of interface pieces that are not actions', () => {
     for (const id of ['0.5', '0.6', '1.1', '2.4', '4.10'])
       expect(isUiUnlocked('sun', id)).toBe(true);
   });
+
+  it('the layers appear at 5.2 (GDD §5.1): hidden before, shown from then on', () => {
+    expect(UI_UNLOCKED_AT.layers).toBe('5.2');
+    for (const id of ['0.5', '4.12', '5.1']) expect(isUiUnlocked('layers', id)).toBe(false);
+    for (const id of ['5.2', '5.5', '6.1', '7.4']) expect(isUiUnlocked('layers', id)).toBe(true);
+  });
 });
