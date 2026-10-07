@@ -51,6 +51,12 @@ export const levelSchema = z.strictObject({
    * every sprout in the dark when absent.
    */
   roots: z.array(label).min(1).optional(),
+  /**
+   * A flower of the starting garden, its petals around the loop with the base first (4.11 shows the
+   * garden open and folded side by side). Integrity checks that it is a flower and that its base is
+   * in the dark.
+   */
+  flower: z.array(label).min(3).optional(),
   /** Actions unlocked by now that this level keeps closed (4.10 closes folding). */
   forbid: z.array(actionType).default([]),
   /** When the play step is won; required exactly when the script has a play step. */

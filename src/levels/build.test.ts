@@ -62,6 +62,14 @@ describe('building a level', () => {
     expect(unwrapLevel(rotate).start.roots).toBeNull();
   });
 
+  it('turns the petals of the flower a level declares into ids, base first; none by default', () => {
+    expect(unwrapLevel({ ...rotate, flower: ['b', 'c', 'd'] }).flower).toEqual([2, 3, 4]);
+    expect(unwrapLevel(rotate).flower).toBeNull();
+    expect(buildLevel({ ...rotate, flower: ['b', 'c', 'X'] })).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'X' } },
+    });
+  });
+
   it('says which name is unknown, wherever it appears', () => {
     expect(buildLevel({ ...rotate, vines: [['R', 'z']] })).toEqual({
       ok: false,
