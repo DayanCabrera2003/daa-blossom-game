@@ -76,6 +76,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '2.2': ['count'],
       '2.4': ['draw'],
       '3.1': ['inspect', 'marks'],
+      '3.7': ['scarecrows'],
     });
   });
 

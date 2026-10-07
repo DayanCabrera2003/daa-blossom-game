@@ -1,0 +1,43 @@
+{
+  "id": "3.7",
+  "sprouts": [
+    { "label": "1", "x": 60, "y": 70, "kind": "bee" },
+    { "label": "2", "x": 140, "y": 70, "kind": "flower" },
+    { "label": "3", "x": 220, "y": 70, "kind": "bee" },
+    { "label": "4", "x": 300, "y": 70, "kind": "flower" },
+    { "label": "5", "x": 380, "y": 70, "kind": "bee" },
+    { "label": "H", "x": 240, "y": 165, "kind": "bee" },
+    { "label": "L1", "x": 150, "y": 200, "kind": "flower" },
+    { "label": "L2", "x": 240, "y": 222, "kind": "flower" },
+    { "label": "L3", "x": 330, "y": 200, "kind": "flower" }
+  ],
+  "vines": [
+    ["1", "2"],
+    ["2", "3"],
+    ["3", "4"],
+    ["4", "5"],
+    ["H", "L1"],
+    ["H", "L2"],
+    ["H", "L3"]
+  ],
+  "lanterns": [
+    ["2", "3"],
+    ["4", "5"],
+    ["H", "L1"]
+  ],
+  "goal": { "visible": true, "value": 3 },
+  "victory": { "type": "coverCertificate" },
+  "hints": [{ "line": "ch3.7.sauce.02" }, { "line": "ch3.7.sauce.03", "highlight": ["2", "4"] }],
+  "flow": [
+    { "step": "say", "lines": ["ch3.7.sauce.00", "ch3.7.sauce.01"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch3.7.sauce.04"] }
+  ],
+  "unlocks": { "actions": ["placeScarecrow", "removeScarecrow"] },
+  "solution": [
+    { "type": "placeScarecrow", "vertex": "2" },
+    { "type": "placeScarecrow", "vertex": "4" },
+    { "type": "placeScarecrow", "vertex": "H" },
+    { "type": "declareDone" }
+  ]
+}
