@@ -4,6 +4,7 @@ import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { size } from '@core/matching/queries';
+import { AUTOMATON_MOVES, runRecipe } from '@core/recipe/run';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
@@ -119,6 +120,18 @@ describe('5.1: a flower inside another', () => {
     expect(others).toEqual([]);
     if (inner === undefined) throw new Error('F1 did not stay folded');
     expect(names(members(inner))).toEqual(sprouts('bcd'));
+  });
+
+  it('is the garden where a recipe without folding falls short (6.3): 3 lanterns, then 4', () => {
+    // The recipe starts from every dark sprout, R and t, whatever the level's own roots.
+    const start = { ...level.start, roots: null, allowed: new Set(AUTOMATON_MOVES) };
+    const broken = play(start, runRecipe(start, { fold: false }));
+    expect([size(broken.matching), broken.declaredDone]).toEqual([3, true]);
+    const repaired = play(start, runRecipe(start, { fold: true }));
+    expect([size(repaired.matching), repaired.declaredDone]).toEqual([
+      maximumSize(level.graph),
+      true,
+    ]);
   });
 });
 
