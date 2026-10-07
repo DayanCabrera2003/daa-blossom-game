@@ -5,7 +5,7 @@ import { planAnimation } from '../../animation/plan';
 import { checkText } from '../../picture/mirrorDrawing';
 import { reasonText } from '../../picture/reasonText';
 import { layerOf, type Controller, type Effect } from '../../systems/levelController';
-import { garden } from '../../systems/levelSession';
+import { automatonDayOf, garden } from '../../systems/levelSession';
 import { lightDay } from '../../systems/lightSearch';
 import { questionAt } from '../../systems/question';
 import { dayToReplay } from '../../systems/replayDay';
@@ -104,6 +104,13 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
         light: true,
       });
       break;
+    case 'automaton': {
+      // The automaton's run is shown one move at a time, from the level's starting lanterns, with
+      // the sun walking it; at the end, the presenter reports it and the session keeps it as a day.
+      const day = automatonDayOf(stage.controller().session);
+      if (day !== null) stage.presenter.present({ kind: 'replay', day, light: true });
+      break;
+    }
     case 'won':
       stage.win(effect.stars);
       break;

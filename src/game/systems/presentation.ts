@@ -24,8 +24,9 @@ export type Presentation =
   | { readonly kind: 'question'; readonly question: Question }
   /**
    * The day replaying itself through these states, dawn to dusk; the garden takes no input. With
-   * `light`, these are the marks of the light searching by itself (4.1, 4.2), not yet in the
-   * player's day: at dusk the scene reports that the search was shown, and the session keeps it.
+   * `light`, these are the garden's own moves, not yet in the player's day: the marks of the light
+   * searching by itself (4.1, 4.2) or the automaton's run (6.2, 6.3). At dusk the scene reports
+   * that they were shown, and the session keeps them.
    */
   | {
       readonly kind: 'replay';
