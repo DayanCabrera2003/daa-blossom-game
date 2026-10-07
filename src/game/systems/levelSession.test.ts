@@ -3,6 +3,11 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import {
+  closedFlowerLevel,
+  festivalLevel,
+  fivePetalsLevel,
+} from '../../../tests/support/fixtureLevels';
 import { HINT_DELAY_MS } from './hints';
 import {
   act,
@@ -29,13 +34,13 @@ const playAll = (session: LevelSession, actions: readonly Action[], now = 0) =>
 
 describe('a level session', () => {
   it('playing 4.6 with its solution wins, with the star for no hints', () => {
-    const level = levelById('4.6');
+    const level = fivePetalsLevel();
     const won = playAll(startSession(level, 0), level.solution);
     expect(won.won).toEqual({ total: 2, noHints: true, withinWater: null });
   });
 
   it('a wrong "Terminé" in 4.9 neither wins nor punishes: it is counted, and play goes on', () => {
-    const level = levelById('4.9');
+    const level = closedFlowerLevel();
     const wrong = playAll(startSession(level, 0), [
       { type: 'split', u: 1, v: 2 },
       { type: 'declareDone' },
@@ -73,7 +78,7 @@ describe('a level session', () => {
   });
 
   it('a hint opens grade by grade; at grade 3 the mentor makes the next step of the solution', () => {
-    const level = levelById('4.1');
+    const level = festivalLevel();
     let session = startSession(level, 0);
     const grades = [];
     for (let k = 1; k <= 3; k++) {
@@ -205,7 +210,7 @@ const question = {
 
 describe('a level session follows its script', () => {
   it('the default script opens with its lines and wins as before: both moments coincide', () => {
-    const level = levelById('4.6');
+    const level = fivePetalsLevel();
     expect(openSession(level, 0).effects).toEqual([
       { kind: 'say', lines: ['ch4.6.sauce.00'] },
       { kind: 'play' },
