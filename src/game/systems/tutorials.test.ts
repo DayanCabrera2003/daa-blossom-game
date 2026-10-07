@@ -6,6 +6,7 @@ import { catalog, compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
 import { describe, expect, it } from 'vitest';
 import {
+  betrayalLevel,
   festivalLevel,
   fivePetalsLevel,
   pentagonLevel,
@@ -116,6 +117,18 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(later.get('4.6')).toEqual(['fold', 'unfold']);
     expect(later.get('4.10')).toEqual(['rotateStem']);
     expect(later.get('7.2')).toEqual(['stones']);
+  });
+
+  it('the first step that points at a vine brings its card (4.2), and only the first', () => {
+    const written = levels.filter(
+      (level) => !level.data.draft && compareLevelIds(level.data.id, '3.0') < 0,
+    );
+    const shown = walkLevels([...written, festivalLevel(), betrayalLevel()]);
+    expect(shown.get('4.2')).toEqual(['pickVine']);
+    expect(stepCard('pickVine', new Set())).toBe('pickVine');
+    expect(stepCard('pickVine', new Set(['pickVine']))).toBeNull();
+    expect(helpCards(betrayalLevel(), 1)).toContain('pickVine');
+    expect(helpCards(betrayalLevel(), 0)).not.toContain('pickVine');
   });
 
   it('every action that unlocks has a card, and every card has something that shows it', () => {

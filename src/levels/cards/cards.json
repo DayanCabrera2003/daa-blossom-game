@@ -230,6 +230,25 @@
     ]
   },
   {
+    "id": "pickVine",
+    "sprouts": [
+      { "label": "R", "x": 30, "y": 42 },
+      { "label": "a", "x": 60, "y": 14 },
+      { "label": "b", "x": 90, "y": 42 }
+    ],
+    "vines": [
+      ["R", "a"],
+      ["a", "b"],
+      ["b", "R"]
+    ],
+    "lanterns": [["a", "b"]],
+    "steps": [
+      { "type": "markRoot", "vertex": "R" },
+      { "type": "markMoon", "from": "R", "to": "a" },
+      { "type": "pickVine", "u": "b", "v": "R" }
+    ]
+  },
+  {
     "id": "scarecrows",
     "sprouts": [
       { "label": "a", "x": 20, "y": 27 },

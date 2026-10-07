@@ -139,6 +139,8 @@
   "tutorial.inspect.body": "Con Inspeccionar, toca un brote para quitar la niebla de sus enredaderas. Cada vistazo gasta una gota de agua.",
   "tutorial.marks.title": "Soles y lunas",
   "tutorial.marks.body": "Con Marcas, toca un brote a oscuras para ponerle un sol. Luego toca ese sol y un vecino: el vecino recibe una luna, y su pareja un sol.",
+  "tutorial.pickVine.title": "Señalar una enredadera",
+  "tutorial.pickVine.body": "Cuando te pidan señalar una enredadera, tócala por el medio, lejos de los brotes. Si no es esa, puedes probar otra.",
   "tutorial.scarecrows.title": "Espantapájaros",
   "tutorial.scarecrows.body": "Con Espantapájaros, toca un brote para ponerle uno. Tócalo otra vez para quitarlo.",
   "tutorial.fold.title": "Plegar flores",

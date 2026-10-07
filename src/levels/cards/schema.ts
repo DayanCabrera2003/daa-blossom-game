@@ -25,6 +25,7 @@ export const CARD_IDS = [
   'draw',
   'inspect',
   'marks',
+  'pickVine',
   'scarecrows',
   'fold',
   'unfold',
