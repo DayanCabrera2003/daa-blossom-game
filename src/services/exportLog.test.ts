@@ -40,6 +40,7 @@ describe('exporting the playtest log', () => {
           vinePicks: { right: 0, wrong: 0 },
           flowerChains: { counted: 0, refused: 0 },
           firstPickRight: null,
+          notebookRightFirstTry: null,
         },
       ],
       log,

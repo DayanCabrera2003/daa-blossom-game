@@ -32,6 +32,12 @@ export interface LevelSummary {
    * no vine was pointed at. Later plays do not change it: they come back knowing the answer.
    */
   readonly firstPickRight: boolean | null;
+  /**
+   * Whether the first statement ever chosen in the level's notebook was a true one (Hito B, 4.11),
+   * or null if the notebook was never answered. No hint can be opened while the notebook asks, so
+   * a right first choice is one made without hints.
+   */
+  readonly notebookRightFirstTry: boolean | null;
 }
 
 type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
@@ -60,6 +66,7 @@ const freshTally = (level: string): Tally => ({
   vinePicks: { right: 0, wrong: 0 },
   flowerChains: { counted: 0, refused: 0 },
   firstPickRight: null,
+  notebookRightFirstTry: null,
 });
 
 /**
@@ -124,6 +131,7 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
         break;
       case 'notebook':
         if (!entry.right) counts.notebookWrong += 1;
+        counts.notebookRightFirstTry ??= entry.right;
         break;
       case 'counterexample':
         counts.counterexamples += 1;

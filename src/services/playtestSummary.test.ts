@@ -36,6 +36,7 @@ describe('playtest summary', () => {
       vinePicks: { right: 0, wrong: 0 },
       flowerChains: { counted: 0, refused: 0 },
       firstPickRight: null,
+      notebookRightFirstTry: null,
     });
   });
 
@@ -166,6 +167,23 @@ describe('playtest summary', () => {
     );
     expect(notebook).toMatchObject({ level: '1.9', notebookWrong: 2, counterexamples: 1 });
     expect(mirror).toMatchObject({ level: '2.4', mirrorChecks: { beating: 2, notBeating: 1 } });
+  });
+
+  it('tells whether the first statement ever chosen in a notebook was a true one (Hito B, 4.11)', () => {
+    const [rightFirst, wrongFirst] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.11' },
+        { kind: 'notebook', at: 1, level: '4.11', option: 1, right: true },
+        { kind: 'levelStart', at: 2, level: '4.11' },
+        { kind: 'notebook', at: 3, level: '4.11', option: 0, right: false },
+        { kind: 'levelStart', at: 10, level: '4.2' },
+        { kind: 'notebook', at: 11, level: '4.2', option: 0, right: false },
+        { kind: 'counterexample', at: 12, level: '4.2', option: 0 },
+        { kind: 'notebook', at: 13, level: '4.2', option: 2, right: true },
+      ]),
+    );
+    expect(rightFirst?.notebookRightFirstTry).toBe(true);
+    expect(wrongFirst?.notebookRightFirstTry).toBe(false);
   });
 
   it('an empty log has nothing to say', () => {
