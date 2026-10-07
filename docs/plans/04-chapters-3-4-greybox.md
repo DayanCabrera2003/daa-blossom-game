@@ -14,7 +14,7 @@ Siguen los del Plan 03: el guion es dato, el núcleo responde las preguntas mate
 - **Los borradores de 4.1, 4.3, 4.6, 4.7, 4.9 y 4.10 se sustituyen** por los niveles reales con el mismo id (dejan de ser `draft`). Los tests que usaban esos borradores como datos se ajustan en commits `test:` y, si dependían de un detalle que el nivel real cambia, pasan a usar datos sintéticos.
 - **Abejas y flores sin decir "bipartito".** En el capítulo 3 cada brote es abeja o flor, distinguibles por forma (no solo color) en greybox.
 
-- **Los niveles empiezan desde cero.** El esquema no tiene marcas ni flores iniciales: cuando un nivel necesita una búsqueda hecha (4.2) o una flor plegada (4.5), el propio jugador la hace dentro del guion (un `play` previo), y el recorrido de referencia la incluye. 4.11 declara su flor (campo `flower`).
+- **Los niveles empiezan desde cero.** El esquema no tiene marcas ni flores iniciales: cuando un nivel necesita una flor plegada (4.5), el propio jugador la hace dentro del guion (un `play` previo), y el recorrido de referencia la incluye. La búsqueda hecha de 4.1 y 4.2 la hace la luz sola (paso `autoSearch`, ver Decisiones). 4.11 declara su flor (campo `flower`).
 
 Definición de "hecho" de cada fase: la del Plan 03.
 
@@ -73,7 +73,7 @@ La detección de sol–sol entre árboles distintos como cadena de raíz a raíz
 
 **Tests clave:** en el jardín de 4.1 (datos sintéticos) con la búsqueda de una sola raíz, el conflicto es `d–b` y el bucle tiene 3 brotes; señalar otra enredadera no termina el paso; en 4.1, el rechazo del sol–sol no menciona nada "raro".
 
-4.2 se escribe como `play` (victoria `searchComplete`, la búsqueda que miente) → `pickVine` → `count` del bucle → Cuaderno.
+4.2 se escribe como `autoSearch` (la luz repite la búsqueda que miente) → `pickVine` → `count` del bucle → Cuaderno, sin `play` ni victoria.
 
 ---
 
@@ -105,6 +105,18 @@ Diseños que el GDD deja abiertos (3.2, 3.3, 3.5, 3.8, 3.9) se fijan aquí y los
 
 Niveles 4.1–4.12 en `src/levels/data/ch4/` (sustituyen a los borradores con el mismo id). 4.1 con `roots: ["R"]`, la búsqueda que "miente" y la cadena encontrada a mano; 4.2 con `pickVine` y el conteo del bucle, más su Cuaderno; 4.3 bucle par; 4.4 plegar (`chainFound`); 4.5 desplegar y aplicar (el jugador vuelve a plegar dentro de su `play`, y el juego rechaza el lado equivocado de la flor); 4.6 cinco pétalos; 4.7 tallo largo con Cuaderno; 4.8 dos flores; 4.9 flor sin cadena y "Terminé" (`searchExhausted`); 4.10 girar el tallo sin plegar, con Cuaderno; 4.11 el reto de la flor (campo `flower`, tallo ya girado) con Cuaderno; 4.12 maestría en niebla con agua y dos flores en rondas distintas. Códex C6, C7, C8 en 4.11.
 
+**Nota (la luz busca sola).** En 4.1 la búsqueda manual solo "mentía" si el jugador miraba `b–c` antes que `b–d`; mirando primero `b–d` encontraba la cadena `c–e`, y 4.2 se quedaba sin conflicto que señalar. Ningún jardín obliga a mentir a una búsqueda hecha a mano, así que la búsqueda de 4.1 y 4.2 la hace la luz sola, con las reglas del jugador en un orden fijo:
+
+| Archivo | Responsabilidad |
+|---|---|
+| `core/search/autoSearch.ts` | Pura: la secuencia de `markRoot`/`markMoon` que hace la luz. Primero los soles ya marcados; después cada raíz permitida (en orden) a oscuras y sin marca, cuyo árbol se recorre en anchura; cada sol mira sus enredaderas apagadas por id de brote ascendente. Un sol–sol del mismo árbol se deja ("ya marcado": la luz nunca pliega); se para en la primera cadena o cuando no queda nada |
+| `levels/flow.ts`, `flowChecks.ts` | Paso `autoSearch` sin campos; las comprobaciones siguen el jardín que deja la luz (para `pickVine` y `count` de bucle) y exigen que las reglas acepten cada movimiento de la luz (`lightRefused`) |
+| `game/systems/flow.ts`, `levelSession.ts`, `lightSearch.ts` | El paso espera la señal `searched`; al llegar, los movimientos de la luz entran en el historial como jugadas aceptadas, y el guion sigue |
+| `game/scenes/presenter.ts`, `LevelScene.ts` | La búsqueda se muestra paso a paso con la maquinaria de la repetición (entrada bloqueada); al anochecer, el presentador avisa y la escena envía `searched` |
+| `levels/cards/cards.json`, `content/es/` | Tarjeta `autoSearch` sin gesto ("Mira cómo busca tu luz…") |
+
+4.1 queda como `say` → `autoSearch` → `say` (la luz no encontró nada; el objetivo dice 3) → `play` (la cadena `R–a=b–d=c–e` a mano: las marcas de la luz no estorban, la cadena las borra al aplicarse, como en el capítulo 3) → `say` de Sauce. 4.2 queda como `autoSearch` → `pickVine` → `say` → `count` → `say` → Cuaderno.
+
 ---
 
 ## Fase 6 — Hub, registro y kit del playtest B
@@ -129,11 +141,15 @@ FP va primero para que los tests no dependan de los borradores. F4 necesita F0�
 
 ---
 
+## Decisiones
+
+- **La luz busca sola en 4.1 y 4.2.** Una búsqueda a mano de 4.1 solo miente en uno de sus dos órdenes posibles, y ningún jardín obliga a mentir. La luz hace la búsqueda del jugador, automatizada y siempre en el mismo orden, así que miente siempre igual y 4.2 siempre tiene el conflicto `d–b`. Sus movimientos entran en el historial (y no solo en la animación) para que el sol pueda repetirlos y para que los pasos siguientes (`pickVine`, `count`) juzguen el jardín que se ha visto. Se añaden al historial cuando la escena termina de mostrarlos, no al abrir el paso, para que el jardín no enseñe las marcas antes de tiempo mientras se leen las líneas previas. Una nueva entrada del registro del playtest para la búsqueda de la luz no aporta nada a las métricas del Hito B (no depende del jugador), así que no se añade.
+
 ## Riesgos y cómo se mitigan
 
 | Riesgo | Mitigación |
 |---|---|
-| 4.1 no "miente": la búsqueda del jugador encuentra la cadena | Campo `roots: ["R"]` impuesto por el núcleo (`notARoot`), integridad que exige que la búsqueda de referencia termine sin cadena, y rechazo sol–sol con el texto de "ya marcado" |
+| 4.1 no "miente": la búsqueda del jugador encuentra la cadena | Campo `roots: ["R"]` impuesto por el núcleo (`notARoot`), la búsqueda la hace la luz sola en un orden fijo (`autoSearch`), y rechazo sol–sol con el texto de "ya marcado" |
 | El reto de 4.11 se vuelve texto pasivo | Cada paso del argumento es una animación sobre la cadena que dibujó el propio jugador |
 | Los niveles del capítulo 3 son largos por la niebla | Presupuestos de agua amables salvo en 3.5; las pistas inspeccionan por el jugador |
 | Romper tests que usaban los borradores | Ajustes en commits `test:` y datos sintéticos donde el detalle importa |
