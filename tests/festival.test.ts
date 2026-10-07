@@ -6,14 +6,18 @@ import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import { searchStatus } from '@core/search/searchStatus';
+import { findConflict } from '@core/search/conflict';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { buildCounterexample, type Counterexample } from '@levels/counterexample';
 import { describe, expect, it } from 'vitest';
 
 /**
  * The lessons of the festival (GDD §7, chapter 4) that its gardens must really hold, checked with
  * the core. In 4.1 the light "lies": searched from R alone, without folding, the search ends with
- * no chain while the garden holds one more lantern.
+ * no chain while the garden holds one more lantern. In 4.2 that search meets itself at d–b, closing
+ * a loop of 3, and "the light is confused by any loop" is refuted by a loop of 4 that confuses
+ * nobody.
  */
 
 const levelOf = (id: string): Level => {
@@ -27,6 +31,15 @@ const sproutOf = (level: Level, name: string): VertexId => {
   const vertex = idOf(level.labels, name);
   if (vertex === undefined) throw new Error(`no sprout ${name}`);
   return vertex;
+};
+
+/** The counterexample of statement `option` of level `id`, built. */
+const counterexampleOf = (id: string, option: number): Counterexample => {
+  const data = levelOf(id).data.notebook?.options[option]?.counterexample;
+  if (data === undefined) throw new Error(`statement ${option} of ${id} has no counterexample`);
+  const built = buildCounterexample(data);
+  if (!built.ok) throw new Error(`the counterexample of statement ${option} does not build`);
+  return built.value;
 };
 
 /** Plays moves from a garden; every one must be accepted. */
@@ -89,5 +102,51 @@ describe('4.1: the festival begins (the light lies)', () => {
       { type: 'markMoon', from: id('c'), to: id('e') },
     ]);
     expect(other.chainSeen).not.toBeNull();
+  });
+});
+
+describe('4.2: sun and moon at once', () => {
+  const level = levelOf('4.2');
+  const id = (name: string): VertexId => sproutOf(level, name);
+
+  it('the search the player repeats meets itself at d–b, closing a loop of 3', () => {
+    const searched = play(level.start, level.solution);
+    expect(statusOf(searched)).toBe('exhausted');
+    const conflict = findConflict(searched.layer, searched.search);
+    expect(conflict?.vine).toEqual([id('b'), id('d')]);
+    expect(conflict?.sprouts).toBe(3);
+  });
+
+  it('(b): a loop of 4 sprouts confuses no search, from either sprout in the dark', () => {
+    const counterexample = counterexampleOf('4.2', 1);
+    const sprout = (name: string): VertexId => {
+      const vertex = idOf(counterexample.labels, name);
+      if (vertex === undefined) throw new Error(`no sprout ${name}`);
+      return vertex;
+    };
+    const look = (from: string, to: string): Action => ({
+      type: 'markMoon',
+      from: sprout(from),
+      to: sprout(to),
+    });
+    const fromR = play(counterexample.start, [
+      { type: 'markRoot', vertex: sprout('R') },
+      look('R', 'a'),
+      look('b', 'c'),
+      look('b', 'e'),
+    ]);
+    // d meets e as a sun meets a moon: already marked, nothing strange.
+    expect(applyAction(fromR, look('d', 'e'))).toMatchObject({ reason: { code: 'alreadyMarked' } });
+    expect(findConflict(fromR.layer, fromR.search)).toBeNull();
+    expect(applyAction(fromR, look('f', 'T'))).toMatchObject({ ok: true });
+    const fromT = play(counterexample.start, [
+      { type: 'markRoot', vertex: sprout('T') },
+      look('T', 'f'),
+      look('e', 'd'),
+      look('e', 'b'),
+    ]);
+    expect(applyAction(fromT, look('c', 'b'))).toMatchObject({ reason: { code: 'alreadyMarked' } });
+    expect(findConflict(fromT.layer, fromT.search)).toBeNull();
+    expect(applyAction(fromT, look('a', 'R'))).toMatchObject({ ok: true });
   });
 });

@@ -1,0 +1,89 @@
+{
+  "id": "4.2",
+  "sprouts": [
+    { "label": "R", "x": 50, "y": 135 },
+    { "label": "a", "x": 130, "y": 135 },
+    { "label": "b", "x": 210, "y": 135 },
+    { "label": "c", "x": 290, "y": 85 },
+    { "label": "d", "x": 290, "y": 185 },
+    { "label": "e", "x": 390, "y": 85 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "b"],
+    ["c", "e"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"]
+  ],
+  "goal": { "visible": true, "value": 3 },
+  "roots": ["R"],
+  "victory": { "type": "searchComplete" },
+  "hints": [
+    { "line": "ch4.2.sauce.01" },
+    { "line": "ch4.2.sauce.02", "highlight": ["b", "c", "d"] },
+    { "line": "ch4.2.sauce.03" }
+  ],
+  "notebook": {
+    "prompt": "ch4.2.notebook.10",
+    "options": [
+      { "line": "ch4.2.notebook.11", "correct": true, "reply": "ch4.2.sauce.14" },
+      {
+        "line": "ch4.2.notebook.12",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch4.2.sauce.15",
+          "sprouts": [
+            { "label": "R", "x": 60, "y": 135 },
+            { "label": "a", "x": 130, "y": 135 },
+            { "label": "b", "x": 200, "y": 135 },
+            { "label": "c", "x": 260, "y": 75 },
+            { "label": "d", "x": 320, "y": 135 },
+            { "label": "e", "x": 260, "y": 195 },
+            { "label": "f", "x": 350, "y": 205 },
+            { "label": "T", "x": 430, "y": 205 }
+          ],
+          "vines": [
+            ["R", "a"],
+            ["a", "b"],
+            ["b", "c"],
+            ["c", "d"],
+            ["d", "e"],
+            ["e", "b"],
+            ["e", "f"],
+            ["f", "T"]
+          ],
+          "lanterns": [
+            ["a", "b"],
+            ["c", "d"],
+            ["e", "f"]
+          ],
+          "actions": ["markRoot", "markMoon"]
+        }
+      },
+      { "line": "ch4.2.notebook.13", "correct": false, "reply": "ch4.2.sauce.16" }
+    ]
+  },
+  "flow": [
+    { "step": "say", "lines": ["ch4.2.sauce.00"] },
+    { "step": "play" },
+    { "step": "pickVine", "prompt": "ch4.2.sauce.04", "reply": "ch4.2.sauce.05" },
+    { "step": "say", "lines": ["ch4.2.sauce.06", "ch4.2.sauce.07"] },
+    { "step": "count", "prompt": "ch4.2.sauce.08", "of": "loop", "range": 6 },
+    { "step": "say", "lines": ["ch4.2.sauce.09"] },
+    { "step": "notebook" }
+  ],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "pickVine", "u": "d", "v": "b" },
+    { "type": "answer", "option": 3 },
+    { "type": "answer", "option": 0 }
+  ]
+}
