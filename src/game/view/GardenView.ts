@@ -129,8 +129,11 @@ export class GardenView {
     while (this.labels.length < sprouts.length) {
       this.labels.push(this.scene.add.text(0, 0, '', textStyle(8)).setOrigin(0.5, 0).setDepth(31));
     }
-    sprouts.forEach((s, i) =>
-      this.labels[i]?.setText(s.label).setPosition(s.x, s.y + SPROUT_RADIUS + 1),
-    );
+    // Inside a flower of the layers fewer sprouts show: the names left over are hidden.
+    this.labels.forEach((label, i) => {
+      const s = sprouts[i];
+      label.setVisible(s !== undefined);
+      if (s !== undefined) label.setText(s.label).setPosition(s.x, s.y + SPROUT_RADIUS + 1);
+    });
   }
 }
