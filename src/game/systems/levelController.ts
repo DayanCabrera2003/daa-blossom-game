@@ -1,4 +1,6 @@
 import type { Edge, VertexId } from '@core/graph/types';
+import type { RecipeVerdict } from '@core/recipe/check';
+import type { RecipeCardId } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import type { GardenState } from '@core/rules/state';
 import { invariant } from '@core/shared/invariant';
@@ -32,6 +34,7 @@ import {
   act,
   askHint,
   checkDrawnMirror,
+  checkRecipeNow,
   drawInGarden,
   drawInMirror,
   garden,
@@ -40,6 +43,7 @@ import {
   respond,
   seekSession,
   stepNow,
+  touchRecipe,
   undoSession,
   type LevelSession,
   type ScriptInput,
@@ -85,7 +89,10 @@ export type UiEvent =
   /** A whole chain drawn in the flower challenge (a drag gives the same, sprout by sprout). */
   | { readonly kind: 'drawChain'; readonly path: readonly VertexId[] }
   /** The light's own search has been shown to the end; the scene says so, not the player. */
-  | { readonly kind: 'searched' };
+  | { readonly kind: 'searched' }
+  /** The recipe (6.1): a card touched, into the recipe or back to the table, and "Comprobar". */
+  | { readonly kind: 'recipeCard'; readonly card: RecipeCardId }
+  | { readonly kind: 'checkRecipe' };
 
 /**
  * What the scene has to show after an event: the answers to moves and hints, and the effects of the
@@ -107,6 +114,8 @@ export type Effect =
   | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
   /** A chain drawn in the flower challenge: cut at the flower, or refused as no chain. */
   | { readonly kind: 'flowerDrawn'; readonly attempt: FlowerAttempt }
+  /** The recipe was checked: what the core found, right or its first failing card. */
+  | { readonly kind: 'recipeChecked'; readonly verdict: RecipeVerdict }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
 /** The controller after an event, and what the scene has to show for it. */
@@ -212,6 +221,20 @@ function drawChain(controller: Controller, path: readonly VertexId[], now: numbe
   return {
     controller: next,
     effects: [{ kind: 'flowerDrawn', attempt }, ...shown(session, effects)],
+  };
+}
+
+/**
+ * "Comprobar" in the recipe: what the core found comes first, then whatever it moves the script on
+ * to. Outside the recipe step nothing happens.
+ */
+function checkRecipe(controller: Controller, now: number): Step {
+  const { session, verdict, effects } = checkRecipeNow(controller.session, now);
+  const next = { ...controller, session };
+  if (verdict === null) return { controller: next, effects: [] };
+  return {
+    controller: next,
+    effects: [{ kind: 'recipeChecked', verdict }, ...shown(session, effects)],
   };
 }
 
@@ -363,6 +386,10 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       return drawChain(controller, event.path, now);
     case 'searched':
       return tell(controller, { type: 'searched' }, now);
+    case 'recipeCard':
+      return same({ session: touchRecipe(controller.session, event.card) });
+    case 'checkRecipe':
+      return checkRecipe(controller, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
     case 'hint': {
