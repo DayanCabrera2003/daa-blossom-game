@@ -7,6 +7,7 @@ import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import { searchStatus } from '@core/search/searchStatus';
+import { itemAt } from '@core/shared/itemAt';
 import { findConflict } from '@core/search/conflict';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
@@ -253,5 +254,33 @@ describe('4.9: a flower without a chain', () => {
     const searched = play(level.start, level.solution.slice(0, declareAt));
     expect(statusOf(searched)).toBe('exhausted');
     expect(size(searched.matching)).toBe(maximumSize(level.graph));
+  });
+});
+
+describe('4.10: turning the stem', () => {
+  const level = levelOf('4.10');
+  const id = (name: string): VertexId => sproutOf(level, name);
+
+  it('folding is closed; turning the stem keeps the lanterns and leaves the base in the dark', () => {
+    expect(level.start.allowed.has('foldAt')).toBe(false);
+    expect(level.start.allowed.has('fold')).toBe(false);
+    const [turn] = level.solution;
+    if (turn === undefined) throw new Error('no first move');
+    const turned = play(level.start, [turn]);
+    expect(size(turned.matching)).toBe(size(level.start.matching));
+    expect(turned.matching.mate[id('b')]).toBe(-1);
+    expect(size(play(turned, level.solution.slice(1)).matching)).toBe(3);
+  });
+
+  it('(b): turning the stem of another flower wins no lantern', () => {
+    const counterexample = counterexampleOf('4.10', 1);
+    const stem = ['R', 'a', 'b', 'c', 'd'].map((name) => {
+      const vertex = idOf(counterexample.labels, name);
+      if (vertex === undefined) throw new Error(`no sprout ${name}`);
+      return vertex;
+    });
+    const turned = play(counterexample.start, [{ type: 'rotateStem', stem }]);
+    expect(size(turned.matching)).toBe(size(counterexample.start.matching));
+    expect(turned.matching.mate[itemAt(stem, 4)]).toBe(-1);
   });
 });

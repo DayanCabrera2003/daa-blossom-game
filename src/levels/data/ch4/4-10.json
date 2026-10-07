@@ -1,6 +1,5 @@
 {
   "id": "4.10",
-  "draft": true,
   "sprouts": [
     { "label": "R", "x": 50, "y": 135 },
     { "label": "a", "x": 130, "y": 135 },
@@ -24,10 +23,60 @@
   "goal": { "visible": true, "value": 3 },
   "forbid": ["fold", "foldAt"],
   "victory": { "type": "matchingSize", "value": 3 },
-  "flow": [{ "step": "say", "lines": ["ch4.10.sauce.00"] }, { "step": "play" }],
+  "hints": [
+    { "line": "ch4.10.sauce.02" },
+    { "line": "ch4.10.sauce.03", "highlight": ["R", "a", "b"] },
+    { "line": "ch4.10.sauce.04" }
+  ],
+  "notebook": {
+    "prompt": "ch4.10.notebook.06",
+    "options": [
+      { "line": "ch4.10.notebook.07", "correct": true, "reply": "ch4.10.sauce.10" },
+      {
+        "line": "ch4.10.notebook.08",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch4.10.sauce.11",
+          "sprouts": [
+            { "label": "R", "x": 50, "y": 135 },
+            { "label": "a", "x": 110, "y": 135 },
+            { "label": "b", "x": 170, "y": 135 },
+            { "label": "c", "x": 230, "y": 135 },
+            { "label": "d", "x": 290, "y": 135 },
+            { "label": "e", "x": 360, "y": 85 },
+            { "label": "f", "x": 360, "y": 185 }
+          ],
+          "vines": [
+            ["R", "a"],
+            ["a", "b"],
+            ["b", "c"],
+            ["c", "d"],
+            ["d", "e"],
+            ["e", "f"],
+            ["f", "d"]
+          ],
+          "lanterns": [
+            ["a", "b"],
+            ["c", "d"],
+            ["e", "f"]
+          ],
+          "actions": ["rotateStem"]
+        }
+      },
+      { "line": "ch4.10.notebook.09", "correct": false, "reply": "ch4.10.sauce.12" }
+    ]
+  },
+  "flow": [
+    { "step": "say", "lines": ["ch4.10.sauce.00", "ch4.10.sauce.01"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch4.10.sauce.05"] },
+    { "step": "notebook" }
+  ],
   "unlocks": { "actions": ["rotateStem"] },
   "solution": [
     { "type": "rotateStem", "stem": ["R", "a", "b"] },
-    { "type": "chain", "path": ["b", "d", "c", "e"] }
+    { "type": "chain", "path": ["b", "d", "c", "e"] },
+    { "type": "answer", "option": 0 }
   ]
 }
