@@ -32,11 +32,12 @@ describe('the picture of the HUD', () => {
       canRedo: false,
       canDeclareDone: false,
       hintAvailable: false,
-      sun: { fraction: 1, steps: 1 },
+      sun: { fraction: 1, steps: 1, calling: false },
       tools: ['lanterns'],
       tool: 'lanterns',
       won: null,
       canCheckMirror: false,
+      prompt: null,
     });
   });
 
@@ -109,7 +110,7 @@ describe('the picture of the HUD', () => {
     for (const id of ['0.1', '0.2', '0.3', '0.4']) {
       expect(at(id)).toMatchObject({ sun: null, canUndo: true });
     }
-    for (const id of ['0.5', '1.1']) expect(at(id).sun).toEqual({ fraction: 1, steps: 2 });
+    for (const id of ['0.5', '1.1']) expect(at(id).sun).toEqual({ fraction: 1, steps: 2, calling: false });
   });
 
   it('with a bet made and the goal hidden, the HUD recalls the bet (1.6)', () => {
@@ -163,5 +164,25 @@ describe('the picture of the HUD', () => {
     expect(hud.canCheckMirror).toBe(true);
     expect(hudPicture(startSession(pondLevel(), 0), pointer, 0).canCheckMirror).toBe(false);
     expect(checkDrawnMirror(drawing.session, 0).check?.kind).toBe('notBetter');
+  });
+
+  it('once 0.5 is won, the sun calls and the bar says to drag it', () => {
+    const level = levelById('0.5');
+    let session = startSession(level, 0);
+    for (const action of level.solution) session = act(session, action, 0).session;
+    const hud = hudPicture(session, initialPointer('lanterns'), 0);
+    expect(hud.sun?.calling).toBe(true);
+    expect(hud.prompt).toEqual({ key: 'hud.prompt.sun', params: {} });
+  });
+
+  it('while playing, nothing is asked of the player beyond the garden itself', () => {
+    const hud = hudPicture(startSession(levelById('0.5'), 0), initialPointer('lanterns'), 0);
+    expect(hud.sun?.calling).toBe(false);
+    expect(hud.prompt).toBeNull();
+  });
+
+  it('in the pond, the bar says to touch a sprout while exploring the tangle', () => {
+    const hud = hudPicture(startSession(levelById('2.1'), 0), initialPointer('lanterns'), 0);
+    expect(hud.prompt).toEqual({ key: 'hud.prompt.explore', params: {} });
   });
 });

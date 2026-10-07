@@ -28,14 +28,35 @@ export interface HudPicture {
   readonly canRedo: boolean;
   readonly canDeclareDone: boolean;
   readonly hintAvailable: boolean;
-  /** The sun on its slider, and how many states the day has; null before it unlocks (0.5). */
-  readonly sun: { readonly fraction: number; readonly steps: number } | null;
+  /**
+   * The sun on its slider, how many states the day has, and whether it calls for the player (the
+   * script waits for the sun to move); null before it unlocks (0.5).
+   */
+  readonly sun: {
+    readonly fraction: number;
+    readonly steps: number;
+    readonly calling: boolean;
+  } | null;
   readonly tools: readonly ToolId[];
   readonly tool: ToolId;
   readonly won: StarResult | null;
   /** Whether the drawn reflection can be checked now: in the mirror challenge only. */
   readonly canCheckMirror: boolean;
+  /**
+   * What the script waits for the player to do, when it is not playing the garden or answering a
+   * panel: drag the sun, touch a sprout, touch the garden, draw a reflection. Without it a level
+   * could wait in silence for a gesture nobody was told about.
+   */
+  readonly prompt: TextRef | null;
 }
+
+/** The steps that wait for a gesture outside the garden's own moves, and what to say for each. */
+const PROMPTS: Partial<Record<string, string>> = {
+  sun: 'hud.prompt.sun',
+  explore: 'hud.prompt.explore',
+  separate: 'hud.prompt.separate',
+  draw: 'hud.prompt.draw',
+};
 
 /**
  * The goal on the top bar: the number of lanterns when it is visible; when hidden, the question, or
@@ -68,6 +89,8 @@ export function hudPicture(session: LevelSession, pointer: PointerState, now: nu
   const state = garden(session);
   const { data } = session.level;
   const { history } = session;
+  const step = stepNow(session)?.step;
+  const prompt = step === undefined ? undefined : PROMPTS[step];
   return {
     goal: goalText(session),
     lanterns: size(state.matching),
@@ -81,11 +104,13 @@ export function hudPicture(session: LevelSession, pointer: PointerState, now: nu
       ? {
           fraction: fractionOfStep(history.cursor, history.states.length),
           steps: history.states.length,
+          calling: step === 'sun',
         }
       : null,
     tools: availableTools(state.allowed),
     tool: pointer.tool,
     won: session.won,
-    canCheckMirror: stepNow(session)?.step === 'draw',
+    canCheckMirror: step === 'draw',
+    prompt: prompt === undefined ? null : { key: prompt, params: {} },
   };
 }
