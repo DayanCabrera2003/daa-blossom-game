@@ -2,6 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import { closedFlowerLevel, festivalLevel } from '../../../tests/support/fixtureLevels';
 import { rightCount } from './answerKey';
 import { HINT_DELAY_MS } from './hints';
 import { handle, startController, type Controller, type UiEvent } from './levelController';
@@ -87,7 +88,7 @@ describe('playtest entries of a step', () => {
   });
 
   it('"Terminé" with the most lanterns is a right claim, and may win the level', () => {
-    const { entries } = play(startController(levelById('4.9'), 0), [{ kind: 'done' }], 9);
+    const { entries } = play(startController(closedFlowerLevel(), 0), [{ kind: 'done' }], 9);
     expect(entries).toEqual([
       { kind: 'move', at: 9, level: '4.9', action: 'declareDone' },
       { kind: 'claim', at: 9, level: '4.9', right: true },
@@ -96,12 +97,12 @@ describe('playtest entries of a step', () => {
   });
 
   it('"Terminé" short of the most lanterns is a claim without reason', () => {
-    const { entries } = play(startController(levelById('4.1'), 0), [{ kind: 'done' }]);
+    const { entries } = play(startController(festivalLevel(), 0), [{ kind: 'done' }]);
     expect(entries).toContainEqual({ kind: 'claim', at: 0, level: '4.1', right: false });
   });
 
   it('a hint opened is logged with its grade; one not on offer yet is not', () => {
-    const festival = startController(levelById('4.1'), 0);
+    const festival = startController(festivalLevel(), 0);
     expect(play(festival, [{ kind: 'hint' }], 0).entries).toEqual([]);
     expect(play(festival, [{ kind: 'hint' }], HINT_DELAY_MS).entries).toEqual([
       { kind: 'hint', at: HINT_DELAY_MS, level: '4.1', grade: 1 },
