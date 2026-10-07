@@ -14,6 +14,10 @@ export interface HintContent {
   readonly option: number | null;
   /** Only at grade 3, in the mirror challenge: the better reflection the mentor draws. */
   readonly mirror: readonly Edge[] | null;
+  /** Only at grade 3, in the flower challenge: the chain the mentor draws in the open garden. */
+  readonly chain: readonly VertexId[] | null;
+  /** Only at grade 3, when pointing at a vine: the vine that glows, left for the player to touch. */
+  readonly vine: Edge | null;
 }
 
 /** A better reflection the mentor can offer in the mirror challenge, and the chain it leaves. */
@@ -37,12 +41,15 @@ export function sproutsOf(action: Action): VertexId[] {
 /**
  * What the mentor can offer besides the level's own hints, each where it applies: the step for the
  * garden as it is now (play), the right option (a question), a better reflection (the mirror
- * challenge). Whatever is left out is not offered.
+ * challenge), a chain of the open garden (the flower challenge), the vine to point at. Whatever is
+ * left out is not offered.
  */
 export interface MentorHelp {
   readonly step?: Action | null;
   readonly option?: number | null;
   readonly reflection?: MentorReflection | null;
+  readonly chain?: readonly VertexId[] | null;
+  readonly vine?: Edge | null;
 }
 
 /**
@@ -51,7 +58,8 @@ export interface MentorHelp {
  * grade is used, and from grade 2 on the sprouts of the mentor's `step` glow instead. Under a
  * question there is no step to take: grade 3 points at `option` instead, when it is given. In the
  * mirror challenge, a `reflection` the mentor offers: from grade 2 its chain glows, and grade 3
- * draws it.
+ * draws it; in the flower challenge the same goes for a `chain`. When the player points at a vine,
+ * grade 3 makes the `vine` glow and leaves the touch to them.
  */
 export function hintContent(
   hints: readonly LevelHint[],
@@ -61,12 +69,14 @@ export function hintContent(
   const mentorStep = help.step ?? null;
   const option = help.option ?? null;
   const reflection = help.reflection ?? null;
+  const chain = help.chain ?? null;
   const written = hints[grade - 1];
+  const traced = reflection?.chain ?? chain;
   const shown =
     mentorStep !== null
       ? sproutsOf(mentorStep)
-      : reflection !== null
-        ? [...reflection.chain].sort((a, b) => a - b)
+      : traced !== null
+        ? [...traced].sort((a, b) => a - b)
         : [];
   const highlight =
     written !== undefined && written.highlight.length > 0
@@ -81,5 +91,7 @@ export function hintContent(
     move: grade >= 3 ? mentorStep : null,
     option: grade >= 3 ? option : null,
     mirror: grade >= 3 && reflection !== null ? reflection.lanterns : null,
+    chain: grade >= 3 ? chain : null,
+    vine: grade >= 3 ? (help.vine ?? null) : null,
   };
 }
