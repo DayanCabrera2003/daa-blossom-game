@@ -69,6 +69,7 @@
     ]
   },
   "flow": [
+    { "step": "say", "lines": ["ch4.2.sauce.00"] },
     { "step": "autoSearch" },
     { "step": "pickVine", "prompt": "ch4.2.sauce.04", "reply": "ch4.2.sauce.05" },
     { "step": "say", "lines": ["ch4.2.sauce.06", "ch4.2.sauce.07"] },

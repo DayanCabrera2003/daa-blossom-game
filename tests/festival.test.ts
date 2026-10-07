@@ -132,7 +132,15 @@ describe('4.2: sun and moon at once', () => {
   const id = (name: string): VertexId => sproutOf(level, name);
 
   it('the light repeats its search of 4.1, with nothing for the player to play', () => {
-    expect(stepsOf(level)).toEqual(['autoSearch', 'pickVine', 'say', 'count', 'say', 'notebook']);
+    expect(stepsOf(level)).toEqual([
+      'say',
+      'autoSearch',
+      'pickVine',
+      'say',
+      'count',
+      'say',
+      'notebook',
+    ]);
     expect(level.data.victory).toBeUndefined();
     expect(lightOn(level.start)).toEqual(lightOn(levelOf('4.1').start));
   });
