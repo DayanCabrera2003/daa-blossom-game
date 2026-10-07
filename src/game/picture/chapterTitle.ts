@@ -1,10 +1,11 @@
 import type { TextRef } from './hud';
 
 /**
- * The chapters that have a name (GDD §6): El Huerto, El Prado, El Estanque, El Invernadero. Each
- * has its text `hub.chapterName.<chapter>` in `content/`; the list of keys is built from this one.
+ * The chapters that have a name (GDD §6): El Huerto, El Prado, El Estanque, El Invernadero, El
+ * Festival. Each has its text `hub.chapterName.<chapter>` in `content/`; the list of keys is built
+ * from this one.
  */
-export const NAMED_CHAPTERS = ['0', '1', '2', '3'] as const;
+export const NAMED_CHAPTERS = ['0', '1', '2', '3', '4'] as const;
 
 /**
  * What the hub writes over a chapter's levels: its name, or "Capítulo N" for a chapter whose levels
