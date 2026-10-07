@@ -48,6 +48,7 @@ import {
   type MirrorChallenge,
   type MirrorCheck,
 } from './mirrorChallenge';
+import { lightDay } from './lightSearch';
 import { nextMove } from './nextMove';
 import { winningPiece } from './pond';
 import { hintedOption, questionAt } from './question';
@@ -62,7 +63,8 @@ import { computeStars, type StarResult } from './stars';
  *
  * What is accepted depends on the step of the script (plan 03, phase 2): garden moves only while
  * playing, so the lanterns never change under a question that depends on them; undo, redo and the
- * sun while playing or waiting for the sun. The reflection of the mirror challenge is drawn and
+ * sun while playing or waiting for the sun. When the light searches by itself (4.1, 4.2), its
+ * marks enter the day once the scene has shown them, as moves the rules accepted. The reflection of the mirror challenge is drawn and
  * checked only in its `draw` step, and the chains of the flower challenge only in its own step. Once the script is over the garden is free again, as it
  * always was after a win, but nothing more can be won.
  */
@@ -101,7 +103,9 @@ export type ScriptInput =
   | { readonly type: 'sunMoved' }
   | { readonly type: 'tap' }
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
-  | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId };
+  | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
+  /** The light's own search has been shown to the end (sent by the scene, not by the player). */
+  | { readonly type: 'searched' };
 
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
 const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
@@ -289,6 +293,14 @@ export function respond(
     case 'pickVine': {
       const right = rightVine(garden(session), input.u, input.v);
       return advance(session, { ...input, right }, now);
+    }
+    case 'searched': {
+      // The light's moves enter the day as moves accepted by the rules, so the sun replays them
+      // and the steps after it (pointing at its conflict, 4.2) judge the garden it leaves.
+      if (stepNow(session)?.step !== 'autoSearch') return { session, effects: [] };
+      const [, ...moves] = lightDay(garden(session));
+      const history = moves.reduce(push, session.history);
+      return advance({ ...session, history }, input, now);
     }
     default:
       return advance(session, input, now);

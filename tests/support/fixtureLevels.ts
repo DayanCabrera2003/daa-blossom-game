@@ -84,6 +84,25 @@ const BETRAYAL = {
 };
 
 /**
+ * The same garden where the light searches by itself, as level 4.2 is designed now (GDD 4.2): its
+ * search stops at the conflict d–b, the player points at it, then counts the loop `b c d`. No play
+ * step, so no victory. Sprouts `R a b c d e` as 0…5.
+ */
+const LIGHT = {
+  ...BETRAYAL,
+  victory: undefined,
+  flow: [
+    { step: 'autoSearch' },
+    { step: 'pickVine', prompt: 'ch4.2.sauce.01', reply: 'ch4.2.sauce.03' },
+    { step: 'count', prompt: 'ch4.2.sauce.02', of: 'loop', range: 6 },
+  ],
+  solution: [
+    { type: 'pickVine', u: 'd', v: 'b' },
+    { type: 'answer', option: 3 },
+  ],
+};
+
+/**
  * Five petals `b–c=d–f=g–b` on a stem `R–a=b`, with an exit `c–e` (as level 4.6 was drafted):
  * the solution folds the flower, marks past it, opens it and chains `R…e` around it. Sprout ids
  * follow the order written: `R a b c d f g e` are 0…7.
@@ -440,6 +459,9 @@ export const festivalLevel = (): Level => load(FESTIVAL);
 
 /** The level built from `BETRAYAL`. */
 export const betrayalLevel = (): Level => load(BETRAYAL);
+
+/** The level built from `LIGHT`. */
+export const lightLevel = (): Level => load(LIGHT);
 
 /** The level built from `FIVE_PETALS`. */
 export const fivePetalsLevel = (): Level => load(FIVE_PETALS);
