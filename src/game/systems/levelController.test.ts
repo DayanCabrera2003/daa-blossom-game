@@ -2,6 +2,12 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import {
+  closedFlowerLevel,
+  festivalLevel,
+  fivePetalsLevel,
+  nestedFlowersLevel,
+} from '../../../tests/support/fixtureLevels';
 import { gesturesFor } from '../input/gestures';
 import type { Point } from '../input/target';
 import { HINT_DELAY_MS } from './hints';
@@ -80,7 +86,7 @@ describe('the level controller', () => {
   });
 
   it('a wrong step while dragging a chain is reported at once', () => {
-    const chainLevel = levelById('4.1');
+    const chainLevel = festivalLevel();
     const p = (v: number) => spot(chainLevel, v);
     const { effects } = feed(startController(chainLevel, 0), [
       { kind: 'press', point: p(0) },
@@ -102,7 +108,7 @@ describe('the level controller', () => {
   });
 
   it('a hint lights up its sprouts; at grade 3 the mentor also makes the move', () => {
-    const festival = levelById('4.1');
+    const festival = festivalLevel();
     let controller = startController(festival, 0);
     const shown = [];
     for (let grade = 1; grade <= 3; grade++) {
@@ -120,7 +126,7 @@ describe('the level controller', () => {
   });
 
   it('the next accepted move puts the glow out', () => {
-    const festival = levelById('4.1');
+    const festival = festivalLevel();
     const hinted = handle(
       startController(festival, 0),
       { kind: 'hint' },
@@ -135,7 +141,7 @@ describe('the level controller', () => {
   });
 
   it('winning is announced once, with the stars; "Terminé" is a button', () => {
-    const closed = levelById('4.9');
+    const closed = closedFlowerLevel();
     const step = handle(startController(closed, 0), { kind: 'done' }, 0);
     expect(step.effects).toContainEqual({
       kind: 'won',
@@ -146,7 +152,7 @@ describe('the level controller', () => {
   });
 
   it('plays a whole level from its gestures to the victory (5.1)', () => {
-    const wild = levelById('5.1');
+    const wild = nestedFlowersLevel();
     const p = placesOf(wild);
     let controller = startController(wild, 0);
     let won = false;
@@ -211,9 +217,9 @@ const question = {
 
 describe('the level controller runs the script', () => {
   it('opens with the effects of the first steps', () => {
-    const opened = openController(levelById('4.6'), 0);
+    const opened = openController(fivePetalsLevel(), 0);
     expect(opened.effects).toEqual([{ kind: 'say', lines: ['ch4.6.sauce.00'] }, { kind: 'play' }]);
-    expect(opened.controller).toEqual(startController(levelById('4.6'), 0));
+    expect(opened.controller).toEqual(startController(fivePetalsLevel(), 0));
   });
 
   it('answers and bets reach the script; finishing it is the win, with its stars', () => {
