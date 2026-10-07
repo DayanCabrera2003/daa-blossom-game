@@ -54,7 +54,7 @@ export interface CardDemo {
   readonly names: readonly string[];
   readonly positions: readonly { readonly x: number; readonly y: number }[];
   /** The options under the garden, when the demo picks one; null otherwise. */
-  readonly choices: CardData['choices'] | null;
+  readonly choices: NonNullable<CardData['choices']> | null;
   /** Whether the sun's track is drawn: the demo moves the sun. */
   readonly showsSun: boolean;
   readonly frames: readonly DemoFrame[];
