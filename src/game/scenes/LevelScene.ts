@@ -9,7 +9,6 @@ import type { SproutKind } from '@levels/fields';
 import { visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook, recordTutorialSeen, writeSave } from '@services/save';
 import { planAnimation } from '../animation/plan';
-import type { Point } from '../input/target';
 import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../picture/garden';
 import { hudPicture } from '../picture/hud';
 import { checkText } from '../picture/mirrorDrawing';
@@ -37,6 +36,7 @@ import type { ShownCard } from '../view/TutorialView';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
+import { bindLevelInput } from './level/levelInput';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
 import { Presenter } from './presenter';
 
@@ -126,7 +126,12 @@ export class LevelScene extends Phaser.Scene {
       },
       { t, line: this.context.line },
     );
-    this.listen();
+    bindLevelInput(this, {
+      dispatch: (event) => this.dispatch(event),
+      leave: () => this.leave(),
+      dialogueOpen: () => this.views.dialogue.open,
+      drawing: () => this.controller.pointer.chain !== null,
+    });
     this.ready = true;
     // The cards of what opens with the level come first; then the script opens it: its first
     // lines, then whatever step waits for the player.
@@ -145,37 +150,6 @@ export class LevelScene extends Phaser.Scene {
       this.lastHudRefresh = time;
       this.renderHud();
     }
-  }
-
-  /** Pointer and keys go to the controller; touches on buttons and on the dialogue stay theirs. */
-  private listen(): void {
-    const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
-    const free = (over: Phaser.GameObjects.GameObject[]) =>
-      over.length === 0 && !this.views.dialogue.open;
-    this.input.on(
-      'pointerdown',
-      (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-        if (free(over)) this.dispatch({ kind: 'press', point: at(pointer) });
-      },
-    );
-    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.isDown && this.controller.pointer.chain !== null)
-        this.dispatch({ kind: 'move', point: at(pointer) });
-    });
-    this.input.on(
-      'pointerup',
-      (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-        if (free(over)) this.dispatch({ kind: 'release', point: at(pointer) });
-      },
-    );
-    const keys = this.input.keyboard;
-    keys?.on('keydown-Z', (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) this.dispatch({ kind: 'undo' });
-    });
-    keys?.on('keydown-Y', (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) this.dispatch({ kind: 'redo' });
-    });
-    keys?.on('keydown-ESC', () => this.leave());
   }
 
   /**
