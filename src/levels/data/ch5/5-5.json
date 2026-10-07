@@ -59,7 +59,7 @@
   ],
   "goal": { "visible": false },
   "fog": true,
-  "water": 14,
+  "water": 16,
   "victory": { "type": "maximum" },
   "hints": [
     { "line": "ch5.5.sauce.01" },
