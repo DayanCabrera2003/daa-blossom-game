@@ -15,6 +15,7 @@ import { hudPicture } from '../picture/hud';
 import { checkText } from '../picture/mirrorDrawing';
 import { pondPicture } from '../picture/pond';
 import { reasonText } from '../picture/reasonText';
+import { splitBadges } from '../picture/splitBadge';
 import {
   handle,
   openController,
@@ -432,11 +433,11 @@ export class LevelScene extends Phaser.Scene {
   /** Repaints the garden as the session shows it, with what the player is pointing at. */
   private render(): void {
     const { session, pointer, highlight } = this.controller;
-    this.renderGarden(garden(session), {
-      selection: pointer.selection,
-      highlight,
-      chain: pointer.chain,
-    });
+    this.renderGarden(
+      garden(session),
+      { selection: pointer.selection, highlight, chain: pointer.chain },
+      splitBadges(session),
+    );
     const pond = pondPicture(session, this.controller.positions, this.labels);
     this.views.mirror.render(pond, this.time.now);
     this.renderHud();
@@ -448,8 +449,15 @@ export class LevelScene extends Phaser.Scene {
     this.renderHud();
   }
 
-  /** Repaints every layer of the garden from one state of it. */
-  private renderGarden(state: GardenState, extras: PointingExtras): void {
+  /**
+   * Repaints every layer of the garden from one state of it; the sprouts in `split` wear the split
+   * badge (4.2), which a replayed day never shows.
+   */
+  private renderGarden(
+    state: GardenState,
+    extras: PointingExtras,
+    split: readonly number[] = [],
+  ): void {
     const picture = gardenPicture(
       state,
       this.controller.positions,
@@ -461,7 +469,7 @@ export class LevelScene extends Phaser.Scene {
     this.views.flowers.render(picture.flowers);
     this.views.objects.render(picture);
     this.views.garden.render(picture);
-    this.views.marks.render(picture.sprouts);
+    this.views.marks.render(picture.sprouts, split);
   }
 
   /** Repaints the HUD; while the day replays, the sun follows the replay instead of the session. */
