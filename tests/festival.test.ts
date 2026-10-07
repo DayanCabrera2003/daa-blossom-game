@@ -184,3 +184,17 @@ describe('4.5: unfold', () => {
     expect(size(play(opened, [{ type: 'chain', path: path('Rabdce') }]).matching)).toBe(3);
   });
 });
+
+describe('4.6: five petals', () => {
+  const level = levelOf('4.6');
+  const id = (name: string): VertexId => sproutOf(level, name);
+
+  it('the opened flower lets the chain round the long side only', () => {
+    const unfoldAt = level.solution.findIndex((move) => move.type === 'unfold');
+    const opened = play(level.start, level.solution.slice(0, unfoldAt + 1));
+    const short = ['R', 'a', 'b', 'c', 'e'].map(id);
+    expect(applyAction(opened, { type: 'chain', path: short }).ok).toBe(false);
+    const long = ['R', 'a', 'b', 'g', 'f', 'd', 'c', 'e'].map(id);
+    expect(size(play(opened, [{ type: 'chain', path: long }]).matching)).toBe(4);
+  });
+});
