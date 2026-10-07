@@ -3,7 +3,9 @@ import type { CardDemo, DemoButton, DemoGesture } from '@levels/cards/demo';
 import { DEMO_AREA } from '@levels/cards/schema';
 import { NO_SELECTION } from '../input/selection';
 import type { Point } from '../input/target';
-import { gardenPicture, type GardenPicture, type PointingExtras } from './garden';
+import type { GardenPicture, PointingExtras } from './garden';
+import { layerPicture } from './layerPicture';
+import { layerView } from './layers';
 
 /** One frame of a card's demo as drawn, in the logical pixels of the demo's own box. */
 export interface CardDemoPicture {
@@ -65,17 +67,19 @@ function touchesOf(gesture: DemoGesture, at: (vertex: number) => Point): Point[]
 
 /**
  * The picture of frame `frame` of a card's demo (the last frame once past the end): the tiny
- * garden as the rules left it, the gesture over it, and what the demo shows around it (silver
- * lanterns, the sun's track, the choices, a button pressed). The view only paints it.
+ * garden as the rules left it, seen from the flower entered with the layers (5.2), the gesture over
+ * it, and what the demo shows around it (silver lanterns, the sun's track, the choices, a button
+ * pressed). The view only paints it.
  */
 export function cardDemoPicture(demo: CardDemo, frame: number): CardDemoPicture {
   const shown = itemAt(demo.frames, Math.min(frame, demo.frames.length - 1));
   const { gesture } = shown;
-  const at = (vertex: number): Point => itemAt(demo.positions, vertex);
+  const view = layerView(shown.state.layer, demo.positions, shown.layers);
+  const at = (vertex: number): Point => itemAt(view.positions, vertex);
   return {
-    garden: gardenPicture(
+    garden: layerPicture(
       shown.state,
-      demo.positions,
+      view,
       demo.names.map(() => ''),
       pointing(gesture),
     ),
