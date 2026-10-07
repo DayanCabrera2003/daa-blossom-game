@@ -10,6 +10,7 @@ import {
   bloomLevel,
   festivalLevel,
   fivePetalsLevel,
+  lightLevel,
   pentagonLevel,
   stemRotationLevel,
 } from '../../../tests/support/fixtureLevels';
@@ -135,6 +136,12 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(stepCard('pickVine', new Set(['pickVine']))).toBeNull();
     expect(helpCards(betrayalLevel(), 1)).toContain('pickVine');
     expect(helpCards(betrayalLevel(), 0)).not.toContain('pickVine');
+  });
+
+  it('the light searching by itself brings its card when it is reached, and only the first time', () => {
+    expect(stepCard('autoSearch', new Set())).toBe('autoSearch');
+    expect(stepCard('autoSearch', new Set(['autoSearch']))).toBeNull();
+    expect(helpCards(lightLevel(), 0)).toContain('autoSearch');
   });
 
   it('the flower challenge brings its card when it is reached (4.11), and only the first time', () => {
