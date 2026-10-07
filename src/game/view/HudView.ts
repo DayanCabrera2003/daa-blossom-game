@@ -4,6 +4,7 @@ import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
 import { LAYOUT } from './layout';
+import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 
 /** What the HUD buttons do; the level scene decides. */
@@ -25,6 +26,8 @@ export interface HudActions {
 export class HudView {
   private readonly goal: Phaser.GameObjects.Text;
   private readonly status: Phaser.GameObjects.Text;
+  /** What a waiting script step expects (drag the sun, touch a sprout…), centred under the goal. */
+  private readonly prompt: Phaser.GameObjects.Text;
   private readonly buttons: Record<
     'done' | 'undo' | 'redo' | 'hint' | 'back' | 'checkMirror',
     Button
@@ -37,6 +40,10 @@ export class HudView {
   ) {
     this.goal = scene.add.text(LAYOUT.margin, LAYOUT.topY, '', textStyle()).setDepth(100);
     this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
+    this.prompt = scene.add
+      .text(CANVAS_WIDTH / 2, LAYOUT.secondY, '', textStyle(8, PALETTE.sun))
+      .setOrigin(0.5, 0)
+      .setDepth(100);
     const order = ['back', 'hint', 'redo', 'undo', 'done', 'checkMirror'] as const;
     let x = CANVAS_WIDTH - LAYOUT.margin;
     const made: Partial<Record<(typeof order)[number], Button>> = {};
@@ -64,5 +71,6 @@ export class HudView {
     this.buttons.hint.setEnabled(hud.hintAvailable);
     this.buttons.done.setVisible(hud.canDeclareDone);
     this.buttons.checkMirror.setVisible(hud.canCheckMirror);
+    this.prompt.setText(hud.prompt === null ? '' : this.t(hud.prompt.key, hud.prompt.params));
   }
 }

@@ -396,6 +396,8 @@ export class LevelScene extends Phaser.Scene {
     this.views.hud.render(hud);
     this.views.toolbar.render(hud.tools, hud.tool);
     const replayed = this.presenter.replaySun;
-    this.views.sun.render(replayed === null || hud.sun === null ? hud.sun : replayed);
+    this.views.sun.render(
+      replayed === null || hud.sun === null ? hud.sun : { ...replayed, calling: false },
+    );
   }
 }
