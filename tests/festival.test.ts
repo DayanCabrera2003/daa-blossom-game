@@ -1,3 +1,4 @@
+import { baseVertex, members } from '@core/blossom/hierarchy';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
@@ -196,5 +197,35 @@ describe('4.6: five petals', () => {
     expect(applyAction(opened, { type: 'chain', path: short }).ok).toBe(false);
     const long = ['R', 'a', 'b', 'g', 'f', 'd', 'c', 'e'].map(id);
     expect(size(play(opened, [{ type: 'chain', path: long }]).matching)).toBe(4);
+  });
+});
+
+describe('4.7: a flower with a long stem', () => {
+  const level = levelOf('4.7');
+  const id = (name: string): VertexId => sproutOf(level, name);
+
+  it('the flower folded at the end of the stem has d for its base, whose lantern leaves it', () => {
+    const foldAt = level.solution.findIndex((move) => move.type === 'foldAt');
+    const folded = play(level.start, level.solution.slice(0, foldAt + 1));
+    const flower = folded.layer.nodes.find((node) => node.kind === 'blossom');
+    if (flower === undefined) throw new Error('no flower folded');
+    expect(baseVertex(flower)).toBe(id('d'));
+    expect(members(flower).sort()).toEqual([id('d'), id('e'), id('f')].sort());
+    expect(members(flower)).not.toContain(level.start.matching.mate[id('d')]);
+  });
+
+  it('(c): with any petal but the base, the chain through the flower breaks', () => {
+    const counterexample = counterexampleOf('4.7', 2);
+    const sprout = (name: string): VertexId => {
+      const vertex = idOf(counterexample.labels, name);
+      if (vertex === undefined) throw new Error(`no sprout ${name}`);
+      return vertex;
+    };
+    const chain = (names: string): Action => ({ type: 'chain', path: [...names].map(sprout) });
+    // Out of the flower by its base b, the lantern a=b: the only chain that works.
+    expect(applyAction(counterexample.start, chain('Rabdce')).ok).toBe(true);
+    for (const names of ['Rabce', 'Rabcde']) {
+      expect(applyAction(counterexample.start, chain(names)).ok).toBe(false);
+    }
   });
 });
