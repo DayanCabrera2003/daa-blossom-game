@@ -128,4 +128,17 @@ describe('the picture of the garden', () => {
     const { sprouts } = gardenPicture(festival.start, placesOf(festival), [], NO_EXTRAS);
     expect(sprouts.map((s) => s.label)).toEqual(['0', '1', '2', '3', '4', '5']);
   });
+
+  it('marks each sprout as a bee or a flower, and as neither in other gardens (chapter 3)', () => {
+    const kinds = ['bee', 'flower', 'bee', 'flower', 'bee', 'flower'] as const;
+    const { sprouts } = gardenPicture(
+      festival.start,
+      placesOf(festival),
+      labelsOf(festival),
+      NO_EXTRAS,
+      kinds,
+    );
+    expect(sprouts.map((s) => s.kind)).toEqual(kinds);
+    expect(picture(festival.start).sprouts.map((s) => s.kind)).toEqual(Array(6).fill(null));
+  });
 });

@@ -5,6 +5,7 @@ import type { VertexId } from '@core/graph/types';
 import { isExposed, isMatchedEdge } from '@core/matching/queries';
 import type { GardenState } from '@core/rules/state';
 import { itemAt } from '@core/shared/itemAt';
+import type { SproutKind } from '@levels/fields';
 import { chainGain } from '../input/dragChain';
 import { flowerOutline } from '../input/flowerShape';
 import { FLOWER_PADDING } from '../input/HitTest';
@@ -17,6 +18,8 @@ export interface SproutPicture {
   readonly x: number;
   readonly y: number;
   readonly label: string;
+  /** Bee or flower in a garden of bees and flowers (chapter 3), drawn as different shapes. */
+  readonly kind: SproutKind | null;
   readonly lit: boolean;
   readonly mark: 'sun' | 'moon' | null;
   readonly selected: boolean;
@@ -74,13 +77,15 @@ const GROUP_PADDING = 8;
 /**
  * The picture of a garden: what each sprout, vine and flower looks like now. The views only paint
  * it, so every visual decision (which vine shows lit, which sprout wears a moon, what the fog hides)
- * is made, and tested, here.
+ * is made, and tested, here. `kinds` says which sprouts are bees or flowers; a garden that has
+ * none leaves it empty.
  */
 export function gardenPicture(
   state: GardenState,
   positions: readonly Point[],
   labels: readonly string[],
   extras: PointingExtras,
+  kinds: readonly (SproutKind | undefined)[] = [],
 ): GardenPicture {
   const at = (v: VertexId): Point => itemAt(positions, v);
   const { layer, search, revealed } = state;
@@ -101,6 +106,7 @@ export function gardenPicture(
     x: point.x,
     y: point.y,
     label: labels[vertex] ?? String(vertex),
+    kind: kinds[vertex] ?? null,
     lit: !isExposed(state.matching, vertex),
     mark: markOf(vertex),
     selected: selected.has(vertex),
