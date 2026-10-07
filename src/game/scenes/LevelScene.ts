@@ -1,8 +1,12 @@
 import Phaser from 'phaser';
 import type { GardenState } from '@core/rules/state';
+import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
+import { cardDemos } from '@levels/cards/catalog';
+import type { CardDemo } from '@levels/cards/demo';
+import type { CardId } from '@levels/cards/schema';
 import { visibleLevels } from '@services/progress';
-import { recordCompletion, recordNotebook, writeSave } from '@services/save';
+import { recordCompletion, recordNotebook, recordTutorialSeen, writeSave } from '@services/save';
 import { planAnimation } from '../animation/plan';
 import type { Point } from '../input/target';
 import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../picture/garden';
@@ -22,6 +26,7 @@ import { playtestEntries } from '../systems/playtestEntries';
 import { questionAt } from '../systems/question';
 import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
+import { offerCards, startCards, stepCard } from '../systems/tutorials';
 import { AnimationView } from '../view/AnimationView';
 import { DialogueView } from '../view/DialogueView';
 import { fitCamera } from '../view/fitCamera';
@@ -37,6 +42,7 @@ import { QuestionView } from '../view/QuestionView';
 import { SunSliderView } from '../view/SunSliderView';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
+import { TutorialView, type ShownCard } from '../view/TutorialView';
 import { VeilView } from '../view/VeilView';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
@@ -72,6 +78,10 @@ export class LevelScene extends Phaser.Scene {
     dialogue: DialogueView;
   };
   private lastHudRefresh = 0;
+  /** Every mechanic card's demo, built once for the scene object Phaser reuses. */
+  private cards: ReadonlyMap<CardId, CardDemo> | null = null;
+  /** The cards the player has seen, or that wait their turn in this level: none is queued twice. */
+  private offered: ReadonlySet<string> = new Set();
   /** Shows lines, questions, replays and the victory panel one at a time, in the queue's order. */
   private presenter!: Presenter;
   /**
@@ -97,6 +107,8 @@ export class LevelScene extends Phaser.Scene {
     }
     this.level = level;
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
+    this.cards ??= cardDemos();
+    this.offered = new Set(this.context.save.tutorialsSeen);
     const opened = openController(level, this.time.now);
     this.controller = opened.controller;
     this.context.playtest.record([
@@ -131,6 +143,7 @@ export class LevelScene extends Phaser.Scene {
         question: new QuestionView(this),
         notebook: new NotebookView(this),
         veil: new VeilView(this),
+        tutorial: new TutorialView(this, t),
       },
       {
         showDay: (state) => (state === null ? this.render() : this.renderReplayed(state)),
@@ -141,12 +154,16 @@ export class LevelScene extends Phaser.Scene {
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
         counterexample: (option) => this.openCounterexample(option),
+        card: (card) => this.shownCard(card),
+        cardClosed: (card) => this.cardSeen(card),
       },
       { t, line: this.context.line },
     );
     this.listen();
     this.ready = true;
-    // The script opens the level: its first lines, then whatever step waits for the player.
+    // The cards of what opens with the level come first; then the script opens it: its first
+    // lines, then whatever step waits for the player.
+    this.offer(startCards(level, this.offered));
     for (const effect of opened.effects) this.show(effect);
     this.render();
   }
@@ -211,6 +228,9 @@ export class LevelScene extends Phaser.Scene {
 
   private show(effect: Effect): void {
     const { t, line } = this.context;
+    // A step that brings a new gesture shows its card first, before whatever it opens.
+    const card = stepCard(effect.kind, this.offered);
+    if (card !== null) this.offer([card]);
     switch (effect.kind) {
       case 'rejected':
         this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
@@ -295,6 +315,27 @@ export class LevelScene extends Phaser.Scene {
         // Nothing to queue: the pond, and the reflection drawn in it, are painted from the session.
         break;
     }
+  }
+
+  /** Queues the mechanic cards among `candidates` that are neither seen nor already waiting. */
+  private offer(candidates: readonly CardId[]): void {
+    const { cards, offered } = offerCards(this.offered, candidates);
+    this.offered = offered;
+    for (const card of cards) this.presenter.present({ kind: 'tutorial', card });
+  }
+
+  /** A mechanic card in the player's words, with its demo. */
+  private shownCard(card: CardId): ShownCard {
+    const demo = this.cards?.get(card);
+    invariant(demo !== undefined, `the cards file has a demo for ${card}`);
+    const { t } = this.context;
+    return { title: t(`tutorial.${card}.title`), body: t(`tutorial.${card}.body`), demo };
+  }
+
+  /** A closed card is seen for good: saved at once, so it never shows by itself again. */
+  private cardSeen(card: CardId): void {
+    this.context.save = recordTutorialSeen(this.context.save, card);
+    writeSave(this.context.storage, this.context.save);
   }
 
   /** Back to the hub; a level left unwon is logged as left. */

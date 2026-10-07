@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import type { GardenState } from '@core/rules/state';
 import { itemAt } from '@core/shared/itemAt';
+import type { CardId } from '@levels/cards/schema';
 import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import { planReplay, replayAt, type ReplayPlan } from '../animation/replay';
@@ -21,6 +22,7 @@ import { fractionOfStep } from '../systems/sun';
 import type { DialogueView } from '../view/DialogueView';
 import type { NotebookView, ShownNotebook } from '../view/NotebookView';
 import type { QuestionView, ShownOption, ShownQuestion } from '../view/QuestionView';
+import type { ShownCard, TutorialView } from '../view/TutorialView';
 import type { VeilView } from '../view/VeilView';
 
 /** A day replaying itself on screen: its states, its timing, when it began and what shows now. */
@@ -37,6 +39,7 @@ export interface PresenterViews {
   readonly question: QuestionView;
   readonly notebook: NotebookView;
   readonly veil: VeilView;
+  readonly tutorial: TutorialView;
 }
 
 /** The texts of the interface and of the level's lines. */
@@ -57,11 +60,15 @@ export interface PresenterHooks {
   readonly answer: (question: Question, value: number) => void;
   /** Opens the garden that refutes the false notebook statement `option`. */
   readonly counterexample: (option: number) => void;
+  /** A mechanic card in the player's words, with its demo. */
+  readonly card: (card: CardId) => ShownCard;
+  /** The player closed a mechanic card: it is seen. */
+  readonly cardClosed: (card: CardId) => void;
 }
 
 /**
  * Shows the items of the presentation queue on the level screen, one at a time (plan 03, phases 3,
- * 4 and 6): lines in the dialogue box, a question in its panel (a bet maybe under the veil, the
+ * 4, 6 and 12): a mechanic card in its window, lines in the dialogue box, a question in its panel (a bet maybe under the veil, the
  * notebook on its page), a counterexample in its own screen, the replayed day on the garden, the
  * victory panel. It opens each when the queue says so, and moves
  * the queue on when it is over. The order is decided by the pure queue (`systems/presentation.ts`);
@@ -130,6 +137,14 @@ export class Presenter {
     this.stage = stage;
     if (start === null) return;
     switch (start.kind) {
+      case 'tutorial': {
+        const { card } = start;
+        this.views.tutorial.show(this.hooks.card(card), () => {
+          this.hooks.cardClosed(card);
+          this.start(finishShowing(this.stage));
+        });
+        break;
+      }
       case 'lines':
         this.views.dialogue.say(start.lines, () => this.start(finishShowing(this.stage)));
         break;
