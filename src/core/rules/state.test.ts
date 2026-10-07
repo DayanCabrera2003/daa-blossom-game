@@ -22,6 +22,7 @@ describe('a garden at the start of a level', () => {
       chainSeen: null,
       declaredDone: false,
       allowed: new Set(['join', 'split']),
+      roots: null,
     });
   });
 
@@ -30,6 +31,11 @@ describe('a garden at the start of a level', () => {
     const state = createGardenState({ graph: path, matching: lanterns, allowed: [] });
     expect(state.matching).toBe(lanterns);
     expect(state.layer.matching).toBe(lanterns);
+  });
+
+  it('keeps the only sprouts a search may start from, when the level names them (4.1)', () => {
+    const state = createGardenState({ graph: path, roots: [0], allowed: ['markRoot'] });
+    expect(state.roots).toEqual([0]);
   });
 
   it('in the fog nothing is revealed yet (chapter 3)', () => {

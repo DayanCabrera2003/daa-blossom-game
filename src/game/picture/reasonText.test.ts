@@ -16,6 +16,7 @@ describe("why a move was refused, in the garden's words", () => {
   it('names the sprouts involved', () => {
     expect(say({ code: 'notAdjacent', u: 0, v: 2 })).toBe('S y b no comparten enredadera.');
     expect(say({ code: 'alreadyLit', vertex: 3 })).toBe('c ya tiene farol: un farol es para dos.');
+    expect(say({ code: 'notARoot', vertex: 5 })).toBe('Hoy la luz sale de otro sitio, no de T.');
   });
 
   it('answers a touch on the drawn reflection, which is no move of the rules', () => {

@@ -23,6 +23,7 @@ const REASONS = {
   alreadyLit: ['vertex'],
   notLit: ['u', 'v'],
   notInTheDark: ['vertex'],
+  notARoot: ['vertex'],
   noLanternToPass: ['vertex'],
   flowersFolded: [],
   invalidPath: [],

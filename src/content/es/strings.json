@@ -5,6 +5,7 @@
   "reason.alreadyLit": "{vertex} ya tiene farol: un farol es para dos.",
   "reason.notLit": "Entre {u} y {v} no hay ningún farol encendido.",
   "reason.notInTheDark": "{vertex} ya tiene farol; una búsqueda empieza en alguien a oscuras.",
+  "reason.notARoot": "Hoy la luz sale de otro sitio, no de {vertex}.",
   "reason.noLanternToPass": "{vertex} no tiene farol que dar.",
   "reason.flowersFolded": "Los faroles no se mueven dentro de una flor cerrada: ábrela primero.",
   "reason.invalidPath": "Por ahí los faroles no pueden deslizarse.",

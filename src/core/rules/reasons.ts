@@ -14,6 +14,7 @@ export type RejectReason =
   | { readonly code: 'alreadyLit'; readonly vertex: VertexId }
   | { readonly code: 'notLit'; readonly u: VertexId; readonly v: VertexId }
   | { readonly code: 'notInTheDark'; readonly vertex: VertexId }
+  | { readonly code: 'notARoot'; readonly vertex: VertexId }
   | { readonly code: 'noLanternToPass'; readonly vertex: VertexId }
   | { readonly code: 'flowersFolded' }
   | { readonly code: 'invalidPath'; readonly error: PathError }

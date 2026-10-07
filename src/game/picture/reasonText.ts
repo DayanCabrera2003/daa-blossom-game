@@ -43,6 +43,7 @@ export function reasonText(
       return t(`reason.${reason.code}`, { u: name(reason.u), v: name(reason.v) });
     case 'alreadyLit':
     case 'notInTheDark':
+    case 'notARoot':
     case 'noLanternToPass':
     case 'alreadyInspected':
     case 'vineHidden':
