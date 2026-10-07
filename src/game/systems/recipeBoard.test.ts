@@ -10,7 +10,7 @@ describe('the recipe on the table (6.1)', () => {
   });
 
   it('a touch on a card puts it in or takes it back, and the last verdict is put away', () => {
-    const checked = checkBoard(startBoard(0, []));
+    const checked = checkBoard(startBoard(0, [])).board;
     expect(checked.verdict?.right).toBe(false);
     const touched = touchCard(checked, 'markDarkSuns');
     expect(touched.recipe.mark).toBe('markDarkSuns');
@@ -19,13 +19,14 @@ describe('the recipe on the table (6.1)', () => {
   });
 
   it('a check judges the recipe as it stands and counts', () => {
-    const board = checkBoard(checkBoard(startBoard(0, ['moon'])));
+    const board = checkBoard(checkBoard(startBoard(0, ['moon'])).board).board;
     expect(board.checks).toBe(2);
     expect(board.verdict).toEqual({
       right: false,
       failure: { kind: 'missing', card: 'moonNothing', case: 'moon' },
     });
     expect(checkBoard({ ...board, recipe: RIGHT_RECIPE }).verdict).toEqual({ right: true });
+    expect(checkBoard({ ...board, recipe: RIGHT_RECIPE }).board.verdict).toEqual({ right: true });
   });
 });
 

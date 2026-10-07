@@ -1,4 +1,5 @@
 import { isMaximum } from '@core/edmonds/fast/maximum';
+import type { RecipeVerdict } from '@core/recipe/check';
 import type { RecipeCardId } from '@core/recipe/recipe';
 import { matchedEdges } from '@core/matching/queries';
 import type { Matching } from '@core/matching/types';
@@ -494,22 +495,22 @@ export function touchRecipe(session: LevelSession, card: RecipeCardId): LevelSes
 /**
  * "Comprobar" in the `recipe` step: the core judges the recipe without running it. A right one
  * ends the step; a wrong one counts like a refused move towards offering a hint, and its verdict
- * stays on the table for the panel to tell. Outside the step nothing is checked and the board is
+ * stays on the table for the panel to tell. Outside the step nothing is checked and the verdict is
  * null.
  */
 export function checkRecipeNow(
   session: LevelSession,
   now: number,
-): { session: LevelSession; board: RecipeBoard | null; effects: FlowEffect[] } {
+): { session: LevelSession; verdict: RecipeVerdict | null; effects: FlowEffect[] } {
   const board = recipeBoardOf(session);
-  if (board === null) return { session, board: null, effects: [] };
-  const checked = checkBoard(board);
-  const right = checked.verdict?.right === true;
+  if (board === null) return { session, verdict: null, effects: [] };
+  const { board: checked, verdict } = checkBoard(board);
+  const { right } = verdict;
   const hints = right ? session.hints : afterRejected(session.hints);
   const advanced = advance(
     { ...session, recipe: checked, hints },
     { type: 'recipeChecked', right },
     now,
   );
-  return { ...advanced, board: checked };
+  return { ...advanced, verdict };
 }

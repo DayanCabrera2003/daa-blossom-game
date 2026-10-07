@@ -46,11 +46,10 @@ export const touchCard = (board: RecipeBoard, card: RecipeCardId): RecipeBoard =
 });
 
 /** "Comprobar": the core judges the recipe as it stands, without running it. */
-export const checkBoard = (board: RecipeBoard): RecipeBoard => ({
-  ...board,
-  checks: board.checks + 1,
-  verdict: checkRecipe(board.recipe),
-});
+export function checkBoard(board: RecipeBoard): { board: RecipeBoard; verdict: RecipeVerdict } {
+  const verdict = checkRecipe(board.recipe);
+  return { board: { ...board, checks: board.checks + 1, verdict }, verdict };
+}
 
 /**
  * The right card the mentor places at grade 3 (GDD §5.3, the first step done for the player): the

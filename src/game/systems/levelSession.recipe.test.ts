@@ -46,13 +46,13 @@ describe('a level session with the recipe (6.1, 6.3)', () => {
     expect(recipeBoardOf(session)?.recipe).toEqual({ mark: null, cases: [], end: null });
 
     const wrong = checkRecipeNow(session, 0);
-    expect(wrong.board?.verdict).toMatchObject({ right: false, failure: { case: 'start' } });
+    expect(wrong.verdict).toMatchObject({ right: false, failure: { case: 'start' } });
     expect(wrong.effects).toEqual([]);
     expect(stepNow(wrong.session)?.step).toBe('recipe');
 
     const built = touchAll(wrong.session);
     const right = checkRecipeNow(built, 0);
-    expect(right.board?.verdict).toEqual({ right: true });
+    expect(right.verdict).toEqual({ right: true });
     expect(right.effects).toEqual([{ kind: 'finished' }]);
     expect(right.session.won).not.toBeNull();
   });
@@ -85,7 +85,7 @@ describe('a level session with the recipe (6.1, 6.3)', () => {
     const { session } = openSession(level, 0);
     expect(recipeBoardOf(session)).toBeNull();
     expect(touchRecipe(session, 'foldFlower')).toBe(session);
-    expect(checkRecipeNow(session, 0)).toEqual({ session, board: null, effects: [] });
+    expect(checkRecipeNow(session, 0)).toEqual({ session, verdict: null, effects: [] });
   });
 
   it('a hint on a right recipe places nothing more', () => {
