@@ -24,6 +24,8 @@ export type DemoGesture =
   | { readonly kind: 'none' }
   /** Touches on these sprouts, one after another (joining, marking, placing…). */
   | { readonly kind: 'touch'; readonly sprouts: readonly VertexId[] }
+  /** A touch on the vine between two sprouts (putting a lantern out, folding where suns meet). */
+  | { readonly kind: 'vine'; readonly u: VertexId; readonly v: VertexId }
   /** A drag through these sprouts (a chain, a stem). */
   | { readonly kind: 'drag'; readonly path: readonly VertexId[] }
   /** These sprouts chosen as a loop to fold. */
@@ -73,11 +75,13 @@ export type DemoError =
 function gestureOf(state: GardenState, action: Action): DemoGesture {
   switch (action.type) {
     case 'join':
-    case 'split':
       return { kind: 'touch', sprouts: [action.u, action.v] };
+    case 'split':
+      return { kind: 'vine', u: action.u, v: action.v };
+    case 'foldAt':
+      return { kind: 'vine', u: action.from, v: action.to };
     case 'passLantern':
     case 'markMoon':
-    case 'foldAt':
       return { kind: 'touch', sprouts: [action.from, action.to] };
     case 'chain':
       return { kind: 'drag', path: action.path };

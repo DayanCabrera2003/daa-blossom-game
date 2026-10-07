@@ -205,7 +205,7 @@ describe('the demo of a mechanic card', () => {
     ).toMatchObject({ ok: false, error: { code: 'badLabel', step: 0 } });
   });
 
-  it('each kind of move shows the gesture that makes it', () => {
+  it('each kind of move shows the gesture that makes it: a lit vine or a meeting is touched on the vine', () => {
     const triangle = {
       sprouts: [
         { label: 'a', x: 30, y: 40 },
@@ -235,7 +235,7 @@ describe('the demo of a mechanic card', () => {
       { kind: 'touch', sprouts: [0, 1, 2] },
       { kind: 'touch', sprouts: [0] },
       { kind: 'touch', sprouts: [0, 1] },
-      { kind: 'touch', sprouts: [2, 0] },
+      { kind: 'vine', u: 2, v: 0 },
       { kind: 'press', button: 'done' },
       { kind: 'none' },
     ]);
@@ -253,7 +253,7 @@ describe('the demo of a mechanic card', () => {
     });
     expect(placed.frames.map((frame) => frame.gesture).slice(0, 6)).toEqual([
       { kind: 'touch', sprouts: [0, 1] },
-      { kind: 'touch', sprouts: [0, 1] },
+      { kind: 'vine', u: 0, v: 1 },
       { kind: 'touch', sprouts: [1] },
       { kind: 'touch', sprouts: [1] },
       { kind: 'touch', sprouts: [2] },
