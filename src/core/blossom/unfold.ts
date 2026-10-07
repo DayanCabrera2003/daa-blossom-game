@@ -1,6 +1,7 @@
 import type { VertexId } from '../graph/types';
 import { UNMATCHED } from '../matching/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { baseVertex, members } from './hierarchy';
 import { projectGraph } from './projectGraph';
 import type { GardenNode, Layer } from './types';
@@ -37,19 +38,19 @@ export function unfoldLayer(layer: Layer, blossom: VertexId): Layer {
   };
   layer.matching.mate.forEach((partner, id) => {
     if (partner === UNMATCHED || id === blossom || partner === blossom) return;
-    pair(renamed(layer.nodes[id] as GardenNode), renamed(layer.nodes[partner] as GardenNode));
+    pair(renamed(itemAt(layer.nodes, id)), renamed(itemAt(layer.nodes, partner)));
   });
-  const outside = layer.matching.mate[blossom] as VertexId;
+  const outside = itemAt(layer.matching.mate, blossom);
   if (outside !== UNMATCHED) {
-    pair(renamed(flower.cycle[0] as GardenNode), renamed(layer.nodes[outside] as GardenNode));
+    pair(renamed(itemAt(flower.cycle, 0)), renamed(itemAt(layer.nodes, outside)));
   }
   for (let i = 1; i < flower.cycle.length; i += 2) {
-    pair(renamed(flower.cycle[i] as GardenNode), renamed(flower.cycle[i + 1] as GardenNode));
+    pair(renamed(itemAt(flower.cycle, i)), renamed(itemAt(flower.cycle, i + 1)));
   }
 
   return {
     original: layer.original,
-    graph: projectGraph(layer.original.edges, nodes.length, (v) => nodeOf[v] as VertexId),
+    graph: projectGraph(layer.original.edges, nodes.length, (v) => itemAt(nodeOf, v)),
     matching: { mate },
     nodes,
     nodeOf,

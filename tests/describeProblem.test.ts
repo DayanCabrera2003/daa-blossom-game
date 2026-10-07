@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { describeLoadError, describeProblem } from '../tools/describeProblem';
+import {
+  describeLoadError,
+  describeProblem,
+  describeWalkthroughProblem,
+} from '../tools/describeProblem';
 
 describe('readable level problems', () => {
   it('explains integrity problems in one line each', () => {
@@ -13,6 +17,26 @@ describe('readable level problems', () => {
         reason: { code: 'notAdjacent', u: 0, v: 2 },
       }),
     ).toBe('solution step 2 is refused by the rules: notAdjacent {"u":0,"v":2}');
+    expect(
+      describeProblem({
+        code: 'demoRefused',
+        step: 2,
+        move: 0,
+        reason: { code: 'notAdjacent', u: 0, v: 2 },
+      }),
+    ).toBe('script step 3: demo move 1 is refused by the rules: notAdjacent {"u":0,"v":2}');
+    expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
+      'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
+    );
+    expect(
+      describeProblem({
+        code: 'badCounterexample',
+        option: 1,
+        error: { code: 'badLabel', error: { code: 'unknownName', name: 'z' } },
+      }),
+    ).toBe(
+      'notebook statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
+    );
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
     );
@@ -20,11 +44,21 @@ describe('readable level problems', () => {
 
   it('every kind of problem has a message', () => {
     const problems = [
+      { code: 'wonAtStart' },
       { code: 'victoryOutOfReach', value: 4, optimum: 3 },
       { code: 'solutionLocked', step: 0, action: 'chain' },
       { code: 'solutionOverWater', used: 5, budget: 4 },
       { code: 'foreignLine', line: 'ch2.1.sauce.00' },
       { code: 'unlockMismatch', action: 'chain', unlockedAt: '1.3' },
+      { code: 'playWithoutVictory' },
+      { code: 'victoryWithoutPlay' },
+      { code: 'noCorrectOption', step: 2 },
+      { code: 'notebookMissing', step: 3 },
+      { code: 'mirrorMissing', step: 0 },
+      { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
+      { code: 'drawUnbeatable', step: 5 },
+      { code: 'counterexampleLocked', option: 1, action: 'fold' },
+      { code: 'counterexampleUnbeatable', option: 2 },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });
@@ -35,6 +69,24 @@ describe('readable level problems', () => {
     );
     expect(describeLoadError({ code: 'badLabel', error: { code: 'unknownName', name: 'z' } })).toBe(
       'badLabel: {"code":"unknownName","name":"z"}',
+    );
+  });
+
+  it('explains why a walkthrough does not play through', () => {
+    expect(
+      describeWalkthroughProblem({ code: 'moveRefused', entry: 2, reason: { code: 'notNow' } }),
+    ).toBe('walkthrough entry 3 is refused while playing: notNow');
+    expect(
+      describeWalkthroughProblem({ code: 'gestureImpossible', entry: 0, message: 'hidden vine' }),
+    ).toBe('walkthrough entry 1 cannot be made with gestures: hidden vine');
+    expect(describeWalkthroughProblem({ code: 'gestureMismatch', entry: 4 })).toBe(
+      'walkthrough entry 5: the gestures make a different move',
+    );
+    expect(describeWalkthroughProblem({ code: 'inputIgnored', entry: 1 })).toBe(
+      'walkthrough entry 2 is an input the script is not waiting for',
+    );
+    expect(describeWalkthroughProblem({ code: 'unfinished', step: 3 })).toBe(
+      'the walkthrough ends with the script still waiting at step 4',
     );
   });
 });

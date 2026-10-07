@@ -1,5 +1,6 @@
 {
   "id": "5.1",
+  "draft": true,
   "sprouts": [
     { "label": "R", "x": 60, "y": 135 },
     { "label": "a", "x": 140, "y": 75 },
@@ -8,7 +9,7 @@
     { "label": "d", "x": 300, "y": 30 },
     { "label": "g", "x": 230, "y": 200 },
     { "label": "h", "x": 140, "y": 200 },
-    { "label": "t", "x": 140, "y": 20 }
+    { "label": "t", "x": 140, "y": 30 }
   ],
   "vines": [
     ["R", "a"],
@@ -28,7 +29,7 @@
   ],
   "goal": { "visible": true, "value": 4 },
   "victory": { "type": "matchingSize", "value": 4 },
-  "script": ["ch5.1.sauce.00"],
+  "flow": [{ "step": "say", "lines": ["ch5.1.sauce.00"] }, { "step": "play" }],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },

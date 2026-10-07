@@ -1,0 +1,36 @@
+{
+  "id": "1.6",
+  "sprouts": [
+    { "label": "A", "x": 150, "y": 130 },
+    { "label": "B", "x": 195, "y": 60 },
+    { "label": "C", "x": 285, "y": 60 },
+    { "label": "D", "x": 330, "y": 130 },
+    { "label": "E", "x": 285, "y": 200 },
+    { "label": "F", "x": 195, "y": 200 },
+    { "label": "G", "x": 65, "y": 130 },
+    { "label": "H", "x": 415, "y": 130 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "F"],
+    ["F", "A"],
+    ["G", "A"],
+    ["D", "H"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "matchingSize", "value": 4 },
+  "flow": [
+    { "step": "bet", "prompt": "ch1.6.sauce.00", "range": 6, "preview": 3000 },
+    { "step": "play" }
+  ],
+  "solution": [
+    { "type": "bet", "value": 4 },
+    { "type": "join", "u": "G", "v": "A" },
+    { "type": "join", "u": "B", "v": "C" },
+    { "type": "join", "u": "D", "v": "H" },
+    { "type": "join", "u": "E", "v": "F" }
+  ]
+}

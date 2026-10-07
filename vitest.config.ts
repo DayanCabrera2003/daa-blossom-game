@@ -9,9 +9,16 @@ export default defineConfig({
     setupFiles: ['tests/setup/fastCheck.ts'],
     coverage: {
       provider: 'v8',
-      // Only the pure core is held to the coverage bar: it is the mathematical heart of the project.
-      include: ['src/core/**/*.ts'],
-      exclude: ['src/core/**/*.test.ts', 'src/core/**/types.ts'],
+      // Every module that decides something is held to the bar: the pure core, levels, services
+      // and the pure folders of the game. Phaser scenes and views only draw, and are checked by
+      // playing (plan 02, phase 8).
+      include: [
+        'src/core/**/*.ts',
+        'src/levels/**/*.ts',
+        'src/services/**/*.ts',
+        'src/game/{input,systems,animation,scale,picture}/**/*.ts',
+      ],
+      exclude: ['src/**/*.test.ts', 'src/**/types.ts'],
       thresholds: { lines: 95, branches: 95, functions: 95, statements: 95 },
     },
   },

@@ -1,7 +1,7 @@
 import { contract } from '../../blossom/contract';
 import { checkBlossom } from '../../blossom/isBlossom';
-import type { VertexId } from '../../graph/types';
 import { invariant } from '../../shared/invariant';
+import { itemAt } from '../../shared/itemAt';
 import { contractEvent } from '../../trace/contractEvent';
 import type { Action } from '../actions';
 import { requireSprouts } from '../checks';
@@ -21,7 +21,7 @@ export function fold(
   if (invalid) return reject(invalid);
   if (state.search !== null) return reject({ code: 'searchInProgress' });
   const { layer } = state;
-  const nodes = loop.map((v) => layer.nodeOf[v] as VertexId);
+  const nodes = loop.map((v) => itemAt(layer.nodeOf, v));
   const checked = checkBlossom(layer.graph, layer.matching, nodes);
   if (!checked.ok) return reject({ code: 'notAFlower', error: checked.error });
 

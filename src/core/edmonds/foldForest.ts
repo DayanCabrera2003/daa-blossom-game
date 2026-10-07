@@ -1,7 +1,8 @@
 import { baseVertex } from '../blossom/hierarchy';
-import type { GardenNode, Layer } from '../blossom/types';
+import type { Layer } from '../blossom/types';
 import type { VertexId } from '../graph/types';
 import { NO_VERTEX, type AlternatingForest, type ForestLabel } from '../search/forest';
+import { itemAt } from '../shared/itemAt';
 
 /**
  * Carries a search forest over a fold, from garden `before` to `after` (= `before` with the flower
@@ -19,10 +20,8 @@ export function foldForest(
   blossom: VertexId,
 ): AlternatingForest {
   const rename = (id: VertexId): VertexId =>
-    id === NO_VERTEX
-      ? NO_VERTEX
-      : (after.nodeOf[baseVertex(before.nodes[id] as GardenNode)] as VertexId);
-  const base = before.nodeOf[baseVertex(after.nodes[blossom] as GardenNode)] as VertexId;
+    id === NO_VERTEX ? NO_VERTEX : itemAt(after.nodeOf, baseVertex(itemAt(before.nodes, id)));
+  const base = itemAt(before.nodeOf, baseVertex(itemAt(after.nodes, blossom)));
 
   const n = after.nodes.length;
   const label = new Array<ForestLabel>(n).fill('none');
@@ -32,11 +31,11 @@ export function foldForest(
     const target = rename(id);
     if (target === blossom) return;
     label[target] = mark;
-    parent[target] = rename(forest.parent[id] as VertexId);
-    root[target] = rename(forest.root[id] as VertexId);
+    parent[target] = rename(itemAt(forest.parent, id));
+    root[target] = rename(itemAt(forest.root, id));
   });
   label[blossom] = 'outer';
-  parent[blossom] = rename(forest.parent[base] as VertexId);
-  root[blossom] = rename(forest.root[base] as VertexId);
+  parent[blossom] = rename(itemAt(forest.parent, base));
+  root[blossom] = rename(itemAt(forest.root, base));
   return { label, parent, root };
 }

@@ -1,5 +1,6 @@
 {
   "id": "4.9",
+  "draft": true,
   "sprouts": [
     { "label": "R", "x": 80, "y": 135 },
     { "label": "a", "x": 160, "y": 135 },
@@ -20,7 +21,7 @@
   ],
   "goal": { "visible": false },
   "victory": { "type": "maximum" },
-  "script": ["ch4.9.sauce.00"],
+  "flow": [{ "step": "say", "lines": ["ch4.9.sauce.00"] }, { "step": "play" }],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },

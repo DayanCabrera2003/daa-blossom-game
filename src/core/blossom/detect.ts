@@ -1,5 +1,6 @@
 import type { VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import type { AlternatingForest } from '../search/forest';
 import { pathToRoot } from '../search/pathToRoot';
 
@@ -24,7 +25,7 @@ export function findOddCycle(forest: AlternatingForest, u: VertexId, x: VertexId
   const fromX = pathToRoot(forest, x);
   const onClimbFromX = new Set(fromX);
   const ancestorIndex = fromU.findIndex((vertex) => onClimbFromX.has(vertex));
-  const ancestor = fromU[ancestorIndex] as VertexId;
+  const ancestor = itemAt(fromU, ancestorIndex);
 
   const down = fromU.slice(0, ancestorIndex + 1).reverse();
   const up = fromX.slice(0, fromX.indexOf(ancestor));

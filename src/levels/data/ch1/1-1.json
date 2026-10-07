@@ -12,12 +12,30 @@
     ["C", "D"]
   ],
   "goal": { "visible": true, "value": 2 },
+  "forbid": ["passLantern"],
   "victory": { "type": "matchingSize", "value": 2 },
-  "script": ["ch1.1.sauce.00"],
+  "hints": [
+    { "line": "ch1.1.sauce.01" },
+    { "line": "ch1.1.sauce.02", "highlight": ["A", "D"] },
+    { "line": "ch1.1.sauce.03" }
+  ],
+  "flow": [
+    { "step": "play" },
+    {
+      "step": "replay",
+      "demo": [
+        { "type": "join", "u": "B", "v": "C" },
+        { "type": "passLantern", "from": "A", "to": "B" },
+        { "type": "join", "u": "C", "v": "D" }
+      ]
+    },
+    { "step": "say", "lines": ["ch1.1.sauce.00"] }
+  ],
   "unlocks": { "actions": ["passLantern"] },
   "solution": [
     { "type": "join", "u": "B", "v": "C" },
-    { "type": "passLantern", "from": "A", "to": "B" },
+    { "type": "split", "u": "B", "v": "C" },
+    { "type": "join", "u": "A", "v": "B" },
     { "type": "join", "u": "C", "v": "D" }
   ]
 }

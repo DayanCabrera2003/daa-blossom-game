@@ -129,7 +129,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 
 ### 4.1 Pixel art
 
-- **Lienzo interno:** 480 × 270 píxeles, escalado por entero (×3 en 1440p, ×4 en 4K). Pixel perfect, sin filtrado.
+- **Lienzo lógico:** 480 × 270 píxeles: todo el arte y los niveles viven en esa rejilla. Se dibuja escalado por entero (×3 en 1440p, ×4 en 4K) con una cámara ampliada sobre un lienzo real del tamaño de la pantalla: pixel perfect y sin filtrado para el arte, y el texto rasterizado a resolución completa para que se lea nítido.
 - **Tiles:** 16 × 16. Brotes: 16 × 16 (cuerpo) con carita animada; flores plegadas: 32 × 32 con el número de pétalos visible como pétalos reales.
 - **Paleta:** una paleta base de 32 colores (estilo Endesga o similar, elegida al inicio y respetada en todo el juego). Cada estación aplica un subconjunto y un tinte:
   - Prólogo, Huerto: verdes suaves, marrón tierra, cielo de atardecer.
@@ -278,6 +278,13 @@ Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y e
 
 Puzles opcionales difíciles escondidos en el hub (uno o dos por capítulo). No enseñan nada nuevo, exigen combinar. Ejemplos en 7.9.
 
+
+### 5.11 Tarjetas de mecánica
+
+La primera vez que una mecánica está disponible, una ventana breve enseña **cómo se usa**: un título, dos o tres líneas sobre el gesto y una mini demostración animada (un jardín diminuto que hace el gesto solo, en bucle). Las herramientas se presentan al empezar el nivel; los pasos del guion (apuesta, Cuaderno, reflejo, dibujar el espejo) cuando llegan. Cada tarjeta se ve una sola vez por jugador y se puede volver a abrir con el botón "?" del HUD.
+
+Las tarjetas explican el gesto, **nunca la idea**: "arrastra desde un brote a oscuras siguiendo las enredaderas" sí; "esto enciende un farol más porque…" no. Lo que una mecánica significa lo descubre el jugador y lo nombra Sauce después (principios 1, 2 y 4).
+
 ---
 
 ## 6. Estructura general
@@ -382,22 +389,22 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 #### 1.3 Brigada
 - **Jardín:** cadena escondida entre distractores.
   `S–a=b–c=d–T` con S y T libres. Distractores: `b–x=y` (y sin más vecinos), `c–z` (z libre).
-- **Objetivo:** visible, 3 (hay 2 al inicio).
+- **Objetivo:** visible, 4 (hay 3 al inicio: a=b, c=d y x=y).
 - **Enseña:** la acción **Cadena**: arrastrar desde S por `S–a`, `a=b`, `b–c`, `c=d`, `d–T`. Al soltar, cascada automática. El distractor `c–z` es una trampa para quien cree que cualquier camino sirve: la herramienta no deja pasar de `b–c` a `c–z` porque serían dos enredaderas apagadas seguidas ("Cleo ya tiene farol: tiene que dárselo a alguien antes de pedir otro").
 - **Por qué aquí:** convierte la cadena manual en herramienta. La regla de alternancia no se explica: la impone la física del jardín.
 - **Guion:** Sauce: "Arrastra desde alguien a oscuras. Los faroles saben deslizarse solos."
 - **Pistas:** (1) "Empieza por Sami." (2) el camino correcto se insinúa. (3) el mentor traza hasta la mitad.
-- **Victoria:** 3 faroles.
+- **Victoria:** 4 faroles.
 - **Desbloquea:** acción **Cadena**.
 
 #### 1.4 Callejón
 - **Jardín:** A libre. Rama 1: `A–B=C–D=E`, E sin más vecinos. Rama 2: `A–F=G–H`, H libre.
-- **Objetivo:** visible, 3 (hay 2).
+- **Objetivo:** visible, 4 (hay 3: B=C, D=E y F=G).
 - **Enseña:** una cadena que termina en un brote con farol y sin salida no gana nada, solo mueve la oscuridad. El jugador la prueba, el juego la aplica con **ganancia 0** en gris (A con luz, E sin ella). Debe deshacer y encontrar la rama 2.
 - **Por qué aquí:** fija la condición "empieza y termina en solitario". Además establece que las cadenas de ganancia 0 son legales, lo que hará falta en 4.10 (girar el tallo).
 - **Guion:** Sauce: "Eli se quedó sin luz para que Ana la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras."
 - **Pistas:** (1) "¿La cadena terminó en alguien que ya tenía farol?" (2) H brilla. (3) —
-- **Victoria:** 3 faroles.
+- **Victoria:** 4 faroles.
 
 #### 1.5 Dos solitarios
 - **Jardín:** dos cadenas independientes que comparten un tramo confuso visualmente. Ejemplo: `P–a=b–Q` (P, Q libres) y `R–c=d–e=f–S` (R, S libres), con enredaderas cruzadas `b–c` y `d–Q` como distractores.

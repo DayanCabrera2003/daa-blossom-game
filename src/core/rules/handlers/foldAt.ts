@@ -2,8 +2,8 @@ import { contract } from '../../blossom/contract';
 import { findOddCycle } from '../../blossom/detect';
 import { foldForest } from '../../edmonds/foldForest';
 import { hasEdge } from '../../graph/queries';
-import type { VertexId } from '../../graph/types';
 import { invariant } from '../../shared/invariant';
+import { itemAt } from '../../shared/itemAt';
 import { contractEvent } from '../../trace/contractEvent';
 import type { Action } from '../actions';
 import { requireSprouts } from '../checks';
@@ -17,14 +17,17 @@ import type { GardenState } from '../state';
  */
 export function foldAt(
   state: GardenState,
-  { from, to }: Extract<Action, { type: 'foldAt' }>,
+  action: Extract<Action, { type: 'foldAt' }>,
 ): ActionOutcome {
+  // A touched vine has no direction, and the loop's direction depends on which sun comes first;
+  // taking the smaller sprout first makes d–b and b–d fold exactly the same flower.
+  const [from, to] = action.from < action.to ? [action.from, action.to] : [action.to, action.from];
   const invalid = requireSprouts(state, [from, to]);
   if (invalid) return reject(invalid);
   if (!hasEdge(state.graph, from, to)) return reject({ code: 'notAdjacent', u: from, v: to });
   const { layer, search } = state;
-  const u = layer.nodeOf[from] as VertexId;
-  const x = layer.nodeOf[to] as VertexId;
+  const u = itemAt(layer.nodeOf, from);
+  const x = itemAt(layer.nodeOf, to);
   const sunsOfOneTree =
     search !== null &&
     u !== x &&

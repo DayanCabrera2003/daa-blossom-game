@@ -1,6 +1,7 @@
 import type { Graph, VertexId } from '../graph/types';
 import { UNMATCHED, type Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { checkBlossom } from './isBlossom';
 import { projectGraph } from './projectGraph';
 import type { Blossom, GardenNode, Layer } from './types';
@@ -43,14 +44,14 @@ export function contract(
   const checked = checkBlossom(layer.graph, layer.matching, loop);
   invariant(checked.ok, `cannot fold a loop that is not a flower: ${loop.join(', ')}`);
   const cycle = checked.value;
-  const base = cycle[0] as VertexId;
+  const base = itemAt(cycle, 0);
   const inLoop = new Set(cycle);
 
   const blossom: Blossom = {
     kind: 'blossom',
     id: maxBlossomId(layer.nodes) + 1,
-    cycle: cycle.map((id) => layer.nodes[id] as GardenNode),
-    edges: cycle.map((id, i) => vineBetween(layer, id, cycle[(i + 1) % cycle.length] as VertexId)),
+    cycle: cycle.map((id) => itemAt(layer.nodes, id)),
+    edges: cycle.map((id, i) => vineBetween(layer, id, itemAt(cycle, (i + 1) % cycle.length))),
   };
 
   // Renumber: the flower sits where the base was; every other loop member disappears.
@@ -61,9 +62,8 @@ export function contract(
     renamed[id] = nodes.length;
     nodes.push(id === base ? blossom : node);
   });
-  const blossomId = renamed[base] as VertexId;
-  const rename = (id: VertexId): VertexId =>
-    inLoop.has(id) ? blossomId : (renamed[id] as VertexId);
+  const blossomId = itemAt(renamed, base);
+  const rename = (id: VertexId): VertexId => (inLoop.has(id) ? blossomId : itemAt(renamed, id));
 
   const mate = new Array<VertexId>(nodes.length).fill(UNMATCHED);
   layer.matching.mate.forEach((partner, id) => {

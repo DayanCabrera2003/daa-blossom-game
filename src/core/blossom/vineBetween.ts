@@ -1,8 +1,9 @@
 import { neighbors } from '../graph/queries';
 import type { VertexId } from '../graph/types';
 import { isMatchedEdge } from '../matching/queries';
+import { itemAt } from '../shared/itemAt';
 import { baseVertex, members } from './hierarchy';
-import type { GardenNode, Layer, OrientedEdge } from './types';
+import type { Layer, OrientedEdge } from './types';
 
 /**
  * The original vine that joins folded nodes `a` and `b`, oriented from `a`. If they share a
@@ -11,8 +12,8 @@ import type { GardenNode, Layer, OrientedEdge } from './types';
  * taken so folding is deterministic.
  */
 export function vineBetween(layer: Layer, a: VertexId, b: VertexId): OrientedEdge {
-  const nodeA = layer.nodes[a] as GardenNode;
-  const nodeB = layer.nodes[b] as GardenNode;
+  const nodeA = itemAt(layer.nodes, a);
+  const nodeB = itemAt(layer.nodes, b);
   if (isMatchedEdge(layer.matching, a, b)) return [baseVertex(nodeA), baseVertex(nodeB)];
   for (const u of members(nodeA)) {
     for (const v of neighbors(layer.original, u)) if (layer.nodeOf[v] === b) return [u, v];

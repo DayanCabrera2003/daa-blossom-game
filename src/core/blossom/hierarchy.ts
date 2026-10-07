@@ -1,4 +1,5 @@
 import type { VertexId } from '../graph/types';
+import { itemAt } from '../shared/itemAt';
 import type { GardenNode, Layer } from './types';
 
 /** Every original sprout inside a node (itself, for a sprout), in ascending order. */
@@ -18,13 +19,13 @@ export function members(node: GardenNode): VertexId[] {
  */
 export function baseVertex(node: GardenNode): VertexId {
   let current = node;
-  while (current.kind === 'blossom') current = current.cycle[0] as GardenNode;
+  while (current.kind === 'blossom') current = itemAt(current.cycle, 0);
   return current.vertex;
 }
 
 /** The folded node holding sprout `v`: its outermost flower, or the sprout itself if unfolded. */
 export function outermostNode(layer: Layer, v: VertexId): GardenNode {
-  return layer.nodes[layer.nodeOf[v] as VertexId] as GardenNode;
+  return itemAt(layer.nodes, itemAt(layer.nodeOf, v));
 }
 
 /**

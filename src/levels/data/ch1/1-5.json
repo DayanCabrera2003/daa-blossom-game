@@ -1,0 +1,253 @@
+{
+  "id": "1.5",
+  "sprouts": [
+    {
+      "label": "P",
+      "x": 70,
+      "y": 60
+    },
+    {
+      "label": "A",
+      "x": 160,
+      "y": 50
+    },
+    {
+      "label": "B",
+      "x": 250,
+      "y": 80
+    },
+    {
+      "label": "Q",
+      "x": 340,
+      "y": 60
+    },
+    {
+      "label": "R",
+      "x": 50,
+      "y": 190
+    },
+    {
+      "label": "C",
+      "x": 130,
+      "y": 180
+    },
+    {
+      "label": "D",
+      "x": 210,
+      "y": 200
+    },
+    {
+      "label": "E",
+      "x": 290,
+      "y": 180
+    },
+    {
+      "label": "F",
+      "x": 370,
+      "y": 200
+    },
+    {
+      "label": "S",
+      "x": 440,
+      "y": 170
+    }
+  ],
+  "vines": [
+    ["P", "A"],
+    ["A", "B"],
+    ["B", "Q"],
+    ["R", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "F"],
+    ["F", "S"],
+    ["B", "C"],
+    ["D", "Q"]
+  ],
+  "lanterns": [
+    ["A", "B"],
+    ["C", "D"],
+    ["E", "F"]
+  ],
+  "goal": {
+    "visible": true,
+    "value": 5
+  },
+  "victory": {
+    "type": "matchingSize",
+    "value": 5
+  },
+  "notebook": {
+    "prompt": "ch1.5.notebook.00",
+    "options": [
+      {
+        "line": "ch1.5.notebook.01",
+        "correct": true,
+        "reply": "ch1.5.sauce.04"
+      },
+      {
+        "line": "ch1.5.notebook.02",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch1.5.sauce.02",
+          "sprouts": [
+            {
+              "label": "A",
+              "x": 90,
+              "y": 120
+            },
+            {
+              "label": "B",
+              "x": 150,
+              "y": 120
+            },
+            {
+              "label": "C",
+              "x": 210,
+              "y": 120
+            },
+            {
+              "label": "D",
+              "x": 270,
+              "y": 120
+            },
+            {
+              "label": "E",
+              "x": 330,
+              "y": 120
+            },
+            {
+              "label": "F",
+              "x": 390,
+              "y": 120
+            }
+          ],
+          "vines": [
+            ["A", "B"],
+            ["B", "C"],
+            ["C", "D"],
+            ["D", "E"],
+            ["E", "F"]
+          ],
+          "lanterns": [
+            ["B", "C"],
+            ["D", "E"]
+          ],
+          "actions": ["join", "split", "passLantern", "chain"]
+        }
+      },
+      {
+        "line": "ch1.5.notebook.03",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch1.5.sauce.03",
+          "sprouts": [
+            {
+              "label": "A",
+              "x": 60,
+              "y": 100
+            },
+            {
+              "label": "B",
+              "x": 100,
+              "y": 140
+            },
+            {
+              "label": "C",
+              "x": 140,
+              "y": 100
+            },
+            {
+              "label": "D",
+              "x": 180,
+              "y": 140
+            },
+            {
+              "label": "E",
+              "x": 220,
+              "y": 100
+            },
+            {
+              "label": "F",
+              "x": 260,
+              "y": 140
+            },
+            {
+              "label": "G",
+              "x": 300,
+              "y": 100
+            },
+            {
+              "label": "H",
+              "x": 340,
+              "y": 140
+            },
+            {
+              "label": "I",
+              "x": 380,
+              "y": 100
+            },
+            {
+              "label": "J",
+              "x": 420,
+              "y": 140
+            }
+          ],
+          "vines": [
+            ["A", "B"],
+            ["B", "C"],
+            ["C", "D"],
+            ["D", "E"],
+            ["E", "F"],
+            ["F", "G"],
+            ["G", "H"],
+            ["H", "I"],
+            ["I", "J"]
+          ],
+          "lanterns": [
+            ["B", "C"],
+            ["D", "E"],
+            ["F", "G"],
+            ["H", "I"]
+          ],
+          "actions": ["join", "split", "passLantern", "chain"]
+        }
+      }
+    ]
+  },
+  "flow": [
+    {
+      "step": "play",
+      "reactions": [
+        {
+          "on": "lanterns",
+          "value": 4,
+          "say": ["ch1.5.sauce.00"]
+        }
+      ]
+    },
+    {
+      "step": "say",
+      "lines": ["ch1.5.sauce.01"]
+    },
+    {
+      "step": "notebook"
+    }
+  ],
+  "solution": [
+    {
+      "type": "chain",
+      "path": ["P", "A", "B", "Q"]
+    },
+    {
+      "type": "chain",
+      "path": ["R", "C", "D", "E", "F", "S"]
+    },
+    {
+      "type": "answer",
+      "option": 0
+    }
+  ]
+}

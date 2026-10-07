@@ -13,7 +13,7 @@ const trap = {
   ],
   goal: { visible: true, value: 2 },
   victory: { type: 'matchingSize', value: 2 },
-  script: ['ch1.1.sauce.00'],
+  flow: [{ step: 'say', lines: ['ch1.1.sauce.00'] }, { step: 'play' }],
   unlocks: { actions: ['passLantern'] },
   solution: [
     { type: 'join', u: 'A', v: 'B' },
@@ -31,6 +31,18 @@ const problemsOf = (json: unknown) => {
 describe('level integrity', () => {
   it('a sound level has no problems', () => {
     expect(problemsOf(trap)).toEqual([]);
+  });
+
+  it('a level must not be won before the player does anything', () => {
+    const alreadyLit = {
+      ...trap,
+      lanterns: [
+        ['A', 'B'],
+        ['C', 'D'],
+      ],
+      solution: [{ type: 'split', u: 'A', v: 'B' }],
+    };
+    expect(problemsOf(alreadyLit)).toContainEqual({ code: 'wonAtStart' });
   });
 
   it('the declared goal must be the true optimum, computed by Edmonds', () => {
@@ -63,6 +75,26 @@ describe('level integrity', () => {
     });
   });
 
+  it('script inputs in the solution leave the garden alone, and count as steps', () => {
+    const answered = {
+      ...trap,
+      solution: [{ type: 'answer', option: 0 }, ...trap.solution, { type: 'tapGarden' }],
+    };
+    expect(problemsOf(answered)).toEqual([]);
+    const refused = {
+      ...trap,
+      solution: [
+        { type: 'bet', value: 2 },
+        { type: 'join', u: 'A', v: 'C' },
+      ],
+    };
+    expect(problemsOf(refused)).toContainEqual({
+      code: 'solutionRefused',
+      step: 1,
+      reason: { code: 'notAdjacent', u: 0, v: 2 },
+    });
+  });
+
   it('the solution must actually win', () => {
     const short = { ...trap, solution: [{ type: 'join', u: 'B', v: 'C' }] };
     expect(problemsOf(short)).toContainEqual({ code: 'solutionFallsShort' });
@@ -74,7 +106,7 @@ describe('level integrity', () => {
       id: '3.1',
       fog: true,
       water: 1,
-      script: [],
+      flow: [{ step: 'play' }],
       unlocks: { actions: [] },
       solution: [
         { type: 'inspect', vertex: 'A' },
@@ -89,6 +121,69 @@ describe('level integrity', () => {
   it('dialogue lines belong to their own level', () => {
     const foreign = { ...trap, hints: [{ line: 'ch2.4.sauce.01', highlight: [] }] };
     expect(problemsOf(foreign)).toContainEqual({ code: 'foreignLine', line: 'ch2.4.sauce.01' });
+  });
+
+  it('notebook lines belong to their own level too', () => {
+    const notebook = {
+      prompt: 'ch1.1.notebook.00',
+      options: [
+        { line: 'ch1.1.notebook.01', correct: true },
+        { line: 'ch2.2.notebook.02', correct: false },
+      ],
+    };
+    expect(problemsOf({ ...trap, notebook })).toEqual([
+      { code: 'foreignLine', line: 'ch2.2.notebook.02' },
+    ]);
+  });
+
+  it('a counterexample is checked as a garden, and its lines belong to the level', () => {
+    const notebook = {
+      prompt: 'ch1.1.notebook.00',
+      options: [
+        { line: 'ch1.1.notebook.01', correct: true },
+        {
+          line: 'ch1.1.notebook.02',
+          correct: false,
+          counterexample: {
+            mode: 'play',
+            line: 'ch2.2.sauce.07',
+            sprouts: [{ label: 'a', x: 100, y: 100 }],
+            vines: [['a', 'a']],
+            actions: ['join'],
+          },
+        },
+      ],
+    };
+    expect(problemsOf({ ...trap, notebook })).toEqual([
+      {
+        code: 'badCounterexample',
+        option: 1,
+        error: { code: 'badGraph', error: expect.anything() },
+      },
+      { code: 'foreignLine', line: 'ch2.2.sauce.07' },
+    ]);
+  });
+
+  it('a play step needs a victory to end, and a victory needs a play step to be reached', () => {
+    expect(problemsOf({ ...trap, victory: undefined })).toEqual([{ code: 'playWithoutVictory' }]);
+    const noPlay = { ...trap, flow: [{ step: 'say', lines: ['ch1.1.sauce.00'] }] };
+    expect(problemsOf(noPlay)).toEqual([{ code: 'victoryWithoutPlay' }]);
+  });
+
+  it('a level that is only talk has no victory to check', () => {
+    const talk = {
+      ...trap,
+      victory: undefined,
+      lanterns: [['A', 'B']],
+      flow: [{ step: 'say', lines: ['ch1.1.sauce.00'] }],
+      solution: [{ type: 'tapGarden' }],
+    };
+    expect(problemsOf(talk)).toEqual([]);
+  });
+
+  it('the checks of the script are part of the integrity of the level', () => {
+    const notebookless = { ...trap, flow: [{ step: 'play' }, { step: 'notebook' }] };
+    expect(problemsOf(notebookless)).toEqual([{ code: 'notebookMissing', step: 1 }]);
   });
 
   it('what a level unlocks must match the unlock table of the rules', () => {

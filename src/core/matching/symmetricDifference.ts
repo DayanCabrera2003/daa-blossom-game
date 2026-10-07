@@ -1,6 +1,7 @@
 import { edgeKey } from '../graph/queries';
 import type { Edge, VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { UNMATCHED, type Matching } from './types';
 
 /**
@@ -44,7 +45,7 @@ export function decomposeSymmetricDifference(from: Matching, to: Matching): Diff
 
   // Partner of v in the difference through each matching, or UNMATCHED if that vine is shared.
   const partnerIn = (matching: Matching, other: Matching, v: VertexId): VertexId => {
-    const partner = matching.mate[v] as VertexId;
+    const partner = itemAt(matching.mate, v);
     return partner !== UNMATCHED && other.mate[v] !== partner ? partner : UNMATCHED;
   };
   const neighborsOf = (v: VertexId): VertexId[] =>
@@ -87,10 +88,9 @@ function describe(
 ): DifferenceComponent {
   const edges: Edge[] = [];
   for (let i = 0; i + 1 < vertices.length; i++) {
-    edges.push([vertices[i] as VertexId, vertices[i + 1] as VertexId]);
+    edges.push([itemAt(vertices, i), itemAt(vertices, i + 1)]);
   }
-  if (kind === 'cycle')
-    edges.push([vertices[vertices.length - 1] as VertexId, vertices[0] as VertexId]);
+  if (kind === 'cycle') edges.push([itemAt(vertices, vertices.length - 1), itemAt(vertices, 0)]);
 
   const gain = edges.reduce(
     (sum, [u, v]) => sum + (to.mate[u] === v ? 1 : 0) - (from.mate[u] === v ? 1 : 0),

@@ -2,8 +2,9 @@ import { hasEdge } from '../graph/queries';
 import type { VertexId } from '../graph/types';
 import { mateOf } from '../matching/queries';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { baseVertex } from './hierarchy';
-import type { GardenNode, Layer } from './types';
+import type { Layer } from './types';
 import { walkToBase } from './walk';
 
 /**
@@ -23,13 +24,13 @@ export function liftPath(
   path: readonly VertexId[],
 ): VertexId[] {
   const toLower = (id: VertexId): VertexId =>
-    lower.nodeOf[baseVertex(upper.nodes[id] as GardenNode)] as VertexId;
+    itemAt(lower.nodeOf, baseVertex(itemAt(upper.nodes, id)));
   const at = path.indexOf(blossom);
   if (at === -1) return path.map(toLower);
 
   const flower = upper.nodes[blossom];
   invariant(flower?.kind === 'blossom', `node ${blossom} is not a flower`);
-  const children = flower.cycle.map((child) => lower.nodeOf[baseVertex(child)] as VertexId);
+  const children = flower.cycle.map((child) => itemAt(lower.nodeOf, baseVertex(child)));
 
   // The neighbor along a dark vine: whichever side of the flower is not its lantern partner.
   const partner = mateOf(upper.matching, blossom);
@@ -41,7 +42,7 @@ export function liftPath(
 
   const entry = toLower(darkNeighbor);
   const petal = children.findIndex((child) => hasEdge(lower.graph, child, entry));
-  const walk = walkToBase(children.length, petal).map((i) => children[i] as VertexId);
+  const walk = walkToBase(children.length, petal).map((i) => itemAt(children, i));
   const inside = darkBefore ? walk : walk.reverse();
 
   return [...path.slice(0, at).map(toLower), ...inside, ...path.slice(at + 1).map(toLower)];

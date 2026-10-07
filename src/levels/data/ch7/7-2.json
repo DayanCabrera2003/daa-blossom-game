@@ -1,5 +1,6 @@
 {
   "id": "7.2",
+  "draft": true,
   "sprouts": [
     { "label": "A", "x": 240, "y": 40 },
     { "label": "B", "x": 330, "y": 105 },
@@ -20,7 +21,7 @@
   ],
   "goal": { "visible": false },
   "victory": { "type": "tutteBergeCertificate" },
-  "script": ["ch7.2.oaks.00"],
+  "flow": [{ "step": "say", "lines": ["ch7.2.oaks.00"] }, { "step": "play" }],
   "unlocks": { "actions": ["liftStone", "dropStone"] },
   "solution": [{ "type": "declareDone" }]
 }

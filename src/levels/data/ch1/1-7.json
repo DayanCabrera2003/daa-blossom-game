@@ -1,0 +1,26 @@
+{
+  "id": "1.7",
+  "sprouts": [
+    { "label": "A", "x": 150, "y": 130 },
+    { "label": "B", "x": 195, "y": 60 },
+    { "label": "C", "x": 285, "y": 60 },
+    { "label": "D", "x": 330, "y": 130 },
+    { "label": "E", "x": 285, "y": 200 },
+    { "label": "F", "x": 195, "y": 200 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "F"],
+    ["F", "A"]
+  ],
+  "lanterns": [
+    ["B", "C"],
+    ["E", "F"]
+  ],
+  "goal": { "visible": true, "value": 3 },
+  "victory": { "type": "matchingSize", "value": 3 },
+  "solution": [{ "type": "chain", "path": ["A", "B", "C", "D"] }]
+}

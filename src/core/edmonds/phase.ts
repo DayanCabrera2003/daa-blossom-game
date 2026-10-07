@@ -5,6 +5,7 @@ import type { Graph, VertexId } from '../graph/types';
 import { flipAlong } from '../matching/augment';
 import type { Matching } from '../matching/types';
 import type { AlternatingForest } from '../search/forest';
+import { itemAt } from '../shared/itemAt';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { searchWithFlowers } from './search';
 
@@ -45,7 +46,7 @@ export function runPhase(
     return { kind: 'maximum', layer: outcome.layer, forest: outcome.forest };
   }
   const path = expandPath(outcome.layer, outcome.path);
-  const onPath = outcome.path.map((id) => outcome.layer.nodes[id] as GardenNode);
+  const onPath = outcome.path.map((id) => itemAt(outcome.layer.nodes, id));
   recordExpansions(onPath, new Set(path), recorder);
   recorder.record({ type: 'augment', path });
   return { kind: 'augmented', matching: flipAlong(matching, path) };

@@ -1,0 +1,73 @@
+import type { Edge, VertexId } from '@core/graph/types';
+import type { Action } from '@core/rules/actions';
+import type { LevelHint } from '@levels/build';
+
+/** What a hint shows: a line (a dialogue id, or a generic interface key), sprouts to glow, a move. */
+export interface HintContent {
+  readonly line: string;
+  /** True when `line` is a generic interface key (`hint.generic.k`), not a dialogue line id. */
+  readonly generic: boolean;
+  readonly highlight: readonly VertexId[];
+  /** Only at grade 3: the step the mentor takes for the player. */
+  readonly move: Action | null;
+  /** Only at grade 3, under a question: the option the mentor points at (its value). */
+  readonly option: number | null;
+  /** Only at grade 3, in the mirror challenge: the better reflection the mentor draws. */
+  readonly mirror: readonly Edge[] | null;
+}
+
+/** A better reflection the mentor can offer in the mirror challenge, and the chain it leaves. */
+export interface MentorReflection {
+  readonly lanterns: readonly Edge[];
+  readonly chain: readonly VertexId[];
+}
+
+/** The sprouts an action involves, each once, in ascending order. */
+export function sproutsOf(action: Action): VertexId[] {
+  const found = new Set<VertexId>();
+  // Every numeric field of an action names a sprout, except a flower's id.
+  for (const [key, value] of Object.entries(action)) {
+    if (key === 'blossom') continue;
+    if (typeof value === 'number') found.add(value);
+    if (Array.isArray(value)) for (const v of value as VertexId[]) found.add(v);
+  }
+  return [...found].sort((a, b) => a - b);
+}
+
+/**
+ * The content of hint grade `grade` (GDD §5.3: a nudge, a direction, the mentor's first step).
+ * The k-th hint written in the level is grade k; when a level has fewer, the generic line of that
+ * grade is used, and from grade 2 on the sprouts of the mentor's step glow instead. Under a
+ * question there is no step to take: grade 3 points at `option` instead, when it is given. In the
+ * mirror challenge, a `reflection` the mentor offers: from grade 2 its chain glows, and grade 3
+ * draws it.
+ */
+export function hintContent(
+  hints: readonly LevelHint[],
+  grade: number,
+  mentorStep: Action | null,
+  option: number | null = null,
+  reflection: MentorReflection | null = null,
+): HintContent {
+  const written = hints[grade - 1];
+  const shown =
+    mentorStep !== null
+      ? sproutsOf(mentorStep)
+      : reflection !== null
+        ? [...reflection.chain].sort((a, b) => a - b)
+        : [];
+  const highlight =
+    written !== undefined && written.highlight.length > 0
+      ? written.highlight
+      : grade >= 2
+        ? shown
+        : [];
+  return {
+    line: written?.line ?? `hint.generic.${grade}`,
+    generic: written === undefined,
+    highlight,
+    move: grade >= 3 ? mentorStep : null,
+    option: grade >= 3 ? option : null,
+    mirror: grade >= 3 && reflection !== null ? reflection.lanterns : null,
+  };
+}

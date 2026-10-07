@@ -12,7 +12,7 @@ const twoSprouts = {
   goal: { visible: true, value: 1 },
   victory: { type: 'matchingSize', value: 1 },
   hints: [{ line: 'ch0.1.sauce.01', highlight: ['A', 'B'] }],
-  script: ['ch0.1.sauce.00'],
+  flow: [{ step: 'say', lines: ['ch0.1.sauce.00'] }, { step: 'play' }],
   unlocks: { actions: ['join', 'split'] },
   solution: [{ type: 'join', u: 'A', v: 'B' }],
 };
@@ -25,9 +25,34 @@ describe('level schema', () => {
       fog: false,
       water: null,
       forbid: [],
+      draft: false,
       unlocks: { actions: ['join', 'split'], codex: [] },
     });
     expect(parsed.notebook).toBeUndefined();
+    expect(parsed.mirror).toBeUndefined();
+  });
+
+  it('opening lines live in a say step of the script, not in a field of their own', () => {
+    expect(levelSchema.safeParse({ ...twoSprouts, script: ['ch0.1.sauce.00'] }).success).toBe(
+      false,
+    );
+  });
+
+  it('a level without a script is played until won', () => {
+    expect(levelSchema.parse({ ...twoSprouts, flow: undefined }).flow).toEqual([
+      { step: 'play', reactions: [] },
+    ]);
+  });
+
+  it('reads the script and the reflection of a level', () => {
+    const parsed = levelSchema.parse({
+      ...twoSprouts,
+      flow: [{ step: 'say', lines: ['ch0.1.sauce.00'] }, { step: 'mirror' }, { step: 'play' }],
+      mirror: [['A', 'B']],
+    });
+    expect(parsed.flow.map((step) => step.step)).toEqual(['say', 'mirror', 'play']);
+    expect(parsed.mirror).toEqual([['A', 'B']]);
+    expect(levelSchema.safeParse({ ...twoSprouts, flow: [{ step: 'jump' }] }).success).toBe(false);
   });
 
   it('reads solutions written with sprout names', () => {
@@ -42,13 +67,39 @@ describe('level schema', () => {
     expect(parsed.solution).toHaveLength(3);
   });
 
+  it('reads the script inputs of a walkthrough between its moves', () => {
+    const parsed = levelSchema.parse({
+      ...twoSprouts,
+      solution: [
+        { type: 'answer', option: 0 },
+        { type: 'join', u: 'A', v: 'B' },
+        { type: 'seekSun', fraction: 0 },
+      ],
+    });
+    expect(parsed.solution.map((entry) => entry.type)).toEqual(['answer', 'join', 'seekSun']);
+    const onlyInputs = { ...twoSprouts, solution: [{ type: 'tapGarden' }] };
+    expect(levelSchema.safeParse(onlyInputs).success).toBe(true);
+  });
+
+  it('a level may have no victory: its script, not a garden, decides when it ends', () => {
+    expect(levelSchema.parse({ ...twoSprouts, victory: undefined }).victory).toBeUndefined();
+  });
+
   it('rejects level ids that are not chapter.level', () => {
     expect(levelSchema.safeParse({ ...twoSprouts, id: '0-1' }).success).toBe(false);
   });
 
-  it('keeps sprouts inside the 480×270 canvas', () => {
-    const outside = { ...twoSprouts, sprouts: [{ label: 'A', x: 500, y: 10 }] };
-    expect(levelSchema.safeParse(outside).success).toBe(false);
+  it('keeps sprouts inside the garden area, clear of the HUD bars (x 8–472, y 28–226)', () => {
+    const at = (x: number, y: number) => ({
+      ...twoSprouts,
+      sprouts: [{ label: 'A', x, y }, twoSprouts.sprouts[1]],
+    });
+    expect(levelSchema.safeParse(at(500, 100)).success).toBe(false);
+    expect(levelSchema.safeParse(at(100, 20)).success).toBe(false);
+    expect(levelSchema.safeParse(at(100, 235)).success).toBe(false);
+    expect(levelSchema.safeParse(at(4, 100)).success).toBe(false);
+    expect(levelSchema.safeParse(at(8, 28)).success).toBe(true);
+    expect(levelSchema.safeParse(at(472, 226)).success).toBe(true);
   });
 
   it('only knows the actions of the game', () => {
@@ -58,7 +109,7 @@ describe('level schema', () => {
   });
 
   it('dialogue lines follow the id format of the voice files', () => {
-    const badLine = { ...twoSprouts, script: ['sauce says hi'] };
+    const badLine = { ...twoSprouts, hints: [{ line: 'sauce says hi' }] };
     expect(levelSchema.safeParse(badLine).success).toBe(false);
   });
 
@@ -79,5 +130,10 @@ describe('level schema', () => {
 
   it('a level needs a reference solution', () => {
     expect(levelSchema.safeParse({ ...twoSprouts, solution: [] }).success).toBe(false);
+  });
+
+  it('marks a test level of a chapter not yet written as a draft', () => {
+    expect(levelSchema.parse({ ...twoSprouts, draft: true }).draft).toBe(true);
+    expect(levelSchema.safeParse({ ...twoSprouts, draft: 'yes' }).success).toBe(false);
   });
 });

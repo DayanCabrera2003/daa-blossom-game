@@ -1,6 +1,7 @@
 import type { VertexId } from '../graph/types';
 import { mateOf } from '../matching/queries';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { members } from './hierarchy';
 import type { Blossom, GardenNode, Layer } from './types';
 import { vineBetween } from './vineBetween';
@@ -28,7 +29,7 @@ function pathToBase(node: GardenNode, x: VertexId): VertexId[] {
   const path: VertexId[] = [];
   let entry = x;
   walk.forEach((index, step) => {
-    const child = node.cycle[index] as GardenNode;
+    const child = itemAt(node.cycle, index);
     if (step % 2 === 0) {
       path.push(...pathToBase(child, entry));
       return;
@@ -53,17 +54,17 @@ function vineTowards(node: Blossom, from: number, to: number): [VertexId, Vertex
  * its dark vine lands and the base, whose lantern (if any) is the chain's other vine there.
  */
 export function expandPath(layer: Layer, path: readonly VertexId[]): VertexId[] {
-  const vines = path.slice(1).map((next, i) => vineBetween(layer, path[i] as VertexId, next));
+  const vines = path.slice(1).map((next, i) => vineBetween(layer, itemAt(path, i), next));
   const expanded: VertexId[] = [];
   path.forEach((id, i) => {
-    const node = layer.nodes[id] as GardenNode;
+    const node = itemAt(layer.nodes, id);
     const partner = mateOf(layer.matching, id);
     const before = path[i - 1];
     // The dark vine at this node lands on `landing`; the lantern side, if any, is the base.
     if (before !== undefined && before !== partner) {
-      expanded.push(...pathToBase(node, (vines[i - 1] as readonly VertexId[])[1] as VertexId));
+      expanded.push(...pathToBase(node, itemAt(vines, i - 1)[1]));
     } else {
-      const landing = (vines[i] as readonly VertexId[])[0] as VertexId;
+      const [landing] = itemAt(vines, i);
       expanded.push(...pathToBase(node, landing).reverse());
     }
   });

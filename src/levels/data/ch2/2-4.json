@@ -1,0 +1,200 @@
+{
+  "id": "2.4",
+  "sprouts": [
+    { "label": "A", "x": 120, "y": 50 },
+    { "label": "B", "x": 200, "y": 50 },
+    { "label": "C", "x": 280, "y": 50 },
+    { "label": "D", "x": 360, "y": 50 },
+    { "label": "E", "x": 120, "y": 105 },
+    { "label": "F", "x": 200, "y": 105 },
+    { "label": "G", "x": 280, "y": 105 },
+    { "label": "H", "x": 360, "y": 105 },
+    { "label": "I", "x": 120, "y": 160 },
+    { "label": "J", "x": 200, "y": 160 },
+    { "label": "K", "x": 280, "y": 160 },
+    { "label": "L", "x": 360, "y": 160 },
+    { "label": "M", "x": 120, "y": 215 },
+    { "label": "N", "x": 200, "y": 215 },
+    { "label": "O", "x": 280, "y": 215 },
+    { "label": "P", "x": 360, "y": 215 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["E", "F"],
+    ["F", "G"],
+    ["G", "H"],
+    ["I", "J"],
+    ["J", "K"],
+    ["K", "L"],
+    ["M", "N"],
+    ["N", "O"],
+    ["O", "P"],
+    ["A", "E"],
+    ["B", "F"],
+    ["C", "G"],
+    ["D", "H"],
+    ["E", "I"],
+    ["F", "J"],
+    ["G", "K"],
+    ["H", "L"],
+    ["I", "M"],
+    ["J", "N"],
+    ["K", "O"],
+    ["L", "P"]
+  ],
+  "lanterns": [
+    ["B", "C"],
+    ["D", "H"],
+    ["F", "G"],
+    ["E", "I"],
+    ["J", "K"],
+    ["L", "P"],
+    ["N", "O"]
+  ],
+  "goal": { "visible": true, "value": 8 },
+  "hints": [{ "line": "ch2.4.sauce.14" }, { "line": "ch2.4.sauce.15" }],
+  "notebook": {
+    "prompt": "ch2.4.notebook.04",
+    "options": [
+      { "line": "ch2.4.notebook.05", "correct": true, "reply": "ch2.4.sauce.09" },
+      { "line": "ch2.4.notebook.06", "correct": false, "reply": "ch2.4.sauce.10" },
+      {
+        "line": "ch2.4.notebook.07",
+        "correct": false,
+        "counterexample": {
+          "mode": "mirrorDraw",
+          "line": "ch2.4.sauce.11",
+          "sprouts": [
+            { "label": "A", "x": 180, "y": 90 },
+            { "label": "B", "x": 240, "y": 90 },
+            { "label": "C", "x": 300, "y": 90 },
+            { "label": "D", "x": 180, "y": 160 },
+            { "label": "E", "x": 240, "y": 160 },
+            { "label": "F", "x": 300, "y": 160 }
+          ],
+          "vines": [
+            ["A", "B"],
+            ["B", "C"],
+            ["D", "E"],
+            ["E", "F"],
+            ["A", "D"],
+            ["B", "E"],
+            ["C", "F"]
+          ],
+          "lanterns": [
+            ["A", "B"],
+            ["E", "F"]
+          ],
+          "found": "ch2.4.sauce.12"
+        }
+      },
+      {
+        "line": "ch2.4.notebook.08",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch2.4.sauce.13",
+          "sprouts": [
+            { "label": "X", "x": 50, "y": 120 },
+            { "label": "A", "x": 110, "y": 120 },
+            { "label": "B", "x": 170, "y": 120 },
+            { "label": "C", "x": 230, "y": 120 },
+            { "label": "D", "x": 290, "y": 120 },
+            { "label": "E", "x": 350, "y": 120 },
+            { "label": "F", "x": 410, "y": 120 },
+            { "label": "G", "x": 410, "y": 200 },
+            { "label": "H", "x": 330, "y": 200 },
+            { "label": "Y", "x": 250, "y": 200 },
+            { "label": "P", "x": 50, "y": 50 },
+            { "label": "Q", "x": 110, "y": 50 },
+            { "label": "R", "x": 170, "y": 190 },
+            { "label": "S", "x": 110, "y": 200 },
+            { "label": "T", "x": 290, "y": 50 },
+            { "label": "U", "x": 350, "y": 50 }
+          ],
+          "vines": [
+            ["X", "A"],
+            ["A", "B"],
+            ["B", "C"],
+            ["C", "D"],
+            ["D", "E"],
+            ["E", "F"],
+            ["F", "G"],
+            ["G", "H"],
+            ["H", "Y"],
+            ["X", "P"],
+            ["P", "Q"],
+            ["B", "R"],
+            ["R", "S"],
+            ["D", "T"],
+            ["T", "U"]
+          ],
+          "lanterns": [
+            ["A", "B"],
+            ["C", "D"],
+            ["E", "F"],
+            ["G", "H"],
+            ["P", "Q"],
+            ["R", "S"],
+            ["T", "U"]
+          ],
+          "actions": ["join", "split", "passLantern", "chain"]
+        }
+      }
+    ]
+  },
+  "flow": [
+    { "step": "say", "lines": ["ch2.4.sauce.00", "ch2.4.sauce.01"] },
+    { "step": "draw", "attempts": 3 },
+    { "step": "say", "lines": ["ch2.4.sauce.02", "ch2.4.sauce.03"] },
+    { "step": "notebook" }
+  ],
+  "unlocks": { "codex": ["C3"] },
+  "solution": [
+    {
+      "type": "drawMirror",
+      "lanterns": [
+        ["A", "B"],
+        ["C", "D"],
+        ["E", "F"],
+        ["G", "H"],
+        ["I", "J"],
+        ["K", "L"],
+        ["M", "N"],
+        ["O", "P"]
+      ]
+    },
+    { "type": "checkMirror" },
+    {
+      "type": "drawMirror",
+      "lanterns": [
+        ["A", "B"],
+        ["C", "D"],
+        ["E", "F"],
+        ["G", "H"],
+        ["A", "E"],
+        ["B", "F"],
+        ["C", "G"],
+        ["D", "H"]
+      ]
+    },
+    { "type": "checkMirror" },
+    {
+      "type": "drawMirror",
+      "lanterns": [
+        ["I", "J"],
+        ["K", "L"],
+        ["M", "N"],
+        ["O", "P"],
+        ["I", "M"],
+        ["J", "N"],
+        ["K", "O"],
+        ["L", "P"]
+      ]
+    },
+    { "type": "checkMirror" },
+    { "type": "answer", "option": 0 }
+  ]
+}

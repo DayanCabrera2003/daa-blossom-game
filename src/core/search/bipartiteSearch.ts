@@ -2,6 +2,7 @@ import { neighbors } from '../graph/queries';
 import type { Graph, VertexId } from '../graph/types';
 import { exposedVertices } from '../matching/queries';
 import type { Matching } from '../matching/types';
+import { itemAt } from '../shared/itemAt';
 import { err, ok, type Result } from '../shared/result';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { plantForest, type AlternatingForest } from './forest';
@@ -53,14 +54,14 @@ export function bipartiteSearch(
 
   const queue: VertexId[] = [...roots];
   for (let head = 0; head < queue.length; head++) {
-    const u = queue[head] as VertexId;
+    const u = itemAt(queue, head);
     for (const x of neighbors(graph, u)) {
       recorder.record({ type: 'scanEdge', from: u, to: x });
       const step = growStep(matching, forest, u, x);
       switch (step.kind) {
         case 'grow': {
           forest = step.forest;
-          const root = forest.root[u] as VertexId;
+          const root = itemAt(forest.root, u);
           recorder.record({ type: 'labelInner', vertex: step.inner, parent: u, root });
           recorder.record({ type: 'labelOuter', vertex: step.outer, parent: step.inner, root });
           queue.push(step.outer);

@@ -1,0 +1,25 @@
+{
+  "id": "0.4",
+  "sprouts": [
+    { "label": "H", "x": 240, "y": 135 },
+    { "label": "L", "x": 240, "y": 50 },
+    { "label": "M", "x": 150, "y": 195 },
+    { "label": "N", "x": 330, "y": 195 }
+  ],
+  "vines": [
+    ["H", "L"],
+    ["H", "M"],
+    ["H", "N"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "matchingSize", "value": 1 },
+  "flow": [
+    { "step": "bet", "prompt": "ch0.4.sauce.00", "range": 4, "informal": true },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch0.4.sauce.01"] }
+  ],
+  "solution": [
+    { "type": "bet", "value": 1 },
+    { "type": "join", "u": "H", "v": "L" }
+  ]
+}

@@ -1,5 +1,6 @@
 import type { Edge, VertexId } from '../graph/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import { UNMATCHED, type Matching } from './types';
 
 /**
@@ -37,7 +38,6 @@ export function flipEdges(matching: Matching, edges: readonly Edge[]): Matching 
 /** Flips the vines along a path given as a sequence of sprouts (passing the lanterns along it). */
 export function flipAlong(matching: Matching, path: readonly VertexId[]): Matching {
   const edges: Edge[] = [];
-  for (let i = 0; i + 1 < path.length; i++)
-    edges.push([path[i] as VertexId, path[i + 1] as VertexId]);
+  for (let i = 0; i + 1 < path.length; i++) edges.push([itemAt(path, i), itemAt(path, i + 1)]);
   return flipEdges(matching, edges);
 }

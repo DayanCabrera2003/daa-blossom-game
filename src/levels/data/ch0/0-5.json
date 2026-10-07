@@ -1,0 +1,25 @@
+{
+  "id": "0.5",
+  "sprouts": [
+    { "label": "A", "x": 100, "y": 150 },
+    { "label": "B", "x": 170, "y": 110 },
+    { "label": "C", "x": 240, "y": 150 },
+    { "label": "D", "x": 310, "y": 110 },
+    { "label": "E", "x": 380, "y": 150 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"]
+  ],
+  "goal": { "visible": true, "value": 2 },
+  "victory": { "type": "matchingSize", "value": 2 },
+  "flow": [{ "step": "play" }, { "step": "say", "lines": ["ch0.5.sauce.00"] }, { "step": "sun" }],
+  "unlocks": { "codex": ["C1"] },
+  "solution": [
+    { "type": "join", "u": "A", "v": "B" },
+    { "type": "join", "u": "C", "v": "D" },
+    { "type": "seekSun", "fraction": 0 }
+  ]
+}

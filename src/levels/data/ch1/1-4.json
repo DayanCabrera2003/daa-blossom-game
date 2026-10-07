@@ -1,0 +1,35 @@
+{
+  "id": "1.4",
+  "sprouts": [
+    { "label": "A", "x": 60, "y": 135 },
+    { "label": "B", "x": 130, "y": 80 },
+    { "label": "C", "x": 210, "y": 60 },
+    { "label": "D", "x": 290, "y": 60 },
+    { "label": "E", "x": 370, "y": 80 },
+    { "label": "F", "x": 140, "y": 195 },
+    { "label": "G", "x": 230, "y": 210 },
+    { "label": "H", "x": 320, "y": 200 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["A", "F"],
+    ["F", "G"],
+    ["G", "H"]
+  ],
+  "lanterns": [
+    ["B", "C"],
+    ["D", "E"],
+    ["F", "G"]
+  ],
+  "goal": { "visible": true, "value": 4 },
+  "victory": { "type": "matchingSize", "value": 4 },
+  "hints": [{ "line": "ch1.4.sauce.01" }, { "line": "ch1.4.sauce.02", "highlight": ["H"] }],
+  "flow": [{ "step": "play", "reactions": [{ "on": "gainZeroChain", "say": ["ch1.4.sauce.00"] }] }],
+  "solution": [
+    { "type": "chain", "path": ["A", "B", "C", "D", "E"] },
+    { "type": "chain", "path": ["E", "D", "C", "B", "A", "F", "G", "H"] }
+  ]
+}

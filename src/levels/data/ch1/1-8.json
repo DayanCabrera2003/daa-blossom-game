@@ -1,0 +1,48 @@
+{
+  "id": "1.8",
+  "sprouts": [
+    { "label": "A", "x": 240, "y": 130 },
+    { "label": "B", "x": 160, "y": 85 },
+    { "label": "C", "x": 80, "y": 60 },
+    { "label": "D", "x": 160, "y": 180 },
+    { "label": "E", "x": 80, "y": 205 },
+    { "label": "F", "x": 320, "y": 130 },
+    { "label": "G", "x": 390, "y": 75 },
+    { "label": "H", "x": 445, "y": 135 },
+    { "label": "I", "x": 400, "y": 205 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["A", "D"],
+    ["D", "E"],
+    ["A", "F"],
+    ["F", "G"],
+    ["G", "H"],
+    ["H", "I"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "maximum" },
+  "flow": [
+    { "step": "say", "lines": ["ch1.8.sauce.00"] },
+    { "step": "play" },
+    {
+      "step": "ask",
+      "prompt": "ch1.8.sauce.01",
+      "options": [
+        { "line": "ch1.8.gardener.02", "correct": true, "reply": "ch1.8.sauce.05" },
+        { "line": "ch1.8.gardener.03", "correct": true, "reply": "ch1.8.sauce.05" },
+        { "line": "ch1.8.gardener.04", "correct": true, "reply": "ch1.8.sauce.05" }
+      ]
+    }
+  ],
+  "unlocks": { "actions": ["declareDone"], "codex": ["C1", "C2"] },
+  "solution": [
+    { "type": "join", "u": "B", "v": "C" },
+    { "type": "join", "u": "D", "v": "E" },
+    { "type": "join", "u": "F", "v": "G" },
+    { "type": "join", "u": "H", "v": "I" },
+    { "type": "declareDone" },
+    { "type": "answer", "option": 2 }
+  ]
+}

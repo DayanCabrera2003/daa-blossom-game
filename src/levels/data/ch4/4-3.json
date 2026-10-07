@@ -1,5 +1,6 @@
 {
   "id": "4.3",
+  "draft": true,
   "sprouts": [
     { "label": "R", "x": 40, "y": 135 },
     { "label": "a", "x": 100, "y": 135 },
@@ -26,13 +27,14 @@
     ["e", "f"]
   ],
   "goal": { "visible": true, "value": 4 },
-  "victory": { "type": "chainFound" },
-  "script": ["ch4.3.sauce.00"],
+  "victory": { "type": "matchingSize", "value": 4 },
+  "flow": [{ "step": "say", "lines": ["ch4.3.sauce.00"] }, { "step": "play" }],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },
     { "type": "markMoon", "from": "b", "to": "c" },
     { "type": "markMoon", "from": "d", "to": "e" },
-    { "type": "markMoon", "from": "f", "to": "T" }
+    { "type": "markMoon", "from": "f", "to": "T" },
+    { "type": "chain", "path": ["R", "a", "b", "c", "d", "e", "f", "T"] }
   ]
 }

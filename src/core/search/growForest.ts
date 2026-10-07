@@ -2,6 +2,7 @@ import type { VertexId } from '../graph/types';
 import { isExposed, mateOf } from '../matching/queries';
 import type { Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
+import { itemAt } from '../shared/itemAt';
 import type { AlternatingForest, ForestLabel } from './forest';
 import { pathToRoot } from './pathToRoot';
 
@@ -55,7 +56,7 @@ export function growStep(
       const label: ForestLabel[] = [...forest.label];
       const parent = [...forest.parent];
       const root = [...forest.root];
-      const treeRoot = forest.root[u] as VertexId;
+      const treeRoot = itemAt(forest.root, u);
       label[x] = 'inner';
       parent[x] = u;
       root[x] = treeRoot;

@@ -1,5 +1,6 @@
 {
   "id": "4.10",
+  "draft": true,
   "sprouts": [
     { "label": "R", "x": 50, "y": 135 },
     { "label": "a", "x": 130, "y": 135 },
@@ -23,7 +24,7 @@
   "goal": { "visible": true, "value": 3 },
   "forbid": ["fold", "foldAt"],
   "victory": { "type": "matchingSize", "value": 3 },
-  "script": ["ch4.10.sauce.00"],
+  "flow": [{ "step": "say", "lines": ["ch4.10.sauce.00"] }, { "step": "play" }],
   "unlocks": { "actions": ["rotateStem"] },
   "solution": [
     { "type": "rotateStem", "stem": ["R", "a", "b"] },

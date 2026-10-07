@@ -1,3 +1,4 @@
+import { itemAt } from '../shared/itemAt';
 import { neighbors } from './queries';
 import type { Graph, VertexId } from './types';
 
@@ -29,7 +30,7 @@ export function bipartition(graph: Graph): Bipartition {
     const queue: VertexId[] = [root];
 
     for (let head = 0; head < queue.length; head++) {
-      const u = queue[head] as VertexId;
+      const u = itemAt(queue, head);
       for (const v of neighbors(graph, u)) {
         if (depth[v] === -1) {
           depth[v] = (depth[u] as number) + 1;
@@ -57,8 +58,8 @@ function closeOddCycle(u: VertexId, v: VertexId, parent: readonly VertexId[]): V
   while (x !== y) {
     fromU.push(x);
     fromV.push(y);
-    x = parent[x] as VertexId;
-    y = parent[y] as VertexId;
+    x = itemAt(parent, x);
+    y = itemAt(parent, y);
   }
   // x is now the lowest common ancestor.
   return [...fromU, x, ...fromV.reverse()];

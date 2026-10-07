@@ -1,6 +1,6 @@
 import { checkTutteBerge } from '../certificates/tutteBerge';
 import { checkVertexCover } from '../certificates/vertexCover';
-import { fastEdmonds } from '../edmonds/fast/solve';
+import { isMaximum } from '../edmonds/fast/maximum';
 import { size } from '../matching/queries';
 import type { GardenState } from './state';
 
@@ -16,7 +16,11 @@ export type VictoryCondition =
   | { readonly type: 'maximum' }
   /** The marks reached a chain (4.4: find it, applying comes later). */
   | { readonly type: 'chainFound' }
-  /** Scarecrows guard every vine, exactly as many as lanterns: König's proof (3.7, 3.8). */
+  /**
+   * Scarecrows guard every vine, exactly as many as lanterns: König's proof (3.7, 3.8). Like the
+   * Tutte–Berge proof below, it counts only once presented with "Terminé" (GDD §5.2); otherwise a
+   * level whose certificate already closes would be won before the player does anything (7.2).
+   */
   | { readonly type: 'coverCertificate' }
   /** The lifted stones prove the lanterns maximum: Tutte–Berge (chapter 7). */
   | { readonly type: 'tutteBergeCertificate' };
@@ -28,14 +32,16 @@ export function isVictory(state: GardenState, condition: VictoryCondition): bool
     case 'matchingSize':
       return lanterns >= condition.value;
     case 'maximum':
-      return state.declaredDone && lanterns === size(fastEdmonds(state.graph));
+      return state.declaredDone && isMaximum(state.graph, state.matching);
     case 'chainFound':
       return state.chainSeen !== null;
     case 'coverCertificate':
       return (
-        state.scarecrows.length === lanterns && checkVertexCover(state.graph, state.scarecrows).ok
+        state.declaredDone &&
+        state.scarecrows.length === lanterns &&
+        checkVertexCover(state.graph, state.scarecrows).ok
       );
     case 'tutteBergeCertificate':
-      return checkTutteBerge(state.graph, state.matching, state.stones).ok;
+      return state.declaredDone && checkTutteBerge(state.graph, state.matching, state.stones).ok;
   }
 }
