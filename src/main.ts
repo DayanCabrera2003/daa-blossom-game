@@ -13,14 +13,16 @@ import { isTeacherMode } from '@services/teacherMode';
 import Phaser from 'phaser';
 import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
-import { integerZoom } from './game/scale/integerZoom';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, integerZoom } from './game/scale/integerZoom';
+import { renderZoom, setRenderZoom } from './game/view/renderZoom';
 
 const storage = browserStorage();
 const clock = (): number => Date.now();
 const playtest = playtestRecorder(storage);
 playtest.record([{ kind: 'sessionStart', at: clock() }]);
 const zoomForWindow = (): number => integerZoom(window.innerWidth, window.innerHeight);
-const game = new Phaser.Game(gameConfig(document.body, zoomForWindow()));
+setRenderZoom(zoomForWindow());
+const game = new Phaser.Game(gameConfig(document.body, renderZoom()));
 const levels = catalog();
 provideContext(game, {
   catalog: levels,
@@ -36,4 +38,9 @@ provideContext(game, {
   playtest,
   clock,
 });
-window.addEventListener('resize', () => game.scale.setZoom(zoomForWindow()));
+window.addEventListener('resize', () => {
+  const zoom = zoomForWindow();
+  if (zoom === renderZoom()) return;
+  setRenderZoom(zoom);
+  game.scale.resize(CANVAS_WIDTH * zoom, CANVAS_HEIGHT * zoom);
+});

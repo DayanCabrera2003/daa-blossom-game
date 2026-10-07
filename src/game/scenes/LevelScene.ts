@@ -24,6 +24,7 @@ import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
 import { AnimationView } from '../view/AnimationView';
 import { DialogueView } from '../view/DialogueView';
+import { fitCamera } from '../view/fitCamera';
 import { FlowerView } from '../view/FlowerView';
 import { FogView } from '../view/FogView';
 import { GardenView } from '../view/GardenView';
@@ -85,6 +86,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   create(data: { levelId: string }): void {
+    fitCamera(this);
     this.ready = false;
     this.lastHudRefresh = 0;
     this.context = contextOf(this);
@@ -162,7 +164,7 @@ export class LevelScene extends Phaser.Scene {
 
   /** Pointer and keys go to the controller; touches on buttons and on the dialogue stay theirs. */
   private listen(): void {
-    const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.x, y: pointer.y });
+    const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
     const free = (over: Phaser.GameObjects.GameObject[]) =>
       over.length === 0 && !this.views.dialogue.open;
     this.input.on(

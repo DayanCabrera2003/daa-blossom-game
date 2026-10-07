@@ -6,6 +6,7 @@ import { unlockedLevels, visibleLevels } from '@services/progress';
 import { chapterTitle } from '../picture/chapterTitle';
 import { HUB, layoutHub } from '../picture/hubLayout';
 import { Button } from '../view/Button';
+import { fitCamera } from '../view/fitCamera';
 import { PALETTE } from '../view/palette';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
@@ -21,6 +22,7 @@ export class HubScene extends Phaser.Scene {
   }
 
   create(): void {
+    fitCamera(this);
     const { catalog, t, save, teacherMode, playtest, clock } = contextOf(this);
     this.add.text(HUB.margin, 6, t('hub.title'), textStyle(12, PALETTE.lit));
 

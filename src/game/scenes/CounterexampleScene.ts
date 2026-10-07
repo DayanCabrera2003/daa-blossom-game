@@ -22,6 +22,7 @@ import { canRedo, canUndo } from '../systems/history';
 import { AnimationView } from '../view/AnimationView';
 import { Button } from '../view/Button';
 import { DialogueView } from '../view/DialogueView';
+import { fitCamera } from '../view/fitCamera';
 import { FlowerView } from '../view/FlowerView';
 import { FogView } from '../view/FogView';
 import { GardenView } from '../view/GardenView';
@@ -82,6 +83,7 @@ export class CounterexampleScene extends Phaser.Scene {
   }
 
   create(data: CounterexampleSceneData): void {
+    fitCamera(this);
     this.context = contextOf(this);
     this.pressing = false;
     const { t, line } = this.context;
@@ -156,7 +158,7 @@ export class CounterexampleScene extends Phaser.Scene {
 
   /** Pointer and keys go to the controller; touches on buttons and on the dialogue stay theirs. */
   private listen(back: () => void): void {
-    const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.x, y: pointer.y });
+    const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
     const free = (over: Phaser.GameObjects.GameObject[]) =>
       over.length === 0 && !this.views.dialogue.open;
     this.input.on(
