@@ -319,7 +319,11 @@ export function askHint(
   const option = question === null ? null : hintedOption(question);
   // In the mirror challenge, the mentor offers a better reflection, and at grade 3 draws it.
   const offer = current.step === 'draw' && opened.grade >= 2 ? mentorOffer(session) : null;
-  const hint = hintContent(level.hints, opened.grade, step, option, offer?.reflection ?? null);
+  const hint = hintContent(level.hints, opened.grade, {
+    step,
+    option,
+    reflection: offer?.reflection ?? null,
+  });
   const { challenge } = session;
   return {
     session: {

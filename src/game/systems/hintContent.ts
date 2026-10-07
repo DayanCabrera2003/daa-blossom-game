@@ -35,9 +35,20 @@ export function sproutsOf(action: Action): VertexId[] {
 }
 
 /**
+ * What the mentor can offer besides the level's own hints, each where it applies: the step for the
+ * garden as it is now (play), the right option (a question), a better reflection (the mirror
+ * challenge). Whatever is left out is not offered.
+ */
+export interface MentorHelp {
+  readonly step?: Action | null;
+  readonly option?: number | null;
+  readonly reflection?: MentorReflection | null;
+}
+
+/**
  * The content of hint grade `grade` (GDD §5.3: a nudge, a direction, the mentor's first step).
  * The k-th hint written in the level is grade k; when a level has fewer, the generic line of that
- * grade is used, and from grade 2 on the sprouts of the mentor's step glow instead. Under a
+ * grade is used, and from grade 2 on the sprouts of the mentor's `step` glow instead. Under a
  * question there is no step to take: grade 3 points at `option` instead, when it is given. In the
  * mirror challenge, a `reflection` the mentor offers: from grade 2 its chain glows, and grade 3
  * draws it.
@@ -45,10 +56,11 @@ export function sproutsOf(action: Action): VertexId[] {
 export function hintContent(
   hints: readonly LevelHint[],
   grade: number,
-  mentorStep: Action | null,
-  option: number | null = null,
-  reflection: MentorReflection | null = null,
+  help: MentorHelp = {},
 ): HintContent {
+  const mentorStep = help.step ?? null;
+  const option = help.option ?? null;
+  const reflection = help.reflection ?? null;
   const written = hints[grade - 1];
   const shown =
     mentorStep !== null
