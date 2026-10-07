@@ -19,6 +19,16 @@ describe("why a move was refused, in the garden's words", () => {
     expect(say({ code: 'notARoot', vertex: 5 })).toBe('Hoy la luz sale de otro sitio, no de T.');
   });
 
+  it('while folding is closed (4.1), suns of one tree meeting is told as "already marked"', () => {
+    const meeting: Action = { type: 'markMoon', from: 4, to: 2 };
+    const conflict: Refusal = { code: 'sunMeetsSun', u: 4, v: 2 };
+    const hidden = reasonText(conflict, meeting, labels, t, { foldAllowed: false });
+    expect(hidden).toBe(say({ code: 'alreadyMarked', vertex: 2 }));
+    expect(hidden).not.toMatch(/raro/);
+    expect(reasonText(conflict, meeting, labels, t, { foldAllowed: true })).toMatch(/raro/);
+    expect(say(conflict, meeting)).toMatch(/raro/);
+  });
+
   it('answers a touch on the drawn reflection, which is no move of the rules', () => {
     expect(reasonText({ code: 'twoSilver', vertex: 3 }, null, labels, t)).toBe(
       'c ya tiene un farol plateado: quítaselo antes de darle otro.',

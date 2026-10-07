@@ -21,13 +21,21 @@ const sequenceOf = (action: Action | null): readonly VertexId[] =>
  * explica por qué"): the text of the reason with the names of the sprouts involved. Errors inside a
  * chain or a loop point at a position in it, which is turned back into the sprouts at that spot.
  * A refusal that answers no action (a touch on the drawn reflection) comes with `action` null.
+ *
+ * While the level does not let loops fold (`foldAllowed` false, as in 4.1), two suns of one tree
+ * meeting is told exactly like a sprout already marked: the player's search "leaves it" (3.3), and
+ * nothing gives away that the light has just gone wrong, which only 4.2 reveals.
  */
 export function reasonText(
   reason: Refusal,
   action: Action | null,
   labels: readonly string[],
   t: Translate,
+  { foldAllowed }: { readonly foldAllowed: boolean } = { foldAllowed: true },
 ): string {
+  if (reason.code === 'sunMeetsSun' && !foldAllowed) {
+    return reasonText({ code: 'alreadyMarked', vertex: reason.v }, action, labels, t);
+  }
   const name = (v: VertexId): string => labels[v] ?? String(v);
   const sequence = sequenceOf(action);
   const at = (index: number): string => name(itemAt(sequence, index % sequence.length));

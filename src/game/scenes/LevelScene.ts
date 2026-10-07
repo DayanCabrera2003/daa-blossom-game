@@ -237,9 +237,14 @@ export class LevelScene extends Phaser.Scene {
     const card = stepCard(effect.kind, this.offered);
     if (card !== null) this.offer([card]);
     switch (effect.kind) {
-      case 'rejected':
-        this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
+      case 'rejected': {
+        // Before folding opens, the conflict of a search is not told apart (4.1).
+        const foldAllowed = this.level.start.allowed.has('foldAt');
+        this.views.toast.show(
+          reasonText(effect.reason, effect.action, this.labels, t, { foldAllowed }),
+        );
         break;
+      }
       case 'drawRefused':
         this.views.toast.show(reasonText(effect.reason, null, this.labels, t));
         break;
