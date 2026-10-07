@@ -1,4 +1,4 @@
-import { members } from '@core/blossom/hierarchy';
+import { members, nodesWithin } from '@core/blossom/hierarchy';
 import type { LabelError } from '@core/graph/labels';
 import { toEdges } from '@core/graph/labels';
 import type { Edge, VertexId } from '@core/graph/types';
@@ -18,7 +18,7 @@ import { toWalkthroughEntry } from '../translate';
 import type { CardData, CardId } from './schema';
 
 /** A button of the HUD a demo shows being pressed. */
-export type DemoButton = 'undo' | 'redo' | 'done' | 'check';
+export type DemoButton = 'undo' | 'redo' | 'done' | 'check' | 'leaveLayer';
 
 /** What the player's hand does on a frame of a demo, drawn over the tiny garden. */
 export type DemoGesture =
@@ -42,9 +42,14 @@ export type DemoGesture =
   /** The sun dragged along its track. */
   | { readonly kind: 'sun' };
 
-/** One frame of a demo: the garden shown, the gesture over it, the sun and the silver lanterns. */
+/**
+ * One frame of a demo: the garden shown, the gesture over it, the sun, the silver lanterns and the
+ * flowers entered with the layers.
+ */
 export interface DemoFrame {
   readonly state: GardenState;
+  /** The flowers entered (5.2), by id from the outermost in; empty outside. */
+  readonly layers: readonly number[];
   readonly gesture: DemoGesture;
   /** Where the sun stands in the demo's day, from dawn (0) to its last move (1). */
   readonly sun: number;
@@ -72,7 +77,11 @@ export type DemoStepProblem =
   | 'choiceOutOfRange'
   | 'badDrawn'
   /** A chain drawn for the flower challenge that is no chain of the demo's garden. */
-  | 'badChain';
+  | 'badChain'
+  /** A flower entered that the layer shown does not show folded. */
+  | 'notShown'
+  /** Leaving a flower with none entered. */
+  | 'outside';
 
 /** Why a card's demo is not a demo the game can play. */
 export type DemoError =
@@ -115,11 +124,15 @@ function gestureOf(state: GardenState, action: Action): DemoGesture {
   }
 }
 
-/** The day of a demo: its states, which one is shown, and the silver lanterns drawn so far. */
+/**
+ * The day of a demo: its states, which one is shown, the silver lanterns drawn so far, and the
+ * flowers entered with the layers.
+ */
 interface Day {
   states: GardenState[];
   cursor: number;
   silver: readonly Edge[];
+  layers: readonly number[];
 }
 
 /**
@@ -143,7 +156,7 @@ export function buildDemo(card: CardData): Result<CardDemo, DemoError> {
   if (!reflection.ok) return err({ code: 'badMirror', error: reflection.error });
 
   const start = createGardenState({ graph, matching, fog: card.fog, allowed: [...EVERY_ACTION] });
-  const day: Day = { states: [start], cursor: 0, silver: reflected.value };
+  const day: Day = { states: [start], cursor: 0, silver: reflected.value, layers: [] };
   const frames: DemoFrame[] = [];
   const frame = (gesture: DemoGesture): void => {
     const last = day.states.length - 1;
@@ -152,6 +165,7 @@ export function buildDemo(card: CardData): Result<CardDemo, DemoError> {
       gesture,
       sun: last === 0 ? 0 : day.cursor / last,
       silver: day.silver,
+      layers: day.layers,
     });
   };
 
@@ -163,6 +177,11 @@ export function buildDemo(card: CardData): Result<CardDemo, DemoError> {
         return bad(back ? 'noUndo' : 'noRedo');
       frame({ kind: 'press', button: step.type });
       day.cursor += back ? -1 : 1;
+      continue;
+    }
+    if (step.type === 'enterLayer' || step.type === 'leaveLayer') {
+      const why = moveThroughLayers(day, step, frame);
+      if (why !== null) return bad(why);
       continue;
     }
     const entry = toWalkthroughEntry(labels, step);
@@ -183,6 +202,30 @@ export function buildDemo(card: CardData): Result<CardDemo, DemoError> {
     showsSun: card.steps.some((step) => step.type === 'seekSun'),
     frames,
   });
+}
+
+/**
+ * Enters a flower the layer shows, touching its petals as a player would with the layers tool, or
+ * leaves the innermost one with the HUD button; the garden itself does not change. The problem, if
+ * any, else null.
+ */
+function moveThroughLayers(
+  day: Day,
+  step: { readonly type: 'enterLayer'; readonly blossom: number } | { readonly type: 'leaveLayer' },
+  frame: (gesture: DemoGesture) => void,
+): DemoStepProblem | null {
+  if (step.type === 'leaveLayer') {
+    if (day.layers.length === 0) return 'outside';
+    frame({ kind: 'press', button: 'leaveLayer' });
+    day.layers = day.layers.slice(0, -1);
+    return null;
+  }
+  const shown = nodesWithin(itemAt(day.states, day.cursor).layer, day.layers) ?? [];
+  const flower = shown.find((node) => node.kind === 'blossom' && node.id === step.blossom);
+  if (flower === undefined) return 'notShown';
+  frame({ kind: 'touch', sprouts: members(flower) });
+  day.layers = [...day.layers, step.blossom];
+  return null;
 }
 
 /** What went wrong playing one step: a move the rules refused, or a step that cannot show. */

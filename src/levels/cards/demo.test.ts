@@ -306,4 +306,66 @@ describe('the demo of a mechanic card', () => {
     });
     expect(itemAt(stem.frames, 0).gesture).toEqual({ kind: 'drag', path: [0, 1, 2] });
   });
+
+  describe('entering and leaving flowers with the layers (5.2)', () => {
+    // x–y=b, with the triangle b–c=d–b folded first (flower 0) and then x–y=F1–x (flower 1).
+    const nested = {
+      sprouts: [
+        { label: 'x', x: 36, y: 42 },
+        { label: 'y', x: 36, y: 12 },
+        { label: 'b', x: 62, y: 27 },
+        { label: 'c', x: 100, y: 12 },
+        { label: 'd', x: 100, y: 42 },
+      ],
+      vines: [
+        ['x', 'y'],
+        ['y', 'b'],
+        ['b', 'c'],
+        ['c', 'd'],
+        ['d', 'b'],
+        ['d', 'x'],
+      ],
+      lanterns: [
+        ['y', 'b'],
+        ['c', 'd'],
+      ],
+    };
+    const folds = [
+      { type: 'fold', loop: ['b', 'c', 'd'] },
+      { type: 'fold', loop: ['x', 'y', 'b'] },
+    ];
+
+    it('a flower shown is entered by touching its petals; the button leaves it', () => {
+      const demo = built({
+        ...nested,
+        steps: [
+          ...folds,
+          { type: 'enterLayer', blossom: 1 },
+          { type: 'enterLayer', blossom: 0 },
+          { type: 'leaveLayer' },
+        ],
+      });
+      expect(demo.frames.map((frame) => frame.layers)).toEqual([[], [], [], [1], [1, 0], [1]]);
+      expect(itemAt(demo.frames, 2).gesture).toEqual({ kind: 'touch', sprouts: [0, 1, 2, 3, 4] });
+      expect(itemAt(demo.frames, 3).gesture).toEqual({ kind: 'touch', sprouts: [2, 3, 4] });
+      expect(itemAt(demo.frames, 4).gesture).toEqual({ kind: 'press', button: 'leaveLayer' });
+      // Entering changes the view only: the garden stays as the folds left it.
+      expect(itemAt(demo.frames, 4).state).toBe(itemAt(demo.frames, 2).state);
+    });
+
+    it('a flower the layer does not show, or leaving from outside, is an error', () => {
+      expect(
+        buildDemo(card({ ...nested, steps: [...folds, { type: 'enterLayer', blossom: 0 }] })),
+      ).toEqual({ ok: false, error: { code: 'badStep', step: 2, why: 'notShown' } });
+      // Undone, the outer flower entered is gone, and the inner one is not shown from it.
+      const undone = [...folds, { type: 'enterLayer', blossom: 1 }, { type: 'undo' }];
+      expect(
+        buildDemo(card({ ...nested, steps: [...undone, { type: 'enterLayer', blossom: 0 }] })),
+      ).toEqual({ ok: false, error: { code: 'badStep', step: 4, why: 'notShown' } });
+      expect(buildDemo(card({ ...nested, steps: [{ type: 'leaveLayer' }] }))).toEqual({
+        ok: false,
+        error: { code: 'badStep', step: 0, why: 'outside' },
+      });
+    });
+  });
 });

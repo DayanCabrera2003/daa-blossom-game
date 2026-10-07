@@ -31,6 +31,7 @@ const BUTTON_TEXT: Readonly<Record<DemoButton, string>> = {
   redo: 'hud.redo',
   done: 'hud.done',
   check: 'hud.checkMirror',
+  leaveLayer: 'hud.leaveLayer',
 };
 
 /** The middle of the demo's box, where a touch on the garden lands. */

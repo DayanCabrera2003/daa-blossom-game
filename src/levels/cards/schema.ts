@@ -51,12 +51,17 @@ const demoSprout = z.strictObject({
   y: z.number().int().min(DEMO_AREA.y0).max(DEMO_AREA.y1),
 });
 
-/** One step of a demo: a garden move, a script input, or undo and redo. */
+/**
+ * One step of a demo: a garden move, a script input, undo and redo, or entering a folded flower
+ * (by id) and leaving it with the layers (5.2).
+ */
 const demoStep = z.discriminatedUnion('type', [
   ...levelActionOptions,
   ...flowInputOptions,
   z.strictObject({ type: z.literal('undo') }),
   z.strictObject({ type: z.literal('redo') }),
+  z.strictObject({ type: z.literal('enterLayer'), blossom: z.number().int().min(0) }),
+  z.strictObject({ type: z.literal('leaveLayer') }),
 ]);
 
 /** One step of a demo, sprouts by name. */
