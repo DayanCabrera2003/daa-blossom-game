@@ -268,6 +268,24 @@ El playtest lo dirige el autor. Sus hallazgos se convierten en cambios de nivele
 
 ---
 
+## Fase 12 — Tarjetas de mecánica (añadida tras la primera prueba del autor)
+
+**Carpetas:** `src/levels/` o `src/content/`, `src/services/`, `src/game/`
+
+| Archivo | Responsabilidad |
+|---|---|
+| `game/systems/tutorials.ts` | Pura: qué tarjetas tocan en un nivel (herramientas permitidas por primera vez, el sol, y los pasos del guion apuesta/pregunta, Cuaderno, reflejo, dibujo), en qué momento (al empezar o al llegar el paso) y cuáles ya vio el jugador |
+| Datos de tarjetas | Por mecánica: textos (en `content/es/`) y una mini demo (jardín diminuto y jugadas, validadas por el núcleo como `replay.demo`) |
+| `services/save.ts` | Versión 3: tarjetas vistas; un guardado v2 se migra sin perder nada |
+| `game/view/TutorialView.ts` | La ventana: título, texto y la demo animada en bucle; "Entendido" la cierra |
+| HUD | Botón "?" que vuelve a abrir las tarjetas de lo disponible en el nivel |
+
+Las tarjetas explican el gesto, nunca la idea (GDD §5.11). Entran en la cola de presentación antes que lo demás de su momento.
+
+**Tests clave:** cada tarjeta aparece una sola vez por jugador; 1.2 presenta "pasar el farol" (1.1 lo cierra), 1.3 la cadena, 0.5 el sol; toda mecánica desbloqueable tiene tarjeta, textos y demo válida; ningún texto nombra las matemáticas; migración v2 → v3.
+
+---
+
 ## Orden y dependencias
 
 ```

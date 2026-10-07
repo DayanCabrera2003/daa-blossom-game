@@ -278,6 +278,13 @@ Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y e
 
 Puzles opcionales difíciles escondidos en el hub (uno o dos por capítulo). No enseñan nada nuevo, exigen combinar. Ejemplos en 7.9.
 
+
+### 5.11 Tarjetas de mecánica
+
+La primera vez que una mecánica está disponible, una ventana breve enseña **cómo se usa**: un título, dos o tres líneas sobre el gesto y una mini demostración animada (un jardín diminuto que hace el gesto solo, en bucle). Las herramientas se presentan al empezar el nivel; los pasos del guion (apuesta, Cuaderno, reflejo, dibujar el espejo) cuando llegan. Cada tarjeta se ve una sola vez por jugador y se puede volver a abrir con el botón "?" del HUD.
+
+Las tarjetas explican el gesto, **nunca la idea**: "arrastra desde un brote a oscuras siguiendo las enredaderas" sí; "esto enciende un farol más porque…" no. Lo que una mecánica significa lo descubre el jugador y lo nombra Sauce después (principios 1, 2 y 4).
+
 ---
 
 ## 6. Estructura general
