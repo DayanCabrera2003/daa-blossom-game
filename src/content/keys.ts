@@ -112,6 +112,7 @@ const UI = {
   'tool.inspect': [],
   'tool.scarecrows': [],
   'tool.stones': [],
+  'tool.layers': [],
   'chain.gainOne': [],
   'chain.gainZero': [],
   'hint.generic.1': [],

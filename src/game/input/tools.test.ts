@@ -31,6 +31,19 @@ describe('tools of the gardener', () => {
     expect(availableTools(noFolding)).toEqual(['lanterns', 'marks']);
   });
 
+  it('the layers tool joins the toolbar from 5.2, last; it makes no move of its own', () => {
+    expect(availableTools(allowed('5.1'))).not.toContain('layers');
+    expect(availableTools(allowed('5.2'), true)).toEqual([
+      'lanterns',
+      'marks',
+      'foldLoop',
+      'inspect',
+      'scarecrows',
+      'layers',
+    ]);
+    expect(TOOL_ACTIONS.layers).toEqual([]);
+  });
+
   it('every action except "Terminé" belongs to exactly one tool', () => {
     const grouped = Object.values(TOOL_ACTIONS).flat();
     const everyAction = (Object.keys(UNLOCKED_AT) as ActionType[]).filter(
