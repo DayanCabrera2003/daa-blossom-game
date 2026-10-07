@@ -4,12 +4,14 @@ import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import {
   BLOOM,
+  automatonLevel,
   betrayalLevel,
   bloomLevel,
   brokenRecipeLevel,
   lightLevel,
   recipeLevel,
 } from '../../../tests/support/fixtureLevels';
+import { size } from '@core/matching/queries';
 import { garden } from './levelSession';
 import { playWalkthrough } from './walkthrough';
 
@@ -71,6 +73,21 @@ describe('playing a walkthrough with the recipe (6.1, 6.3)', () => {
 
   it('repairs the broken recipe, taking back nothing it keeps', () => {
     expect(playWalkthrough(brokenRecipeLevel()).problem).toBeNull();
+  });
+
+  it('the automaton runs as the scene reports each run shown, between the recipes (6.3)', () => {
+    const played = playWalkthrough(automatonLevel());
+    expect(played.problem).toBeNull();
+    expect(played.effects.map((effect) => effect.kind)).toEqual([
+      'recipe',
+      'recipeChecked',
+      'automaton',
+      'recipe',
+      'recipeChecked',
+      'automaton',
+      'won',
+    ]);
+    expect(size(garden(played.controller.session).matching)).toBe(4);
   });
 
   it('a recipe given outside its step is not waited for', () => {

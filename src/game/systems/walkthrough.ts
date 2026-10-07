@@ -22,7 +22,7 @@ import type { Refusal } from './refusal';
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
  * vines, a chain of the flower challenge as a drag through its sprouts, a recipe as touches on its
  * cards and "Comprobar", and the end of the light's
- * own search as the scene reports it, with no entry of its own. A level whose walkthrough does not
+ * own search or of the automaton's run as the scene reports it, with no entry of its own. A level whose walkthrough does not
  * finish its script never reaches the browser (plan 03, §0): the playability test and
  * `check-levels` both run this.
  */
@@ -282,9 +282,13 @@ function playEntry(
   return { ...played, problem: matches ? null : { code: 'gestureMismatch', entry: index } };
 }
 
+/** The steps where the garden moves by itself: the light's search, and the automaton's run. */
+const SHOWN_ALONE: ReadonlySet<string> = new Set(['autoSearch', 'automaton']);
+
 /**
- * Lets the light search by itself whenever the script waits for it: the scene shows the search and
- * then says it is over, which the walkthrough does at once. It writes no entry for it.
+ * Lets the light search by itself, or the automaton run, whenever the script waits for it: the
+ * scene shows the moves and then says they are over, which the walkthrough does at once. It writes
+ * no entry for them.
  */
 function showLight(
   controller: Controller,
@@ -292,7 +296,7 @@ function showLight(
 ): { controller: Controller; effects: Effect[] } {
   let current = controller;
   const effects: Effect[] = [];
-  while (stepNow(current.session)?.step === 'autoSearch') {
+  while (SHOWN_ALONE.has(stepNow(current.session)?.step ?? '')) {
     const step = handle(current, { kind: 'searched' }, now);
     current = step.controller;
     effects.push(...step.effects);
