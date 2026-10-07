@@ -83,6 +83,11 @@ const flowStep = z.discriminatedUnion('step', [
     }),
     z.strictObject({ step: z.literal('count'), prompt: lineId, of: z.literal('loop'), range }),
   ]),
+  /**
+   * The player points at the vine where the light went wrong: the conflict of their search (4.2),
+   * as the core finds it. A wrong vine is answered with `reply`, if any, and asked again.
+   */
+  z.strictObject({ step: z.literal('pickVine'), prompt: lineId, reply: lineId.optional() }),
   /** The mirror challenge (2.4): draw a better reflection, `attempts` times. */
   z.strictObject({ step: z.literal('draw'), attempts: z.number().int().min(1) }),
   /** The level's notebook question. */

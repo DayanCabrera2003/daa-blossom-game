@@ -422,9 +422,30 @@ describe('a level session follows its script', () => {
     expect(respond(session, { type: 'answer', option: 2 }, 0).session.won).not.toBeNull();
   });
 
-  it('a count of the loop is judged by the core on the conflict of the search (4.2)', () => {
+  it('the vine pointed at is judged by the core: only the conflict of the search ends the step', () => {
     const level = betrayalLevel();
     const searched = playAll(startSession(level, 0), level.solution);
+    expect(stepNow(searched)?.step).toBe('pickVine');
+    const wrong = respond(searched, { type: 'pickVine', u: 2, v: 3 }, 0);
+    expect(wrong.session.flow.index).toBe(searched.flow.index);
+    expect(wrong.effects).toEqual([
+      { kind: 'vinePicked', step: 1, u: 2, v: 3, correct: false },
+      { kind: 'say', lines: ['ch4.2.sauce.03'] },
+      { kind: 'pickVine', step: 1, prompt: 'ch4.2.sauce.01' },
+    ]);
+    const right = respond(searched, { type: 'pickVine', u: 4, v: 2 }, 0);
+    expect(right.effects.map((effect) => effect.kind)).toEqual(['vinePicked', 'count']);
+    // Under the pick, the garden takes no move.
+    expect(act(searched, { type: 'markMoon', from: 4, to: 2 }, 0).outcome).toEqual({
+      ok: false,
+      reason: { code: 'notNow' },
+    });
+  });
+
+  it('a count of the loop is judged by the core on the conflict of the search (4.2)', () => {
+    const level = betrayalLevel();
+    const played = playAll(startSession(level, 0), level.solution);
+    const searched = respond(played, { type: 'pickVine', u: 2, v: 4 }, 0).session;
     expect(stepNow(searched)?.step).toBe('count');
     expect(respond(searched, { type: 'answer', option: 4 }, 0).session.won).toBeNull();
     expect(respond(searched, { type: 'answer', option: 3 }, 0).session.won).not.toBeNull();

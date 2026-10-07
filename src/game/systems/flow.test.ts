@@ -236,6 +236,29 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('pointing at a vine asks again until the conflict; a wrong one hears the reply first', () => {
+    const pick: LevelStep = { step: 'pickVine', prompt: 'ch4.2.sauce.01', reply: 'ch4.2.sauce.03' };
+    const started = start([pick]);
+    const opening = { kind: 'pickVine', step: 0, prompt: 'ch4.2.sauce.01' };
+    expect(started.effects).toEqual([opening]);
+    expect(advanceFlow(started.flow, { type: 'tap' }).effects).toEqual([]);
+    const wrong = advanceFlow(started.flow, { type: 'pickVine', u: 2, v: 3, right: false });
+    expect(wrong.flow.index).toBe(0);
+    expect(wrong.effects).toEqual([
+      { kind: 'vinePicked', step: 0, u: 2, v: 3, correct: false },
+      { kind: 'say', lines: ['ch4.2.sauce.03'] },
+      opening,
+    ]);
+    expect(advanceFlow(wrong.flow, { type: 'pickVine', u: 4, v: 2, right: true }).effects).toEqual([
+      { kind: 'vinePicked', step: 0, u: 4, v: 2, correct: true },
+      { kind: 'finished' },
+    ]);
+    const silent = start([{ step: 'pickVine', prompt: 'ch4.2.sauce.01' }]);
+    expect(
+      advanceFlow(silent.flow, { type: 'pickVine', u: 2, v: 3, right: false }).effects,
+    ).toEqual([{ kind: 'vinePicked', step: 0, u: 2, v: 3, correct: false }, opening]);
+  });
+
   it('the notebook ends only with a right option, which is written down', () => {
     const started = startFlow([{ step: 'notebook' }], { notebook: [plainWrong, plainRight] });
     expect(started.effects).toEqual([{ kind: 'notebook', step: 0 }]);

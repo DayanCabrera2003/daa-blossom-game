@@ -292,6 +292,13 @@ export class LevelScene extends Phaser.Scene {
       case 'answered':
         this.presenter.answered();
         break;
+      case 'pickVine':
+        // The mentor asks; the touch on a vine that answers goes through the controller.
+        this.presenter.present({ kind: 'lines', lines: [line(effect.prompt)] });
+        break;
+      case 'vinePicked':
+        // Nothing to queue: a right pick shows in the garden, painted from the session.
+        break;
       case 'reveal': {
         const key = effect.bet === effect.right ? 'bet.revealRight' : 'bet.revealWrong';
         this.presenter.present({

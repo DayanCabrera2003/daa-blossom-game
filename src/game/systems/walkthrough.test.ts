@@ -2,6 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import { betrayalLevel } from '../../../tests/support/fixtureLevels';
 import { garden } from './levelSession';
 import { playWalkthrough } from './walkthrough';
 
@@ -79,6 +80,22 @@ describe('playing the reference walkthrough of a level without a scene', () => {
       [{ type: 'tapSprout', vertex: 'B' }, { type: 'tapGarden' }],
     );
     expect(playWalkthrough(level).problem).toBeNull();
+  });
+
+  it('a vine pointed at is touched where the garden shows it (4.2)', () => {
+    const played = playWalkthrough(betrayalLevel());
+    expect(played.problem).toBeNull();
+    expect(played.effects.map((effect) => effect.kind)).toEqual([
+      'play',
+      'animate',
+      'animate',
+      'animate',
+      'pickVine',
+      'vinePicked',
+      'count',
+      'answered',
+      'won',
+    ]);
   });
 
   it('a move the level refuses stops the walkthrough, saying which and why', () => {

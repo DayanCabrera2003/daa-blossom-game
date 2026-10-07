@@ -59,8 +59,8 @@ const FESTIVAL = {
 
 /**
  * The garden of the festival searched from R alone, as level 4.2 is designed (GDD 4.2): the search
- * stops at the conflict d–b, then the loop it closes, `b c d`, is counted. Sprouts `R a b c d e` as
- * 0…5.
+ * stops at the conflict d–b, the player points at it, then the loop it closes, `b c d`, is
+ * counted. Sprouts `R a b c d e` as 0…5.
  */
 const BETRAYAL = {
   ...FESTIVAL,
@@ -68,11 +68,16 @@ const BETRAYAL = {
   roots: ['R'],
   hints: [],
   victory: { type: 'searchComplete' },
-  flow: [{ step: 'play' }, { step: 'count', prompt: 'ch4.2.sauce.02', of: 'loop', range: 6 }],
+  flow: [
+    { step: 'play' },
+    { step: 'pickVine', prompt: 'ch4.2.sauce.01', reply: 'ch4.2.sauce.03' },
+    { step: 'count', prompt: 'ch4.2.sauce.02', of: 'loop', range: 6 },
+  ],
   solution: [
     { type: 'markRoot', vertex: 'R' },
     { type: 'markMoon', from: 'R', to: 'a' },
     { type: 'markMoon', from: 'b', to: 'c' },
+    { type: 'pickVine', u: 'd', v: 'b' },
     { type: 'answer', option: 3 },
   ],
 };

@@ -123,13 +123,18 @@ describe('the demo of a mechanic card', () => {
     ).toMatchObject({ ok: false, error: { code: 'badStep', why: 'choiceOutOfRange' } });
   });
 
-  it('touches on a sprout or on the garden are shown, and change no lantern', () => {
+  it('touches on a sprout, a vine or the garden are shown, and change no lantern', () => {
     const demo = built({
       ...path3,
-      steps: [{ type: 'tapSprout', vertex: 'b' }, { type: 'tapGarden' }],
+      steps: [
+        { type: 'tapSprout', vertex: 'b' },
+        { type: 'pickVine', u: 'c', v: 'b' },
+        { type: 'tapGarden' },
+      ],
     });
     expect(demo.frames.map((frame) => frame.gesture)).toEqual([
       { kind: 'touch', sprouts: [1] },
+      { kind: 'vines', vines: [[2, 1]] },
       { kind: 'tapGarden' },
       { kind: 'none' },
     ]);

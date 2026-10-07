@@ -10,7 +10,7 @@ import type { TraceEvent } from '@core/trace/events';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
-import { countAnswer, rightBet } from './answerKey';
+import { countAnswer, rightBet, rightVine } from './answerKey';
 import {
   advanceFlow,
   betRight,
@@ -90,7 +90,8 @@ export type ScriptInput =
   | { readonly type: 'bet'; readonly value: number }
   | { readonly type: 'sunMoved' }
   | { readonly type: 'tap' }
-  | { readonly type: 'tapSprout'; readonly vertex: VertexId };
+  | { readonly type: 'tapSprout'; readonly vertex: VertexId }
+  | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId };
 
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
 const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set(['play', 'ask', 'count', 'draw']);
@@ -249,7 +250,8 @@ export function act(
 
 /**
  * Gives the script an answer, a bet, a touch or news of the sun. The right number of a bet or a
- * count comes from the core, judged on the garden as it is now; a step that does not wait for this
+ * count, and whether a vine pointed at is the conflict, come from the core, judged on the garden as
+ * it is now; a step that does not wait for this
  * input ignores it.
  */
 export function respond(
@@ -266,6 +268,10 @@ export function respond(
     }
     case 'bet':
       return advance(session, { type: 'bet', value: input.value, right: rightBet(level) }, now);
+    case 'pickVine': {
+      const right = rightVine(garden(session), input.u, input.v);
+      return advance(session, { ...input, right }, now);
+    }
     default:
       return advance(session, input, now);
   }

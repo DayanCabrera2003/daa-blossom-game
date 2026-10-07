@@ -57,9 +57,11 @@ function gestureEvents(gesture: Gesture): UiEvent[] {
 
 /**
  * The interface events that give the script an input; a drawn reflection is touched where its vines
- * really are instead (`drawEvents`).
+ * really are instead (`drawEvents`), and so is a vine pointed at (`vineEvents`).
  */
-function inputEvents(input: Exclude<FlowInput, { readonly type: 'drawMirror' }>): UiEvent[] {
+function inputEvents(
+  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' }>,
+): UiEvent[] {
   switch (input.type) {
     case 'answer':
       return [{ kind: 'answer', option: input.option }];
@@ -82,6 +84,7 @@ const ANSWERED: ReadonlySet<FlowInput['type']> = new Set([
   'bet',
   'tapGarden',
   'tapSprout',
+  'pickVine',
 ]);
 
 /**
@@ -149,6 +152,19 @@ function drawEvents(controller: Controller, vines: readonly Edge[]): UiEvent[] |
   }
 }
 
+/** The touch on the vine u–v where the garden shows it now, or why it cannot be touched. */
+function vineEvents(controller: Controller, u: number, v: number): UiEvent[] | string {
+  try {
+    const point = vinePoint(garden(controller.session), controller.positions, u, v);
+    return [
+      { kind: 'press', point },
+      { kind: 'release', point },
+    ];
+  } catch (error) {
+    return error instanceof Error ? error.message : String(error);
+  }
+}
+
 /** Plays a drawn reflection; a touch the challenge refuses is a refused move. */
 function playDrawing(
   controller: Controller,
@@ -182,7 +198,16 @@ function playEntry(
 ): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
   if (isFlowInput(entry)) {
     if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
-    const played = feed(controller, inputEvents(entry), now);
+    const events =
+      entry.type === 'pickVine' ? vineEvents(controller, entry.u, entry.v) : inputEvents(entry);
+    if (typeof events === 'string') {
+      return {
+        controller,
+        effects: [],
+        problem: { code: 'gestureImpossible', entry: index, message: events },
+      };
+    }
+    const played = feed(controller, events, now);
     const ignored = ANSWERED.has(entry.type) && played.effects.length === 0;
     return { ...played, problem: ignored ? { code: 'inputIgnored', entry: index } : null };
   }

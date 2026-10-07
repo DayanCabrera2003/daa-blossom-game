@@ -35,6 +35,13 @@ export type FlowSignal =
   | { readonly type: 'tap' }
   /** A touch on a sprout. */
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
+  /** A touch on the vine u–v; `right` when the core says it is the conflict of the search. */
+  | {
+      readonly type: 'pickVine';
+      readonly u: VertexId;
+      readonly v: VertexId;
+      readonly right: boolean;
+    }
   /** A drawn reflection was checked; `better` when it beats the player's garden. */
   | { readonly type: 'mirrorChecked'; readonly better: boolean }
   /** Too many checks did not win: the mirror challenge is over anyway (no one stays stuck). */
@@ -87,6 +94,16 @@ export type FlowEffect =
       readonly range: number;
     }
   | { readonly kind: 'draw'; readonly attempts: number }
+  /** Waiting for a touch on the vine where the light went wrong. */
+  | { readonly kind: 'pickVine'; readonly step: number; readonly prompt: string }
+  /** A vine was pointed at; for the playtest log and the split badge. */
+  | {
+      readonly kind: 'vinePicked';
+      readonly step: number;
+      readonly u: VertexId;
+      readonly v: VertexId;
+      readonly correct: boolean;
+    }
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
   /** A false statement of the notebook (`option`) is refuted by its garden, which opens. */
@@ -186,6 +203,8 @@ function opening(step: LevelStep, index: number): FlowEffect {
       return { kind: 'draw', attempts: step.attempts };
     case 'notebook':
       return { kind: 'notebook', step: index };
+    case 'pickVine':
+      return { kind: 'pickVine', step: index, prompt: step.prompt };
   }
 }
 
@@ -278,6 +297,19 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       if (signal.option === signal.right) return next(given);
       given.effects.push(opening(step, flow.index));
       return given;
+    }
+    case 'pickVine': {
+      // Only the conflict ends the step; any other vine hears the reply, if any, and is asked again.
+      if (signal.type !== 'pickVine') return unchanged;
+      const { u, v, right } = signal;
+      const picked: FlowTurn = {
+        flow,
+        effects: [{ kind: 'vinePicked', step: flow.index, u, v, correct: right }],
+      };
+      if (right) return next(picked);
+      if (step.reply !== undefined) picked.effects.push({ kind: 'say', lines: [step.reply] });
+      picked.effects.push(opening(step, flow.index));
+      return picked;
     }
     case 'notebook': {
       // A false statement is answered by the mentor and refuted by its garden, if it has them;

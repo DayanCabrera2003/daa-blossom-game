@@ -62,8 +62,8 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
 /**
  * The checks of a level script (plan 03, phase 1) that the schema cannot see: every question has a
  * right answer, the notebook step has a notebook to show, the steps of the pond have a reflection,
- * a `count` of lanterns asks about a sprout that is in the tangle, a `count` of the loop comes
- * where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
+ * a `count` of lanterns asks about a sprout that is in the tangle, pointing at the conflict and a
+ * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
  * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), and
  * every demo is accepted by the rules.
  *
@@ -76,6 +76,11 @@ export function checkFlow(level: Level): FlowProblem[] {
   const playedGarden = replay(start, level.solution).state;
   const played = playedGarden.matching;
   let afterPlay = false;
+  /** Whether the search of the garden at a step (after a play step or not) meets a conflict. */
+  const conflictAt = (pastPlay: boolean): boolean => {
+    const garden = pastPlay ? playedGarden : start;
+    return findConflict(garden.layer, garden.search) !== null;
+  };
 
   for (const [step, flowStep] of level.flow.entries()) {
     switch (flowStep.step) {
@@ -103,12 +108,12 @@ export function checkFlow(level: Level): FlowProblem[] {
       case 'separate':
         if (mirror === null) problems.push({ code: 'mirrorMissing', step });
         break;
+      case 'pickVine':
+        if (!conflictAt(afterPlay)) problems.push({ code: 'noConflict', step });
+        break;
       case 'count': {
         if (flowStep.of === 'loop') {
-          const garden = afterPlay ? playedGarden : start;
-          if (findConflict(garden.layer, garden.search) === null) {
-            problems.push({ code: 'noConflict', step });
-          }
+          if (!conflictAt(afterPlay)) problems.push({ code: 'noConflict', step });
           break;
         }
         if (mirror === null) {

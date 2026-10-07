@@ -93,12 +93,21 @@ export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, L
   }
 }
 
-/** Translates one script input of a walkthrough: the sprout touched, the reflection drawn. */
+/**
+ * Translates one script input of a walkthrough: the sprout touched, the vine pointed at, the
+ * reflection drawn.
+ */
 function toFlowInput(labels: Labels, input: LevelFlowInput): Result<FlowInput, LabelError> {
   switch (input.type) {
     case 'tapSprout': {
       const vertex = named(labels, input.vertex);
       return vertex.ok ? ok({ type: 'tapSprout', vertex: vertex.value }) : vertex;
+    }
+    case 'pickVine': {
+      const u = named(labels, input.u);
+      if (!u.ok) return u;
+      const v = named(labels, input.v);
+      return v.ok ? ok({ type: 'pickVine', u: u.value, v: v.value }) : v;
     }
     case 'drawMirror': {
       const lanterns = toEdges(labels, input.lanterns);

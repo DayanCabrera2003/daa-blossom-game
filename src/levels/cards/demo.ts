@@ -24,7 +24,10 @@ export type DemoGesture =
   | { readonly kind: 'none' }
   /** Touches on these sprouts, one after another (joining, marking, placing…). */
   | { readonly kind: 'touch'; readonly sprouts: readonly VertexId[] }
-  /** Touches on vines (putting a lantern out, folding where suns meet, drawing a reflection). */
+  /**
+   * Touches on vines (putting a lantern out, folding where suns meet, pointing at a conflict,
+   * drawing a reflection).
+   */
   | { readonly kind: 'vines'; readonly vines: readonly Edge[] }
   /** A drag through these sprouts (a chain, a stem). */
   | { readonly kind: 'drag'; readonly path: readonly VertexId[] }
@@ -205,6 +208,9 @@ function playInput(
       return null;
     case 'tapSprout':
       frame({ kind: 'touch', sprouts: [entry.vertex] });
+      return null;
+    case 'pickVine':
+      frame({ kind: 'vines', vines: [[entry.u, entry.v]] });
       return null;
     case 'drawMirror': {
       if (!createMatching(state.graph, entry.lanterns).ok) return { kind: 'bad', why: 'badDrawn' };

@@ -3,15 +3,16 @@ import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import {
+  betrayalLevel,
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
   nestedFlowersLevel,
 } from '../../../tests/support/fixtureLevels';
-import { gesturesFor } from '../input/gestures';
+import { gesturesFor, vinePoint } from '../input/gestures';
 import type { Point } from '../input/target';
 import { HINT_DELAY_MS } from './hints';
-import { garden } from './levelSession';
+import { act, garden } from './levelSession';
 import {
   openController,
   startController,
@@ -288,6 +289,32 @@ describe('the level controller runs the script', () => {
     expect(handle(won, { kind: 'seek', fraction: 0 }, 0).effects.map((e) => e.kind)).toEqual([
       'ask',
     ]);
+  });
+
+  it('while pointing at a vine, a touch on a vine is the answer, and nothing is a move (4.2)', () => {
+    const level = betrayalLevel();
+    const opened = startController(level, 0);
+    const session = level.solution.reduce((s, action) => act(s, action, 0).session, opened.session);
+    const controller = { ...opened, session };
+    const state = garden(session);
+    const vine = (u: number, v: number) => vinePoint(state, controller.positions, u, v);
+    // b–c is no conflict: the step waits on; a touch on a sprout or on nothing does nothing.
+    const missed = feed(controller, [...touch(vine(2, 3)), ...touch(spot(level, 4))]);
+    expect(missed.effects.map((effect) => effect.kind)).toEqual(['vinePicked', 'say', 'pickVine']);
+    expect(missed.controller.session.flow.index).toBe(1);
+    expect(garden(missed.controller.session)).toBe(state);
+    const right = feed(controller, touch(vine(4, 2)));
+    expect(right.effects).toMatchObject([
+      { kind: 'vinePicked', u: 2, v: 4, correct: true },
+      { kind: 'count', step: 2 },
+    ]);
+    expect(handle(controller, { kind: 'pickVine', u: 4, v: 2 }, 0).effects[0]).toEqual({
+      kind: 'vinePicked',
+      step: 1,
+      u: 4,
+      v: 2,
+      correct: true,
+    });
   });
 
   it('in the mirror challenge, touching a vine draws it in silver; nothing else moves', () => {

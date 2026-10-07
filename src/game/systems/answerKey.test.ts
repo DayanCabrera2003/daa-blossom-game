@@ -62,7 +62,7 @@ describe('the answers the core gives to the questions of a script', () => {
     const searched = play(level.start, level.solution);
     expect(rightLoopCount(searched)).toBe(3);
     expect(rightLoopCount(level.start)).toBe(0);
-    const step = level.flow[1];
+    const step = level.flow[2];
     if (step?.step !== 'count') throw new Error('4.2 counts after its play step');
     expect(countAnswer(level, searched, step)).toBe(3);
   });

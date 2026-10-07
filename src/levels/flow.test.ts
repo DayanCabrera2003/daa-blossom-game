@@ -96,10 +96,13 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'draw', attempts: 0 }])).toBe(false);
   });
 
-  it('reads a count of the sprouts of the loop of a conflict (4.2)', () => {
-    expect(parse([{ step: 'count', prompt: 'ch4.2.sauce.03', of: 'loop', range: 6 }])).toEqual([
+  it('reads the conflict steps of 4.2: pointing at a vine and counting the loop', () => {
+    const flow = [
+      { step: 'pickVine', prompt: 'ch4.2.sauce.01', reply: 'ch4.2.sauce.02' },
+      { step: 'pickVine', prompt: 'ch4.2.sauce.01' },
       { step: 'count', prompt: 'ch4.2.sauce.03', of: 'loop', range: 6 },
-    ]);
+    ];
+    expect(parse(flow)).toEqual(flow);
   });
 
   it('a loop is counted without a piece, and the lanterns of a piece are not', () => {
@@ -109,6 +112,8 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'count', prompt: 'ch2.1.sauce.03', of: 'yours', range: 3 }])).toBe(
       false,
     );
+    expect(accepts([{ step: 'pickVine' }])).toBe(false);
+    expect(accepts([{ step: 'pickVine', prompt: 'ch4.2.sauce.01', retry: false }])).toBe(false);
   });
 
   it('a question offers at least two options', () => {

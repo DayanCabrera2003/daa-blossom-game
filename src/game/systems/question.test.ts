@@ -163,9 +163,9 @@ describe('the questions of a script', () => {
       if (!outcome.ok) throw new Error(`${action.type} refused`);
       return outcome.state;
     }, level.start);
-    expect(questionAt(level, 1, searched)).toEqual({
+    expect(questionAt(level, 2, searched)).toEqual({
       kind: 'count',
-      step: 1,
+      step: 2,
       prompt: 'ch4.2.sauce.02',
       options: [0, 1, 2, 3, 4, 5, 6].map((value) => ({ value, line: null })),
       right: [3],

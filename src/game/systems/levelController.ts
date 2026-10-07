@@ -58,6 +58,8 @@ export type UiEvent =
   /** A touch on the garden or on a sprout, for the steps that wait for one. */
   | { readonly kind: 'tapGarden' }
   | { readonly kind: 'tapSprout'; readonly vertex: VertexId }
+  /** A vine pointed at, for the step that waits for the conflict. */
+  | { readonly kind: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
   /** The mirror challenge: a vine put in or out of the drawn reflection, and the check of it. */
   | { readonly kind: 'drawToggle'; readonly u: VertexId; readonly v: VertexId }
   | { readonly kind: 'checkMirror' };
@@ -184,6 +186,8 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
           ? tell(controller, { type: 'tapSprout', vertex: target.vertex }, now)
           : same({});
       }
+      // While pointing at the conflict, the touch is read as it ends (on release).
+      if (step === 'pickVine') return same({});
       // In the mirror challenge, a touch on a vine draws it in silver (or takes it out).
       if (step === 'draw') {
         const target = hitTest(state, positions, event.point);
@@ -202,7 +206,16 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     }
     case 'release': {
       // The press of the mirror challenge was the whole touch: lanterns never move under it.
-      if (stepNow(controller.session)?.step === 'draw') return same({});
+      const step = stepNow(controller.session)?.step;
+      if (step === 'draw') return same({});
+      // While pointing at the conflict, a touch on a vine is the answer, never a move. It is read
+      // on release, so the end of the touch cannot reach the step that comes after a right one.
+      if (step === 'pickVine') {
+        const target = hitTest(state, positions, event.point);
+        return target.kind === 'vine'
+          ? tell(controller, { type: 'pickVine', u: target.u, v: target.v }, now)
+          : same({});
+      }
       const released = pressEnd(controller.pointer, state, positions, event.point);
       const next = { ...controller, pointer: released.pointer };
       return released.action === null
@@ -228,6 +241,8 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       return tell(controller, { type: 'tap' }, now);
     case 'tapSprout':
       return tell(controller, { type: 'tapSprout', vertex: event.vertex }, now);
+    case 'pickVine':
+      return tell(controller, { type: 'pickVine', u: event.u, v: event.v }, now);
     case 'drawToggle':
       return drawToggle(controller, event.u, event.v);
     case 'checkMirror':

@@ -226,4 +226,12 @@ describe('the checks of a level script', () => {
       { code: 'noConflict', step: 1 },
     ]);
   });
+
+  it('the vine of the conflict is pointed at only where the reference search leaves one', () => {
+    const pick = { step: 'pickVine', prompt: 'ch4.2.sauce.02' };
+    expect(flowProblemsOf({ ...betrayal, flow: [{ step: 'play' }, pick, loopCount] })).toEqual([]);
+    expect(flowProblemsOf({ ...betrayal, flow: [pick, { step: 'play' }] })).toEqual([
+      { code: 'noConflict', step: 0 },
+    ]);
+  });
 });
