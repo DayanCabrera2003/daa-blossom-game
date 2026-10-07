@@ -29,6 +29,8 @@ import type { VeilView } from '../view/VeilView';
 /** A day replaying itself on screen: its states, its timing, when it began and what shows now. */
 interface Replaying {
   readonly day: readonly GardenState[];
+  /** Whether this is the light's own search, whose end the scene reports. */
+  readonly light: boolean;
   readonly plan: ReplayPlan;
   readonly startedAt: number;
   cursor: number;
@@ -53,6 +55,8 @@ export interface PresenterTexts {
 export interface PresenterHooks {
   /** Shows one state of a replayed day; null shows the player's own day again. */
   readonly showDay: (state: GardenState | null) => void;
+  /** The light's own search has been shown to the end: the session may keep its marks. */
+  readonly searched: () => void;
   /** Ends any move animation still playing: a replay owns the garden from dawn. */
   readonly stopAnimation: () => void;
   /** Shows the victory panel. */
@@ -158,6 +162,7 @@ export class Presenter {
         this.hooks.stopAnimation();
         this.replaying = {
           day: start.day,
+          light: start.light === true,
           plan: planReplay(start.day.length),
           startedAt: this.scene.time.now,
           cursor: 0,
@@ -224,7 +229,8 @@ export class Presenter {
 
   /**
    * Shows the state of the replayed day due at `time`; once dusk is reached, the garden shows the
-   * player's real day again and the queue moves on.
+   * player's real day again and the queue moves on. At the dusk of the light's own search, the
+   * scene is told first, so the day it shows again already holds the light's marks.
    */
   private replayFrame(time: number): void {
     const replaying = this.replaying;
@@ -232,6 +238,7 @@ export class Presenter {
     const elapsed = time - replaying.startedAt;
     if (elapsed >= replaying.plan.duration) {
       this.replaying = null;
+      if (replaying.light) this.hooks.searched();
       this.hooks.showDay(null);
       this.start(finishShowing(this.stage));
       return;

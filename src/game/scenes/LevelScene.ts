@@ -28,6 +28,7 @@ import type { FlowerAttempt } from '../systems/flowerChallenge';
 import { garden } from '../systems/levelSession';
 import { playtestEntries } from '../systems/playtestEntries';
 import { questionAt } from '../systems/question';
+import { lightDay } from '../systems/lightSearch';
 import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
 import { helpCards, offerCards, startCards, stepCard } from '../systems/tutorials';
@@ -165,6 +166,7 @@ export class LevelScene extends Phaser.Scene {
       },
       {
         showDay: (state) => (state === null ? this.render() : this.renderReplayed(state)),
+        searched: () => this.forward({ kind: 'searched' }),
         stopAnimation: () => this.views.animation.finish(),
         victory: (stars) => this.offerNext(stars),
         answer: (question, value) =>
@@ -230,11 +232,18 @@ export class LevelScene extends Phaser.Scene {
   }
 
   /**
-   * One event through the controller; a new move ends any animation still playing. While the day
-   * replays, the player's input waits: nothing reaches the controller.
+   * An event of the player. While the day replays, the player's input waits: nothing reaches the
+   * controller.
    */
   private dispatch(event: UiEvent): void {
-    if (this.presenter.blocksInput) return;
+    if (!this.presenter.blocksInput) this.forward(event);
+  }
+
+  /**
+   * One event through the controller; a new move ends any animation still playing. It also takes
+   * the end of the light's own search, which the presenter reports while its day is on screen.
+   */
+  private forward(event: UiEvent): void {
     if (event.kind !== 'move') this.views.animation.finish();
     const step = handle(this.controller, event, this.time.now);
     this.context.playtest.record(
@@ -307,6 +316,15 @@ export class LevelScene extends Phaser.Scene {
         this.presenter.present({ kind: 'replay', day });
         break;
       }
+      case 'autoSearch':
+        // The light's marks are shown one by one from the garden as it is now; at the end, the
+        // presenter reports it and the session keeps them.
+        this.presenter.present({
+          kind: 'replay',
+          day: lightDay(garden(this.controller.session)),
+          light: true,
+        });
+        break;
       case 'won':
         this.win(effect.stars);
         break;
