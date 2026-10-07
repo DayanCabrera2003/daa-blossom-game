@@ -74,6 +74,7 @@ export const buildLevelViews = (
       back: buttons.back,
       help: buttons.help,
       checkMirror: () => dispatch({ kind: 'checkMirror' }),
+      leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
     }),
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),

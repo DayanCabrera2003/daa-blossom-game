@@ -123,6 +123,7 @@ export class LevelScene extends Phaser.Scene {
     bindLevelInput(this, {
       dispatch: (event) => this.dispatch(event),
       leave: () => this.leave(),
+      insideLayer: () => this.controller.layers.length > 0,
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });

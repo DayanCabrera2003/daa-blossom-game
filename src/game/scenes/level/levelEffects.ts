@@ -4,7 +4,7 @@ import type { LineText } from '@services/lines';
 import { planAnimation } from '../../animation/plan';
 import { checkText } from '../../picture/mirrorDrawing';
 import { reasonText } from '../../picture/reasonText';
-import type { Controller, Effect } from '../../systems/levelController';
+import { layerOf, type Controller, type Effect } from '../../systems/levelController';
 import { garden } from '../../systems/levelSession';
 import { lightDay } from '../../systems/lightSearch';
 import { questionAt } from '../../systems/question';
@@ -71,7 +71,12 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       break;
     }
     case 'animate':
-      stage.animation.play(planAnimation(effect.events), stage.controller().positions, stage.now());
+      // Played where the layer entered draws the sprouts (5.2).
+      stage.animation.play(
+        planAnimation(effect.events),
+        layerOf(stage.controller()).positions,
+        stage.now(),
+      );
       break;
     case 'hint': {
       const { content } = effect;

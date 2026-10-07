@@ -1,12 +1,13 @@
 import type { GardenState } from '@core/rules/state';
 import type { SproutKind } from '@levels/fields';
-import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../../picture/garden';
+import { NO_EXTRAS, type PointingExtras } from '../../picture/garden';
 import { hudPicture } from '../../picture/hud';
+import { layerPicture } from '../../picture/layerPicture';
 import { pondPicture } from '../../picture/pond';
 import { sideBySidePicture } from '../../picture/sideBySide';
 import { splitBadges } from '../../picture/splitBadge';
 import type { FlowerAttempt } from '../../systems/flowerChallenge';
-import type { Controller } from '../../systems/levelController';
+import { layerOf, type Controller } from '../../systems/levelController';
 import { garden } from '../../systems/levelSession';
 import type { LevelViews } from './levelViews';
 
@@ -98,8 +99,9 @@ export class LevelRenderer {
   }
 
   /**
-   * Repaints every layer of the garden from one state of it; the sprouts in `split` wear the split
-   * badge (4.2), which a replayed day never shows.
+   * Repaints every layer of the garden from one state of it, as the flower entered with the layers
+   * shows it (5.2); the sprouts in `split` wear the split badge (4.2), which a replayed day never
+   * shows.
    */
   private renderGarden(
     state: GardenState,
@@ -107,7 +109,8 @@ export class LevelRenderer {
     split: readonly number[] = [],
   ): void {
     const { labels, kinds } = this.look;
-    const picture = gardenPicture(state, this.source.controller().positions, labels, extras, kinds);
+    const view = layerOf(this.source.controller(), state);
+    const picture = layerPicture(state, view, labels, extras, kinds);
     this.views.fog.render(picture);
     this.views.flowers.render(picture.flowers);
     this.views.objects.render(picture);
@@ -117,8 +120,9 @@ export class LevelRenderer {
 
   /** Repaints the HUD; while the day replays, the sun follows the replay instead of the session. */
   private renderHud(now: number): void {
-    const { session, pointer } = this.source.controller();
-    const hud = hudPicture(session, pointer, now);
+    const controller = this.source.controller();
+    const { session, pointer } = controller;
+    const hud = hudPicture(session, pointer, now, layerOf(controller).path.length);
     this.views.hud.render(hud);
     this.views.toolbar.render(hud.tools, hud.tool);
     const replayed = this.source.replaySun();

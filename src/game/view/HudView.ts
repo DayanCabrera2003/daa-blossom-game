@@ -18,12 +18,15 @@ export interface HudActions {
   readonly help: () => void;
   /** Checks the reflection drawn in the mirror challenge. */
   readonly checkMirror: () => void;
+  /** Leaves the innermost flower entered with the layers (5.2). */
+  readonly leaveLayer: () => void;
 }
 
 /**
  * The greybox HUD: the goal (or the question, when it is hidden), lanterns lit and water spent on
  * top; "Terminé", undo, redo, hint, "?" (the mechanic cards again) and back at the bottom right,
- * greyed out when not available, and "Comprobar" beside them in the mirror challenge.
+ * greyed out when not available, "Comprobar" beside them in the mirror challenge, and the way out
+ * of a flower entered with the layers, whose depth the status line tells (5.2).
  */
 export class HudView {
   private readonly goal: Phaser.GameObjects.Text;
@@ -31,7 +34,7 @@ export class HudView {
   /** What a waiting script step expects (drag the sun, touch a sprout…), centred under the goal. */
   private readonly prompt: Phaser.GameObjects.Text;
   private readonly buttons: Record<
-    'done' | 'undo' | 'redo' | 'hint' | 'help' | 'back' | 'checkMirror',
+    'done' | 'undo' | 'redo' | 'hint' | 'help' | 'back' | 'checkMirror' | 'leaveLayer',
     Button
   >;
 
@@ -46,7 +49,16 @@ export class HudView {
       .text(CANVAS_WIDTH / 2, LAYOUT.secondY, '', textStyle(8, PALETTE.sun))
       .setOrigin(0.5, 0)
       .setDepth(100);
-    const order = ['back', 'help', 'hint', 'redo', 'undo', 'done', 'checkMirror'] as const;
+    const order = [
+      'back',
+      'help',
+      'hint',
+      'redo',
+      'undo',
+      'done',
+      'checkMirror',
+      'leaveLayer',
+    ] as const;
     let x = CANVAS_WIDTH - LAYOUT.margin;
     const made: Partial<Record<(typeof order)[number], Button>> = {};
     for (const name of order) {
@@ -67,12 +79,15 @@ export class HudView {
         : hud.water.budget === null
           ? this.t('hud.waterNoBudget', { used: hud.water.used })
           : this.t('hud.water', { used: hud.water.used, budget: hud.water.budget });
-    this.status.setText(water === '' ? lanterns : `${lanterns}   ${water}`);
+    const inside = hud.layers !== null && hud.layers > 0;
+    const layer = inside ? this.t('hud.layer', { depth: hud.layers ?? 0 }) : '';
+    this.status.setText([lanterns, water, layer].filter((part) => part !== '').join('   '));
     this.buttons.undo.setEnabled(hud.canUndo);
     this.buttons.redo.setEnabled(hud.canRedo);
     this.buttons.hint.setEnabled(hud.hintAvailable);
     this.buttons.done.setVisible(hud.canDeclareDone);
     this.buttons.checkMirror.setVisible(hud.canCheckMirror);
+    this.buttons.leaveLayer.setVisible(inside);
     this.prompt.setText(hud.prompt === null ? '' : this.t(hud.prompt.key, hud.prompt.params));
   }
 }

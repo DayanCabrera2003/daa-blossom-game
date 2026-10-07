@@ -72,6 +72,8 @@
   "hud.hint": "Pista",
   "hud.back": "Volver",
   "hud.help": "?",
+  "hud.leaveLayer": "Salir de la flor",
+  "hud.layer": "Capa {depth}",
   "tool.lanterns": "Faroles",
   "tool.marks": "Marcas",
   "tool.foldLoop": "Plegar",

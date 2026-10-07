@@ -106,6 +106,8 @@ const UI = {
   'hud.hint': [],
   'hud.back': [],
   'hud.help': [],
+  'hud.leaveLayer': [],
+  'hud.layer': ['depth'],
   'tool.lanterns': [],
   'tool.marks': [],
   'tool.foldLoop': [],
