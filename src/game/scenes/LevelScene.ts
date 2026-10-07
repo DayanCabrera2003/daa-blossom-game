@@ -5,6 +5,7 @@ import type { Level } from '@levels/build';
 import { cardDemos } from '@levels/cards/catalog';
 import type { CardDemo } from '@levels/cards/demo';
 import type { CardId } from '@levels/cards/schema';
+import type { SproutKind } from '@levels/fields';
 import { visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook, recordTutorialSeen, writeSave } from '@services/save';
 import { planAnimation } from '../animation/plan';
@@ -63,6 +64,8 @@ export class LevelScene extends Phaser.Scene {
   private level!: Level;
   private controller!: Controller;
   private labels: readonly string[] = [];
+  /** Which sprouts are bees or flowers; empty in a garden that has none. */
+  private kinds: readonly (SproutKind | undefined)[] = [];
   private views!: {
     fog: FogView;
     flowers: FlowerView;
@@ -107,6 +110,7 @@ export class LevelScene extends Phaser.Scene {
     }
     this.level = level;
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
+    this.kinds = level.data.sprouts.map((sprout) => sprout.kind);
     this.cards ??= cardDemos();
     this.offered = new Set(this.context.save.tutorialsSeen);
     const opened = openController(level, this.time.now);
@@ -434,7 +438,13 @@ export class LevelScene extends Phaser.Scene {
 
   /** Repaints every layer of the garden from one state of it. */
   private renderGarden(state: GardenState, extras: PointingExtras): void {
-    const picture = gardenPicture(state, this.controller.positions, this.labels, extras);
+    const picture = gardenPicture(
+      state,
+      this.controller.positions,
+      this.labels,
+      extras,
+      this.kinds,
+    );
     this.views.fog.render(picture);
     this.views.flowers.render(picture.flowers);
     this.views.objects.render(picture);

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { size } from '@core/matching/queries';
 import { invariant } from '@core/shared/invariant';
 import { counterexampleAt } from '@levels/counterexample';
+import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
@@ -59,6 +60,8 @@ export class CounterexampleScene extends Phaser.Scene {
   /** The level whose notebook opened this garden, for the playtest log. */
   private levelId = '';
   private labels: readonly string[] = [];
+  /** Which sprouts are bees or flowers; empty in a garden that has none. */
+  private kinds: readonly (SproutKind | undefined)[] = [];
   private views!: {
     fog: FogView;
     flowers: FlowerView;
@@ -97,6 +100,7 @@ export class CounterexampleScene extends Phaser.Scene {
     this.controller = openCounterexample(counterexample);
     this.levelId = data.levelId;
     this.labels = counterexample.data.sprouts.map((sprout) => sprout.label);
+    this.kinds = counterexample.data.sprouts.map((sprout) => sprout.kind);
 
     // The false statement stays on top, so the player knows what the garden answers.
     const said = `${line(level.data.notebook.prompt)} ${line(statement.line)}`;
@@ -243,11 +247,13 @@ export class CounterexampleScene extends Phaser.Scene {
     const { controller } = this;
     const state = shownGarden(controller);
     const { pointer } = controller;
-    const picture = gardenPicture(state, controller.positions, this.labels, {
-      selection: pointer.selection,
-      highlight: [],
-      chain: pointer.chain,
-    });
+    const picture = gardenPicture(
+      state,
+      controller.positions,
+      this.labels,
+      { selection: pointer.selection, highlight: [], chain: pointer.chain },
+      this.kinds,
+    );
     this.views.fog.render(picture);
     this.views.flowers.render(picture.flowers);
     this.views.objects.render(picture);
