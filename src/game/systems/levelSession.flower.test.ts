@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { bloomLevel } from '../../../tests/support/fixtureLevels';
 import { FLOWER_MISSES_BEFORE_SPARED } from './flowerChallenge';
-import { act, drawInGarden, garden, respond, startSession, stepNow } from './levelSession';
+import { HINT_DELAY_MS } from './hints';
+import {
+  act,
+  askHint,
+  drawInGarden,
+  garden,
+  isHintAvailable,
+  respond,
+  startSession,
+  stepNow,
+} from './levelSession';
 
 // The bloom garden: b c d f g e t h x = 0…8; the script opens on the flower challenge.
 const level = bloomLevel();
@@ -63,5 +73,24 @@ describe('a level session runs the flower challenge (4.11)', () => {
     expect(stepNow(over)).toBeNull();
     expect(drawInGarden(over, [5, 6], 0)).toEqual({ session: over, attempt: null, effects: [] });
     expect(respond(over, { type: 'tap' }, 0).effects).toEqual([]);
+  });
+
+  it('hints: the level line, then the mentor chain glows, then the mentor draws it', () => {
+    let session = startSession(level, 0);
+    const hints = [];
+    for (let k = 1; k <= 3; k++) {
+      expect(isHintAvailable(session, k * HINT_DELAY_MS)).toBe(true);
+      const opened = askHint(session, k * HINT_DELAY_MS);
+      if (opened === null) throw new Error('hint not offered');
+      ({ session } = opened);
+      hints.push(opened.hint);
+    }
+    const [first, second, third] = hints;
+    expect(first).toMatchObject({ line: 'ch4.11.sauce.02', highlight: [5], chain: null });
+    expect(second?.highlight.length).toBeGreaterThan(1);
+    expect(second?.chain).toBeNull();
+    const chain = third?.chain ?? [];
+    expect(chain.length).toBeGreaterThan(1);
+    expect(drawInGarden(session, chain, 0).attempt).toMatchObject({ kind: 'cut' });
   });
 });

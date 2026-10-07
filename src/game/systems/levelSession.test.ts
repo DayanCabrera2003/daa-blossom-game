@@ -442,6 +442,32 @@ describe('a level session follows its script', () => {
     });
   });
 
+  it('pointing at a vine offers hints: the level lines, then the conflict glows unanswered', () => {
+    const level = {
+      ...betrayalLevel(),
+      hints: [
+        { line: 'ch4.2.sauce.04', highlight: [] },
+        { line: 'ch4.2.sauce.05', highlight: [2, 4] },
+      ],
+    };
+    let session = playAll(startSession(level, 0), level.solution);
+    const hints = [];
+    for (let k = 1; k <= 3; k++) {
+      expect(isHintAvailable(session, k * HINT_DELAY_MS)).toBe(true);
+      const opened = askHint(session, k * HINT_DELAY_MS);
+      if (opened === null) throw new Error('hint not offered');
+      ({ session } = opened);
+      hints.push(opened.hint);
+    }
+    expect(hints.map((hint) => [hint.line, hint.vine])).toEqual([
+      ['ch4.2.sauce.04', null],
+      ['ch4.2.sauce.05', null],
+      ['hint.generic.3', [2, 4]],
+    ]);
+    // The glow answers nothing: the step still waits for the touch.
+    expect(stepNow(session)?.step).toBe('pickVine');
+  });
+
   it('a count of the loop is judged by the core on the conflict of the search (4.2)', () => {
     const level = betrayalLevel();
     const played = playAll(startSession(level, 0), level.solution);

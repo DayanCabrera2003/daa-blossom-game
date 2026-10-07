@@ -2,6 +2,7 @@ import { isMaximum } from '@core/edmonds/fast/maximum';
 import { matchedEdges } from '@core/matching/queries';
 import type { Matching } from '@core/matching/types';
 import { invariant } from '@core/shared/invariant';
+import { findConflict } from '@core/search/conflict';
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
@@ -23,6 +24,7 @@ import {
 } from './flow';
 import {
   drawFlowerChain,
+  mentorChain,
   startFlowerChallenge,
   type FlowerAttempt,
   type FlowerChallenge,
@@ -102,7 +104,14 @@ export type ScriptInput =
   | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId };
 
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
-const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set(['play', 'ask', 'count', 'draw']);
+const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
+  'play',
+  'ask',
+  'count',
+  'draw',
+  'pickVine',
+  'flowerChallenge',
+]);
 
 /** The step of the script now, or null once it is over. */
 export const stepNow = (session: LevelSession): LevelStep | null => currentStep(session.flow);
@@ -305,8 +314,9 @@ export function isHintAvailable(session: LevelSession, now: number): boolean {
 
 /**
  * Opens the hint on offer: the next grade, with the level's own line and sprouts when it has them,
- * and at grade 3 the mentor's step for the garden as it is now, or under a question the right
- * option. Null if no hint is on offer.
+ * and at grade 3 the mentor's step for the garden as it is now, under a question the right option,
+ * in the flower challenge a chain to draw, or the vine of the conflict to point at. Null if no hint
+ * is on offer.
  */
 export function askHint(
   session: LevelSession,
@@ -328,10 +338,18 @@ export function askHint(
   const option = question === null ? null : hintedOption(question);
   // In the mirror challenge, the mentor offers a better reflection, and at grade 3 draws it.
   const offer = current.step === 'draw' && opened.grade >= 2 ? mentorOffer(session) : null;
+  // In the flower challenge, the mentor finds a chain of the open garden, and at grade 3 draws it.
+  const { graph, matching, layer, search } = garden(session);
+  const chain =
+    current.step === 'flowerChallenge' && opened.grade >= 2 ? mentorChain(graph, matching) : null;
+  // When pointing at a vine, the conflict glows at grade 3; the touch is left to the player.
+  const vine = current.step === 'pickVine' ? (findConflict(layer, search)?.vine ?? null) : null;
   const hint = hintContent(level.hints, opened.grade, {
     step,
     option,
     reflection: offer?.reflection ?? null,
+    chain,
+    vine,
   });
   const { challenge } = session;
   return {
