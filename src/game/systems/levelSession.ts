@@ -421,9 +421,9 @@ export function checkDrawnMirror(
 
 /**
  * A chain drawn through `path` in the open garden during the flower challenge (4.11): cut at the
- * level's flower and never applied, or refused when it is no chain. A chain is one more attempt;
- * once the refused drawings reach the limit, the step is over anyway. Outside the step nothing is
- * drawn and the attempt is null.
+ * level's flower and never applied, or refused when it is no chain. A chain not drawn before,
+ * either way round, is one more attempt; once the refused drawings reach the limit, the step is over
+ * anyway. Outside the step nothing is drawn and the attempt is null.
  */
 export function drawInGarden(
   session: LevelSession,
@@ -438,7 +438,7 @@ export function drawInGarden(
   const signal: FlowSignal =
     attempt.kind === 'notAChain' && attempt.spared
       ? { type: 'flowerSpared' }
-      : { type: 'flowerDrawn', chain: attempt.kind === 'cut' };
+      : { type: 'flowerDrawn', chain: attempt.kind === 'cut' && attempt.fresh };
   const advanced = advance({ ...session, flower: drawn.challenge }, signal, now);
   return { ...advanced, attempt };
 }

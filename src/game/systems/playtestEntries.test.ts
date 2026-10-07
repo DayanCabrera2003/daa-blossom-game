@@ -229,14 +229,16 @@ describe('playtest entries of bets, counts and the notebook', () => {
     ]);
   });
 
-  it('each chain drawn in the flower challenge is logged by its names, counted or not (4.11)', () => {
+  it('each chain drawn in the flower challenge is logged by its names, counted once or not (4.11)', () => {
     const { entries } = play(startController(bloomLevel(), 0), [
       { kind: 'drawChain', path: [6, 8] },
       { kind: 'drawChain', path: [5, 6] },
+      { kind: 'drawChain', path: [6, 5] },
     ]);
     expect(entries).toEqual([
       { kind: 'flowerChain', at: 0, level: '4.11', path: ['t', 'x'], counted: false },
       { kind: 'flowerChain', at: 0, level: '4.11', path: ['e', 't'], counted: true },
+      { kind: 'flowerChain', at: 0, level: '4.11', path: ['t', 'e'], counted: false },
     ]);
   });
 

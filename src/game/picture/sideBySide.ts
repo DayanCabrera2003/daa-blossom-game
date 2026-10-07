@@ -69,8 +69,11 @@ export interface SideBySidePicture {
   readonly cut: CutPicture | null;
 }
 
-/** What each moment says; the second depends on whether the chain touches the flower at all. */
-function captionOf(moment: 1 | 2 | 3, touches: boolean): TextRef {
+/**
+ * What each moment says; the second depends on whether the chain touches the flower at all, and the
+ * last one, on a chain drawn before, says it does not count again.
+ */
+function captionOf(moment: 1 | 2 | 3, touches: boolean, fresh: boolean): TextRef {
   const key =
     moment === 1
       ? 'flower.ends'
@@ -78,7 +81,9 @@ function captionOf(moment: 1 | 2 | 3, touches: boolean): TextRef {
         ? touches
           ? 'flower.stretch'
           : 'flower.whole'
-        : 'flower.folded';
+        : fresh
+          ? 'flower.folded'
+          : 'flower.again';
   return { key, params: {} };
 }
 
@@ -130,7 +135,7 @@ export function sideBySidePicture(
     const moment = momentAt(elapsed);
     cut = {
       moment,
-      caption: captionOf(moment, shown.cut.petal !== null),
+      caption: captionOf(moment, shown.cut.petal !== null, shown.fresh),
       chain: shown.cut.chain.map(at),
       outside: at(argument.ends.outside),
       other: at(argument.ends.other),

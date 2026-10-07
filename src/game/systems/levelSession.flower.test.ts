@@ -28,6 +28,14 @@ describe('a level session runs the flower challenge (4.11)', () => {
     expect(drawn.effects).toEqual([]);
   });
 
+  it('the same chain drawn again, either way round, is shown again but does not count', () => {
+    const once = drawInGarden(startSession(level, 0), [6, 8, 7, 2, 1, 5], 0).session;
+    const again = drawInGarden(once, [5, 1, 2, 7, 8, 6], 0);
+    expect(again.attempt).toMatchObject({ kind: 'cut', fresh: false });
+    expect(again.session.flow.attempts).toBe(1);
+    expect(again.session.flower.shown).toBe(again.attempt);
+  });
+
   it('a drawing that is no chain is refused gently and does not count', () => {
     const drawn = drawInGarden(startSession(level, 0), [6, 8, 7], 0);
     expect(drawn.attempt).toMatchObject({ kind: 'notAChain', spared: false });

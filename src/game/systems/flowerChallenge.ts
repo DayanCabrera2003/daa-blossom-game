@@ -15,7 +15,8 @@ import { itemAt } from '@core/shared/itemAt';
  * reaches the flower by a dark vine; in the folded garden that stretch is a chain to the flower,
  * which is in the dark. Pure.
  *
- * A drawing that is no chain of the open garden is refused with its reason and does not count.
+ * A drawing that is no chain of the open garden is refused with its reason and does not count; a
+ * chain drawn before, either way round, is cut and shown again but counts once.
  * Nobody is left stuck: a grade-3 hint draws a chain the core finds (`mentorChain`), and after
  * `FLOWER_MISSES_BEFORE_SPARED` refused drawings the step is over anyway.
  */
@@ -42,26 +43,46 @@ export type FlowerAttempt =
       readonly error: PathError;
       readonly spared: boolean;
     }
-  /** A chain, as drawn, cut at the flower, with the moments of the argument. */
+  /**
+   * A chain, as drawn, cut at the flower, with the moments of the argument. `fresh` unless this very
+   * chain, either way round, was drawn before, which then counts as no new attempt.
+   */
   | {
       readonly kind: 'cut';
       readonly path: readonly VertexId[];
       readonly cut: FlowerCut;
       readonly argument: FlowerArgument;
+      readonly fresh: boolean;
     };
 
 /** Everything the challenge remembers. */
 export interface FlowerChallenge {
-  /** Chains drawn so far. */
+  /** Distinct chains drawn so far. */
   readonly chains: number;
   /** Drawings so far that were no chains. */
   readonly misses: number;
+  /** The distinct chains drawn so far, each as its key (`keyOf`). */
+  readonly drawn: readonly string[];
   /** The last drawing, shown until the next one; null before the first. */
   readonly shown: FlowerAttempt | null;
 }
 
 /** A challenge with nothing drawn yet. */
-export const startFlowerChallenge = (): FlowerChallenge => ({ chains: 0, misses: 0, shown: null });
+export const startFlowerChallenge = (): FlowerChallenge => ({
+  chains: 0,
+  misses: 0,
+  drawn: [],
+  shown: null,
+});
+
+/**
+ * A chain and its reverse are the same chain: both read from the end with the smaller id. The two
+ * ends of a chain are different sprouts, so this picks one reading.
+ */
+const keyOf = (path: readonly VertexId[]): string => {
+  const forward = itemAt(path, 0) < itemAt(path, path.length - 1);
+  return JSON.stringify(forward ? path : [...path].reverse());
+};
 
 /** The moments of the argument on a cut chain. */
 function argumentOf(cut: FlowerCut, flower: readonly VertexId[]): FlowerArgument {
@@ -99,8 +120,21 @@ export function drawFlowerChain(
     return { challenge: { ...challenge, misses, shown: attempt }, attempt };
   }
   const cut = cutAtFlower(graph, matching, flower, path);
-  const attempt: FlowerAttempt = { kind: 'cut', path, cut, argument: argumentOf(cut, flower) };
-  return { challenge: { ...challenge, chains: challenge.chains + 1, shown: attempt }, attempt };
+  const key = keyOf(path);
+  const fresh = !challenge.drawn.includes(key);
+  const attempt: FlowerAttempt = {
+    kind: 'cut',
+    path,
+    cut,
+    argument: argumentOf(cut, flower),
+    fresh,
+  };
+  if (!fresh) return { challenge: { ...challenge, shown: attempt }, attempt };
+  const drawn = [...challenge.drawn, key];
+  return {
+    challenge: { ...challenge, chains: challenge.chains + 1, drawn, shown: attempt },
+    attempt,
+  };
 }
 
 /**

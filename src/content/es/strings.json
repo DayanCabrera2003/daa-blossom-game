@@ -102,6 +102,7 @@
   "flower.stretch": "Desde ese extremo, sigue la cadena hasta el primer pétalo que toca: alterna y llega por una enredadera apagada.",
   "flower.whole": "Tu cadena no toca la flor: tal cual, ya es una cadena del jardín plegado.",
   "flower.folded": "En el jardín plegado, ese trozo va de un brote a oscuras hasta la flor, que está a oscuras. ¡Cadena encontrada!",
+  "flower.again": "Esa cadena ya la dibujaste: su trozo vuelve a llegar a la flor. Dibuja otra distinta.",
   "flower.spared": "Tranquilo: dibujar cadenas aquí no es fácil. Pero cualquiera que dibujes tendrá un trozo que llega a la flor.",
   "hud.checkMirror": "Comprobar",
   "victory.title": "¡Jardín iluminado!",

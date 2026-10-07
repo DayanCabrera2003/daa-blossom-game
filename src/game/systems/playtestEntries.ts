@@ -110,7 +110,8 @@ export function playtestEntries(
       case 'flowerDrawn': {
         const { attempt } = effect;
         const path = attempt.path.map((v) => nameOf(before.session.level.labels, v));
-        entries.push({ kind: 'flowerChain', at, level, path, counted: attempt.kind === 'cut' });
+        const counted = attempt.kind === 'cut' && attempt.fresh;
+        entries.push({ kind: 'flowerChain', at, level, path, counted });
         break;
       }
       case 'counterexample':

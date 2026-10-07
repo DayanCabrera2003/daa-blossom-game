@@ -60,6 +60,13 @@ describe('the open and the folded garden side by side (4.11)', () => {
     });
   });
 
+  it('a chain drawn again is cut again, and its last moment says it was already drawn', () => {
+    const once = drawInGarden(startSession(level, 0), [5, 6], 0).session;
+    const again = drawInGarden(once, [6, 5], 0).session;
+    expect(picture(again, 0)?.cut?.caption.key).toBe('flower.ends');
+    expect(picture(again, 5 * MOMENT_MS)?.cut?.caption.key).toBe('flower.again');
+  });
+
   it('a chain that misses the flower is a chain of the folded garden whole', () => {
     const drawn = drawInGarden(startSession(level, 0), [5, 6], 0).session;
     expect(picture(drawn, MOMENT_MS)?.cut?.caption.key).toBe('flower.whole');

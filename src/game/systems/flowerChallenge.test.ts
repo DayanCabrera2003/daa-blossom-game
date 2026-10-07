@@ -25,7 +25,7 @@ const drawing = (paths: number[][]): FlowerChallenge =>
 
 describe('the flower challenge', () => {
   it('starts with no chain drawn, no miss and nothing shown', () => {
-    expect(startFlowerChallenge()).toEqual({ chains: 0, misses: 0, shown: null });
+    expect(startFlowerChallenge()).toEqual({ chains: 0, misses: 0, drawn: [], shown: null });
   });
 
   it('a chain is cut at the flower: its outside end, the stretch to the first petal, folded', () => {
@@ -43,7 +43,8 @@ describe('the flower challenge', () => {
     });
     expect(attempt.cut.petal).toBe(2);
     expect(attempt.path).toEqual([6, 8, 7, 2, 1, 5]);
-    expect(challenge).toEqual({ chains: 1, misses: 0, shown: attempt });
+    expect(attempt.fresh).toBe(true);
+    expect(challenge).toMatchObject({ chains: 1, misses: 0, shown: attempt });
   });
 
   it('a drawing that is no chain of the open garden is refused gently, and does not count', () => {
@@ -59,7 +60,21 @@ describe('the flower challenge', () => {
       error: { code: 'endpointNotExposed', vertex: 7 },
       spared: false,
     });
-    expect(challenge).toEqual({ chains: 0, misses: 1, shown: attempt });
+    expect(challenge).toMatchObject({ chains: 0, misses: 1, shown: attempt });
+  });
+
+  it('a chain drawn again, either way round, is shown cut again but counts once', () => {
+    const once = drawing([[6, 8, 7, 2, 1, 5]]);
+    const again = drawFlowerChain(once, garden, flower, [6, 8, 7, 2, 1, 5]);
+    expect(again.attempt).toMatchObject({ kind: 'cut', fresh: false });
+    expect(again.challenge.chains).toBe(1);
+    expect(again.challenge.shown).toBe(again.attempt);
+    const reversed = drawFlowerChain(again.challenge, garden, flower, [5, 1, 2, 7, 8, 6]);
+    expect(reversed.attempt).toMatchObject({ kind: 'cut', fresh: false });
+    expect(reversed.challenge.chains).toBe(1);
+    const other = drawFlowerChain(reversed.challenge, garden, flower, [5, 6]);
+    expect(other.attempt).toMatchObject({ kind: 'cut', fresh: true });
+    expect(other.challenge.chains).toBe(2);
   });
 
   it('after enough drawings that are no chains, the challenge lets the player go', () => {

@@ -137,6 +137,7 @@ const UI = {
   'flower.stretch': [],
   'flower.whole': [],
   'flower.folded': [],
+  'flower.again': [],
   'hud.checkMirror': [],
   'victory.title': [],
   'victory.stars': ['count'],
