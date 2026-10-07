@@ -1,6 +1,13 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { graphWithMatchingArb } from '../../../tests/support/arbitraries';
+import {
+  closedFlowerLevel,
+  festivalLevel,
+  fivePetalsLevel,
+  helixLevel,
+  twoComponentsLevel,
+} from '../../../tests/support/fixtureLevels';
 import { fastEdmonds } from '@core/edmonds/fast/solve';
 import { cycleGraph, pathGraph } from '@core/generators/families';
 import { createMatching } from '@core/matching/createMatching';
@@ -61,18 +68,21 @@ describe("the mentor's next step (hint grade 3)", () => {
   );
 
   it.each([
-    ['1.1', 'the trap B=C', [{ type: 'join', u: 1, v: 2 }]],
-    ['4.6', 'a sun off the solution', [{ type: 'markRoot', vertex: 7 }]],
-    ['4.9', 'a lantern put out', [{ type: 'split', u: 1, v: 2 }]],
-    ['7.3', 'a wrong stone', [{ type: 'liftStone', vertex: 2 }]],
-    ['7.4', 'a lantern put out', [{ type: 'split', u: 1, v: 2 }]],
-  ] as [string, string, Action[]][])('wins level %s after %s', (id, _, mistake) => {
-    const level = levelById(id);
-    mentorPlays(goalOf(level), after(level, mistake));
-  });
+    ['1.1', 'the trap B=C', () => levelById('1.1'), [{ type: 'join', u: 1, v: 2 }]],
+    ['4.6', 'a sun off the solution', fivePetalsLevel, [{ type: 'markRoot', vertex: 7 }]],
+    ['4.9', 'a lantern put out', closedFlowerLevel, [{ type: 'split', u: 1, v: 2 }]],
+    ['7.3', 'a wrong stone', helixLevel, [{ type: 'liftStone', vertex: 2 }]],
+    ['7.4', 'a lantern put out', twoComponentsLevel, [{ type: 'split', u: 1, v: 2 }]],
+  ] as [string, string, () => Level, Action[]][])(
+    'wins level %s after %s',
+    (_, __, build, mistake) => {
+      const level = build();
+      mentorPlays(goalOf(level), after(level, mistake));
+    },
+  );
 
   it("on the reference solution, it gives the solution's own next step", () => {
-    const level = levelById('4.6');
+    const level = fivePetalsLevel();
     const [first, second] = level.solution;
     expect(nextMove(goalOf(level), level.start)).toEqual(first);
     expect(nextMove(goalOf(level), after(level, [first as Action]))).toEqual(second);
@@ -146,7 +156,7 @@ describe("the mentor's next step (hint grade 3)", () => {
   });
 
   it('stones: lifts the moons of the failed search when no solution guides it (7.3)', () => {
-    const level = levelById('7.3');
+    const level = helixLevel();
     const goal: MentorGoal = { ...goalOf(level), solution: [] };
     expect(nextMove(goal, level.start)).toEqual({ type: 'liftStone', vertex: 0 });
     mentorPlays(goal, level.start);
@@ -170,7 +180,7 @@ describe("the mentor's next step (hint grade 3)", () => {
   });
 
   it('with a flower folded off the solution, it opens it before moving lanterns (4.6)', () => {
-    const level = levelById('4.6');
+    const level = fivePetalsLevel();
     const folded = after(level, [...level.solution.slice(0, 5), { type: 'markRoot', vertex: 7 }]);
     expect(folded.layer.nodes.length).toBeLessThan(folded.graph.n);
     expect(nextMove(goalOf(level), folded)).toEqual({ type: 'unfold', blossom: 0 });
@@ -178,7 +188,7 @@ describe("the mentor's next step (hint grade 3)", () => {
   });
 
   it('searching for a chain, it folds where two suns of one tree meet (4.1 to 4.4)', () => {
-    const level = levelById('4.1');
+    const level = festivalLevel();
     const start: GardenState = { ...level.start, allowed: new Set(actionsUnlockedBy('4.4')) };
     const goal: MentorGoal = { start, solution: [], victory: { type: 'chainFound' } };
     let state = start;
@@ -195,7 +205,7 @@ describe("the mentor's next step (hint grade 3)", () => {
   });
 
   it('where folding is still locked (4.1), it never suggests folding, and runs out of steps', () => {
-    const level = levelById('4.1');
+    const level = festivalLevel();
     const goal: MentorGoal = { start: level.start, solution: [], victory: { type: 'chainFound' } };
     let state = level.start;
     for (let move = nextMove(goal, state); move !== null; move = nextMove(goal, state)) {
