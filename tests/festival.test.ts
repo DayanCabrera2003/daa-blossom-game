@@ -242,3 +242,16 @@ describe('4.8: two flowers', () => {
     expect(size(lit.matching)).toBe(maximumSize(level.graph));
   });
 });
+
+describe('4.9: a flower without a chain', () => {
+  const level = levelOf('4.9');
+
+  it('the search folds the flower and still ends without a chain, on lanterns already the most', () => {
+    const declareAt = level.solution.findIndex((move) => move.type === 'declareDone');
+    const unfolded = play(level.start, level.solution.slice(0, declareAt - 1));
+    expect(statusOf(unfolded)).toBe('conflict');
+    const searched = play(level.start, level.solution.slice(0, declareAt));
+    expect(statusOf(searched)).toBe('exhausted');
+    expect(size(searched.matching)).toBe(maximumSize(level.graph));
+  });
+});
