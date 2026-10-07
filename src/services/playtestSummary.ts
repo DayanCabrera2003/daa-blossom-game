@@ -38,6 +38,12 @@ export interface LevelSummary {
    * a right first choice is one made without hints.
    */
   readonly notebookRightFirstTry: boolean | null;
+  /**
+   * Whether a grade-3 hint (the one that shows the way) was opened before the level was first won,
+   * in any play; in a level never won, whether one was opened at all (Hito B, 4.1: was the chain
+   * found by hand?).
+   */
+  readonly hint3BeforeWin: boolean;
 }
 
 type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
@@ -67,6 +73,7 @@ const freshTally = (level: string): Tally => ({
   flowerChains: { counted: 0, refused: 0 },
   firstPickRight: null,
   notebookRightFirstTry: null,
+  hint3BeforeWin: false,
 });
 
 /**
@@ -117,6 +124,7 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
         break;
       case 'hint':
         counts.hints += 1;
+        if (entry.grade >= 3 && counts.wins === 0) counts.hint3BeforeWin = true;
         break;
       case 'claim':
         if (entry.right) counts.claims.right += 1;

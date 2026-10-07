@@ -41,6 +41,7 @@ describe('exporting the playtest log', () => {
           flowerChains: { counted: 0, refused: 0 },
           firstPickRight: null,
           notebookRightFirstTry: null,
+          hint3BeforeWin: false,
         },
       ],
       log,

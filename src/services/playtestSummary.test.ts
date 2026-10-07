@@ -37,6 +37,7 @@ describe('playtest summary', () => {
       flowerChains: { counted: 0, refused: 0 },
       firstPickRight: null,
       notebookRightFirstTry: null,
+      hint3BeforeWin: false,
     });
   });
 
@@ -184,6 +185,32 @@ describe('playtest summary', () => {
     );
     expect(rightFirst?.notebookRightFirstTry).toBe(true);
     expect(wrongFirst?.notebookRightFirstTry).toBe(false);
+  });
+
+  it('tells whether a grade-3 hint was opened before the level was first won (Hito B, 4.1)', () => {
+    const [byHand, helped, neverWon] = summarize(
+      log([
+        // Won without the third hint; a later play that opens it changes nothing.
+        { kind: 'levelStart', at: 0, level: '4.1' },
+        { kind: 'hint', at: 1, level: '4.1', grade: 1 },
+        { kind: 'hint', at: 2, level: '4.1', grade: 2 },
+        { kind: 'levelEnd', at: 3, level: '4.1', outcome: 'won', stars: 2 },
+        { kind: 'levelStart', at: 4, level: '4.1' },
+        { kind: 'hint', at: 5, level: '4.1', grade: 3 },
+        // The third hint in a play left unwon still comes before the first win.
+        { kind: 'levelStart', at: 10, level: '3.1' },
+        { kind: 'hint', at: 11, level: '3.1', grade: 3 },
+        { kind: 'levelEnd', at: 12, level: '3.1', outcome: 'left', stars: null },
+        { kind: 'levelStart', at: 13, level: '3.1' },
+        { kind: 'levelEnd', at: 14, level: '3.1', outcome: 'won', stars: 3 },
+        // Never won: any third hint counts.
+        { kind: 'levelStart', at: 20, level: '3.2' },
+        { kind: 'hint', at: 21, level: '3.2', grade: 3 },
+      ]),
+    );
+    expect(byHand?.hint3BeforeWin).toBe(false);
+    expect(helped?.hint3BeforeWin).toBe(true);
+    expect(neverWon?.hint3BeforeWin).toBe(true);
   });
 
   it('an empty log has nothing to say', () => {
