@@ -1,7 +1,10 @@
+import { contract, openLayer } from '@core/blossom/contract';
+import { cutAtFlower } from '@core/blossom/cutAtFlower';
 import { baseVertex, members } from '@core/blossom/hierarchy';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
+import { checkAugmentingPath } from '@core/matching/paths';
 import { size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
@@ -282,5 +285,39 @@ describe('4.10: turning the stem', () => {
     const turned = play(counterexample.start, [{ type: 'rotateStem', stem }]);
     expect(size(turned.matching)).toBe(size(counterexample.start.matching));
     expect(turned.matching.mate[itemAt(stem, 4)]).toBe(-1);
+  });
+});
+
+describe('4.11: the flower challenge', () => {
+  const level = levelOf('4.11');
+  const { graph, matching } = level.start;
+
+  it('keeps every sprout clear of the folded copy and of the captions at the top', () => {
+    for (const sprout of level.data.sprouts) {
+      expect(sprout.x).toBeLessThanOrEqual(232);
+      expect(sprout.y).toBeGreaterThanOrEqual(44);
+    }
+  });
+
+  it('the three chains of the walkthrough are different, and each is cut into a folded chain', () => {
+    const drawn = level.walkthrough.flatMap((entry) =>
+      entry.type === 'drawChain' ? [entry.path] : [],
+    );
+    const keys = drawn.map((path) => {
+      const forward = itemAt(path, 0) < itemAt(path, path.length - 1);
+      return JSON.stringify(forward ? path : [...path].reverse());
+    });
+    expect(new Set(keys).size).toBe(3);
+    const flower = level.flower ?? [];
+    const folded = contract(openLayer(graph, matching), flower).layer;
+    for (const path of drawn) {
+      expect(checkAugmentingPath(graph, matching, path).ok).toBe(true);
+      const { projected } = cutAtFlower(graph, matching, flower, path);
+      expect(checkAugmentingPath(folded.graph, folded.matching, projected).ok).toBe(true);
+    }
+  });
+
+  it('opens the Codex on odd loops, the flower and the flower lemma', () => {
+    expect(level.data.unlocks.codex).toEqual(['C6', 'C7', 'C8']);
   });
 });

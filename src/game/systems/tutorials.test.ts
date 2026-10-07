@@ -83,6 +83,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '4.4': ['fold'],
       '4.5': ['unfold'],
       '4.10': ['rotateStem'],
+      '4.11': ['flowerChallenge'],
     });
   });
 
