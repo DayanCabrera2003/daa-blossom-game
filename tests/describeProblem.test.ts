@@ -85,6 +85,7 @@ describe('readable level problems', () => {
       { code: 'flowerMissing', step: 1 },
       { code: 'noChainToDraw', step: 1 },
       { code: 'flowerAfterPlay', step: 1 },
+      { code: 'recallAhead', step: 0, level: '4.4' },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

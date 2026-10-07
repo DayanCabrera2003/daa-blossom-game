@@ -1,4 +1,5 @@
 import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
+import { RECIPE_CASES } from '@core/recipe/recipe';
 import { nameOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
@@ -10,7 +11,9 @@ import type { GardenState } from '@core/rules/state';
 import { autoSearch } from '@core/search/autoSearch';
 import { findConflict } from '@core/search/conflict';
 import type { Level } from './build';
+import { compareLevelIds } from './catalog';
 import { demoStart } from './demoStart';
+import { TAUGHT_IN } from './recipeCards';
 
 /** Something wrong with the script of a level; `step` is the index of the step in the script. */
 export type FlowProblem =
@@ -28,6 +31,8 @@ export type FlowProblem =
   | { readonly code: 'noChainToDraw'; readonly step: number }
   /** A flower challenge after a play step, whose moves may have undone the declared flower. */
   | { readonly code: 'flowerAfterPlay'; readonly step: number }
+  /** A recipe whose cards recall a level (`level`) not played yet: "esto lo hiciste en…" lies. */
+  | { readonly code: 'recallAhead'; readonly step: number; readonly level: string }
   /** A bet whose numbers (1 to `range`) leave out the most lanterns the garden holds. */
   | {
       readonly code: 'betOutOfRange';
@@ -80,7 +85,8 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
  * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
  * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
  * challenge has a flower and a chain to draw in the garden the level starts with, every demo is
- * accepted by the rules, and so is every move of the light's own search.
+ * accepted by the rules, and so is every move of the light's own search, and a recipe recalls only
+ * levels that come before it.
  *
  * Lanterns and marks only move in a play step, where the reference solution is played, and when the
  * light searches by itself (4.1, 4.2), where its marks are added; so the garden at a `count`, a
@@ -162,6 +168,15 @@ export function checkFlow(level: Level): FlowProblem[] {
           problems.push({ code: 'noChainToDraw', step });
         }
         break;
+      case 'recipe': {
+        const recalled = new Set(RECIPE_CASES.map((recipeCase) => TAUGHT_IN[recipeCase]));
+        for (const taught of recalled) {
+          if (compareLevelIds(taught, data.id) >= 0) {
+            problems.push({ code: 'recallAhead', step, level: taught });
+          }
+        }
+        break;
+      }
       case 'replay': {
         if (flowStep.demo === undefined) break;
         const { refused } = replay(demoStart(start), flowStep.demo);

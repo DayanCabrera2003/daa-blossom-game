@@ -50,6 +50,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
     case 'noChainToDraw':
       return `script step ${problem.step + 1} asks for chains, but the garden already holds the most`;
+    case 'recallAhead':
+      return `script step ${problem.step + 1} is a recipe that recalls level ${problem.level}, which is not played yet`;
     case 'flowerAfterPlay':
       return `script step ${problem.step + 1} is a flower challenge after a play step, whose moves may undo the flower`;
     case 'betOutOfRange':

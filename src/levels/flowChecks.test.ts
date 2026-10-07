@@ -278,4 +278,23 @@ describe('the checks of a level script', () => {
     };
     expect(flowProblemsOf(played)).toEqual([{ code: 'flowerAfterPlay', step: 1 }]);
   });
+
+  it('a recipe recalls only levels played before it', () => {
+    const garden = {
+      sprouts: [
+        { label: 'a', x: 100, y: 100 },
+        { label: 'b', x: 200, y: 100 },
+      ],
+      vines: [['a', 'b']],
+      goal: { visible: false },
+      flow: [{ step: 'recipe' }],
+      solution: [{ type: 'recipe', cards: [] }],
+    };
+    expect(flowProblemsOf({ ...garden, id: '6.1' })).toEqual([]);
+    // In 3.5, folding (4.4) and a search that ends with no chain (3.6) are still to come.
+    expect(flowProblemsOf({ ...garden, id: '3.5' })).toEqual([
+      { code: 'recallAhead', step: 0, level: '4.4' },
+      { code: 'recallAhead', step: 0, level: '3.6' },
+    ]);
+  });
 });
