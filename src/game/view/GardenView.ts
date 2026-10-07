@@ -7,6 +7,39 @@ import { textStyle } from './textStyle';
 /** Radius of a sprout's circle (GDD §4.1: 16 × 16 sprouts). */
 export const SPROUT_RADIUS = 7;
 
+/**
+ * Half the diagonal of a flower's diamond: a point wider than a sprout's radius, so the two shapes
+ * look about the same size, and still inside the selection ring.
+ */
+const DIAMOND_REACH = SPROUT_RADIUS + 1;
+
+/**
+ * Fills a sprout's body at `(x, y)`, `grow` pixels larger than the sprout itself: a diamond for a
+ * flower, a circle for a bee or a sprout that is neither. The shape, not the colour, tells bees
+ * from flowers, so they still read in greyscale (GDD §4.1).
+ */
+function fillBody(
+  graphics: Phaser.GameObjects.Graphics,
+  sprout: SproutPicture,
+  grow: number,
+): void {
+  const { x, y } = sprout;
+  if (sprout.kind !== 'flower') {
+    graphics.fillCircle(x, y, SPROUT_RADIUS + grow);
+    return;
+  }
+  const r = DIAMOND_REACH + grow;
+  graphics.fillPoints(
+    [
+      { x, y: y - r },
+      { x: x + r, y },
+      { x, y: y + r },
+      { x: x - r, y },
+    ],
+    true,
+  );
+}
+
 /** Draws a dotted segment: dark vines are dotted, lit ones solid (GDD §4.1). */
 function dotted(graphics: Phaser.GameObjects.Graphics, a: Point, b: Point): void {
   const length = Math.hypot(b.x - a.x, b.y - a.y);
@@ -24,8 +57,9 @@ function dotted(graphics: Phaser.GameObjects.Graphics, a: Point, b: Point): void
 
 /**
  * The garden itself in greybox: vines (dotted when dark, solid amber when lit, unseen under fog),
- * sprouts (cold blue in the dark, warm amber with a lantern), their names, the rings of what the
- * player points at, and the chain being dragged with what it would gain.
+ * sprouts (cold blue in the dark, warm amber with a lantern; flowers as diamonds, bees and every
+ * other sprout as circles), their names, the rings of what the player points at, and the chain
+ * being dragged with what it would gain. Hit-testing still takes every sprout as a circle.
  */
 export class GardenView {
   private readonly vines: Phaser.GameObjects.Graphics;
@@ -65,8 +99,8 @@ export class GardenView {
   private drawSprouts(sprouts: readonly SproutPicture[]): void {
     const g = this.sprouts.clear();
     for (const s of sprouts) {
-      if (s.lit) g.fillStyle(PALETTE.litGlow, 0.25).fillCircle(s.x, s.y, SPROUT_RADIUS + 3);
-      g.fillStyle(s.lit ? PALETTE.lit : PALETTE.dark).fillCircle(s.x, s.y, SPROUT_RADIUS);
+      if (s.lit) fillBody(g.fillStyle(PALETTE.litGlow, 0.25), s, 3);
+      fillBody(g.fillStyle(s.lit ? PALETTE.lit : PALETTE.dark), s, 0);
       if (s.selected) g.lineStyle(1, PALETTE.selected).strokeCircle(s.x, s.y, SPROUT_RADIUS + 2);
       if (s.highlighted)
         g.lineStyle(1, PALETTE.highlight).strokeCircle(s.x, s.y, SPROUT_RADIUS + 4);
