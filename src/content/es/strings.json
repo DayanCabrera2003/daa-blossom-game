@@ -161,6 +161,8 @@
   "tutorial.fold.body": "Con Marcas, toca la enredadera donde se tocan dos soles del mismo árbol: el bucle se pliega en una flor. Con Plegar, toca en orden los brotes de un bucle.",
   "tutorial.unfold.title": "Desplegar flores",
   "tutorial.unfold.body": "Con Marcas, toca una flor cerrada para abrirla y ver otra vez sus brotes.",
+  "tutorial.layers.title": "Capas",
+  "tutorial.layers.body": "Con Capas, toca una flor cerrada para entrar y verla de cerca; dentro, toca otra flor para entrar más. Sal con Salir de la flor o con Esc.",
   "tutorial.rotateStem.title": "Girar el tallo",
   "tutorial.rotateStem.body": "Arrastra una cadena desde un brote a oscuras hasta la base de una flor: los faroles del tallo giran y la base queda a oscuras.",
   "tutorial.stones.title": "Piedras",

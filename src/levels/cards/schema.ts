@@ -31,6 +31,7 @@ export const CARD_IDS = [
   'scarecrows',
   'fold',
   'unfold',
+  'layers',
   'rotateStem',
   'stones',
 ] as const;

@@ -11,6 +11,7 @@ import {
   festivalLevel,
   fivePetalsLevel,
   lightLevel,
+  nestedFlowersLevel,
   pentagonLevel,
   stemRotationLevel,
 } from '../../../tests/support/fixtureLevels';
@@ -89,6 +90,14 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     });
   });
 
+  it('the layers bring their card as 5.2 starts, like the sun in 0.5', () => {
+    const wild = nestedFlowersLevel();
+    expect(levelCards(wild)).not.toContain('layers');
+    const layered = { ...wild, data: { ...wild.data, id: '5.2' } };
+    expect(levelCards(layered)).toContain('layers');
+    expect(startCards(layered, new Set(['layers']))).not.toContain('layers');
+  });
+
   it('1.1 keeps passing the lantern closed, so its card waits for 1.2', () => {
     expect(levelCards(levelOf('1.1'))).not.toContain('passLantern');
     expect(levelCards(levelOf('1.2'))).toContain('passLantern');
@@ -124,7 +133,8 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(later.get('4.1')).toEqual(['inspect', 'marks', 'scarecrows']);
     expect(later.get('4.6')).toEqual(['fold', 'unfold']);
     expect(later.get('4.10')).toEqual(['rotateStem']);
-    expect(later.get('7.2')).toEqual(['stones']);
+    // This walk skips chapter 5, so the layers (5.2) are first met in 7.2 too.
+    expect(later.get('7.2')).toEqual(['layers', 'stones']);
   });
 
   it('the first step that points at a vine brings its card (4.2), and only the first', () => {
@@ -161,6 +171,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       ...Object.values(STEP_CARD),
       'undo',
       'sun',
+      'layers',
     ]);
     expect(CARD_IDS.filter((card) => !reachable.has(card))).toEqual([]);
   });

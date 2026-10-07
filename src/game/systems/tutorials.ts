@@ -7,7 +7,7 @@ import { isUiUnlocked } from '@levels/uiUnlocks';
 
 /**
  * When each mechanic card shows (GDD §5.11): the first time its mechanic is open, once per player.
- * Tools and the sun are introduced as the level starts; the steps of a script (a bet, a question,
+ * Tools, the sun and the layers are introduced as the level starts; the steps of a script (a bet, a question,
  * the notebook, the reflection, counting, drawing, pointing at a vine, the flower challenge, the
  * light searching by itself) when they are reached.
  * Pure: the scene asks what to show and the save remembers what was closed.
@@ -64,13 +64,14 @@ const inOrder = (cards: Iterable<CardId>): CardId[] => {
   return CARD_IDS.filter((card) => set.has(card));
 };
 
-/** The cards of what a level has open from its start: its tools, undo, the sun. */
+/** The cards of what a level has open from its start: its tools, undo, the sun, the layers. */
 export function levelCards(level: Level): CardId[] {
   const id = level.data.id;
   const tools = [...level.start.allowed].map((action) => ACTION_CARD[action]);
   const undo: CardId[] = compareLevelIds(id, UNDO_CARD_FROM) >= 0 ? ['undo'] : [];
   const sun: CardId[] = isUiUnlocked('sun', id) ? ['sun'] : [];
-  return inOrder([...tools, ...undo, ...sun]);
+  const layers: CardId[] = isUiUnlocked('layers', id) ? ['layers'] : [];
+  return inOrder([...tools, ...undo, ...sun, ...layers]);
 }
 
 /** The cards a level shows as it starts: what it has open that the player has not seen. */
