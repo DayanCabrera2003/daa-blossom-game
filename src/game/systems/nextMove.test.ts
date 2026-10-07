@@ -10,6 +10,7 @@ import {
 } from '../../../tests/support/fixtureLevels';
 import { fastEdmonds } from '@core/edmonds/fast/solve';
 import { cycleGraph, pathGraph } from '@core/generators/families';
+import { createGraph } from '@core/graph/createGraph';
 import { createMatching } from '@core/matching/createMatching';
 import { size } from '@core/matching/queries';
 import type { Action, ActionType } from '@core/rules/actions';
@@ -215,5 +216,87 @@ describe("the mentor's next step (hint grade 3)", () => {
       state = outcome.state;
     }
     expect(isVictory(state, goal.victory)).toBe(false);
+  });
+});
+
+/** Lets the mentor play until the level is won, at most `limit` steps; the garden and its moves. */
+const mentorFinishes = (
+  goal: MentorGoal,
+  from: GardenState,
+  limit = 200,
+): { state: GardenState; moves: Action[] } => {
+  let state = from;
+  const moves: Action[] = [];
+  while (!isVictory(state, goal.victory)) {
+    const move = nextMove(goal, state);
+    if (move === null || moves.length >= limit) throw new Error('the mentor did not finish');
+    const outcome = applyAction(state, move);
+    if (!outcome.ok) throw new Error(`refused ${move.type}: ${outcome.reason.code}`);
+    moves.push(move);
+    state = outcome.state;
+  }
+  return { state, moves };
+};
+
+/**
+ * Level 3.3 in the fog: the moon m is reachable from two suns, R1 and R2. R1 R2 m p x y are 0…5,
+ * with m=p and x=y lit and a dead end p–x=y: the search ends without a chain.
+ */
+const visitedTwice = (): GardenState => {
+  const graph = unwrap(
+    createGraph(6, [
+      [0, 2],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [4, 5],
+    ]),
+  );
+  return createGardenState({
+    graph,
+    matching: unwrap(
+      createMatching(graph, [
+        [2, 3],
+        [4, 5],
+      ]),
+    ),
+    fog: true,
+    allowed: actionsUnlockedBy('3.3'),
+  });
+};
+
+describe("the mentor's next step, when the level is won by the search itself", () => {
+  it('completes a search by itself, inspecting only the suns it looks from (3.3)', () => {
+    const start = visitedTwice();
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'searchComplete' } };
+    // Only suns are inspected: R1, R2 and p. The moon m is never looked around, and y, the last
+    // sun, needs no look once every vine of the true garden is accounted for.
+    const { moves } = mentorFinishes(goal, start);
+    const inspected = moves.flatMap((move) => (move.type === 'inspect' ? [move.vertex] : []));
+    expect(inspected).toEqual([0, 1, 3]);
+  });
+
+  it('says "Terminé" once the search is over without a chain (3.6)', () => {
+    const start = visitedTwice();
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'searchExhausted' } };
+    expect(mentorFinishes(goal, start).moves.at(-1)).toEqual({ type: 'declareDone' });
+  });
+
+  it('after a lantern put out, it lights the chain again before searching to the end (3.6)', () => {
+    const start = visitedTwice();
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'searchExhausted' } };
+    const split = applyAction(start, { type: 'split', u: 2, v: 3 });
+    if (!split.ok) throw new Error(split.reason.code);
+    expect(size(mentorFinishes(goal, split.state).state.matching)).toBe(2);
+  });
+
+  it('searches from the named roots only, and ends on the lie of 4.1 (4.2)', () => {
+    const level = festivalLevel();
+    const start: GardenState = { ...level.start, roots: [0] };
+    for (const type of ['searchComplete', 'searchExhausted'] as const) {
+      const { state, moves } = mentorFinishes({ start, solution: [], victory: { type } }, start);
+      expect(moves).not.toContainEqual({ type: 'markRoot', vertex: 5 });
+      expect(size(state.matching)).toBe(2);
+    }
   });
 });

@@ -13,6 +13,7 @@ import type { GardenState } from '@core/rules/state';
 import { isVictory, type VictoryCondition } from '@core/rules/victory';
 import { itemAt } from '@core/shared/itemAt';
 import { bipartiteMatching } from '@core/search/bipartiteMatching';
+import { searchStatus } from '@core/search/searchStatus';
 import { createRecorder } from '@core/trace/recorder';
 
 /** What the mentor needs to know about a level: where it starts, how it is solved, how it is won. */
@@ -78,12 +79,18 @@ function placeTowards(
   return missing === undefined ? null : add(missing);
 }
 
-/** The next mark of a search that looks for a chain: roots first, then looks from suns, folding when suns meet. */
+/**
+ * The next mark of a search that looks for a chain: roots first (only those the level allows, which
+ * `markRoot` checks), then looks from suns, folding when suns meet. In the fog only suns are
+ * inspected, since only a sun looks along its vines: no drop of water is spent on anyone else.
+ */
 function searchStep(state: GardenState): Action | null {
   const sprouts = [...Array(state.graph.n).keys()];
   const root = sprouts.find((v) => accepted(state, { type: 'markRoot', vertex: v }));
   if (root !== undefined) return { type: 'markRoot', vertex: root };
-  for (const from of sprouts) {
+  const isSun = (v: VertexId): boolean =>
+    state.search?.label[itemAt(state.layer.nodeOf, v)] === 'outer';
+  for (const from of sprouts.filter(isSun)) {
     for (const to of neighbors(state.graph, from)) {
       const look: Action = { type: 'markMoon', from, to };
       const outcome = applyAction(state, look);
@@ -100,11 +107,26 @@ function searchStep(state: GardenState): Action | null {
 }
 
 /**
+ * The next step towards a search over without a chain, and "Terminé" (3.6, 4.9). If the marks can
+ * still reach a chain, the lanterns are not the most yet (a lantern put out, say): it is lit first,
+ * which wipes the marks, and the search starts again on the new lanterns.
+ */
+function toTheEndOfTheSearch(state: GardenState): Action | null {
+  const status = searchStatus(state.layer, state.search, {
+    roots: state.roots,
+    foldAllowed: state.allowed.has('foldAt'),
+  });
+  if (status === 'exhausted') return { type: 'declareDone' };
+  return status === 'chain' ? lightMore(state) : searchStep(state);
+}
+
+/**
  * The step the mentor takes for the player at hint grade 3 (GDD §5.3). It is always a move the
  * rules accept and that brings the level closer to its victory, or null once the level is won:
  * on the reference solution, its next step; otherwise a step computed by the core for the
- * level's victory (a search for `chainFound`; the most lanterns, then "Terminé" or the right
- * stones or scarecrows, for the rest).
+ * level's victory (a search for `chainFound` and `searchComplete`, a search to its end and then
+ * "Terminé" for `searchExhausted`; the most lanterns, then "Terminé" or the right stones or
+ * scarecrows, for the rest).
  */
 export function nextMove(goal: MentorGoal, state: GardenState): Action | null {
   if (isVictory(state, goal.victory)) return null;
@@ -117,7 +139,15 @@ export function nextMove(goal: MentorGoal, state: GardenState): Action | null {
 
 /** The step for the level's victory when the garden is off the reference solution. */
 function computedStep(goal: MentorGoal, state: GardenState): Action | null {
-  if (goal.victory.type === 'chainFound') return searchStep(state);
+  switch (goal.victory.type) {
+    case 'chainFound':
+    case 'searchComplete':
+      return searchStep(state);
+    case 'searchExhausted':
+      return toTheEndOfTheSearch(state);
+    default:
+      break;
+  }
 
   if (!isMaximum(state.graph, state.matching)) return lightMore(state);
 
