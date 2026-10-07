@@ -35,6 +35,7 @@ describe('playtest summary', () => {
       mirrorChecks: { beating: 0, notBeating: 0 },
       vinePicks: { right: 0, wrong: 0 },
       flowerChains: { counted: 0, refused: 0 },
+      firstPickRight: null,
     });
   });
 
@@ -121,6 +122,23 @@ describe('playtest summary', () => {
       ]),
     );
     expect(summary?.vinePicks).toEqual({ right: 1, wrong: 1 });
+  });
+
+  it('tells whether the first vine ever pointed at in a level was the right one (Hito B, 4.2)', () => {
+    const [wrongFirst, rightFirst] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.2' },
+        { kind: 'pickVine', at: 1, level: '4.2', step: 2, vine: ['b', 'c'], right: false },
+        { kind: 'pickVine', at: 2, level: '4.2', step: 2, vine: ['d', 'b'], right: true },
+        { kind: 'levelStart', at: 3, level: '4.2' },
+        { kind: 'pickVine', at: 4, level: '4.2', step: 2, vine: ['d', 'b'], right: true },
+        { kind: 'levelStart', at: 10, level: '4.3' },
+        { kind: 'pickVine', at: 11, level: '4.3', step: 2, vine: ['d', 'b'], right: true },
+        { kind: 'pickVine', at: 12, level: '4.3', step: 2, vine: ['b', 'c'], right: false },
+      ]),
+    );
+    expect(wrongFirst?.firstPickRight).toBe(false);
+    expect(rightFirst?.firstPickRight).toBe(true);
   });
 
   it('counts the chains drawn in the flower challenge per level, counted and refused (4.11)', () => {
