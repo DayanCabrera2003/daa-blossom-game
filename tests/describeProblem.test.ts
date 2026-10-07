@@ -25,6 +25,16 @@ describe('readable level problems', () => {
         reason: { code: 'notAdjacent', u: 0, v: 2 },
       }),
     ).toBe('script step 3: demo move 1 is refused by the rules: notAdjacent {"u":0,"v":2}');
+    expect(
+      describeProblem({
+        code: 'lightRefused',
+        step: 0,
+        move: 0,
+        reason: { code: 'actionLocked', action: 'markRoot' },
+      }),
+    ).toBe(
+      'script step 1: move 1 of the light\'s own search is refused by the rules: actionLocked {"action":"markRoot"}',
+    );
     expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
       'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
     );

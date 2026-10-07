@@ -49,7 +49,9 @@ export type FlowSignal =
   /** A drawing in the flower challenge; `chain` when the core says it is a chain of the garden. */
   | { readonly type: 'flowerDrawn'; readonly chain: boolean }
   /** Too many drawings were no chains: the flower challenge is over anyway. */
-  | { readonly type: 'flowerSpared' };
+  | { readonly type: 'flowerSpared' }
+  /** The light's own search was made in the garden and shown to the end. */
+  | { readonly type: 'searched' };
 
 /** What the scene has to show; data only, line ids untranslated. */
 export type FlowEffect =
@@ -110,6 +112,11 @@ export type FlowEffect =
     }
   /** Waiting for chains drawn in the open garden, cut at the flower and never applied. */
   | { readonly kind: 'flowerChallenge'; readonly step: number; readonly attempts: number }
+  /**
+   * The light searches by itself: the scene shows its marks one by one, with the garden taking no
+   * input, and says when it is over.
+   */
+  | { readonly kind: 'autoSearch'; readonly step: number }
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
   /** A false statement of the notebook (`option`) is refuted by its garden, which opens. */
@@ -213,6 +220,8 @@ function opening(step: LevelStep, index: number): FlowEffect {
       return { kind: 'pickVine', step: index, prompt: step.prompt };
     case 'flowerChallenge':
       return { kind: 'flowerChallenge', step: index, attempts: step.attempts };
+    case 'autoSearch':
+      return { kind: 'autoSearch', step: index };
   }
 }
 
@@ -281,6 +290,8 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     }
     case 'sun':
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;
+    case 'autoSearch':
+      return signal.type === 'searched' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'separate':
       return signal.type === 'tap' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'explore':

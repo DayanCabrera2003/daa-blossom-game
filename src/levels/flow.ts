@@ -88,6 +88,12 @@ const flowStep = z.discriminatedUnion('step', [
    * as the core finds it. A wrong vine is answered with `reply`, if any, and asked again.
    */
   z.strictObject({ step: z.literal('pickVine'), prompt: lineId, reply: lineId.optional() }),
+  /**
+   * The light searches by itself (4.1, 4.2): the player's marks, made with the greenhouse rules in
+   * one fixed order (`autoSearch` of the core), shown one by one while the garden takes no input.
+   * It needs nothing from the player and is over once it has been shown.
+   */
+  z.strictObject({ step: z.literal('autoSearch') }),
   /** The mirror challenge (2.4): draw a better reflection, `attempts` times. */
   z.strictObject({ step: z.literal('draw'), attempts: z.number().int().min(1) }),
   /**

@@ -7,6 +7,7 @@ import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
+import { autoSearch } from '@core/search/autoSearch';
 import { findConflict } from '@core/search/conflict';
 import type { Level } from './build';
 import { demoStart } from './demoStart';
@@ -33,6 +34,13 @@ export type FlowProblem =
       readonly step: number;
       readonly range: number;
       readonly optimum: number;
+    }
+  /** A move of the light's own search that the rules refuse (marks locked, fog, roots). */
+  | {
+      readonly code: 'lightRefused';
+      readonly step: number;
+      readonly move: number;
+      readonly reason: RejectReason;
     }
   | {
       readonly code: 'demoRefused';
@@ -71,29 +79,37 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
  * a `count` of lanterns asks about a sprout that is in the tangle, pointing at the conflict and a
  * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
  * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
- * challenge has a flower and a chain to draw in the garden the level starts with, and every demo is
- * accepted by the rules.
+ * challenge has a flower and a chain to draw in the garden the level starts with, every demo is
+ * accepted by the rules, and so is every move of the light's own search.
  *
- * Lanterns and marks never move outside a play step, so the garden at a `count` or a `draw` is the
- * one the level starts with, or, after a play step, the one the reference solution leaves.
+ * Lanterns and marks only move in a play step, where the reference solution is played, and when the
+ * light searches by itself (4.1, 4.2), where its marks are added; so the garden at a `count`, a
+ * `pickVine` or a `draw` is the one the steps before it leave.
  */
 export function checkFlow(level: Level): FlowProblem[] {
   const problems: FlowProblem[] = [];
   const { data, start, mirror } = level;
-  const playedGarden = replay(start, level.solution).state;
-  const played = playedGarden.matching;
+  /** The garden as the steps so far leave it. */
+  let garden = start;
   let afterPlay = false;
-  /** Whether the search of the garden at a step (after a play step or not) meets a conflict. */
-  const conflictAt = (pastPlay: boolean): boolean => {
-    const garden = pastPlay ? playedGarden : start;
-    return findConflict(garden.layer, garden.search) !== null;
-  };
+  /** Whether the search of the garden now meets a conflict. */
+  const conflictNow = (): boolean => findConflict(garden.layer, garden.search) !== null;
 
   for (const [step, flowStep] of level.flow.entries()) {
     switch (flowStep.step) {
       case 'play':
+        garden = replay(garden, level.solution).state;
         afterPlay = true;
         break;
+      case 'autoSearch': {
+        const light = autoSearch(garden.layer, garden.search, garden.roots);
+        const searched = replay(garden, light);
+        if (searched.refused !== null) {
+          problems.push({ code: 'lightRefused', step, ...searched.refused });
+        }
+        garden = searched.state;
+        break;
+      }
       case 'ask':
         if (!flowStep.options.some((option) => option.correct)) {
           problems.push({ code: 'noCorrectOption', step });
@@ -116,26 +132,25 @@ export function checkFlow(level: Level): FlowProblem[] {
         if (mirror === null) problems.push({ code: 'mirrorMissing', step });
         break;
       case 'pickVine':
-        if (!conflictAt(afterPlay)) problems.push({ code: 'noConflict', step });
+        if (!conflictNow()) problems.push({ code: 'noConflict', step });
         break;
       case 'count': {
         if (flowStep.of === 'loop') {
-          if (!conflictAt(afterPlay)) problems.push({ code: 'noConflict', step });
+          if (!conflictNow()) problems.push({ code: 'noConflict', step });
           break;
         }
         if (mirror === null) {
           problems.push({ code: 'mirrorMissing', step });
           break;
         }
-        const yours = afterPlay ? played : start.matching;
-        if (!inTangle(yours, mirror, flowStep.piece)) {
+        if (!inTangle(garden.matching, mirror, flowStep.piece)) {
           const sprout = nameOf(level.labels, flowStep.piece);
           problems.push({ code: 'pieceOutsideTangle', step, sprout });
         }
         break;
       }
       case 'draw':
-        if (isMaximum(level.graph, afterPlay ? played : start.matching)) {
+        if (isMaximum(level.graph, garden.matching)) {
           problems.push({ code: 'drawUnbeatable', step });
         }
         break;

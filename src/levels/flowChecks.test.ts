@@ -236,6 +236,29 @@ describe('the checks of a level script', () => {
     ]);
   });
 
+  it('after the light searches by itself, its conflict can be pointed at and its loop counted', () => {
+    const pick = { step: 'pickVine', prompt: 'ch4.2.sauce.02' };
+    const lit = {
+      ...betrayal,
+      victory: undefined,
+      solution: [{ type: 'pickVine', u: 'd', v: 'b' }],
+    };
+    expect(flowProblemsOf({ ...lit, flow: [{ step: 'autoSearch' }, pick, loopCount] })).toEqual([]);
+  });
+
+  it('the light searches with the moves the level allows, from the garden it has', () => {
+    // Without marks unlocked (chapter 0), the light's first sun is refused.
+    const early = { ...betrayal, id: '0.5', victory: undefined, solution: [{ type: 'tapGarden' }] };
+    expect(flowProblemsOf({ ...early, flow: [{ step: 'autoSearch' }] })).toEqual([
+      {
+        code: 'lightRefused',
+        step: 0,
+        move: 0,
+        reason: { code: 'actionLocked', action: 'markRoot' },
+      },
+    ]);
+  });
+
   it('the flower challenge needs a flower, a chain to draw, and comes before any play', () => {
     const challenge = { step: 'flowerChallenge', attempts: 3 };
     expect(flowProblemsOf({ ...BLOOM, flow: [challenge] })).toEqual([]);

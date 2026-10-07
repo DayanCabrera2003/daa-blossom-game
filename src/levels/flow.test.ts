@@ -116,6 +116,11 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'pickVine', prompt: 'ch4.2.sauce.01', retry: false }])).toBe(false);
   });
 
+  it('reads the step where the light searches by itself (4.1, 4.2), which takes no fields', () => {
+    expect(parse([{ step: 'autoSearch' }])).toEqual([{ step: 'autoSearch' }]);
+    expect(accepts([{ step: 'autoSearch', from: 'R' }])).toBe(false);
+  });
+
   it('reads the flower challenge (4.11): chains drawn `attempts` times, at least once', () => {
     expect(parse([{ step: 'flowerChallenge', attempts: 3 }])).toEqual([
       { step: 'flowerChallenge', attempts: 3 },

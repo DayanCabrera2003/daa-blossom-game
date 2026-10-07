@@ -56,6 +56,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} bets from 1 to ${problem.range} lanterns, but the garden holds ${problem.optimum}: nobody can win it`;
     case 'demoRefused':
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'lightRefused':
+      return `script step ${problem.step + 1}: move ${problem.move + 1} of the light's own search is refused by the rules: ${withDetails(problem.reason)}`;
     case 'notAFlower':
       return `the declared flower is no flower of the starting lanterns: ${withDetails(problem.error)}`;
     case 'flowerBaseLit':

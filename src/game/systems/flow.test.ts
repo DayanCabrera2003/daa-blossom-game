@@ -186,6 +186,16 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('the light searches by itself and the script waits until it has been shown', () => {
+    const started = start([say('ch4.1.sauce.00'), { step: 'autoSearch' }, play]);
+    expect(started.effects).toEqual([
+      { kind: 'say', lines: ['ch4.1.sauce.00'] },
+      { kind: 'autoSearch', step: 1 },
+    ]);
+    expect(advanceFlow(started.flow, { type: 'tap' }).flow).toBe(started.flow);
+    expect(advanceFlow(started.flow, { type: 'searched' }).effects).toEqual([{ kind: 'play' }]);
+  });
+
   it('explore ends with a touch on a sprout, separate with a touch on the garden', () => {
     const { flow, effects } = start([{ step: 'explore' }, { step: 'separate' }]);
     expect(effects).toEqual([{ kind: 'explore' }]);
