@@ -62,7 +62,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(all).toEqual([...new Set(all)]);
   });
 
-  it('chapters 0 to 2 bring their mechanics in the levels that first use them', () => {
+  it('the written chapters bring their mechanics in the levels that first use them', () => {
     expect(Object.fromEntries([...shown].filter(([, cards]) => cards.length > 0))).toEqual({
       '0.1': ['lanterns'],
       '0.2': ['undo'],
@@ -75,6 +75,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '2.1': ['reflection'],
       '2.2': ['count'],
       '2.4': ['draw'],
+      '3.1': ['inspect', 'marks'],
     });
   });
 

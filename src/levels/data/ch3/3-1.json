@@ -1,0 +1,47 @@
+{
+  "id": "3.1",
+  "sprouts": [
+    { "label": "R", "x": 50, "y": 140, "kind": "bee" },
+    { "label": "a", "x": 125, "y": 110, "kind": "flower" },
+    { "label": "b", "x": 200, "y": 140, "kind": "bee" },
+    { "label": "c", "x": 275, "y": 110, "kind": "flower" },
+    { "label": "d", "x": 350, "y": 140, "kind": "bee" },
+    { "label": "T", "x": 425, "y": 110, "kind": "flower" }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "T"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"]
+  ],
+  "goal": { "visible": true, "value": 3 },
+  "fog": true,
+  "water": 6,
+  "victory": { "type": "matchingSize", "value": 3 },
+  "hints": [
+    { "line": "ch3.1.sauce.02" },
+    { "line": "ch3.1.sauce.03", "highlight": ["R"] },
+    { "line": "ch3.1.sauce.04" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch3.1.sauce.00", "ch3.1.sauce.01"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch3.1.sauce.05"] }
+  ],
+  "unlocks": { "actions": ["inspect", "markRoot", "markMoon"] },
+  "solution": [
+    { "type": "inspect", "vertex": "R" },
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "inspect", "vertex": "b" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "inspect", "vertex": "d" },
+    { "type": "markMoon", "from": "d", "to": "T" },
+    { "type": "chain", "path": ["R", "a", "b", "c", "d", "T"] }
+  ]
+}
