@@ -32,27 +32,12 @@ import { lightDay } from '../systems/lightSearch';
 import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
 import { helpCards, offerCards, startCards, stepCard } from '../systems/tutorials';
-import { AnimationView } from '../view/AnimationView';
-import { DialogueView } from '../view/DialogueView';
 import { fitCamera } from '../view/fitCamera';
-import { FlowerView } from '../view/FlowerView';
-import { FogView } from '../view/FogView';
-import { GardenView } from '../view/GardenView';
-import { HudView } from '../view/HudView';
-import { MarksView } from '../view/MarksView';
-import { MirrorView } from '../view/MirrorView';
-import { NotebookView } from '../view/NotebookView';
-import { ObjectsView } from '../view/ObjectsView';
-import { QuestionView } from '../view/QuestionView';
-import { SideBySideView } from '../view/SideBySideView';
-import { SunSliderView } from '../view/SunSliderView';
-import { ToastView } from '../view/ToastView';
-import { ToolbarView } from '../view/ToolbarView';
-import { TutorialView, type ShownCard } from '../view/TutorialView';
-import { VeilView } from '../view/VeilView';
+import type { ShownCard } from '../view/TutorialView';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
+import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
 import { Presenter } from './presenter';
 
 /** How often the HUD is refreshed while nothing happens, so a hint shows up when it is due. */
@@ -71,21 +56,7 @@ export class LevelScene extends Phaser.Scene {
   private labels: readonly string[] = [];
   /** Which sprouts are bees or flowers; empty in a garden that has none. */
   private kinds: readonly (SproutKind | undefined)[] = [];
-  private views!: {
-    fog: FogView;
-    flowers: FlowerView;
-    objects: ObjectsView;
-    garden: GardenView;
-    marks: MarksView;
-    mirror: MirrorView;
-    sideBySide: SideBySideView;
-    animation: AnimationView;
-    hud: HudView;
-    toolbar: ToolbarView;
-    sun: SunSliderView;
-    toast: ToastView;
-    dialogue: DialogueView;
-  };
+  private views!: LevelViews;
   private lastHudRefresh = 0;
   /** The last chain drawn in the flower challenge, and since when it shows, to time its moments. */
   private cutShown: FlowerAttempt | null = null;
@@ -132,38 +103,14 @@ export class LevelScene extends Phaser.Scene {
       { kind: 'levelStart', at: this.context.clock(), level: level.data.id },
     ]);
     const { t } = this.context;
-    this.views = {
-      fog: new FogView(this),
-      flowers: new FlowerView(this),
-      objects: new ObjectsView(this),
-      garden: new GardenView(this),
-      marks: new MarksView(this),
-      mirror: new MirrorView(this, t),
-      sideBySide: new SideBySideView(this, t),
-      animation: new AnimationView(this),
-      hud: new HudView(this, t, {
-        done: () => this.dispatch({ kind: 'done' }),
-        undo: () => this.dispatch({ kind: 'undo' }),
-        redo: () => this.dispatch({ kind: 'redo' }),
-        hint: () => this.dispatch({ kind: 'hint' }),
-        back: () => this.leave(),
-        help: () => this.openHelp(),
-        checkMirror: () => this.dispatch({ kind: 'checkMirror' }),
-      }),
-      toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
-      sun: new SunSliderView(this, (fraction) => this.dispatch({ kind: 'seek', fraction })),
-      toast: new ToastView(this),
-      dialogue: new DialogueView(this, t('dialogue.continue')),
-    };
+    this.views = buildLevelViews(this, t, {
+      dispatch: (event) => this.dispatch(event),
+      back: () => this.leave(),
+      help: () => this.openHelp(),
+    });
     this.presenter = new Presenter(
       this,
-      {
-        dialogue: this.views.dialogue,
-        question: new QuestionView(this),
-        notebook: new NotebookView(this),
-        veil: new VeilView(this),
-        tutorial: new TutorialView(this, t),
-      },
+      buildPresenterViews(this, t, this.views.dialogue),
       {
         showDay: (state) => (state === null ? this.render() : this.renderReplayed(state)),
         searched: () => this.forward({ kind: 'searched' }),
