@@ -1,6 +1,6 @@
 import type { PlaytestLog } from './playtestLog';
 
-/** What the playtest of Hito A measures for one level (GDD §10), over every play of it. */
+/** What the playtests of Hitos A and B measure for one level (GDD §10), over every play of it. */
 export interface LevelSummary {
   readonly level: string;
   readonly plays: number;
