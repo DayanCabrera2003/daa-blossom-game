@@ -602,7 +602,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 
 #### 4.8 Dos flores
 - **Jardín:** un árbol de búsqueda con dos ciclos impares disjuntos en ramas distintas; la cadena pasa por uno solo de ellos.
-- **Enseña:** puede haber varias flores en una búsqueda; se pliegan a medida que aparecen; solo se despliegan las que la cadena atraviesa.
+- **Enseña:** puede haber varias flores en una búsqueda; se pliegan a medida que aparecen; a mano solo se despliegan las que la cadena atraviesa. Al aplicar la cadena, el jardín se abre entero, como al terminar una ronda.
 - **Victoria:** cadena aplicada.
 
 #### 4.9 Flor sin cadena
