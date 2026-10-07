@@ -229,3 +229,16 @@ describe('4.7: a flower with a long stem', () => {
     }
   });
 });
+
+describe('4.8: two flowers', () => {
+  const level = levelOf('4.8');
+
+  it('the chain crosses one flower: the other stays folded, and lighting it opens the garden', () => {
+    const chainAt = level.solution.findIndex((move) => move.type === 'chain');
+    const ready = play(level.start, level.solution.slice(0, chainAt));
+    expect(ready.layer.nodes.filter((node) => node.kind === 'blossom')).toHaveLength(1);
+    const lit = play(ready, level.solution.slice(chainAt));
+    expect(lit.layer.nodes.every((node) => node.kind === 'sprout')).toBe(true);
+    expect(size(lit.matching)).toBe(maximumSize(level.graph));
+  });
+});
