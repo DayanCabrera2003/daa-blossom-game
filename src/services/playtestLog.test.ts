@@ -53,6 +53,8 @@ describe('playtest log', () => {
         { kind: 'mirrorCheck', at: 5, level: '2.4', beats: true, counted: true },
         { kind: 'pickVine', at: 6, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
         { kind: 'flowerChain', at: 7, level: '4.11', path: ['e', 't'], counted: true },
+        { kind: 'recipeCheck', at: 8, level: '6.1', step: 0, card: 'moonToSun', case: 'moon' },
+        { kind: 'recipeCheck', at: 9, level: '6.1', step: 0, card: null, case: null },
       ],
     };
     expect(parseLog(log)).toEqual(log);

@@ -111,6 +111,18 @@ const entrySchema = z.discriminatedUnion('kind', [
     path: z.array(z.string()),
     counted: z.boolean(),
   }),
+  /**
+   * A recipe checked in a `recipe` step (6.1): the id of its first failing card and the case of
+   * the search it is about, or both null when the recipe was right.
+   */
+  z.strictObject({
+    kind: z.literal('recipeCheck'),
+    at,
+    level,
+    step: z.number().int().min(0),
+    card: z.string().nullable(),
+    case: z.string().nullable(),
+  }),
 ]);
 
 const logSchema = z.strictObject({

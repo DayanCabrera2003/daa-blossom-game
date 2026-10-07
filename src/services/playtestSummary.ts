@@ -27,6 +27,8 @@ export interface LevelSummary {
   readonly vinePicks: { readonly right: number; readonly wrong: number };
   /** Chains drawn in the flower challenge (4.11), counted or refused as no chain. */
   readonly flowerChains: { readonly counted: number; readonly refused: number };
+  /** Recipes checked (6.1), right or with a failing card. */
+  readonly recipeChecks: { readonly right: number; readonly wrong: number };
   /**
    * Whether the first vine ever pointed at in the level was the conflict (Hito B, 4.2), or null if
    * no vine was pointed at. Later plays do not change it: they come back knowing the answer.
@@ -52,6 +54,7 @@ type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
   mirrorChecks: { beating: number; notBeating: number };
   vinePicks: { right: number; wrong: number };
   flowerChains: { counted: number; refused: number };
+  recipeChecks: { right: number; wrong: number };
 };
 
 const freshTally = (level: string): Tally => ({
@@ -71,6 +74,7 @@ const freshTally = (level: string): Tally => ({
   mirrorChecks: { beating: 0, notBeating: 0 },
   vinePicks: { right: 0, wrong: 0 },
   flowerChains: { counted: 0, refused: 0 },
+  recipeChecks: { right: 0, wrong: 0 },
   firstPickRight: null,
   notebookRightFirstTry: null,
   hint3BeforeWin: false,
@@ -156,6 +160,10 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
       case 'flowerChain':
         if (entry.counted) counts.flowerChains.counted += 1;
         else counts.flowerChains.refused += 1;
+        break;
+      case 'recipeCheck':
+        if (entry.card === null) counts.recipeChecks.right += 1;
+        else counts.recipeChecks.wrong += 1;
         break;
       case 'history':
         break;

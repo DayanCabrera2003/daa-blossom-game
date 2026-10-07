@@ -6,6 +6,7 @@ import {
   betrayalLevel,
   bloomLevel,
   closedFlowerLevel,
+  brokenRecipeLevel,
   festivalLevel,
 } from '../../../tests/support/fixtureLevels';
 import { countAnswer } from './answerKey';
@@ -239,6 +240,19 @@ describe('playtest entries of bets, counts and the notebook', () => {
       { kind: 'flowerChain', at: 0, level: '4.11', path: ['t', 'x'], counted: false },
       { kind: 'flowerChain', at: 0, level: '4.11', path: ['e', 't'], counted: true },
       { kind: 'flowerChain', at: 0, level: '4.11', path: ['t', 'e'], counted: false },
+    ]);
+  });
+
+  it('every recipe check is logged: the failing card and its case, or none when right', () => {
+    const { entries } = play(startController(brokenRecipeLevel(), 0), [
+      { kind: 'checkRecipe' },
+      { kind: 'recipeCard', card: 'foldFlower' },
+      { kind: 'checkRecipe' },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'recipeCheck', at: 0, level: '6.3', step: 0, card: 'foldFlower', case: 'sameTree' },
+      { kind: 'recipeCheck', at: 0, level: '6.3', step: 0, card: null, case: null },
+      { kind: 'levelEnd', at: 0, level: '6.3', outcome: 'won', stars: 2 },
     ]);
   });
 

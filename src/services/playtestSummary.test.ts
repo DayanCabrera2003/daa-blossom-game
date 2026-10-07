@@ -35,6 +35,7 @@ describe('playtest summary', () => {
       mirrorChecks: { beating: 0, notBeating: 0 },
       vinePicks: { right: 0, wrong: 0 },
       flowerChains: { counted: 0, refused: 0 },
+      recipeChecks: { right: 0, wrong: 0 },
       firstPickRight: null,
       notebookRightFirstTry: null,
       hint3BeforeWin: false,
@@ -152,6 +153,17 @@ describe('playtest summary', () => {
       ]),
     );
     expect(summary?.flowerChains).toEqual({ counted: 1, refused: 1 });
+  });
+
+  it('counts the recipe checks per level, right and wrong (6.1)', () => {
+    const [summary] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '6.1' },
+        { kind: 'recipeCheck', at: 1, level: '6.1', step: 0, card: 'foldFlower', case: 'sameTree' },
+        { kind: 'recipeCheck', at: 2, level: '6.1', step: 0, card: null, case: null },
+      ]),
+    );
+    expect(summary?.recipeChecks).toEqual({ right: 1, wrong: 1 });
   });
 
   it('counts wrong notebook choices, counterexamples opened and mirror checks per level', () => {

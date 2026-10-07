@@ -39,6 +39,7 @@ describe('exporting the playtest log', () => {
           mirrorChecks: { beating: 0, notBeating: 0 },
           vinePicks: { right: 0, wrong: 0 },
           flowerChains: { counted: 0, refused: 0 },
+          recipeChecks: { right: 0, wrong: 0 },
           firstPickRight: null,
           notebookRightFirstTry: null,
           hint3BeforeWin: false,
