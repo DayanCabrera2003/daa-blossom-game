@@ -41,3 +41,18 @@ export function nestingDepth(layer: Layer, v: VertexId): number {
   }
   return depth;
 }
+
+/**
+ * What the flowers `path` (ids, outermost first) fold, entered from the outside in as the "Layers"
+ * view does (level 5.2): the garden on top for an empty path, else the children of its last flower.
+ * Null when a flower of the path is not folded among the nodes seen just before it.
+ */
+export function nodesWithin(layer: Layer, path: readonly number[]): readonly GardenNode[] | null {
+  let nodes: readonly GardenNode[] = layer.nodes;
+  for (const id of path) {
+    const flower = nodes.find((node) => node.kind === 'blossom' && node.id === id);
+    if (flower?.kind !== 'blossom') return null;
+    nodes = flower.cycle;
+  }
+  return nodes;
+}
