@@ -1,3 +1,5 @@
+import { checkVertexCover, koenigCover } from '@core/certificates/vertexCover';
+import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
@@ -15,7 +17,8 @@ import { describe, expect, it } from 'vitest';
 /**
  * The lessons of the greenhouse (GDD §7, chapter 3) that its gardens must really hold, checked with
  * the core: in 3.3 a moon is reached from two suns and the false statement "a marked sprout means a
- * chain" is refuted by a garden without one.
+ * chain" is refuted by a garden without one; in 3.8 the failed search reaches every sprout, so its
+ * moons are König's scarecrows, and "k scarecrows, exactly k lanterns" is refuted by a spare one.
  */
 
 const levelOf = (id: string): Level => {
@@ -31,6 +34,13 @@ const counterexampleOf = (id: string, option: number): Counterexample => {
   const built = buildCounterexample(data);
   if (!built.ok) throw new Error(`the counterexample of statement ${option} does not build`);
   return built.value;
+};
+
+/** A sprout of a counterexample, by name. */
+const sproutOf = (counterexample: Counterexample, name: string): VertexId => {
+  const vertex = idOf(counterexample.labels, name);
+  if (vertex === undefined) throw new Error(`no sprout ${name}`);
+  return vertex;
 };
 
 /** Plays moves from a garden; every one must be accepted. */
@@ -68,11 +78,7 @@ describe('3.3: already visited', () => {
 
   it('(c): reaching a marked sprout again is no sign of a chain', () => {
     const counterexample = counterexampleOf('3.3', 2);
-    const id = (name: string): VertexId => {
-      const vertex = idOf(counterexample.labels, name);
-      if (vertex === undefined) throw new Error(`no sprout ${name}`);
-      return vertex;
-    };
+    const id = (name: string): VertexId => sproutOf(counterexample, name);
     const searched = play(counterexample.start, [
       { type: 'markRoot', vertex: id('R') },
       { type: 'markMoon', from: id('R'), to: id('a') },
@@ -81,5 +87,44 @@ describe('3.3: already visited', () => {
     const again = applyAction(searched, { type: 'markMoon', from: id('d'), to: id('a') });
     expect(again).toMatchObject({ ok: false, reason: { code: 'alreadyMarked' } });
     expect(statusOf(searched)).toBe('exhausted');
+  });
+});
+
+describe('3.8: the gift of the search', () => {
+  const level = () => levelOf('3.8');
+  /** The walkthrough's moves before its first scarecrow: the search, and nothing else. */
+  const search = (): readonly Action[] => {
+    const moves = level().solution;
+    const first = moves.findIndex((move) => move.type === 'placeScarecrow');
+    return first === -1 ? moves : moves.slice(0, first);
+  };
+
+  it('its search fails and reaches every sprout', () => {
+    const end = play(level().start, search());
+    expect(statusOf(end)).toBe('exhausted');
+    const unmarked = [...Array(end.graph.n).keys()].filter(
+      (v) => end.search?.label[itemAt(end.layer.nodeOf, v)] === 'none',
+    );
+    expect(unmarked).toEqual([]);
+  });
+
+  it('puts a scarecrow on every moon of that search, and they guard every vine', () => {
+    const { start, solution } = level();
+    const end = play(start, search());
+    if (end.search === null) throw new Error('the walkthrough marks nothing');
+    const placed = solution.flatMap((move) =>
+      move.type === 'placeScarecrow' ? [move.vertex] : [],
+    );
+    expect([...placed].sort((a, b) => a - b)).toEqual(marked(end, 'inner'));
+    expect(koenigCover(end.graph, end.search)).toEqual(marked(end, 'inner'));
+    expect(checkVertexCover(end.graph, placed).ok).toBe(true);
+  });
+
+  it('(b): two scarecrows guard every vine, and still only one lantern fits', () => {
+    const counterexample = counterexampleOf('3.8', 1);
+    const { graph } = counterexample.start;
+    const spare = [sproutOf(counterexample, 'A'), sproutOf(counterexample, 'C')];
+    expect(checkVertexCover(graph, spare).ok).toBe(true);
+    expect(maximumSize(graph)).toBe(1);
   });
 });
