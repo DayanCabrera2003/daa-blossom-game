@@ -20,6 +20,7 @@ describe('what each hint grade shows (GDD §5.3)', () => {
       mirror: null,
       chain: null,
       vine: null,
+      card: null,
     });
     expect(hintContent(festivalHints, 2, { step }).highlight).toEqual([5]);
   });
@@ -34,6 +35,7 @@ describe('what each hint grade shows (GDD §5.3)', () => {
       mirror: null,
       chain: null,
       vine: null,
+      card: null,
     });
   });
 
@@ -47,6 +49,7 @@ describe('what each hint grade shows (GDD §5.3)', () => {
       mirror: null,
       chain: null,
       vine: null,
+      card: null,
     });
     expect(hintContent([], 2, { step }).highlight).toEqual([0, 1, 2, 3, 4, 5]);
     expect(hintContent([], 3)).toEqual({
@@ -58,6 +61,7 @@ describe('what each hint grade shows (GDD §5.3)', () => {
       mirror: null,
       chain: null,
       vine: null,
+      card: null,
     });
   });
 
@@ -92,6 +96,14 @@ describe('what each hint grade shows (GDD §5.3)', () => {
     const vine = [2, 4] as const;
     expect(hintContent(festivalHints, 2, { vine })).toMatchObject({ vine: null, highlight: [5] });
     expect(hintContent(festivalHints, 3, { vine })).toMatchObject({ vine, move: null });
+  });
+
+  it('in the recipe, only grade 3 names the card the mentor places', () => {
+    expect(hintContent([], 2, { card: 'foldFlower' })).toMatchObject({ card: null });
+    expect(hintContent([], 3, { card: 'foldFlower' })).toMatchObject({
+      card: 'foldFlower',
+      move: null,
+    });
   });
 
   it('the sprouts an action involves, each once', () => {
