@@ -138,6 +138,15 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'recipe', missing: ['moon', 'moon'] }])).toBe(false);
   });
 
+  it('reads the automaton step (6.2, 6.3): the recipe of the player, or a fixed one less some cases', () => {
+    expect(parse([{ step: 'automaton' }])).toEqual([{ step: 'automaton' }]);
+    expect(parse([{ step: 'automaton', missing: ['sameTree'] }])).toEqual([
+      { step: 'automaton', missing: ['sameTree'] },
+    ]);
+    expect(accepts([{ step: 'automaton', missing: ['fold'] }])).toBe(false);
+    expect(accepts([{ step: 'automaton', missing: ['moon', 'moon'] }])).toBe(false);
+  });
+
   it('a question offers at least two options', () => {
     const lonely = {
       step: 'ask',

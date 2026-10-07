@@ -51,7 +51,10 @@ export type FlowSignal =
   | { readonly type: 'flowerDrawn'; readonly chain: boolean }
   /** Too many drawings were no chains: the flower challenge is over anyway. */
   | { readonly type: 'flowerSpared' }
-  /** The light's own search was made in the garden and shown to the end. */
+  /**
+   * The garden's own moves were made and shown to the end: the light's search (ends `autoSearch`),
+   * or the automaton's run (ends `automaton`).
+   */
   | { readonly type: 'searched' }
   /** The recipe was checked; `right` when the core finds it right (ends `recipe`). */
   | { readonly type: 'recipeChecked'; readonly right: boolean };
@@ -120,6 +123,11 @@ export type FlowEffect =
    * input, and says when it is over.
    */
   | { readonly kind: 'autoSearch'; readonly step: number }
+  /**
+   * The automaton runs a recipe (6.2, 6.3): the scene shows its moves one by one, with the garden
+   * taking no input, and says when the whole run has been seen.
+   */
+  | { readonly kind: 'automaton'; readonly step: number }
   /**
    * The recipe with cards (6.1): the panel opens with the right recipe less the cards of the
    * `missing` cases to repair (6.3), or with no card placed when none are named.
@@ -230,6 +238,8 @@ function opening(step: LevelStep, index: number): FlowEffect {
       return { kind: 'flowerChallenge', step: index, attempts: step.attempts };
     case 'autoSearch':
       return { kind: 'autoSearch', step: index };
+    case 'automaton':
+      return { kind: 'automaton', step: index };
     case 'recipe':
       return { kind: 'recipe', step: index, missing: step.missing };
   }
@@ -301,6 +311,7 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     case 'sun':
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'autoSearch':
+    case 'automaton':
       return signal.type === 'searched' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'recipe':
       // A wrong check is told by the panel, which stays open: only a right recipe moves on.

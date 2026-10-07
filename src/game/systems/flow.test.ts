@@ -196,6 +196,16 @@ describe('the script engine', () => {
     expect(advanceFlow(started.flow, { type: 'searched' }).effects).toEqual([{ kind: 'play' }]);
   });
 
+  it('the automaton runs a recipe and the script waits until the whole run has been seen', () => {
+    const started = start([{ step: 'automaton', missing: ['sameTree'] }, say('ch6.3.sauce.00')]);
+    expect(started.effects).toEqual([{ kind: 'automaton', step: 0 }]);
+    expect(advanceFlow(started.flow, { type: 'tap' }).flow).toBe(started.flow);
+    expect(advanceFlow(started.flow, { type: 'searched' }).effects).toEqual([
+      { kind: 'say', lines: ['ch6.3.sauce.00'] },
+      { kind: 'finished' },
+    ]);
+  });
+
   it('explore ends with a touch on a sprout, separate with a touch on the garden', () => {
     const { flow, effects } = start([{ step: 'explore' }, { step: 'separate' }]);
     expect(effects).toEqual([{ kind: 'explore' }]);

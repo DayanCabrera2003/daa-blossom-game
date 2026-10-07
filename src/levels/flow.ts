@@ -31,6 +31,11 @@ const option = z.strictObject({ line: lineId, correct: z.boolean(), reply: lineI
 const range = z.number().int().min(1);
 
 /** The steps of a script, by `step`. Every object is strict, so a typo is an error. */
+/** Cases of the recipe, each named once: the cards a recipe arrives without. */
+const missingCases = z
+  .array(z.enum(RECIPE_CASES))
+  .refine((cases) => new Set(cases).size === cases.length, 'a missing case is named twice');
+
 const flowStep = z.discriminatedUnion('step', [
   /** Play with the level's rules until its victory holds. */
   z.strictObject({ step: z.literal('play'), reactions: z.array(reaction).default([]) }),
@@ -109,13 +114,15 @@ const flowStep = z.discriminatedUnion('step', [
    * right. With `missing`, the right recipe arrives without the cards of those cases, to be
    * repaired (6.3); each case is named once.
    */
-  z.strictObject({
-    step: z.literal('recipe'),
-    missing: z
-      .array(z.enum(RECIPE_CASES))
-      .default([])
-      .refine((cases) => new Set(cases).size === cases.length, 'a missing case is named twice'),
-  }),
+  z.strictObject({ step: z.literal('recipe'), missing: missingCases.default([]) }),
+  /**
+   * The mechanical gardener (6.2, 6.3) runs a recipe from the lanterns the level starts with: its
+   * moves enter the day, shown one by one while the garden takes no input, and the step is over
+   * once the whole run has been seen. It runs the recipe the player wrote in the last `recipe` step
+   * before it (the right one, since a recipe step ends only when it is), or, with `missing`, a fixed
+   * one: the right recipe without the cards of those cases (Bruto's, 6.3).
+   */
+  z.strictObject({ step: z.literal('automaton'), missing: missingCases.optional() }),
 ]);
 
 /** The script of a level; without one, the level is played until won. */
