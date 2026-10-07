@@ -1,5 +1,5 @@
-import { members } from '@core/blossom/hierarchy';
-import type { Blossom, GardenNode, Layer } from '@core/blossom/types';
+import { members, nodesWithin } from '@core/blossom/hierarchy';
+import type { GardenNode, Layer } from '@core/blossom/types';
 import type { VertexId } from '@core/graph/types';
 import { invariant } from '@core/shared/invariant';
 import { itemAt } from '@core/shared/itemAt';
@@ -69,10 +69,6 @@ function ancestry(nodes: readonly GardenNode[], id: number): number[] | null {
   return null;
 }
 
-/** The flower with id `id` among `nodes` (not inside them), if any. */
-const flowerAmong = (nodes: readonly GardenNode[], id: number): Blossom | undefined =>
-  nodes.find((node): node is Blossom => node.kind === 'blossom' && node.id === id);
-
 /**
  * The nearest layer to `path` that exists in the garden `layer`: the innermost flower entered that
  * is still folded, reached through the flowers that hold it now; outside if none is. So opening a
@@ -88,12 +84,8 @@ export function settlePath(layer: Layer, path: LayerPath): LayerPath {
 
 /** The nodes seen at a settled path: the garden on top, or the children of its last flower. */
 function nodesAt(layer: Layer, path: LayerPath): readonly GardenNode[] {
-  let nodes: readonly GardenNode[] = layer.nodes;
-  for (const id of path) {
-    const flower = flowerAmong(nodes, id);
-    invariant(flower !== undefined, 'a settled path enters only flowers that are folded');
-    nodes = flower.cycle;
-  }
+  const nodes = nodesWithin(layer, path);
+  invariant(nodes !== null, 'a settled path enters only flowers that are folded');
   return nodes;
 }
 
@@ -103,8 +95,8 @@ function nodesAt(layer: Layer, path: LayerPath): readonly GardenNode[] {
  */
 export function enterFlower(layer: Layer, path: LayerPath, blossom: number): LayerPath {
   const settled = settlePath(layer, path);
-  const shown = flowerAmong(nodesAt(layer, settled), blossom) !== undefined;
-  return shown ? [...settled, blossom] : settled;
+  const entered = [...settled, blossom];
+  return nodesWithin(layer, entered) === null ? settled : entered;
 }
 
 /** Leaves the innermost flower entered, back to the layer before; outside stays outside. */
