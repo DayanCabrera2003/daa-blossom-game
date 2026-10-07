@@ -2,7 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { betrayalLevel } from '../../../tests/support/fixtureLevels';
+import { BLOOM, betrayalLevel, bloomLevel } from '../../../tests/support/fixtureLevels';
 import { garden } from './levelSession';
 import { playWalkthrough } from './walkthrough';
 
@@ -26,6 +26,12 @@ const scripted = (flow: unknown[], solution: unknown[]): Level => {
     flow,
     solution,
   });
+  if (!loaded.ok) throw new Error('fixture does not load');
+  return loaded.value;
+};
+/** Loads a level file that must load. */
+const load = (json: unknown): Level => {
+  const loaded = loadLevel(json);
   if (!loaded.ok) throw new Error('fixture does not load');
   return loaded.value;
 };
@@ -96,6 +102,27 @@ describe('playing the reference walkthrough of a level without a scene', () => {
       'answered',
       'won',
     ]);
+  });
+
+  it('a chain drawn in the flower challenge is dragged through its sprouts (4.11)', () => {
+    const played = playWalkthrough(bloomLevel());
+    expect(played.problem).toBeNull();
+    expect(played.effects.map((effect) => effect.kind)).toEqual([
+      'say',
+      'flowerChallenge',
+      'flowerDrawn',
+      'flowerDrawn',
+      'flowerDrawn',
+      'say',
+      'won',
+    ]);
+  });
+
+  it('a chain the drag cannot follow, or that draws nothing, is a problem', () => {
+    const astray = { ...BLOOM, solution: [{ type: 'drawChain', path: ['t', 'g', 'b', 'c'] }] };
+    expect(playWalkthrough(load(astray)).problem).toEqual({ code: 'gestureMismatch', entry: 0 });
+    const lit = { ...BLOOM, solution: [{ type: 'drawChain', path: ['x', 'h'] }] };
+    expect(playWalkthrough(load(lit)).problem).toEqual({ code: 'inputIgnored', entry: 0 });
   });
 
   it('a move the level refuses stops the walkthrough, saying which and why', () => {

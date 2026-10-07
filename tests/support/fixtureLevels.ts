@@ -382,7 +382,9 @@ const TWO_COMPONENTS = {
  * A garden like the one GDD 4.11 describes: the flower `b–c=d–f=g–b` with its base b in the dark,
  * exits `c–e`, `d–h` and `g–t`, the lit pair `h=x` leading to t, and `e–t` outside it, so e and t
  * are the two more sprouts in the dark. Sprouts `b c d f g e t h x` as 0…8, all in the left half of
- * the canvas so the folded garden fits beside it. Exported as a file, for tests that vary it.
+ * the canvas so the folded garden fits beside it. Its script is the flower challenge, three chains;
+ * the walkthrough draws one from outside to outside, one to the base, and one that misses the
+ * flower. Exported as a file, for tests that vary it.
  */
 export const BLOOM = {
   id: '4.11',
@@ -417,8 +419,17 @@ export const BLOOM = {
   ],
   flower: ['b', 'c', 'd', 'f', 'g'],
   goal: { visible: false },
-  flow: [{ step: 'say', lines: ['ch4.11.sauce.00'] }],
-  solution: [{ type: 'tapGarden' }],
+  hints: [{ line: 'ch4.11.sauce.02', highlight: ['e'] }],
+  flow: [
+    { step: 'say', lines: ['ch4.11.sauce.00'] },
+    { step: 'flowerChallenge', attempts: 3 },
+    { step: 'say', lines: ['ch4.11.sauce.01'] },
+  ],
+  solution: [
+    { type: 'drawChain', path: ['t', 'x', 'h', 'd', 'c', 'e'] },
+    { type: 'drawChain', path: ['e', 'c', 'd', 'f', 'g', 'b'] },
+    { type: 'drawChain', path: ['e', 't'] },
+  ],
 };
 
 /** The level built from `BLOOM`. */

@@ -328,6 +328,25 @@ describe('the script engine', () => {
     expect(advanceFlow(asking, { type: 'mirrorSpared' })).toEqual({ flow: asking, effects: [] });
   });
 
+  it('the flower challenge ends after its chains, or when the player is spared', () => {
+    const { flow, effects } = start([{ step: 'flowerChallenge', attempts: 2 }]);
+    expect(effects).toEqual([{ kind: 'flowerChallenge', step: 0, attempts: 2 }]);
+    const tried = send(flow, [
+      { type: 'flowerDrawn', chain: true },
+      { type: 'flowerDrawn', chain: false },
+      { type: 'mirrorChecked', better: true },
+    ]);
+    expect(tried.flow.attempts).toBe(1);
+    expect(tried.effects).toEqual([]);
+    expect(advanceFlow(tried.flow, { type: 'flowerDrawn', chain: true }).effects).toEqual([
+      { kind: 'finished' },
+    ]);
+    expect(advanceFlow(flow, { type: 'flowerSpared' }).effects).toEqual([{ kind: 'finished' }]);
+    // Anywhere else, a chain drawn means nothing.
+    const asking = start([ask(true)]).flow;
+    expect(advanceFlow(asking, { type: 'flowerDrawn', chain: true }).effects).toEqual([]);
+  });
+
   it('an option that is not on offer is no answer', () => {
     const asking = start([ask(true)]).flow;
     expect(advanceFlow(asking, { type: 'answer', option: 2, right: null }).effects).toEqual([]);

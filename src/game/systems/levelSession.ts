@@ -21,6 +21,12 @@ import {
   type FlowSignal,
   type FlowState,
 } from './flow';
+import {
+  drawFlowerChain,
+  startFlowerChallenge,
+  type FlowerAttempt,
+  type FlowerChallenge,
+} from './flowerChallenge';
 import { hintContent, type HintContent, type MentorReflection } from './hintContent';
 import {
   afterAccepted,
@@ -55,7 +61,7 @@ import { computeStars, type StarResult } from './stars';
  * What is accepted depends on the step of the script (plan 03, phase 2): garden moves only while
  * playing, so the lanterns never change under a question that depends on them; undo, redo and the
  * sun while playing or waiting for the sun. The reflection of the mirror challenge is drawn and
- * checked only in its `draw` step. Once the script is over the garden is free again, as it
+ * checked only in its `draw` step, and the chains of the flower challenge only in its own step. Once the script is over the garden is free again, as it
  * always was after a win, but nothing more can be won.
  */
 export interface LevelSession {
@@ -77,6 +83,8 @@ export interface LevelSession {
   readonly reactions: readonly FiredReaction[];
   /** The reflection drawn in the mirror challenge (2.4) and its checks; untouched elsewhere. */
   readonly challenge: MirrorChallenge;
+  /** The chains drawn in the flower challenge (4.11); untouched elsewhere. */
+  readonly flower: FlowerChallenge;
 }
 
 /** The answer of a move: applied (for the animation queue), or refused and why. */
@@ -159,6 +167,7 @@ export function openSession(
     flow,
     reactions: [],
     challenge: startChallenge(level.start.graph),
+    flower: startFlowerChallenge(),
   };
   // A script that is over at once (only lines) completes the level as it opens.
   return { session: { ...session, won: starsAt(session, flow) }, effects };
@@ -390,4 +399,28 @@ export function checkDrawnMirror(
         : { type: 'mirrorChecked', better: false };
   const advanced = advance({ ...session, challenge }, signal, now);
   return { ...advanced, check };
+}
+
+/**
+ * A chain drawn through `path` in the open garden during the flower challenge (4.11): cut at the
+ * level's flower and never applied, or refused when it is no chain. A chain is one more attempt;
+ * once the refused drawings reach the limit, the step is over anyway. Outside the step nothing is
+ * drawn and the attempt is null.
+ */
+export function drawInGarden(
+  session: LevelSession,
+  path: readonly VertexId[],
+  now: number,
+): { session: LevelSession; attempt: FlowerAttempt | null; effects: FlowEffect[] } {
+  if (stepNow(session)?.step !== 'flowerChallenge') return { session, attempt: null, effects: [] };
+  const { flower } = session.level;
+  invariant(flower !== null, 'the script checks keep a flower challenge to levels with a flower');
+  const drawn = drawFlowerChain(session.flower, garden(session), flower, path);
+  const { attempt } = drawn;
+  const signal: FlowSignal =
+    attempt.kind === 'notAChain' && attempt.spared
+      ? { type: 'flowerSpared' }
+      : { type: 'flowerDrawn', chain: attempt.kind === 'cut' };
+  const advanced = advance({ ...session, flower: drawn.challenge }, signal, now);
+  return { ...advanced, attempt };
 }

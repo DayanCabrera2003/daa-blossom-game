@@ -42,6 +42,7 @@ describe('the flower challenge', () => {
       folded: [2, 4, 3, 0],
     });
     expect(attempt.cut.petal).toBe(2);
+    expect(attempt.path).toEqual([6, 8, 7, 2, 1, 5]);
     expect(challenge).toEqual({ chains: 1, misses: 0, shown: attempt });
   });
 

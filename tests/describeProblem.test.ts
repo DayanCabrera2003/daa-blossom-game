@@ -72,6 +72,9 @@ describe('readable level problems', () => {
       { code: 'flowerBaseLit', base: 'b' },
       { code: 'flowerBaseNotFirst', base: 'b' },
       { code: 'flowerOffSide', sprout: 't' },
+      { code: 'flowerMissing', step: 1 },
+      { code: 'noChainToDraw', step: 1 },
+      { code: 'flowerAfterPlay', step: 1 },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

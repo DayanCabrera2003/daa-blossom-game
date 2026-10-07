@@ -132,6 +132,7 @@ const UI = {
   'mirror.chain': [],
   'mirror.again': [],
   'mirror.spared': [],
+  'flower.spared': [],
   'hud.checkMirror': [],
   'victory.title': [],
   'victory.stars': ['count'],

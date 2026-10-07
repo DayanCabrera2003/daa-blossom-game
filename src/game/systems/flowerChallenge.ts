@@ -42,8 +42,13 @@ export type FlowerAttempt =
       readonly error: PathError;
       readonly spared: boolean;
     }
-  /** A chain, cut at the flower, with the moments of the argument. */
-  | { readonly kind: 'cut'; readonly cut: FlowerCut; readonly argument: FlowerArgument };
+  /** A chain, as drawn, cut at the flower, with the moments of the argument. */
+  | {
+      readonly kind: 'cut';
+      readonly path: readonly VertexId[];
+      readonly cut: FlowerCut;
+      readonly argument: FlowerArgument;
+    };
 
 /** Everything the challenge remembers. */
 export interface FlowerChallenge {
@@ -94,7 +99,7 @@ export function drawFlowerChain(
     return { challenge: { ...challenge, misses, shown: attempt }, attempt };
   }
   const cut = cutAtFlower(graph, matching, flower, path);
-  const attempt: FlowerAttempt = { kind: 'cut', cut, argument: argumentOf(cut, flower) };
+  const attempt: FlowerAttempt = { kind: 'cut', path, cut, argument: argumentOf(cut, flower) };
   return { challenge: { ...challenge, chains: challenge.chains + 1, shown: attempt }, attempt };
 }
 

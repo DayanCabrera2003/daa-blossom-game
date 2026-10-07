@@ -4,7 +4,7 @@ import { label, vine } from './fields';
 
 /**
  * What a player gives the script of a level besides garden moves: answers, bets, the sun, touches
- * (on the garden, a sprout or a vine) and the mirror challenge. A level's reference walkthrough (`solution`) writes them between its
+ * (on the garden, a sprout or a vine), the mirror challenge and the chains of the flower challenge. A level's reference walkthrough (`solution`) writes them between its
  * moves, so a test can play the whole level, script included. None of these changes the lanterns.
  */
 
@@ -26,6 +26,8 @@ export const flowInputOptions = [
   z.strictObject({ type: z.literal('checkMirror') }),
   /** A touch on the vine u–v, pointed at in a `pickVine` step. */
   z.strictObject({ type: z.literal('pickVine'), u: label, v: label }),
+  /** A chain dragged through these sprouts in a `flowerChallenge` step, shown and never applied. */
+  z.strictObject({ type: z.literal('drawChain'), path: z.array(label).min(2) }),
 ] as const;
 
 /** Every input type; none of them is the type of a player action. */
@@ -38,8 +40,12 @@ export type LevelFlowInput = z.infer<(typeof flowInputOptions)[number]>;
 
 /** One input, built: sprouts by id. */
 export type FlowInput =
-  | Exclude<LevelFlowInput, { type: 'tapSprout' } | { type: 'drawMirror' } | { type: 'pickVine' }>
+  | Exclude<
+      LevelFlowInput,
+      { type: 'tapSprout' } | { type: 'drawMirror' } | { type: 'pickVine' } | { type: 'drawChain' }
+    >
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
+  | { readonly type: 'drawChain'; readonly path: readonly VertexId[] }
   | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
   | { readonly type: 'drawMirror'; readonly lanterns: readonly Edge[] };
 

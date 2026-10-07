@@ -90,6 +90,11 @@ const flowStep = z.discriminatedUnion('step', [
   z.strictObject({ step: z.literal('pickVine'), prompt: lineId, reply: lineId.optional() }),
   /** The mirror challenge (2.4): draw a better reflection, `attempts` times. */
   z.strictObject({ step: z.literal('draw'), attempts: z.number().int().min(1) }),
+  /**
+   * The flower challenge (4.11): the player draws chains in the open garden, which are shown cut at
+   * the level's `flower` and never applied, until `attempts` of them are chains.
+   */
+  z.strictObject({ step: z.literal('flowerChallenge'), attempts: z.number().int().min(1) }),
   /** The level's notebook question. */
   z.strictObject({ step: z.literal('notebook') }),
 ]);

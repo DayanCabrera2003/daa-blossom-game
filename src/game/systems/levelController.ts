@@ -16,11 +16,13 @@ import type { Point } from '../input/target';
 import { availableTools, type ToolId } from '../input/tools';
 import { triedChain } from '../input/triedChain';
 import type { FlowEffect } from './flow';
+import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
 import {
   act,
   askHint,
   checkDrawnMirror,
+  drawInGarden,
   drawInMirror,
   garden,
   openSession,
@@ -62,7 +64,9 @@ export type UiEvent =
   | { readonly kind: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
   /** The mirror challenge: a vine put in or out of the drawn reflection, and the check of it. */
   | { readonly kind: 'drawToggle'; readonly u: VertexId; readonly v: VertexId }
-  | { readonly kind: 'checkMirror' };
+  | { readonly kind: 'checkMirror' }
+  /** A whole chain drawn in the flower challenge (a drag gives the same, sprout by sprout). */
+  | { readonly kind: 'drawChain'; readonly path: readonly VertexId[] };
 
 /**
  * What the scene has to show after an event: the answers to moves and hints, and the effects of the
@@ -82,6 +86,8 @@ export type Effect =
   | { readonly kind: 'drawRefused'; readonly reason: Refusal }
   /** The drawn reflection was checked: what the check found, to show over the garden. */
   | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
+  /** A chain drawn in the flower challenge: cut at the flower, or refused as no chain. */
+  | { readonly kind: 'flowerDrawn'; readonly attempt: FlowerAttempt }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
 /** The controller after an event, and what the scene has to show for it. */
@@ -167,6 +173,20 @@ function checkMirror(controller: Controller, now: number): Step {
   };
 }
 
+/**
+ * A chain drawn in the flower challenge: what the challenge made of it comes first, then whatever it
+ * moves the script on to. Outside the challenge nothing happens.
+ */
+function drawChain(controller: Controller, path: readonly VertexId[], now: number): Step {
+  const { session, attempt, effects } = drawInGarden(controller.session, path, now);
+  const next = { ...controller, session };
+  if (attempt === null) return { controller: next, effects: [] };
+  return {
+    controller: next,
+    effects: [{ kind: 'flowerDrawn', attempt }, ...shown(session, effects)],
+  };
+}
+
 /** Handles one event of the level screen at time `now` (milliseconds). Pure. */
 export function handle(controller: Controller, event: UiEvent, now: number): Step {
   const state = garden(controller.session);
@@ -193,6 +213,18 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
         const target = hitTest(state, positions, event.point);
         return target.kind === 'vine' ? drawToggle(controller, target.u, target.v) : same({});
       }
+      // In the flower challenge, whatever the tool in hand, a press on a sprout in the dark starts a
+      // chain to draw, as the chain tool would.
+      if (step === 'flowerChallenge') {
+        const { pointer } = controller;
+        const sketching = pressStart(
+          { ...pointer, tool: 'lanterns' },
+          state,
+          positions,
+          event.point,
+        );
+        return same({ pointer: { ...sketching, tool: pointer.tool } });
+      }
       return same({ pointer: pressStart(controller.pointer, state, positions, event.point) });
     }
     case 'move': {
@@ -215,6 +247,14 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
         return target.kind === 'vine'
           ? tell(controller, { type: 'pickVine', u: target.u, v: target.v }, now)
           : same({});
+      }
+      // In the flower challenge, letting go draws the chain dragged; it is never a move.
+      if (step === 'flowerChallenge') {
+        const { chain } = controller.pointer;
+        const released = { ...controller, pointer: { ...controller.pointer, chain: null } };
+        return chain !== null && chain.length >= 2
+          ? drawChain(released, chain, now)
+          : { controller: released, effects: [] };
       }
       const released = pressEnd(controller.pointer, state, positions, event.point);
       const next = { ...controller, pointer: released.pointer };
@@ -247,6 +287,8 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       return drawToggle(controller, event.u, event.v);
     case 'checkMirror':
       return checkMirror(controller, now);
+    case 'drawChain':
+      return drawChain(controller, event.path, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
     case 'hint': {

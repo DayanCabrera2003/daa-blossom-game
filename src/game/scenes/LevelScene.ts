@@ -258,6 +258,18 @@ export class LevelScene extends Phaser.Scene {
           this.presenter.present({ kind: 'lines', lines: [t('mirror.spared')] });
         break;
       }
+      case 'flowerDrawn': {
+        // A chain is cut over both gardens, painted from the session; a drawing that is no chain is
+        // told why, and a player who cannot draw one is let go with a word from the mentor.
+        const { attempt } = effect;
+        if (attempt.kind === 'cut') break;
+        const reason = { code: 'invalidPath', error: attempt.error } as const;
+        this.views.toast.show(
+          reasonText(reason, { type: 'chain', path: attempt.path }, this.labels, t),
+        );
+        if (attempt.spared) this.presenter.present({ kind: 'lines', lines: [t('flower.spared')] });
+        break;
+      }
       case 'animate':
         this.views.animation.play(
           planAnimation(effect.events),
@@ -331,6 +343,9 @@ export class LevelScene extends Phaser.Scene {
       case 'separate':
       case 'draw':
         // Nothing to queue: the pond, and the reflection drawn in it, are painted from the session.
+        break;
+      case 'flowerChallenge':
+        // Nothing to queue: the open and the folded garden are painted from the session.
         break;
     }
   }

@@ -70,6 +70,19 @@ describe('building a level', () => {
     });
   });
 
+  it('turns the sprouts of a chain drawn in the walkthrough into ids', () => {
+    const drawn = (path: string[]): LevelData => ({
+      ...rotate,
+      solution: [{ type: 'drawChain', path }],
+    });
+    expect(buildLevel(drawn(['e', 'c', 'X']))).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'X' } },
+    });
+    expect(unwrapLevel(drawn(['e', 'c', 'd', 'b'])).walkthrough).toEqual([
+      { type: 'drawChain', path: [5, 3, 4, 2] },
+    ]);
+  });
+
   it('says which name is unknown, wherever it appears', () => {
     expect(buildLevel({ ...rotate, vines: [['R', 'z']] })).toEqual({
       ok: false,

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { BLOOM } from '../../tests/support/fixtureLevels';
 import { checkFlow } from './flowChecks';
 import { loadLevel } from './loader';
 
@@ -233,5 +234,25 @@ describe('the checks of a level script', () => {
     expect(flowProblemsOf({ ...betrayal, flow: [pick, { step: 'play' }] })).toEqual([
       { code: 'noConflict', step: 0 },
     ]);
+  });
+
+  it('the flower challenge needs a flower, a chain to draw, and comes before any play', () => {
+    const challenge = { step: 'flowerChallenge', attempts: 3 };
+    expect(flowProblemsOf({ ...BLOOM, flow: [challenge] })).toEqual([]);
+    expect(flowProblemsOf({ ...BLOOM, flower: undefined, flow: [challenge] })).toEqual([
+      { code: 'flowerMissing', step: 0 },
+    ]);
+    // With e and t lit together, the open garden holds the most: no chain to draw.
+    const full = { ...BLOOM, lanterns: [...BLOOM.lanterns, ['e', 't']] };
+    expect(flowProblemsOf({ ...full, flow: [challenge] })).toEqual([
+      { code: 'noChainToDraw', step: 0 },
+    ]);
+    const played = {
+      ...BLOOM,
+      victory: { type: 'maximum' },
+      flow: [{ step: 'play' }, challenge],
+      solution: [{ type: 'join', u: 'e', v: 't' }],
+    };
+    expect(flowProblemsOf(played)).toEqual([{ code: 'flowerAfterPlay', step: 1 }]);
   });
 });

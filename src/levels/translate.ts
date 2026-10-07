@@ -95,7 +95,7 @@ export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, L
 
 /**
  * Translates one script input of a walkthrough: the sprout touched, the vine pointed at, the
- * reflection drawn.
+ * reflection or the chain drawn.
  */
 function toFlowInput(labels: Labels, input: LevelFlowInput): Result<FlowInput, LabelError> {
   switch (input.type) {
@@ -108,6 +108,10 @@ function toFlowInput(labels: Labels, input: LevelFlowInput): Result<FlowInput, L
       if (!u.ok) return u;
       const v = named(labels, input.v);
       return v.ok ? ok({ type: 'pickVine', u: u.value, v: v.value }) : v;
+    }
+    case 'drawChain': {
+      const path = toSprouts(labels, input.path);
+      return path.ok ? ok({ type: 'drawChain', path: path.value }) : path;
     }
     case 'drawMirror': {
       const lanterns = toEdges(labels, input.lanterns);

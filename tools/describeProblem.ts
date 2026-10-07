@@ -46,6 +46,12 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
     case 'drawUnbeatable':
       return `script step ${problem.step + 1} asks for a better reflection, but the lanterns already hold the most`;
+    case 'flowerMissing':
+      return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
+    case 'noChainToDraw':
+      return `script step ${problem.step + 1} asks for chains, but the garden already holds the most`;
+    case 'flowerAfterPlay':
+      return `script step ${problem.step + 1} is a flower challenge after a play step, whose moves may undo the flower`;
     case 'betOutOfRange':
       return `script step ${problem.step + 1} bets from 1 to ${problem.range} lanterns, but the garden holds ${problem.optimum}: nobody can win it`;
     case 'demoRefused':

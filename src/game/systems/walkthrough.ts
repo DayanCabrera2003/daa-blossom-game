@@ -1,4 +1,4 @@
-import type { Edge } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level, WalkthroughEntry } from '@levels/build';
@@ -19,7 +19,7 @@ import type { Refusal } from './refusal';
  * Plays a level's reference walkthrough through the level controller, with no scene: every move as
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
- * vines. A level whose walkthrough does not finish its script
+ * vines, and a chain of the flower challenge as a drag through its sprouts. A level whose walkthrough does not finish its script
  * never reaches the browser (plan 03, §0): the playability test and `check-levels` both run this.
  */
 
@@ -60,7 +60,7 @@ function gestureEvents(gesture: Gesture): UiEvent[] {
  * really are instead (`drawEvents`), and so is a vine pointed at (`vineEvents`).
  */
 function inputEvents(
-  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' }>,
+  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' }>,
 ): UiEvent[] {
   switch (input.type) {
     case 'answer':
@@ -165,6 +165,26 @@ function vineEvents(controller: Controller, u: number, v: number): UiEvent[] | s
   }
 }
 
+/**
+ * Plays a chain drawn in the flower challenge as a drag through its sprouts. The drag must draw
+ * exactly that chain: one the garden does not let the finger follow is a mismatch, and a drag that
+ * draws nothing (it starts on a lit sprout, or outside the challenge) was not waited for.
+ */
+function playChain(
+  controller: Controller,
+  path: readonly VertexId[],
+  index: number,
+  now: number,
+): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
+  const points = path.map((v) => itemAt(controller.positions, v));
+  const played = feed(controller, gestureEvents({ kind: 'press', points }), now);
+  const drawn = played.effects.find((effect) => effect.kind === 'flowerDrawn');
+  if (drawn === undefined) return { ...played, problem: { code: 'inputIgnored', entry: index } };
+  const { attempt } = drawn;
+  const same = attempt.path.length === path.length && attempt.path.every((v, i) => v === path[i]);
+  return { ...played, problem: same ? null : { code: 'gestureMismatch', entry: index } };
+}
+
 /** Plays a drawn reflection; a touch the challenge refuses is a refused move. */
 function playDrawing(
   controller: Controller,
@@ -198,6 +218,7 @@ function playEntry(
 ): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
   if (isFlowInput(entry)) {
     if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
+    if (entry.type === 'drawChain') return playChain(controller, entry.path, index, now);
     const events =
       entry.type === 'pickVine' ? vineEvents(controller, entry.u, entry.v) : inputEvents(entry);
     if (typeof events === 'string') {

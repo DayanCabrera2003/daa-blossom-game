@@ -170,6 +170,19 @@ describe('the demo of a mechanic card', () => {
     expect(itemAt(drawn.frames, 1).gesture).toEqual({ kind: 'vines', vines: [[2, 3]] });
   });
 
+  it('a chain drawn in the flower challenge is dragged and changes no lantern', () => {
+    const demo = built({ ...path3, steps: [{ type: 'drawChain', path: ['a', 'b'] }] });
+    expect(itemAt(demo.frames, 0).gesture).toEqual({ kind: 'drag', path: [0, 1] });
+    expect(lit(demo, 1, 0)).toBe(false);
+    const lantern = { ...path3, lanterns: [['b', 'c']] };
+    expect(
+      buildDemo(card({ ...lantern, steps: [{ type: 'drawChain', path: ['a', 'b'] }] })),
+    ).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'badChain' },
+    });
+  });
+
   it('silver lanterns that are not a valid set of lanterns are an error', () => {
     const drawing = card({
       ...path3,

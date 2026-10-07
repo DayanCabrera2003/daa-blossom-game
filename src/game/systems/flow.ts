@@ -45,7 +45,11 @@ export type FlowSignal =
   /** A drawn reflection was checked; `better` when it beats the player's garden. */
   | { readonly type: 'mirrorChecked'; readonly better: boolean }
   /** Too many checks did not win: the mirror challenge is over anyway (no one stays stuck). */
-  | { readonly type: 'mirrorSpared' };
+  | { readonly type: 'mirrorSpared' }
+  /** A drawing in the flower challenge; `chain` when the core says it is a chain of the garden. */
+  | { readonly type: 'flowerDrawn'; readonly chain: boolean }
+  /** Too many drawings were no chains: the flower challenge is over anyway. */
+  | { readonly type: 'flowerSpared' };
 
 /** What the scene has to show; data only, line ids untranslated. */
 export type FlowEffect =
@@ -104,6 +108,8 @@ export type FlowEffect =
       readonly v: VertexId;
       readonly correct: boolean;
     }
+  /** Waiting for chains drawn in the open garden, cut at the flower and never applied. */
+  | { readonly kind: 'flowerChallenge'; readonly step: number; readonly attempts: number }
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
   /** A false statement of the notebook (`option`) is refuted by its garden, which opens. */
@@ -141,7 +147,7 @@ export interface FlowState {
     readonly correct: boolean;
     readonly informal: boolean;
   } | null;
-  /** Better reflections checked in the current `draw` step. */
+  /** Better reflections checked in the current `draw` step, or chains drawn in a flower challenge. */
   readonly attempts: number;
   /** The sprout touched to explore the tangle (2.1), whose strands stay shown; null before. */
   readonly touched: VertexId | null;
@@ -205,6 +211,8 @@ function opening(step: LevelStep, index: number): FlowEffect {
       return { kind: 'notebook', step: index };
     case 'pickVine':
       return { kind: 'pickVine', step: index, prompt: step.prompt };
+    case 'flowerChallenge':
+      return { kind: 'flowerChallenge', step: index, attempts: step.attempts };
   }
 }
 
@@ -339,6 +347,14 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     case 'draw': {
       if (signal.type === 'mirrorSpared') return enter(flow, flow.index + 1, []);
       if (signal.type !== 'mirrorChecked' || !signal.better) return unchanged;
+      const attempts = flow.attempts + 1;
+      return attempts >= step.attempts
+        ? enter(flow, flow.index + 1, [])
+        : { flow: { ...flow, attempts }, effects: [] };
+    }
+    case 'flowerChallenge': {
+      if (signal.type === 'flowerSpared') return enter(flow, flow.index + 1, []);
+      if (signal.type !== 'flowerDrawn' || !signal.chain) return unchanged;
       const attempts = flow.attempts + 1;
       return attempts >= step.attempts
         ? enter(flow, flow.index + 1, [])

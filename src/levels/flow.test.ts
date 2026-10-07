@@ -116,6 +116,14 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'pickVine', prompt: 'ch4.2.sauce.01', retry: false }])).toBe(false);
   });
 
+  it('reads the flower challenge (4.11): chains drawn `attempts` times, at least once', () => {
+    expect(parse([{ step: 'flowerChallenge', attempts: 3 }])).toEqual([
+      { step: 'flowerChallenge', attempts: 3 },
+    ]);
+    expect(accepts([{ step: 'flowerChallenge', attempts: 0 }])).toBe(false);
+    expect(accepts([{ step: 'flowerChallenge' }])).toBe(false);
+  });
+
   it('a question offers at least two options', () => {
     const lonely = {
       step: 'ask',

@@ -21,6 +21,12 @@ export type FlowProblem =
   | { readonly code: 'noConflict'; readonly step: number }
   /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
   | { readonly code: 'drawUnbeatable'; readonly step: number }
+  /** A flower challenge in a level that declares no flower to cut the chains at. */
+  | { readonly code: 'flowerMissing'; readonly step: number }
+  /** A flower challenge over a garden with no chain: nothing can be drawn. */
+  | { readonly code: 'noChainToDraw'; readonly step: number }
+  /** A flower challenge after a play step, whose moves may have undone the declared flower. */
+  | { readonly code: 'flowerAfterPlay'; readonly step: number }
   /** A bet whose numbers (1 to `range`) leave out the most lanterns the garden holds. */
   | {
       readonly code: 'betOutOfRange';
@@ -64,8 +70,9 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
  * right answer, the notebook step has a notebook to show, the steps of the pond have a reflection,
  * a `count` of lanterns asks about a sprout that is in the tangle, pointing at the conflict and a
  * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
- * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), and
- * every demo is accepted by the rules.
+ * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
+ * challenge has a flower and a chain to draw in the garden the level starts with, and every demo is
+ * accepted by the rules.
  *
  * Lanterns and marks never move outside a play step, so the garden at a `count` or a `draw` is the
  * one the level starts with, or, after a play step, the one the reference solution leaves.
@@ -130,6 +137,14 @@ export function checkFlow(level: Level): FlowProblem[] {
       case 'draw':
         if (isMaximum(level.graph, afterPlay ? played : start.matching)) {
           problems.push({ code: 'drawUnbeatable', step });
+        }
+        break;
+      case 'flowerChallenge':
+        // The flower is declared on the starting lanterns, so the challenge comes before any play.
+        if (level.flower === null) problems.push({ code: 'flowerMissing', step });
+        if (afterPlay) problems.push({ code: 'flowerAfterPlay', step });
+        else if (isMaximum(level.graph, start.matching)) {
+          problems.push({ code: 'noChainToDraw', step });
         }
         break;
       case 'replay': {
