@@ -2,11 +2,15 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { closedFlowerLevel, festivalLevel } from '../../../tests/support/fixtureLevels';
+import {
+  betrayalLevel,
+  closedFlowerLevel,
+  festivalLevel,
+} from '../../../tests/support/fixtureLevels';
 import { countAnswer } from './answerKey';
 import { HINT_DELAY_MS } from './hints';
 import { handle, startController, type Controller, type UiEvent } from './levelController';
-import { garden } from './levelSession';
+import { act, garden } from './levelSession';
 import { playtestEntries } from './playtestEntries';
 import type { Piece } from './pond';
 
@@ -207,6 +211,20 @@ describe('playtest entries of bets, counts and the notebook', () => {
     expect(entries).toEqual([
       { kind: 'bet', at: 3, level: '1.9', value: 1, right: true, informal: true },
       { kind: 'levelEnd', at: 3, level: '1.9', outcome: 'won', stars: 2 },
+    ]);
+  });
+
+  it('a vine pointed at is logged by the names of its ends, right or not (4.2)', () => {
+    const level = betrayalLevel();
+    const opened = startController(level, 0);
+    const session = level.solution.reduce((s, action) => act(s, action, 0).session, opened.session);
+    const { entries } = play({ ...opened, session }, [
+      { kind: 'pickVine', u: 2, v: 3 },
+      { kind: 'pickVine', u: 2, v: 4 },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'pickVine', at: 0, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
+      { kind: 'pickVine', at: 0, level: '4.2', step: 1, vine: ['b', 'd'], right: true },
     ]);
   });
 

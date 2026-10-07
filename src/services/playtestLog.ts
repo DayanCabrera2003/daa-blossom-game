@@ -88,6 +88,18 @@ const entrySchema = z.discriminatedUnion('kind', [
     beats: z.boolean(),
     counted: z.boolean(),
   }),
+  /**
+   * A vine pointed at in a `pickVine` step (4.2), by the names of its ends: right when it is the
+   * conflict of the search.
+   */
+  z.strictObject({
+    kind: z.literal('pickVine'),
+    at,
+    level,
+    step: z.number().int().min(0),
+    vine: z.tuple([z.string(), z.string()]),
+    right: z.boolean(),
+  }),
 ]);
 
 const logSchema = z.strictObject({

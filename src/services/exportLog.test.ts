@@ -37,6 +37,7 @@ describe('exporting the playtest log', () => {
           notebookWrong: 0,
           counterexamples: 0,
           mirrorChecks: { beating: 0, notBeating: 0 },
+          vinePicks: { right: 0, wrong: 0 },
         },
       ],
       log,

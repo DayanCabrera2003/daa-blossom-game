@@ -23,12 +23,15 @@ export interface LevelSummary {
   readonly counterexamples: number;
   /** Drawn reflections checked, by whether they beat the garden. */
   readonly mirrorChecks: { readonly beating: number; readonly notBeating: number };
+  /** Vines pointed at where the light went wrong (4.2), by whether they were the conflict. */
+  readonly vinePicks: { readonly right: number; readonly wrong: number };
 }
 
 type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
   claims: { right: number; wrong: number };
   bets: { made: number; right: number };
   mirrorChecks: { beating: number; notBeating: number };
+  vinePicks: { right: number; wrong: number };
 };
 
 const freshTally = (level: string): Tally => ({
@@ -46,6 +49,7 @@ const freshTally = (level: string): Tally => ({
   notebookWrong: 0,
   counterexamples: 0,
   mirrorChecks: { beating: 0, notBeating: 0 },
+  vinePicks: { right: 0, wrong: 0 },
 });
 
 /**
@@ -117,6 +121,10 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
       case 'mirrorCheck':
         if (entry.beats) counts.mirrorChecks.beating += 1;
         else counts.mirrorChecks.notBeating += 1;
+        break;
+      case 'pickVine':
+        if (entry.right) counts.vinePicks.right += 1;
+        else counts.vinePicks.wrong += 1;
         break;
       case 'history':
         break;

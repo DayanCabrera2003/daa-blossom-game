@@ -33,6 +33,7 @@ describe('playtest summary', () => {
       notebookWrong: 0,
       counterexamples: 0,
       mirrorChecks: { beating: 0, notBeating: 0 },
+      vinePicks: { right: 0, wrong: 0 },
     });
   });
 
@@ -108,6 +109,17 @@ describe('playtest summary', () => {
       { level: '1.2', wrongAnswers: 2, bets: { made: 0, right: 0 } },
       { level: '1.6', wrongAnswers: 0, bets: { made: 2, right: 1 } },
     ]);
+  });
+
+  it('counts the vines pointed at per level, right and wrong (4.2)', () => {
+    const [summary] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.2' },
+        { kind: 'pickVine', at: 1, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
+        { kind: 'pickVine', at: 2, level: '4.2', step: 1, vine: ['b', 'd'], right: true },
+      ]),
+    );
+    expect(summary?.vinePicks).toEqual({ right: 1, wrong: 1 });
   });
 
   it('counts wrong notebook choices, counterexamples opened and mirror checks per level', () => {

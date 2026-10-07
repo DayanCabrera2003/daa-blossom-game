@@ -1,3 +1,4 @@
+import { nameOf } from '@core/graph/labels';
 import { itemAt } from '@core/shared/itemAt';
 import type { PlaytestEntry } from '@services/playtestLog';
 import type { Controller, Effect, Step, UiEvent } from './levelController';
@@ -48,9 +49,9 @@ export const mirrorCheckEntry = (check: MirrorCheck, at: number, level: string):
 /**
  * What the playtest log records for one step of a level (GDD §10, Hito A): moves accepted and
  * refused, "Terminé" right or without reason, hints opened, trips through the day, answers, bets
- * and notebook choices, the counterexamples they open, reflections checked, and the win. A
- * counterexample is logged when the script opens it: the screen shows it in its turn, after any
- * lines before it.
+ * and notebook choices, vines pointed at, the counterexamples they open, reflections checked, and
+ * the win. A counterexample is logged when the script opens it: the screen shows it in its turn,
+ * after any lines before it.
  * Pointing, dragging and choosing tools are not recorded, nor history moves that go nowhere.
  * Pure: `before` is the controller the event reached, `step` what it answered, `at` the clock.
  */
@@ -93,6 +94,19 @@ export function playtestEntries(
       case 'answered':
         entries.push(answerEntry(before, effect, at, level));
         break;
+      case 'vinePicked': {
+        const name = (v: number): string => nameOf(before.session.level.labels, v);
+        const { step: index, u, v, correct } = effect;
+        entries.push({
+          kind: 'pickVine',
+          at,
+          level,
+          step: index,
+          vine: [name(u), name(v)],
+          right: correct,
+        });
+        break;
+      }
       case 'counterexample':
         entries.push({ kind: 'counterexample', at, level, option: effect.option });
         break;
