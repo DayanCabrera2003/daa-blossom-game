@@ -1,6 +1,7 @@
 import { checkIntegrity } from '@levels/integrity';
 import { describe, expect, it } from 'vitest';
 import {
+  betrayalLevel,
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
@@ -13,6 +14,7 @@ import {
 
 const FIXTURES = [
   ['4.1', festivalLevel],
+  ['4.2', betrayalLevel],
   ['4.6', fivePetalsLevel],
   ['4.9', closedFlowerLevel],
   ['4.10', stemRotationLevel],

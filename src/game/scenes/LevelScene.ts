@@ -283,8 +283,8 @@ export class LevelScene extends Phaser.Scene {
       case 'bet':
       case 'count':
       case 'notebook': {
-        // The options and right answers come from the core, on the lanterns as they are now.
-        const yours = garden(this.controller.session).matching;
+        // The options and right answers come from the core, on the garden as it is now.
+        const yours = garden(this.controller.session);
         const question = questionAt(this.level, effect.step, yours);
         if (question !== null) this.presenter.present({ kind: 'question', question });
         break;

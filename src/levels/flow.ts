@@ -68,16 +68,21 @@ const flowStep = z.discriminatedUnion('step', [
   /** A touch on the garden splits the tangle into its threads and loops. */
   z.strictObject({ step: z.literal('separate') }),
   /**
-   * How many lanterns, the player's or the reflection's (`of`), the piece through the sprout
-   * `piece` holds. The core gives the right answer; the player always may try again.
+   * A number the core knows, asked with the numbers 0 to `range`; the player always may try again.
+   * Either how many lanterns, the player's or the reflection's (`of`), the piece of the tangle
+   * through the sprout `piece` holds (chapter 2), or how many sprouts the loop closed by the
+   * conflict of the player's search holds (`of: 'loop'`, 4.2).
    */
-  z.strictObject({
-    step: z.literal('count'),
-    prompt: lineId,
-    piece: label,
-    of: z.enum(['yours', 'mirror']),
-    range,
-  }),
+  z.discriminatedUnion('of', [
+    z.strictObject({
+      step: z.literal('count'),
+      prompt: lineId,
+      piece: label,
+      of: z.enum(['yours', 'mirror']),
+      range,
+    }),
+    z.strictObject({ step: z.literal('count'), prompt: lineId, of: z.literal('loop'), range }),
+  ]),
   /** The mirror challenge (2.4): draw a better reflection, `attempts` times. */
   z.strictObject({ step: z.literal('draw'), attempts: z.number().int().min(1) }),
   /** The level's notebook question. */
@@ -95,6 +100,9 @@ export type FlowStep = z.infer<typeof flowStep>;
 
 /** One step of a built script: the sprouts it names are ids. */
 export type LevelStep =
-  | Exclude<FlowStep, { step: 'count' } | { step: 'replay' }>
-  | (Omit<Extract<FlowStep, { step: 'count' }>, 'piece'> & { readonly piece: VertexId })
+  | Exclude<FlowStep, { of: 'yours' | 'mirror' } | { step: 'replay' }>
+  | (Omit<Extract<FlowStep, { of: 'yours' | 'mirror' }>, 'piece'> & { readonly piece: VertexId })
   | { readonly step: 'replay'; readonly demo?: readonly Action[] };
+
+/** A `count` step of a built script: lanterns on a piece of the tangle, or sprouts of the loop. */
+export type CountStep = Extract<LevelStep, { step: 'count' }>;

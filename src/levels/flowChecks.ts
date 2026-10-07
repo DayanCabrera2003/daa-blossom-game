@@ -7,6 +7,7 @@ import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
+import { findConflict } from '@core/search/conflict';
 import type { Level } from './build';
 import { demoStart } from './demoStart';
 
@@ -16,6 +17,8 @@ export type FlowProblem =
   | { readonly code: 'notebookMissing'; readonly step: number }
   | { readonly code: 'mirrorMissing'; readonly step: number }
   | { readonly code: 'pieceOutsideTangle'; readonly step: number; readonly sprout: string }
+  /** A step about the conflict of the search, where the reference search has met no conflict. */
+  | { readonly code: 'noConflict'; readonly step: number }
   /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
   | { readonly code: 'drawUnbeatable'; readonly step: number }
   /** A bet whose numbers (1 to `range`) leave out the most lanterns the garden holds. */
@@ -59,17 +62,19 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
 /**
  * The checks of a level script (plan 03, phase 1) that the schema cannot see: every question has a
  * right answer, the notebook step has a notebook to show, the steps of the pond have a reflection,
- * a `count` asks about a sprout that is in the tangle, a bet offers the right number among its
- * own (a bet nobody can win is no bet), a mirror challenge can be won (a better reflection
- * exists), and every demo is accepted by the rules.
+ * a `count` of lanterns asks about a sprout that is in the tangle, a `count` of the loop comes
+ * where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
+ * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), and
+ * every demo is accepted by the rules.
  *
- * Lanterns never move outside a play step, so the player's lanterns at a `count` or a `draw` are those the
- * level starts with, or, after a play step, those the reference solution leaves.
+ * Lanterns and marks never move outside a play step, so the garden at a `count` or a `draw` is the
+ * one the level starts with, or, after a play step, the one the reference solution leaves.
  */
 export function checkFlow(level: Level): FlowProblem[] {
   const problems: FlowProblem[] = [];
   const { data, start, mirror } = level;
-  const played = replay(start, level.solution).state.matching;
+  const playedGarden = replay(start, level.solution).state;
+  const played = playedGarden.matching;
   let afterPlay = false;
 
   for (const [step, flowStep] of level.flow.entries()) {
@@ -99,6 +104,13 @@ export function checkFlow(level: Level): FlowProblem[] {
         if (mirror === null) problems.push({ code: 'mirrorMissing', step });
         break;
       case 'count': {
+        if (flowStep.of === 'loop') {
+          const garden = afterPlay ? playedGarden : start;
+          if (findConflict(garden.layer, garden.search) === null) {
+            problems.push({ code: 'noConflict', step });
+          }
+          break;
+        }
         if (mirror === null) {
           problems.push({ code: 'mirrorMissing', step });
           break;

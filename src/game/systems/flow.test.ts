@@ -223,7 +223,7 @@ describe('the script engine', () => {
     };
     const started = start([count]);
     expect(started.effects).toEqual([
-      { kind: 'count', step: 0, prompt: 'ch2.1.sauce.05', piece: 4, of: 'mirror', range: 4 },
+      { kind: 'count', step: 0, prompt: 'ch2.1.sauce.05', range: 4 },
     ]);
     const wrong = advanceFlow(started.flow, { type: 'answer', option: 2, right: 3 });
     expect(wrong.effects).toEqual([

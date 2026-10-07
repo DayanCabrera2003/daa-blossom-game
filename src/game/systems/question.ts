@@ -1,7 +1,7 @@
-import type { Matching } from '@core/matching/types';
+import type { GardenState } from '@core/rules/state';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
-import { rightBet, rightCount } from './answerKey';
+import { countAnswer, rightBet } from './answerKey';
 
 /**
  * The questions of a script as the player sees them (plan 03, phases 4 and 6): what is asked, the
@@ -39,11 +39,11 @@ const numbers = (from: number, to: number): QuestionOption[] =>
   Array.from({ length: to - from + 1 }, (_, k) => ({ value: from + k, line: null }));
 
 /**
- * The question of the step at `index` of the level's script, judged on the player's lanterns
- * `yours`; null when that step asks nothing. A bet offers 1 to its range (a garden worth a bet lights some), a
+ * The question of the step at `index` of the level's script, judged on the player's garden `yours`
+ * (its lanterns, and its marks for the loop of a conflict); null when that step asks nothing. A bet offers 1 to its range (a garden worth a bet lights some), a
  * count 0 to its range (a piece may hold none of one side).
  */
-export function questionAt(level: Level, index: number, yours: Matching): Question | null {
+export function questionAt(level: Level, index: number, yours: GardenState): Question | null {
   const step = level.flow[index];
   if (step === undefined) return null;
   const base = { step: index, preview: null };
@@ -66,14 +66,12 @@ export function questionAt(level: Level, index: number, yours: Matching): Questi
         preview: step.preview ?? null,
       };
     case 'count':
-      // Level integrity gives every count a reflection to count on.
-      invariant(level.mirror !== null, 'a count needs the reflection of its level');
       return {
         ...base,
         kind: 'count',
         prompt: step.prompt,
         options: numbers(0, step.range),
-        right: [rightCount(yours, level.mirror, step)],
+        right: [countAnswer(level, yours, step)],
       };
     case 'notebook': {
       // Level integrity gives every notebook step the notebook question of its level.

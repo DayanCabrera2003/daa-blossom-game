@@ -42,6 +42,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} needs the reflection, but the level has no mirror`;
     case 'pieceOutsideTangle':
       return `script step ${problem.step + 1} counts the piece through ${problem.sprout}, which is in no thread or loop`;
+    case 'noConflict':
+      return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
     case 'drawUnbeatable':
       return `script step ${problem.step + 1} asks for a better reflection, but the lanterns already hold the most`;
     case 'betOutOfRange':

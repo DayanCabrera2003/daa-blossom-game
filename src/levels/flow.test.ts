@@ -96,6 +96,21 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'draw', attempts: 0 }])).toBe(false);
   });
 
+  it('reads a count of the sprouts of the loop of a conflict (4.2)', () => {
+    expect(parse([{ step: 'count', prompt: 'ch4.2.sauce.03', of: 'loop', range: 6 }])).toEqual([
+      { step: 'count', prompt: 'ch4.2.sauce.03', of: 'loop', range: 6 },
+    ]);
+  });
+
+  it('a loop is counted without a piece, and the lanterns of a piece are not', () => {
+    expect(
+      accepts([{ step: 'count', prompt: 'ch4.2.sauce.03', piece: 'b', of: 'loop', range: 6 }]),
+    ).toBe(false);
+    expect(accepts([{ step: 'count', prompt: 'ch2.1.sauce.03', of: 'yours', range: 3 }])).toBe(
+      false,
+    );
+  });
+
   it('a question offers at least two options', () => {
     const lonely = {
       step: 'ask',

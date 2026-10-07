@@ -72,10 +72,14 @@ export function toActions(
   return ok(actions);
 }
 
-/** Translates one step of a script: the sprout a `count` asks about and the moves of a demo. */
+/**
+ * Translates one step of a script: the sprout a `count` of lanterns asks about and the moves of a
+ * demo.
+ */
 export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, LabelError> {
   switch (step.step) {
     case 'count': {
+      if (step.of === 'loop') return ok(step);
       const piece = named(labels, step.piece);
       return piece.ok ? ok({ ...step, piece: piece.value }) : piece;
     }

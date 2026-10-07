@@ -58,6 +58,26 @@ const FESTIVAL = {
 };
 
 /**
+ * The garden of the festival searched from R alone, as level 4.2 is designed (GDD 4.2): the search
+ * stops at the conflict d–b, then the loop it closes, `b c d`, is counted. Sprouts `R a b c d e` as
+ * 0…5.
+ */
+const BETRAYAL = {
+  ...FESTIVAL,
+  id: '4.2',
+  roots: ['R'],
+  hints: [],
+  victory: { type: 'searchComplete' },
+  flow: [{ step: 'play' }, { step: 'count', prompt: 'ch4.2.sauce.02', of: 'loop', range: 6 }],
+  solution: [
+    { type: 'markRoot', vertex: 'R' },
+    { type: 'markMoon', from: 'R', to: 'a' },
+    { type: 'markMoon', from: 'b', to: 'c' },
+    { type: 'answer', option: 3 },
+  ],
+};
+
+/**
  * Five petals `b–c=d–f=g–b` on a stem `R–a=b`, with an exit `c–e` (as level 4.6 was drafted):
  * the solution folds the flower, marks past it, opens it and chains `R…e` around it. Sprout ids
  * follow the order written: `R a b c d f g e` are 0…7.
@@ -354,6 +374,9 @@ const TWO_COMPONENTS = {
 
 /** The level built from `FESTIVAL`. */
 export const festivalLevel = (): Level => load(FESTIVAL);
+
+/** The level built from `BETRAYAL`. */
+export const betrayalLevel = (): Level => load(BETRAYAL);
 
 /** The level built from `FIVE_PETALS`. */
 export const fivePetalsLevel = (): Level => load(FIVE_PETALS);

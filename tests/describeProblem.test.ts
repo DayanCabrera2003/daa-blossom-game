@@ -60,6 +60,7 @@ describe('readable level problems', () => {
       { code: 'mirrorMissing', step: 0 },
       { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
       { code: 'drawUnbeatable', step: 5 },
+      { code: 'noConflict', step: 1 },
       { code: 'counterexampleLocked', option: 1, action: 'fold' },
       { code: 'counterexampleUnbeatable', option: 2 },
       { code: 'sameKindVine', u: 'a', v: 'b', kind: 'bee' },

@@ -79,12 +79,11 @@ export type FlowEffect =
   | { readonly kind: 'sproutTapped'; readonly vertex: VertexId }
   /** Waiting for a touch that splits the tangle. */
   | { readonly kind: 'separate' }
+  /** A count; what is counted, and its right number, come from the level and the core. */
   | {
       readonly kind: 'count';
       readonly step: number;
       readonly prompt: string;
-      readonly piece: VertexId;
-      readonly of: 'yours' | 'mirror';
       readonly range: number;
     }
   | { readonly kind: 'draw'; readonly attempts: number }
@@ -182,14 +181,7 @@ function opening(step: LevelStep, index: number): FlowEffect {
     case 'separate':
       return { kind: 'separate' };
     case 'count':
-      return {
-        kind: 'count',
-        step: index,
-        prompt: step.prompt,
-        piece: step.piece,
-        of: step.of,
-        range: step.range,
-      };
+      return { kind: 'count', step: index, prompt: step.prompt, range: step.range };
     case 'draw':
       return { kind: 'draw', attempts: step.attempts };
     case 'notebook':

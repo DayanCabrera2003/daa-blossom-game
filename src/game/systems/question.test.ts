@@ -1,6 +1,8 @@
+import { applyAction } from '@core/rules/applyAction';
 import type { Level } from '@levels/build';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import { betrayalLevel } from '../../../tests/support/fixtureLevels';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { hintedOption, questionAt } from './question';
 
@@ -39,8 +41,8 @@ const scripted = (flow: unknown[], extra: object = {}): Level => {
   return loaded.value;
 };
 
-/** The lanterns the level starts with: none. */
-const yours = (level: Level) => level.start.matching;
+/** The garden the level starts with: no lanterns. */
+const yours = (level: Level) => level.start;
 
 describe('the questions of a script', () => {
   it('the notebook offers its statements, by index; its right one is the true statement', () => {
@@ -152,5 +154,22 @@ describe('the questions of a script', () => {
     expect(at(0)).toBe(1);
     expect(at(1)).toBeNull();
     expect(at(2)).toBe(1);
+  });
+
+  it('a count of the loop offers 0 to its range; the right one is the sprouts of the loop', () => {
+    const level = betrayalLevel();
+    const searched = level.solution.reduce((state, action) => {
+      const outcome = applyAction(state, action);
+      if (!outcome.ok) throw new Error(`${action.type} refused`);
+      return outcome.state;
+    }, level.start);
+    expect(questionAt(level, 1, searched)).toEqual({
+      kind: 'count',
+      step: 1,
+      prompt: 'ch4.2.sauce.02',
+      options: [0, 1, 2, 3, 4, 5, 6].map((value) => ({ value, line: null })),
+      right: [3],
+      preview: null,
+    });
   });
 });

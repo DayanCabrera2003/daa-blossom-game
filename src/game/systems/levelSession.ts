@@ -10,7 +10,7 @@ import type { TraceEvent } from '@core/trace/events';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
-import { rightBet, rightCount } from './answerKey';
+import { countAnswer, rightBet } from './answerKey';
 import {
   advanceFlow,
   betRight,
@@ -261,10 +261,7 @@ export function respond(
   switch (input.type) {
     case 'answer': {
       const step = stepNow(session);
-      const right =
-        step?.step === 'count' && level.mirror !== null
-          ? rightCount(garden(session).matching, level.mirror, step)
-          : null;
+      const right = step?.step === 'count' ? countAnswer(level, garden(session), step) : null;
       return advance(session, { type: 'answer', option: input.option, right }, now);
     }
     case 'bet':
@@ -312,7 +309,7 @@ export function askHint(
       ? nextMove({ start: level.start, solution: level.solution, victory }, garden(session))
       : null;
   // Under a question, the mentor points at a right option instead (never at a bet's).
-  const question = questionAt(level, session.flow.index, garden(session).matching);
+  const question = questionAt(level, session.flow.index, garden(session));
   const option = question === null ? null : hintedOption(question);
   // In the mirror challenge, the mentor offers a better reflection, and at grade 3 draws it.
   const offer = current.step === 'draw' && opened.grade >= 2 ? mentorOffer(session) : null;

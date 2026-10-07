@@ -52,6 +52,38 @@ const count = (piece: string) => ({
   range: 3,
 });
 
+/**
+ * The garden of 4.1 searched from R alone, as 4.2 does: R sun, a moon, b sun, c moon, d sun, and
+ * d–b closes the loop b, c, d. No reflection: the loop needs none to be counted.
+ */
+const betrayal = {
+  id: '4.2',
+  sprouts: ['R', 'a', 'b', 'c', 'd', 'e'].map((label, i) => ({ label, x: 40 + 60 * i, y: 135 })),
+  vines: [
+    ['R', 'a'],
+    ['a', 'b'],
+    ['b', 'c'],
+    ['c', 'd'],
+    ['d', 'b'],
+    ['c', 'e'],
+  ],
+  lanterns: [
+    ['a', 'b'],
+    ['c', 'd'],
+  ],
+  roots: ['R'],
+  goal: { visible: true, value: 3 },
+  victory: { type: 'searchComplete' },
+  flow: [{ step: 'play' }],
+  solution: [
+    { type: 'markRoot', vertex: 'R' },
+    { type: 'markMoon', from: 'R', to: 'a' },
+    { type: 'markMoon', from: 'b', to: 'c' },
+  ],
+};
+
+const loopCount = { step: 'count', prompt: 'ch4.2.sauce.01', of: 'loop', range: 6 };
+
 describe('the checks of a level script', () => {
   it('a sound script has no problems', () => {
     const sound = {
@@ -178,6 +210,20 @@ describe('the checks of a level script', () => {
     };
     expect(flowProblemsOf({ ...pond, flow: [{ step: 'mirror' }, demo] })).toEqual([
       { code: 'demoRefused', step: 1, move: 1, reason: { code: 'notAdjacent', u: 0, v: 2 } },
+    ]);
+  });
+
+  it('the loop of a conflict is counted without a reflection, once the search has met itself', () => {
+    expect(flowProblemsOf({ ...betrayal, flow: [{ step: 'play' }, loopCount] })).toEqual([]);
+  });
+
+  it('a loop is counted only where the reference search leaves a conflict', () => {
+    expect(flowProblemsOf({ ...betrayal, flow: [loopCount, { step: 'play' }] })).toEqual([
+      { code: 'noConflict', step: 0 },
+    ]);
+    const unmet = { ...betrayal, solution: betrayal.solution.slice(0, 2) };
+    expect(flowProblemsOf({ ...unmet, flow: [{ step: 'play' }, loopCount] })).toEqual([
+      { code: 'noConflict', step: 1 },
     ]);
   });
 });

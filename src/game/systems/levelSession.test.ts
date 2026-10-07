@@ -4,6 +4,7 @@ import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import {
+  betrayalLevel,
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
@@ -419,6 +420,14 @@ describe('a level session follows its script', () => {
     const session = startSession(level, 0);
     expect(respond(session, { type: 'answer', option: 1 }, 0).session.won).toBeNull();
     expect(respond(session, { type: 'answer', option: 2 }, 0).session.won).not.toBeNull();
+  });
+
+  it('a count of the loop is judged by the core on the conflict of the search (4.2)', () => {
+    const level = betrayalLevel();
+    const searched = playAll(startSession(level, 0), level.solution);
+    expect(stepNow(searched)?.step).toBe('count');
+    expect(respond(searched, { type: 'answer', option: 4 }, 0).session.won).toBeNull();
+    expect(respond(searched, { type: 'answer', option: 3 }, 0).session.won).not.toBeNull();
   });
 
   it('a script of lines only completes the level as it opens', () => {

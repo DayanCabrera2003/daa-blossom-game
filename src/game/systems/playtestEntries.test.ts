@@ -3,7 +3,7 @@ import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import { closedFlowerLevel, festivalLevel } from '../../../tests/support/fixtureLevels';
-import { rightCount } from './answerKey';
+import { countAnswer } from './answerKey';
 import { HINT_DELAY_MS } from './hints';
 import { handle, startController, type Controller, type UiEvent } from './levelController';
 import { garden } from './levelSession';
@@ -216,7 +216,7 @@ describe('playtest entries of bets, counts and the notebook', () => {
     const step = opened.session.flow.index;
     const question = opened.session.flow.steps[step];
     if (question?.step !== 'count' || pond.mirror === null) throw new Error('2.2 counts first');
-    const right = rightCount(garden(opened.session).matching, pond.mirror, question);
+    const right = countAnswer(pond, garden(opened.session), question);
     const wrong = right === 0 ? 1 : 0;
     const { entries } = play(opened, [
       { kind: 'answer', option: wrong },
