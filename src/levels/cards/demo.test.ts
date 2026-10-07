@@ -107,6 +107,20 @@ describe('the demo of a mechanic card', () => {
     expect(built({ ...path3, steps: [{ type: 'join', u: 'a', v: 'b' }] }).showsSun).toBe(false);
   });
 
+  it('moves the garden makes by itself show no hand, but the sun is still dragged', () => {
+    const demo = built({
+      ...path3,
+      alone: true,
+      steps: [
+        { type: 'join', u: 'a', v: 'b' },
+        { type: 'seekSun', fraction: 0 },
+      ],
+    });
+    expect(demo.frames.map((frame) => frame.gesture.kind)).toEqual(['none', 'sun', 'none']);
+    expect(lit(demo, 1, 0)).toBe(true);
+    expect(card({ ...path3, steps: [{ type: 'join', u: 'a', v: 'b' }] }).alone).toBe(false);
+  });
+
   it('a bet or an answer picks one of the choices shown, which must exist', () => {
     const choices = { count: 3, kind: 'numbers' };
     const demo = built({ ...path3, choices, steps: [{ type: 'bet', value: 1 }] });

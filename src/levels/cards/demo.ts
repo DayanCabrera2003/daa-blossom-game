@@ -293,7 +293,7 @@ function playInput(
     default: {
       const outcome = applyAction(state, entry);
       if (!outcome.ok) return { kind: 'refused', reason: outcome.reason };
-      frame(gestureOf(state, entry));
+      frame(card.alone ? { kind: 'none' } : gestureOf(state, entry));
       // A new move forgets what could have been redone, as the level's own history does.
       day.states = [...day.states.slice(0, day.cursor + 1), outcome.state];
       day.cursor = day.states.length - 1;
