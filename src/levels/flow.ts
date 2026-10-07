@@ -1,4 +1,5 @@
 import type { VertexId } from '@core/graph/types';
+import { RECIPE_CASES } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import { z } from 'zod';
 import { label, levelAction, lineId } from './fields';
@@ -103,6 +104,18 @@ const flowStep = z.discriminatedUnion('step', [
   z.strictObject({ step: z.literal('flowerChallenge'), attempts: z.number().int().min(1) }),
   /** The level's notebook question. */
   z.strictObject({ step: z.literal('notebook') }),
+  /**
+   * The recipe with cards (6.1): the player builds it, and the step is over once a check finds it
+   * right. With `missing`, the right recipe arrives without the cards of those cases, to be
+   * repaired (6.3); each case is named once.
+   */
+  z.strictObject({
+    step: z.literal('recipe'),
+    missing: z
+      .array(z.enum(RECIPE_CASES))
+      .default([])
+      .refine((cases) => new Set(cases).size === cases.length, 'a missing case is named twice'),
+  }),
 ]);
 
 /** The script of a level; without one, the level is played until won. */

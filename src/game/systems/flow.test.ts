@@ -357,6 +357,23 @@ describe('the script engine', () => {
     expect(advanceFlow(asking, { type: 'flowerDrawn', chain: true }).effects).toEqual([]);
   });
 
+  it('the recipe (6.1) opens with the cases it lacks and ends only on a right check', () => {
+    const { flow, effects } = start([{ step: 'recipe', missing: ['sameTree'] }]);
+    expect(effects).toEqual([{ kind: 'recipe', step: 0, missing: ['sameTree'] }]);
+    // A wrong check, or anything else, leaves the step waiting with the recipe on screen.
+    expect(advanceFlow(flow, { type: 'recipeChecked', right: false })).toEqual({
+      flow,
+      effects: [],
+    });
+    expect(advanceFlow(flow, { type: 'tap' }).effects).toEqual([]);
+    expect(advanceFlow(flow, { type: 'recipeChecked', right: true }).effects).toEqual([
+      { kind: 'finished' },
+    ]);
+    // Anywhere else, a check means nothing.
+    const asking = start([ask(true)]).flow;
+    expect(advanceFlow(asking, { type: 'recipeChecked', right: true }).effects).toEqual([]);
+  });
+
   it('an option that is not on offer is no answer', () => {
     const asking = start([ask(true)]).flow;
     expect(advanceFlow(asking, { type: 'answer', option: 2, right: null }).effects).toEqual([]);

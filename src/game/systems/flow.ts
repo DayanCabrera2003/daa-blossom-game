@@ -1,4 +1,5 @@
 import type { VertexId } from '@core/graph/types';
+import type { RecipeCase } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import type { LevelStep } from '@levels/flow';
 
@@ -51,7 +52,9 @@ export type FlowSignal =
   /** Too many drawings were no chains: the flower challenge is over anyway. */
   | { readonly type: 'flowerSpared' }
   /** The light's own search was made in the garden and shown to the end. */
-  | { readonly type: 'searched' };
+  | { readonly type: 'searched' }
+  /** The recipe was checked; `right` when the core finds it right (ends `recipe`). */
+  | { readonly type: 'recipeChecked'; readonly right: boolean };
 
 /** What the scene has to show; data only, line ids untranslated. */
 export type FlowEffect =
@@ -117,6 +120,11 @@ export type FlowEffect =
    * input, and says when it is over.
    */
   | { readonly kind: 'autoSearch'; readonly step: number }
+  /**
+   * The recipe with cards (6.1): the panel opens with the right recipe less the cards of the
+   * `missing` cases to repair (6.3), or with no card placed when none are named.
+   */
+  | { readonly kind: 'recipe'; readonly step: number; readonly missing: readonly RecipeCase[] }
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
   /** A false statement of the notebook (`option`) is refuted by its garden, which opens. */
@@ -222,6 +230,8 @@ function opening(step: LevelStep, index: number): FlowEffect {
       return { kind: 'flowerChallenge', step: index, attempts: step.attempts };
     case 'autoSearch':
       return { kind: 'autoSearch', step: index };
+    case 'recipe':
+      return { kind: 'recipe', step: index, missing: step.missing };
   }
 }
 
@@ -292,6 +302,11 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'autoSearch':
       return signal.type === 'searched' ? enter(flow, flow.index + 1, []) : unchanged;
+    case 'recipe':
+      // A wrong check is told by the panel, which stays open: only a right recipe moves on.
+      return signal.type === 'recipeChecked' && signal.right
+        ? enter(flow, flow.index + 1, [])
+        : unchanged;
     case 'separate':
       return signal.type === 'tap' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'explore':
