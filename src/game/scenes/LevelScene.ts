@@ -1,11 +1,7 @@
 import Phaser from 'phaser';
-import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
-import { cardDemos } from '@levels/cards/catalog';
-import type { CardDemo } from '@levels/cards/demo';
-import type { CardId } from '@levels/cards/schema';
 import { visibleLevels } from '@services/progress';
-import { recordCompletion, recordNotebook, recordTutorialSeen, writeSave } from '@services/save';
+import { recordCompletion, recordNotebook, writeSave } from '@services/save';
 import {
   handle,
   openController,
@@ -15,12 +11,12 @@ import {
 } from '../systems/levelController';
 import { playtestEntries } from '../systems/playtestEntries';
 import type { StarResult } from '../systems/stars';
-import { helpCards, offerCards, startCards, stepCard } from '../systems/tutorials';
+import { startCards, stepCard } from '../systems/tutorials';
 import { fitCamera } from '../view/fitCamera';
-import type { ShownCard } from '../view/TutorialView';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
+import { LevelCards } from './level/LevelCards';
 import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
 import { showEffect, type EffectStage } from './level/levelEffects';
@@ -33,7 +29,7 @@ import { Presenter } from './presenter';
  * level controller, hands the effects it answers with to `level/levelEffects.ts`, and has
  * `level/LevelRenderer.ts` repaint every layer after each event. Dialogue, questions, replays and the
  * victory panel go through the presenter (`presenter.ts`), which shows them in the order the
- * presentation queue decides. What stays here is the wiring, and what outlives the screen: the save
+ * presentation queue decides, and the mechanic cards through `level/LevelCards.ts`. What stays here is the wiring, and what outlives the screen: the save
  * and the playtest log.
  */
 export class LevelScene extends Phaser.Scene {
@@ -44,12 +40,10 @@ export class LevelScene extends Phaser.Scene {
   private views!: LevelViews;
   /** Paints every layer of the screen from the pure pictures of the garden and the HUD. */
   private painter!: LevelRenderer;
-  /** Every mechanic card's demo, built once for the scene object Phaser reuses. */
-  private cards: ReadonlyMap<CardId, CardDemo> | null = null;
-  /** The cards the player has seen, or that wait their turn in this level: none is queued twice. */
-  private offered: ReadonlySet<string> = new Set();
   /** Shows lines, questions, replays and the victory panel one at a time, in the queue's order. */
   private presenter!: Presenter;
+  /** The mechanic cards of this level: queued, shown again on "?", saved once seen. */
+  private cards!: LevelCards;
   /** Where the controller's effects are shown (`level/levelEffects.ts`). */
   private stage!: EffectStage;
   /**
@@ -74,8 +68,6 @@ export class LevelScene extends Phaser.Scene {
     }
     this.level = level;
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
-    this.cards ??= cardDemos();
-    this.offered = new Set(this.context.save.tutorialsSeen);
     const opened = openController(level, this.time.now);
     this.controller = opened.controller;
     this.context.playtest.record([
@@ -85,7 +77,7 @@ export class LevelScene extends Phaser.Scene {
     this.views = buildLevelViews(this, t, {
       dispatch: (event) => this.dispatch(event),
       back: () => this.leave(),
-      help: () => this.openHelp(),
+      help: () => this.cards.help(level, this.controller.session.flow.index),
     });
     // A new painter for every level: its timing starts afresh with the level.
     this.painter = new LevelRenderer(
@@ -109,11 +101,12 @@ export class LevelScene extends Phaser.Scene {
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
         counterexample: (option) => this.openCounterexample(option),
-        card: (card) => this.shownCard(card),
-        cardClosed: (card) => this.cardSeen(card),
+        card: (card) => this.cards.shown(card),
+        cardClosed: (card) => this.cards.closed(card),
       },
       { t, line: this.context.line },
     );
+    this.cards = new LevelCards(this.context, this.presenter);
     this.stage = {
       level,
       labels: this.labels,
@@ -136,7 +129,7 @@ export class LevelScene extends Phaser.Scene {
     this.ready = true;
     // The cards of what opens with the level come first; then the script opens it: its first
     // lines, then whatever step waits for the player.
-    this.offer(startCards(level, this.offered));
+    this.cards.offer(startCards(level, this.cards.seen));
     for (const effect of opened.effects) this.show(effect);
     this.painter.render(this.time.now);
   }
@@ -174,40 +167,9 @@ export class LevelScene extends Phaser.Scene {
 
   private show(effect: Effect): void {
     // A step that brings a new gesture shows its card first, before whatever it opens.
-    const card = stepCard(effect.kind, this.offered);
-    if (card !== null) this.offer([card]);
+    const card = stepCard(effect.kind, this.cards.seen);
+    if (card !== null) this.cards.offer([card]);
     showEffect(effect, this.stage);
-  }
-
-  /** Queues the mechanic cards among `candidates` that are neither seen nor already waiting. */
-  private offer(candidates: readonly CardId[]): void {
-    const { cards, offered } = offerCards(this.offered, candidates);
-    this.offered = offered;
-    for (const card of cards) this.presenter.present({ kind: 'tutorial', card });
-  }
-
-  /**
-   * "?": the cards of what the level has open so far, again, one after another; seen or not, and
-   * not queued a second time while they are still showing.
-   */
-  private openHelp(): void {
-    if (this.presenter.cardsQueued) return;
-    for (const card of helpCards(this.level, this.controller.session.flow.index))
-      this.presenter.present({ kind: 'tutorial', card });
-  }
-
-  /** A mechanic card in the player's words, with its demo. */
-  private shownCard(card: CardId): ShownCard {
-    const demo = this.cards?.get(card);
-    invariant(demo !== undefined, `the cards file has a demo for ${card}`);
-    const { t } = this.context;
-    return { title: t(`tutorial.${card}.title`), body: t(`tutorial.${card}.body`), demo };
-  }
-
-  /** A closed card is seen for good: saved at once, so it never shows by itself again. */
-  private cardSeen(card: CardId): void {
-    this.context.save = recordTutorialSeen(this.context.save, card);
-    writeSave(this.context.storage, this.context.save);
   }
 
   /** Back to the hub; a level left unwon is logged as left. */
