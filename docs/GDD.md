@@ -129,7 +129,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 
 ### 4.1 Pixel art
 
-- **Lienzo interno:** 480 × 270 píxeles, escalado por entero (×3 en 1440p, ×4 en 4K). Pixel perfect, sin filtrado.
+- **Lienzo lógico:** 480 × 270 píxeles: todo el arte y los niveles viven en esa rejilla. Se dibuja escalado por entero (×3 en 1440p, ×4 en 4K) con una cámara ampliada sobre un lienzo real del tamaño de la pantalla: pixel perfect y sin filtrado para el arte, y el texto rasterizado a resolución completa para que se lea nítido.
 - **Tiles:** 16 × 16. Brotes: 16 × 16 (cuerpo) con carita animada; flores plegadas: 32 × 32 con el número de pétalos visible como pétalos reales.
 - **Paleta:** una paleta base de 32 colores (estilo Endesga o similar, elegida al inicio y respetada en todo el juego). Cada estación aplica un subconjunto y un tinte:
   - Prólogo, Huerto: verdes suaves, marrón tierra, cielo de atardecer.
