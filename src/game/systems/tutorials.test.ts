@@ -117,6 +117,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(stepCard('replay', new Set())).toBeNull();
     expect(stepCard('bet', new Set(['bet']))).toBeNull();
     expect(stepCard('explore', new Set())).toBe('reflection');
+    expect(stepCard('animate', new Set())).toBeNull();
   });
 
   it('offering cards skips those seen or already waiting, and remembers the new ones', () => {

@@ -4,7 +4,6 @@ import { compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
 import type { LevelStep } from '@levels/flow';
 import { isUiUnlocked } from '@levels/uiUnlocks';
-import type { FlowEffect } from './flow';
 
 /**
  * When each mechanic card shows (GDD §5.11): the first time its mechanic is open, once per player.
@@ -74,11 +73,11 @@ export function levelCards(level: Level): CardId[] {
 export const startCards = (level: Level, seen: ReadonlySet<string>): CardId[] =>
   levelCards(level).filter((card) => !seen.has(card));
 
-/** The card shown as a step opens (by the step, or the effect that opens it), unless seen. */
-export function stepCard(
-  kind: LevelStep['step'] | FlowEffect['kind'],
-  seen: ReadonlySet<string>,
-): CardId | null {
+/**
+ * The card shown as a step opens, unless seen. `kind` is the step, or the kind of any effect the
+ * scene shows: the effect that opens a step has the step's name, and every other effect has none.
+ */
+export function stepCard(kind: string, seen: ReadonlySet<string>): CardId | null {
   const card = (STEP_CARD as Readonly<Record<string, CardId | undefined>>)[kind];
   return card === undefined || seen.has(card) ? null : card;
 }
