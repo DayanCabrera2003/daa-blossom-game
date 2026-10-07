@@ -2,9 +2,15 @@ import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { ActionType } from '@core/rules/actions';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
-import { catalog } from '@levels/catalog';
+import { catalog, compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
 import { describe, expect, it } from 'vitest';
+import {
+  festivalLevel,
+  fivePetalsLevel,
+  pentagonLevel,
+  stemRotationLevel,
+} from '../../../tests/support/fixtureLevels';
 import {
   ACTION_CARD,
   helpCards,
@@ -26,11 +32,10 @@ const levelOf = (id: string): Level => {
  * Plays the game in order, as one player who closes every card: the cards each level shows, at
  * its start and as each step of its script is reached.
  */
-function walk(ids: readonly string[]): Map<string, CardId[]> {
+function walkLevels(played: readonly Level[]): Map<string, CardId[]> {
   const seen = new Set<CardId>();
   const shown = new Map<string, CardId[]>();
-  for (const id of ids) {
-    const level = levelOf(id);
+  for (const level of played) {
     const cards = [...startCards(level, seen)];
     for (const card of cards) seen.add(card);
     for (const step of level.flow) {
@@ -39,10 +44,13 @@ function walk(ids: readonly string[]): Map<string, CardId[]> {
       cards.push(card);
       seen.add(card);
     }
-    shown.set(id, cards);
+    shown.set(level.data.id, cards);
   }
   return shown;
 }
+
+/** The same walk, through the levels of the catalog with these ids. */
+const walk = (ids: readonly string[]): Map<string, CardId[]> => walkLevels(ids.map(levelOf));
 
 const playedInOrder = levels.filter((level) => !level.data.draft).map((level) => level.data.id);
 
@@ -90,8 +98,18 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     ]);
   });
 
-  it('the draft levels of later chapters bring the cards of their own tools', () => {
-    const later = walk(levels.map((level) => level.data.id));
+  it('gardens of later chapters bring the cards of their own tools', () => {
+    // Chapters 0 to 2 as written, then gardens of chapters 4 and 7 that open new tools.
+    const written = levels.filter(
+      (level) => !level.data.draft && compareLevelIds(level.data.id, '3.0') < 0,
+    );
+    const later = walkLevels([
+      ...written,
+      festivalLevel(),
+      fivePetalsLevel(),
+      stemRotationLevel(),
+      pentagonLevel(),
+    ]);
     expect(later.get('4.1')).toEqual(['inspect', 'marks', 'scarecrows']);
     expect(later.get('4.6')).toEqual(['fold', 'unfold']);
     expect(later.get('4.10')).toEqual(['rotateStem']);
