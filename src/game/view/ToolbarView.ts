@@ -1,6 +1,8 @@
 import type Phaser from 'phaser';
+import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
 import type { ToolId } from '../input/tools';
+import { toolbarRow } from '../picture/bottomRows';
 import { Button } from './Button';
 import { LAYOUT } from './layout';
 
@@ -19,14 +21,14 @@ export class ToolbarView {
     const key = tools.join(',');
     if (key !== this.shown) {
       for (const { button } of this.buttons) button.destroy();
-      let x = LAYOUT.margin + 2;
-      this.buttons = tools.map((tool) => {
-        const button = new Button(this.scene, x, LAYOUT.toolbarY, this.t(`tool.${tool}`), () =>
+      this.buttons = tools.map((tool) => ({
+        tool,
+        button: new Button(this.scene, 0, LAYOUT.toolbarY, this.t(`tool.${tool}`), () =>
           this.choose(tool),
-        );
-        x += button.width + 3;
-        return { tool, button };
-      });
+        ),
+      }));
+      const lefts = toolbarRow(this.buttons.map(({ button }) => button.width));
+      this.buttons.forEach(({ button }, i) => button.moveTo(itemAt(lefts, i), LAYOUT.toolbarY));
       this.shown = key;
     }
     for (const { tool, button } of this.buttons) button.setActive(tool === inHand);

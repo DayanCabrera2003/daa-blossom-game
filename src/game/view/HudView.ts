@@ -1,5 +1,7 @@
 import type Phaser from 'phaser';
+import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
+import { HUD_BUTTONS, hudRow, type HudButton } from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -33,10 +35,7 @@ export class HudView {
   private readonly status: Phaser.GameObjects.Text;
   /** What a waiting script step expects (drag the sun, touch a sprout…), centred under the goal. */
   private readonly prompt: Phaser.GameObjects.Text;
-  private readonly buttons: Record<
-    'done' | 'undo' | 'redo' | 'hint' | 'help' | 'back' | 'checkMirror' | 'leaveLayer',
-    Button
-  >;
+  private readonly buttons: Record<HudButton, Button>;
 
   constructor(
     scene: Phaser.Scene,
@@ -49,25 +48,16 @@ export class HudView {
       .text(CANVAS_WIDTH / 2, LAYOUT.secondY, '', textStyle(8, PALETTE.sun))
       .setOrigin(0.5, 0)
       .setDepth(100);
-    const order = [
-      'back',
-      'help',
-      'hint',
-      'redo',
-      'undo',
-      'done',
-      'checkMirror',
-      'leaveLayer',
-    ] as const;
-    let x = CANVAS_WIDTH - LAYOUT.margin;
-    const made: Partial<Record<(typeof order)[number], Button>> = {};
-    for (const name of order) {
-      const label = t(`hud.${name}`);
-      const button = new Button(scene, 0, LAYOUT.bottomY, label, actions[name]);
-      x -= button.width + 3;
-      made[name] = button.moveTo(x, LAYOUT.bottomY);
-    }
-    this.buttons = made as Record<(typeof order)[number], Button>;
+    // Every button keeps its place even while hidden, so the row is laid out for all of them.
+    const made = HUD_BUTTONS.map(
+      (name) => new Button(scene, 0, LAYOUT.bottomY, t(`hud.${name}`), actions[name]),
+    );
+    const lefts = hudRow(made.map((button) => button.width));
+    made.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
+    this.buttons = Object.fromEntries(HUD_BUTTONS.map((name, i) => [name, made[i]])) as Record<
+      HudButton,
+      Button
+    >;
   }
 
   render(hud: HudPicture): void {
