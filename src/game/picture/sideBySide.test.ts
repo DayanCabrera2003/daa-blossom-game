@@ -35,6 +35,9 @@ describe('the open and the folded garden side by side (4.11)', () => {
     expect(shown.vines).toHaveLength(6);
     expect(shown.outline.length).toBeGreaterThan(2);
     expect(shown.cut).toBeNull();
+    // A sprout without a name (a random garden) shows its number.
+    const unnamed = sideBySidePicture(startSession(level, 0), positions, [], 0);
+    expect(unnamed?.nodes[1]?.label).toBe('5');
   });
 
   it('a chain drawn is shown cut, its moments in turn: ends, stretch, folded chain', () => {
