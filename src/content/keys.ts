@@ -4,6 +4,8 @@ import type { ActionType } from '@core/rules/actions';
 import { NAMED_CHAPTERS } from '@game/picture/chapterTitle';
 import type { RefusalCode } from '@game/systems/refusal';
 import { CARD_IDS } from '@levels/cards/schema';
+import { RECIPE_CARDS, RECIPE_CASES } from '@core/recipe/recipe';
+import { cardTextKey, failureTextKey, RECALL_KEY } from '@levels/recipeCards';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
@@ -141,6 +143,13 @@ const UI = {
   'flower.whole': [],
   'flower.folded': [],
   'flower.again': [],
+  'recipe.title': [],
+  'recipe.mark': [],
+  'recipe.cases': [],
+  'recipe.end': [],
+  'recipe.table': [],
+  'recipe.check': [],
+  'recipe.right': [],
   'hud.checkMirror': [],
   'victory.title': [],
   'victory.stars': ['count'],
@@ -170,6 +179,22 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
       [`tutorial.${id}.body`, []],
     ]),
   ),
+  // The recipe cards (GDD 6.1): each card's text, why each distractor is wrong, which case is
+  // missing, and the level that taught it.
+  ...Object.fromEntries(RECIPE_CARDS.map((card) => [cardTextKey(card.id), []])),
+  ...Object.fromEntries(
+    RECIPE_CARDS.filter((card) => !card.right).map((card) => [
+      failureTextKey({ kind: 'distractor', card: card.id, case: card.case }),
+      [],
+    ]),
+  ),
+  ...Object.fromEntries(
+    RECIPE_CASES.map((recipeCase) => [
+      failureTextKey({ kind: 'missing', card: 'markDarkSuns', case: recipeCase }),
+      [],
+    ]),
+  ),
+  [RECALL_KEY]: ['level'],
   // The name of each named chapter, over its levels in the hub.
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
 };
