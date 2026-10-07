@@ -1,11 +1,13 @@
 import { baseVertex, members, nestingDepth, nodesWithin } from '@core/blossom/hierarchy';
 import type { Blossom, GardenNode } from '@core/blossom/types';
+import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
+import { itemAt } from '@core/shared/itemAt';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { buildCounterexample } from '@levels/counterexample';
@@ -247,5 +249,64 @@ describe('5.3: the wrong petal', () => {
     // From t, the chain comes in by the base b and goes out by c, towards g.
     expect(chain.indexOf(sprout('c')) + 1).toBe(chain.indexOf(sprout('g')));
     expect(size(play(start, [{ type: 'chain', path: chain }]).matching)).toBe(4);
+  });
+});
+
+/** The reference solution cut into rounds, each ending with the chain it lights. */
+const roundsOf = (level: Level): Action[][] => {
+  const rounds: Action[][] = [[]];
+  for (const move of level.solution) {
+    rounds.at(-1)?.push(move);
+    if (move.type === 'chain') rounds.push([]);
+  }
+  return rounds.filter((round) => round.some((move) => move.type === 'chain'));
+};
+
+/**
+ * The flower each round of the reference solution has folded around the rest when its last fold is
+ * made: the outermost flower at that moment, or null for a round that folds nothing.
+ */
+const lastFolds = (level: Level): (Blossom | null)[] => {
+  let state = level.start;
+  return roundsOf(level).map((round) => {
+    let flower: Blossom | null = null;
+    for (const move of round) {
+      state = play(state, [move]);
+      if (move.type !== 'foldAt') continue;
+      const id = itemAt(state.layer.nodeOf, move.from);
+      const node = itemAt(state.layer.nodes, id);
+      flower = node.kind === 'blossom' ? node : null;
+    }
+    return flower;
+  });
+};
+
+describe('5.4: wild garden', () => {
+  const level = levelOf('5.4');
+  const id = (name: string): VertexId => sproutOf(level, name);
+
+  it('16 sprouts, the goal hidden: the most lanterns, said with "Terminé"', () => {
+    expect(level.graph.n).toBe(16);
+    expect(level.data.goal.visible).toBe(false);
+    expect(level.data.victory).toEqual({ type: 'maximum' });
+  });
+
+  it('three rounds of chains are needed, and the reference plays exactly three', () => {
+    expect(maximumSize(level.graph) - size(level.start.matching)).toBe(3);
+    expect(roundsOf(level)).toHaveLength(3);
+  });
+
+  it('two of the rounds fold a flower inside another, each nesting in its own way', () => {
+    const [first, second] = lastFolds(level);
+    if (first == null || second == null) throw new Error('a round folds nothing');
+    const [firstInner] = innerFlowers(first);
+    const [secondInner] = innerFlowers(second);
+    if (firstInner === undefined || secondInner === undefined) throw new Error('no nesting');
+    // From R, the inner flower hangs inside the loop, with a base of its own (as in 5.1).
+    expect(baseVertex(first)).toBe(id('R'));
+    expect(baseVertex(firstInner)).not.toBe(baseVertex(first));
+    // From U, the inner flower holds the base of the outer one: both open at U.
+    expect(baseVertex(second)).toBe(id('U'));
+    expect(baseVertex(secondInner)).toBe(id('U'));
   });
 });
