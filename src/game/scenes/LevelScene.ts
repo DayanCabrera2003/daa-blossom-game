@@ -6,9 +6,6 @@ import type { CardDemo } from '@levels/cards/demo';
 import type { CardId } from '@levels/cards/schema';
 import { visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook, recordTutorialSeen, writeSave } from '@services/save';
-import { planAnimation } from '../animation/plan';
-import { checkText } from '../picture/mirrorDrawing';
-import { reasonText } from '../picture/reasonText';
 import {
   handle,
   openController,
@@ -16,11 +13,7 @@ import {
   type Effect,
   type UiEvent,
 } from '../systems/levelController';
-import { garden } from '../systems/levelSession';
 import { playtestEntries } from '../systems/playtestEntries';
-import { questionAt } from '../systems/question';
-import { lightDay } from '../systems/lightSearch';
-import { dayToReplay } from '../systems/replayDay';
 import type { StarResult } from '../systems/stars';
 import { helpCards, offerCards, startCards, stepCard } from '../systems/tutorials';
 import { fitCamera } from '../view/fitCamera';
@@ -30,14 +23,18 @@ import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
 import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
+import { showEffect, type EffectStage } from './level/levelEffects';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
 import { Presenter } from './presenter';
 
 /**
- * A level being played. The scene takes no decision: it forwards the player's presses, keys and
- * buttons to the level controller, shows the effects it answers with, and repaints every layer from
- * the pure pictures of the garden and the HUD. Dialogue, questions, replays and the victory panel
- * go through the presenter (`presenter.ts`), which shows them in the order the presentation queue decides.
+ * A level being played. The scene takes no decision and draws nothing itself: it builds the screen
+ * (`level/levelViews.ts`), sends the player's presses, keys and buttons (`level/levelInput.ts`) to the
+ * level controller, hands the effects it answers with to `level/levelEffects.ts`, and has
+ * `level/LevelRenderer.ts` repaint every layer after each event. Dialogue, questions, replays and the
+ * victory panel go through the presenter (`presenter.ts`), which shows them in the order the
+ * presentation queue decides. What stays here is the wiring, and what outlives the screen: the save
+ * and the playtest log.
  */
 export class LevelScene extends Phaser.Scene {
   private context!: GameContext;
@@ -53,6 +50,8 @@ export class LevelScene extends Phaser.Scene {
   private offered: ReadonlySet<string> = new Set();
   /** Shows lines, questions, replays and the victory panel one at a time, in the queue's order. */
   private presenter!: Presenter;
+  /** Where the controller's effects are shown (`level/levelEffects.ts`). */
+  private stage!: EffectStage;
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -115,6 +114,19 @@ export class LevelScene extends Phaser.Scene {
       },
       { t, line: this.context.line },
     );
+    this.stage = {
+      level,
+      labels: this.labels,
+      t,
+      line: this.context.line,
+      controller: () => this.controller,
+      now: () => this.time.now,
+      toast: this.views.toast,
+      animation: this.views.animation,
+      presenter: this.presenter,
+      win: (stars) => this.win(stars),
+      writeNotebook: () => this.writeNotebook(),
+    };
     bindLevelInput(this, {
       dispatch: (event) => this.dispatch(event),
       leave: () => this.leave(),
@@ -161,130 +173,10 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private show(effect: Effect): void {
-    const { t, line } = this.context;
     // A step that brings a new gesture shows its card first, before whatever it opens.
     const card = stepCard(effect.kind, this.offered);
     if (card !== null) this.offer([card]);
-    switch (effect.kind) {
-      case 'rejected': {
-        // Before folding opens, the conflict of a search is not told apart (4.1).
-        const foldAllowed = this.level.start.allowed.has('foldAt');
-        this.views.toast.show(
-          reasonText(effect.reason, effect.action, this.labels, t, { foldAllowed }),
-        );
-        break;
-      }
-      case 'drawRefused':
-        this.views.toast.show(reasonText(effect.reason, null, this.labels, t));
-        break;
-      case 'mirrorChecked': {
-        // What the check found is painted from the session; here it is told, and a player who
-        // could not beat the garden is let go with a word from the mentor.
-        const { key, params } = checkText(effect.check);
-        this.views.toast.show(t(key, params));
-        if (effect.check.kind === 'notBetter' && effect.check.spared)
-          this.presenter.present({ kind: 'lines', lines: [t('mirror.spared')] });
-        break;
-      }
-      case 'flowerDrawn': {
-        // A chain is cut over both gardens, painted from the session; a drawing that is no chain is
-        // told why, and a player who cannot draw one is let go with a word from the mentor.
-        const { attempt } = effect;
-        if (attempt.kind === 'cut') break;
-        const reason = { code: 'invalidPath', error: attempt.error } as const;
-        this.views.toast.show(
-          reasonText(reason, { type: 'chain', path: attempt.path }, this.labels, t),
-        );
-        if (attempt.spared) this.presenter.present({ kind: 'lines', lines: [t('flower.spared')] });
-        break;
-      }
-      case 'animate':
-        this.views.animation.play(
-          planAnimation(effect.events),
-          this.controller.positions,
-          this.time.now,
-        );
-        break;
-      case 'hint': {
-        const { content } = effect;
-        this.presenter.hint(
-          [content.generic ? t(content.line) : line(content.line)],
-          content.option,
-        );
-        break;
-      }
-      case 'say':
-        this.presenter.present({ kind: 'lines', lines: effect.lines.map(line) });
-        break;
-      case 'replay': {
-        const { level, history } = this.controller.session;
-        const day = dayToReplay(level, history.states, effect.demo);
-        this.presenter.present({ kind: 'replay', day });
-        break;
-      }
-      case 'autoSearch':
-        // The light's marks are shown one by one from the garden as it is now; at the end, the
-        // presenter reports it and the session keeps them.
-        this.presenter.present({
-          kind: 'replay',
-          day: lightDay(garden(this.controller.session)),
-          light: true,
-        });
-        break;
-      case 'won':
-        this.win(effect.stars);
-        break;
-      case 'ask':
-      case 'bet':
-      case 'count':
-      case 'notebook': {
-        // The options and right answers come from the core, on the garden as it is now.
-        const yours = garden(this.controller.session);
-        const question = questionAt(this.level, effect.step, yours);
-        if (question !== null) this.presenter.present({ kind: 'question', question });
-        break;
-      }
-      case 'answered':
-        this.presenter.answered();
-        break;
-      case 'pickVine':
-        // The mentor asks; the touch on a vine that answers goes through the controller.
-        this.presenter.present({ kind: 'lines', lines: [line(effect.prompt)] });
-        break;
-      case 'vinePicked':
-        // Nothing to queue: a right pick shows in the garden, painted from the session.
-        break;
-      case 'reveal': {
-        const key = effect.bet === effect.right ? 'bet.revealRight' : 'bet.revealWrong';
-        this.presenter.present({
-          kind: 'lines',
-          lines: [t(key, { bet: effect.bet, count: effect.right })],
-        });
-        break;
-      }
-      case 'play':
-      case 'sproutTapped':
-        // Nothing to draw: the garden simply takes moves, or the touched sprout is painted.
-        break;
-      case 'sun':
-        // Nothing to draw: the sun is already on the top bar, and moving it ends the step.
-        break;
-      case 'counterexample':
-        this.presenter.present({ kind: 'counterexample', option: effect.option });
-        break;
-      case 'written':
-        this.writeNotebook();
-        break;
-      case 'mirror':
-      case 'explore':
-      case 'separate':
-      case 'draw':
-        // Nothing to queue: the pond, and the reflection drawn in it, are painted from the session.
-        break;
-      case 'flowerChallenge':
-        // Nothing to queue: the open and the folded garden are painted from the session.
-        break;
-    }
+    showEffect(effect, this.stage);
   }
 
   /** Queues the mechanic cards among `candidates` that are neither seen nor already waiting. */
