@@ -68,7 +68,9 @@ export type UiEvent =
   | { readonly kind: 'drawToggle'; readonly u: VertexId; readonly v: VertexId }
   | { readonly kind: 'checkMirror' }
   /** A whole chain drawn in the flower challenge (a drag gives the same, sprout by sprout). */
-  | { readonly kind: 'drawChain'; readonly path: readonly VertexId[] };
+  | { readonly kind: 'drawChain'; readonly path: readonly VertexId[] }
+  /** The light's own search has been shown to the end; the scene says so, not the player. */
+  | { readonly kind: 'searched' };
 
 /**
  * What the scene has to show after an event: the answers to moves and hints, and the effects of the
@@ -299,6 +301,8 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       return checkMirror(controller, now);
     case 'drawChain':
       return drawChain(controller, event.path, now);
+    case 'searched':
+      return tell(controller, { type: 'searched' }, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
     case 'hint': {

@@ -2,7 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { BLOOM, betrayalLevel, bloomLevel } from '../../../tests/support/fixtureLevels';
+import { BLOOM, betrayalLevel, bloomLevel, lightLevel } from '../../../tests/support/fixtureLevels';
 import { garden } from './levelSession';
 import { playWalkthrough } from './walkthrough';
 
@@ -96,6 +96,19 @@ describe('playing the reference walkthrough of a level without a scene', () => {
       'animate',
       'animate',
       'animate',
+      'pickVine',
+      'vinePicked',
+      'count',
+      'answered',
+      'won',
+    ]);
+  });
+
+  it('the light searches by itself as the scene would show it, with no entry of its own', () => {
+    const played = playWalkthrough(lightLevel());
+    expect(played.problem).toBeNull();
+    expect(played.effects.map((effect) => effect.kind)).toEqual([
+      'autoSearch',
       'pickVine',
       'vinePicked',
       'count',

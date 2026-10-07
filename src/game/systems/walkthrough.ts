@@ -12,14 +12,15 @@ import {
   type Effect,
   type UiEvent,
 } from './levelController';
-import { garden } from './levelSession';
+import { garden, stepNow } from './levelSession';
 import type { Refusal } from './refusal';
 
 /**
  * Plays a level's reference walkthrough through the level controller, with no scene: every move as
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
- * vines, and a chain of the flower challenge as a drag through its sprouts. A level whose walkthrough does not finish its script
+ * vines, a chain of the flower challenge as a drag through its sprouts, and the end of the light's
+ * own search as the scene reports it, with no entry of its own. A level whose walkthrough does not finish its script
  * never reaches the browser (plan 03, §0): the playability test and `check-levels` both run this.
  */
 
@@ -254,16 +255,39 @@ function playEntry(
   return { ...played, problem: matches ? null : { code: 'gestureMismatch', entry: index } };
 }
 
+/**
+ * Lets the light search by itself whenever the script waits for it: the scene shows the search and
+ * then says it is over, which the walkthrough does at once. It writes no entry for it.
+ */
+function showLight(
+  controller: Controller,
+  now: number,
+): { controller: Controller; effects: Effect[] } {
+  let current = controller;
+  const effects: Effect[] = [];
+  while (stepNow(current.session)?.step === 'autoSearch') {
+    const step = handle(current, { kind: 'searched' }, now);
+    current = step.controller;
+    effects.push(...step.effects);
+  }
+  return { controller: current, effects };
+}
+
 /** Plays the level's whole walkthrough from its start, at time `now`; stops at the first problem. */
 export function playWalkthrough(level: Level, now = 0): WalkthroughResult {
   const opened = openController(level, now);
-  let controller = opened.controller;
-  const effects: Effect[] = [...opened.effects];
+  const shown = showLight(opened.controller, now);
+  let controller = shown.controller;
+  const effects: Effect[] = [...opened.effects, ...shown.effects];
   for (const [index, entry] of level.walkthrough.entries()) {
     const played = playEntry(controller, entry, index, now);
-    controller = played.controller;
     effects.push(...played.effects);
-    if (played.problem !== null) return { controller, effects, problem: played.problem };
+    if (played.problem !== null) {
+      return { controller: played.controller, effects, problem: played.problem };
+    }
+    const light = showLight(played.controller, now);
+    controller = light.controller;
+    effects.push(...light.effects);
   }
   const { flow } = controller.session;
   const problem: WalkthroughProblem | null = isFinished(flow)

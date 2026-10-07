@@ -7,6 +7,7 @@ import {
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
+  lightLevel,
   nestedFlowersLevel,
 } from '../../../tests/support/fixtureLevels';
 import { gesturesFor, vinePoint } from '../input/gestures';
@@ -315,6 +316,17 @@ describe('the level controller runs the script', () => {
       v: 2,
       correct: true,
     });
+  });
+
+  it('the light searches by itself: touches wait, and its end puts its marks in the day', () => {
+    const level = lightLevel();
+    const opened = openController(level, 0);
+    expect(opened.effects).toEqual([{ kind: 'autoSearch', step: 0 }]);
+    const touched = feed(opened.controller, touch(spot(level, 0)));
+    expect(garden(touched.controller.session)).toBe(level.start);
+    const searched = handle(touched.controller, { kind: 'searched' }, 0);
+    expect(searched.effects).toEqual([{ kind: 'pickVine', step: 1, prompt: 'ch4.2.sauce.01' }]);
+    expect(searched.controller.session.history.states).toHaveLength(4);
   });
 
   it('while pointing at a vine, the third hint makes the conflict glow until it is touched', () => {
