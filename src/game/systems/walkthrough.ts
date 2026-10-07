@@ -20,8 +20,9 @@ import type { Refusal } from './refusal';
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
  * vines, a chain of the flower challenge as a drag through its sprouts, and the end of the light's
- * own search as the scene reports it, with no entry of its own. A level whose walkthrough does not finish its script
- * never reaches the browser (plan 03, §0): the playability test and `check-levels` both run this.
+ * own search as the scene reports it, with no entry of its own. A level whose walkthrough does not
+ * finish its script never reaches the browser (plan 03, §0): the playability test and
+ * `check-levels` both run this.
  */
 
 /** Why a walkthrough does not play through; `entry` is its index in the walkthrough. */
