@@ -1,5 +1,7 @@
 import type { GardenState } from '@core/rules/state';
 import type { SproutKind } from '@levels/fields';
+import { backdropPicture, seedOf, siteOf } from '../../picture/backdrop';
+import { backdropTint } from '../../picture/dayTint';
 import { NO_EXTRAS, type PointingExtras } from '../../picture/garden';
 import { hudPicture } from '../../picture/hud';
 import { layerPicture } from '../../picture/layerPicture';
@@ -47,18 +49,28 @@ export class LevelRenderer {
   /** Whether the moments of the chain shown are still moving on. */
   private cutMoving = false;
   private lastHudRefresh = 0;
+  /** The colour of the season of the level's chapter, which the hour of the sun multiplies. */
+  private readonly seasonTint: number;
 
   constructor(
     private readonly views: LevelViews,
     private readonly look: LevelLook,
     private readonly source: RenderSource,
-  ) {}
+  ) {
+    // The backdrop of the level is painted once: it depends on the level alone.
+    const { level } = source.controller().session;
+    const backdrop = backdropPicture(siteOf(level));
+    views.backdrop.paint(backdrop);
+    views.backdrop.setDrift(backdrop.season.drift, seedOf(level.data.id));
+    this.seasonTint = backdrop.season.tint;
+  }
 
   /**
    * Moves on what plays by itself: the mirror, the moments of a chain cut at the flower, and the
    * counters of a race running.
    */
   update(time: number): void {
+    this.views.backdrop.update(time);
     this.views.mirror.update(time);
     if (this.cutMoving) this.renderSideBySide(time);
     if (this.source.raceClock() !== null) this.renderRace();
@@ -148,8 +160,9 @@ export class LevelRenderer {
     this.views.hud.render(hud);
     this.views.toolbar.render(hud.tools, hud.tool);
     const replayed = this.source.replaySun();
-    this.views.sun.render(
-      replayed === null || hud.sun === null ? hud.sun : { ...replayed, calling: false },
-    );
+    const sun = replayed === null || hud.sun === null ? hud.sun : { ...replayed, calling: false };
+    this.views.sun.render(sun);
+    // The backdrop follows the sun's hour; with no sun yet, the present: night.
+    this.views.backdrop.tint(backdropTint(this.seasonTint, sun?.fraction ?? null));
   }
 }
