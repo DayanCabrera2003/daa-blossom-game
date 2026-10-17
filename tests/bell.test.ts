@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { renderBell, type BellTimbre } from '../tools/synth/bell';
+import { magnitude, strongest } from './support/spectrum';
 
 const RATE = 22050;
 
@@ -15,38 +16,12 @@ const TIMBRE: BellTimbre = {
   peak: 0.8,
 };
 
-/** How strongly `samples` hold the frequency `hz` (one bin of a discrete Fourier transform). */
-function magnitude(samples: Int16Array, hz: number): number {
-  let re = 0;
-  let im = 0;
-  for (let i = 0; i < samples.length; i++) {
-    const phase = (2 * Math.PI * hz * i) / RATE;
-    re += (samples[i] ?? 0) * Math.cos(phase);
-    im -= (samples[i] ?? 0) * Math.sin(phase);
-  }
-  return Math.hypot(re, im);
-}
-
-/** The strongest frequency between `low` and `high`, scanned in steps of `step` Hz. */
-function strongest(samples: Int16Array, low: number, high: number, step: number): number {
-  let best = low;
-  let bestMagnitude = -1;
-  for (let hz = low; hz <= high; hz += step) {
-    const m = magnitude(samples, hz);
-    if (m > bestMagnitude) {
-      best = hz;
-      bestMagnitude = m;
-    }
-  }
-  return best;
-}
-
 describe('the synthesized bell', () => {
   it.each([523.25, 1046.5, 3520])('rings at %s Hz to within 1 %%', (hz) => {
     const samples = renderBell([{ frequency: hz, start: 0, gain: 1 }], TIMBRE, RATE);
     // A coarse scan over every partial finds the fundamental strongest; a fine one pins it.
-    const coarse = strongest(samples.subarray(0, 4096), 100, 10000, 10);
-    const fine = strongest(samples, coarse - 15, coarse + 15, 0.5);
+    const coarse = strongest(samples.subarray(0, 4096), RATE, { low: 100, high: 10000, step: 10 });
+    const fine = strongest(samples, RATE, { low: coarse - 15, high: coarse + 15, step: 0.5 });
     expect(Math.abs(fine - hz) / hz).toBeLessThan(0.01);
   });
 
@@ -83,7 +58,9 @@ describe('the synthesized bell', () => {
     // At 3520 Hz the 5.4 partial (19 kHz) is past 11 kHz: it would come back near 3 kHz.
     const samples = renderBell([{ frequency: 3520, start: 0, gain: 1 }], TIMBRE, RATE);
     const folded = RATE - 3520 * 5.4;
-    expect(magnitude(samples, Math.abs(folded))).toBeLessThan(magnitude(samples, 3520) / 100);
+    expect(magnitude(samples, Math.abs(folded), RATE)).toBeLessThan(
+      magnitude(samples, 3520, RATE) / 100,
+    );
   });
 
   it('is silence for no notes', () => {
