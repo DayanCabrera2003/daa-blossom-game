@@ -41,7 +41,7 @@ function fitsOnCanvas(lefts: readonly number[], widths: readonly number[]): bool
 }
 
 describe('the two bottom rows of the level HUD', () => {
-  it('a button is as wide as its label in the 8 px monospace face, plus its padding', () => {
+  it('a button is as wide as its label in the pixel font, plus its padding', () => {
     expect(estimatedButtonWidth('?')).toBe(CHAR_ADVANCE + BOTTOM_ROWS.padding);
     // Accented letters are one character each, as the face draws them.
     expect(estimatedButtonWidth('Terminé')).toBe(7 * CHAR_ADVANCE + BOTTOM_ROWS.padding);
