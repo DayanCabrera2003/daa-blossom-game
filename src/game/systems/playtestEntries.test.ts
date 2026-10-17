@@ -377,3 +377,62 @@ describe('playtest entries of the mirror challenge', () => {
     ]);
   });
 });
+
+describe('playtest entries of the stone certificates', () => {
+  const council = levelById('7.4');
+  /** Level 7.4 at its play step, the automaton's search shown and these stones lifted. */
+  const lifted = (names: readonly string[]): Controller => {
+    const opened = play(startController(council, 0), [{ kind: 'searched' }]).controller;
+    const session = names.reduce((s, name) => {
+      const vertex = council.data.sprouts.findIndex((sprout) => sprout.label === name);
+      return act(s, { type: 'liftStone', vertex }, 0).session;
+    }, opened.session);
+    return { ...opened, session };
+  };
+
+  it('"Terminé" with the moons lifted logs a certificate that proves and counts (7.4)', () => {
+    const { entries } = play(lifted(['a', 'a2']), [{ kind: 'done' }], 6);
+    expect(entries).toEqual([
+      { kind: 'move', at: 6, level: '7.4', action: 'declareDone' },
+      { kind: 'claim', at: 6, level: '7.4', right: true },
+      {
+        kind: 'stoneCertificate',
+        at: 6,
+        level: '7.4',
+        stones: ['a', 'a2'],
+        proves: true,
+        counts: true,
+      },
+      { kind: 'levelEnd', at: 6, level: '7.4', outcome: 'won', stars: expect.any(Number) },
+    ]);
+  });
+
+  it('stones that prove the lanterns but are not the moons do not count in 7.4', () => {
+    const { entries } = play(lifted([]), [{ kind: 'done' }]);
+    expect(entries).toContainEqual({
+      kind: 'stoneCertificate',
+      at: 0,
+      level: '7.4',
+      stones: [],
+      proves: true,
+      counts: false,
+    });
+  });
+
+  it('stones that do not close the bound neither prove nor count', () => {
+    const { entries } = play(lifted(['b']), [{ kind: 'done' }]);
+    expect(entries).toContainEqual({
+      kind: 'stoneCertificate',
+      at: 0,
+      level: '7.4',
+      stones: ['b'],
+      proves: false,
+      counts: false,
+    });
+  });
+
+  it('"Terminé" in a level won by a cover logs no stone certificate', () => {
+    const { entries } = play(startController(levelById('7.1'), 0), [{ kind: 'done' }]);
+    expect(entries.map((entry) => entry.kind)).not.toContain('stoneCertificate');
+  });
+});

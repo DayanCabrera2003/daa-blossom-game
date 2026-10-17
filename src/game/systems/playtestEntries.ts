@@ -1,8 +1,11 @@
+import { checkTutteBerge } from '@core/certificates/tutteBerge';
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { nameOf } from '@core/graph/labels';
+import { isVictory } from '@core/rules/victory';
 import { itemAt } from '@core/shared/itemAt';
 import type { PlaytestEntry } from '@services/playtestLog';
 import type { Controller, Effect, Step, UiEvent } from './levelController';
+import { garden, type LevelSession } from './levelSession';
 import type { MirrorCheck } from './mirrorChallenge';
 import type { Refusal } from './refusal';
 
@@ -42,6 +45,32 @@ function answerEntry(
 }
 
 /**
+ * The stones presented with "Terminé" in a level won by a certificate of stones (chapter 7), or
+ * null in any other level: whether they prove the lanterns, and whether they are what the level
+ * asks for (in 7.4 only the moons of the search count). Judged by the core on the garden as the
+ * move left it.
+ */
+function stoneCertificateEntry(
+  after: LevelSession,
+  at: number,
+  level: string,
+): PlaytestEntry | null {
+  const { victory } = after.level.data;
+  if (victory?.type !== 'tutteBergeCertificate' && victory?.type !== 'moonCertificate') {
+    return null;
+  }
+  const state = garden(after);
+  return {
+    kind: 'stoneCertificate',
+    at,
+    level,
+    stones: state.stones.map((v) => nameOf(after.level.labels, v)),
+    proves: checkTutteBerge(state.graph, state.matching, state.stones).ok,
+    counts: isVictory(state, victory),
+  };
+}
+
+/**
  * A drawn reflection checked: whether it beats the garden, and whether it counts as an attempt
  * (a better reflection not checked before). Shared with the counterexample screen.
  */
@@ -57,8 +86,9 @@ export const mirrorCheckEntry = (check: MirrorCheck, at: number, level: string):
  * What the playtest log records for one step of a level (GDD §10, Hito A): moves accepted and
  * refused, "Terminé" right or without reason, hints opened, trips through the day, answers, bets
  * and notebook choices, vines pointed at, the counterexamples they open, reflections checked, chains
- * drawn in the flower challenge, recipes checked, doubling bets, and the win. A counterexample is logged when the script opens it: the screen shows it in its turn,
- * after any lines before it.
+ * drawn in the flower challenge, recipes checked, doubling bets, stone certificates, and the win.
+ * A counterexample is logged when the script opens it: the screen shows it in its turn, after any
+ * lines before it.
  * Pointing, dragging and choosing tools are not recorded, nor history moves that go nowhere.
  * Pure: `before` is the controller the event reached, `step` what it answered, `at` the clock.
  */
@@ -96,6 +126,8 @@ export function playtestEntries(
         if (effect.action.type === 'declareDone') {
           const right = after.claims.right > before.session.claims.right;
           entries.push({ kind: 'claim', at, level, right });
+          const certificate = stoneCertificateEntry(after, at, level);
+          if (certificate !== null) entries.push(certificate);
         }
         break;
       case 'answered':
