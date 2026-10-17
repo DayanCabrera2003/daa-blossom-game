@@ -1,7 +1,9 @@
-import { checkTutteBerge } from '@core/certificates/tutteBerge';
+import { oddComponents } from '@core/certificates/oddComponents';
+import { checkTutteBerge, tutteBergeBound } from '@core/certificates/tutteBerge';
 import { checkVertexCover } from '@core/certificates/vertexCover';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
+import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
 import { size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
@@ -10,6 +12,7 @@ import type { GardenState } from '@core/rules/state';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { counterexampleAt } from '@levels/counterexample';
 import type { LevelStep } from '@levels/flow';
 import { gardenAtPlay } from '@levels/playStart';
 import { isUiUnlocked } from '@levels/uiUnlocks';
@@ -129,5 +132,66 @@ describe('7.2: stones', () => {
     expect(level.data.unlocks.actions).toEqual(['liftStone', 'dropStone']);
     expect(isUiUnlocked('council', level.data.id)).toBe(true);
     expect(isUiUnlocked('council', first.data.id)).toBe(false);
+  });
+});
+
+describe('7.3: choose your stones', () => {
+  const level = levelOf('7.3');
+  const id = (name: string): VertexId => sproutOf(level, name);
+
+  it('is the helix: a centre C joined to one sprout of each of three triangles, four lanterns', () => {
+    expect(level.graph.n).toBe(10);
+    expect(neighbors(level.graph, id('C'))).toHaveLength(3);
+    expect(maximumSize(level.graph)).toBe(4);
+    expect(size(level.start.matching)).toBe(4);
+    expect(level.data.goal.visible).toBe(false);
+  });
+
+  it('with no stone lifted, the garden is one even group of ten and proves nothing', () => {
+    expect(oddComponents(level.graph, [])).toEqual([]);
+    expect(checkTutteBerge(level.graph, level.start.matching, []).ok).toBe(false);
+  });
+
+  it('lifting C leaves three triangles, three odd groups: 3 − 1 = 2 in the dark, and there are 2', () => {
+    expect(oddComponents(level.graph, [id('C')])).toHaveLength(3);
+    expect(level.graph.n - 2 * tutteBergeBound(level.graph, [id('C')])).toBe(2);
+    expect(level.graph.n - 2 * size(level.start.matching)).toBe(2);
+    expect(isVictory(solved(level), { type: 'tutteBergeCertificate' })).toBe(true);
+    expect(solved(level).stones).toEqual([id('C')]);
+  });
+
+  it('the stones must be chosen well: no other single stone closes the count', () => {
+    for (let vertex = 0; vertex < level.graph.n; vertex++) {
+      if (vertex === id('C')) continue;
+      expect(checkTutteBerge(level.graph, level.start.matching, [vertex]).ok).toBe(false);
+    }
+  });
+
+  it('then writes it in the notebook, after the mentor names it, the true statement first', () => {
+    expect(stepsOf(level)).toEqual(['say', 'play', 'say', 'notebook']);
+    const options = level.data.notebook?.options ?? [];
+    expect(options.map((option) => option.correct)).toEqual([true, false, false]);
+    expect(options.map((option) => option.counterexample?.mode)).toEqual([
+      undefined,
+      'play',
+      'play',
+    ]);
+  });
+
+  it('"exactly g in the dark" fails: lifting the middle of a row of three, only one is dark', () => {
+    const refuted = counterexampleAt(level, 1);
+    if (refuted === null) throw new Error('no counterexample');
+    const middle = idOf(refuted.labels, 'B');
+    if (middle === undefined) throw new Error('no sprout B');
+    const lifted = play(refuted.start, [{ type: 'liftStone', vertex: middle }]);
+    expect(oddComponents(lifted.graph, lifted.stones)).toHaveLength(2);
+    expect(lifted.graph.n - 2 * size(lifted.matching)).toBe(1);
+  });
+
+  it('"even groups leave someone in the dark too" fails: the square lights everyone', () => {
+    const refuted = counterexampleAt(level, 2);
+    if (refuted === null) throw new Error('no counterexample');
+    expect(oddComponents(refuted.start.graph, [])).toEqual([]);
+    expect(2 * maximumSize(refuted.start.graph)).toBe(refuted.start.graph.n);
   });
 });

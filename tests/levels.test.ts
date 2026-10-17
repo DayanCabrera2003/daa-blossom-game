@@ -34,7 +34,6 @@ describe('level integrity (every level file)', () => {
   it('the drafts written before scripts open with the lines they always said, then play', () => {
     const opening: Record<string, string[]> = {
       '0.1': ['ch0.1.sauce.00'],
-      '7.3': ['ch7.3.oaks.00'],
       '7.4': ['ch7.4.sauce.00'],
     };
     for (const { json } of files) {
