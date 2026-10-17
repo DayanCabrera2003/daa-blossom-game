@@ -1,13 +1,17 @@
 import { checkIntegrity } from '@levels/integrity';
 import { describe, expect, it } from 'vitest';
 import {
+  automatonLevel,
   betrayalLevel,
+  brokenRecipeLevel,
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
   helixLevel,
   nestedFlowersLevel,
   pentagonLevel,
+  racesLevel,
+  recipeLevel,
   stemRotationLevel,
   twoComponentsLevel,
 } from './fixtureLevels';
@@ -19,6 +23,10 @@ const FIXTURES = [
   ['4.9', closedFlowerLevel],
   ['4.10', stemRotationLevel],
   ['5.1', nestedFlowersLevel],
+  ['6.1', recipeLevel],
+  ['6.3', brokenRecipeLevel],
+  ['6.3', automatonLevel],
+  ['6.5', racesLevel],
   ['7.2', pentagonLevel],
   ['7.3', helixLevel],
   ['7.4', twoComponentsLevel],

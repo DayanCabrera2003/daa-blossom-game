@@ -121,7 +121,30 @@ describe('level schema', () => {
         { line: 'ch0.1.notebook.02', correct: false },
       ],
     };
-    expect(levelSchema.safeParse({ ...twoSprouts, notebook }).success).toBe(false);
+    expect(levelSchema.safeParse({ ...twoSprouts, notebook: [notebook] }).success).toBe(false);
+  });
+
+  it('writes its notebook as a list of one question or more, each asked by its own step', () => {
+    const question = {
+      prompt: 'ch0.1.notebook.00',
+      options: [
+        { line: 'ch0.1.notebook.01', correct: true },
+        { line: 'ch0.1.notebook.02', correct: false },
+      ],
+    };
+    const asked = {
+      ...twoSprouts,
+      flow: [{ step: 'play' }, { step: 'notebook' }, { step: 'notebook', question: 1 }],
+    };
+    const parsed = levelSchema.parse({ ...asked, notebook: [question, question] });
+    expect(parsed.notebook).toHaveLength(2);
+    // A step that names no question asks the first one.
+    expect(parsed.flow.slice(1)).toEqual([
+      { step: 'notebook', question: 0 },
+      { step: 'notebook', question: 1 },
+    ]);
+    expect(levelSchema.safeParse({ ...asked, notebook: question }).success).toBe(false);
+    expect(levelSchema.safeParse({ ...asked, notebook: [] }).success).toBe(false);
   });
 
   it('rejects unknown fields, so typos never pass silently', () => {

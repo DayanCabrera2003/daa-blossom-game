@@ -83,7 +83,11 @@ export class LevelScene extends Phaser.Scene {
     this.painter = new LevelRenderer(
       this.views,
       { labels: this.labels, kinds: level.data.sprouts.map((sprout) => sprout.kind) },
-      { controller: () => this.controller, replaySun: () => this.presenter.replaySun },
+      {
+        controller: () => this.controller,
+        replaySun: () => this.presenter.replaySun,
+        raceClock: () => this.presenter.raceClock,
+      },
     );
     this.presenter = new Presenter(
       this,
@@ -94,13 +98,14 @@ export class LevelScene extends Phaser.Scene {
             ? this.painter.render(this.time.now)
             : this.painter.renderReplayed(state, this.time.now),
         searched: () => this.forward({ kind: 'searched' }),
+        raced: () => this.forward({ kind: 'raced' }),
         stopAnimation: () => this.views.animation.finish(),
         victory: (stars) => this.offerNext(stars),
         answer: (question, value) =>
           this.dispatch(
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
-        counterexample: (option) => this.openCounterexample(option),
+        counterexample: (question, option) => this.openCounterexample(question, option),
         card: (card) => this.cards.shown(card),
         cardClosed: (card) => this.cards.closed(card),
       },
@@ -123,6 +128,7 @@ export class LevelScene extends Phaser.Scene {
     bindLevelInput(this, {
       dispatch: (event) => this.dispatch(event),
       leave: () => this.leave(),
+      insideLayer: () => this.controller.layers.length > 0,
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });
@@ -196,12 +202,13 @@ export class LevelScene extends Phaser.Scene {
   }
 
   /**
-   * Opens the garden that refutes the false notebook statement `option` in its own screen, while
-   * this one sleeps as it is; coming back wakes it and the notebook asks again.
+   * Opens the garden that refutes the false statement `option` of notebook question `question` in
+   * its own screen, while this one sleeps as it is; coming back wakes it and the notebook asks again.
    */
-  private openCounterexample(option: number): void {
+  private openCounterexample(question: number, option: number): void {
     const data: CounterexampleSceneData = {
       levelId: this.level.data.id,
+      question,
       option,
       back: () => {
         this.scene.wake();

@@ -199,4 +199,10 @@ describe('the other tools', () => {
     expect(tapAll(trap, 'inspect', [vine(0, 1)])).toEqual([null]);
     expect(tapAll(trap, 'scarecrows', [{ kind: 'nothing' }])).toEqual([null]);
   });
+
+  it('the layers tool only looks: no touch makes a move (5.2)', () => {
+    expect(tapAll(trap, 'layers', [sprout(0), sprout(1), vine(1, 2), { kind: 'nothing' }])).toEqual(
+      [null, null, null, null],
+    );
+  });
 });

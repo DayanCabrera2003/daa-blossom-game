@@ -1,0 +1,52 @@
+{
+  "id": "6.1",
+  "sprouts": [
+    { "label": "R", "x": 100, "y": 135 },
+    { "label": "a", "x": 200, "y": 135 },
+    { "label": "b", "x": 300, "y": 135 },
+    { "label": "c", "x": 400, "y": 135 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"]
+  ],
+  "lanterns": [["a", "b"]],
+  "goal": { "visible": false },
+  "hints": [
+    { "line": "ch6.1.sauce.01" },
+    { "line": "ch6.1.sauce.02" },
+    { "line": "ch6.1.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch6.1.sauce.00"] },
+    { "step": "recipe" },
+    { "step": "say", "lines": ["ch6.1.sauce.04"] }
+  ],
+  "solution": [
+    {
+      "type": "recipe",
+      "cards": [
+        "markDarkSuns",
+        "chainToDark",
+        "growMoon",
+        "chainRootToRoot",
+        "foldFlower",
+        "moonToSun",
+        "finishKeepMoons"
+      ]
+    },
+    {
+      "type": "recipe",
+      "cards": [
+        "markDarkSuns",
+        "moonNothing",
+        "foldFlower",
+        "chainRootToRoot",
+        "growMoon",
+        "chainToDark",
+        "finishKeepMoons"
+      ]
+    }
+  ]
+}

@@ -59,13 +59,19 @@ describe('the order the player sees things in', () => {
     expect(finishShowing(emptyStage)).toEqual({ stage: emptyStage, start: null });
   });
 
-  it('input is blocked only while the day replays', () => {
+  it('input is blocked only while the day replays or a race runs', () => {
     expect(blocksInput(emptyStage)).toBe(false);
     expect(blocksInput(present(emptyStage, [lines('a'), replay]).stage)).toBe(false);
     expect(blocksInput(present(emptyStage, [replay, lines('a')]).stage)).toBe(true);
     expect(blocksInput(present(emptyStage, [victory]).stage)).toBe(false);
     // The light searching by itself is a day replaying too (4.1, 4.2).
     expect(blocksInput(present(emptyStage, [{ ...replay, light: true }]).stage)).toBe(true);
+    // So is a race being run (6.4, 6.5), until it is over.
+    const race: Presentation = { kind: 'race', step: 2, duration: 5_000 };
+    const racing = present(emptyStage, [lines('a'), race]);
+    expect(blocksInput(racing.stage)).toBe(false);
+    expect(blocksInput(finishShowing(racing.stage).stage)).toBe(true);
+    expect(finishShowing(racing.stage).start).toEqual(race);
   });
 
   it('a question waits for the lines before it, and what follows waits for its answer', () => {
@@ -78,7 +84,7 @@ describe('the order the player sees things in', () => {
   });
 
   it('a counterexample waits its turn, and the notebook opens again once the player is back', () => {
-    const refuting: Presentation = { kind: 'counterexample', option: 1 };
+    const refuting: Presentation = { kind: 'counterexample', question: 0, option: 1 };
     const noting: Presentation = { kind: 'question', question: { ...question, kind: 'notebook' } };
     let turn = present(emptyStage, [lines('a'), refuting, noting]);
     turn = finishShowing(turn.stage);

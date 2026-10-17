@@ -51,12 +51,16 @@ export function buildCounterexample(data: CounterexampleData): Result<Counterexa
 }
 
 /**
- * The counterexample of statement `option` of the level's notebook, built; null for a statement
- * with none (a true one, one answered only in words) or not on offer. Level integrity builds every
- * counterexample, so one that does not build here is a bug.
+ * The counterexample of statement `option` of the level's notebook question `question`, built; null
+ * for a statement with none (a true one, one answered only in words) or not on offer. Level
+ * integrity builds every counterexample, so one that does not build here is a bug.
  */
-export function counterexampleAt(level: Level, option: number): Counterexample | null {
-  const data = level.data.notebook?.options[option]?.counterexample;
+export function counterexampleAt(
+  level: Level,
+  question: number,
+  option: number,
+): Counterexample | null {
+  const data = level.data.notebook?.[question]?.options[option]?.counterexample;
   if (data === undefined) return null;
   const built = buildCounterexample(data);
   invariant(built.ok, 'a counterexample does not build; run npm run check-levels');

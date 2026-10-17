@@ -14,13 +14,15 @@ const talkative = levelSchema.parse({
   victory: { type: 'matchingSize', value: 1 },
   hints: [{ line: 'ch4.7.sauce.01' }, { line: 'ch4.7.sauce.02', highlight: ['A'] }],
   flow: [{ step: 'say', lines: ['ch4.7.sauce.00', 'ch4.7.sauce.01'] }, { step: 'play' }],
-  notebook: {
-    prompt: 'ch4.7.notebook.00',
-    options: [
-      { line: 'ch4.7.notebook.01', correct: true },
-      { line: 'ch4.7.notebook.02', correct: false },
-    ],
-  },
+  notebook: [
+    {
+      prompt: 'ch4.7.notebook.00',
+      options: [
+        { line: 'ch4.7.notebook.01', correct: true },
+        { line: 'ch4.7.notebook.02', correct: false },
+      ],
+    },
+  ],
   solution: [{ type: 'join', u: 'A', v: 'B' }],
 });
 
@@ -45,28 +47,35 @@ describe('referencedLines', () => {
       ...talkative,
       hints: [],
       flow: [{ step: 'play' }],
-      notebook: {
-        prompt: 'ch4.7.notebook.00',
-        options: [
-          { line: 'ch4.7.notebook.01', correct: true, reply: 'ch4.7.sauce.05' },
-          {
-            line: 'ch4.7.notebook.02',
-            correct: false,
-            counterexample: { mode: 'play', line: 'ch4.7.sauce.06', ...garden, actions: ['join'] },
-          },
-          {
-            line: 'ch4.7.notebook.03',
-            correct: false,
-            reply: 'ch4.7.sauce.07',
-            counterexample: {
-              mode: 'mirrorDraw',
-              line: 'ch4.7.sauce.08',
-              found: 'ch4.7.sauce.09',
-              ...garden,
+      notebook: [
+        {
+          prompt: 'ch4.7.notebook.00',
+          options: [
+            { line: 'ch4.7.notebook.01', correct: true, reply: 'ch4.7.sauce.05' },
+            {
+              line: 'ch4.7.notebook.02',
+              correct: false,
+              counterexample: {
+                mode: 'play',
+                line: 'ch4.7.sauce.06',
+                ...garden,
+                actions: ['join'],
+              },
             },
-          },
-        ],
-      },
+            {
+              line: 'ch4.7.notebook.03',
+              correct: false,
+              reply: 'ch4.7.sauce.07',
+              counterexample: {
+                mode: 'mirrorDraw',
+                line: 'ch4.7.sauce.08',
+                found: 'ch4.7.sauce.09',
+                ...garden,
+              },
+            },
+          ],
+        },
+      ],
     });
     expect(referencedLines(refuted)).toEqual([
       'ch4.7.notebook.00',
@@ -78,6 +87,32 @@ describe('referencedLines', () => {
       'ch4.7.sauce.07',
       'ch4.7.sauce.08',
       'ch4.7.sauce.09',
+    ]);
+  });
+
+  it('lists the lines of every notebook question, in the order the level writes them', () => {
+    const twice = levelSchema.parse({
+      ...talkative,
+      hints: [],
+      flow: [{ step: 'play' }],
+      notebook: [
+        ...(talkative.notebook ?? []),
+        {
+          prompt: 'ch4.7.notebook.03',
+          options: [
+            { line: 'ch4.7.notebook.04', correct: true },
+            { line: 'ch4.7.notebook.05', correct: false },
+          ],
+        },
+      ],
+    });
+    expect(referencedLines(twice)).toEqual([
+      'ch4.7.notebook.00',
+      'ch4.7.notebook.01',
+      'ch4.7.notebook.02',
+      'ch4.7.notebook.03',
+      'ch4.7.notebook.04',
+      'ch4.7.notebook.05',
     ]);
   });
 
@@ -108,6 +143,8 @@ describe('referencedLines', () => {
         { step: 'count', prompt: 'ch4.7.sauce.11', of: 'loop', range: 3 },
         { step: 'pickVine', prompt: 'ch4.7.sauce.12', reply: 'ch4.7.sauce.13' },
         { step: 'pickVine', prompt: 'ch4.7.sauce.14' },
+        { step: 'race', family: 'half', size: 8, seed: 1, budget: 100 },
+        { step: 'raceBet', prompt: 'ch4.7.sauce.15', runner: 'bruto' },
         { step: 'sun' },
       ],
     });
@@ -126,6 +163,7 @@ describe('referencedLines', () => {
       'ch4.7.sauce.12',
       'ch4.7.sauce.13',
       'ch4.7.sauce.14',
+      'ch4.7.sauce.15',
       'ch4.7.sauce.09',
     ]);
   });

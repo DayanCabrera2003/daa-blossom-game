@@ -41,8 +41,8 @@ describe('the level catalog', () => {
     expect([...ids].sort(compareLevelIds)).toEqual(ids);
   });
 
-  it('holds the written chapters 0 to 4 whole, with no draft among them', () => {
-    const early = catalog().filter((level) => compareLevelIds(level.data.id, '5.0') < 0);
+  it('holds the written chapters 0 to 5 whole, with no draft among them', () => {
+    const early = catalog().filter((level) => compareLevelIds(level.data.id, '6.0') < 0);
     expect(early.map((level) => level.data.id)).toEqual([
       '0.1',
       '0.2',
@@ -83,8 +83,32 @@ describe('the level catalog', () => {
       '4.10',
       '4.11',
       '4.12',
+      '5.1',
+      '5.2',
+      '5.3',
+      '5.4',
+      '5.5',
     ]);
     expect(early.filter((level) => level.data.draft)).toEqual([]);
+  });
+
+  it('holds the written chapter 6 whole, with no draft among its levels', () => {
+    const recipes = catalog().filter((level) => level.data.id.startsWith('6.'));
+    expect(recipes.map((level) => level.data.id)).toEqual([
+      '6.1',
+      '6.2',
+      '6.3',
+      '6.4',
+      '6.5',
+      '6.6',
+    ]);
+    expect(recipes.filter((level) => level.data.draft)).toEqual([]);
+  });
+
+  it('holds the written chapter 7 whole, with no draft among its levels', () => {
+    const council = catalog().filter((level) => level.data.id.startsWith('7.'));
+    expect(council.map((level) => level.data.id)).toEqual(['7.1', '7.2', '7.3', '7.4', '7.5']);
+    expect(council.filter((level) => level.data.draft)).toEqual([]);
   });
 
   it('keeps drafts only in chapters not yet written, all after the written ones', () => {

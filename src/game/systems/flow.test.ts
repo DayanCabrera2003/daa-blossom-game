@@ -196,6 +196,71 @@ describe('the script engine', () => {
     expect(advanceFlow(started.flow, { type: 'searched' }).effects).toEqual([{ kind: 'play' }]);
   });
 
+  it('the automaton runs a recipe and the script waits until the whole run has been seen', () => {
+    const started = start([{ step: 'automaton', missing: ['sameTree'] }, say('ch6.3.sauce.00')]);
+    expect(started.effects).toEqual([{ kind: 'automaton', step: 0 }]);
+    expect(advanceFlow(started.flow, { type: 'tap' }).flow).toBe(started.flow);
+    expect(advanceFlow(started.flow, { type: 'searched' }).effects).toEqual([
+      { kind: 'say', lines: ['ch6.3.sauce.00'] },
+      { kind: 'finished' },
+    ]);
+  });
+
+  it('a race waits until it has been seen to its end', () => {
+    const race: LevelStep = { step: 'race', family: 'half', size: 6, seed: 1, budget: 100 };
+    const started = start([race, say('ch6.4.sauce.01')]);
+    expect(started.effects).toEqual([{ kind: 'race', step: 0 }]);
+    expect(advanceFlow(started.flow, { type: 'searched' }).flow).toBe(started.flow);
+    expect(advanceFlow(started.flow, { type: 'raced' }).effects).toEqual([
+      { kind: 'raced', step: 0, bets: [] },
+      { kind: 'say', lines: ['ch6.4.sauce.01'] },
+      { kind: 'finished' },
+    ]);
+  });
+
+  it('a doubling bet takes one of its answers, right or not, and the next race settles it', () => {
+    const race = (size: number): LevelStep => ({
+      step: 'race',
+      family: 'half',
+      size,
+      seed: 1,
+      budget: 100,
+    });
+    const raceBet = (runner: 'automaton' | 'bruto'): LevelStep => ({
+      step: 'raceBet',
+      prompt: 'ch6.5.sauce.01',
+      runner,
+    });
+    const started = start([race(8), raceBet('automaton'), raceBet('bruto'), race(16)]);
+    const opened = advanceFlow(started.flow, { type: 'raced' });
+    expect(opened.effects).toEqual([
+      { kind: 'raced', step: 0, bets: [] },
+      { kind: 'raceBet', step: 1, prompt: 'ch6.5.sauce.01', runner: 'automaton' },
+    ]);
+    // An answer that is none of the three, or with no right one to judge it, is not taken.
+    expect(advanceFlow(opened.flow, { type: 'answer', option: 3, right: 1 }).flow).toBe(
+      opened.flow,
+    );
+    expect(advanceFlow(opened.flow, { type: 'answer', option: 1, right: null }).flow).toBe(
+      opened.flow,
+    );
+    const { flow, effects } = send(started.flow, [
+      { type: 'raced' },
+      { type: 'answer', option: 1, right: 1 },
+      { type: 'answer', option: 0, right: 2 },
+      { type: 'raced' },
+    ]);
+    expect(isFinished(flow)).toBe(true);
+    const bets = [
+      { step: 1, value: 1, correct: true },
+      { step: 2, value: 0, correct: false },
+    ];
+    expect(flow.answers).toEqual(bets);
+    expect(effects).toContainEqual({ kind: 'raced', step: 3, bets });
+    // A doubling bet earns no star: it is no bet on lanterns.
+    expect(betRight(flow)).toBeNull();
+  });
+
   it('explore ends with a touch on a sprout, separate with a touch on the garden', () => {
     const { flow, effects } = start([{ step: 'explore' }, { step: 'separate' }]);
     expect(effects).toEqual([{ kind: 'explore' }]);
@@ -270,7 +335,9 @@ describe('the script engine', () => {
   });
 
   it('the notebook ends only with a right option, which is written down', () => {
-    const started = startFlow([{ step: 'notebook' }], { notebook: [plainWrong, plainRight] });
+    const started = startFlow([{ step: 'notebook', question: 0 }], {
+      notebook: [[plainWrong, plainRight]],
+    });
     expect(started.effects).toEqual([{ kind: 'notebook', step: 0 }]);
     const wrong = advanceFlow(started.flow, { type: 'answer', option: 0, right: null });
     expect(wrong.effects).toEqual([
@@ -291,7 +358,7 @@ describe('the script engine', () => {
       { correct: false, reply: null, refuted: true },
       { correct: true, reply: 'ch1.5.sauce.05', refuted: false },
     ];
-    const started = startFlow([play, { step: 'notebook' }], { notebook });
+    const started = startFlow([play, { step: 'notebook', question: 0 }], { notebook: [notebook] });
     const noting = advanceFlow(started.flow, { type: 'won' }).flow;
     expect(advanceFlow(noting, { type: 'answer', option: 0, right: null }).effects).toEqual([
       { kind: 'answered', step: 1, value: 0, correct: false },
@@ -301,12 +368,43 @@ describe('the script engine', () => {
     const refuted = advanceFlow(noting, { type: 'answer', option: 1, right: null });
     expect(refuted.effects).toEqual([
       { kind: 'answered', step: 1, value: 1, correct: false },
-      { kind: 'counterexample', step: 1, option: 1 },
+      { kind: 'counterexample', step: 1, question: 0, option: 1 },
       { kind: 'notebook', step: 1 },
     ]);
     expect(advanceFlow(refuted.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([
       { kind: 'answered', step: 1, value: 2, correct: true },
       { kind: 'say', lines: ['ch1.5.sauce.05'] },
+      { kind: 'written' },
+      { kind: 'finished' },
+    ]);
+  });
+
+  it('each notebook step asks its own question, judged by its own statements', () => {
+    const first = [plainRight, plainWrong];
+    const second = [plainWrong, { correct: false, reply: null, refuted: true }, plainRight];
+    const steps: LevelStep[] = [
+      { step: 'notebook', question: 0 },
+      { step: 'notebook', question: 1 },
+    ];
+    const started = startFlow(steps, { notebook: [first, second] });
+    const asked = advanceFlow(started.flow, { type: 'answer', option: 0, right: null });
+    expect(asked.effects).toEqual([
+      { kind: 'answered', step: 0, value: 0, correct: true },
+      { kind: 'written' },
+      { kind: 'notebook', step: 1 },
+    ]);
+    // The same option means another statement in the second question.
+    expect(advanceFlow(asked.flow, { type: 'answer', option: 0, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 0, correct: false },
+      { kind: 'notebook', step: 1 },
+    ]);
+    expect(advanceFlow(asked.flow, { type: 'answer', option: 1, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 1, correct: false },
+      { kind: 'counterexample', step: 1, question: 1, option: 1 },
+      { kind: 'notebook', step: 1 },
+    ]);
+    expect(advanceFlow(asked.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 2, correct: true },
       { kind: 'written' },
       { kind: 'finished' },
     ]);
@@ -357,10 +455,29 @@ describe('the script engine', () => {
     expect(advanceFlow(asking, { type: 'flowerDrawn', chain: true }).effects).toEqual([]);
   });
 
+  it('the recipe (6.1) opens with the cases it lacks and ends only on a right check', () => {
+    const { flow, effects } = start([{ step: 'recipe', missing: ['sameTree'] }]);
+    expect(effects).toEqual([{ kind: 'recipe', step: 0, missing: ['sameTree'] }]);
+    // A wrong check, or anything else, leaves the step waiting with the recipe on screen.
+    expect(advanceFlow(flow, { type: 'recipeChecked', right: false })).toEqual({
+      flow,
+      effects: [],
+    });
+    expect(advanceFlow(flow, { type: 'tap' }).effects).toEqual([]);
+    expect(advanceFlow(flow, { type: 'recipeChecked', right: true }).effects).toEqual([
+      { kind: 'finished' },
+    ]);
+    // Anywhere else, a check means nothing.
+    const asking = start([ask(true)]).flow;
+    expect(advanceFlow(asking, { type: 'recipeChecked', right: true }).effects).toEqual([]);
+  });
+
   it('an option that is not on offer is no answer', () => {
     const asking = start([ask(true)]).flow;
     expect(advanceFlow(asking, { type: 'answer', option: 2, right: null }).effects).toEqual([]);
-    const noting = startFlow([{ step: 'notebook' }], { notebook: [plainRight] }).flow;
+    const noting = startFlow([{ step: 'notebook', question: 0 }], {
+      notebook: [[plainRight]],
+    }).flow;
     expect(advanceFlow(noting, { type: 'answer', option: 1, right: null }).effects).toEqual([]);
     expect(advanceFlow(noting, { type: 'tap' })).toEqual({ flow: noting, effects: [] });
     const counting = start([

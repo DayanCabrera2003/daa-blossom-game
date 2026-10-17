@@ -1,0 +1,38 @@
+{
+  "id": "6.2",
+  "sprouts": [
+    { "label": "S", "x": 50, "y": 150 },
+    { "label": "A", "x": 115, "y": 150 },
+    { "label": "B", "x": 180, "y": 150 },
+    { "label": "C", "x": 260, "y": 150 },
+    { "label": "D", "x": 325, "y": 150 },
+    { "label": "T", "x": 400, "y": 150 },
+    { "label": "X", "x": 180, "y": 80 },
+    { "label": "Y", "x": 110, "y": 55 },
+    { "label": "Z", "x": 260, "y": 215 }
+  ],
+  "vines": [
+    ["S", "A"],
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "T"],
+    ["B", "X"],
+    ["X", "Y"],
+    ["C", "Z"]
+  ],
+  "lanterns": [
+    ["A", "B"],
+    ["C", "D"],
+    ["X", "Y"]
+  ],
+  "goal": { "visible": false },
+  "flow": [
+    { "step": "say", "lines": ["ch6.2.sauce.00"] },
+    { "step": "automaton" },
+    { "step": "say", "lines": ["ch6.2.sauce.01"] },
+    { "step": "sun" },
+    { "step": "say", "lines": ["ch6.2.sauce.02"] }
+  ],
+  "solution": [{ "type": "seekSun", "fraction": 0.5 }]
+}

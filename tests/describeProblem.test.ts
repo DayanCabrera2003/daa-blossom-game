@@ -35,17 +35,40 @@ describe('readable level problems', () => {
     ).toBe(
       'script step 1: move 1 of the light\'s own search is refused by the rules: actionLocked {"action":"markRoot"}',
     );
+    expect(
+      describeProblem({
+        code: 'automatonRefused',
+        step: 1,
+        move: 1,
+        reason: { code: 'notARoot', vertex: 7 },
+      }),
+    ).toBe(
+      'script step 2: move 2 of the automaton\'s run is refused by the rules: notARoot {"vertex":7}',
+    );
+    expect(describeProblem({ code: 'recipeCannotRun', step: 0 })).toBe(
+      'script step 1 runs a recipe the automaton cannot run: only the fold card may be missing',
+    );
     expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
       'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
+    );
+    expect(describeProblem({ code: 'raceBetWithoutRaces', step: 2 })).toBe(
+      'script step 3 is a doubling bet, but it needs a race before it and one after it',
+    );
+    expect(describeProblem({ code: 'raceNotDoubled', step: 2, before: 8, after: 10 })).toBe(
+      'script step 3 bets on a doubling, but the races go from 8 to 10 sprouts of the same family',
+    );
+    expect(describeProblem({ code: 'raceBetUnclear', step: 2, answer: 'double' })).toBe(
+      'script step 3 bets on a doubling whose steps sit near an edge of "double": pick other seeds',
     );
     expect(
       describeProblem({
         code: 'badCounterexample',
+        question: 1,
         option: 1,
         error: { code: 'badLabel', error: { code: 'unknownName', name: 'z' } },
       }),
     ).toBe(
-      'notebook statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
+      'notebook question 2, statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
     );
     expect(describeProblem({ code: 'sameKindVine', u: 'b', v: 'c', kind: 'flower' })).toBe(
       'vine b–c joins two flowers, but a bee only pairs with a flower',
@@ -74,10 +97,17 @@ describe('readable level problems', () => {
       { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
       { code: 'drawUnbeatable', step: 5 },
       { code: 'noConflict', step: 1 },
-      { code: 'counterexampleLocked', option: 1, action: 'fold' },
-      { code: 'counterexampleUnbeatable', option: 2 },
+      { code: 'counterexampleLocked', question: 0, option: 1, action: 'fold' },
+      { code: 'counterexampleUnbeatable', question: 0, option: 2 },
       { code: 'sameKindVine', u: 'a', v: 'b', kind: 'bee' },
-      { code: 'counterexampleSameKindVine', option: 1, u: 'a', v: 'b', kind: 'flower' },
+      {
+        code: 'counterexampleSameKindVine',
+        question: 0,
+        option: 1,
+        u: 'a',
+        v: 'b',
+        kind: 'flower',
+      },
       { code: 'notAFlower', error: { code: 'evenLength', length: 4 } },
       { code: 'flowerBaseLit', base: 'b' },
       { code: 'flowerBaseNotFirst', base: 'b' },
@@ -85,6 +115,7 @@ describe('readable level problems', () => {
       { code: 'flowerMissing', step: 1 },
       { code: 'noChainToDraw', step: 1 },
       { code: 'flowerAfterPlay', step: 1 },
+      { code: 'recallAhead', step: 0, level: '4.4' },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

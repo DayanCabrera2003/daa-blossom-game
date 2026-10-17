@@ -7,8 +7,8 @@ import { describe, expect, it } from 'vitest';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
-import { betrayalLevel } from '../../../tests/support/fixtureLevels';
-import { countAnswer, rightBet, rightCount, rightLoopCount } from './answerKey';
+import { betrayalLevel, racesLevel } from '../../../tests/support/fixtureLevels';
+import { countAnswer, rightBet, rightCount, rightLoopCount, rightRaceBet } from './answerKey';
 
 // A path a–b–c–d plus a lone pair e–f: sprouts 0…5.
 const graph = createGraph(6, [
@@ -65,5 +65,13 @@ describe('the answers the core gives to the questions of a script', () => {
     const step = level.flow[2];
     if (step?.step !== 'count') throw new Error('4.2 counts after its play step');
     expect(countAnswer(level, searched, step)).toBe(3);
+  });
+
+  it('a doubling bet is answered by the races around it, as the index of its answer', () => {
+    const level = racesLevel();
+    // The automaton goes from 41 to 183 steps: four to eight times. Bruto falls asleep.
+    expect(rightRaceBet(level, 1)).toBe(1);
+    expect(rightRaceBet(level, 2)).toBe(2);
+    expect(rightRaceBet(level, 0)).toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 import type { Edge, VertexId } from '@core/graph/types';
+import type { RecipeCardId } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import type { LevelHint } from '@levels/build';
 
@@ -18,6 +19,8 @@ export interface HintContent {
   readonly chain: readonly VertexId[] | null;
   /** Only at grade 3, when pointing at a vine: the vine that glows, left for the player to touch. */
   readonly vine: Edge | null;
+  /** Only at grade 3, in the recipe: the right card the mentor places on it. */
+  readonly card: RecipeCardId | null;
 }
 
 /** A better reflection the mentor can offer in the mirror challenge, and the chain it leaves. */
@@ -41,8 +44,8 @@ export function sproutsOf(action: Action): VertexId[] {
 /**
  * What the mentor can offer besides the level's own hints, each where it applies: the step for the
  * garden as it is now (play), the right option (a question), a better reflection (the mirror
- * challenge), a chain of the open garden (the flower challenge), the vine to point at. Whatever is
- * left out is not offered.
+ * challenge), a chain of the open garden (the flower challenge), the vine to point at, the right
+ * card to place in the recipe. Whatever is left out is not offered.
  */
 export interface MentorHelp {
   readonly step?: Action | null;
@@ -50,6 +53,7 @@ export interface MentorHelp {
   readonly reflection?: MentorReflection | null;
   readonly chain?: readonly VertexId[] | null;
   readonly vine?: Edge | null;
+  readonly card?: RecipeCardId | null;
 }
 
 /**
@@ -59,7 +63,8 @@ export interface MentorHelp {
  * question there is no step to take: grade 3 points at `option` instead, when it is given. In the
  * mirror challenge, a `reflection` the mentor offers: from grade 2 its chain glows, and grade 3
  * draws it; in the flower challenge the same goes for a `chain`. When the player points at a vine,
- * grade 3 makes the `vine` glow and leaves the touch to them.
+ * grade 3 makes the `vine` glow and leaves the touch to them; in the recipe, grade 3 places the
+ * `card`.
  */
 export function hintContent(
   hints: readonly LevelHint[],
@@ -93,5 +98,6 @@ export function hintContent(
     mirror: grade >= 3 && reflection !== null ? reflection.lanterns : null,
     chain: grade >= 3 ? chain : null,
     vine: grade >= 3 ? (help.vine ?? null) : null,
+    card: grade >= 3 ? (help.card ?? null) : null,
   };
 }

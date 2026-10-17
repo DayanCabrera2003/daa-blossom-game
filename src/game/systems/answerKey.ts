@@ -1,3 +1,4 @@
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import type { VertexId } from '@core/graph/types';
 import type { Matching } from '@core/matching/types';
@@ -6,6 +7,7 @@ import { findConflict, isConflictVine } from '@core/search/conflict';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
 import type { CountStep } from '@levels/flow';
+import { raceBetVerdict } from '@levels/races';
 import { lanternsOn, pieceOf, pondPieces } from './pond';
 
 /**
@@ -52,4 +54,14 @@ export function countAnswer(level: Level, state: GardenState, step: CountStep): 
   // Level integrity gives every count of lanterns a reflection to count on.
   invariant(level.mirror !== null, 'a count of lanterns needs the reflection of its level');
   return rightCount(state.matching, level.mirror, step);
+}
+
+/**
+ * The right answer of the doubling bet at `step` of the script, as its index among the three
+ * answers: what the core measured in the races around it. Null when that step is no doubling bet
+ * with a race on each side (the level checks keep such a bet out of every level).
+ */
+export function rightRaceBet(level: Level, step: number): number | null {
+  const verdict = raceBetVerdict(level.flow, step);
+  return verdict === null ? null : DOUBLING_ANSWERS.indexOf(verdict.answer);
 }

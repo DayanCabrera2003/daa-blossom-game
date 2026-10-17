@@ -12,6 +12,8 @@ import { MirrorView } from '../../view/MirrorView';
 import { NotebookView } from '../../view/NotebookView';
 import { ObjectsView } from '../../view/ObjectsView';
 import { QuestionView } from '../../view/QuestionView';
+import { RaceView } from '../../view/RaceView';
+import { RecipeView } from '../../view/RecipeView';
 import { SideBySideView } from '../../view/SideBySideView';
 import { SunSliderView } from '../../view/SunSliderView';
 import { ToastView } from '../../view/ToastView';
@@ -29,6 +31,8 @@ export interface LevelViews {
   readonly marks: MarksView;
   readonly mirror: MirrorView;
   readonly sideBySide: SideBySideView;
+  readonly recipe: RecipeView;
+  readonly race: RaceView;
   readonly animation: AnimationView;
   readonly hud: HudView;
   readonly toolbar: ToolbarView;
@@ -65,6 +69,11 @@ export const buildLevelViews = (
     marks: new MarksView(scene),
     mirror: new MirrorView(scene, t),
     sideBySide: new SideBySideView(scene, t),
+    recipe: new RecipeView(scene, t, {
+      card: (card) => dispatch({ kind: 'recipeCard', card }),
+      check: () => dispatch({ kind: 'checkRecipe' }),
+    }),
+    race: new RaceView(scene, t),
     animation: new AnimationView(scene),
     hud: new HudView(scene, t, {
       done: () => dispatch({ kind: 'done' }),
@@ -74,6 +83,7 @@ export const buildLevelViews = (
       back: buttons.back,
       help: buttons.help,
       checkMirror: () => dispatch({ kind: 'checkMirror' }),
+      leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
     }),
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),

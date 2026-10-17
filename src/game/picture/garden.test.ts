@@ -126,6 +126,16 @@ describe('the picture of the garden', () => {
     ).toEqual([]);
   });
 
+  it('in the fog, the odd groups are outlined only once presented with "Terminé" (7.5)', () => {
+    const helix = helixLevel();
+    const fogged = { ...helix.start, revealed: new Array<boolean>(10).fill(false), stones: [0] };
+    const outline = (state: GardenState) =>
+      gardenPicture(state, placesOf(helix), labelsOf(helix), NO_EXTRAS).oddGroups;
+    // The groups would tell which vines join whom before they are inspected.
+    expect(outline(fogged)).toEqual([]);
+    expect(outline({ ...fogged, declaredDone: true })).toHaveLength(3);
+  });
+
   it('nothing pointed at by default', () => {
     expect(NO_EXTRAS).toEqual({
       selection: NO_SELECTION,

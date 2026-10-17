@@ -84,7 +84,8 @@ function foldLoop(selection: Selection, target: Target): TapOutcome {
 /**
  * Turns one touch into an action of the rules, given the tool in hand and what was selected
  * before. It never decides whether the action is valid: that is the reducer's job, and its reason
- * is what the player reads. Tools that act on a single sprout toggle what is on it.
+ * is what the player reads. Tools that act on a single sprout toggle what is on it; the layers
+ * make no move.
  */
 export function resolveTap(
   state: GardenState,
@@ -110,6 +111,9 @@ export function resolveTap(
           : { type: 'placeScarecrow', vertex },
       );
     }
+    case 'layers':
+      // Entering a flower is the level screen's business: the garden itself is only looked at.
+      return act(null);
     case 'stones': {
       if (target.kind !== 'sprout') return act(null);
       const vertex = target.vertex;

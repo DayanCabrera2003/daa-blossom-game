@@ -8,6 +8,8 @@ export interface LevelInputTarget {
   readonly dispatch: (event: UiEvent) => void;
   /** Escape: leaves for the hub. */
   readonly leave: () => void;
+  /** Whether a flower is entered with the layers: then Escape leaves it instead (5.2). */
+  readonly insideLayer: () => boolean;
   /** Whether the dialogue box is open: it takes the touches meant for it. */
   readonly dialogueOpen: () => boolean;
   /** Whether a chain is being drawn: only then does a drag move it on. */
@@ -17,7 +19,7 @@ export interface LevelInputTarget {
 /**
  * Listens to the pointer and the keys of the level screen. Presses and releases on the garden go to
  * the controller; touches on buttons and on the dialogue stay theirs. Ctrl/Cmd+Z and Ctrl/Cmd+Y undo
- * and redo, Escape leaves.
+ * and redo, Escape leaves the flower entered with the layers, or else the level.
  */
 export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): void => {
   const { dispatch } = target;
@@ -46,5 +48,8 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
   keys?.on('keydown-Y', (event: KeyboardEvent) => {
     if (event.ctrlKey || event.metaKey) dispatch({ kind: 'redo' });
   });
-  keys?.on('keydown-ESC', () => target.leave());
+  keys?.on('keydown-ESC', () => {
+    if (target.insideLayer()) dispatch({ kind: 'leaveLayer' });
+    else target.leave();
+  });
 };

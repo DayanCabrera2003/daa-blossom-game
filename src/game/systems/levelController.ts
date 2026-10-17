@@ -1,5 +1,8 @@
 import type { Edge, VertexId } from '@core/graph/types';
+import type { RecipeVerdict } from '@core/recipe/check';
+import type { RecipeCardId } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
+import type { GardenState } from '@core/rules/state';
 import { invariant } from '@core/shared/invariant';
 import type { TraceEvent } from '@core/trace/events';
 import type { Level } from '@levels/build';
@@ -15,6 +18,15 @@ import {
 import type { Point } from '../input/target';
 import { availableTools, type ToolId } from '../input/tools';
 import { triedChain } from '../input/triedChain';
+import {
+  enterFlower,
+  layerView,
+  leaveFlower,
+  OUTSIDE,
+  settlePath,
+  type LayerPath,
+  type LayerView,
+} from '../picture/layers';
 import type { FlowEffect } from './flow';
 import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
@@ -22,6 +34,7 @@ import {
   act,
   askHint,
   checkDrawnMirror,
+  checkRecipeNow,
   drawInGarden,
   drawInMirror,
   garden,
@@ -30,6 +43,7 @@ import {
   respond,
   seekSession,
   stepNow,
+  touchRecipe,
   undoSession,
   type LevelSession,
   type ScriptInput,
@@ -47,7 +61,10 @@ export interface Controller {
   readonly highlight: readonly VertexId[];
   /** The vine glowing because of a hint (the conflict to point at); put out by the next answer. */
   readonly vineGlow: Edge | null;
+  /** Where the sprouts truly sit: the places of the level file. */
   readonly positions: readonly Point[];
+  /** The flowers entered with the layers (5.2), outermost first; empty outside. */
+  readonly layers: LayerPath;
 }
 
 /** What the player did on the level screen, as the scene reports it. */
@@ -55,6 +72,8 @@ export type UiEvent =
   | { readonly kind: 'press' | 'move' | 'release'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
   | { readonly kind: 'undo' | 'redo' | 'hint' | 'done' }
+  /** Out of the innermost flower entered, back to the layer before (5.2). */
+  | { readonly kind: 'leaveLayer' }
   | { readonly kind: 'seek'; readonly fraction: number }
   /** An option of the question on screen (its index), or the number picked in a count. */
   | { readonly kind: 'answer'; readonly option: number }
@@ -70,7 +89,12 @@ export type UiEvent =
   /** A whole chain drawn in the flower challenge (a drag gives the same, sprout by sprout). */
   | { readonly kind: 'drawChain'; readonly path: readonly VertexId[] }
   /** The light's own search has been shown to the end; the scene says so, not the player. */
-  | { readonly kind: 'searched' };
+  | { readonly kind: 'searched' }
+  /** A race has been shown to its end (6.4, 6.5); the scene says so, not the player. */
+  | { readonly kind: 'raced' }
+  /** The recipe (6.1): a card touched, into the recipe or back to the table, and "Comprobar". */
+  | { readonly kind: 'recipeCard'; readonly card: RecipeCardId }
+  | { readonly kind: 'checkRecipe' };
 
 /**
  * What the scene has to show after an event: the answers to moves and hints, and the effects of the
@@ -92,6 +116,8 @@ export type Effect =
   | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
   /** A chain drawn in the flower challenge: cut at the flower, or refused as no chain. */
   | { readonly kind: 'flowerDrawn'; readonly attempt: FlowerAttempt }
+  /** The recipe was checked: what the core found, right or its first failing card. */
+  | { readonly kind: 'recipeChecked'; readonly verdict: RecipeVerdict }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
 /** The controller after an event, and what the scene has to show for it. */
@@ -117,6 +143,7 @@ export function openController(level: Level, now: number): Step {
       highlight: [],
       vineGlow: null,
       positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
+      layers: OUTSIDE,
     },
     effects: shown(session, effects),
   };
@@ -199,10 +226,58 @@ function drawChain(controller: Controller, path: readonly VertexId[], now: numbe
   };
 }
 
-/** Handles one event of the level screen at time `now` (milliseconds). Pure. */
+/**
+ * "Comprobar" in the recipe: what the core found comes first, then whatever it moves the script on
+ * to. Outside the recipe step nothing happens.
+ */
+function checkRecipe(controller: Controller, now: number): Step {
+  const { session, verdict, effects } = checkRecipeNow(controller.session, now);
+  const next = { ...controller, session };
+  if (verdict === null) return { controller: next, effects: [] };
+  return {
+    controller: next,
+    effects: [{ kind: 'recipeChecked', verdict }, ...shown(session, effects)],
+  };
+}
+
+/**
+ * The layer the screen shows of the garden `state` (the session's own by default): the flowers
+ * entered settled on the nearest that exist in it, where it draws the sprouts, and what it shows.
+ */
+export const layerOf = (
+  controller: Controller,
+  state: GardenState = garden(controller.session),
+): LayerView => layerView(state.layer, controller.positions, controller.layers);
+
+/** A touch of the layers tool: a folded flower the layer shows is entered; anything else is not. */
+function enter(controller: Controller, view: LayerView, point: Point): Step {
+  const target = hitTest(garden(controller.session), view.positions, point, view);
+  const layers =
+    target.kind === 'flower'
+      ? enterFlower(garden(controller.session).layer, view.path, target.blossom)
+      : view.path;
+  return { controller: { ...controller, layers }, effects: [] };
+}
+
+/**
+ * Handles one event of the level screen at time `now` (milliseconds). Pure. Whatever the event did
+ * to the garden, the layers then settle on the nearest flower entered that is still folded.
+ */
 export function handle(controller: Controller, event: UiEvent, now: number): Step {
+  const step = respondTo(controller, event, now);
+  const next = step.controller;
+  const layers = settlePath(garden(next.session).layer, next.layers);
+  return { controller: { ...next, layers }, effects: step.effects };
+}
+
+/**
+ * One event, before the layers settle. Touches are read at the layer shown: where it draws the
+ * sprouts, and only what it shows, so a touch on an enlarged petal names the true sprout.
+ */
+function respondTo(controller: Controller, event: UiEvent, now: number): Step {
   const state = garden(controller.session);
-  const { positions } = controller;
+  const view = layerOf(controller, state);
+  const { positions } = view;
   const same = (next: Partial<Controller>): Step => ({
     controller: { ...controller, ...next },
     effects: [],
@@ -213,7 +288,7 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       const step = stepNow(controller.session)?.step;
       if (step === 'separate') return tell(controller, { type: 'tap' }, now);
       if (step === 'explore') {
-        const target = hitTest(state, positions, event.point);
+        const target = hitTest(state, positions, event.point, view);
         return target.kind === 'sprout'
           ? tell(controller, { type: 'tapSprout', vertex: target.vertex }, now)
           : same({});
@@ -222,7 +297,7 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       if (step === 'pickVine') return same({});
       // In the mirror challenge, a touch on a vine draws it in silver (or takes it out).
       if (step === 'draw') {
-        const target = hitTest(state, positions, event.point);
+        const target = hitTest(state, positions, event.point, view);
         return target.kind === 'vine' ? drawToggle(controller, target.u, target.v) : same({});
       }
       // In the flower challenge, whatever the tool in hand, a press on a sprout in the dark starts a
@@ -234,15 +309,21 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
           state,
           positions,
           event.point,
+          view,
         );
         return same({ pointer: { ...sketching, tool: pointer.tool } });
       }
-      return same({ pointer: pressStart(controller.pointer, state, positions, event.point) });
+      return same({
+        pointer: pressStart(controller.pointer, state, positions, event.point, view),
+      });
     }
     case 'move': {
-      const moved = pressMove(controller.pointer, state, positions, event.point);
+      const moved = pressMove(controller.pointer, state, positions, event.point, view);
       if (moved.rejection === null) return same({ pointer: moved.pointer });
-      const action = triedChain(controller.pointer.chain, hitTest(state, positions, event.point));
+      const action = triedChain(
+        controller.pointer.chain,
+        hitTest(state, positions, event.point, view),
+      );
       return {
         controller: { ...controller, pointer: moved.pointer },
         effects: [{ kind: 'rejected', reason: moved.rejection, action }],
@@ -255,7 +336,7 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       // While pointing at the conflict, a touch on a vine is the answer, never a move. It is read
       // on release, so the end of the touch cannot reach the step that comes after a right one.
       if (step === 'pickVine') {
-        const target = hitTest(state, positions, event.point);
+        const target = hitTest(state, positions, event.point, view);
         return target.kind === 'vine'
           ? tell(controller, { type: 'pickVine', u: target.u, v: target.v }, now)
           : same({});
@@ -268,7 +349,9 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
           ? drawChain(released, chain, now)
           : { controller: released, effects: [] };
       }
-      const released = pressEnd(controller.pointer, state, positions, event.point);
+      // The layers tool makes no move: its touch only enters a flower.
+      if (controller.pointer.tool === 'layers') return enter(controller, view, event.point);
+      const released = pressEnd(controller.pointer, state, positions, event.point, view);
       const next = { ...controller, pointer: released.pointer };
       return released.action === null
         ? { controller: next, effects: [] }
@@ -276,6 +359,8 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     }
     case 'tool':
       return same({ pointer: chooseTool(controller.pointer, event.tool) });
+    case 'leaveLayer':
+      return same({ layers: leaveFlower(view.path) });
     case 'undo':
       return travel(controller, undoSession(controller.session), now);
     case 'redo':
@@ -303,6 +388,12 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       return drawChain(controller, event.path, now);
     case 'searched':
       return tell(controller, { type: 'searched' }, now);
+    case 'raced':
+      return tell(controller, { type: 'raced' }, now);
+    case 'recipeCard':
+      return same({ session: touchRecipe(controller.session, event.card) });
+    case 'checkRecipe':
+      return checkRecipe(controller, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
     case 'hint': {

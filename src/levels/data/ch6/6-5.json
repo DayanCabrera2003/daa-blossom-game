@@ -1,0 +1,33 @@
+{
+  "id": "6.5",
+  "sprouts": [
+    { "label": "M", "x": 200, "y": 135 },
+    { "label": "B", "x": 280, "y": 135 }
+  ],
+  "vines": [["M", "B"]],
+  "goal": { "visible": false },
+  "flow": [
+    { "step": "say", "lines": ["ch6.5.sauce.00", "ch6.5.bruto.01", "ch6.5.sauce.02"] },
+    { "step": "race", "family": "half", "size": 8, "seed": 4, "budget": 1000000 },
+    { "step": "raceBet", "prompt": "ch6.5.sauce.03", "runner": "automaton" },
+    { "step": "raceBet", "prompt": "ch6.5.sauce.04", "runner": "bruto" },
+    { "step": "race", "family": "half", "size": 16, "seed": 26, "budget": 1000000 },
+    { "step": "say", "lines": ["ch6.5.bruto.05"] },
+    { "step": "raceBet", "prompt": "ch6.5.sauce.06", "runner": "automaton" },
+    { "step": "raceBet", "prompt": "ch6.5.sauce.04", "runner": "bruto" },
+    { "step": "race", "family": "half", "size": 32, "seed": 17, "budget": 1000000 },
+    { "step": "say", "lines": ["ch6.5.bruto.07", "ch6.5.sauce.08"] },
+    { "step": "raceBet", "prompt": "ch6.5.sauce.09", "runner": "automaton" },
+    { "step": "raceBet", "prompt": "ch6.5.sauce.04", "runner": "bruto" },
+    { "step": "race", "family": "half", "size": 64, "seed": 28, "budget": 1000000 },
+    { "step": "say", "lines": ["ch6.5.sauce.10", "ch6.5.bruto.11"] }
+  ],
+  "solution": [
+    { "type": "raceBet", "answer": "fourToEight" },
+    { "type": "raceBet", "answer": "farMore" },
+    { "type": "raceBet", "answer": "fourToEight" },
+    { "type": "raceBet", "answer": "farMore" },
+    { "type": "raceBet", "answer": "fourToEight" },
+    { "type": "raceBet", "answer": "farMore" }
+  ]
+}

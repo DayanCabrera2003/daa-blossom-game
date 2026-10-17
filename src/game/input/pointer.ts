@@ -4,7 +4,7 @@ import type { Action } from '@core/rules/actions';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
 import { extendChain, finishChain } from './dragChain';
-import { hitTest } from './HitTest';
+import { hitTest, type HitScope } from './HitTest';
 import { resolveTap } from './intent';
 import { NO_SELECTION, type Selection } from './selection';
 import type { Point } from './target';
@@ -13,7 +13,9 @@ import type { ToolId } from './tools';
 /**
  * Everything the input remembers between pointer events: the tool in hand, what is selected, and
  * the chain being dragged (null when not dragging). The level scene only forwards press, move and
- * release here, so what a player can do is exactly what the tests of this module can do.
+ * release here, so what a player can do is exactly what the tests of this module can do. Inside a
+ * flower of the layers (5.2), `positions` are where the layer draws the sprouts and `scope` what it
+ * shows, so a touch lands on what the player sees and still names a true sprout.
  */
 export interface PointerState {
   readonly tool: ToolId;
@@ -42,8 +44,9 @@ export function pressStart(
   garden: GardenState,
   positions: readonly Point[],
   point: Point,
+  scope?: HitScope,
 ): PointerState {
-  const target = hitTest(garden, positions, point);
+  const target = hitTest(garden, positions, point, scope);
   const startsChain =
     pointer.tool === 'lanterns' &&
     target.kind === 'sprout' &&
@@ -57,9 +60,10 @@ export function pressMove(
   garden: GardenState,
   positions: readonly Point[],
   point: Point,
+  scope?: HitScope,
 ): { pointer: PointerState; rejection: RejectReason | null } {
   if (pointer.chain === null) return { pointer, rejection: null };
-  const target = hitTest(garden, positions, point);
+  const target = hitTest(garden, positions, point, scope);
   if (target.kind !== 'sprout') return { pointer, rejection: null };
   const step = extendChain(garden, pointer.chain, target.vertex);
   return { pointer: { ...pointer, chain: step.path }, rejection: step.rejection };
@@ -74,6 +78,7 @@ export function pressEnd(
   garden: GardenState,
   positions: readonly Point[],
   point: Point,
+  scope?: HitScope,
 ): { pointer: PointerState; action: Action | null } {
   if (pointer.chain !== null && pointer.chain.length >= 2) {
     return {
@@ -85,7 +90,7 @@ export function pressEnd(
     garden,
     pointer.tool,
     pointer.selection,
-    hitTest(garden, positions, point),
+    hitTest(garden, positions, point, scope),
   );
   return {
     pointer: { ...pointer, selection: outcome.selection, chain: null },

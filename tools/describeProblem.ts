@@ -37,7 +37,7 @@ export function describeProblem(problem: IntegrityProblem): string {
     case 'noCorrectOption':
       return `script step ${problem.step + 1} asks a question with no right answer`;
     case 'notebookMissing':
-      return `script step ${problem.step + 1} opens the notebook, but the level has no notebook question`;
+      return `script step ${problem.step + 1} opens a notebook question the level does not write`;
     case 'mirrorMissing':
       return `script step ${problem.step + 1} needs the reflection, but the level has no mirror`;
     case 'pieceOutsideTangle':
@@ -50,14 +50,26 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
     case 'noChainToDraw':
       return `script step ${problem.step + 1} asks for chains, but the garden already holds the most`;
+    case 'recallAhead':
+      return `script step ${problem.step + 1} is a recipe that recalls level ${problem.level}, which is not played yet`;
     case 'flowerAfterPlay':
       return `script step ${problem.step + 1} is a flower challenge after a play step, whose moves may undo the flower`;
     case 'betOutOfRange':
       return `script step ${problem.step + 1} bets from 1 to ${problem.range} lanterns, but the garden holds ${problem.optimum}: nobody can win it`;
+    case 'raceBetWithoutRaces':
+      return `script step ${problem.step + 1} is a doubling bet, but it needs a race before it and one after it`;
+    case 'raceNotDoubled':
+      return `script step ${problem.step + 1} bets on a doubling, but the races go from ${problem.before} to ${problem.after} sprouts of the same family`;
+    case 'raceBetUnclear':
+      return `script step ${problem.step + 1} bets on a doubling whose steps sit near an edge of "${problem.answer}": pick other seeds`;
     case 'demoRefused':
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
     case 'lightRefused':
       return `script step ${problem.step + 1}: move ${problem.move + 1} of the light's own search is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'automatonRefused':
+      return `script step ${problem.step + 1}: move ${problem.move + 1} of the automaton's run is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'recipeCannotRun':
+      return `script step ${problem.step + 1} runs a recipe the automaton cannot run: only the fold card may be missing`;
     case 'notAFlower':
       return `the declared flower is no flower of the starting lanterns: ${withDetails(problem.error)}`;
     case 'flowerBaseLit':
@@ -67,15 +79,19 @@ export function describeProblem(problem: IntegrityProblem): string {
     case 'flowerOffSide':
       return `sprout ${problem.sprout} sits in the right half, where the folded garden is drawn`;
     case 'badCounterexample':
-      return `notebook statement ${problem.option + 1}: its counterexample is no garden: ${withDetails(problem.error)}`;
+      return `${statementAt(problem)}: its counterexample is no garden: ${withDetails(problem.error)}`;
     case 'counterexampleLocked':
-      return `notebook statement ${problem.option + 1}: its counterexample uses "${problem.action}", which this level does not allow`;
+      return `${statementAt(problem)}: its counterexample uses "${problem.action}", which this level does not allow`;
     case 'counterexampleUnbeatable':
-      return `notebook statement ${problem.option + 1}: its lanterns already hold the most, so no better reflection can be drawn`;
+      return `${statementAt(problem)}: its lanterns already hold the most, so no better reflection can be drawn`;
     case 'counterexampleSameKindVine':
-      return `notebook statement ${problem.option + 1}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
+      return `${statementAt(problem)}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
   }
 }
+
+/** Where a notebook statement is, counted from 1: its question, then the statement itself. */
+const statementAt = (problem: { readonly question: number; readonly option: number }): string =>
+  `notebook question ${problem.question + 1}, statement ${problem.option + 1}`;
 
 /** One readable line for a walkthrough that does not play through the interface. */
 export function describeWalkthroughProblem(problem: WalkthroughProblem): string {

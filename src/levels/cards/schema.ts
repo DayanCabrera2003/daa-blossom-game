@@ -31,7 +31,12 @@ export const CARD_IDS = [
   'scarecrows',
   'fold',
   'unfold',
+  'layers',
   'rotateStem',
+  'recipe',
+  'automaton',
+  'race',
+  'raceBet',
   'stones',
 ] as const;
 
@@ -51,12 +56,17 @@ const demoSprout = z.strictObject({
   y: z.number().int().min(DEMO_AREA.y0).max(DEMO_AREA.y1),
 });
 
-/** One step of a demo: a garden move, a script input, or undo and redo. */
+/**
+ * One step of a demo: a garden move, a script input, undo and redo, or entering a folded flower
+ * (by id) and leaving it with the layers (5.2).
+ */
 const demoStep = z.discriminatedUnion('type', [
   ...levelActionOptions,
   ...flowInputOptions,
   z.strictObject({ type: z.literal('undo') }),
   z.strictObject({ type: z.literal('redo') }),
+  z.strictObject({ type: z.literal('enterLayer'), blossom: z.number().int().min(0) }),
+  z.strictObject({ type: z.literal('leaveLayer') }),
 ]);
 
 /** One step of a demo, sprouts by name. */
@@ -70,6 +80,11 @@ const card = z.strictObject({
   lanterns: z.array(vine).default([]),
   /** Whether the tiny garden starts under fog (inspecting). */
   fog: z.boolean().default(false),
+  /**
+   * Whether the garden makes its moves by itself (the automaton, 6.2): they are shown with no hand
+   * over them, since the player makes none of them. Only the sun is still dragged.
+   */
+  alone: z.boolean().default(false),
   /** Silver lanterns of a reflection shown over the garden from the start. */
   mirror: z.array(vine).default([]),
   /** The options under the garden that a bet or an answer picks from: numbers, or written lines. */

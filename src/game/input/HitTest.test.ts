@@ -1,4 +1,6 @@
 import { contract } from '@core/blossom/contract';
+import { members } from '@core/blossom/hierarchy';
+import type { Blossom } from '@core/blossom/types';
 import { createGraph } from '@core/graph/createGraph';
 import { createMatching } from '@core/matching/createMatching';
 import { createGardenState } from '@core/rules/state';
@@ -107,6 +109,40 @@ describe('what lies under the pointer', () => {
       blossom: 1,
     });
     expect(hitTest(twice, wildPositions, { x: 140, y: 47 })).toEqual({ kind: 'vine', u: 1, v: 7 });
+
+    // Inside the outer flower (the layers, 5.2), the inner one is offered in its turn.
+    const outer = twice.layer.nodes.find((node) => node.kind === 'blossom') as Blossom;
+    const groupOf = wildPositions.map((_, v) =>
+      outer.cycle.findIndex((n) => members(n).includes(v)),
+    );
+    const inside = { shown: groupOf.map((g) => g !== -1), groupOf, nodes: outer.cycle };
+    expect(hitTest(twice, wildPositions, { x: 277, y: 80 }, inside)).toEqual({
+      kind: 'flower',
+      blossom: 0,
+    });
+    // t, outside the flower entered, is not there to touch, nor its vine.
+    expect(hitTest(twice, wildPositions, { x: 140, y: 20 }, inside)).toEqual({ kind: 'nothing' });
+    expect(hitTest(twice, wildPositions, { x: 140, y: 47 }, inside)).toEqual({ kind: 'nothing' });
+  });
+
+  it('inside a flower, only its petals are touched, and the vines between them are free (5.2)', () => {
+    const inside = {
+      shown: [false, false, true, true, true, false],
+      groupOf: [-1, -1, 0, 1, 2, -1],
+      nodes: [2, 3, 4].map((vertex) => ({ kind: 'sprout', vertex }) as const),
+    };
+    expect(hitTest(folded, positions, { x: 130, y: 135 }, inside)).toEqual({ kind: 'nothing' });
+    expect(hitTest(folded, positions, { x: 210, y: 135 }, inside)).toEqual({
+      kind: 'sprout',
+      vertex: 2,
+    });
+    expect(hitTest(folded, positions, { x: 290, y: 135 }, inside)).toEqual({
+      kind: 'vine',
+      u: 3,
+      v: 4,
+    });
+    // A vine to a sprout outside the flower entered cannot be touched.
+    expect(hitTest(folded, positions, { x: 170, y: 135 }, inside)).toEqual({ kind: 'nothing' });
   });
 
   it('between two close sprouts, the nearer one wins; between two vines, the nearer one', () => {

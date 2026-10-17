@@ -4,8 +4,10 @@ import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import {
   betrayalLevel,
+  racesLevel,
   bloomLevel,
   closedFlowerLevel,
+  brokenRecipeLevel,
   festivalLevel,
 } from '../../../tests/support/fixtureLevels';
 import { countAnswer } from './answerKey';
@@ -242,6 +244,47 @@ describe('playtest entries of bets, counts and the notebook', () => {
     ]);
   });
 
+  it('every recipe check is logged: the failing card and its case, or none when right', () => {
+    const { entries } = play(startController(brokenRecipeLevel(), 0), [
+      { kind: 'checkRecipe' },
+      { kind: 'recipeCard', card: 'foldFlower' },
+      { kind: 'checkRecipe' },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'recipeCheck', at: 0, level: '6.3', step: 0, card: 'foldFlower', case: 'sameTree' },
+      { kind: 'recipeCheck', at: 0, level: '6.3', step: 0, card: null, case: null },
+      { kind: 'levelEnd', at: 0, level: '6.3', outcome: 'won', stars: 2 },
+    ]);
+  });
+
+  it('every doubling bet is logged with its runner, the answer picked and whether it was right', () => {
+    const { entries } = play(startController(racesLevel(), 0), [
+      { kind: 'raced' },
+      { kind: 'answer', option: 1 },
+      { kind: 'answer', option: 0 },
+    ]);
+    expect(entries).toEqual([
+      {
+        kind: 'raceBet',
+        at: 0,
+        level: '6.5',
+        step: 1,
+        runner: 'automaton',
+        answer: 'fourToEight',
+        right: true,
+      },
+      {
+        kind: 'raceBet',
+        at: 0,
+        level: '6.5',
+        step: 2,
+        runner: 'bruto',
+        answer: 'double',
+        right: false,
+      },
+    ]);
+  });
+
   it('a number in a count is logged as an answer, right or not', () => {
     const pond = levelById('2.2');
     const opened = play(startController(pond, 0), [{ kind: 'tapGarden' }]).controller;
@@ -273,14 +316,16 @@ describe('playtest entries of bets, counts and the notebook', () => {
       actions: ['join'],
     };
     const notebook = scripted([{ step: 'notebook' }], {
-      notebook: {
-        prompt: 'ch1.9.notebook.00',
-        options: [
-          { line: 'ch1.9.notebook.01', correct: true },
-          { line: 'ch1.9.notebook.02', correct: false, counterexample },
-          { line: 'ch1.9.notebook.03', correct: false },
-        ],
-      },
+      notebook: [
+        {
+          prompt: 'ch1.9.notebook.00',
+          options: [
+            { line: 'ch1.9.notebook.01', correct: true },
+            { line: 'ch1.9.notebook.02', correct: false, counterexample },
+            { line: 'ch1.9.notebook.03', correct: false },
+          ],
+        },
+      ],
     });
     const { entries } = play(startController(notebook, 0), [
       { kind: 'answer', option: 1 },
@@ -330,5 +375,64 @@ describe('playtest entries of the mirror challenge', () => {
     expect(checked(false)).toEqual([
       { kind: 'mirrorCheck', at: 0, level: '2.4', beats: true, counted: false },
     ]);
+  });
+});
+
+describe('playtest entries of the stone certificates', () => {
+  const council = levelById('7.4');
+  /** Level 7.4 at its play step, the automaton's search shown and these stones lifted. */
+  const lifted = (names: readonly string[]): Controller => {
+    const opened = play(startController(council, 0), [{ kind: 'searched' }]).controller;
+    const session = names.reduce((s, name) => {
+      const vertex = council.data.sprouts.findIndex((sprout) => sprout.label === name);
+      return act(s, { type: 'liftStone', vertex }, 0).session;
+    }, opened.session);
+    return { ...opened, session };
+  };
+
+  it('"Terminé" with the moons lifted logs a certificate that proves and counts (7.4)', () => {
+    const { entries } = play(lifted(['a', 'a2']), [{ kind: 'done' }], 6);
+    expect(entries).toEqual([
+      { kind: 'move', at: 6, level: '7.4', action: 'declareDone' },
+      { kind: 'claim', at: 6, level: '7.4', right: true },
+      {
+        kind: 'stoneCertificate',
+        at: 6,
+        level: '7.4',
+        stones: ['a', 'a2'],
+        proves: true,
+        counts: true,
+      },
+      { kind: 'levelEnd', at: 6, level: '7.4', outcome: 'won', stars: expect.any(Number) },
+    ]);
+  });
+
+  it('stones that prove the lanterns but are not the moons do not count in 7.4', () => {
+    const { entries } = play(lifted([]), [{ kind: 'done' }]);
+    expect(entries).toContainEqual({
+      kind: 'stoneCertificate',
+      at: 0,
+      level: '7.4',
+      stones: [],
+      proves: true,
+      counts: false,
+    });
+  });
+
+  it('stones that do not close the bound neither prove nor count', () => {
+    const { entries } = play(lifted(['b']), [{ kind: 'done' }]);
+    expect(entries).toContainEqual({
+      kind: 'stoneCertificate',
+      at: 0,
+      level: '7.4',
+      stones: ['b'],
+      proves: false,
+      counts: false,
+    });
+  });
+
+  it('"Terminé" in a level won by a cover logs no stone certificate', () => {
+    const { entries } = play(startController(levelById('7.1'), 0), [{ kind: 'done' }]);
+    expect(entries.map((entry) => entry.kind)).not.toContain('stoneCertificate');
   });
 });

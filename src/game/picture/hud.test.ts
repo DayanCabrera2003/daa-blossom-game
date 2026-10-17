@@ -2,7 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { closedFlowerLevel } from '../../../tests/support/fixtureLevels';
+import { closedFlowerLevel, helixLevel } from '../../../tests/support/fixtureLevels';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { initialPointer } from '../input/pointer';
 import { HINT_DELAY_MS } from '../systems/hints';
@@ -39,7 +39,30 @@ describe('the picture of the HUD', () => {
       won: null,
       canCheckMirror: false,
       prompt: null,
+      layers: null,
+      council: null,
     });
+  });
+
+  it("from 7.2 the Council's count is on the bar, as the stones leave the garden (7.3)", () => {
+    const level = helixLevel();
+    const lifted = act(startSession(level, 0), { type: 'liftStone', vertex: 0 }, 0).session;
+    expect(hudPicture(lifted, initialPointer('stones'), 0).council).toEqual({
+      key: 'hud.council',
+      params: { groups: 3, stones: 1, atLeast: 2, dark: 2 },
+    });
+  });
+
+  it('hides the layers before 5.2; from 5.2 the tool is there and the depth entered is told', () => {
+    const early = startSession(closedFlowerLevel(), 0);
+    expect(hudPicture(early, initialPointer('marks'), 0).layers).toBeNull();
+    expect(hudPicture(early, initialPointer('marks'), 0).tools).not.toContain('layers');
+    const base = closedFlowerLevel();
+    const later = startSession({ ...base, data: { ...base.data, id: '5.2' } }, 0);
+    const outside = hudPicture(later, initialPointer('marks'), 0);
+    expect(outside.layers).toBe(0);
+    expect(outside.tools).toContain('layers');
+    expect(hudPicture(later, initialPointer('layers'), 0, 2).layers).toBe(2);
   });
 
   it('a hidden goal asks the question instead (4.9); "Terminé" is at hand', () => {

@@ -1,0 +1,69 @@
+{
+  "id": "5.2",
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 135 },
+    { "label": "a", "x": 110, "y": 75 },
+    { "label": "b", "x": 185, "y": 75 },
+    { "label": "c", "x": 260, "y": 75 },
+    { "label": "d", "x": 330, "y": 75 },
+    { "label": "e", "x": 410, "y": 120 },
+    { "label": "f", "x": 410, "y": 40 },
+    { "label": "g", "x": 335, "y": 165 },
+    { "label": "h", "x": 260, "y": 165 },
+    { "label": "i", "x": 185, "y": 210 },
+    { "label": "j", "x": 110, "y": 210 },
+    { "label": "t", "x": 40, "y": 45 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "e"],
+    ["e", "f"],
+    ["f", "d"],
+    ["e", "g"],
+    ["g", "h"],
+    ["h", "b"],
+    ["h", "i"],
+    ["i", "j"],
+    ["j", "R"],
+    ["a", "t"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"],
+    ["g", "h"],
+    ["i", "j"]
+  ],
+  "goal": { "visible": true, "value": 6 },
+  "roots": ["R"],
+  "victory": { "type": "matchingSize", "value": 6 },
+  "hints": [
+    { "line": "ch5.2.sauce.01" },
+    { "line": "ch5.2.sauce.02", "highlight": ["j", "R"] },
+    { "line": "ch5.2.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch5.2.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch5.2.sauce.04"] }
+  ],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "markMoon", "from": "d", "to": "e" },
+    { "type": "foldAt", "from": "f", "to": "d" },
+    { "type": "markMoon", "from": "e", "to": "g" },
+    { "type": "foldAt", "from": "h", "to": "b" },
+    { "type": "markMoon", "from": "h", "to": "i" },
+    { "type": "foldAt", "from": "j", "to": "R" },
+    { "type": "markMoon", "from": "a", "to": "t" },
+    { "type": "unfold", "blossom": 2 },
+    { "type": "unfold", "blossom": 1 },
+    { "type": "unfold", "blossom": 0 },
+    { "type": "chain", "path": ["t", "a", "b", "c", "d", "f", "e", "g", "h", "i", "j", "R"] }
+  ]
+}

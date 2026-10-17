@@ -1,3 +1,6 @@
+import { runRecipe } from '@core/recipe/run';
+import { applyAction } from '@core/rules/applyAction';
+import { itemAt } from '@core/shared/itemAt';
 import { describe, expect, it } from 'vitest';
 import { buildCards, cardDemos } from './catalog';
 import cardsFile from './cards.json';
@@ -19,6 +22,25 @@ describe('the mechanic cards file', () => {
     const built = buildCards(cardsFile);
     expect(built).toMatchObject({ ok: true });
     expect([...cardDemos().keys()].sort()).toEqual([...CARD_IDS].sort());
+  });
+
+  it("the automaton's card shows the run of the recipe in its tiny garden, untouched by hand", () => {
+    const demo = cardDemos().get('automaton');
+    if (demo === undefined) throw new Error('the automaton has a card');
+    const dawn = itemAt(demo.frames, 0).state;
+    const moves = runRecipe(dawn, { fold: true });
+    // One frame per move, then the sun dragged back, then the last frame.
+    expect(demo.frames).toHaveLength(moves.length + 2);
+    expect(demo.frames.map((frame) => frame.gesture.kind)).toEqual([
+      ...moves.map(() => 'none'),
+      'sun',
+      'none',
+    ]);
+    // Each frame shows the garden the run's move before it leaves.
+    for (const [index, move] of moves.entries()) {
+      const outcome = applyAction(itemAt(demo.frames, index).state, move);
+      expect(outcome.ok && outcome.state).toEqual(itemAt(demo.frames, index + 1).state);
+    }
   });
 
   it('a card missing or written twice is an error', () => {

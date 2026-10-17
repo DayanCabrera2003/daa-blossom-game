@@ -3,10 +3,11 @@ import { loadLevel } from '@levels/loader';
 
 /**
  * Synthetic levels for tests that need a garden of chapters 4, 5 or 7: copies of the drafts those
- * chapters started from, so the tests keep their data when the level files are rewritten, and a
- * garden for the flower challenge (4.11). Each one
- * is loaded through the real loader, so it is validated exactly like a level file. The ids are kept,
- * because the tools a level opens follow its id.
+ * chapters started from, so the tests keep their data when the level files are rewritten, a
+ * garden for the flower challenge (4.11), and the recipe and the races of chapter 6 as they were
+ * first drafted.
+ * Each one is loaded through the real loader, so it is validated exactly like a level file. The
+ * ids are kept, because the tools a level opens follow its id.
  */
 
 /** Loads a fixture; a fixture that does not load is a broken test, so it stops loudly. */
@@ -450,6 +451,147 @@ export const BLOOM = {
     { type: 'drawChain', path: ['e', 't'] },
   ],
 };
+
+/**
+ * The recipe with cards (GDD 6.1), as drafted before chapter 6 had its files: a garden, `R–a=b–c`,
+ * that the script does not touch, and a recipe built from nothing. The walkthrough first checks a
+ * recipe tempted by a distractor ("si x es luna, cámbiala a sol"), which is told and stays open,
+ * then the right one, with its cases in an order of its own.
+ */
+const RECIPE = {
+  id: '6.1',
+  sprouts: [
+    { label: 'R', x: 100, y: 135 },
+    { label: 'a', x: 200, y: 135 },
+    { label: 'b', x: 300, y: 135 },
+    { label: 'c', x: 400, y: 135 },
+  ],
+  vines: [
+    ['R', 'a'],
+    ['a', 'b'],
+    ['b', 'c'],
+  ],
+  lanterns: [['a', 'b']],
+  goal: { visible: false },
+  flow: [{ step: 'recipe' }],
+  solution: [
+    {
+      type: 'recipe',
+      cards: [
+        'markDarkSuns',
+        'chainToDark',
+        'growMoon',
+        'chainRootToRoot',
+        'foldFlower',
+        'moonToSun',
+        'finishKeepMoons',
+      ],
+    },
+    {
+      type: 'recipe',
+      cards: [
+        'markDarkSuns',
+        'moonNothing',
+        'foldFlower',
+        'chainRootToRoot',
+        'growMoon',
+        'chainToDark',
+        'finishKeepMoons',
+      ],
+    },
+  ],
+};
+
+/**
+ * The broken recipe (GDD 6.3) on the same garden: the right recipe arrives without the card that
+ * folds the flower, and the walkthrough puts it back.
+ */
+const BROKEN_RECIPE = {
+  ...RECIPE,
+  id: '6.3',
+  flow: [{ step: 'recipe', missing: ['sameTree'] }],
+  solution: [
+    {
+      type: 'recipe',
+      cards: [
+        'markDarkSuns',
+        'chainToDark',
+        'growMoon',
+        'chainRootToRoot',
+        'foldFlower',
+        'moonNothing',
+        'finishKeepMoons',
+      ],
+    },
+  ],
+};
+
+/** Every right card of the recipe, as a walkthrough places them. */
+const RIGHT_CARDS = [
+  'markDarkSuns',
+  'chainToDark',
+  'growMoon',
+  'chainRootToRoot',
+  'foldFlower',
+  'moonNothing',
+  'finishKeepMoons',
+];
+
+/**
+ * The automaton on the garden of 5.1 (GDD 6.2, 6.3): the player writes the recipe, Bruto's runs
+ * without the fold card and stops at 3 lanterns, the player puts the card back, and the repaired
+ * recipe runs again from the same starting lanterns and reaches 4.
+ */
+export const AUTOMATON = {
+  ...NESTED_FLOWERS,
+  id: '6.3',
+  goal: { visible: false },
+  victory: undefined,
+  flow: [
+    { step: 'recipe' },
+    { step: 'automaton', missing: ['sameTree'] },
+    { step: 'recipe', missing: ['sameTree'] },
+    { step: 'automaton' },
+  ],
+  solution: [
+    { type: 'recipe', cards: RIGHT_CARDS },
+    { type: 'recipe', cards: RIGHT_CARDS },
+  ],
+};
+
+/**
+ * A short race series on the garden of `RECIPE` (GDD 6.5, before its level file): a race at 8
+ * sprouts, a doubling bet on each runner, and a race at 16, where Bruto falls asleep after a
+ * thousand steps so the test stays quick. The automaton takes 41 steps at 8 and 183 at 16, about
+ * four times; Bruto 224 at 8, and then sleeps. The walkthrough bets right on the automaton and
+ * wrong on Bruto.
+ */
+const RACES = {
+  ...RECIPE,
+  id: '6.5',
+  flow: [
+    { step: 'race', family: 'half', size: 8, seed: 4, budget: 1_000_000 },
+    { step: 'raceBet', prompt: 'ch6.5.sauce.01', runner: 'automaton' },
+    { step: 'raceBet', prompt: 'ch6.5.sauce.02', runner: 'bruto' },
+    { step: 'race', family: 'half', size: 16, seed: 26, budget: 1_000 },
+  ],
+  solution: [
+    { type: 'raceBet', answer: 'fourToEight' },
+    { type: 'raceBet', answer: 'double' },
+  ],
+};
+
+/** The level built from `RACES`. */
+export const racesLevel = (): Level => load(RACES);
+
+/** The level built from `RECIPE`. */
+export const recipeLevel = (): Level => load(RECIPE);
+
+/** The level built from `BROKEN_RECIPE`. */
+export const brokenRecipeLevel = (): Level => load(BROKEN_RECIPE);
+
+/** The level built from `AUTOMATON`. */
+export const automatonLevel = (): Level => load(AUTOMATON);
 
 /** The level built from `BLOOM`. */
 export const bloomLevel = (): Level => load(BLOOM);

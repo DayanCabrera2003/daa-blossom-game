@@ -2,7 +2,17 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { BLOOM, betrayalLevel, bloomLevel, lightLevel } from '../../../tests/support/fixtureLevels';
+import {
+  BLOOM,
+  automatonLevel,
+  betrayalLevel,
+  bloomLevel,
+  brokenRecipeLevel,
+  lightLevel,
+  racesLevel,
+  recipeLevel,
+} from '../../../tests/support/fixtureLevels';
+import { size } from '@core/matching/queries';
 import { garden } from './levelSession';
 import { playWalkthrough } from './walkthrough';
 
@@ -44,6 +54,69 @@ const question = {
   ],
   retry: true,
 };
+
+describe('playing a walkthrough with the recipe (6.1, 6.3)', () => {
+  it('builds each recipe with touches on its cards and checks it, until one is right', () => {
+    const result = playWalkthrough(recipeLevel());
+    expect(result.problem).toBeNull();
+    const checks = result.effects.flatMap((effect) =>
+      effect.kind === 'recipeChecked' ? [effect.verdict] : [],
+    );
+    expect(checks).toEqual([
+      {
+        right: false,
+        failure: { kind: 'distractor', card: 'moonToSun', case: 'moon' },
+      },
+      { right: true },
+    ]);
+    expect(result.effects.at(-1)).toMatchObject({ kind: 'won' });
+  });
+
+  it('repairs the broken recipe, taking back nothing it keeps', () => {
+    expect(playWalkthrough(brokenRecipeLevel()).problem).toBeNull();
+  });
+
+  it('the automaton runs as the scene reports each run shown, between the recipes (6.3)', () => {
+    const played = playWalkthrough(automatonLevel());
+    expect(played.problem).toBeNull();
+    expect(played.effects.map((effect) => effect.kind)).toEqual([
+      'recipe',
+      'recipeChecked',
+      'automaton',
+      'recipe',
+      'recipeChecked',
+      'automaton',
+      'won',
+    ]);
+    expect(size(garden(played.controller.session).matching)).toBe(4);
+  });
+
+  it('every race runs as the scene reports it shown, and the bets between them are answered', () => {
+    const played = playWalkthrough(racesLevel());
+    expect(played.problem).toBeNull();
+    expect(played.effects.map((effect) => effect.kind)).toEqual([
+      'race',
+      'raced',
+      'raceBet',
+      'answered',
+      'raceBet',
+      'answered',
+      'race',
+      'raced',
+      'won',
+    ]);
+  });
+
+  it('a doubling bet given where nothing waits for it is not waited for', () => {
+    const level = load({ ...BLOOM, solution: [{ type: 'raceBet', answer: 'double' }] });
+    expect(playWalkthrough(level).problem).toEqual({ code: 'inputIgnored', entry: 0 });
+  });
+
+  it('a recipe given outside its step is not waited for', () => {
+    const level = load({ ...BLOOM, solution: [{ type: 'recipe', cards: ['foldFlower'] }] });
+    expect(playWalkthrough(level).problem).toEqual({ code: 'inputIgnored', entry: 0 });
+  });
+});
 
 describe('playing the reference walkthrough of a level without a scene', () => {
   it('plays moves with gestures and script inputs as interface events, to the end', () => {

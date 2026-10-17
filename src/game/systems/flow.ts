@@ -1,4 +1,7 @@
+import type { Runner } from '@core/cost/benchmark';
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { VertexId } from '@core/graph/types';
+import type { RecipeCase } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import type { LevelStep } from '@levels/flow';
 
@@ -23,8 +26,9 @@ export type FlowSignal =
   /** The core says the victory of the level holds (ends `play`). */
   | { readonly type: 'won' }
   /**
-   * An option of an `ask` or `notebook`, or a number in a `count`; `right` is the number the core
-   * gives for a count (null for the other two, which are judged by their options).
+   * An option of an `ask` or `notebook`, a number in a `count`, or an answer of a doubling bet (its
+   * index); `right` is the number the core gives for a count, or the index of the right answer of
+   * a doubling bet (null for the other two, which are judged by their options).
    */
   | { readonly type: 'answer'; readonly option: number; readonly right: number | null }
   /** A bet, and the most lanterns the garden can hold, as the core computes it. */
@@ -50,8 +54,15 @@ export type FlowSignal =
   | { readonly type: 'flowerDrawn'; readonly chain: boolean }
   /** Too many drawings were no chains: the flower challenge is over anyway. */
   | { readonly type: 'flowerSpared' }
-  /** The light's own search was made in the garden and shown to the end. */
-  | { readonly type: 'searched' };
+  /**
+   * The garden's own moves were made and shown to the end: the light's search (ends `autoSearch`),
+   * or the automaton's run (ends `automaton`).
+   */
+  | { readonly type: 'searched' }
+  /** The recipe was checked; `right` when the core finds it right (ends `recipe`). */
+  | { readonly type: 'recipeChecked'; readonly right: boolean }
+  /** The race has been shown to its end (ends `race`). */
+  | { readonly type: 'raced' };
 
 /** What the scene has to show; data only, line ids untranslated. */
 export type FlowEffect =
@@ -117,10 +128,45 @@ export type FlowEffect =
    * input, and says when it is over.
    */
   | { readonly kind: 'autoSearch'; readonly step: number }
+  /**
+   * The automaton runs a recipe (6.2, 6.3): the scene shows its moves one by one, with the garden
+   * taking no input, and says when the whole run has been seen.
+   */
+  | { readonly kind: 'automaton'; readonly step: number }
+  /**
+   * The recipe with cards (6.1): the panel opens with the right recipe less the cards of the
+   * `missing` cases to repair (6.3), or with no card placed when none are named.
+   */
+  | { readonly kind: 'recipe'; readonly step: number; readonly missing: readonly RecipeCase[] }
+  /**
+   * A race (6.4, 6.5): the scene shows it to its end, with the garden taking no input, and says
+   * when it is over.
+   */
+  | { readonly kind: 'race'; readonly step: number }
+  /**
+   * The race at `step` was seen to its end: its point joins the chart, and the doubling bets
+   * answered since the race before it (`bets`, in order) are settled by it.
+   */
+  | { readonly kind: 'raced'; readonly step: number; readonly bets: readonly FlowAnswer[] }
+  /** A doubling bet (6.5) on one runner of the race to come, answered with one of three answers. */
+  | {
+      readonly kind: 'raceBet';
+      readonly step: number;
+      readonly prompt: string;
+      readonly runner: Runner;
+    }
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
-  /** A false statement of the notebook (`option`) is refuted by its garden, which opens. */
-  | { readonly kind: 'counterexample'; readonly step: number; readonly option: number }
+  /**
+   * A false statement (`option`) of the notebook question `question` is refuted by its garden,
+   * which opens.
+   */
+  | {
+      readonly kind: 'counterexample';
+      readonly step: number;
+      readonly question: number;
+      readonly option: number;
+    }
   /** The right statement was chosen: it is written in the player's notebook. */
   | { readonly kind: 'written' }
   /** The last step is over: the level is complete. */
@@ -138,8 +184,8 @@ export interface NotebookKey {
 /** Where a script is, and what the player has given it so far. */
 export interface FlowState {
   readonly steps: readonly LevelStep[];
-  /** The statements of the level's notebook question, in order (empty without one). */
-  readonly notebook: readonly NotebookKey[];
+  /** The statements of each notebook question of the level, in order (empty without one). */
+  readonly notebook: readonly (readonly NotebookKey[])[];
   /** The index of the current step; equal to the number of steps once the script is finished. */
   readonly index: number;
   /** Every answer and bet, in the order given. */
@@ -222,6 +268,14 @@ function opening(step: LevelStep, index: number): FlowEffect {
       return { kind: 'flowerChallenge', step: index, attempts: step.attempts };
     case 'autoSearch':
       return { kind: 'autoSearch', step: index };
+    case 'automaton':
+      return { kind: 'automaton', step: index };
+    case 'recipe':
+      return { kind: 'recipe', step: index, missing: step.missing };
+    case 'race':
+      return { kind: 'race', step: index };
+    case 'raceBet':
+      return { kind: 'raceBet', step: index, prompt: step.prompt, runner: step.runner };
   }
 }
 
@@ -249,7 +303,7 @@ function enter(flow: FlowState, index: number, effects: FlowEffect[]): FlowTurn 
 /** The script at its start: the effects of its first steps, up to the first one that waits. */
 export function startFlow(
   steps: readonly LevelStep[],
-  key: { readonly notebook: readonly NotebookKey[] },
+  key: { readonly notebook: readonly (readonly NotebookKey[])[] },
 ): FlowTurn {
   const flow: FlowState = {
     steps,
@@ -272,6 +326,18 @@ function answered(flow: FlowState, value: number, correct: boolean): FlowTurn {
   };
 }
 
+/**
+ * The doubling bets a race settles: those answered since the race before it (or the start), in the
+ * order they were given.
+ */
+function betsSettledBy(flow: FlowState): FlowAnswer[] {
+  const before = flow.steps.slice(0, flow.index).map((step) => step.step);
+  const since = before.lastIndexOf('race') + 1;
+  return flow.answers.filter(
+    (answer) => answer.step >= since && flow.steps[answer.step]?.step === 'raceBet',
+  );
+}
+
 /** Feeds one signal to the current step. A signal the step does not wait for changes nothing. */
 export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
   const step = currentStep(flow);
@@ -291,7 +357,25 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     case 'sun':
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'autoSearch':
+    case 'automaton':
       return signal.type === 'searched' ? enter(flow, flow.index + 1, []) : unchanged;
+    case 'recipe':
+      // A wrong check is told by the panel, which stays open: only a right recipe moves on.
+      return signal.type === 'recipeChecked' && signal.right
+        ? enter(flow, flow.index + 1, [])
+        : unchanged;
+    case 'race':
+      return signal.type === 'raced'
+        ? enter(flow, flow.index + 1, [
+            { kind: 'raced', step: flow.index, bets: betsSettledBy(flow) },
+          ])
+        : unchanged;
+    case 'raceBet': {
+      // Guessing wrong is free (GDD §2, principle 5): any of the three answers moves on.
+      if (signal.type !== 'answer' || signal.right === null) return unchanged;
+      if (signal.option >= DOUBLING_ANSWERS.length) return unchanged;
+      return next(answered(flow, signal.option, signal.option === signal.right));
+    }
     case 'separate':
       return signal.type === 'tap' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'explore':
@@ -334,7 +418,7 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       // A false statement is answered by the mentor and refuted by its garden, if it has them;
       // then the question opens again. Only the right one is written down and ends the step.
       if (signal.type !== 'answer') return unchanged;
-      const statement = flow.notebook[signal.option];
+      const statement = flow.notebook[step.question]?.[signal.option];
       if (statement === undefined) return unchanged;
       const given = answered(flow, signal.option, statement.correct);
       if (statement.reply !== null) given.effects.push({ kind: 'say', lines: [statement.reply] });
@@ -343,7 +427,13 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
         return next(given);
       }
       if (statement.refuted) {
-        given.effects.push({ kind: 'counterexample', step: flow.index, option: signal.option });
+        const { question } = step;
+        given.effects.push({
+          kind: 'counterexample',
+          step: flow.index,
+          question,
+          option: signal.option,
+        });
       }
       given.effects.push(opening(step, flow.index));
       return given;

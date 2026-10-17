@@ -24,8 +24,9 @@ export type Presentation =
   | { readonly kind: 'question'; readonly question: Question }
   /**
    * The day replaying itself through these states, dawn to dusk; the garden takes no input. With
-   * `light`, these are the marks of the light searching by itself (4.1, 4.2), not yet in the
-   * player's day: at dusk the scene reports that the search was shown, and the session keeps it.
+   * `light`, these are the garden's own moves, not yet in the player's day: the marks of the light
+   * searching by itself (4.1, 4.2) or the automaton's run (6.2, 6.3). At dusk the scene reports
+   * that they were shown, and the session keeps them.
    */
   | {
       readonly kind: 'replay';
@@ -33,10 +34,15 @@ export type Presentation =
       readonly light?: boolean;
     }
   /**
-   * The garden that refutes a false notebook statement (`option`), in a screen of its own; over when
-   * the player goes back to the notebook.
+   * A race being run (6.4, 6.5): the race of the script step `step`, its counters running for
+   * `duration` milliseconds; the garden takes no input. At its end the scene reports it run.
    */
-  | { readonly kind: 'counterexample'; readonly option: number }
+  | { readonly kind: 'race'; readonly step: number; readonly duration: number }
+  /**
+   * The garden that refutes a false statement (`option`) of the notebook question `question`, in a
+   * screen of its own; over when the player goes back to the notebook.
+   */
+  | { readonly kind: 'counterexample'; readonly question: number; readonly option: number }
   /** The victory panel; the level ends with it, so nothing after it ever shows. */
   | { readonly kind: 'victory'; readonly stars: StarResult };
 
@@ -69,8 +75,9 @@ export function present(stage: Stage, items: readonly Presentation[]): StageTurn
 /** The item on stage is over: the next one in line starts, if any. */
 export const finishShowing = (stage: Stage): StageTurn => next(stage.waiting);
 
-/** Whether the player's input is held back: only while the day replays. */
-export const blocksInput = (stage: Stage): boolean => stage.showing?.kind === 'replay';
+/** Whether the player's input is held back: only while the day replays or a race runs. */
+export const blocksInput = (stage: Stage): boolean =>
+  stage.showing?.kind === 'replay' || stage.showing?.kind === 'race';
 
 /** The question on stage was answered: it leaves and the next item starts. Anything else stays. */
 export const answerShowing = (stage: Stage): StageTurn =>

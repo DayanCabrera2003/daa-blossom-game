@@ -53,6 +53,35 @@ describe('playtest log', () => {
         { kind: 'mirrorCheck', at: 5, level: '2.4', beats: true, counted: true },
         { kind: 'pickVine', at: 6, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
         { kind: 'flowerChain', at: 7, level: '4.11', path: ['e', 't'], counted: true },
+        { kind: 'recipeCheck', at: 8, level: '6.1', step: 0, card: 'moonToSun', case: 'moon' },
+        { kind: 'recipeCheck', at: 9, level: '6.1', step: 0, card: null, case: null },
+        {
+          kind: 'raceBet',
+          at: 10,
+          level: '6.5',
+          step: 1,
+          runner: 'bruto',
+          answer: 'farMore',
+          right: true,
+        },
+      ],
+    };
+    expect(parseLog(log)).toEqual(log);
+  });
+
+  it('reads back stone certificates, by the names of their stones', () => {
+    const log = {
+      version: 1,
+      entries: [
+        {
+          kind: 'stoneCertificate',
+          at: 1,
+          level: '7.4',
+          stones: ['b'],
+          proves: true,
+          counts: false,
+        },
+        { kind: 'stoneCertificate', at: 2, level: '7.4', stones: [], proves: false, counts: false },
       ],
     };
     expect(parseLog(log)).toEqual(log);

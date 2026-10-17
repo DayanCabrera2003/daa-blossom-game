@@ -1,5 +1,7 @@
 import type Phaser from 'phaser';
+import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
+import { HUD_BUTTONS, hudRow, type HudButton } from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -18,22 +20,25 @@ export interface HudActions {
   readonly help: () => void;
   /** Checks the reflection drawn in the mirror challenge. */
   readonly checkMirror: () => void;
+  /** Leaves the innermost flower entered with the layers (5.2). */
+  readonly leaveLayer: () => void;
 }
 
 /**
  * The greybox HUD: the goal (or the question, when it is hidden), lanterns lit and water spent on
  * top; "Terminé", undo, redo, hint, "?" (the mechanic cards again) and back at the bottom right,
- * greyed out when not available, and "Comprobar" beside them in the mirror challenge.
+ * greyed out when not available, "Comprobar" beside them in the mirror challenge, and the way out
+ * of a flower entered with the layers, whose depth the status line tells (5.2), and from 7.2 the
+ * Council's count on the right of the status line.
  */
 export class HudView {
   private readonly goal: Phaser.GameObjects.Text;
   private readonly status: Phaser.GameObjects.Text;
   /** What a waiting script step expects (drag the sun, touch a sprout…), centred under the goal. */
   private readonly prompt: Phaser.GameObjects.Text;
-  private readonly buttons: Record<
-    'done' | 'undo' | 'redo' | 'hint' | 'help' | 'back' | 'checkMirror',
-    Button
-  >;
+  /** The Council's count (chapter 7), on the right of the status line. */
+  private readonly council: Phaser.GameObjects.Text;
+  private readonly buttons: Record<HudButton, Button>;
 
   constructor(
     scene: Phaser.Scene,
@@ -46,16 +51,20 @@ export class HudView {
       .text(CANVAS_WIDTH / 2, LAYOUT.secondY, '', textStyle(8, PALETTE.sun))
       .setOrigin(0.5, 0)
       .setDepth(100);
-    const order = ['back', 'help', 'hint', 'redo', 'undo', 'done', 'checkMirror'] as const;
-    let x = CANVAS_WIDTH - LAYOUT.margin;
-    const made: Partial<Record<(typeof order)[number], Button>> = {};
-    for (const name of order) {
-      const label = t(`hud.${name}`);
-      const button = new Button(scene, 0, LAYOUT.bottomY, label, actions[name]);
-      x -= button.width + 3;
-      made[name] = button.moveTo(x, LAYOUT.bottomY);
-    }
-    this.buttons = made as Record<(typeof order)[number], Button>;
+    this.council = scene.add
+      .text(CANVAS_WIDTH - LAYOUT.margin, LAYOUT.secondY, '', textStyle(8))
+      .setOrigin(1, 0)
+      .setDepth(100);
+    // Every button keeps its place even while hidden, so the row is laid out for all of them.
+    const made = HUD_BUTTONS.map(
+      (name) => new Button(scene, 0, LAYOUT.bottomY, t(`hud.${name}`), actions[name]),
+    );
+    const lefts = hudRow(made.map((button) => button.width));
+    made.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
+    this.buttons = Object.fromEntries(HUD_BUTTONS.map((name, i) => [name, made[i]])) as Record<
+      HudButton,
+      Button
+    >;
   }
 
   render(hud: HudPicture): void {
@@ -67,12 +76,16 @@ export class HudView {
         : hud.water.budget === null
           ? this.t('hud.waterNoBudget', { used: hud.water.used })
           : this.t('hud.water', { used: hud.water.used, budget: hud.water.budget });
-    this.status.setText(water === '' ? lanterns : `${lanterns}   ${water}`);
+    const inside = hud.layers !== null && hud.layers > 0;
+    const layer = inside ? this.t('hud.layer', { depth: hud.layers ?? 0 }) : '';
+    this.status.setText([lanterns, water, layer].filter((part) => part !== '').join('   '));
     this.buttons.undo.setEnabled(hud.canUndo);
     this.buttons.redo.setEnabled(hud.canRedo);
     this.buttons.hint.setEnabled(hud.hintAvailable);
     this.buttons.done.setVisible(hud.canDeclareDone);
     this.buttons.checkMirror.setVisible(hud.canCheckMirror);
+    this.buttons.leaveLayer.setVisible(inside);
     this.prompt.setText(hud.prompt === null ? '' : this.t(hud.prompt.key, hud.prompt.params));
+    this.council.setText(hud.council === null ? '' : this.t(hud.council.key, hud.council.params));
   }
 }

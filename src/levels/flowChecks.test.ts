@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BLOOM } from '../../tests/support/fixtureLevels';
+import { AUTOMATON, BLOOM } from '../../tests/support/fixtureLevels';
 import { checkFlow } from './flowChecks';
 import { loadLevel } from './loader';
 
@@ -104,13 +104,15 @@ describe('the checks of a level script', () => {
         { step: 'replay', demo: [{ type: 'chain', path: ['A', 'B', 'C', 'D', 'E', 'F'] }] },
         { step: 'notebook' },
       ],
-      notebook: {
-        prompt: 'ch2.1.notebook.00',
-        options: [
-          { line: 'ch2.1.notebook.01', correct: true },
-          { line: 'ch2.1.notebook.02', correct: false },
-        ],
-      },
+      notebook: [
+        {
+          prompt: 'ch2.1.notebook.00',
+          options: [
+            { line: 'ch2.1.notebook.01', correct: true },
+            { line: 'ch2.1.notebook.02', correct: false },
+          ],
+        },
+      ],
     };
     expect(flowProblemsOf(sound)).toEqual([]);
   });
@@ -132,6 +134,25 @@ describe('the checks of a level script', () => {
   it('a notebook step needs the notebook question of the level', () => {
     expect(flowProblemsOf({ ...pond, flow: [{ step: 'notebook' }] })).toEqual([
       { code: 'notebookMissing', step: 0 },
+    ]);
+  });
+
+  it('a notebook step asks one of the questions the level writes', () => {
+    const notebook = [
+      {
+        prompt: 'ch2.1.notebook.00',
+        options: [
+          { line: 'ch2.1.notebook.01', correct: true },
+          { line: 'ch2.1.notebook.02', correct: false },
+        ],
+      },
+    ];
+    const flow = [
+      { step: 'notebook', question: 0 },
+      { step: 'notebook', question: 1 },
+    ];
+    expect(flowProblemsOf({ ...pond, notebook, flow })).toEqual([
+      { code: 'notebookMissing', step: 1 },
     ]);
   });
 
@@ -259,6 +280,20 @@ describe('the checks of a level script', () => {
     ]);
   });
 
+  it('the automaton runs a recipe it can run, with the moves the level allows', () => {
+    expect(flowProblemsOf(AUTOMATON)).toEqual([]);
+    // Only the fold card may be missing: a recipe without its chains would not be the search.
+    const chainless = { ...AUTOMATON, flow: [{ step: 'automaton', missing: ['dark'] }] };
+    expect(flowProblemsOf({ ...chainless, solution: [{ type: 'tapGarden' }] })).toEqual([
+      { code: 'recipeCannotRun', step: 0 },
+    ]);
+    // The recipe starts from every dark sprout: a level searching from R alone refuses t.
+    expect(flowProblemsOf({ ...AUTOMATON, roots: ['R'] })).toEqual([
+      { code: 'automatonRefused', step: 1, move: 1, reason: { code: 'notARoot', vertex: 7 } },
+      { code: 'automatonRefused', step: 3, move: 1, reason: { code: 'notARoot', vertex: 7 } },
+    ]);
+  });
+
   it('the flower challenge needs a flower, a chain to draw, and comes before any play', () => {
     const challenge = { step: 'flowerChallenge', attempts: 3 };
     expect(flowProblemsOf({ ...BLOOM, flow: [challenge] })).toEqual([]);
@@ -277,5 +312,59 @@ describe('the checks of a level script', () => {
       solution: [{ type: 'join', u: 'e', v: 't' }],
     };
     expect(flowProblemsOf(played)).toEqual([{ code: 'flowerAfterPlay', step: 1 }]);
+  });
+
+  it('a recipe recalls only levels played before it', () => {
+    const garden = {
+      sprouts: [
+        { label: 'a', x: 100, y: 100 },
+        { label: 'b', x: 200, y: 100 },
+      ],
+      vines: [['a', 'b']],
+      goal: { visible: false },
+      flow: [{ step: 'recipe' }],
+      solution: [{ type: 'recipe', cards: [] }],
+    };
+    expect(flowProblemsOf({ ...garden, id: '6.1' })).toEqual([]);
+    // In 3.5, folding (4.4) and a search that ends with no chain (3.6) are still to come.
+    expect(flowProblemsOf({ ...garden, id: '3.5' })).toEqual([
+      { code: 'recallAhead', step: 0, level: '4.4' },
+      { code: 'recallAhead', step: 0, level: '3.6' },
+    ]);
+  });
+
+  it('a doubling bet stands between a race and one twice its size, with a clear answer', () => {
+    const race = (size: number, seed: number) => ({
+      step: 'race',
+      family: 'half',
+      size,
+      seed,
+      budget: 1_000_000,
+    });
+    const bet = (runner: string) => ({ step: 'raceBet', prompt: 'ch6.5.sauce.01', runner });
+    const races = (flow: unknown[]) => ({
+      ...pond,
+      id: '6.5',
+      mirror: undefined,
+      flow,
+      solution: [{ type: 'tapGarden' }],
+    });
+    // 41 steps of the automaton at 8 sprouts, 183 at 16: about four times, clearly.
+    expect(
+      flowProblemsOf(races([race(8, 4), bet('automaton'), bet('bruto'), race(16, 26)])),
+    ).toEqual([]);
+    expect(flowProblemsOf(races([bet('bruto'), race(16, 26)]))).toEqual([
+      { code: 'raceBetWithoutRaces', step: 0 },
+    ]);
+    expect(flowProblemsOf(races([race(8, 4), bet('bruto')]))).toEqual([
+      { code: 'raceBetWithoutRaces', step: 1 },
+    ]);
+    expect(flowProblemsOf(races([race(8, 4), bet('bruto'), race(10, 13)]))).toEqual([
+      { code: 'raceNotDoubled', step: 1, before: 8, after: 10 },
+    ]);
+    // 69 steps at 8 sprouts against 183 at 16 sit between double and four times.
+    expect(flowProblemsOf(races([race(8, 27), bet('automaton'), race(16, 26)]))).toEqual([
+      { code: 'raceBetUnclear', step: 1, answer: 'double' },
+    ]);
   });
 });

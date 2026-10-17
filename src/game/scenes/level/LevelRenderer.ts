@@ -1,13 +1,18 @@
 import type { GardenState } from '@core/rules/state';
 import type { SproutKind } from '@levels/fields';
-import { gardenPicture, NO_EXTRAS, type PointingExtras } from '../../picture/garden';
+import { NO_EXTRAS, type PointingExtras } from '../../picture/garden';
 import { hudPicture } from '../../picture/hud';
+import { layerPicture } from '../../picture/layerPicture';
+import { moonGlow } from '../../picture/moonGlow';
 import { pondPicture } from '../../picture/pond';
+import { racePicture, type RaceClock } from '../../picture/racePanel';
+import { recipePicture } from '../../picture/recipePanel';
 import { sideBySidePicture } from '../../picture/sideBySide';
 import { splitBadges } from '../../picture/splitBadge';
 import type { FlowerAttempt } from '../../systems/flowerChallenge';
-import type { Controller } from '../../systems/levelController';
+import { layerOf, type Controller } from '../../systems/levelController';
 import { garden } from '../../systems/levelSession';
+import { RACE_LAYOUT } from '../../view/RaceView';
 import type { LevelViews } from './levelViews';
 
 /** How often the HUD is refreshed while nothing happens, so a hint shows up when it is due. */
@@ -25,11 +30,13 @@ export interface RenderSource {
   readonly controller: () => Controller;
   /** Where the sun stands in the day replaying now, or null when nothing replays. */
   readonly replaySun: () => { readonly fraction: number } | null;
+  /** The race running on screen and how long since it began, or null when none runs. */
+  readonly raceClock: () => RaceClock | null;
 }
 
 /**
- * Paints the level screen from the pure pictures of the garden, the pond, the flower challenge and
- * the HUD. It takes no decision: every layer is a picture of the controller as it is now (or of
+ * Paints the level screen from the pure pictures of the garden, the pond, the flower challenge, the
+ * recipe, the races and the HUD. It takes no decision: every layer is a picture of the controller as it is now (or of
  * one state of a replayed day). It keeps only what timing needs: when the chain drawn in the flower
  * challenge started its moments, and when the HUD was last refreshed.
  */
@@ -47,10 +54,14 @@ export class LevelRenderer {
     private readonly source: RenderSource,
   ) {}
 
-  /** Moves on what plays by itself: the mirror and the moments of a chain cut at the flower. */
+  /**
+   * Moves on what plays by itself: the mirror, the moments of a chain cut at the flower, and the
+   * counters of a race running.
+   */
   update(time: number): void {
     this.views.mirror.update(time);
     if (this.cutMoving) this.renderSideBySide(time);
+    if (this.source.raceClock() !== null) this.renderRace();
   }
 
   /** Refreshes the HUD now and then, so a hint shows up when it is due. */
@@ -64,16 +75,28 @@ export class LevelRenderer {
   /** Repaints the garden as the session shows it, with what the player is pointing at. */
   render(now: number): void {
     const controller = this.source.controller();
-    const { session, pointer, highlight, vineGlow } = controller;
+    const { session, pointer, vineGlow } = controller;
+    const state = garden(session);
+    // What a hint lights up, and in 7.4 the moons of the search over, still to be lifted.
+    const moons = moonGlow(session.level.data.victory, state);
+    const highlight = [...new Set([...controller.highlight, ...moons])];
     this.renderGarden(
-      garden(session),
+      state,
       { selection: pointer.selection, highlight, chain: pointer.chain, vineGlow },
       splitBadges(session),
     );
     const pond = pondPicture(session, controller.positions, this.look.labels);
     this.views.mirror.render(pond, now);
     this.renderSideBySide(now);
+    this.views.recipe.render(recipePicture(session));
+    this.renderRace();
     this.renderHud(now);
+  }
+
+  /** Repaints the race panel (6.4, 6.5), its counters on the clock of the race running. */
+  private renderRace(): void {
+    const { session } = this.source.controller();
+    this.views.race.render(racePicture(session, this.source.raceClock(), RACE_LAYOUT));
   }
 
   /** Shows one state of a replayed day, with the sun where the replay stands. */
@@ -98,8 +121,9 @@ export class LevelRenderer {
   }
 
   /**
-   * Repaints every layer of the garden from one state of it; the sprouts in `split` wear the split
-   * badge (4.2), which a replayed day never shows.
+   * Repaints every layer of the garden from one state of it, as the flower entered with the layers
+   * shows it (5.2); the sprouts in `split` wear the split badge (4.2), which a replayed day never
+   * shows.
    */
   private renderGarden(
     state: GardenState,
@@ -107,7 +131,8 @@ export class LevelRenderer {
     split: readonly number[] = [],
   ): void {
     const { labels, kinds } = this.look;
-    const picture = gardenPicture(state, this.source.controller().positions, labels, extras, kinds);
+    const view = layerOf(this.source.controller(), state);
+    const picture = layerPicture(state, view, labels, extras, kinds);
     this.views.fog.render(picture);
     this.views.flowers.render(picture.flowers);
     this.views.objects.render(picture);
@@ -117,8 +142,9 @@ export class LevelRenderer {
 
   /** Repaints the HUD; while the day replays, the sun follows the replay instead of the session. */
   private renderHud(now: number): void {
-    const { session, pointer } = this.source.controller();
-    const hud = hudPicture(session, pointer, now);
+    const controller = this.source.controller();
+    const { session, pointer } = controller;
+    const hud = hudPicture(session, pointer, now, layerOf(controller).path.length);
     this.views.hud.render(hud);
     this.views.toolbar.render(hud.tools, hud.tool);
     const replayed = this.source.replaySun();

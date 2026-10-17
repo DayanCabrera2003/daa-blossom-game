@@ -39,7 +39,7 @@ Todo lo que el jugador hace con las manos tiene un nombre matemático exacto. El
 | Demostración de corrección didáctica | Capítulos 2, 4, 7 (Berge, lema de la flor, Tutte–Berge) jugados como puzles adversarios y certificados; Códex C3, C8, C10, C12 |
 | Análisis de costo | Capítulo 6 (mediciones, carrera, gráfica) y Códex C11 |
 | Ejemplos intuitivos primero, generalización después | Estructura de cada capítulo: introducir → practicar → giro → dominar |
-| Narración con la voz del autor | Mentora, pistas y Paseo guiado (video) |
+| Narración con la voz del autor | Guion del mentor y de las pistas escrito por el autor; Paseo guiado (video) |
 | Calidad audiovisual | Pixel art por estaciones, animaciones de cascada y floración, música por capítulo |
 | Plan previo aprobado | Este documento |
 
@@ -80,9 +80,9 @@ El jardín pasa por las cuatro estaciones a lo largo del juego. Cada estación e
 
 | Personaje | Función didáctica | Voz |
 |---|---|---|
-| **Abuelo Sauce** (mentor, un sauce viejo) | Hace preguntas, da pistas en tres grados, nombra las cosas *después* de que el jugador las descubre. Nunca explica antes de tiempo. | La voz del autor |
-| **Bruto** (gnomo de la fuerza bruta) | Alivio cómico. Propone siempre "probar todas las combinaciones". Cada capítulo va más lento. Personifica el costo exponencial y las "recetas rotas". | Voz del autor, distorsionada/aguda |
-| **El Consejo de los Robles** | Exigen certificados: "¿Cómo sabes que nadie más puede tener farol?" Personifican la demostración de optimalidad. | Voz del autor, grave y lenta |
+| **Abuelo Sauce** (mentor, un sauce viejo) | Hace preguntas, da pistas en tres grados, nombra las cosas *después* de que el jugador las descubre. Nunca explica antes de tiempo. | Balbuceo cálido y pausado |
+| **Bruto** (gnomo de la fuerza bruta) | Alivio cómico. Propone siempre "probar todas las combinaciones". Cada capítulo va más lento. Personifica el costo exponencial y las "recetas rotas". | Balbuceo agudo y atropellado |
+| **El Consejo de los Robles** | Exigen certificados: "¿Cómo sabes que nadie más puede tener farol?" Personifican la demostración de optimalidad. | Balbuceo grave, lento y en coro |
 | **Los brotes** | Los vértices. Tienen caritas: dormidos y tristes a oscuras, felices con farol. | Sonidos, sin voz |
 | **Abejas y flores** (Invernadero) | La forma natural de que un jardín sea bipartito sin decir la palabra. | — |
 
@@ -159,54 +159,49 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 
 - **Música:** una pieza por estación, chiptune suave o lo-fi con instrumentos "de madera". Loop de 2–3 minutos. Las carreras del invierno tienen una variante más rápida.
 - **Efectos:** campanitas de farol (escala pentatónica; una cadena de longitud k toca k notas ascendentes), cierre de flor (acorde), niebla (soplo), piedra (golpe sordo), error suave (nunca un buzzer).
-- **Voz:** todas las líneas del mentor, el gnomo y el Consejo son grabadas por el autor, que es hombre. **Todos los personajes con voz son masculinos** y se distinguen por registro y procesado, no por actor:
-  - **Abuelo Sauce:** voz natural del autor, pausada y cálida, algo de reverberación corta "de exterior".
-  - **Bruto:** voz del autor acelerada y con pitch subido dos o tres semitonos, ritmo atropellado. Es el único personaje al que se le aplica un efecto cómico.
-  - **El Consejo de los Robles:** voz del autor con pitch bajado, muy lenta, reverberación larga y ligero coro (tres tomas superpuestas: son varios robles hablando a la vez).
-  Siempre con subtítulos. Las pistas también son de voz.
+- **Voz:** no hay voces grabadas ni sintetizadas. Los personajes hablan en **balbuceo**: mientras el texto aparece letra a letra suenan sílabas cortas sin significado, cada personaje con su propio timbre. Sale de los sonidos de voz de los packs CC0 y se procesa en el motor (pitch y velocidad), sin IA. Los tres personajes con voz son masculinos y se distinguen por registro:
+  - **Abuelo Sauce:** balbuceo grave-medio, pausado y cálido.
+  - **Bruto:** balbuceo agudo y rápido, atropellado. Es el único personaje con efecto cómico.
+  - **El Consejo de los Robles:** balbuceo muy grave y lento, con tres voces superpuestas (son varios robles hablando a la vez).
+  El texto es siempre lo que se lee: el balbuceo solo da ritmo y carácter. Las pistas también balbucean.
 
 ---
 
 ### 4.3 Herramientas y recursos para la calidad visual y sonora
 
-Criterio: la calidad visual **no depende de dibujar cada píxel desde cero ni de generar arte con IA**. Se apoya en recursos con licencia libre de calidad probada, herramientas maduras, y arte original solo donde define la identidad del juego. Todo recurso ajeno se registra en `CREDITS.md` con autor y licencia.
+Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar nada a mano, ni de generar nada con IA**. Todo sale de packs gratuitos **CC0** (se pueden modificar y redistribuir, y el repositorio es público) de calidad probada, compuestos y animados en el motor. Todo recurso ajeno se registra en `CREDITS.md` con autor y licencia.
 
-**Qué se compra o descarga, y qué se hace a mano**
+**Qué se descarga**
 
 | Capa | Fuente | Licencia | Notas |
 |---|---|---|---|
-| Tiles de entorno (tierra, césped, agua, cercas, madera, nieve) | **Sprout Lands** (Cup Nooble, itch.io) | Gratis con atribución; el pack premium es de pago y permite uso comercial | Es exactamente la estética cozy de jardín que queremos; ahorra semanas |
-| Plantas, flores, árboles decorativos, invernadero | Sprout Lands + **Kenney** (kenney.nl) | CC0 (Kenney) | Se combinan porque comparten escala 16 × 16 |
-| UI (paneles 9-slice, botones, iconos, libro) | **Kenney UI Pack / Pixel UI**, más retoques propios | CC0 | Se recolorea a la paleta del juego |
+| Tiles de entorno, plantas, flores, árboles, rocas, agua | **Ninja Adventure** (Pixel-boy, itch.io) + **Kenney Tiny Town** (kenney.nl) | CC0 | Escala 16 × 16 común. Sprout Lands se descartó: su versión gratis prohíbe redistribuir y el repositorio es público |
+| Retratos de diálogo | Facesets de **Ninja Adventure** (el anciano para Abuelo Sauce) | CC0 | Los Robles: un roble del tileset con cara compuesta en el motor |
+| UI (paneles 9-slice, botones, iconos, cajas de diálogo) | **Ninja Adventure** UI + **Kenney UI Pack Pixel Adventure** | CC0 | Se recolorea a la paleta del juego si desentona |
 | Tipografías pixel | **m5x7** y **m6x11** (Daniel Linssen) | Gratis, uso libre | Legibles a escala 1× y 2×; cubren acentos y ñ |
-| Paleta | **Endesga 32** o **Resurrect 64** (Lospec) | Libre | Se elige una y se respeta en todo, incluidos los recursos ajenos recoloreados |
-| Música | Packs chiptune / lo-fi con licencia (itch.io, OpenGameArt) o composición propia en **BeepBox** o **Bosca Ceoil** (gratis) | CC0 / CC-BY según pack | Un tema por estación; un loop de 2–3 min |
-| Efectos de sonido | **Kenney Audio**, **jsfxr** (generador en el navegador), **freesound.org** | CC0 / CC-BY | Las campanitas de farol se sintetizan para poder afinarlas a la escala pentatónica |
+| Paleta | La de **Ninja Adventure** como base | CC0 | Kenney se recolorea a ella cuando desentona; los colores propios (farol, sol, luna) salen de ella |
+| Música | Pistas de **Ninja Adventure** (Peaceful, Calm Village, Chill, Sunny, Dream…) + **Kenney Music Jingles**; si falta, OpenGameArt CC0 | CC0 | Un tema por estación; jingles para victoria y desbloqueos |
+| Efectos de sonido | **Kenney Interface Sounds / RPG Audio**, sonidos de **Ninja Adventure**, **jsfxr** (síntesis por parámetros, sin IA) | CC0 | Las campanitas de farol se sintetizan para poder afinarlas a la escala pentatónica |
 
-**Arte original (identidad del juego, se hace a mano)**
+**Piezas de identidad (compuestas, no dibujadas a mano)**
 
-- Los **brotes** con caritas y sus animaciones (dormido, feliz, sorprendido, insignia sol/luna).
-- El **farol** y su parpadeo.
-- La **flor plegada** (3, 5, 7 pétalos y "flor dentro de flor") y su animación de cierre y apertura.
-- Los retratos de **Abuelo Sauce, Bruto y los Robles** para los diálogos.
-- Todo lo demás se compone a partir de packs. Si un elemento de pack desentona, se recolorea o se edita, no se redibuja.
+- Los **brotes**, el **farol**, las insignias sol/luna y la **flor plegada** (3, 5, 7 pétalos y "flor dentro de flor") se componen con piezas de los packs y gráficos dibujados por código en el motor (formas, tintes, tweens), sin dibujar a mano.
+- Si un elemento de pack desentona, se recolorea o se edita, no se redibuja.
 
 **Herramientas**
 
 | Tarea | Herramienta | Por qué |
 |---|---|---|
-| Pixel art y animación | **Aseprite** (≈20 USD) o **LibreSprite** (gratis) | Onion skin, paletas indexadas, exportación de spritesheets con JSON que Phaser lee directamente |
+| Recortar y recolorear recursos | Scripts de Node en `tools/` | Extraer tiles de las hojas de los packs y exportar spritesheets que Phaser lee directamente |
 | Diseño de niveles | **Tiled** (gratis) | Dibujar el jardín visualmente y exportar JSON; el grafo se define en capas de objetos |
-| Edición de audio y voz | **Audacity** (gratis) | Reducción de ruido, pitch shift y reverb para los tres registros de voz |
-| Grabación de voz | Micrófono USB de condensador de gama básica, en habitación con tela (armario, cortinas) | La calidad de la voz pesa en la evaluación; un micro de portátil se nota |
-| Video del Paseo guiado | **OBS** (grabación) + **Kdenlive** o **DaVinci Resolve** (edición, gratis) | Captura del juego a resolución entera y montaje con la voz |
+| Video del Paseo guiado | **OBS** (grabación) + **Kdenlive** o **DaVinci Resolve** (edición, gratis) | Captura del juego a resolución entera y montaje con subtítulos |
 | Juice en el motor | Tweens, partículas, cámara y post-procesado de **Phaser** | Squash & stretch, sacudida sutil de cámara, halos y viñeta de noche sin escribir shaders propios |
 | Fórmulas del Códex | **KaTeX** | Render rápido y tipografía matemática correcta |
 
 **Reglas de uso de recursos**
 
 1. Antes de usar un pack se lee su licencia y se anota en `CREDITS.md`.
-2. Nada generado por IA entra en el arte, la música ni la voz. Es una decisión de identidad y de honestidad ante el profesor.
+2. Nada generado por IA entra en el arte, la música ni el sonido. Solo recursos CC0 (o síntesis por parámetros como jsfxr). Es una decisión de identidad y de honestidad ante el profesor.
 3. Los recursos ajenos se recolorean a la paleta del juego para que todo parezca de la misma mano.
 
 ## 5. Sistemas transversales
@@ -662,7 +657,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 - **Desbloquea:** Capas.
 
 #### 5.3 El pétalo equivocado
-- **Jardín:** anidamiento donde el punto de entrada a la flor interior no es su base y el de salida tampoco; el lado correcto interior es el largo.
+- **Jardín:** anidamiento donde el punto de entrada a la flor interior no es su base (uno de los dos puntos de cruce siempre lo es: el único farol que sale de una flor es el de su base); el lado correcto interior es el largo.
 - **Enseña:** en una flor interior puede que entres por un pétalo y salgas por otro, y hay que ir de uno a otro alternando; sigue habiendo exactamente un lado válido.
 - **Cuaderno:** "Al desplegar una flor que está dentro de otra…" (a) "…entro por un pétalo, salgo por otro y solo un lado del bucle alterna bien" ✔ (b) "…siempre salgo por la base" ✘ contraejemplo (c) "…los dos lados sirven" ✘.
 - **Victoria:** cadena aplicada.
@@ -703,8 +698,9 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 - **Victoria:** ver la ejecución completa.
 
 #### 6.3 La receta rota
-- **Jardín:** el de 4.6 (cinco pétalos).
-- **Enseña:** Bruto trae "una receta más corta" sin la tarjeta de plegar. El autómata la ejecuta, se detiene en 2 faroles y declara "terminé". El jugador, que ya resolvió ese jardín a mano, sabe que se puede 3. Repara la receta.
+- **Jardín:** el de 5.1 (una flor dentro de otra).
+- **Enseña:** Bruto trae "una receta más corta" sin la tarjeta de plegar. El autómata la ejecuta, se detiene en 3 faroles y declara "terminé". El jugador, que ya resolvió ese jardín a mano, sabe que se puede 4. Repara la receta.
+- **Por qué este jardín:** la receta busca desde todos los brotes a oscuras a la vez; en jardines como el de 4.6 dos búsquedas se encuentran y rodean la flor sin plegarla, y la receta rota acertaría por casualidad. En el de 5.1 no hay atajo: sin plegar, se queda corta.
 - **Por qué aquí:** el error de una receta se ve como comportamiento, no como texto. Reafirma por qué la flor es imprescindible.
 - **Guion:** Bruto: "¡Menos pasos! ¡Más rápido!" Sauce: "Más rápido para equivocarse."
 - **Victoria:** receta reparada y 3 faroles.
@@ -771,7 +767,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 - Una pantalla sobria, sin puzles, que abre el Códex **C14** y el modo libre.
 - **Usos reales:** intercambio cruzado de donantes de riñón (tratado con respeto y brevedad: "hay jardines donde encender un farol salva una vida"); estructuras de Kekulé en química (los dobles enlaces de una molécula forman un emparejamiento perfecto); asignación de parejas de trabajo, turnos y equipos.
-- Cierre con la voz del autor.
+- Cierre con un texto del autor.
 
 ---
 
@@ -840,9 +836,9 @@ Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Fo
 3. **Capítulos 0–2 greybox → playtest A.**
 4. **Capítulos 3–4 greybox → playtest B.**
 5. **Capítulos 5–7 greybox → playtest C.**
-6. **Arte:** elegir paleta y packs (Sprout Lands, Kenney), recolorear; dibujar a mano brotes, faroles, flor y retratos; hub. Registrar licencias en `CREDITS.md`.
+6. **Arte:** integrar los packs CC0 (Ninja Adventure, Kenney), recolorear a una paleta; componer en el motor brotes, faroles, flor y retratos; hub. Registrar licencias en `CREDITS.md`.
 7. **Códex** (texto formal revisado) y Cuaderno.
-8. **Voz:** guion completo, grabación, subtítulos.
+8. **Voz:** balbuceo por personaje (sonidos CC0 procesados en el motor) y subtítulos.
 9. **Música y efectos.**
 10. **Modo libre, modo profesor, flores secretas.**
 11. **Paseo guiado** (grabación del video).

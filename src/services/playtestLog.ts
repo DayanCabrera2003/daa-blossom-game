@@ -111,6 +111,45 @@ const entrySchema = z.discriminatedUnion('kind', [
     path: z.array(z.string()),
     counted: z.boolean(),
   }),
+  /**
+   * A recipe checked in a `recipe` step (6.1): the id of its first failing card and the case of
+   * the search it is about, or both null when the recipe was right.
+   */
+  z.strictObject({
+    kind: z.literal('recipeCheck'),
+    at,
+    level,
+    step: z.number().int().min(0),
+    card: z.string().nullable(),
+    case: z.string().nullable(),
+  }),
+  /**
+   * A doubling bet answered before a race (6.5): the runner bet on, the answer picked (`double`,
+   * `fourToEight` or `farMore`) and whether the races proved it right.
+   */
+  z.strictObject({
+    kind: z.literal('raceBet'),
+    at,
+    level,
+    step: z.number().int().min(0),
+    runner: z.string(),
+    answer: z.string(),
+    right: z.boolean(),
+  }),
+  /**
+   * Stones presented with "Terminé" in a level won by a certificate of stones (chapter 7), by the
+   * names of the sprouts lifted: whether they prove the lanterns the most the garden holds, and
+   * whether they are the certificate the level asks for (in 7.4, only the moons of the search
+   * count, so stones that prove the lanterns may still not count there).
+   */
+  z.strictObject({
+    kind: z.literal('stoneCertificate'),
+    at,
+    level,
+    stones: z.array(z.string()),
+    proves: z.boolean(),
+    counts: z.boolean(),
+  }),
 ]);
 
 const logSchema = z.strictObject({

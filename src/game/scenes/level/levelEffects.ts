@@ -2,10 +2,12 @@ import type { Level } from '@levels/build';
 import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import { planAnimation } from '../../animation/plan';
+import { raceBetReveal } from '../../picture/raceBetReveal';
+import { raceDurationAt } from '../../picture/racePanel';
 import { checkText } from '../../picture/mirrorDrawing';
 import { reasonText } from '../../picture/reasonText';
-import type { Controller, Effect } from '../../systems/levelController';
-import { garden } from '../../systems/levelSession';
+import { layerOf, type Controller, type Effect } from '../../systems/levelController';
+import { automatonDayOf, garden } from '../../systems/levelSession';
 import { lightDay } from '../../systems/lightSearch';
 import { questionAt } from '../../systems/question';
 import { dayToReplay } from '../../systems/replayDay';
@@ -71,7 +73,12 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       break;
     }
     case 'animate':
-      stage.animation.play(planAnimation(effect.events), stage.controller().positions, stage.now());
+      // Played where the layer entered draws the sprouts (5.2).
+      stage.animation.play(
+        planAnimation(effect.events),
+        layerOf(stage.controller()).positions,
+        stage.now(),
+      );
       break;
     case 'hint': {
       const { content } = effect;
@@ -99,12 +106,42 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
         light: true,
       });
       break;
+    case 'automaton': {
+      // The automaton's run is shown one move at a time, from the level's starting lanterns, with
+      // the sun walking it; at the end, the presenter reports it and the session keeps it as a day.
+      const day = automatonDayOf(stage.controller().session);
+      if (day !== null) stage.presenter.present({ kind: 'replay', day, light: true });
+      break;
+    }
+    case 'race':
+      // The race runs on the panel, painted from the session and the presenter's clock; at its
+      // end, the presenter reports it run.
+      stage.presenter.present({
+        kind: 'race',
+        step: effect.step,
+        duration: raceDurationAt(stage.level.flow, effect.step),
+      });
+      break;
+    case 'raced': {
+      // The bets this race settles are told, right or wrong, beside what was measured.
+      const lines = effect.bets.flatMap((bet) => {
+        const reveal = raceBetReveal(stage.level.flow, bet);
+        if (reveal === null) return [];
+        const params = Object.fromEntries(
+          Object.entries(reveal.params).map(([name, key]) => [name, t(key)]),
+        );
+        return [t(reveal.key, params)];
+      });
+      if (lines.length > 0) stage.presenter.present({ kind: 'lines', lines });
+      break;
+    }
     case 'won':
       stage.win(effect.stars);
       break;
     case 'ask':
     case 'bet':
     case 'count':
+    case 'raceBet':
     case 'notebook': {
       // The options and right answers come from the core, on the garden as it is now.
       const yours = garden(stage.controller().session);
@@ -137,9 +174,11 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
     case 'sun':
       // Nothing to draw: the sun is already on the top bar, and moving it ends the step.
       break;
-    case 'counterexample':
-      stage.presenter.present({ kind: 'counterexample', option: effect.option });
+    case 'counterexample': {
+      const { question, option } = effect;
+      stage.presenter.present({ kind: 'counterexample', question, option });
       break;
+    }
     case 'written':
       stage.writeNotebook();
       break;
@@ -151,6 +190,14 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       break;
     case 'flowerChallenge':
       // Nothing to queue: the open and the folded garden are painted from the session.
+      break;
+    case 'recipe':
+      // Nothing to queue: the recipe panel is painted from the session.
+      break;
+    case 'recipeChecked':
+      // A wrong recipe is told on the panel, painted from the session; a right one closes it, so
+      // it is told here.
+      if (effect.verdict.right) stage.toast.show(t('recipe.right'));
       break;
   }
 };

@@ -1,4 +1,6 @@
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { Edge, VertexId } from '@core/graph/types';
+import { placedCards, type RecipeCardId } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level, WalkthroughEntry } from '@levels/build';
@@ -12,15 +14,17 @@ import {
   type Effect,
   type UiEvent,
 } from './levelController';
-import { garden, stepNow } from './levelSession';
+import { garden, recipeBoardOf, stepNow } from './levelSession';
 import type { Refusal } from './refusal';
 
 /**
  * Plays a level's reference walkthrough through the level controller, with no scene: every move as
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
- * vines, a chain of the flower challenge as a drag through its sprouts, and the end of the light's
- * own search as the scene reports it, with no entry of its own. A level whose walkthrough does not
+ * vines, a chain of the flower challenge as a drag through its sprouts, a recipe as touches on its
+ * cards and "Comprobar", the answer of a doubling bet as the option of its panel, and the end of
+ * the light's own search, of the automaton's run or of a race as the scene reports it, with no
+ * entry of its own. A level whose walkthrough does not
  * finish its script never reaches the browser (plan 03, §0): the playability test and
  * `check-levels` both run this.
  */
@@ -62,7 +66,7 @@ function gestureEvents(gesture: Gesture): UiEvent[] {
  * really are instead (`drawEvents`), and so is a vine pointed at (`vineEvents`).
  */
 function inputEvents(
-  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' }>,
+  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' | 'recipe' }>,
 ): UiEvent[] {
   switch (input.type) {
     case 'answer':
@@ -77,6 +81,8 @@ function inputEvents(
       return [{ kind: 'tapSprout', vertex: input.vertex }];
     case 'checkMirror':
       return [{ kind: 'checkMirror' }];
+    case 'raceBet':
+      return [{ kind: 'answer', option: DOUBLING_ANSWERS.indexOf(input.answer) }];
   }
 }
 
@@ -87,6 +93,8 @@ const ANSWERED: ReadonlySet<FlowInput['type']> = new Set([
   'tapGarden',
   'tapSprout',
   'pickVine',
+  'recipe',
+  'raceBet',
 ]);
 
 /**
@@ -168,6 +176,25 @@ function vineEvents(controller: Controller, u: number, v: number): UiEvent[] | s
 }
 
 /**
+ * The touches that leave exactly `cards` in the recipe on the table (the cards it holds and these
+ * lack are taken back first, then the missing ones are placed, each in its slot), then
+ * "Comprobar". Outside a recipe step there is no table: only the check is sent, which nothing waits
+ * for.
+ */
+function recipeEvents(controller: Controller, cards: readonly RecipeCardId[]): UiEvent[] {
+  const board = recipeBoardOf(controller.session);
+  const placed = board === null ? [] : placedCards(board.recipe);
+  const touched = [
+    ...placed.filter((card) => !cards.includes(card)),
+    ...cards.filter((card) => !placed.includes(card)),
+  ];
+  return [
+    ...touched.map((card): UiEvent => ({ kind: 'recipeCard', card })),
+    { kind: 'checkRecipe' },
+  ];
+}
+
+/**
  * Plays a chain drawn in the flower challenge as a drag through its sprouts. The drag must draw
  * exactly that chain: one the garden does not let the finger follow is a mismatch, and a drag that
  * draws nothing (it starts on a lit sprout, or outside the challenge) was not waited for.
@@ -222,7 +249,11 @@ function playEntry(
     if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
     if (entry.type === 'drawChain') return playChain(controller, entry.path, index, now);
     const events =
-      entry.type === 'pickVine' ? vineEvents(controller, entry.u, entry.v) : inputEvents(entry);
+      entry.type === 'pickVine'
+        ? vineEvents(controller, entry.u, entry.v)
+        : entry.type === 'recipe'
+          ? recipeEvents(controller, entry.cards)
+          : inputEvents(entry);
     if (typeof events === 'string') {
       return {
         controller,
@@ -257,8 +288,15 @@ function playEntry(
 }
 
 /**
- * Lets the light search by itself whenever the script waits for it: the scene shows the search and
- * then says it is over, which the walkthrough does at once. It writes no entry for it.
+ * The steps that play by themselves: the light's search and the automaton's run, whose moves the
+ * scene reports shown, and a race, which it reports run.
+ */
+const SHOWN_ALONE: ReadonlySet<string> = new Set(['autoSearch', 'automaton', 'race']);
+
+/**
+ * Lets the light search by itself, the automaton run or a race be run, whenever the script waits
+ * for it: the scene shows it and then says it is over, which the walkthrough does at once. It
+ * writes no entry for them.
  */
 function showLight(
   controller: Controller,
@@ -266,8 +304,10 @@ function showLight(
 ): { controller: Controller; effects: Effect[] } {
   let current = controller;
   const effects: Effect[] = [];
-  while (stepNow(current.session)?.step === 'autoSearch') {
-    const step = handle(current, { kind: 'searched' }, now);
+  for (;;) {
+    const shown = stepNow(current.session)?.step ?? '';
+    if (!SHOWN_ALONE.has(shown)) break;
+    const step = handle(current, { kind: shown === 'race' ? 'raced' : 'searched' }, now);
     current = step.controller;
     effects.push(...step.effects);
   }

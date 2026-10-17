@@ -76,4 +76,22 @@ describe('the picture of a mechanic card demo', () => {
   it('a frame past the end shows the last one', () => {
     expect(picture('bet', 99)).toEqual(picture('bet', 1));
   });
+
+  it('the layers card zooms into the flower entered, and the button to leave is pressed', () => {
+    const layers = demos.get('layers');
+    if (layers === undefined) throw new Error('no layers card');
+    const outside = picture('layers', 2);
+    expect(outside.garden.sprouts).toHaveLength(5);
+    expect(outside.garden.flowers.map((flower) => flower.id)).toEqual([1, 0]);
+    const inner = picture('layers', 4);
+    expect(inner.garden.sprouts.map((sprout) => sprout.vertex)).toEqual([2, 3, 4]);
+    expect(inner.garden.flowers).toEqual([]);
+    expect(inner.press).toBe('hud.leaveLayer');
+    // Enlarged: the petals sit farther apart than in the tiny garden itself.
+    const [b, c] = [itemAt(inner.garden.sprouts, 0), itemAt(inner.garden.sprouts, 1)];
+    const [trueB, trueC] = [itemAt(layers.positions, 2), itemAt(layers.positions, 3)];
+    expect(Math.hypot(b.x - c.x, b.y - c.y)).toBeGreaterThan(
+      Math.hypot(trueB.x - trueC.x, trueB.y - trueC.y),
+    );
+  });
 });

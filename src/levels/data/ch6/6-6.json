@@ -1,0 +1,80 @@
+{
+  "id": "6.6",
+  "sprouts": [
+    { "label": "A", "x": 90, "y": 135 },
+    { "label": "B", "x": 150, "y": 135 },
+    { "label": "C", "x": 210, "y": 135 },
+    { "label": "D", "x": 270, "y": 135 },
+    { "label": "E", "x": 330, "y": 135 },
+    { "label": "F", "x": 390, "y": 135 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "F"]
+  ],
+  "lanterns": [
+    ["B", "C"],
+    ["D", "E"]
+  ],
+  "goal": { "visible": false },
+  "notebook": [
+    {
+      "prompt": "ch6.6.notebook.01",
+      "options": [
+        { "line": "ch6.6.notebook.02", "correct": true, "reply": "ch6.6.sauce.03" },
+        { "line": "ch6.6.notebook.04", "correct": false, "reply": "ch6.6.sauce.05" },
+        {
+          "line": "ch6.6.notebook.06",
+          "correct": false,
+          "counterexample": {
+            "mode": "play",
+            "line": "ch6.6.sauce.07",
+            "sprouts": [
+              { "label": "A", "x": 90, "y": 120 },
+              { "label": "B", "x": 150, "y": 120 },
+              { "label": "C", "x": 210, "y": 120 },
+              { "label": "D", "x": 270, "y": 120 },
+              { "label": "E", "x": 330, "y": 120 },
+              { "label": "F", "x": 390, "y": 120 }
+            ],
+            "vines": [
+              ["A", "B"],
+              ["B", "C"],
+              ["C", "D"],
+              ["D", "E"],
+              ["E", "F"]
+            ],
+            "lanterns": [
+              ["B", "C"],
+              ["D", "E"]
+            ],
+            "actions": ["chain"]
+          }
+        }
+      ]
+    },
+    {
+      "prompt": "ch6.6.notebook.09",
+      "options": [
+        { "line": "ch6.6.notebook.10", "correct": true, "reply": "ch6.6.sauce.11" },
+        { "line": "ch6.6.notebook.12", "correct": false, "reply": "ch6.6.sauce.13" },
+        { "line": "ch6.6.notebook.14", "correct": false, "reply": "ch6.6.sauce.15" }
+      ]
+    }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch6.6.sauce.00"] },
+    { "step": "notebook", "question": 0 },
+    { "step": "say", "lines": ["ch6.6.sauce.08"] },
+    { "step": "notebook", "question": 1 },
+    { "step": "say", "lines": ["ch6.6.sauce.16"] }
+  ],
+  "unlocks": { "codex": ["C10", "C11"] },
+  "solution": [
+    { "type": "answer", "option": 0 },
+    { "type": "answer", "option": 0 }
+  ]
+}

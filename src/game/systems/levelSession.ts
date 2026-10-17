@@ -1,4 +1,6 @@
 import { isMaximum } from '@core/edmonds/fast/maximum';
+import type { RecipeVerdict } from '@core/recipe/check';
+import { RIGHT_RECIPE, withoutCases, type Recipe, type RecipeCardId } from '@core/recipe/recipe';
 import { matchedEdges } from '@core/matching/queries';
 import type { Matching } from '@core/matching/types';
 import { invariant } from '@core/shared/invariant';
@@ -11,7 +13,8 @@ import type { TraceEvent } from '@core/trace/events';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
-import { countAnswer, rightBet, rightVine } from './answerKey';
+import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
+import { automatonDay } from './automaton';
 import {
   advanceFlow,
   betRight,
@@ -53,6 +56,7 @@ import { nextMove } from './nextMove';
 import { winningPiece } from './pond';
 import { hintedOption, questionAt } from './question';
 import { reactionsTo, type FiredReaction } from './reactions';
+import { checkBoard, mentorFix, startBoard, touchCard, type RecipeBoard } from './recipeBoard';
 import { NOT_NOW, type Refusal } from './refusal';
 import { computeStars, type StarResult } from './stars';
 
@@ -64,8 +68,10 @@ import { computeStars, type StarResult } from './stars';
  * What is accepted depends on the step of the script (plan 03, phase 2): garden moves only while
  * playing, so the lanterns never change under a question that depends on them; undo, redo and the
  * sun while playing or waiting for the sun. When the light searches by itself (4.1, 4.2), its
- * marks enter the day once the scene has shown them, as moves the rules accepted. The reflection of the mirror challenge is drawn and
- * checked only in its `draw` step, and the chains of the flower challenge only in its own step. Once the script is over the garden is free again, as it
+ * marks enter the day once the scene has shown them, as moves the rules accepted; the automaton's
+ * run (6.2, 6.3) makes a new day of its own, from the level's starting lanterns. The reflection of
+ * the mirror challenge is drawn and checked only in its `draw` step, the chains of the flower
+ * challenge only in its own step, and the recipe cards only in a `recipe` step. Once the script is over the garden is free again, as it
  * always was after a win, but nothing more can be won.
  */
 export interface LevelSession {
@@ -89,6 +95,11 @@ export interface LevelSession {
   readonly challenge: MirrorChallenge;
   /** The chains drawn in the flower challenge (4.11); untouched elsewhere. */
   readonly flower: FlowerChallenge;
+  /**
+   * The recipe on the table (6.1), once a card is touched, checked or placed by a hint; until then
+   * (and after its step) `recipeBoardOf` deals it afresh from the step.
+   */
+  readonly recipe: RecipeBoard | null;
 }
 
 /** The answer of a move: applied (for the animation queue), or refused and why. */
@@ -104,8 +115,13 @@ export type ScriptInput =
   | { readonly type: 'tap' }
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
   | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
-  /** The light's own search has been shown to the end (sent by the scene, not by the player). */
-  | { readonly type: 'searched' };
+  /**
+   * The light's own search, or the automaton's run, has been shown to the end (sent by the scene,
+   * not by the player).
+   */
+  | { readonly type: 'searched' }
+  /** A race has been shown to its end (sent by the scene, not by the player). */
+  | { readonly type: 'raced' };
 
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
 const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
@@ -115,6 +131,7 @@ const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
   'draw',
   'pickVine',
   'flowerChallenge',
+  'recipe',
 ]);
 
 /** The step of the script now, or null once it is over. */
@@ -163,11 +180,13 @@ export function openSession(
   now: number,
 ): { session: LevelSession; effects: FlowEffect[] } {
   // What the script needs of each notebook statement: right or not, the reply, and its garden.
-  const notebook = (level.data.notebook?.options ?? []).map((option) => ({
-    correct: option.correct,
-    reply: option.reply ?? null,
-    refuted: option.counterexample !== undefined,
-  }));
+  const notebook = (level.data.notebook ?? []).map((question) =>
+    question.options.map((option) => ({
+      correct: option.correct,
+      reply: option.reply ?? null,
+      refuted: option.counterexample !== undefined,
+    })),
+  );
   const { flow, effects } = startFlow(level.flow, { notebook });
   const session: LevelSession = {
     level,
@@ -181,6 +200,7 @@ export function openSession(
     reactions: [],
     challenge: startChallenge(level.start.graph),
     flower: startFlowerChallenge(),
+    recipe: null,
   };
   // A script that is over at once (only lines) completes the level as it opens.
   return { session: { ...session, won: starsAt(session, flow) }, effects };
@@ -284,8 +304,14 @@ export function respond(
   const { level } = session;
   switch (input.type) {
     case 'answer': {
+      // A count and a doubling bet are judged by the core; a question by its options.
       const step = stepNow(session);
-      const right = step?.step === 'count' ? countAnswer(level, garden(session), step) : null;
+      const right =
+        step?.step === 'count'
+          ? countAnswer(level, garden(session), step)
+          : step?.step === 'raceBet'
+            ? rightRaceBet(level, session.flow.index)
+            : null;
       return advance(session, { type: 'answer', option: input.option, right }, now);
     }
     case 'bet':
@@ -295,6 +321,13 @@ export function respond(
       return advance(session, { ...input, right }, now);
     }
     case 'searched': {
+      // The automaton's run is a day of its own, from the lanterns the level starts with.
+      const run = automatonDayOf(session);
+      if (run !== null) {
+        const [dawn, ...moves] = run;
+        invariant(dawn !== undefined, 'a day has a dawn');
+        return advance({ ...session, history: moves.reduce(push, startHistory(dawn)) }, input, now);
+      }
       // The light's moves enter the day as moves accepted by the rules, so the sun replays them
       // and the steps after it (pointing at its conflict, 4.2) judge the garden it leaves.
       if (stepNow(session)?.step !== 'autoSearch') return { session, effects: [] };
@@ -327,8 +360,8 @@ export function isHintAvailable(session: LevelSession, now: number): boolean {
 /**
  * Opens the hint on offer: the next grade, with the level's own line and sprouts when it has them,
  * and at grade 3 the mentor's step for the garden as it is now, under a question the right option,
- * in the flower challenge a chain to draw, or the vine of the conflict to point at. Null if no hint
- * is on offer.
+ * in the flower challenge a chain to draw, the vine of the conflict to point at, or in the recipe
+ * the right card the mentor places. Null if no hint is on offer.
  */
 export function askHint(
   session: LevelSession,
@@ -356,12 +389,16 @@ export function askHint(
     current.step === 'flowerChallenge' && opened.grade >= 2 ? mentorChain(graph, matching) : null;
   // When pointing at a vine, the conflict glows at grade 3; the touch is left to the player.
   const vine = current.step === 'pickVine' ? (findConflict(layer, search)?.vine ?? null) : null;
+  // In the recipe, the mentor places the right card of the first case that fails, at grade 3.
+  const board = recipeBoardOf(session);
+  const fix = board === null ? null : mentorFix(board.recipe);
   const hint = hintContent(level.hints, opened.grade, {
     step,
     option,
     reflection: offer?.reflection ?? null,
     chain,
     vine,
+    card: fix?.card ?? null,
   });
   const { challenge } = session;
   return {
@@ -372,6 +409,10 @@ export function askHint(
         offer !== null && hint.mirror !== null
           ? drawReflection(challenge, offer.better)
           : challenge,
+      recipe:
+        board !== null && fix !== null && hint.card !== null
+          ? { ...board, recipe: fix.recipe, verdict: null }
+          : session.recipe,
     },
     hint,
   };
@@ -453,4 +494,69 @@ export function drawInGarden(
       : { type: 'flowerDrawn', chain: attempt.kind === 'cut' && attempt.fresh };
   const advanced = advance({ ...session, flower: drawn.challenge }, signal, now);
   return { ...advanced, attempt };
+}
+
+/**
+ * The recipe on the table in the `recipe` step now: the one the player is building, or the one the
+ * step deals as it opens (empty, or the right one without its `missing` cases). Null in any other
+ * step.
+ */
+export function recipeBoardOf(session: LevelSession): RecipeBoard | null {
+  const step = stepNow(session);
+  if (step?.step !== 'recipe') return null;
+  const { index } = session.flow;
+  return session.recipe?.step === index ? session.recipe : startBoard(index, step.missing);
+}
+
+/** A touch on a recipe card: into the recipe or back to the table. Outside the step, nothing. */
+export function touchRecipe(session: LevelSession, card: RecipeCardId): LevelSession {
+  const board = recipeBoardOf(session);
+  return board === null ? session : { ...session, recipe: touchCard(board, card) };
+}
+
+/**
+ * "Comprobar" in the `recipe` step: the core judges the recipe without running it. A right one
+ * ends the step; a wrong one counts like a refused move towards offering a hint, and its verdict
+ * stays on the table for the panel to tell. Outside the step nothing is checked and the verdict is
+ * null.
+ */
+export function checkRecipeNow(
+  session: LevelSession,
+  now: number,
+): { session: LevelSession; verdict: RecipeVerdict | null; effects: FlowEffect[] } {
+  const board = recipeBoardOf(session);
+  if (board === null) return { session, verdict: null, effects: [] };
+  const { board: checked, verdict } = checkBoard(board);
+  const { right } = verdict;
+  const hints = right ? session.hints : afterRejected(session.hints);
+  const advanced = advance(
+    { ...session, recipe: checked, hints },
+    { type: 'recipeChecked', right },
+    now,
+  );
+  return { ...advanced, verdict };
+}
+
+/**
+ * The recipe the automaton runs in the `automaton` step now: with `missing`, the fixed one (the
+ * right recipe without those cards, Bruto's in 6.3); otherwise the one the player wrote in the last
+ * `recipe` step before it, which that step let pass only when right, or the right recipe when the
+ * level has no recipe step of its own (6.2 runs what was written in 6.1). Null in any other step.
+ */
+function automatonRecipe(session: LevelSession): Recipe | null {
+  const step = stepNow(session);
+  if (step?.step !== 'automaton') return null;
+  if (step.missing !== undefined) return withoutCases(RIGHT_RECIPE, step.missing);
+  return session.recipe?.recipe ?? RIGHT_RECIPE;
+}
+
+/**
+ * The day of the automaton's run in the `automaton` step now, or null in any other step. Every run
+ * starts a new day from the lanterns the level starts with, not from the garden a run before it
+ * left: a repaired recipe is judged on the same garden as the broken one (6.3, 3 lanterns against
+ * 4), and the sun walks one whole run, from the first sun to "Terminé".
+ */
+export function automatonDayOf(session: LevelSession): readonly GardenState[] | null {
+  const recipe = automatonRecipe(session);
+  return recipe === null ? null : automatonDay(session.level.start, recipe);
 }

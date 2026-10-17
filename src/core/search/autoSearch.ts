@@ -16,7 +16,7 @@ type LightMove = Extract<Action, { readonly type: 'markRoot' | 'markMoon' }>;
  * `[from, to]`: from each of its sprouts to a neighbor outside it, never along its own lantern.
  * Ordered by the sprout looked at, then by the sprout looked from, so the order is fixed.
  */
-function looksFrom(layer: Layer, sun: VertexId): (readonly [VertexId, VertexId])[] {
+export function looksFrom(layer: Layer, sun: VertexId): (readonly [VertexId, VertexId])[] {
   const looks: (readonly [VertexId, VertexId])[] = [];
   for (const from of members(itemAt(layer.nodes, sun))) {
     for (const to of neighbors(layer.original, from)) {

@@ -19,6 +19,8 @@ const victory = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('searchExhausted') }),
   z.strictObject({ type: z.literal('coverCertificate') }),
   z.strictObject({ type: z.literal('tutteBergeCertificate') }),
+  z.strictObject({ type: z.literal('coverComplete') }),
+  z.strictObject({ type: z.literal('moonCertificate') }),
 ]);
 
 /** The goal shown to the player: "this garden can light N lanterns", or hidden (GDD §5.2). */
@@ -65,7 +67,11 @@ export const levelSchema = z.strictObject({
   hints: z
     .array(z.strictObject({ line: lineId, highlight: z.array(label).default([]) }))
     .default([]),
-  notebook: notebookSchema.optional(),
+  /**
+   * The notebook questions of the level, in order: each `notebook` step of the script asks one of
+   * them by its index (6.6 asks two).
+   */
+  notebook: z.array(notebookSchema).min(1).optional(),
   /** What happens in the level, in order; played until won when the level writes no script. */
   flow: flowSchema,
   /** What finishing the level unlocks: actions and Codex entries (C1…C14). */

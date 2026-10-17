@@ -6,6 +6,7 @@ import { canRedo, canUndo } from '../systems/history';
 import { garden, isHintAvailable, stepNow, type LevelSession } from '../systems/levelSession';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
+import { councilCount } from './council';
 import { shownReflection, ties } from './pond';
 
 /** An interface text to show, as a key of `content/` and its parameters. */
@@ -48,6 +49,17 @@ export interface HudPicture {
    * could wait in silence for a gesture nobody was told about.
    */
   readonly prompt: TextRef | null;
+  /**
+   * How many flowers deep the layers are (0 outside), told on the bar with a way out when inside;
+   * null before they unlock (5.2).
+   */
+  readonly layers: number | null;
+  /**
+   * The Council's count (chapter 7, from 7.2): odd groups, stones and the sprouts that must sleep in
+   * the dark against those that do, or in the fog a reminder that it is worked out with "Terminé";
+   * null before 7.2.
+   */
+  readonly council: TextRef | null;
 }
 
 /** The steps that wait for a gesture outside the garden's own moves, and what to say for each. */
@@ -84,13 +96,22 @@ function goalText(session: LevelSession): TextRef {
     : { key: 'hud.bet', params: { count: bet.value } };
 }
 
-/** The picture of the HUD for a session, the tool in hand, at time `now`. */
-export function hudPicture(session: LevelSession, pointer: PointerState, now: number): HudPicture {
+/**
+ * The picture of the HUD for a session, the tool in hand, at time `now`, `depth` flowers deep in
+ * the layers.
+ */
+export function hudPicture(
+  session: LevelSession,
+  pointer: PointerState,
+  now: number,
+  depth = 0,
+): HudPicture {
   const state = garden(session);
   const { data } = session.level;
   const { history } = session;
   const step = stepNow(session)?.step;
   const prompt = step === undefined ? undefined : PROMPTS[step];
+  const layers = isUiUnlocked('layers', data.id);
   return {
     goal: goalText(session),
     lanterns: size(state.matching),
@@ -107,10 +128,12 @@ export function hudPicture(session: LevelSession, pointer: PointerState, now: nu
           calling: step === 'sun',
         }
       : null,
-    tools: availableTools(state.allowed),
+    tools: availableTools(state.allowed, layers),
     tool: pointer.tool,
     won: session.won,
     canCheckMirror: step === 'draw',
     prompt: prompt === undefined ? null : { key: prompt, params: {} },
+    layers: layers ? depth : null,
+    council: councilCount(session.level, state),
   };
 }

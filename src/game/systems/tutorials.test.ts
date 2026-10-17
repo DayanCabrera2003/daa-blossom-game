@@ -11,7 +11,11 @@ import {
   festivalLevel,
   fivePetalsLevel,
   lightLevel,
+  nestedFlowersLevel,
   pentagonLevel,
+  recipeLevel,
+  automatonLevel,
+  racesLevel,
   stemRotationLevel,
 } from '../../../tests/support/fixtureLevels';
 import {
@@ -86,7 +90,21 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '4.5': ['unfold'],
       '4.10': ['rotateStem'],
       '4.11': ['flowerChallenge'],
+      '5.2': ['layers'],
+      '6.1': ['recipe'],
+      '6.2': ['automaton'],
+      '6.4': ['race'],
+      '6.5': ['raceBet'],
+      '7.2': ['stones'],
     });
+  });
+
+  it('the layers bring their card as 5.2 starts, like the sun in 0.5', () => {
+    const wild = nestedFlowersLevel();
+    expect(levelCards(wild)).not.toContain('layers');
+    const layered = { ...wild, data: { ...wild.data, id: '5.2' } };
+    expect(levelCards(layered)).toContain('layers');
+    expect(startCards(layered, new Set(['layers']))).not.toContain('layers');
   });
 
   it('1.1 keeps passing the lantern closed, so its card waits for 1.2', () => {
@@ -124,7 +142,8 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(later.get('4.1')).toEqual(['inspect', 'marks', 'scarecrows']);
     expect(later.get('4.6')).toEqual(['fold', 'unfold']);
     expect(later.get('4.10')).toEqual(['rotateStem']);
-    expect(later.get('7.2')).toEqual(['stones']);
+    // This walk skips chapter 5, so the layers (5.2) are first met in 7.2 too.
+    expect(later.get('7.2')).toEqual(['layers', 'stones']);
   });
 
   it('the first step that points at a vine brings its card (4.2), and only the first', () => {
@@ -152,6 +171,28 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(helpCards(bloomLevel(), 0)).not.toContain('flowerChallenge');
   });
 
+  it('the recipe brings its card when it is reached (6.1), and only the first time', () => {
+    expect(stepCard('recipe', new Set())).toBe('recipe');
+    expect(stepCard('recipe', new Set(['recipe']))).toBeNull();
+    expect(helpCards(recipeLevel(), 0)).toContain('recipe');
+  });
+
+  it('the automaton brings its card when it first runs (6.2), and only the first time', () => {
+    expect(stepCard('automaton', new Set())).toBe('automaton');
+    expect(stepCard('automaton', new Set(['automaton']))).toBeNull();
+    expect(helpCards(automatonLevel(), 1)).toContain('automaton');
+    expect(helpCards(automatonLevel(), 0)).not.toContain('automaton');
+  });
+
+  it('a race and a doubling bet bring their cards when first reached (6.4, 6.5)', () => {
+    expect(stepCard('race', new Set())).toBe('race');
+    expect(stepCard('raceBet', new Set())).toBe('raceBet');
+    expect(stepCard('raceBet', new Set(['raceBet']))).toBeNull();
+    expect(helpCards(racesLevel(), 0)).toContain('race');
+    expect(helpCards(racesLevel(), 0)).not.toContain('raceBet');
+    expect(helpCards(racesLevel(), 1)).toContain('raceBet');
+  });
+
   it('every action that unlocks has a card, and every card has something that shows it', () => {
     for (const action of Object.keys(UNLOCKED_AT) as ActionType[]) {
       expect(CARD_IDS).toContain(ACTION_CARD[action]);
@@ -161,6 +202,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       ...Object.values(STEP_CARD),
       'undo',
       'sun',
+      'layers',
     ]);
     expect(CARD_IDS.filter((card) => !reachable.has(card))).toEqual([]);
   });

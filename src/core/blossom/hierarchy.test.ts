@@ -3,7 +3,7 @@ import { createGraph } from '../graph/createGraph';
 import { createMatching } from '../matching/createMatching';
 import { unwrap } from '../shared/result';
 import { contract, openLayer } from './contract';
-import { baseVertex, members, nestingDepth, outermostNode } from './hierarchy';
+import { baseVertex, members, nestingDepth, nodesWithin, outermostNode } from './hierarchy';
 import type { Blossom, GardenNode } from './types';
 
 const sprout = (vertex: number): GardenNode => ({ kind: 'sprout', vertex });
@@ -88,5 +88,15 @@ describe('layers of a folded garden', () => {
       1, 1, 2, 2, 2, 1, 1, 0,
     ]);
     expect(nestingDepth(openLayer(wild, lanterns), 3)).toBe(0);
+  });
+
+  it('sees what entered flowers fold, from the outside in (the Layers view, 5.2)', () => {
+    expect(nodesWithin(second, [])).toBe(second.nodes);
+    expect(nodesWithin(second, [1])).toBe((second.nodes[0] as Blossom).cycle);
+    expect(nodesWithin(second, [1, 0])).toEqual([sprout(2), sprout(3), sprout(4)]);
+    // A nested flower is not entered from outside, nor a flower that is not folded.
+    expect(nodesWithin(second, [0])).toBeNull();
+    expect(nodesWithin(second, [1, 0, 0])).toBeNull();
+    expect(nodesWithin(first, [1])).toBeNull();
   });
 });

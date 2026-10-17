@@ -18,6 +18,7 @@ function stepLines(step: FlowStep): string[] {
       ];
     case 'bet':
     case 'count':
+    case 'raceBet':
       return [step.prompt];
     case 'pickVine':
       return step.reply === undefined ? [step.prompt] : [step.prompt, step.reply];
@@ -42,14 +43,14 @@ function optionLines(option: NotebookData['options'][number]): string[] {
 
 /**
  * Every dialogue line a level refers to, in the order it may be heard: the script, the hints, then
- * the notebook question, its statements and what refutes them. Each id appears once, so content checks can match the ids
+ * the notebook questions, their statements and what refutes them. Each id appears once, so content checks can match the ids
  * against the line table and the voice files.
  */
 export function referencedLines(level: LevelData): string[] {
-  const notebook =
-    level.notebook === undefined
-      ? []
-      : [level.notebook.prompt, ...level.notebook.options.flatMap(optionLines)];
+  const notebook = (level.notebook ?? []).flatMap((question) => [
+    question.prompt,
+    ...question.options.flatMap(optionLines),
+  ]);
   return [
     ...new Set([
       ...level.flow.flatMap(stepLines),

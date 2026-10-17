@@ -11,6 +11,7 @@ import { isFlowInput } from './flowInput';
 import { sameKindVines, type KindClash } from './kinds';
 import { referencedLines } from './lines';
 import { checkNotebook, type NotebookProblem } from './notebookChecks';
+import { gardenAtPlay } from './playStart';
 
 /** Something wrong with a level that the schema alone cannot see. */
 export type IntegrityProblem =
@@ -33,7 +34,7 @@ export type IntegrityProblem =
 /**
  * The integrity checks of a level (plan 01, phase 10), shared by the test suite and
  * `tools/check-levels`. The optimum is always recomputed with Edmonds and the reference solution is
- * replayed with the real rules, so a level can never promise what its garden cannot give (the
+ * replayed with the real rules, on the garden the play step starts from, so a level can never promise what its garden cannot give (the
  * mistake once made in the design of 4.3). An empty list means the level is sound.
  */
 export function checkIntegrity(level: Level): IntegrityProblem[] {
@@ -55,7 +56,8 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     problems.push({ code: 'victoryOutOfReach', value: victory.value, optimum });
   }
 
-  let state = start;
+  // The moves are played where the play step starts, after what the garden did by itself.
+  let state = gardenAtPlay(level);
   let replayed = true;
   for (const [step, action] of level.walkthrough.entries()) {
     // Script inputs never change the lanterns; steps are numbered as the file writes them.

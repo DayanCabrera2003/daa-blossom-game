@@ -29,11 +29,18 @@ import type { VeilView } from '../view/VeilView';
 /** A day replaying itself on screen: its states, its timing, when it began and what shows now. */
 interface Replaying {
   readonly day: readonly GardenState[];
-  /** Whether this is the light's own search, whose end the scene reports. */
+  /** Whether these are the garden's own moves (the light's search, the automaton's run), whose end the scene reports. */
   readonly light: boolean;
   readonly plan: ReplayPlan;
   readonly startedAt: number;
   cursor: number;
+}
+
+/** A race running on screen: the index of its step, when it began and how long it lasts. */
+interface Racing {
+  readonly step: number;
+  readonly startedAt: number;
+  readonly duration: number;
 }
 
 /** The views the presenter opens items in. */
@@ -55,16 +62,21 @@ export interface PresenterTexts {
 export interface PresenterHooks {
   /** Shows one state of a replayed day; null shows the player's own day again. */
   readonly showDay: (state: GardenState | null) => void;
-  /** The light's own search has been shown to the end: the session may keep its marks. */
+  /**
+   * The light's own search, or the automaton's run, has been shown to the end: the session may keep
+   * its moves.
+   */
   readonly searched: () => void;
+  /** A race has been run to its end on screen: the script may move on. */
+  readonly raced: () => void;
   /** Ends any move animation still playing: a replay owns the garden from dawn. */
   readonly stopAnimation: () => void;
   /** Shows the victory panel. */
   readonly victory: (stars: StarResult) => void;
   /** The player chose an option (its value) of the question on screen. */
   readonly answer: (question: Question, value: number) => void;
-  /** Opens the garden that refutes the false notebook statement `option`. */
-  readonly counterexample: (option: number) => void;
+  /** Opens the garden that refutes the false statement `option` of notebook question `question`. */
+  readonly counterexample: (question: number, option: number) => void;
   /** A mechanic card in the player's words, with its demo. */
   readonly card: (card: CardId) => ShownCard;
   /** The player closed a mechanic card: it is seen. */
@@ -83,6 +95,8 @@ export class Presenter {
   private stage: Stage = emptyStage;
   /** The day replaying now, if any; while it plays, the garden takes no input. */
   private replaying: Replaying | null = null;
+  /** The race running now, if any; while it runs, the garden takes no input. */
+  private racing: Racing | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -107,6 +121,14 @@ export class Presenter {
     return replaying === null
       ? null
       : { fraction: fractionOfStep(replaying.cursor, replaying.day.length) };
+  }
+
+  /** The race running now and how long since it began, or null when none runs. */
+  get raceClock(): { readonly step: number; readonly elapsed: number } | null {
+    const { racing } = this;
+    return racing === null
+      ? null
+      : { step: racing.step, elapsed: this.scene.time.now - racing.startedAt };
   }
 
   /** Queues an item to show on its own; it starts at once if nothing else is showing. */
@@ -137,9 +159,16 @@ export class Presenter {
     if (option !== null) this.views.question.mark(option);
   }
 
-  /** Moves a replay on; called every frame by the scene. */
+  /** Moves a replay or a race on; called every frame by the scene. */
   update(time: number): void {
     if (this.replaying !== null) this.replayFrame(time);
+    const { racing } = this;
+    if (racing !== null && time - racing.startedAt >= racing.duration) {
+      // The race is over: the scene is told first, so the script moves on before what follows.
+      this.racing = null;
+      this.hooks.raced();
+      this.start(finishShowing(this.stage));
+    }
   }
 
   /** Takes a turn of the queue and starts the item it puts on screen, if any. */
@@ -172,8 +201,15 @@ export class Presenter {
       case 'question':
         this.ask(start.question);
         break;
+      case 'race':
+        this.racing = {
+          step: start.step,
+          startedAt: this.scene.time.now,
+          duration: start.duration,
+        };
+        break;
       case 'counterexample':
-        this.hooks.counterexample(start.option);
+        this.hooks.counterexample(start.question, start.option);
         break;
       case 'victory':
         this.hooks.victory(start.stars);
@@ -203,17 +239,26 @@ export class Presenter {
     const { t, line } = this.texts;
     return {
       prompt: line(question.prompt),
-      footer: t(question.kind === 'bet' ? 'bet.choose' : 'question.choose'),
+      footer: t(
+        question.kind === 'bet' || question.kind === 'raceBet' ? 'bet.choose' : 'question.choose',
+      ),
       options: question.options.map((option) => this.option(option)),
     };
   }
 
-  /** An option in the player's words: a written one translated, a number as itself. */
+  /**
+   * An option in the player's words: one the game writes in its interface text, a line of the level
+   * translated, a number as itself.
+   */
   private option(option: QuestionOption): ShownOption {
-    return {
-      value: option.value,
-      label: option.line === null ? String(option.value) : this.texts.line(option.line),
-    };
+    const { t, line } = this.texts;
+    const label =
+      option.text !== undefined
+        ? t(option.text)
+        : option.line === null
+          ? String(option.value)
+          : line(option.line);
+    return { value: option.value, label };
   }
 
   /** The notebook question in the player's words: the page's name, the statement, its endings. */
@@ -229,8 +274,8 @@ export class Presenter {
 
   /**
    * Shows the state of the replayed day due at `time`; once dusk is reached, the garden shows the
-   * player's real day again and the queue moves on. At the dusk of the light's own search, the
-   * scene is told first, so the day it shows again already holds the light's marks.
+   * player's real day again and the queue moves on. At the dusk of the light's own search or the
+   * automaton's run, the scene is told first, so the day it shows again already holds their moves.
    */
   private replayFrame(time: number): void {
     const replaying = this.replaying;

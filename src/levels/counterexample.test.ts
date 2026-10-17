@@ -77,13 +77,14 @@ describe('the counterexample of a statement', () => {
 
   it('is built from the level’s notebook, for the false statements that carry one', () => {
     const level = byId('1.5');
-    expect(counterexampleAt(level, 1)?.start.graph.n).toBe(6);
-    expect(counterexampleAt(level, 2)?.start.graph.n).toBe(10);
+    expect(counterexampleAt(level, 0, 1)?.start.graph.n).toBe(6);
+    expect(counterexampleAt(level, 0, 2)?.start.graph.n).toBe(10);
   });
 
-  it('is none for a true statement, a statement not on offer, or a level with no notebook', () => {
-    expect(counterexampleAt(byId('1.5'), 0)).toBeNull();
-    expect(counterexampleAt(byId('1.5'), 7)).toBeNull();
-    expect(counterexampleAt(byId('0.1'), 1)).toBeNull();
+  it('is none for a true statement, a statement or question not on offer, or no notebook', () => {
+    expect(counterexampleAt(byId('1.5'), 0, 0)).toBeNull();
+    expect(counterexampleAt(byId('1.5'), 0, 7)).toBeNull();
+    expect(counterexampleAt(byId('1.5'), 1, 1)).toBeNull();
+    expect(counterexampleAt(byId('0.1'), 0, 1)).toBeNull();
   });
 });

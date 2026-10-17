@@ -107,6 +107,20 @@ describe('the demo of a mechanic card', () => {
     expect(built({ ...path3, steps: [{ type: 'join', u: 'a', v: 'b' }] }).showsSun).toBe(false);
   });
 
+  it('moves the garden makes by itself show no hand, but the sun is still dragged', () => {
+    const demo = built({
+      ...path3,
+      alone: true,
+      steps: [
+        { type: 'join', u: 'a', v: 'b' },
+        { type: 'seekSun', fraction: 0 },
+      ],
+    });
+    expect(demo.frames.map((frame) => frame.gesture.kind)).toEqual(['none', 'sun', 'none']);
+    expect(lit(demo, 1, 0)).toBe(true);
+    expect(card({ ...path3, steps: [{ type: 'join', u: 'a', v: 'b' }] }).alone).toBe(false);
+  });
+
   it('a bet or an answer picks one of the choices shown, which must exist', () => {
     const choices = { count: 3, kind: 'numbers' };
     const demo = built({ ...path3, choices, steps: [{ type: 'bet', value: 1 }] });
@@ -120,6 +134,43 @@ describe('the demo of a mechanic card', () => {
     });
     expect(
       buildDemo(card({ ...path3, choices, steps: [{ type: 'answer', option: 3 }] })),
+    ).toMatchObject({ ok: false, error: { code: 'badStep', why: 'choiceOutOfRange' } });
+  });
+
+  it('a doubling bet picks its answer among the three choices shown, which must be there', () => {
+    const choices = { count: 3, kind: 'lines' };
+    const demo = built({ ...path3, choices, steps: [{ type: 'raceBet', answer: 'farMore' }] });
+    expect(itemAt(demo.frames, 0).gesture).toEqual({ kind: 'pick', option: 2 });
+    const bet = { type: 'raceBet', answer: 'double' };
+    expect(buildDemo(card({ ...path3, steps: [bet] }))).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'noChoices' },
+    });
+    const two = { count: 2, kind: 'lines' };
+    const far = { type: 'raceBet', answer: 'farMore' };
+    expect(buildDemo(card({ ...path3, choices: two, steps: [far] }))).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'choiceOutOfRange' },
+    });
+  });
+
+  it('a recipe picks its cards from the choices, one by one, then presses the check', () => {
+    const choices = { count: 3, kind: 'lines' };
+    const cards = ['markDarkSuns', 'foldFlower'];
+    const demo = built({ ...path3, choices, steps: [{ type: 'recipe', cards }] });
+    expect(demo.frames.map((frame) => frame.gesture)).toEqual([
+      { kind: 'pick', option: 0 },
+      { kind: 'pick', option: 1 },
+      { kind: 'press', button: 'check' },
+      { kind: 'none' },
+    ]);
+    expect(buildDemo(card({ ...path3, steps: [{ type: 'recipe', cards }] }))).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'noChoices' },
+    });
+    const many = ['markDarkSuns', 'foldFlower', 'growMoon', 'moonNothing'];
+    expect(
+      buildDemo(card({ ...path3, choices, steps: [{ type: 'recipe', cards: many }] })),
     ).toMatchObject({ ok: false, error: { code: 'badStep', why: 'choiceOutOfRange' } });
   });
 
@@ -305,5 +356,67 @@ describe('the demo of a mechanic card', () => {
       steps: [{ type: 'rotateStem', stem: ['R', 'a', 'b'] }],
     });
     expect(itemAt(stem.frames, 0).gesture).toEqual({ kind: 'drag', path: [0, 1, 2] });
+  });
+
+  describe('entering and leaving flowers with the layers (5.2)', () => {
+    // x–y=b, with the triangle b–c=d–b folded first (flower 0) and then x–y=F1–x (flower 1).
+    const nested = {
+      sprouts: [
+        { label: 'x', x: 36, y: 42 },
+        { label: 'y', x: 36, y: 12 },
+        { label: 'b', x: 62, y: 27 },
+        { label: 'c', x: 100, y: 12 },
+        { label: 'd', x: 100, y: 42 },
+      ],
+      vines: [
+        ['x', 'y'],
+        ['y', 'b'],
+        ['b', 'c'],
+        ['c', 'd'],
+        ['d', 'b'],
+        ['d', 'x'],
+      ],
+      lanterns: [
+        ['y', 'b'],
+        ['c', 'd'],
+      ],
+    };
+    const folds = [
+      { type: 'fold', loop: ['b', 'c', 'd'] },
+      { type: 'fold', loop: ['x', 'y', 'b'] },
+    ];
+
+    it('a flower shown is entered by touching its petals; the button leaves it', () => {
+      const demo = built({
+        ...nested,
+        steps: [
+          ...folds,
+          { type: 'enterLayer', blossom: 1 },
+          { type: 'enterLayer', blossom: 0 },
+          { type: 'leaveLayer' },
+        ],
+      });
+      expect(demo.frames.map((frame) => frame.layers)).toEqual([[], [], [], [1], [1, 0], [1]]);
+      expect(itemAt(demo.frames, 2).gesture).toEqual({ kind: 'touch', sprouts: [0, 1, 2, 3, 4] });
+      expect(itemAt(demo.frames, 3).gesture).toEqual({ kind: 'touch', sprouts: [2, 3, 4] });
+      expect(itemAt(demo.frames, 4).gesture).toEqual({ kind: 'press', button: 'leaveLayer' });
+      // Entering changes the view only: the garden stays as the folds left it.
+      expect(itemAt(demo.frames, 4).state).toBe(itemAt(demo.frames, 2).state);
+    });
+
+    it('a flower the layer does not show, or leaving from outside, is an error', () => {
+      expect(
+        buildDemo(card({ ...nested, steps: [...folds, { type: 'enterLayer', blossom: 0 }] })),
+      ).toEqual({ ok: false, error: { code: 'badStep', step: 2, why: 'notShown' } });
+      // Undone, the outer flower entered is gone, and the inner one is not shown from it.
+      const undone = [...folds, { type: 'enterLayer', blossom: 1 }, { type: 'undo' }];
+      expect(
+        buildDemo(card({ ...nested, steps: [...undone, { type: 'enterLayer', blossom: 0 }] })),
+      ).toEqual({ ok: false, error: { code: 'badStep', step: 4, why: 'notShown' } });
+      expect(buildDemo(card({ ...nested, steps: [{ type: 'leaveLayer' }] }))).toEqual({
+        ok: false,
+        error: { code: 'badStep', step: 0, why: 'outside' },
+      });
+    });
   });
 });

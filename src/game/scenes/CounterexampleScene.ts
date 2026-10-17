@@ -40,7 +40,9 @@ import { contextOf, type GameContext } from './context';
 /** What the level scene gives the counterexample screen when it opens it. */
 export interface CounterexampleSceneData {
   readonly levelId: string;
-  /** The false statement of the level's notebook whose garden opens. */
+  /** The notebook question of the level, by its index, whose false statement is refuted. */
+  readonly question: number;
+  /** The false statement of that question whose garden opens. */
   readonly option: number;
   /** Called once the player goes back to the notebook. */
   readonly back: () => void;
@@ -91,10 +93,12 @@ export class CounterexampleScene extends Phaser.Scene {
     this.pressing = false;
     const { t, line } = this.context;
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
-    const statement = level?.data.notebook?.options[data.option];
-    const counterexample = level === undefined ? null : counterexampleAt(level, data.option);
+    const asked = level?.data.notebook?.[data.question];
+    const statement = asked?.options[data.option];
+    const counterexample =
+      level === undefined ? null : counterexampleAt(level, data.question, data.option);
     invariant(
-      level?.data.notebook !== undefined && statement !== undefined && counterexample !== null,
+      asked !== undefined && statement !== undefined && counterexample !== null,
       'the level opens only the counterexamples of its own notebook',
     );
     this.controller = openCounterexample(counterexample);
@@ -103,7 +107,7 @@ export class CounterexampleScene extends Phaser.Scene {
     this.kinds = counterexample.data.sprouts.map((sprout) => sprout.kind);
 
     // The false statement stays on top, so the player knows what the garden answers.
-    const said = `${line(level.data.notebook.prompt)} ${line(statement.line)}`;
+    const said = `${line(asked.prompt)} ${line(statement.line)}`;
     this.add
       .text(LAYOUT.margin, LAYOUT.topY, said, {
         ...textStyle(8, PALETTE.lit),

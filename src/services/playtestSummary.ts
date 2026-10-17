@@ -1,6 +1,6 @@
 import type { PlaytestLog } from './playtestLog';
 
-/** What the playtests of Hitos A and B measure for one level (GDD §10), over every play of it. */
+/** What the playtests of Hitos A, B and C measure for one level (GDD §10), over every play of it. */
 export interface LevelSummary {
   readonly level: string;
   readonly plays: number;
@@ -27,6 +27,20 @@ export interface LevelSummary {
   readonly vinePicks: { readonly right: number; readonly wrong: number };
   /** Chains drawn in the flower challenge (4.11), counted or refused as no chain. */
   readonly flowerChains: { readonly counted: number; readonly refused: number };
+  /** Recipes checked (6.1), right or with a failing card. */
+  readonly recipeChecks: { readonly right: number; readonly wrong: number };
+  /** Doubling bets answered before a race (6.5), by whether the races proved them right. */
+  readonly raceBets: { readonly right: number; readonly wrong: number };
+  /**
+   * Stones presented with "Terminé" in chapter 7: the certificate the level asks for (counted),
+   * stones that prove the lanterns but are not it (in 7.4, not the moons of the search), and
+   * stones that prove nothing.
+   */
+  readonly stoneCertificates: {
+    readonly counted: number;
+    readonly provingOther: number;
+    readonly failing: number;
+  };
   /**
    * Whether the first vine ever pointed at in the level was the conflict (Hito B, 4.2), or null if
    * no vine was pointed at. Later plays do not change it: they come back knowing the answer.
@@ -38,6 +52,12 @@ export interface LevelSummary {
    * a right first choice is one made without hints.
    */
   readonly notebookRightFirstTry: boolean | null;
+  /**
+   * Whether the first stones ever presented in the level were the certificate it asks for (Hito C,
+   * 7.4: are the moons lifted as the stones?), or null if no stones were presented. Like the other
+   * first tries, later plays do not change it. Whether the player can say why is asked aloud.
+   */
+  readonly certificateRightFirstTry: boolean | null;
   /**
    * Whether a grade-3 hint (the one that shows the way) was opened before the level was first won,
    * in any play; in a level never won, whether one was opened at all (Hito B, 4.1: was the chain
@@ -52,6 +72,9 @@ type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
   mirrorChecks: { beating: number; notBeating: number };
   vinePicks: { right: number; wrong: number };
   flowerChains: { counted: number; refused: number };
+  recipeChecks: { right: number; wrong: number };
+  raceBets: { right: number; wrong: number };
+  stoneCertificates: { counted: number; provingOther: number; failing: number };
 };
 
 const freshTally = (level: string): Tally => ({
@@ -71,8 +94,12 @@ const freshTally = (level: string): Tally => ({
   mirrorChecks: { beating: 0, notBeating: 0 },
   vinePicks: { right: 0, wrong: 0 },
   flowerChains: { counted: 0, refused: 0 },
+  recipeChecks: { right: 0, wrong: 0 },
+  raceBets: { right: 0, wrong: 0 },
+  stoneCertificates: { counted: 0, provingOther: 0, failing: 0 },
   firstPickRight: null,
   notebookRightFirstTry: null,
+  certificateRightFirstTry: null,
   hint3BeforeWin: false,
 });
 
@@ -156,6 +183,20 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
       case 'flowerChain':
         if (entry.counted) counts.flowerChains.counted += 1;
         else counts.flowerChains.refused += 1;
+        break;
+      case 'recipeCheck':
+        if (entry.card === null) counts.recipeChecks.right += 1;
+        else counts.recipeChecks.wrong += 1;
+        break;
+      case 'raceBet':
+        if (entry.right) counts.raceBets.right += 1;
+        else counts.raceBets.wrong += 1;
+        break;
+      case 'stoneCertificate':
+        if (entry.counts) counts.stoneCertificates.counted += 1;
+        else if (entry.proves) counts.stoneCertificates.provingOther += 1;
+        else counts.stoneCertificates.failing += 1;
+        counts.certificateRightFirstTry ??= entry.counts;
         break;
       case 'history':
         break;

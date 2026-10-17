@@ -2,7 +2,7 @@ import { applyAction } from '@core/rules/applyAction';
 import type { Level } from '@levels/build';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { betrayalLevel } from '../../../tests/support/fixtureLevels';
+import { betrayalLevel, racesLevel } from '../../../tests/support/fixtureLevels';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { hintedOption, questionAt } from './question';
 
@@ -53,7 +53,7 @@ describe('the questions of a script', () => {
         { line: 'ch1.6.notebook.02', correct: true },
       ],
     };
-    const level = scripted([{ step: 'notebook' }], { notebook });
+    const level = scripted([{ step: 'notebook' }], { notebook: [notebook] });
     expect(questionAt(level, 0, yours(level))).toEqual({
       kind: 'notebook',
       step: 0,
@@ -64,6 +64,31 @@ describe('the questions of a script', () => {
       ],
       right: [1],
       preview: null,
+    });
+  });
+
+  it('a notebook step asks the question it names among the level’s', () => {
+    const question = (first: number) => ({
+      prompt: `ch1.6.notebook.0${first}`,
+      options: [
+        { line: `ch1.6.notebook.0${first + 1}`, correct: true },
+        { line: `ch1.6.notebook.0${first + 2}`, correct: false },
+      ],
+    });
+    const steps = [
+      { step: 'notebook', question: 0 },
+      { step: 'notebook', question: 1 },
+    ];
+    const level = scripted(steps, { notebook: [question(0), question(3)] });
+    expect(questionAt(level, 1, yours(level))).toMatchObject({
+      kind: 'notebook',
+      step: 1,
+      prompt: 'ch1.6.notebook.03',
+      options: [
+        { value: 0, line: 'ch1.6.notebook.04' },
+        { value: 1, line: 'ch1.6.notebook.05' },
+      ],
+      right: [0],
     });
   });
 
@@ -154,6 +179,31 @@ describe('the questions of a script', () => {
     expect(at(0)).toBe(1);
     expect(at(1)).toBeNull();
     expect(at(2)).toBe(1);
+  });
+
+  it('a doubling bet offers its three answers in words; the right one is what the races measured', () => {
+    const level = racesLevel();
+    const question = questionAt(level, 2, level.start);
+    expect(question).toEqual({
+      kind: 'raceBet',
+      step: 2,
+      prompt: 'ch6.5.sauce.02',
+      options: [
+        { value: 0, line: null, text: 'raceBet.answer.double' },
+        { value: 1, line: null, text: 'raceBet.answer.fourToEight' },
+        { value: 2, line: null, text: 'raceBet.answer.farMore' },
+      ],
+      right: [2],
+      preview: null,
+    });
+    // Like any bet, it is a guess made before knowing: a hint never gives it away.
+    if (question === null) throw new Error('a doubling bet is a question');
+    expect(hintedOption(question)).toBeNull();
+  });
+
+  it('a doubling bet with no races around it has no right answer to offer', () => {
+    const level = scripted([{ step: 'raceBet', prompt: 'ch6.5.sauce.02', runner: 'bruto' }]);
+    expect(questionAt(level, 0, yours(level))?.right).toEqual([]);
   });
 
   it('a count of the loop offers 0 to its range; the right one is the sprouts of the loop', () => {

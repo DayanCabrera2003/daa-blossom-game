@@ -55,7 +55,10 @@ export interface GardenPicture {
   readonly vines: readonly VinePicture[];
   /** Outermost flowers first, each followed by the flowers inside it. */
   readonly flowers: readonly FlowerPicture[];
-  /** With stones lifted, the outline of each odd group they leave (GDD §4.1, key animation 4). */
+  /**
+   * With stones lifted, the outline of each odd group they leave (GDD §4.1, key animation 4); in the
+   * fog, only once presented with "Terminé".
+   */
   readonly oddGroups: readonly (readonly Point[])[];
   readonly fog: { readonly revealed: readonly boolean[] } | null;
   /** The chain being dragged, with what letting go would gain (+1, 0 in grey, or not legal). */
@@ -82,6 +85,28 @@ export const NO_EXTRAS: PointingExtras = {
 /** Margin of nested flower outlines, narrower the deeper they are, and of odd groups. */
 const nestedPadding = (depth: number): number => Math.max(4, FLOWER_PADDING - 4 * depth);
 const GROUP_PADDING = 8;
+
+/**
+ * The outlines of the folded flowers among `nodes` (those on top have depth 0), each followed by
+ * the flowers inside it, around their petals drawn at `at`.
+ */
+export function flowerPictures(
+  nodes: readonly GardenNode[],
+  at: (v: VertexId) => Point,
+): FlowerPicture[] {
+  const flowers: FlowerPicture[] = [];
+  const walk = (node: GardenNode, depth: number): void => {
+    if (node.kind !== 'blossom') return;
+    flowers.push({
+      id: node.id,
+      depth,
+      outline: flowerOutline(members(node).map(at), nestedPadding(depth)),
+    });
+    for (const child of node.cycle) walk(child, depth + 1);
+  };
+  for (const node of nodes) walk(node, 0);
+  return flowers;
+}
 
 /**
  * The picture of a garden: what each sprout, vine and flower looks like now. The views only paint
@@ -139,20 +164,13 @@ export function gardenPicture(
     glowing: glowing(u, v),
   }));
 
-  const flowers: FlowerPicture[] = [];
-  const walk = (node: GardenNode, depth: number): void => {
-    if (node.kind !== 'blossom') return;
-    flowers.push({
-      id: node.id,
-      depth,
-      outline: flowerOutline(members(node).map(at), nestedPadding(depth)),
-    });
-    for (const child of node.cycle) walk(child, depth + 1);
-  };
-  for (const node of layer.nodes) walk(node, 0);
+  const flowers = flowerPictures(layer.nodes, at);
 
+  // In the fog the groups would tell which vines join whom before they are inspected, so, like the
+  // Council's count, they are only drawn once the certificate is presented with "Terminé" (7.5).
+  const groupsHidden = revealed !== null && !state.declaredDone;
   const oddGroups =
-    state.stones.length === 0
+    state.stones.length === 0 || groupsHidden
       ? []
       : oddComponents(state.graph, state.stones).map((group) =>
           flowerOutline(group.map(at), GROUP_PADDING),

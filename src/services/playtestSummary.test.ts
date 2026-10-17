@@ -35,8 +35,12 @@ describe('playtest summary', () => {
       mirrorChecks: { beating: 0, notBeating: 0 },
       vinePicks: { right: 0, wrong: 0 },
       flowerChains: { counted: 0, refused: 0 },
+      recipeChecks: { right: 0, wrong: 0 },
+      raceBets: { right: 0, wrong: 0 },
+      stoneCertificates: { counted: 0, provingOther: 0, failing: 0 },
       firstPickRight: null,
       notebookRightFirstTry: null,
+      certificateRightFirstTry: null,
       hint3BeforeWin: false,
     });
   });
@@ -152,6 +156,83 @@ describe('playtest summary', () => {
       ]),
     );
     expect(summary?.flowerChains).toEqual({ counted: 1, refused: 1 });
+  });
+
+  it('counts the recipe checks per level, right and wrong (6.1)', () => {
+    const [summary] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '6.1' },
+        { kind: 'recipeCheck', at: 1, level: '6.1', step: 0, card: 'foldFlower', case: 'sameTree' },
+        { kind: 'recipeCheck', at: 2, level: '6.1', step: 0, card: null, case: null },
+      ]),
+    );
+    expect(summary?.recipeChecks).toEqual({ right: 1, wrong: 1 });
+  });
+
+  it('counts the doubling bets per level, right and wrong (6.5)', () => {
+    const bet = (at: number, right: boolean): PlaytestEntry => ({
+      kind: 'raceBet',
+      at,
+      level: '6.5',
+      step: 1,
+      runner: 'bruto',
+      answer: 'farMore',
+      right,
+    });
+    const [summary] = summarize(log([bet(0, true), bet(1, false), bet(2, true)]));
+    expect(summary?.raceBets).toEqual({ right: 2, wrong: 1 });
+  });
+
+  it('counts the stone certificates per level: counted, proving but not counted, failing (7.4)', () => {
+    const certificate = (at: number, proves: boolean, counts: boolean): PlaytestEntry => ({
+      kind: 'stoneCertificate',
+      at,
+      level: '7.4',
+      stones: [],
+      proves,
+      counts,
+    });
+    const [summary] = summarize(
+      log([certificate(0, false, false), certificate(1, true, false), certificate(2, true, true)]),
+    );
+    expect(summary?.stoneCertificates).toEqual({ counted: 1, provingOther: 1, failing: 1 });
+  });
+
+  it('tells whether the first stones ever presented in a level counted (Hito C, 7.4)', () => {
+    const [rightFirst, wrongFirst] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '7.4' },
+        {
+          kind: 'stoneCertificate',
+          at: 1,
+          level: '7.4',
+          stones: ['a'],
+          proves: true,
+          counts: true,
+        },
+        { kind: 'levelStart', at: 2, level: '7.4' },
+        { kind: 'stoneCertificate', at: 3, level: '7.4', stones: [], proves: true, counts: false },
+        { kind: 'levelStart', at: 10, level: '7.5' },
+        {
+          kind: 'stoneCertificate',
+          at: 11,
+          level: '7.5',
+          stones: [],
+          proves: false,
+          counts: false,
+        },
+        {
+          kind: 'stoneCertificate',
+          at: 12,
+          level: '7.5',
+          stones: ['c'],
+          proves: true,
+          counts: true,
+        },
+      ]),
+    );
+    expect(rightFirst?.certificateRightFirstTry).toBe(true);
+    expect(wrongFirst?.certificateRightFirstTry).toBe(false);
   });
 
   it('counts wrong notebook choices, counterexamples opened and mirror checks per level', () => {

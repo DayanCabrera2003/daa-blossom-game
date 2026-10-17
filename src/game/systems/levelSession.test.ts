@@ -271,7 +271,7 @@ describe('a level session follows its script', () => {
         { line: 'ch2.9.notebook.03', correct: true },
       ],
     };
-    const level = scripted([{ step: 'notebook' }], { notebook });
+    const level = scripted([{ step: 'notebook' }], { notebook: [notebook] });
     const opened = openSession(level, 0);
     expect(opened.effects).toEqual([{ kind: 'notebook', step: 0 }]);
     const refuted = respond(opened.session, { type: 'answer', option: 0 }, 0);

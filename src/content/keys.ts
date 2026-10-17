@@ -4,6 +4,11 @@ import type { ActionType } from '@core/rules/actions';
 import { NAMED_CHAPTERS } from '@game/picture/chapterTitle';
 import type { RefusalCode } from '@game/systems/refusal';
 import { CARD_IDS } from '@levels/cards/schema';
+import { RECIPE_CARDS, RECIPE_CASES } from '@core/recipe/recipe';
+import { cardTextKey, failureTextKey, RECALL_KEY } from '@levels/recipeCards';
+import { RUNNERS } from '@core/cost/benchmark';
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
+import { doublingTextKey } from '@levels/races';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
@@ -106,12 +111,17 @@ const UI = {
   'hud.hint': [],
   'hud.back': [],
   'hud.help': [],
+  'hud.leaveLayer': [],
+  'hud.layer': ['depth'],
+  'hud.council': ['groups', 'stones', 'atLeast', 'dark'],
+  'hud.councilHidden': [],
   'tool.lanterns': [],
   'tool.marks': [],
   'tool.foldLoop': [],
   'tool.inspect': [],
   'tool.scarecrows': [],
   'tool.stones': [],
+  'tool.layers': [],
   'chain.gainOne': [],
   'chain.gainZero': [],
   'hint.generic.1': [],
@@ -138,6 +148,22 @@ const UI = {
   'flower.whole': [],
   'flower.folded': [],
   'flower.again': [],
+  'recipe.mark': [],
+  'recipe.cases': [],
+  'recipe.end': [],
+  'recipe.table': [],
+  'recipe.empty': [],
+  'recipe.check': [],
+  'recipe.right': [],
+  'race.title': ['count'],
+  'race.counter.brutoAsleep': [],
+  'race.legend.automaton': [],
+  'race.legend.bruto': [],
+  'race.axis.steps': [],
+  'race.axis.sprouts': [],
+  'race.asleep': [],
+  'raceBet.revealRight': ['runner', 'answer'],
+  'raceBet.revealWrong': ['runner', 'answer', 'bet'],
   'hud.checkMirror': [],
   'victory.title': [],
   'victory.stars': ['count'],
@@ -165,6 +191,32 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
     CARD_IDS.flatMap((id) => [
       [`tutorial.${id}.title`, []],
       [`tutorial.${id}.body`, []],
+    ]),
+  ),
+  // The recipe cards (GDD 6.1): each card's text, why each distractor is wrong, which case is
+  // missing, and the level that taught it.
+  ...Object.fromEntries(RECIPE_CARDS.map((card) => [cardTextKey(card.id), []])),
+  ...Object.fromEntries(
+    RECIPE_CARDS.filter((card) => !card.right).map((card) => [
+      failureTextKey({ kind: 'distractor', card: card.id, case: card.case }),
+      [],
+    ]),
+  ),
+  ...Object.fromEntries(
+    RECIPE_CASES.map((recipeCase) => [
+      failureTextKey({ kind: 'missing', card: 'markDarkSuns', case: recipeCase }),
+      [],
+    ]),
+  ),
+  [RECALL_KEY]: ['level'],
+  // The three answers of a doubling bet (GDD 6.5).
+  ...Object.fromEntries(DOUBLING_ANSWERS.map((answer) => [doublingTextKey(answer), []])),
+  ...Object.fromEntries(RUNNERS.map((runner) => [`raceBet.runner.${runner}`, []])),
+  // The counters of a race (GDD 6.4): each runner's steps, running and once finished.
+  ...Object.fromEntries(
+    RUNNERS.flatMap((runner) => [
+      [`race.counter.${runner}`, ['steps']],
+      [`race.counter.${runner}Done`, ['steps']],
     ]),
   ),
   // The name of each named chapter, over its levels in the hub.

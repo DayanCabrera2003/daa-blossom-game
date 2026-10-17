@@ -339,6 +339,36 @@
     ]
   },
   {
+    "id": "layers",
+    "sprouts": [
+      { "label": "x", "x": 36, "y": 42 },
+      { "label": "y", "x": 36, "y": 12 },
+      { "label": "b", "x": 70, "y": 27 },
+      { "label": "c", "x": 100, "y": 18 },
+      { "label": "d", "x": 100, "y": 36 }
+    ],
+    "vines": [
+      ["x", "y"],
+      ["y", "b"],
+      ["b", "c"],
+      ["c", "d"],
+      ["d", "b"],
+      ["d", "x"]
+    ],
+    "lanterns": [
+      ["y", "b"],
+      ["c", "d"]
+    ],
+    "steps": [
+      { "type": "fold", "loop": ["b", "c", "d"] },
+      { "type": "fold", "loop": ["x", "y", "b"] },
+      { "type": "enterLayer", "blossom": 1 },
+      { "type": "enterLayer", "blossom": 0 },
+      { "type": "leaveLayer" },
+      { "type": "leaveLayer" }
+    ]
+  },
+  {
     "id": "rotateStem",
     "sprouts": [
       { "label": "R", "x": 10, "y": 27 },
@@ -359,6 +389,71 @@
       ["c", "d"]
     ],
     "steps": [{ "type": "rotateStem", "stem": ["R", "a", "b"] }]
+  },
+  {
+    "id": "recipe",
+    "sprouts": [
+      { "label": "a", "x": 30, "y": 27 },
+      { "label": "b", "x": 90, "y": 27 }
+    ],
+    "vines": [["a", "b"]],
+    "choices": { "count": 4, "kind": "lines" },
+    "steps": [{ "type": "recipe", "cards": ["markDarkSuns", "foldFlower", "finishKeepMoons"] }]
+  },
+  {
+    "id": "automaton",
+    "sprouts": [
+      { "label": "a", "x": 12, "y": 30 },
+      { "label": "b", "x": 44, "y": 30 },
+      { "label": "c", "x": 76, "y": 30 },
+      { "label": "d", "x": 108, "y": 30 }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"],
+      ["c", "d"]
+    ],
+    "lanterns": [["b", "c"]],
+    "alone": true,
+    "steps": [
+      { "type": "markRoot", "vertex": "a" },
+      { "type": "markRoot", "vertex": "d" },
+      { "type": "markMoon", "from": "a", "to": "b" },
+      { "type": "markMoon", "from": "d", "to": "c" },
+      { "type": "chain", "path": ["d", "c", "b", "a"] },
+      { "type": "declareDone" },
+      { "type": "seekSun", "fraction": 0.5 }
+    ]
+  },
+  {
+    "id": "race",
+    "sprouts": [
+      { "label": "a", "x": 20, "y": 30 },
+      { "label": "b", "x": 60, "y": 30 },
+      { "label": "c", "x": 100, "y": 30 }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"]
+    ],
+    "alone": true,
+    "steps": [
+      { "type": "join", "u": "a", "v": "b" },
+      { "type": "split", "u": "a", "v": "b" },
+      { "type": "join", "u": "b", "v": "c" },
+      { "type": "split", "u": "b", "v": "c" },
+      { "type": "join", "u": "a", "v": "b" }
+    ]
+  },
+  {
+    "id": "raceBet",
+    "sprouts": [
+      { "label": "a", "x": 40, "y": 30 },
+      { "label": "b", "x": 80, "y": 30 }
+    ],
+    "vines": [["a", "b"]],
+    "choices": { "count": 3, "kind": "lines" },
+    "steps": [{ "type": "raceBet", "answer": "fourToEight" }]
   },
   {
     "id": "stones",

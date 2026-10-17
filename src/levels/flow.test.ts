@@ -129,6 +129,42 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'flowerChallenge' }])).toBe(false);
   });
 
+  it('reads the recipe step (6.1), whole or with the cards of some cases missing (6.3)', () => {
+    expect(parse([{ step: 'recipe' }])).toEqual([{ step: 'recipe', missing: [] }]);
+    expect(parse([{ step: 'recipe', missing: ['sameTree'] }])).toEqual([
+      { step: 'recipe', missing: ['sameTree'] },
+    ]);
+    expect(accepts([{ step: 'recipe', missing: ['fold'] }])).toBe(false);
+    expect(accepts([{ step: 'recipe', missing: ['moon', 'moon'] }])).toBe(false);
+  });
+
+  it('reads the automaton step (6.2, 6.3): the recipe of the player, or a fixed one less some cases', () => {
+    expect(parse([{ step: 'automaton' }])).toEqual([{ step: 'automaton' }]);
+    expect(parse([{ step: 'automaton', missing: ['sameTree'] }])).toEqual([
+      { step: 'automaton', missing: ['sameTree'] },
+    ]);
+    expect(accepts([{ step: 'automaton', missing: ['fold'] }])).toBe(false);
+    expect(accepts([{ step: 'automaton', missing: ['moon', 'moon'] }])).toBe(false);
+  });
+
+  it('reads the race step (6.4, 6.5): a garden by family, size and seed, and Bruto’s budget', () => {
+    const race = { step: 'race', family: 'half', size: 16, seed: 26, budget: 1_000_000 };
+    expect(parse([race])).toEqual([race]);
+    expect(accepts([{ ...race, family: 'wild' }])).toBe(false);
+    // Small enough to draw in miniature, and to race in the browser at once.
+    expect(accepts([{ ...race, size: 65 }])).toBe(false);
+    expect(accepts([{ ...race, size: 1 }])).toBe(false);
+    expect(accepts([{ ...race, budget: 2_000_001 }])).toBe(false);
+    expect(accepts([{ ...race, budget: 0 }])).toBe(false);
+  });
+
+  it('reads the doubling bet (6.5): on the automaton or on Bruto, never a number', () => {
+    const bet = { step: 'raceBet', prompt: 'ch6.5.sauce.01', runner: 'bruto' };
+    expect(parse([bet])).toEqual([bet]);
+    expect(accepts([{ ...bet, runner: 'sauce' }])).toBe(false);
+    expect(accepts([{ ...bet, range: 3 }])).toBe(false);
+  });
+
   it('a question offers at least two options', () => {
     const lonely = {
       step: 'ask',

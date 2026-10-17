@@ -73,6 +73,25 @@ describe('pointer: touches and drags', () => {
     });
   });
 
+  it('within a scope (a layer, 5.2), only the sprouts it shows answer the pointer', () => {
+    // A layer that shows B, C and D only: A is not there to press or to touch.
+    const scope = {
+      shown: [false, true, true, true],
+      groupOf: [-1, 0, 1, 2],
+      nodes: [1, 2, 3].map((vertex) => ({ kind: 'sprout', vertex }) as const),
+    };
+    const pressed = pressStart(initialPointer('lanterns'), garden, positions, at(0), scope);
+    expect(pressed.chain).toBeNull();
+    const moved = pressMove({ ...pressed, chain: [3] }, garden, positions, at(0), scope);
+    expect(moved.pointer.chain).toEqual([3]);
+    const released = pressEnd(initialPointer('marks'), garden, positions, at(0), scope);
+    expect(released.action).toBeNull();
+    expect(pressEnd(initialPointer('marks'), garden, positions, at(3), scope).action).toEqual({
+      type: 'markRoot',
+      vertex: 3,
+    });
+  });
+
   it('choosing a tool lets go of whatever was selected', () => {
     const first = touch(initialPointer('lanterns'), 0);
     expect(chooseTool(first.pointer, 'marks')).toEqual({
