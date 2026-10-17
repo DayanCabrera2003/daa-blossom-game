@@ -1,5 +1,5 @@
 import lines from '@content/es/lines.json';
-import { maximumSize } from '@core/edmonds/fast/maximum';
+import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
 import { size } from '@core/matching/queries';
 import { checkRecipe } from '@core/recipe/check';
 import {
@@ -16,6 +16,7 @@ import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
+import { counterexampleAt } from '@levels/counterexample';
 import { TAUGHT_IN } from '@levels/recipeCards';
 import { describe, expect, it } from 'vitest';
 
@@ -165,5 +166,35 @@ describe('6.3: the broken recipe', () => {
       right: false,
       failure: { kind: 'missing', case: 'sameTree' },
     });
+  });
+});
+
+describe('6.6: why does it end?', () => {
+  const level = levelOf('6.6');
+  const [chains, searches] = level.data.notebook ?? [];
+
+  it('asks its two notebook questions in order, and only statement (a) of each is true', () => {
+    expect(stepsOf(level)).toEqual(['say', 'notebook', 'say', 'notebook', 'say']);
+    expect(level.flow[1]).toEqual({ step: 'notebook', question: 0 });
+    expect(level.flow[3]).toEqual({ step: 'notebook', question: 1 });
+    for (const question of [chains, searches]) {
+      expect(question?.options.map((option) => option.correct)).toEqual([true, false, false]);
+    }
+  });
+
+  it('(c) of the chains: in its garden the lanterns only go up, to half the sprouts and no more', () => {
+    const counterexample = counterexampleAt(level, 0, 2);
+    if (counterexample === null) throw new Error('statement (c) has no garden');
+    const { start } = counterexample;
+    expect([...start.allowed]).toEqual(['chain']);
+    const path = Array.from({ length: start.graph.n }, (_, k) => k);
+    const chained = play(start, [{ type: 'chain', path }]);
+    expect(size(chained.matching)).toBe(size(start.matching) + 1);
+    expect(size(chained.matching)).toBe(start.graph.n / 2);
+    expect(isMaximum(chained.graph, chained.matching)).toBe(true);
+  });
+
+  it('opens the Codex on the recipe and on its cost', () => {
+    expect(level.data.unlocks.codex).toEqual(['C10', 'C11']);
   });
 });
