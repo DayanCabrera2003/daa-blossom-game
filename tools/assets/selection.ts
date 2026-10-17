@@ -203,11 +203,13 @@ const GARDEN_PIECES: readonly SelectedFile[] = [
     'images/actors/lantern.png',
     { frame: TILE },
   ),
+  // Two frames of 10 × 8, not 16 × 16 as its name says: the picture is 20 × 8.
   pick(
     'anim.flower',
-    'image',
+    'sheet',
     ninja('Backgrounds/Animated/Flower/SpriteSheet16x16.png'),
     'images/animated/flower.png',
+    { frame: { width: 10, height: 8 } },
   ),
   pick(
     'anim.waterRipples',
@@ -220,8 +222,13 @@ const GARDEN_PIECES: readonly SelectedFile[] = [
   pick('fx.smoke', 'sheet', ninja('FX/Smoke/Smoke/SpriteSheet.png'), 'images/fx/smoke.png', {
     frame: { width: 32, height: 32 },
   }),
-  pick('fx.spark', 'image', ninja('FX/Particle/Spark.png'), 'images/fx/spark.png'),
-  pick('fx.leafPink', 'image', ninja('FX/Particle/LeafPink.png'), 'images/fx/leaf-pink.png'),
+  // Seven frames of 10 × 8, and six leaves of 12 × 7, side by side.
+  pick('fx.spark', 'sheet', ninja('FX/Particle/Spark.png'), 'images/fx/spark.png', {
+    frame: { width: 10, height: 8 },
+  }),
+  pick('fx.leafPink', 'sheet', ninja('FX/Particle/LeafPink.png'), 'images/fx/leaf-pink.png', {
+    frame: { width: 12, height: 7 },
+  }),
 ];
 
 /** Seasonal decorations and particles beyond the tilesets (section 1.5). */
