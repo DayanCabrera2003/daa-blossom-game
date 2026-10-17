@@ -136,6 +136,20 @@ const entrySchema = z.discriminatedUnion('kind', [
     answer: z.string(),
     right: z.boolean(),
   }),
+  /**
+   * Stones presented with "Terminé" in a level won by a certificate of stones (chapter 7), by the
+   * names of the sprouts lifted: whether they prove the lanterns the most the garden holds, and
+   * whether they are the certificate the level asks for (in 7.4, only the moons of the search
+   * count, so stones that prove the lanterns may still not count there).
+   */
+  z.strictObject({
+    kind: z.literal('stoneCertificate'),
+    at,
+    level,
+    stones: z.array(z.string()),
+    proves: z.boolean(),
+    counts: z.boolean(),
+  }),
 ]);
 
 const logSchema = z.strictObject({

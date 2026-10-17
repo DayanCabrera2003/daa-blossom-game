@@ -69,6 +69,24 @@ describe('playtest log', () => {
     expect(parseLog(log)).toEqual(log);
   });
 
+  it('reads back stone certificates, by the names of their stones', () => {
+    const log = {
+      version: 1,
+      entries: [
+        {
+          kind: 'stoneCertificate',
+          at: 1,
+          level: '7.4',
+          stones: ['b'],
+          proves: true,
+          counts: false,
+        },
+        { kind: 'stoneCertificate', at: 2, level: '7.4', stones: [], proves: false, counts: false },
+      ],
+    };
+    expect(parseLog(log)).toEqual(log);
+  });
+
   it('still reads a log written before answers were recorded: the new entries only add kinds', () => {
     const older = { version: 1, entries: [{ kind: 'levelStart', at: 0, level: '0.1' }] };
     expect(parseLog(older)).toEqual(older);
