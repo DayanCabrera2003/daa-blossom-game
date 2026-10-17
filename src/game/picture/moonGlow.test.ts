@@ -27,6 +27,11 @@ describe('the moons that glow, to be lifted as stones (7.4)', () => {
 
   it('nothing glows while the search is not over, nor where the stones are free to choose', () => {
     expect(moonGlow(moonsWanted, level.start)).toEqual([]);
+    const begun = play(level.start, [
+      { type: 'markRoot', vertex: 0 },
+      { type: 'markMoon', from: 0, to: 1 },
+    ]);
+    expect(moonGlow(moonsWanted, begun)).toEqual([]);
     expect(moonGlow({ type: 'tutteBergeCertificate' }, searched)).toEqual([]);
     expect(moonGlow(undefined, searched)).toEqual([]);
   });
