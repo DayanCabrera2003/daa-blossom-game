@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type { CardDemo } from '@levels/cards/demo';
 import type { Translate } from '@services/i18n';
 import { cardFrameAt } from '../animation/cardLoop';
+import { playUiSound } from '../audio/uiSound';
 import { cardDemoPicture } from '../picture/cardDemo';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -46,6 +47,7 @@ export class TutorialView {
   show(card: ShownCard, onClose: () => void): void {
     this.close();
     const { scene } = this;
+    playUiSound(scene, 'sfx.card');
     const x = (CANVAS_WIDTH - WIDTH) / 2;
     const blocker = scene.add
       .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.4)
