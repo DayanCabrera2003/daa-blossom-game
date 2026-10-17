@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SproutPicture } from './garden';
-import { BLINK_MS, BLINK_PERIOD_MS, sproutLook } from './sproutLook';
+import { BLINK_MS, BLINK_PERIOD_MS, restingLook, sproutLook } from './sproutLook';
 
 /** A sprout as the garden's picture gives it, dark and plain unless told otherwise. */
 const sprout = (overrides: Partial<SproutPicture> = {}): SproutPicture => ({
@@ -55,5 +55,10 @@ describe('the look of a sprout', () => {
     const first = blinkingInstants(sprout({ lit: true, vertex: 0 }));
     const second = blinkingInstants(sprout({ lit: true, vertex: 1 }));
     expect(first[0]).not.toBe(second[0]);
+  });
+
+  it('has a still look for pictures that do not move: the face of its lantern, never a blink', () => {
+    expect(restingLook(true)).toEqual({ face: 'happy', species: 'sprout', blinking: false });
+    expect(restingLook(false, 'bee')).toEqual({ face: 'asleep', species: 'bee', blinking: false });
   });
 });

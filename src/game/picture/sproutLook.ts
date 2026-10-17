@@ -43,3 +43,12 @@ export function sproutLook(sprout: SproutPicture, now: number): SproutLook {
     blinking: face === 'happy' && inPeriod < BLINK_MS,
   };
 }
+
+/**
+ * The look of a sprout in a picture that does not move (the pond's drifting pieces, the folded
+ * garden of the flower challenge, the tiny gardens of the cards): the face its lantern gives it,
+ * with its eyes never shut by a blink.
+ */
+export function restingLook(lit: boolean, species: SproutSpecies = 'sprout'): SproutLook {
+  return { face: lit ? 'happy' : 'asleep', species, blinking: false };
+}
