@@ -4,6 +4,7 @@ import { BootScene } from './scenes/BootScene';
 import { CounterexampleScene } from './scenes/CounterexampleScene';
 import { HubScene } from './scenes/HubScene';
 import { LevelScene } from './scenes/LevelScene';
+import { PreloadScene } from './scenes/PreloadScene';
 
 /**
  * The Phaser setup. The game is laid out on a 480×270 logical canvas (GDD §4.1); the real canvas is
@@ -21,6 +22,6 @@ export function gameConfig(parent: HTMLElement, zoom: number): Phaser.Types.Core
     roundPixels: true,
     backgroundColor: '#1d2433',
     scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [BootScene, HubScene, LevelScene, CounterexampleScene],
+    scene: [BootScene, PreloadScene, HubScene, LevelScene, CounterexampleScene],
   };
 }

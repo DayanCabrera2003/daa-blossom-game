@@ -1,9 +1,8 @@
 import Phaser from 'phaser';
-import { contextOf } from './context';
 
 /**
- * First scene: nothing to load in the greybox (shapes only), so it hands over to the hub, or
- * straight to a level when teacher mode asks for one.
+ * First scene: it holds nothing to load itself and hands over to the preload scene, which loads the
+ * art and sounds of the boot group and then opens the hub or the level teacher mode asks for.
  */
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -11,8 +10,6 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
-    const { startLevel } = contextOf(this);
-    if (startLevel === null) this.scene.start('hub');
-    else this.scene.start('level', { levelId: startLevel });
+    this.scene.start('preload');
   }
 }
