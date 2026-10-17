@@ -44,7 +44,8 @@ describe('the synthesized bell', () => {
       { frequency: 523.25, start: 0, gain: 1 },
       { frequency: 659.25, start: 0.08, gain: 0.7 },
     ];
-    expect(renderBell(notes, TIMBRE, RATE)).toEqual(renderBell(notes, TIMBRE, RATE));
+    const first = Buffer.from(renderBell(notes, TIMBRE, RATE).buffer);
+    expect(first.equals(Buffer.from(renderBell(notes, TIMBRE, RATE).buffer))).toBe(true);
   });
 
   it('starts each note at its own time: nothing sounds before the first one', () => {

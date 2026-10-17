@@ -8,6 +8,9 @@ import { strongest } from './support/spectrum';
 
 const RATE = 22050;
 
+/** Whether two files hold the same bytes (a deep comparison of long arrays is far slower). */
+const sameBytes = (a: Uint8Array, b: Uint8Array): boolean => Buffer.from(a).equals(Buffer.from(b));
+
 const byKey = (key: string) => {
   const sound = SOUNDS.find((candidate) => candidate.key === key);
   if (sound === undefined) throw new Error(`no sound ${key}`);
@@ -64,7 +67,7 @@ describe('the synthesized sounds', () => {
   it('are mono 16-bit wave files at 22.05 kHz, the same bytes on every run', () => {
     for (const file of OWN_WORK.files) {
       const bytes = file.make();
-      expect(file.make()).toEqual(bytes);
+      expect(sameBytes(file.make(), bytes)).toBe(true);
       const audio = parseWav(bytes);
       expect(audio.sampleRate).toBe(RATE);
       expect(audio.channels).toHaveLength(1);
@@ -105,7 +108,7 @@ describe('the committed synthesized sounds', () => {
       const entry = assetEntry(key as (typeof ASSET_KEYS)[number]);
       expect(entry.pack).toBe(OWN_WORK.id);
       expect(entry.source).toBe(file.source);
-      expect(new Uint8Array(readFileSync(PUBLIC + entry.path))).toEqual(file.make());
+      expect(sameBytes(readFileSync(PUBLIC + entry.path), file.make())).toBe(true);
     },
   );
 });
