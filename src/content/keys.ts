@@ -6,6 +6,7 @@ import type { RefusalCode } from '@game/systems/refusal';
 import { CARD_IDS } from '@levels/cards/schema';
 import { RECIPE_CARDS, RECIPE_CASES } from '@core/recipe/recipe';
 import { cardTextKey, failureTextKey, RECALL_KEY } from '@levels/recipeCards';
+import { RUNNERS } from '@core/cost/benchmark';
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { doublingTextKey } from '@levels/races';
 
@@ -154,6 +155,8 @@ const UI = {
   'recipe.empty': [],
   'recipe.check': [],
   'recipe.right': [],
+  'raceBet.revealRight': ['runner', 'answer'],
+  'raceBet.revealWrong': ['runner', 'answer', 'bet'],
   'hud.checkMirror': [],
   'victory.title': [],
   'victory.stars': ['count'],
@@ -201,6 +204,7 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   [RECALL_KEY]: ['level'],
   // The three answers of a doubling bet (GDD 6.5).
   ...Object.fromEntries(DOUBLING_ANSWERS.map((answer) => [doublingTextKey(answer), []])),
+  ...Object.fromEntries(RUNNERS.map((runner) => [`raceBet.runner.${runner}`, []])),
   // The name of each named chapter, over its levels in the hub.
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
 };
