@@ -149,15 +149,17 @@ export class LevelScene extends Phaser.Scene {
       win: (stars) => this.win(stars),
       writeNotebook: () => this.writeNotebook(),
     };
+    // The settings, at the bottom left, clear of the buttons laid out from the right.
+    const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
     bindLevelInput(this, {
       dispatch: (event) => this.dispatch(event),
       leave: () => this.leave(),
       insideLayer: () => this.controller.layers.length > 0,
+      settingsOpen: settings.open,
+      closeSettings: settings.close,
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });
-    // The settings, at the bottom left, clear of the buttons laid out from the right.
-    addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
     this.ready = true;
     // The cards of what opens with the level come first; then the script opens it: its first
     // lines, then whatever step waits for the player.
