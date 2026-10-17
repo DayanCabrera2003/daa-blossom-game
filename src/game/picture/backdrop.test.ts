@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { catalog } from '@levels/catalog';
 import { SPROUT_HIT_RADIUS } from '../input/HitTest';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
-import { BACKDROP, backdropPicture, seedOf, siteOf, type BackdropSite } from './backdrop';
+import { BACKDROP, backdropPicture, groundOf, seedOf, siteOf, type BackdropSite } from './backdrop';
 import { boxesOverlap, distanceToPoint, distanceToSegment, type Rect } from './boxDistance';
 import { seasonOf } from './seasons';
 
@@ -123,5 +123,14 @@ describe('the backdrop of a level (plan 06, phase 4)', () => {
   it('finds room for some ornaments in most levels', () => {
     const decorated = LEVELS.filter((level) => backdropPicture(siteOf(level)).ornaments.length > 0);
     expect(decorated.length).toBeGreaterThan(LEVELS.length * 0.8);
+  });
+
+  it('lays a ground alone, with no ornaments, for the hub', () => {
+    const orchard = seasonOf('0');
+    const ground = groundOf(orchard, seedOf('hub'));
+    expect(ground).toEqual(groundOf(orchard, seedOf('hub')));
+    expect(ground).toHaveLength(BACKDROP.cols * BACKDROP.rows);
+    const tiles = [...orchard.ground.block.flat(), ...orchard.ground.sprinkles];
+    for (const tile of ground) expect(tiles).toContainEqual(tile);
   });
 });

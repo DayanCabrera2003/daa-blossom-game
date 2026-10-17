@@ -115,6 +115,10 @@ function groundTiles(season: Season, rng: Rng): SheetCut[] {
   return tiles;
 }
 
+/** A ground on its own, with no ornaments: the orchard's grass under the hub. */
+export const groundOf = (season: Season, seed: number): SheetCut[] =>
+  groundTiles(season, createRng(seed));
+
 /**
  * Tries random places for the season's ornaments, keeping each one that stays clear of the garden
  * and of the ornaments kept before it, until the season has its count or the tries run out. An
