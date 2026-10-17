@@ -11,4 +11,4 @@ coverage/
 
 # Downloaded asset packs stay out of the repository (the Ninja Adventure zip alone is 94 MB);
 # the files chosen from them are extracted to public/assets/ by `npm run assets`
-assets-src/packs/
+assets-src/packs
