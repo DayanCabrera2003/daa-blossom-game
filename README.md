@@ -36,7 +36,7 @@ Property-based tests use a fixed seed by default, so every run (and CI) is repro
 The game's art, music and sounds come from CC0 packs (listed with their authors in [`CREDITS.md`](CREDITS.md)). The zips are not committed: download them into `assets-src/packs/` (file names and sha256 checksums are in `tools/assets/selection.ts`). The files the game uses are extracted from them and committed under `public/assets/`, so building and testing never need the zips.
 
 ```sh
-npm run assets        # extract the chosen files into public/assets/ and regenerate src/game/assets/manifest.json
+npm run assets        # extract the chosen files into public/assets/ and regenerate src/game/assets/manifest.json and glyphs.json
 npm run assets:check  # check, without writing, that the committed files are exactly what the zips give
 npm run sounds        # synthesize the lantern chimes and the fold chords alone, without the zips
 ```
