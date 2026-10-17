@@ -110,6 +110,8 @@ const UI = {
   'hud.help': [],
   'hud.leaveLayer': [],
   'hud.layer': ['depth'],
+  'hud.council': ['groups', 'stones', 'atLeast', 'dark'],
+  'hud.councilHidden': [],
   'tool.lanterns': [],
   'tool.marks': [],
   'tool.foldLoop': [],
