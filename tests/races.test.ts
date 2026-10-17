@@ -1,7 +1,8 @@
 import { runOf, type RaceResult } from '@core/cost/benchmark';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
-import { racesOf } from '@levels/races';
+import { raceBetVerdict, racesOf } from '@levels/races';
+import { costChart } from '@game/picture/costChart';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -59,5 +60,57 @@ describe('6.4, race I: 6, 8 and 10 sprouts', () => {
     expect(ask.options.filter((option) => option.correct).map((option) => option.line)).toEqual([
       'ch6.4.sauce.07',
     ]);
+  });
+});
+
+describe('6.5, race II: 16, 32 and 64 sprouts, with doubling bets', () => {
+  const level = levelOf('6.5');
+  const races = racesBySize(level);
+
+  it('starts at 8 sprouts, so the first bet has a race to compare with, and doubles each time', () => {
+    expect([...races.keys()]).toEqual([8, 16, 32, 64]);
+  });
+
+  it('Bruto finishes up to 16 sprouts, and from 32 he falls asleep', () => {
+    expect([8, 16].map((n) => runOf(raceAt(races, n), 'bruto').asleep)).toEqual([false, false]);
+    expect([32, 64].map((n) => runOf(raceAt(races, n), 'bruto').asleep)).toEqual([true, true]);
+  });
+
+  it('keeps every race quick: Bruto never has more than a million steps', () => {
+    for (const { race } of racesOf(level.flow)) expect(race.budget).toBeLessThanOrEqual(1_000_000);
+  });
+
+  it('each bet has one clear answer: about four to eight times for the recipe, far more for Bruto', () => {
+    const answers = level.flow.flatMap((step, index) => {
+      if (step.step !== 'raceBet') return [];
+      const verdict = raceBetVerdict(level.flow, index);
+      return [{ runner: step.runner, answer: verdict?.answer, clear: verdict?.clear }];
+    });
+    const recipe = { runner: 'automaton', answer: 'fourToEight', clear: true };
+    const bruto = { runner: 'bruto', answer: 'farMore', clear: true };
+    expect(answers).toEqual([recipe, bruto, recipe, bruto, recipe, bruto]);
+  });
+
+  it('the recipe takes about four times the steps each time the garden doubles, as Sauce says', () => {
+    const steps = [8, 16, 32, 64].map((n) => runOf(raceAt(races, n), 'automaton').steps);
+    for (let i = 1; i < steps.length; i++) {
+      const ratio = (steps[i] ?? 0) / (steps[i - 1] ?? 1);
+      expect(ratio).toBeGreaterThan(3.5);
+      expect(ratio).toBeLessThan(4.5);
+    }
+  });
+
+  it('the reference walkthrough bets right every time', () => {
+    const bets = level.walkthrough.flatMap((entry) => (entry.type === 'raceBet' ? [entry] : []));
+    const right = level.flow.flatMap((step, index) =>
+      step.step === 'raceBet' ? [raceBetVerdict(level.flow, index)?.answer] : [],
+    );
+    expect(bets.map((bet) => bet.answer)).toEqual(right);
+  });
+
+  it('on the chart the recipe stays inside, and Bruto leaves through the top, then sleeps', () => {
+    const chart = costChart([...races.values()], races.size, { width: 100, height: 100 });
+    expect(chart.automaton.every((dot) => dot.y > 0)).toBe(true);
+    expect(chart.bruto.map((dot) => dot.mark)).toEqual(['shown', 'above', 'asleep', 'asleep']);
   });
 });
