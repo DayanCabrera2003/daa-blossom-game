@@ -48,6 +48,13 @@ const recipesOf = (level: Level): Recipe[] =>
       : [],
   );
 
+/** The garden of a level, as its file writes it: sprouts by name, vines and lanterns. */
+const gardenOf = (level: Level) => ({
+  names: level.data.sprouts.map((sprout) => sprout.label),
+  vines: level.data.vines,
+  lanterns: level.data.lanterns,
+});
+
 describe('6.1: cards', () => {
   const level = levelOf('6.1');
 
@@ -71,5 +78,31 @@ describe('6.1: cards', () => {
     const start = { ...level.start, allowed: new Set(AUTOMATON_MOVES) };
     const ran = play(start, runRecipe(start, { fold: true }));
     expect(size(ran.matching)).toBe(maximumSize(level.graph));
+  });
+});
+
+describe('6.2: the automaton', () => {
+  const level = levelOf('6.2');
+
+  it('runs in a garden of the Prado: the one of 1.3, its lanterns lit as they were', () => {
+    expect(gardenOf(level)).toEqual(gardenOf(levelOf('1.3')));
+  });
+
+  it('runs the recipe written in 6.1, then the sun walks its run', () => {
+    expect(stepsOf(level)).toEqual(['say', 'automaton', 'say', 'sun', 'say']);
+    expect(level.flow[1]).toEqual({ step: 'automaton' });
+    expect(level.flow.some((step) => step.step === 'recipe')).toBe(false);
+  });
+
+  it('searches from every sprout in the dark, with every move the automaton makes allowed', () => {
+    expect(level.start.roots).toBeNull();
+    for (const move of AUTOMATON_MOVES) expect(level.start.allowed.has(move)).toBe(true);
+  });
+
+  it('the run reaches the most lanterns and says «Terminé»', () => {
+    const ran = play(level.start, runRecipe(level.start, { fold: true }));
+    expect(size(ran.matching)).toBe(maximumSize(level.graph));
+    expect(size(ran.matching)).toBeGreaterThan(size(level.start.matching));
+    expect(ran.declaredDone).toBe(true);
   });
 });
