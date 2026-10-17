@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { racesLevel } from '../../../tests/support/fixtureLevels';
 import { openSession, respond, type LevelSession } from '../systems/levelSession';
 import { raceDuration } from './raceClock';
-import { racePicture, type RaceLayout } from './racePanel';
+import { raceDurationAt, racePicture, type RaceLayout } from './racePanel';
 
 const layout: RaceLayout = {
   miniature: { x: 0, y: 0, width: 80, height: 80 },
@@ -62,6 +62,15 @@ describe('the race panel (6.4, 6.5)', () => {
     const picture = racePicture(betsDone, { step: 3, elapsed: Infinity }, layout);
     expect(picture?.bruto).toEqual({ steps: 1_000, finished: false, asleep: true });
     expect(picture?.chart.bruto.map((dot) => dot.mark)).toEqual(['shown', 'asleep']);
+  });
+
+  it('lasts on screen as long as the clock takes to stop its slower runner', () => {
+    const runs = [
+      { steps: 41, asleep: false },
+      { steps: 224, asleep: false },
+    ];
+    expect(raceDurationAt(level.flow, 0)).toBe(raceDuration(runs));
+    expect(raceDurationAt(level.flow, 1)).toBe(0);
   });
 
   it('closes once the script is over', () => {

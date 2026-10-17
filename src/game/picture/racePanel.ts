@@ -1,5 +1,6 @@
-import { runOf } from '@core/cost/benchmark';
-import { racesOf } from '@levels/races';
+import { runOf, type RaceResult } from '@core/cost/benchmark';
+import type { LevelStep } from '@levels/flow';
+import { raceOf, racesOf } from '@levels/races';
 import { isFinished } from '../systems/flow';
 import { stepNow, type LevelSession } from '../systems/levelSession';
 import { costChart, type ChartBox, type CostChart } from './costChart';
@@ -37,6 +38,16 @@ export interface RacePanelPicture {
   readonly chart: CostChart;
 }
 
+/** The two runs of a race, the automaton's first. */
+const runsOf = (result: RaceResult) =>
+  [runOf(result, 'automaton'), runOf(result, 'bruto')] as const;
+
+/** How long the race at step `index` of `steps` lasts on screen; 0 when that step is no race. */
+export function raceDurationAt(steps: readonly LevelStep[], index: number): number {
+  const step = steps[index];
+  return step?.step === 'race' ? raceDuration(runsOf(raceOf(step))) : 0;
+}
+
 /**
  * The race panel of the session now; null when no race has come yet or the script is over. `clock`
  * is the race the scene is showing, if any: a race step not yet started stands at its start.
@@ -56,7 +67,7 @@ export function racePicture(
   const shown = races[index];
   if (shown === undefined) return null;
   const elapsed = !now ? Infinity : clock?.step === shown.step ? clock.elapsed : 0;
-  const runs = [runOf(shown.result, 'automaton'), runOf(shown.result, 'bruto')] as const;
+  const runs = runsOf(shown.result);
   const over = elapsed >= raceDuration(runs);
   return {
     step: shown.step,
