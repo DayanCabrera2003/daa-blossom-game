@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import type { UiEvent } from '../../systems/levelController';
+import { voiceLine } from '../../systems/lineVoice';
 import { AnimationView } from '../../view/AnimationView';
 import { BackdropView } from '../../view/BackdropView';
 import { DialogueView } from '../../view/DialogueView';
@@ -94,7 +95,7 @@ export const buildLevelViews = (
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),
     toast: new ToastView(scene),
-    dialogue: new DialogueView(scene, t),
+    dialogue: new DialogueView(scene, t, voiceLine),
   };
 };
 

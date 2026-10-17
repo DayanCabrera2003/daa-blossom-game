@@ -21,6 +21,7 @@ import {
 } from '../systems/counterexampleController';
 import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
+import { voiceLine } from '../systems/lineVoice';
 import { planCues, refusalCues } from '../systems/soundCues';
 import { spokenLine } from '../systems/speaker';
 import { AnimationView } from '../view/AnimationView';
@@ -130,7 +131,7 @@ export class CounterexampleScene extends Phaser.Scene {
       animation: new AnimationView(this),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
       toast: new ToastView(this),
-      dialogue: new DialogueView(this, t),
+      dialogue: new DialogueView(this, t, voiceLine),
       lanterns: this.add.text(LAYOUT.margin, LAYOUT.bottomY, '', textStyle(8)).setDepth(100),
       ...this.buttons(data.back),
     };
