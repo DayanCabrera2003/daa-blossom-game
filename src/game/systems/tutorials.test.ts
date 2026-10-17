@@ -94,6 +94,8 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '6.1': ['recipe'],
       '6.2': ['automaton'],
       '7.2': ['stones'],
+      '6.4': ['race'],
+      '6.5': ['raceBet'],
     });
   });
 
