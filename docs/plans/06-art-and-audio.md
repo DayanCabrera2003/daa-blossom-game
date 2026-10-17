@@ -63,7 +63,7 @@ Se comprobó la tabla `cmap` de cada TTF y se renderizó una muestra en español
 | Kenney Pixel, Mini, Mini Square, High… (CC0) | Tienen los códigos, pero **las minúsculas acentuadas se dibujan como mayúsculas** (`á`→`Á`, `ñ`→`Ñ`, `ó`→`Ó`) y la tilde es una barra plana. Ninguna tiene `★ – − ≈ ● ⟨ ⟩ ∅ →`. **No sirven** para texto corrido |
 | m5x7 / m6x11 (Daniel Linssen, citadas en GDD §4.3) | **No están en los packs descargados** y su licencia es "gratis con crédito", no CC0 |
 
-Decisión: **monogram extended** (datagoblin, CC0) para todo el texto. Sea cual sea, el zip se añade a `assets-src/packs/` y a la selección, y la fase 1 no se cierra hasta que el test de cobertura pase. Los símbolos que la fuente no tenga no se escriben: `★` y `●` pasan a iconos dibujados, y `− ≈ –` del texto se sustituyen por equivalentes cubiertos (`-`, "unas", `-`) en `content/es/`.
+Decisión: **monogram extended** (datagoblin, CC0) para todo el texto; tiene `– − ≈ → ∅ « » ¿ ¡ ñ` y las vocales acentuadas. El zip se añade a `assets-src/packs/` y a la selección, y la fase 1 no se cierra hasta que el test de cobertura pase. Los símbolos que no tiene no se escriben: `★`, `●` y `⟨ ⟩` pasan a iconos dibujados o a equivalentes cubiertos.
 
 ### 1.3 Personajes y retratos
 
