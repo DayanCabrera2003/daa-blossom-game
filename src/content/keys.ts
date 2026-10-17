@@ -9,6 +9,7 @@ import { cardTextKey, failureTextKey, RECALL_KEY } from '@levels/recipeCards';
 import { RUNNERS } from '@core/cost/benchmark';
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { doublingTextKey } from '@levels/races';
+import { AUDIO_CHANNELS } from '@services/settings';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
@@ -174,6 +175,10 @@ const UI = {
   'hub.locked': [],
   'hub.exportLog': [],
   'tutorial.ok': [],
+  'settings.title': [],
+  'settings.volume': ['percent'],
+  'settings.mute': [],
+  'settings.close': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>
@@ -221,4 +226,6 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ),
   // The name of each named chapter, over its levels in the hub.
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
+  // The name of each audio channel, beside its slider in the settings panel.
+  ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
 };

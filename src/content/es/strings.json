@@ -226,5 +226,12 @@
   "tutorial.raceBet.body": "Antes de la carrera, toca una de las tres respuestas: cuántos pasos más crees que dará ese corredor en un jardín el doble de grande. Luego mira la carrera.",
   "tutorial.stones.title": "Piedras",
   "tutorial.stones.body": "Con Piedras, toca un brote para levantarlo como una piedra. Tócalo otra vez para devolverlo.",
-  "tutorial.ok": "Entendido"
+  "tutorial.ok": "Entendido",
+  "settings.title": "Ajustes",
+  "settings.music": "Música",
+  "settings.sfx": "Efectos",
+  "settings.voice": "Voces",
+  "settings.volume": "{percent} %",
+  "settings.mute": "Silencio (M)",
+  "settings.close": "Cerrar"
 }
