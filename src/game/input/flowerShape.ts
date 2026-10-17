@@ -4,7 +4,8 @@ import type { Point } from './target';
 const cross = (o: Point, a: Point, b: Point): number =>
   (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
 
-const centroid = (points: readonly Point[]): Point => ({
+/** The centre of a group of points: the mean of their coordinates. */
+export const centroid = (points: readonly Point[]): Point => ({
   x: points.reduce((sum, p) => sum + p.x, 0) / points.length,
   y: points.reduce((sum, p) => sum + p.y, 0) / points.length,
 });

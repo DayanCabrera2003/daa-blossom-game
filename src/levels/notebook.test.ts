@@ -84,4 +84,20 @@ describe('the notebook schema', () => {
     );
     expect(parsed.success).toBe(false);
   });
+
+  it('a counterexample with bees and flowers says what every one of its sprouts is', () => {
+    const [a, b, c] = row.sprouts;
+    const kinds = (sprouts: unknown[]) =>
+      notebookSchema.safeParse(
+        withCounterexample({ mode: 'play', ...row, sprouts, actions: ['chain'] }),
+      ).success;
+    expect(
+      kinds([
+        { ...a, kind: 'bee' },
+        { ...b, kind: 'flower' },
+        { ...c, kind: 'bee' },
+      ]),
+    ).toBe(true);
+    expect(kinds([{ ...a, kind: 'bee' }, b, c])).toBe(false);
+  });
 });

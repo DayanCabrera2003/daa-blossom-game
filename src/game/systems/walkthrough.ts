@@ -1,4 +1,4 @@
-import type { Edge } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level, WalkthroughEntry } from '@levels/build';
@@ -12,15 +12,17 @@ import {
   type Effect,
   type UiEvent,
 } from './levelController';
-import { garden } from './levelSession';
+import { garden, stepNow } from './levelSession';
 import type { Refusal } from './refusal';
 
 /**
  * Plays a level's reference walkthrough through the level controller, with no scene: every move as
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
- * vines. A level whose walkthrough does not finish its script
- * never reaches the browser (plan 03, §0): the playability test and `check-levels` both run this.
+ * vines, a chain of the flower challenge as a drag through its sprouts, and the end of the light's
+ * own search as the scene reports it, with no entry of its own. A level whose walkthrough does not
+ * finish its script never reaches the browser (plan 03, §0): the playability test and
+ * `check-levels` both run this.
  */
 
 /** Why a walkthrough does not play through; `entry` is its index in the walkthrough. */
@@ -57,9 +59,11 @@ function gestureEvents(gesture: Gesture): UiEvent[] {
 
 /**
  * The interface events that give the script an input; a drawn reflection is touched where its vines
- * really are instead (`drawEvents`).
+ * really are instead (`drawEvents`), and so is a vine pointed at (`vineEvents`).
  */
-function inputEvents(input: Exclude<FlowInput, { readonly type: 'drawMirror' }>): UiEvent[] {
+function inputEvents(
+  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' }>,
+): UiEvent[] {
   switch (input.type) {
     case 'answer':
       return [{ kind: 'answer', option: input.option }];
@@ -82,6 +86,7 @@ const ANSWERED: ReadonlySet<FlowInput['type']> = new Set([
   'bet',
   'tapGarden',
   'tapSprout',
+  'pickVine',
 ]);
 
 /**
@@ -149,6 +154,39 @@ function drawEvents(controller: Controller, vines: readonly Edge[]): UiEvent[] |
   }
 }
 
+/** The touch on the vine u–v where the garden shows it now, or why it cannot be touched. */
+function vineEvents(controller: Controller, u: number, v: number): UiEvent[] | string {
+  try {
+    const point = vinePoint(garden(controller.session), controller.positions, u, v);
+    return [
+      { kind: 'press', point },
+      { kind: 'release', point },
+    ];
+  } catch (error) {
+    return error instanceof Error ? error.message : String(error);
+  }
+}
+
+/**
+ * Plays a chain drawn in the flower challenge as a drag through its sprouts. The drag must draw
+ * exactly that chain: one the garden does not let the finger follow is a mismatch, and a drag that
+ * draws nothing (it starts on a lit sprout, or outside the challenge) was not waited for.
+ */
+function playChain(
+  controller: Controller,
+  path: readonly VertexId[],
+  index: number,
+  now: number,
+): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
+  const points = path.map((v) => itemAt(controller.positions, v));
+  const played = feed(controller, gestureEvents({ kind: 'press', points }), now);
+  const drawn = played.effects.find((effect) => effect.kind === 'flowerDrawn');
+  if (drawn === undefined) return { ...played, problem: { code: 'inputIgnored', entry: index } };
+  const { attempt } = drawn;
+  const same = attempt.path.length === path.length && attempt.path.every((v, i) => v === path[i]);
+  return { ...played, problem: same ? null : { code: 'gestureMismatch', entry: index } };
+}
+
 /** Plays a drawn reflection; a touch the challenge refuses is a refused move. */
 function playDrawing(
   controller: Controller,
@@ -182,7 +220,17 @@ function playEntry(
 ): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
   if (isFlowInput(entry)) {
     if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
-    const played = feed(controller, inputEvents(entry), now);
+    if (entry.type === 'drawChain') return playChain(controller, entry.path, index, now);
+    const events =
+      entry.type === 'pickVine' ? vineEvents(controller, entry.u, entry.v) : inputEvents(entry);
+    if (typeof events === 'string') {
+      return {
+        controller,
+        effects: [],
+        problem: { code: 'gestureImpossible', entry: index, message: events },
+      };
+    }
+    const played = feed(controller, events, now);
     const ignored = ANSWERED.has(entry.type) && played.effects.length === 0;
     return { ...played, problem: ignored ? { code: 'inputIgnored', entry: index } : null };
   }
@@ -208,16 +256,39 @@ function playEntry(
   return { ...played, problem: matches ? null : { code: 'gestureMismatch', entry: index } };
 }
 
+/**
+ * Lets the light search by itself whenever the script waits for it: the scene shows the search and
+ * then says it is over, which the walkthrough does at once. It writes no entry for it.
+ */
+function showLight(
+  controller: Controller,
+  now: number,
+): { controller: Controller; effects: Effect[] } {
+  let current = controller;
+  const effects: Effect[] = [];
+  while (stepNow(current.session)?.step === 'autoSearch') {
+    const step = handle(current, { kind: 'searched' }, now);
+    current = step.controller;
+    effects.push(...step.effects);
+  }
+  return { controller: current, effects };
+}
+
 /** Plays the level's whole walkthrough from its start, at time `now`; stops at the first problem. */
 export function playWalkthrough(level: Level, now = 0): WalkthroughResult {
   const opened = openController(level, now);
-  let controller = opened.controller;
-  const effects: Effect[] = [...opened.effects];
+  const shown = showLight(opened.controller, now);
+  let controller = shown.controller;
+  const effects: Effect[] = [...opened.effects, ...shown.effects];
   for (const [index, entry] of level.walkthrough.entries()) {
     const played = playEntry(controller, entry, index, now);
-    controller = played.controller;
     effects.push(...played.effects);
-    if (played.problem !== null) return { controller, effects, problem: played.problem };
+    if (played.problem !== null) {
+      return { controller: played.controller, effects, problem: played.problem };
+    }
+    const light = showLight(played.controller, now);
+    controller = light.controller;
+    effects.push(...light.effects);
   }
   const { flow } = controller.session;
   const problem: WalkthroughProblem | null = isFinished(flow)

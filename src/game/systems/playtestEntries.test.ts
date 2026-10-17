@@ -2,10 +2,16 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { rightCount } from './answerKey';
+import {
+  betrayalLevel,
+  bloomLevel,
+  closedFlowerLevel,
+  festivalLevel,
+} from '../../../tests/support/fixtureLevels';
+import { countAnswer } from './answerKey';
 import { HINT_DELAY_MS } from './hints';
 import { handle, startController, type Controller, type UiEvent } from './levelController';
-import { garden } from './levelSession';
+import { act, garden } from './levelSession';
 import { playtestEntries } from './playtestEntries';
 import type { Piece } from './pond';
 
@@ -87,7 +93,7 @@ describe('playtest entries of a step', () => {
   });
 
   it('"Terminé" with the most lanterns is a right claim, and may win the level', () => {
-    const { entries } = play(startController(levelById('4.9'), 0), [{ kind: 'done' }], 9);
+    const { entries } = play(startController(closedFlowerLevel(), 0), [{ kind: 'done' }], 9);
     expect(entries).toEqual([
       { kind: 'move', at: 9, level: '4.9', action: 'declareDone' },
       { kind: 'claim', at: 9, level: '4.9', right: true },
@@ -96,12 +102,12 @@ describe('playtest entries of a step', () => {
   });
 
   it('"Terminé" short of the most lanterns is a claim without reason', () => {
-    const { entries } = play(startController(levelById('4.1'), 0), [{ kind: 'done' }]);
+    const { entries } = play(startController(festivalLevel(), 0), [{ kind: 'done' }]);
     expect(entries).toContainEqual({ kind: 'claim', at: 0, level: '4.1', right: false });
   });
 
   it('a hint opened is logged with its grade; one not on offer yet is not', () => {
-    const festival = startController(levelById('4.1'), 0);
+    const festival = startController(festivalLevel(), 0);
     expect(play(festival, [{ kind: 'hint' }], 0).entries).toEqual([]);
     expect(play(festival, [{ kind: 'hint' }], HINT_DELAY_MS).entries).toEqual([
       { kind: 'hint', at: HINT_DELAY_MS, level: '4.1', grade: 1 },
@@ -209,13 +215,40 @@ describe('playtest entries of bets, counts and the notebook', () => {
     ]);
   });
 
+  it('a vine pointed at is logged by the names of its ends, right or not (4.2)', () => {
+    const level = betrayalLevel();
+    const opened = startController(level, 0);
+    const session = level.solution.reduce((s, action) => act(s, action, 0).session, opened.session);
+    const { entries } = play({ ...opened, session }, [
+      { kind: 'pickVine', u: 2, v: 3 },
+      { kind: 'pickVine', u: 2, v: 4 },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'pickVine', at: 0, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
+      { kind: 'pickVine', at: 0, level: '4.2', step: 1, vine: ['b', 'd'], right: true },
+    ]);
+  });
+
+  it('each chain drawn in the flower challenge is logged by its names, counted once or not (4.11)', () => {
+    const { entries } = play(startController(bloomLevel(), 0), [
+      { kind: 'drawChain', path: [6, 8] },
+      { kind: 'drawChain', path: [5, 6] },
+      { kind: 'drawChain', path: [6, 5] },
+    ]);
+    expect(entries).toEqual([
+      { kind: 'flowerChain', at: 0, level: '4.11', path: ['t', 'x'], counted: false },
+      { kind: 'flowerChain', at: 0, level: '4.11', path: ['e', 't'], counted: true },
+      { kind: 'flowerChain', at: 0, level: '4.11', path: ['t', 'e'], counted: false },
+    ]);
+  });
+
   it('a number in a count is logged as an answer, right or not', () => {
     const pond = levelById('2.2');
     const opened = play(startController(pond, 0), [{ kind: 'tapGarden' }]).controller;
     const step = opened.session.flow.index;
     const question = opened.session.flow.steps[step];
     if (question?.step !== 'count' || pond.mirror === null) throw new Error('2.2 counts first');
-    const right = rightCount(garden(opened.session).matching, pond.mirror, question);
+    const right = countAnswer(pond, garden(opened.session), question);
     const wrong = right === 0 ? 1 : 0;
     const { entries } = play(opened, [
       { kind: 'answer', option: wrong },

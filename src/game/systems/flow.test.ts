@@ -186,6 +186,16 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('the light searches by itself and the script waits until it has been shown', () => {
+    const started = start([say('ch4.1.sauce.00'), { step: 'autoSearch' }, play]);
+    expect(started.effects).toEqual([
+      { kind: 'say', lines: ['ch4.1.sauce.00'] },
+      { kind: 'autoSearch', step: 1 },
+    ]);
+    expect(advanceFlow(started.flow, { type: 'tap' }).flow).toBe(started.flow);
+    expect(advanceFlow(started.flow, { type: 'searched' }).effects).toEqual([{ kind: 'play' }]);
+  });
+
   it('explore ends with a touch on a sprout, separate with a touch on the garden', () => {
     const { flow, effects } = start([{ step: 'explore' }, { step: 'separate' }]);
     expect(effects).toEqual([{ kind: 'explore' }]);
@@ -223,7 +233,7 @@ describe('the script engine', () => {
     };
     const started = start([count]);
     expect(started.effects).toEqual([
-      { kind: 'count', step: 0, prompt: 'ch2.1.sauce.05', piece: 4, of: 'mirror', range: 4 },
+      { kind: 'count', step: 0, prompt: 'ch2.1.sauce.05', range: 4 },
     ]);
     const wrong = advanceFlow(started.flow, { type: 'answer', option: 2, right: 3 });
     expect(wrong.effects).toEqual([
@@ -234,6 +244,29 @@ describe('the script engine', () => {
       { kind: 'answered', step: 0, value: 3, correct: true },
       { kind: 'finished' },
     ]);
+  });
+
+  it('pointing at a vine asks again until the conflict; a wrong one hears the reply first', () => {
+    const pick: LevelStep = { step: 'pickVine', prompt: 'ch4.2.sauce.01', reply: 'ch4.2.sauce.03' };
+    const started = start([pick]);
+    const opening = { kind: 'pickVine', step: 0, prompt: 'ch4.2.sauce.01' };
+    expect(started.effects).toEqual([opening]);
+    expect(advanceFlow(started.flow, { type: 'tap' }).effects).toEqual([]);
+    const wrong = advanceFlow(started.flow, { type: 'pickVine', u: 2, v: 3, right: false });
+    expect(wrong.flow.index).toBe(0);
+    expect(wrong.effects).toEqual([
+      { kind: 'vinePicked', step: 0, u: 2, v: 3, correct: false },
+      { kind: 'say', lines: ['ch4.2.sauce.03'] },
+      opening,
+    ]);
+    expect(advanceFlow(wrong.flow, { type: 'pickVine', u: 4, v: 2, right: true }).effects).toEqual([
+      { kind: 'vinePicked', step: 0, u: 4, v: 2, correct: true },
+      { kind: 'finished' },
+    ]);
+    const silent = start([{ step: 'pickVine', prompt: 'ch4.2.sauce.01' }]);
+    expect(
+      advanceFlow(silent.flow, { type: 'pickVine', u: 2, v: 3, right: false }).effects,
+    ).toEqual([{ kind: 'vinePicked', step: 0, u: 2, v: 3, correct: false }, opening]);
   });
 
   it('the notebook ends only with a right option, which is written down', () => {
@@ -303,6 +336,25 @@ describe('the script engine', () => {
     // Anywhere else, being spared means nothing.
     const asking = start([ask(true)]).flow;
     expect(advanceFlow(asking, { type: 'mirrorSpared' })).toEqual({ flow: asking, effects: [] });
+  });
+
+  it('the flower challenge ends after its chains, or when the player is spared', () => {
+    const { flow, effects } = start([{ step: 'flowerChallenge', attempts: 2 }]);
+    expect(effects).toEqual([{ kind: 'flowerChallenge', step: 0, attempts: 2 }]);
+    const tried = send(flow, [
+      { type: 'flowerDrawn', chain: true },
+      { type: 'flowerDrawn', chain: false },
+      { type: 'mirrorChecked', better: true },
+    ]);
+    expect(tried.flow.attempts).toBe(1);
+    expect(tried.effects).toEqual([]);
+    expect(advanceFlow(tried.flow, { type: 'flowerDrawn', chain: true }).effects).toEqual([
+      { kind: 'finished' },
+    ]);
+    expect(advanceFlow(flow, { type: 'flowerSpared' }).effects).toEqual([{ kind: 'finished' }]);
+    // Anywhere else, a chain drawn means nothing.
+    const asking = start([ask(true)]).flow;
+    expect(advanceFlow(asking, { type: 'flowerDrawn', chain: true }).effects).toEqual([]);
   });
 
   it('an option that is not on offer is no answer', () => {

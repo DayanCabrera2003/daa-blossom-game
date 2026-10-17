@@ -2,10 +2,18 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { gesturesFor } from '../input/gestures';
+import {
+  betrayalLevel,
+  closedFlowerLevel,
+  festivalLevel,
+  fivePetalsLevel,
+  lightLevel,
+  nestedFlowersLevel,
+} from '../../../tests/support/fixtureLevels';
+import { gesturesFor, vinePoint } from '../input/gestures';
 import type { Point } from '../input/target';
 import { HINT_DELAY_MS } from './hints';
-import { garden } from './levelSession';
+import { act, garden } from './levelSession';
 import {
   openController,
   startController,
@@ -80,7 +88,7 @@ describe('the level controller', () => {
   });
 
   it('a wrong step while dragging a chain is reported at once', () => {
-    const chainLevel = levelById('4.1');
+    const chainLevel = festivalLevel();
     const p = (v: number) => spot(chainLevel, v);
     const { effects } = feed(startController(chainLevel, 0), [
       { kind: 'press', point: p(0) },
@@ -102,7 +110,7 @@ describe('the level controller', () => {
   });
 
   it('a hint lights up its sprouts; at grade 3 the mentor also makes the move', () => {
-    const festival = levelById('4.1');
+    const festival = festivalLevel();
     let controller = startController(festival, 0);
     const shown = [];
     for (let grade = 1; grade <= 3; grade++) {
@@ -120,7 +128,7 @@ describe('the level controller', () => {
   });
 
   it('the next accepted move puts the glow out', () => {
-    const festival = levelById('4.1');
+    const festival = festivalLevel();
     const hinted = handle(
       startController(festival, 0),
       { kind: 'hint' },
@@ -135,7 +143,7 @@ describe('the level controller', () => {
   });
 
   it('winning is announced once, with the stars; "Terminé" is a button', () => {
-    const closed = levelById('4.9');
+    const closed = closedFlowerLevel();
     const step = handle(startController(closed, 0), { kind: 'done' }, 0);
     expect(step.effects).toContainEqual({
       kind: 'won',
@@ -146,7 +154,7 @@ describe('the level controller', () => {
   });
 
   it('plays a whole level from its gestures to the victory (5.1)', () => {
-    const wild = levelById('5.1');
+    const wild = nestedFlowersLevel();
     const p = placesOf(wild);
     let controller = startController(wild, 0);
     let won = false;
@@ -211,9 +219,9 @@ const question = {
 
 describe('the level controller runs the script', () => {
   it('opens with the effects of the first steps', () => {
-    const opened = openController(levelById('4.6'), 0);
+    const opened = openController(fivePetalsLevel(), 0);
     expect(opened.effects).toEqual([{ kind: 'say', lines: ['ch4.6.sauce.00'] }, { kind: 'play' }]);
-    expect(opened.controller).toEqual(startController(levelById('4.6'), 0));
+    expect(opened.controller).toEqual(startController(fivePetalsLevel(), 0));
   });
 
   it('answers and bets reach the script; finishing it is the win, with its stars', () => {
@@ -282,6 +290,57 @@ describe('the level controller runs the script', () => {
     expect(handle(won, { kind: 'seek', fraction: 0 }, 0).effects.map((e) => e.kind)).toEqual([
       'ask',
     ]);
+  });
+
+  it('while pointing at a vine, a touch on a vine is the answer, and nothing is a move (4.2)', () => {
+    const level = betrayalLevel();
+    const opened = startController(level, 0);
+    const session = level.solution.reduce((s, action) => act(s, action, 0).session, opened.session);
+    const controller = { ...opened, session };
+    const state = garden(session);
+    const vine = (u: number, v: number) => vinePoint(state, controller.positions, u, v);
+    // b–c is no conflict: the step waits on; a touch on a sprout or on nothing does nothing.
+    const missed = feed(controller, [...touch(vine(2, 3)), ...touch(spot(level, 4))]);
+    expect(missed.effects.map((effect) => effect.kind)).toEqual(['vinePicked', 'say', 'pickVine']);
+    expect(missed.controller.session.flow.index).toBe(1);
+    expect(garden(missed.controller.session)).toBe(state);
+    const right = feed(controller, touch(vine(4, 2)));
+    expect(right.effects).toMatchObject([
+      { kind: 'vinePicked', u: 2, v: 4, correct: true },
+      { kind: 'count', step: 2 },
+    ]);
+    expect(handle(controller, { kind: 'pickVine', u: 4, v: 2 }, 0).effects[0]).toEqual({
+      kind: 'vinePicked',
+      step: 1,
+      u: 4,
+      v: 2,
+      correct: true,
+    });
+  });
+
+  it('the light searches by itself: touches wait, and its end puts its marks in the day', () => {
+    const level = lightLevel();
+    const opened = openController(level, 0);
+    expect(opened.effects).toEqual([{ kind: 'autoSearch', step: 0 }]);
+    const touched = feed(opened.controller, touch(spot(level, 0)));
+    expect(garden(touched.controller.session)).toBe(level.start);
+    const searched = handle(touched.controller, { kind: 'searched' }, 0);
+    expect(searched.effects).toEqual([{ kind: 'pickVine', step: 1, prompt: 'ch4.2.sauce.01' }]);
+    expect(searched.controller.session.history.states).toHaveLength(4);
+  });
+
+  it('while pointing at a vine, the third hint makes the conflict glow until it is touched', () => {
+    const level = betrayalLevel();
+    const opened = startController(level, 0);
+    const session = level.solution.reduce((s, action) => act(s, action, 0).session, opened.session);
+    let controller: Controller = { ...opened, session };
+    expect(controller.vineGlow).toBeNull();
+    for (let k = 1; k <= 3; k++)
+      controller = handle(controller, { kind: 'hint' }, k * HINT_DELAY_MS).controller;
+    expect(controller.vineGlow).toEqual([2, 4]);
+    expect(controller.session.flow.index).toBe(1);
+    const answered = handle(controller, { kind: 'pickVine', u: 4, v: 2 }, 0).controller;
+    expect(answered.vineGlow).toBeNull();
   });
 
   it('in the mirror challenge, touching a vine draws it in silver; nothing else moves', () => {

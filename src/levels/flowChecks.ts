@@ -7,6 +7,8 @@ import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
+import { autoSearch } from '@core/search/autoSearch';
+import { findConflict } from '@core/search/conflict';
 import type { Level } from './build';
 import { demoStart } from './demoStart';
 
@@ -16,14 +18,29 @@ export type FlowProblem =
   | { readonly code: 'notebookMissing'; readonly step: number }
   | { readonly code: 'mirrorMissing'; readonly step: number }
   | { readonly code: 'pieceOutsideTangle'; readonly step: number; readonly sprout: string }
+  /** A step about the conflict of the search, where the reference search has met no conflict. */
+  | { readonly code: 'noConflict'; readonly step: number }
   /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
   | { readonly code: 'drawUnbeatable'; readonly step: number }
+  /** A flower challenge in a level that declares no flower to cut the chains at. */
+  | { readonly code: 'flowerMissing'; readonly step: number }
+  /** A flower challenge over a garden with no chain: nothing can be drawn. */
+  | { readonly code: 'noChainToDraw'; readonly step: number }
+  /** A flower challenge after a play step, whose moves may have undone the declared flower. */
+  | { readonly code: 'flowerAfterPlay'; readonly step: number }
   /** A bet whose numbers (1 to `range`) leave out the most lanterns the garden holds. */
   | {
       readonly code: 'betOutOfRange';
       readonly step: number;
       readonly range: number;
       readonly optimum: number;
+    }
+  /** A move of the light's own search that the rules refuse (marks locked, fog, roots). */
+  | {
+      readonly code: 'lightRefused';
+      readonly step: number;
+      readonly move: number;
+      readonly reason: RejectReason;
     }
   | {
       readonly code: 'demoRefused';
@@ -59,24 +76,40 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
 /**
  * The checks of a level script (plan 03, phase 1) that the schema cannot see: every question has a
  * right answer, the notebook step has a notebook to show, the steps of the pond have a reflection,
- * a `count` asks about a sprout that is in the tangle, a bet offers the right number among its
- * own (a bet nobody can win is no bet), a mirror challenge can be won (a better reflection
- * exists), and every demo is accepted by the rules.
+ * a `count` of lanterns asks about a sprout that is in the tangle, pointing at the conflict and a
+ * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
+ * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
+ * challenge has a flower and a chain to draw in the garden the level starts with, every demo is
+ * accepted by the rules, and so is every move of the light's own search.
  *
- * Lanterns never move outside a play step, so the player's lanterns at a `count` or a `draw` are those the
- * level starts with, or, after a play step, those the reference solution leaves.
+ * Lanterns and marks only move in a play step, where the reference solution is played, and when the
+ * light searches by itself (4.1, 4.2), where its marks are added; so the garden at a `count`, a
+ * `pickVine` or a `draw` is the one the steps before it leave.
  */
 export function checkFlow(level: Level): FlowProblem[] {
   const problems: FlowProblem[] = [];
   const { data, start, mirror } = level;
-  const played = replay(start, level.solution).state.matching;
+  /** The garden as the steps so far leave it. */
+  let garden = start;
   let afterPlay = false;
+  /** Whether the search of the garden now meets a conflict. */
+  const conflictNow = (): boolean => findConflict(garden.layer, garden.search) !== null;
 
   for (const [step, flowStep] of level.flow.entries()) {
     switch (flowStep.step) {
       case 'play':
+        garden = replay(garden, level.solution).state;
         afterPlay = true;
         break;
+      case 'autoSearch': {
+        const light = autoSearch(garden.layer, garden.search, garden.roots);
+        const searched = replay(garden, light);
+        if (searched.refused !== null) {
+          problems.push({ code: 'lightRefused', step, ...searched.refused });
+        }
+        garden = searched.state;
+        break;
+      }
       case 'ask':
         if (!flowStep.options.some((option) => option.correct)) {
           problems.push({ code: 'noCorrectOption', step });
@@ -98,21 +131,35 @@ export function checkFlow(level: Level): FlowProblem[] {
       case 'separate':
         if (mirror === null) problems.push({ code: 'mirrorMissing', step });
         break;
+      case 'pickVine':
+        if (!conflictNow()) problems.push({ code: 'noConflict', step });
+        break;
       case 'count': {
+        if (flowStep.of === 'loop') {
+          if (!conflictNow()) problems.push({ code: 'noConflict', step });
+          break;
+        }
         if (mirror === null) {
           problems.push({ code: 'mirrorMissing', step });
           break;
         }
-        const yours = afterPlay ? played : start.matching;
-        if (!inTangle(yours, mirror, flowStep.piece)) {
+        if (!inTangle(garden.matching, mirror, flowStep.piece)) {
           const sprout = nameOf(level.labels, flowStep.piece);
           problems.push({ code: 'pieceOutsideTangle', step, sprout });
         }
         break;
       }
       case 'draw':
-        if (isMaximum(level.graph, afterPlay ? played : start.matching)) {
+        if (isMaximum(level.graph, garden.matching)) {
           problems.push({ code: 'drawUnbeatable', step });
+        }
+        break;
+      case 'flowerChallenge':
+        // The flower is declared on the starting lanterns, so the challenge comes before any play.
+        if (level.flower === null) problems.push({ code: 'flowerMissing', step });
+        if (afterPlay) problems.push({ code: 'flowerAfterPlay', step });
+        else if (isMaximum(level.graph, start.matching)) {
+          problems.push({ code: 'noChainToDraw', step });
         }
         break;
       case 'replay': {

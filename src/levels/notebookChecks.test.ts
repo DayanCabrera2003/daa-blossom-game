@@ -91,4 +91,12 @@ describe('the checks of a notebook', () => {
       { code: 'counterexampleUnbeatable', option: 1 },
     ]);
   });
+
+  it('a counterexample of bees and flowers joins only a bee and a flower', () => {
+    const kinds = ['bee', 'flower', 'flower', 'bee'];
+    const kinded = { ...row, sprouts: row.sprouts.map((s, i) => ({ ...s, kind: kinds[i] })) };
+    expect(notebookProblemsOf(levelWith({ mode: 'play', ...kinded, actions: ['chain'] }))).toEqual([
+      { code: 'counterexampleSameKindVine', option: 1, u: 'b', v: 'c', kind: 'flower' },
+    ]);
+  });
 });

@@ -2,6 +2,7 @@ import { isMaximum } from '@core/edmonds/fast/maximum';
 import { matchedEdges } from '@core/matching/queries';
 import type { Matching } from '@core/matching/types';
 import { invariant } from '@core/shared/invariant';
+import { findConflict } from '@core/search/conflict';
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
@@ -10,7 +11,7 @@ import type { TraceEvent } from '@core/trace/events';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
-import { rightBet, rightCount } from './answerKey';
+import { countAnswer, rightBet, rightVine } from './answerKey';
 import {
   advanceFlow,
   betRight,
@@ -21,6 +22,13 @@ import {
   type FlowSignal,
   type FlowState,
 } from './flow';
+import {
+  drawFlowerChain,
+  mentorChain,
+  startFlowerChallenge,
+  type FlowerAttempt,
+  type FlowerChallenge,
+} from './flowerChallenge';
 import { hintContent, type HintContent, type MentorReflection } from './hintContent';
 import {
   afterAccepted,
@@ -40,6 +48,7 @@ import {
   type MirrorChallenge,
   type MirrorCheck,
 } from './mirrorChallenge';
+import { lightDay } from './lightSearch';
 import { nextMove } from './nextMove';
 import { winningPiece } from './pond';
 import { hintedOption, questionAt } from './question';
@@ -54,8 +63,9 @@ import { computeStars, type StarResult } from './stars';
  *
  * What is accepted depends on the step of the script (plan 03, phase 2): garden moves only while
  * playing, so the lanterns never change under a question that depends on them; undo, redo and the
- * sun while playing or waiting for the sun. The reflection of the mirror challenge is drawn and
- * checked only in its `draw` step. Once the script is over the garden is free again, as it
+ * sun while playing or waiting for the sun. When the light searches by itself (4.1, 4.2), its
+ * marks enter the day once the scene has shown them, as moves the rules accepted. The reflection of the mirror challenge is drawn and
+ * checked only in its `draw` step, and the chains of the flower challenge only in its own step. Once the script is over the garden is free again, as it
  * always was after a win, but nothing more can be won.
  */
 export interface LevelSession {
@@ -77,6 +87,8 @@ export interface LevelSession {
   readonly reactions: readonly FiredReaction[];
   /** The reflection drawn in the mirror challenge (2.4) and its checks; untouched elsewhere. */
   readonly challenge: MirrorChallenge;
+  /** The chains drawn in the flower challenge (4.11); untouched elsewhere. */
+  readonly flower: FlowerChallenge;
 }
 
 /** The answer of a move: applied (for the animation queue), or refused and why. */
@@ -90,10 +102,20 @@ export type ScriptInput =
   | { readonly type: 'bet'; readonly value: number }
   | { readonly type: 'sunMoved' }
   | { readonly type: 'tap' }
-  | { readonly type: 'tapSprout'; readonly vertex: VertexId };
+  | { readonly type: 'tapSprout'; readonly vertex: VertexId }
+  | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
+  /** The light's own search has been shown to the end (sent by the scene, not by the player). */
+  | { readonly type: 'searched' };
 
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
-const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set(['play', 'ask', 'count', 'draw']);
+const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
+  'play',
+  'ask',
+  'count',
+  'draw',
+  'pickVine',
+  'flowerChallenge',
+]);
 
 /** The step of the script now, or null once it is over. */
 export const stepNow = (session: LevelSession): LevelStep | null => currentStep(session.flow);
@@ -158,6 +180,7 @@ export function openSession(
     flow,
     reactions: [],
     challenge: startChallenge(level.start.graph),
+    flower: startFlowerChallenge(),
   };
   // A script that is over at once (only lines) completes the level as it opens.
   return { session: { ...session, won: starsAt(session, flow) }, effects };
@@ -249,7 +272,8 @@ export function act(
 
 /**
  * Gives the script an answer, a bet, a touch or news of the sun. The right number of a bet or a
- * count comes from the core, judged on the garden as it is now; a step that does not wait for this
+ * count, and whether a vine pointed at is the conflict, come from the core, judged on the garden as
+ * it is now; a step that does not wait for this
  * input ignores it.
  */
 export function respond(
@@ -261,14 +285,23 @@ export function respond(
   switch (input.type) {
     case 'answer': {
       const step = stepNow(session);
-      const right =
-        step?.step === 'count' && level.mirror !== null
-          ? rightCount(garden(session).matching, level.mirror, step)
-          : null;
+      const right = step?.step === 'count' ? countAnswer(level, garden(session), step) : null;
       return advance(session, { type: 'answer', option: input.option, right }, now);
     }
     case 'bet':
       return advance(session, { type: 'bet', value: input.value, right: rightBet(level) }, now);
+    case 'pickVine': {
+      const right = rightVine(garden(session), input.u, input.v);
+      return advance(session, { ...input, right }, now);
+    }
+    case 'searched': {
+      // The light's moves enter the day as moves accepted by the rules, so the sun replays them
+      // and the steps after it (pointing at its conflict, 4.2) judge the garden it leaves.
+      if (stepNow(session)?.step !== 'autoSearch') return { session, effects: [] };
+      const [, ...moves] = lightDay(garden(session));
+      const history = moves.reduce(push, session.history);
+      return advance({ ...session, history }, input, now);
+    }
     default:
       return advance(session, input, now);
   }
@@ -293,8 +326,9 @@ export function isHintAvailable(session: LevelSession, now: number): boolean {
 
 /**
  * Opens the hint on offer: the next grade, with the level's own line and sprouts when it has them,
- * and at grade 3 the mentor's step for the garden as it is now, or under a question the right
- * option. Null if no hint is on offer.
+ * and at grade 3 the mentor's step for the garden as it is now, under a question the right option,
+ * in the flower challenge a chain to draw, or the vine of the conflict to point at. Null if no hint
+ * is on offer.
  */
 export function askHint(
   session: LevelSession,
@@ -312,11 +346,23 @@ export function askHint(
       ? nextMove({ start: level.start, solution: level.solution, victory }, garden(session))
       : null;
   // Under a question, the mentor points at a right option instead (never at a bet's).
-  const question = questionAt(level, session.flow.index, garden(session).matching);
+  const question = questionAt(level, session.flow.index, garden(session));
   const option = question === null ? null : hintedOption(question);
   // In the mirror challenge, the mentor offers a better reflection, and at grade 3 draws it.
   const offer = current.step === 'draw' && opened.grade >= 2 ? mentorOffer(session) : null;
-  const hint = hintContent(level.hints, opened.grade, step, option, offer?.reflection ?? null);
+  // In the flower challenge, the mentor finds a chain of the open garden, and at grade 3 draws it.
+  const { graph, matching, layer, search } = garden(session);
+  const chain =
+    current.step === 'flowerChallenge' && opened.grade >= 2 ? mentorChain(graph, matching) : null;
+  // When pointing at a vine, the conflict glows at grade 3; the touch is left to the player.
+  const vine = current.step === 'pickVine' ? (findConflict(layer, search)?.vine ?? null) : null;
+  const hint = hintContent(level.hints, opened.grade, {
+    step,
+    option,
+    reflection: offer?.reflection ?? null,
+    chain,
+    vine,
+  });
   const { challenge } = session;
   return {
     session: {
@@ -383,4 +429,28 @@ export function checkDrawnMirror(
         : { type: 'mirrorChecked', better: false };
   const advanced = advance({ ...session, challenge }, signal, now);
   return { ...advanced, check };
+}
+
+/**
+ * A chain drawn through `path` in the open garden during the flower challenge (4.11): cut at the
+ * level's flower and never applied, or refused when it is no chain. A chain not drawn before,
+ * either way round, is one more attempt; once the refused drawings reach the limit, the step is over
+ * anyway. Outside the step nothing is drawn and the attempt is null.
+ */
+export function drawInGarden(
+  session: LevelSession,
+  path: readonly VertexId[],
+  now: number,
+): { session: LevelSession; attempt: FlowerAttempt | null; effects: FlowEffect[] } {
+  if (stepNow(session)?.step !== 'flowerChallenge') return { session, attempt: null, effects: [] };
+  const { flower } = session.level;
+  invariant(flower !== null, 'the script checks keep a flower challenge to levels with a flower');
+  const drawn = drawFlowerChain(session.flower, garden(session), flower, path);
+  const { attempt } = drawn;
+  const signal: FlowSignal =
+    attempt.kind === 'notAChain' && attempt.spared
+      ? { type: 'flowerSpared' }
+      : { type: 'flowerDrawn', chain: attempt.kind === 'cut' && attempt.fresh };
+  const advanced = advance({ ...session, flower: drawn.challenge }, signal, now);
+  return { ...advanced, attempt };
 }

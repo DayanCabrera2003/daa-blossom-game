@@ -35,10 +35,23 @@ export type FlowSignal =
   | { readonly type: 'tap' }
   /** A touch on a sprout. */
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
+  /** A touch on the vine u–v; `right` when the core says it is the conflict of the search. */
+  | {
+      readonly type: 'pickVine';
+      readonly u: VertexId;
+      readonly v: VertexId;
+      readonly right: boolean;
+    }
   /** A drawn reflection was checked; `better` when it beats the player's garden. */
   | { readonly type: 'mirrorChecked'; readonly better: boolean }
   /** Too many checks did not win: the mirror challenge is over anyway (no one stays stuck). */
-  | { readonly type: 'mirrorSpared' };
+  | { readonly type: 'mirrorSpared' }
+  /** A drawing in the flower challenge; `chain` when the core says it is a chain of the garden. */
+  | { readonly type: 'flowerDrawn'; readonly chain: boolean }
+  /** Too many drawings were no chains: the flower challenge is over anyway. */
+  | { readonly type: 'flowerSpared' }
+  /** The light's own search was made in the garden and shown to the end. */
+  | { readonly type: 'searched' };
 
 /** What the scene has to show; data only, line ids untranslated. */
 export type FlowEffect =
@@ -79,15 +92,31 @@ export type FlowEffect =
   | { readonly kind: 'sproutTapped'; readonly vertex: VertexId }
   /** Waiting for a touch that splits the tangle. */
   | { readonly kind: 'separate' }
+  /** A count; what is counted, and its right number, come from the level and the core. */
   | {
       readonly kind: 'count';
       readonly step: number;
       readonly prompt: string;
-      readonly piece: VertexId;
-      readonly of: 'yours' | 'mirror';
       readonly range: number;
     }
   | { readonly kind: 'draw'; readonly attempts: number }
+  /** Waiting for a touch on the vine where the light went wrong. */
+  | { readonly kind: 'pickVine'; readonly step: number; readonly prompt: string }
+  /** A vine was pointed at; for the playtest log and the split badge. */
+  | {
+      readonly kind: 'vinePicked';
+      readonly step: number;
+      readonly u: VertexId;
+      readonly v: VertexId;
+      readonly correct: boolean;
+    }
+  /** Waiting for chains drawn in the open garden, cut at the flower and never applied. */
+  | { readonly kind: 'flowerChallenge'; readonly step: number; readonly attempts: number }
+  /**
+   * The light searches by itself: the scene shows its marks one by one, with the garden taking no
+   * input, and says when it is over.
+   */
+  | { readonly kind: 'autoSearch'; readonly step: number }
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
   /** A false statement of the notebook (`option`) is refuted by its garden, which opens. */
@@ -125,7 +154,7 @@ export interface FlowState {
     readonly correct: boolean;
     readonly informal: boolean;
   } | null;
-  /** Better reflections checked in the current `draw` step. */
+  /** Better reflections checked in the current `draw` step, or chains drawn in a flower challenge. */
   readonly attempts: number;
   /** The sprout touched to explore the tangle (2.1), whose strands stay shown; null before. */
   readonly touched: VertexId | null;
@@ -182,18 +211,17 @@ function opening(step: LevelStep, index: number): FlowEffect {
     case 'separate':
       return { kind: 'separate' };
     case 'count':
-      return {
-        kind: 'count',
-        step: index,
-        prompt: step.prompt,
-        piece: step.piece,
-        of: step.of,
-        range: step.range,
-      };
+      return { kind: 'count', step: index, prompt: step.prompt, range: step.range };
     case 'draw':
       return { kind: 'draw', attempts: step.attempts };
     case 'notebook':
       return { kind: 'notebook', step: index };
+    case 'pickVine':
+      return { kind: 'pickVine', step: index, prompt: step.prompt };
+    case 'flowerChallenge':
+      return { kind: 'flowerChallenge', step: index, attempts: step.attempts };
+    case 'autoSearch':
+      return { kind: 'autoSearch', step: index };
   }
 }
 
@@ -262,6 +290,8 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     }
     case 'sun':
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;
+    case 'autoSearch':
+      return signal.type === 'searched' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'separate':
       return signal.type === 'tap' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'explore':
@@ -286,6 +316,19 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       if (signal.option === signal.right) return next(given);
       given.effects.push(opening(step, flow.index));
       return given;
+    }
+    case 'pickVine': {
+      // Only the conflict ends the step; any other vine hears the reply, if any, and is asked again.
+      if (signal.type !== 'pickVine') return unchanged;
+      const { u, v, right } = signal;
+      const picked: FlowTurn = {
+        flow,
+        effects: [{ kind: 'vinePicked', step: flow.index, u, v, correct: right }],
+      };
+      if (right) return next(picked);
+      if (step.reply !== undefined) picked.effects.push({ kind: 'say', lines: [step.reply] });
+      picked.effects.push(opening(step, flow.index));
+      return picked;
     }
     case 'notebook': {
       // A false statement is answered by the mentor and refuted by its garden, if it has them;
@@ -315,6 +358,14 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     case 'draw': {
       if (signal.type === 'mirrorSpared') return enter(flow, flow.index + 1, []);
       if (signal.type !== 'mirrorChecked' || !signal.better) return unchanged;
+      const attempts = flow.attempts + 1;
+      return attempts >= step.attempts
+        ? enter(flow, flow.index + 1, [])
+        : { flow: { ...flow, attempts }, effects: [] };
+    }
+    case 'flowerChallenge': {
+      if (signal.type === 'flowerSpared') return enter(flow, flow.index + 1, []);
+      if (signal.type !== 'flowerDrawn' || !signal.chain) return unchanged;
       const attempts = flow.attempts + 1;
       return attempts >= step.attempts
         ? enter(flow, flow.index + 1, [])

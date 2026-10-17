@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { actionType, label, levelActionOptions, lineId, sprout, vine } from './fields';
+import { actionType, label, levelActionOptions, lineId, sprouts, vine } from './fields';
 import { flowSchema } from './flow';
 import { flowInputOptions } from './flowInput';
 import { notebookSchema } from './notebook';
@@ -15,6 +15,8 @@ const victory = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('matchingSize'), value: z.number().int().min(0) }),
   z.strictObject({ type: z.literal('maximum') }),
   z.strictObject({ type: z.literal('chainFound') }),
+  z.strictObject({ type: z.literal('searchComplete') }),
+  z.strictObject({ type: z.literal('searchExhausted') }),
   z.strictObject({ type: z.literal('coverCertificate') }),
   z.strictObject({ type: z.literal('tutteBergeCertificate') }),
 ]);
@@ -29,7 +31,7 @@ export const levelSchema = z.strictObject({
   /** `chapter.level`, e.g. `4.10`. */
   id: z.string().regex(/^\d+\.\d+$/, 'expected chapter.level, like 4.10'),
   /** Sprouts in id order: the n-th sprout is vertex n. */
-  sprouts: z.array(sprout).min(1),
+  sprouts,
   /**
    * A test level of a chapter not yet written: it still passes every integrity check, but only
    * teacher mode shows it, so playtesters never reach it.
@@ -44,6 +46,17 @@ export const levelSchema = z.strictObject({
   fog: z.boolean().default(false),
   /** Water budget for the extra star; null when the level does not count water. */
   water: z.number().int().min(0).nullable().default(null),
+  /**
+   * The only sprouts a search may start from (4.1 searches from R alone, so its light can "lie");
+   * every sprout in the dark when absent.
+   */
+  roots: z.array(label).min(1).optional(),
+  /**
+   * A flower of the starting garden, its petals around the loop with the base first (4.11 shows the
+   * garden open and folded side by side). Integrity checks that it is a flower and that its base is
+   * in the dark.
+   */
+  flower: z.array(label).min(3).optional(),
   /** Actions unlocked by now that this level keeps closed (4.10 closes folding). */
   forbid: z.array(actionType).default([]),
   /** When the play step is won; required exactly when the script has a play step. */

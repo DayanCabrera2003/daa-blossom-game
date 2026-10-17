@@ -1,7 +1,11 @@
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import type { VertexId } from '@core/graph/types';
 import type { Matching } from '@core/matching/types';
+import type { GardenState } from '@core/rules/state';
+import { findConflict, isConflictVine } from '@core/search/conflict';
+import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
+import type { CountStep } from '@levels/flow';
 import { lanternsOn, pieceOf, pondPieces } from './pond';
 
 /**
@@ -25,4 +29,27 @@ export function rightCount(
 ): number {
   const piece = pieceOf(pondPieces(yours, mirror), question.piece);
   return piece === null ? 0 : lanternsOn(piece, question.of);
+}
+
+/**
+ * The right count of the loop (4.2): how many sprouts the loop closed by the conflict of the
+ * player's search holds; 0 when the search meets no conflict (the level checks never let a count of
+ * the loop come where it does not).
+ */
+export const rightLoopCount = (state: GardenState): number =>
+  findConflict(state.layer, state.search)?.sprouts ?? 0;
+
+/**
+ * Whether the vine u–v (original sprouts) is the one where the light went wrong (4.2): a conflict
+ * of the player's search in the garden `state`.
+ */
+export const rightVine = (state: GardenState, u: VertexId, v: VertexId): boolean =>
+  isConflictVine(state.layer, state.search, u, v);
+
+/** The right number of a `count` step, judged on the garden `state` as it is now. */
+export function countAnswer(level: Level, state: GardenState, step: CountStep): number {
+  if (step.of === 'loop') return rightLoopCount(state);
+  // Level integrity gives every count of lanterns a reflection to count on.
+  invariant(level.mirror !== null, 'a count of lanterns needs the reflection of its level');
+  return rightCount(state.matching, level.mirror, step);
 }

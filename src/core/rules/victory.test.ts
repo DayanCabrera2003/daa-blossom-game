@@ -3,7 +3,9 @@ import { pathGraph } from '../generators/families';
 import { createGraph } from '../graph/createGraph';
 import { createMatching } from '../matching/createMatching';
 import { unwrap } from '../shared/result';
-import { createGardenState } from './state';
+import type { Action } from './actions';
+import { applyAction } from './applyAction';
+import { createGardenState, type GardenState } from './state';
 import { isVictory } from './victory';
 
 // Level 3.7, part I: 1–2–3–4–5 as 0..4, with its maximum of two lanterns.
@@ -108,5 +110,91 @@ describe('victory conditions', () => {
       true,
     );
     expect(isVictory({ ...twoLit, scarecrows: [1, 3] }, { type: 'coverCertificate' })).toBe(false);
+  });
+});
+
+/** Plays moves in order; a refusal here is a test bug. */
+const play = (state: GardenState, actions: readonly Action[]): GardenState =>
+  actions.reduce((current, action) => {
+    const outcome = applyAction(current, action);
+    if (!outcome.ok) throw new Error(`${action.type} refused: ${outcome.reason.code}`);
+    return outcome.state;
+  }, state);
+
+// Level 4.1: R–a=b, triangle b–c=d–b, c–e. R a b c d e = 0 1 2 3 4 5; the search starts at R only.
+const festivalGraph = unwrap(
+  createGraph(6, [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [2, 4],
+    [3, 5],
+  ]),
+);
+const festival = (allowed: readonly Action['type'][]): GardenState =>
+  createGardenState({
+    graph: festivalGraph,
+    matching: unwrap(
+      createMatching(festivalGraph, [
+        [1, 2],
+        [3, 4],
+      ]),
+    ),
+    roots: [0],
+    allowed,
+  });
+const SEARCH: readonly Action[] = [
+  { type: 'markRoot', vertex: 0 },
+  { type: 'markMoon', from: 0, to: 1 },
+  { type: 'markMoon', from: 2, to: 3 },
+];
+
+describe('the search as a victory (chapters 3 and 4)', () => {
+  it('searchComplete: a search that ends without a chain is complete, even if the light lies (4.2)', () => {
+    const start = festival(['markRoot', 'markMoon', 'declareDone']);
+    expect(isVictory(start, { type: 'searchComplete' })).toBe(false);
+    expect(isVictory(play(start, SEARCH.slice(0, 2)), { type: 'searchComplete' })).toBe(false);
+    expect(isVictory(play(start, SEARCH), { type: 'searchComplete' })).toBe(true);
+  });
+
+  it('searchComplete: a chain counts once the marks have reached it, not before (3.3)', () => {
+    // Level 3.1 without fog: R–a=b–c=d–T as 0–1=2–3=4–5.
+    const fog = pathGraph(6);
+    const start = createGardenState({
+      graph: fog,
+      matching: unwrap(
+        createMatching(fog, [
+          [1, 2],
+          [3, 4],
+        ]),
+      ),
+      allowed: ['markRoot', 'markMoon'],
+    });
+    const walked = play(start, [
+      { type: 'markRoot', vertex: 0 },
+      { type: 'markMoon', from: 0, to: 1 },
+      { type: 'markMoon', from: 2, to: 3 },
+    ]);
+    expect(isVictory(walked, { type: 'searchComplete' })).toBe(false);
+    const found = play(walked, [{ type: 'markMoon', from: 4, to: 5 }]);
+    expect(isVictory(found, { type: 'searchComplete' })).toBe(true);
+  });
+
+  it('searchComplete: with folding allowed, a conflict left unfolded is not the end (4.4)', () => {
+    const searched = play(festival(['markRoot', 'markMoon', 'foldAt']), SEARCH);
+    expect(isVictory(searched, { type: 'searchComplete' })).toBe(false);
+  });
+
+  it('searchExhausted: the search is over with no chain, and "Terminé" says so (3.6, 4.9)', () => {
+    const searched = play(festival(['markRoot', 'markMoon', 'declareDone']), SEARCH);
+    expect(isVictory(searched, { type: 'searchExhausted' })).toBe(false);
+    const claimed = play(searched, [{ type: 'declareDone' }]);
+    expect(isVictory(claimed, { type: 'searchExhausted' })).toBe(true);
+    const early = play(festival(['markRoot', 'markMoon', 'declareDone']), [
+      ...SEARCH.slice(0, 2),
+      { type: 'declareDone' },
+    ]);
+    expect(isVictory(early, { type: 'searchExhausted' })).toBe(false);
   });
 });

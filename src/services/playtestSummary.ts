@@ -1,6 +1,6 @@
 import type { PlaytestLog } from './playtestLog';
 
-/** What the playtest of Hito A measures for one level (GDD §10), over every play of it. */
+/** What the playtests of Hitos A and B measure for one level (GDD §10), over every play of it. */
 export interface LevelSummary {
   readonly level: string;
   readonly plays: number;
@@ -23,12 +23,35 @@ export interface LevelSummary {
   readonly counterexamples: number;
   /** Drawn reflections checked, by whether they beat the garden. */
   readonly mirrorChecks: { readonly beating: number; readonly notBeating: number };
+  /** Vines pointed at where the light went wrong (4.2), by whether they were the conflict. */
+  readonly vinePicks: { readonly right: number; readonly wrong: number };
+  /** Chains drawn in the flower challenge (4.11), counted or refused as no chain. */
+  readonly flowerChains: { readonly counted: number; readonly refused: number };
+  /**
+   * Whether the first vine ever pointed at in the level was the conflict (Hito B, 4.2), or null if
+   * no vine was pointed at. Later plays do not change it: they come back knowing the answer.
+   */
+  readonly firstPickRight: boolean | null;
+  /**
+   * Whether the first statement ever chosen in the level's notebook was a true one (Hito B, 4.11),
+   * or null if the notebook was never answered. No hint can be opened while the notebook asks, so
+   * a right first choice is one made without hints.
+   */
+  readonly notebookRightFirstTry: boolean | null;
+  /**
+   * Whether a grade-3 hint (the one that shows the way) was opened before the level was first won,
+   * in any play; in a level never won, whether one was opened at all (Hito B, 4.1: was the chain
+   * found by hand?).
+   */
+  readonly hint3BeforeWin: boolean;
 }
 
 type Tally = { -readonly [K in keyof LevelSummary]: LevelSummary[K] } & {
   claims: { right: number; wrong: number };
   bets: { made: number; right: number };
   mirrorChecks: { beating: number; notBeating: number };
+  vinePicks: { right: number; wrong: number };
+  flowerChains: { counted: number; refused: number };
 };
 
 const freshTally = (level: string): Tally => ({
@@ -46,6 +69,11 @@ const freshTally = (level: string): Tally => ({
   notebookWrong: 0,
   counterexamples: 0,
   mirrorChecks: { beating: 0, notBeating: 0 },
+  vinePicks: { right: 0, wrong: 0 },
+  flowerChains: { counted: 0, refused: 0 },
+  firstPickRight: null,
+  notebookRightFirstTry: null,
+  hint3BeforeWin: false,
 });
 
 /**
@@ -96,6 +124,7 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
         break;
       case 'hint':
         counts.hints += 1;
+        if (entry.grade >= 3 && counts.wins === 0) counts.hint3BeforeWin = true;
         break;
       case 'claim':
         if (entry.right) counts.claims.right += 1;
@@ -110,6 +139,7 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
         break;
       case 'notebook':
         if (!entry.right) counts.notebookWrong += 1;
+        counts.notebookRightFirstTry ??= entry.right;
         break;
       case 'counterexample':
         counts.counterexamples += 1;
@@ -117,6 +147,15 @@ export function summarize(log: PlaytestLog): LevelSummary[] {
       case 'mirrorCheck':
         if (entry.beats) counts.mirrorChecks.beating += 1;
         else counts.mirrorChecks.notBeating += 1;
+        break;
+      case 'pickVine':
+        if (entry.right) counts.vinePicks.right += 1;
+        else counts.vinePicks.wrong += 1;
+        counts.firstPickRight ??= entry.right;
+        break;
+      case 'flowerChain':
+        if (entry.counted) counts.flowerChains.counted += 1;
+        else counts.flowerChains.refused += 1;
         break;
       case 'history':
         break;

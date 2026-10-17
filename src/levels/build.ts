@@ -10,7 +10,7 @@ import type { LevelData } from './schema';
 import type { LevelStep } from './flow';
 import { isFlowInput, type FlowInput } from './flowInput';
 import { buildGarden, type GardenError } from './garden';
-import { toLevelStep, toWalkthroughEntry } from './translate';
+import { toLevelStep, toSprouts, toWalkthroughEntry } from './translate';
 
 /** One entry of a walkthrough: a garden move, or an input the script asks for. */
 export type WalkthroughEntry = Action | FlowInput;
@@ -24,6 +24,8 @@ export interface Level {
   readonly start: GardenState;
   /** The lanterns of the reflection in the pond (chapter 2); null when the level has none. */
   readonly mirror: Matching | null;
+  /** The petals of the flower the level declares (4.11), base first; null when it has none. */
+  readonly flower: readonly VertexId[] | null;
   /** What happens in the level, in order, with sprout ids. */
   readonly flow: readonly LevelStep[];
   /** The moves of the reference walkthrough, with sprout ids. */
@@ -47,7 +49,8 @@ export type BuildError =
 /**
  * Builds the playable level from its validated file: labels, garden, starting lanterns, the
  * reflection (a valid set of lanterns of the same garden), the actions it allows (those unlocked by
- * its id, minus `forbid`) and its solution with ids.
+ * its id, minus `forbid`), the roots a search may start from, the petals of its flower and its
+ * solution with ids.
  */
 export function buildLevel(data: LevelData): Result<Level, BuildError> {
   const built = buildGarden({
@@ -94,11 +97,26 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
   }
   const solution = walkthrough.filter((entry): entry is Action => !isFlowInput(entry));
 
+  let roots: VertexId[] | undefined;
+  if (data.roots !== undefined) {
+    const named = toSprouts(labels, data.roots);
+    if (!named.ok) return err({ code: 'badLabel', error: named.error });
+    roots = named.value;
+  }
+
+  let flower: VertexId[] | null = null;
+  if (data.flower !== undefined) {
+    const petals = toSprouts(labels, data.flower);
+    if (!petals.ok) return err({ code: 'badLabel', error: petals.error });
+    flower = petals.value;
+  }
+
   const forbidden = new Set(data.forbid);
   const start = createGardenState({
     graph,
     matching,
     fog: data.fog,
+    ...(roots === undefined ? {} : { roots }),
     allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
   });
   return ok({
@@ -107,6 +125,7 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     graph,
     start,
     mirror,
+    flower,
     flow,
     solution,
     walkthrough,

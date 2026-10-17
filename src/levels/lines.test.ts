@@ -105,6 +105,9 @@ describe('referencedLines', () => {
         },
         { step: 'bet', prompt: 'ch4.7.sauce.08', range: 3 },
         { step: 'count', prompt: 'ch4.7.sauce.10', piece: 'A', of: 'yours', range: 2 },
+        { step: 'count', prompt: 'ch4.7.sauce.11', of: 'loop', range: 3 },
+        { step: 'pickVine', prompt: 'ch4.7.sauce.12', reply: 'ch4.7.sauce.13' },
+        { step: 'pickVine', prompt: 'ch4.7.sauce.14' },
         { step: 'sun' },
       ],
     });
@@ -119,6 +122,10 @@ describe('referencedLines', () => {
       'ch4.7.sauce.07',
       'ch4.7.sauce.08',
       'ch4.7.sauce.10',
+      'ch4.7.sauce.11',
+      'ch4.7.sauce.12',
+      'ch4.7.sauce.13',
+      'ch4.7.sauce.14',
       'ch4.7.sauce.09',
     ]);
   });

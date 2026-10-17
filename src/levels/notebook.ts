@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { actionType, lineId, sprout, vine } from './fields';
+import { actionType, lineId, sprouts, vine } from './fields';
 
 /**
  * The notebook question of a level (GDD §5.5): after the player masters an idea, the mentor asks
@@ -12,7 +12,7 @@ const miniGarden = {
   /** The line that presents the garden: what to try in it. */
   line: lineId,
   /** Sprouts in id order, inside the same garden area as a level's. */
-  sprouts: z.array(sprout).min(1),
+  sprouts,
   vines: z.array(vine),
   /** Lanterns lit when the garden opens. */
   lanterns: z.array(vine).default([]),

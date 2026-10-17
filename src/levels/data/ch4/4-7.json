@@ -1,6 +1,5 @@
 {
   "id": "4.7",
-  "draft": true,
   "sprouts": [
     { "label": "R", "x": 30, "y": 135 },
     { "label": "a", "x": 90, "y": 135 },
@@ -27,8 +26,55 @@
     ["e", "f"]
   ],
   "goal": { "visible": true, "value": 4 },
+  "roots": ["R"],
   "victory": { "type": "matchingSize", "value": 4 },
-  "flow": [{ "step": "say", "lines": ["ch4.7.sauce.00"] }, { "step": "play" }],
+  "hints": [
+    { "line": "ch4.7.sauce.01" },
+    { "line": "ch4.7.sauce.02", "highlight": ["d", "f"] },
+    { "line": "ch4.7.sauce.03" }
+  ],
+  "notebook": {
+    "prompt": "ch4.7.notebook.05",
+    "options": [
+      { "line": "ch4.7.notebook.06", "correct": true, "reply": "ch4.7.sauce.09" },
+      { "line": "ch4.7.notebook.07", "correct": false, "reply": "ch4.7.sauce.10" },
+      {
+        "line": "ch4.7.notebook.08",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch4.7.sauce.11",
+          "sprouts": [
+            { "label": "R", "x": 80, "y": 135 },
+            { "label": "a", "x": 160, "y": 135 },
+            { "label": "b", "x": 240, "y": 135 },
+            { "label": "c", "x": 320, "y": 85 },
+            { "label": "d", "x": 320, "y": 185 },
+            { "label": "e", "x": 410, "y": 85 }
+          ],
+          "vines": [
+            ["R", "a"],
+            ["a", "b"],
+            ["b", "c"],
+            ["c", "d"],
+            ["d", "b"],
+            ["c", "e"]
+          ],
+          "lanterns": [
+            ["a", "b"],
+            ["c", "d"]
+          ],
+          "actions": ["markRoot", "markMoon", "foldAt", "unfold", "chain"]
+        }
+      }
+    ]
+  },
+  "flow": [
+    { "step": "say", "lines": ["ch4.7.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch4.7.sauce.04"] },
+    { "step": "notebook" }
+  ],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },
@@ -37,6 +83,7 @@
     { "type": "foldAt", "from": "f", "to": "d" },
     { "type": "markMoon", "from": "e", "to": "T" },
     { "type": "unfold", "blossom": 0 },
-    { "type": "chain", "path": ["R", "a", "b", "c", "d", "f", "e", "T"] }
+    { "type": "chain", "path": ["R", "a", "b", "c", "d", "f", "e", "T"] },
+    { "type": "answer", "option": 0 }
   ]
 }

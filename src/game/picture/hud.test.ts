@@ -2,6 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import { closedFlowerLevel } from '../../../tests/support/fixtureLevels';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { initialPointer } from '../input/pointer';
 import { HINT_DELAY_MS } from '../systems/hints';
@@ -42,7 +43,7 @@ describe('the picture of the HUD', () => {
   });
 
   it('a hidden goal asks the question instead (4.9); "Terminé" is at hand', () => {
-    const hud = hudPicture(startSession(levelById('4.9'), 0), initialPointer('marks'), 0);
+    const hud = hudPicture(startSession(closedFlowerLevel(), 0), initialPointer('marks'), 0);
     expect(hud.goal).toEqual({ key: 'hud.goalHidden', params: {} });
     expect(hud.canDeclareDone).toBe(true);
     expect(hud.tools).toEqual(['lanterns', 'marks', 'foldLoop', 'inspect', 'scarecrows']);

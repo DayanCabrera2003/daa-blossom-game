@@ -33,6 +33,11 @@ describe('playtest summary', () => {
       notebookWrong: 0,
       counterexamples: 0,
       mirrorChecks: { beating: 0, notBeating: 0 },
+      vinePicks: { right: 0, wrong: 0 },
+      flowerChains: { counted: 0, refused: 0 },
+      firstPickRight: null,
+      notebookRightFirstTry: null,
+      hint3BeforeWin: false,
     });
   });
 
@@ -110,6 +115,45 @@ describe('playtest summary', () => {
     ]);
   });
 
+  it('counts the vines pointed at per level, right and wrong (4.2)', () => {
+    const [summary] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.2' },
+        { kind: 'pickVine', at: 1, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
+        { kind: 'pickVine', at: 2, level: '4.2', step: 1, vine: ['b', 'd'], right: true },
+      ]),
+    );
+    expect(summary?.vinePicks).toEqual({ right: 1, wrong: 1 });
+  });
+
+  it('tells whether the first vine ever pointed at in a level was the right one (Hito B, 4.2)', () => {
+    const [wrongFirst, rightFirst] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.2' },
+        { kind: 'pickVine', at: 1, level: '4.2', step: 2, vine: ['b', 'c'], right: false },
+        { kind: 'pickVine', at: 2, level: '4.2', step: 2, vine: ['d', 'b'], right: true },
+        { kind: 'levelStart', at: 3, level: '4.2' },
+        { kind: 'pickVine', at: 4, level: '4.2', step: 2, vine: ['d', 'b'], right: true },
+        { kind: 'levelStart', at: 10, level: '4.3' },
+        { kind: 'pickVine', at: 11, level: '4.3', step: 2, vine: ['d', 'b'], right: true },
+        { kind: 'pickVine', at: 12, level: '4.3', step: 2, vine: ['b', 'c'], right: false },
+      ]),
+    );
+    expect(wrongFirst?.firstPickRight).toBe(false);
+    expect(rightFirst?.firstPickRight).toBe(true);
+  });
+
+  it('counts the chains drawn in the flower challenge per level, counted and refused (4.11)', () => {
+    const [summary] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.11' },
+        { kind: 'flowerChain', at: 1, level: '4.11', path: ['t', 'x'], counted: false },
+        { kind: 'flowerChain', at: 2, level: '4.11', path: ['e', 't'], counted: true },
+      ]),
+    );
+    expect(summary?.flowerChains).toEqual({ counted: 1, refused: 1 });
+  });
+
   it('counts wrong notebook choices, counterexamples opened and mirror checks per level', () => {
     const [notebook, mirror] = summarize(
       log([
@@ -124,6 +168,49 @@ describe('playtest summary', () => {
     );
     expect(notebook).toMatchObject({ level: '1.9', notebookWrong: 2, counterexamples: 1 });
     expect(mirror).toMatchObject({ level: '2.4', mirrorChecks: { beating: 2, notBeating: 1 } });
+  });
+
+  it('tells whether the first statement ever chosen in a notebook was a true one (Hito B, 4.11)', () => {
+    const [rightFirst, wrongFirst] = summarize(
+      log([
+        { kind: 'levelStart', at: 0, level: '4.11' },
+        { kind: 'notebook', at: 1, level: '4.11', option: 1, right: true },
+        { kind: 'levelStart', at: 2, level: '4.11' },
+        { kind: 'notebook', at: 3, level: '4.11', option: 0, right: false },
+        { kind: 'levelStart', at: 10, level: '4.2' },
+        { kind: 'notebook', at: 11, level: '4.2', option: 0, right: false },
+        { kind: 'counterexample', at: 12, level: '4.2', option: 0 },
+        { kind: 'notebook', at: 13, level: '4.2', option: 2, right: true },
+      ]),
+    );
+    expect(rightFirst?.notebookRightFirstTry).toBe(true);
+    expect(wrongFirst?.notebookRightFirstTry).toBe(false);
+  });
+
+  it('tells whether a grade-3 hint was opened before the level was first won (Hito B, 4.1)', () => {
+    const [byHand, helped, neverWon] = summarize(
+      log([
+        // Won without the third hint; a later play that opens it changes nothing.
+        { kind: 'levelStart', at: 0, level: '4.1' },
+        { kind: 'hint', at: 1, level: '4.1', grade: 1 },
+        { kind: 'hint', at: 2, level: '4.1', grade: 2 },
+        { kind: 'levelEnd', at: 3, level: '4.1', outcome: 'won', stars: 2 },
+        { kind: 'levelStart', at: 4, level: '4.1' },
+        { kind: 'hint', at: 5, level: '4.1', grade: 3 },
+        // The third hint in a play left unwon still comes before the first win.
+        { kind: 'levelStart', at: 10, level: '3.1' },
+        { kind: 'hint', at: 11, level: '3.1', grade: 3 },
+        { kind: 'levelEnd', at: 12, level: '3.1', outcome: 'left', stars: null },
+        { kind: 'levelStart', at: 13, level: '3.1' },
+        { kind: 'levelEnd', at: 14, level: '3.1', outcome: 'won', stars: 3 },
+        // Never won: any third hint counts.
+        { kind: 'levelStart', at: 20, level: '3.2' },
+        { kind: 'hint', at: 21, level: '3.2', grade: 3 },
+      ]),
+    );
+    expect(byHand?.hint3BeforeWin).toBe(false);
+    expect(helped?.hint3BeforeWin).toBe(true);
+    expect(neverWon?.hint3BeforeWin).toBe(true);
   });
 
   it('an empty log has nothing to say', () => {

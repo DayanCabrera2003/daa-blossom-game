@@ -7,6 +7,8 @@ import { HUB, layoutHub } from './hubLayout';
 const HEIGHT = 11;
 /** A wide level button: "1.1 ★★★" with stars wider than the digits. */
 const WIDE = 47;
+/** A level button of a two-digit level, "4.12 ★★★". */
+const WIDER = 52;
 
 /** Every button of a layout as a box: left, top, right, bottom. */
 const boxes = (widths: readonly (readonly number[])[], height = HEIGHT) =>
@@ -46,13 +48,16 @@ describe('the hub layout', () => {
   });
 
   it('every chapter of teacher mode, drafts included, stays above the export button', () => {
-    // Chapters 0, 1, 2, 4, 5 and 7 as the catalog has them: 5, 9, 4, 6, 1 and 3 levels.
-    const counts = [5, 9, 4, 6, 1, 3];
-    const { bottom } = layoutHub(
-      counts.map((count) => Array<number>(count).fill(WIDE)),
-      HEIGHT,
-    );
+    // Chapters 0, 1, 2, 3, 4, 5 and 7 as the catalog has them: 5, 9, 4, 9, 12, 1 and 3 levels.
+    // The ids of chapter 4 run to "4.12", a digit wider, so its buttons are wider still.
+    const counts = [5, 9, 4, 9, 12, 1, 3];
+    const widths = counts.map((count, c) => Array<number>(count).fill(c === 4 ? WIDER : WIDE));
+    const { chapters, bottom } = layoutHub(widths, HEIGHT);
     expect(bottom + HUB.gap).toBeLessThanOrEqual(HUB.exportY);
+    // The twelve festival levels take two lines, the nine of the greenhouse only one.
+    const lines = (c: number) => new Set(chapters[c]?.buttons.map((at) => at.y)).size;
+    expect(lines(3)).toBe(1);
+    expect(lines(4)).toBe(2);
   });
 
   it('buttons never overlap and never leave the canvas sideways', () => {

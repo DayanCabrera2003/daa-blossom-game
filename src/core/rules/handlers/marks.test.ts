@@ -70,6 +70,15 @@ describe('marking suns and moons', () => {
     });
   });
 
+  it('a level that names its roots refuses to start from any other sprout (4.1)', () => {
+    const fromR = { ...festival, roots: [0] };
+    expect(markRoot(fromR, { type: 'markRoot', vertex: 5 })).toEqual({
+      ok: false,
+      reason: { code: 'notARoot', vertex: 5 },
+    });
+    expect(markRoot(fromR, { type: 'markRoot', vertex: 0 }).ok).toBe(true);
+  });
+
   it('from a sun along a dark vine: a moon, and its partner a sun', () => {
     const rooted = play(fog, [{ type: 'markRoot', vertex: 0 }]);
     const outcome = markMoon(rooted, { type: 'markMoon', from: 0, to: 1 });

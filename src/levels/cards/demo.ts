@@ -3,6 +3,7 @@ import type { LabelError } from '@core/graph/labels';
 import { toEdges } from '@core/graph/labels';
 import type { Edge, VertexId } from '@core/graph/types';
 import { createMatching, type MatchingError } from '@core/matching/createMatching';
+import { checkAugmentingPath } from '@core/matching/paths';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { RejectReason } from '@core/rules/reasons';
@@ -24,7 +25,10 @@ export type DemoGesture =
   | { readonly kind: 'none' }
   /** Touches on these sprouts, one after another (joining, marking, placing…). */
   | { readonly kind: 'touch'; readonly sprouts: readonly VertexId[] }
-  /** Touches on vines (putting a lantern out, folding where suns meet, drawing a reflection). */
+  /**
+   * Touches on vines (putting a lantern out, folding where suns meet, pointing at a conflict,
+   * drawing a reflection).
+   */
   | { readonly kind: 'vines'; readonly vines: readonly Edge[] }
   /** A drag through these sprouts (a chain, a stem). */
   | { readonly kind: 'drag'; readonly path: readonly VertexId[] }
@@ -61,7 +65,14 @@ export interface CardDemo {
 }
 
 /** Why a written step cannot be shown. */
-export type DemoStepProblem = 'noUndo' | 'noRedo' | 'noChoices' | 'choiceOutOfRange' | 'badDrawn';
+export type DemoStepProblem =
+  | 'noUndo'
+  | 'noRedo'
+  | 'noChoices'
+  | 'choiceOutOfRange'
+  | 'badDrawn'
+  /** A chain drawn for the flower challenge that is no chain of the demo's garden. */
+  | 'badChain';
 
 /** Why a card's demo is not a demo the game can play. */
 export type DemoError =
@@ -206,6 +217,9 @@ function playInput(
     case 'tapSprout':
       frame({ kind: 'touch', sprouts: [entry.vertex] });
       return null;
+    case 'pickVine':
+      frame({ kind: 'vines', vines: [[entry.u, entry.v]] });
+      return null;
     case 'drawMirror': {
       if (!createMatching(state.graph, entry.lanterns).ok) return { kind: 'bad', why: 'badDrawn' };
       // The touches go to the vines added since the last drawing.
@@ -217,6 +231,12 @@ function playInput(
     }
     case 'checkMirror':
       frame({ kind: 'press', button: 'check' });
+      return null;
+    case 'drawChain':
+      // The flower challenge draws a chain without passing its lanterns.
+      if (!checkAugmentingPath(state.graph, state.matching, entry.path).ok)
+        return { kind: 'bad', why: 'badChain' };
+      frame({ kind: 'drag', path: entry.path });
       return null;
     default: {
       const outcome = applyAction(state, entry);

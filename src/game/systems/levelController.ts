@@ -1,4 +1,4 @@
-import type { VertexId } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { invariant } from '@core/shared/invariant';
 import type { TraceEvent } from '@core/trace/events';
@@ -16,11 +16,13 @@ import type { Point } from '../input/target';
 import { availableTools, type ToolId } from '../input/tools';
 import { triedChain } from '../input/triedChain';
 import type { FlowEffect } from './flow';
+import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
 import {
   act,
   askHint,
   checkDrawnMirror,
+  drawInGarden,
   drawInMirror,
   garden,
   openSession,
@@ -43,6 +45,8 @@ export interface Controller {
   readonly pointer: PointerState;
   /** Sprouts glowing because of a hint; put out by the next accepted move. */
   readonly highlight: readonly VertexId[];
+  /** The vine glowing because of a hint (the conflict to point at); put out by the next answer. */
+  readonly vineGlow: Edge | null;
   readonly positions: readonly Point[];
 }
 
@@ -58,9 +62,15 @@ export type UiEvent =
   /** A touch on the garden or on a sprout, for the steps that wait for one. */
   | { readonly kind: 'tapGarden' }
   | { readonly kind: 'tapSprout'; readonly vertex: VertexId }
+  /** A vine pointed at, for the step that waits for the conflict. */
+  | { readonly kind: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
   /** The mirror challenge: a vine put in or out of the drawn reflection, and the check of it. */
   | { readonly kind: 'drawToggle'; readonly u: VertexId; readonly v: VertexId }
-  | { readonly kind: 'checkMirror' };
+  | { readonly kind: 'checkMirror' }
+  /** A whole chain drawn in the flower challenge (a drag gives the same, sprout by sprout). */
+  | { readonly kind: 'drawChain'; readonly path: readonly VertexId[] }
+  /** The light's own search has been shown to the end; the scene says so, not the player. */
+  | { readonly kind: 'searched' };
 
 /**
  * What the scene has to show after an event: the answers to moves and hints, and the effects of the
@@ -80,6 +90,8 @@ export type Effect =
   | { readonly kind: 'drawRefused'; readonly reason: Refusal }
   /** The drawn reflection was checked: what the check found, to show over the garden. */
   | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
+  /** A chain drawn in the flower challenge: cut at the flower, or refused as no chain. */
+  | { readonly kind: 'flowerDrawn'; readonly attempt: FlowerAttempt }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
 /** The controller after an event, and what the scene has to show for it. */
@@ -103,6 +115,7 @@ export function openController(level: Level, now: number): Step {
       session,
       pointer: initialPointer(first),
       highlight: [],
+      vineGlow: null,
       positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
     },
     effects: shown(session, effects),
@@ -113,10 +126,16 @@ export function openController(level: Level, now: number): Step {
 export const startController = (level: Level, now: number): Controller =>
   openController(level, now).controller;
 
-/** Gives the script an input of the player; the controller keeps everything else. */
+/**
+ * Gives the script an input of the player; an answer puts out the vine a hint made glow, and the
+ * controller keeps everything else.
+ */
 function tell(controller: Controller, input: ScriptInput, now: number): Step {
   const { session, effects } = respond(controller.session, input, now);
-  return { controller: { ...controller, session }, effects: shown(session, effects) };
+  return {
+    controller: { ...controller, session, vineGlow: null },
+    effects: shown(session, effects),
+  };
 }
 
 /** A move through the day (undo, redo, the sun): when the shown state changes, the sun moved. */
@@ -165,6 +184,21 @@ function checkMirror(controller: Controller, now: number): Step {
   };
 }
 
+/**
+ * A chain drawn in the flower challenge: what the challenge made of it comes first, then whatever it
+ * moves the script on to. Outside the challenge nothing happens.
+ */
+function drawChain(controller: Controller, path: readonly VertexId[], now: number): Step {
+  const { session, attempt, effects } = drawInGarden(controller.session, path, now);
+  if (attempt === null) return { controller: { ...controller, session }, effects: [] };
+  // Like a move, a drawing puts out what a hint made glow.
+  const next = { ...controller, session, highlight: [] };
+  return {
+    controller: next,
+    effects: [{ kind: 'flowerDrawn', attempt }, ...shown(session, effects)],
+  };
+}
+
 /** Handles one event of the level screen at time `now` (milliseconds). Pure. */
 export function handle(controller: Controller, event: UiEvent, now: number): Step {
   const state = garden(controller.session);
@@ -184,10 +218,24 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
           ? tell(controller, { type: 'tapSprout', vertex: target.vertex }, now)
           : same({});
       }
+      // While pointing at the conflict, the touch is read as it ends (on release).
+      if (step === 'pickVine') return same({});
       // In the mirror challenge, a touch on a vine draws it in silver (or takes it out).
       if (step === 'draw') {
         const target = hitTest(state, positions, event.point);
         return target.kind === 'vine' ? drawToggle(controller, target.u, target.v) : same({});
+      }
+      // In the flower challenge, whatever the tool in hand, a press on a sprout in the dark starts a
+      // chain to draw, as the chain tool would.
+      if (step === 'flowerChallenge') {
+        const { pointer } = controller;
+        const sketching = pressStart(
+          { ...pointer, tool: 'lanterns' },
+          state,
+          positions,
+          event.point,
+        );
+        return same({ pointer: { ...sketching, tool: pointer.tool } });
       }
       return same({ pointer: pressStart(controller.pointer, state, positions, event.point) });
     }
@@ -202,7 +250,24 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
     }
     case 'release': {
       // The press of the mirror challenge was the whole touch: lanterns never move under it.
-      if (stepNow(controller.session)?.step === 'draw') return same({});
+      const step = stepNow(controller.session)?.step;
+      if (step === 'draw') return same({});
+      // While pointing at the conflict, a touch on a vine is the answer, never a move. It is read
+      // on release, so the end of the touch cannot reach the step that comes after a right one.
+      if (step === 'pickVine') {
+        const target = hitTest(state, positions, event.point);
+        return target.kind === 'vine'
+          ? tell(controller, { type: 'pickVine', u: target.u, v: target.v }, now)
+          : same({});
+      }
+      // In the flower challenge, letting go draws the chain dragged; it is never a move.
+      if (step === 'flowerChallenge') {
+        const { chain } = controller.pointer;
+        const released = { ...controller, pointer: { ...controller.pointer, chain: null } };
+        return chain !== null && chain.length >= 2
+          ? drawChain(released, chain, now)
+          : { controller: released, effects: [] };
+      }
       const released = pressEnd(controller.pointer, state, positions, event.point);
       const next = { ...controller, pointer: released.pointer };
       return released.action === null
@@ -228,23 +293,40 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
       return tell(controller, { type: 'tap' }, now);
     case 'tapSprout':
       return tell(controller, { type: 'tapSprout', vertex: event.vertex }, now);
+    case 'pickVine':
+      return tell(controller, { type: 'pickVine', u: event.u, v: event.v }, now);
     case 'drawToggle':
       return drawToggle(controller, event.u, event.v);
     case 'checkMirror':
       return checkMirror(controller, now);
+    case 'drawChain':
+      return drawChain(controller, event.path, now);
+    case 'searched':
+      return tell(controller, { type: 'searched' }, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
     case 'hint': {
       const opened = askHint(controller.session, now);
       if (opened === null) return same({});
+      const { hint } = opened;
       const shown: Step = {
-        controller: { ...controller, session: opened.session, highlight: opened.hint.highlight },
-        effects: [{ kind: 'hint', content: opened.hint }],
+        controller: {
+          ...controller,
+          session: opened.session,
+          highlight: hint.highlight,
+          vineGlow: hint.vine ?? controller.vineGlow,
+        },
+        effects: [{ kind: 'hint', content: hint }],
       };
-      if (opened.hint.move === null) return shown;
-      const made = apply(shown.controller, opened.hint.move, now);
+      // In the flower challenge, the mentor draws a chain for the player.
+      if (hint.chain !== null) {
+        const drawn = drawChain(shown.controller, hint.chain, now);
+        return { controller: drawn.controller, effects: [...shown.effects, ...drawn.effects] };
+      }
+      if (hint.move === null) return shown;
+      const made = apply(shown.controller, hint.move, now);
       return {
-        controller: { ...made.controller, highlight: opened.hint.highlight },
+        controller: { ...made.controller, highlight: hint.highlight },
         effects: [...shown.effects, ...made.effects],
       };
     }

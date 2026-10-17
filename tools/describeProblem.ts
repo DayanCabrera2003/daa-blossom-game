@@ -32,6 +32,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `line ${problem.line} belongs to another level`;
     case 'unlockMismatch':
       return `unlocks "${problem.action}", but the rules unlock it at ${problem.unlockedAt}`;
+    case 'sameKindVine':
+      return `vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
     case 'noCorrectOption':
       return `script step ${problem.step + 1} asks a question with no right answer`;
     case 'notebookMissing':
@@ -40,18 +42,38 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} needs the reflection, but the level has no mirror`;
     case 'pieceOutsideTangle':
       return `script step ${problem.step + 1} counts the piece through ${problem.sprout}, which is in no thread or loop`;
+    case 'noConflict':
+      return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
     case 'drawUnbeatable':
       return `script step ${problem.step + 1} asks for a better reflection, but the lanterns already hold the most`;
+    case 'flowerMissing':
+      return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
+    case 'noChainToDraw':
+      return `script step ${problem.step + 1} asks for chains, but the garden already holds the most`;
+    case 'flowerAfterPlay':
+      return `script step ${problem.step + 1} is a flower challenge after a play step, whose moves may undo the flower`;
     case 'betOutOfRange':
       return `script step ${problem.step + 1} bets from 1 to ${problem.range} lanterns, but the garden holds ${problem.optimum}: nobody can win it`;
     case 'demoRefused':
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'lightRefused':
+      return `script step ${problem.step + 1}: move ${problem.move + 1} of the light's own search is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'notAFlower':
+      return `the declared flower is no flower of the starting lanterns: ${withDetails(problem.error)}`;
+    case 'flowerBaseLit':
+      return `the base ${problem.base} of the declared flower holds a lantern, but it must be in the dark`;
+    case 'flowerBaseNotFirst':
+      return `the declared flower must start at its base, ${problem.base}`;
+    case 'flowerOffSide':
+      return `sprout ${problem.sprout} sits in the right half, where the folded garden is drawn`;
     case 'badCounterexample':
       return `notebook statement ${problem.option + 1}: its counterexample is no garden: ${withDetails(problem.error)}`;
     case 'counterexampleLocked':
       return `notebook statement ${problem.option + 1}: its counterexample uses "${problem.action}", which this level does not allow`;
     case 'counterexampleUnbeatable':
       return `notebook statement ${problem.option + 1}: its lanterns already hold the most, so no better reflection can be drawn`;
+    case 'counterexampleSameKindVine':
+      return `notebook statement ${problem.option + 1}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
   }
 }
 

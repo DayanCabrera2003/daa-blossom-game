@@ -1,6 +1,5 @@
 {
   "id": "4.9",
-  "draft": true,
   "sprouts": [
     { "label": "R", "x": 80, "y": 135 },
     { "label": "a", "x": 160, "y": 135 },
@@ -20,8 +19,17 @@
     ["c", "d"]
   ],
   "goal": { "visible": false },
-  "victory": { "type": "maximum" },
-  "flow": [{ "step": "say", "lines": ["ch4.9.sauce.00"] }, { "step": "play" }],
+  "victory": { "type": "searchExhausted" },
+  "hints": [
+    { "line": "ch4.9.sauce.01" },
+    { "line": "ch4.9.sauce.02", "highlight": ["b", "d"] },
+    { "line": "ch4.9.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch4.9.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch4.9.sauce.04"] }
+  ],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },

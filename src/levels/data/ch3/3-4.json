@@ -1,0 +1,59 @@
+{
+  "id": "3.4",
+  "sprouts": [
+    { "label": "R1", "x": 40, "y": 127, "kind": "bee" },
+    { "label": "a", "x": 120, "y": 75, "kind": "flower" },
+    { "label": "b", "x": 200, "y": 75, "kind": "bee" },
+    { "label": "e", "x": 120, "y": 180, "kind": "flower" },
+    { "label": "f", "x": 200, "y": 180, "kind": "bee" },
+    { "label": "R2", "x": 440, "y": 127, "kind": "flower" },
+    { "label": "c", "x": 360, "y": 75, "kind": "bee" },
+    { "label": "d", "x": 280, "y": 75, "kind": "flower" },
+    { "label": "g", "x": 360, "y": 180, "kind": "bee" },
+    { "label": "h", "x": 280, "y": 180, "kind": "flower" }
+  ],
+  "vines": [
+    ["R1", "a"],
+    ["a", "b"],
+    ["R1", "e"],
+    ["e", "f"],
+    ["R2", "c"],
+    ["c", "d"],
+    ["R2", "g"],
+    ["g", "h"],
+    ["b", "d"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["e", "f"],
+    ["c", "d"],
+    ["g", "h"]
+  ],
+  "goal": { "visible": true, "value": 5 },
+  "fog": true,
+  "water": 10,
+  "victory": { "type": "matchingSize", "value": 5 },
+  "hints": [
+    { "line": "ch3.4.sauce.01" },
+    { "line": "ch3.4.sauce.02", "highlight": ["R1", "R2"] },
+    { "line": "ch3.4.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch3.4.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch3.4.sauce.04"] }
+  ],
+  "solution": [
+    { "type": "inspect", "vertex": "R1" },
+    { "type": "markRoot", "vertex": "R1" },
+    { "type": "inspect", "vertex": "R2" },
+    { "type": "markRoot", "vertex": "R2" },
+    { "type": "markMoon", "from": "R1", "to": "a" },
+    { "type": "markMoon", "from": "R1", "to": "e" },
+    { "type": "markMoon", "from": "R2", "to": "c" },
+    { "type": "markMoon", "from": "R2", "to": "g" },
+    { "type": "inspect", "vertex": "b" },
+    { "type": "markMoon", "from": "b", "to": "d" },
+    { "type": "chain", "path": ["R1", "a", "b", "d", "c", "R2"] }
+  ]
+}

@@ -57,6 +57,32 @@ describe('building a level', () => {
     expect(unwrapLevel({ ...rotate, fog: true }).start.revealed).toEqual(new Array(6).fill(false));
   });
 
+  it('turns the roots a search may start from into ids, any sprout in the dark by default', () => {
+    expect(unwrapLevel({ ...rotate, roots: ['R'] }).start.roots).toEqual([0]);
+    expect(unwrapLevel(rotate).start.roots).toBeNull();
+  });
+
+  it('turns the petals of the flower a level declares into ids, base first; none by default', () => {
+    expect(unwrapLevel({ ...rotate, flower: ['b', 'c', 'd'] }).flower).toEqual([2, 3, 4]);
+    expect(unwrapLevel(rotate).flower).toBeNull();
+    expect(buildLevel({ ...rotate, flower: ['b', 'c', 'X'] })).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'X' } },
+    });
+  });
+
+  it('turns the sprouts of a chain drawn in the walkthrough into ids', () => {
+    const drawn = (path: string[]): LevelData => ({
+      ...rotate,
+      solution: [{ type: 'drawChain', path }],
+    });
+    expect(buildLevel(drawn(['e', 'c', 'X']))).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'X' } },
+    });
+    expect(unwrapLevel(drawn(['e', 'c', 'd', 'b'])).walkthrough).toEqual([
+      { type: 'drawChain', path: [5, 3, 4, 2] },
+    ]);
+  });
+
   it('says which name is unknown, wherever it appears', () => {
     expect(buildLevel({ ...rotate, vines: [['R', 'z']] })).toEqual({
       ok: false,
@@ -68,6 +94,9 @@ describe('building a level', () => {
     expect(
       buildLevel({ ...rotate, hints: [{ line: 'ch4.10.sauce.01', highlight: ['W'] }] }),
     ).toMatchObject({ error: { code: 'badLabel', error: { name: 'W' } } });
+    expect(buildLevel({ ...rotate, roots: ['R', 'V'] })).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'V' } },
+    });
   });
 
   it('also finds unknown names inside paths and among the starting lanterns', () => {

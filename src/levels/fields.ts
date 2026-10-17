@@ -25,12 +25,43 @@ export const lineId = z
  */
 export const SPROUT_AREA = { x0: 8, x1: 472, y0: 28, y1: 226 } as const;
 
-/** A sprout and where it sits, inside `SPROUT_AREA`. */
-export const sprout = z.strictObject({
+/**
+ * A garden shown open and folded side by side (4.11): the open garden keeps to the left half of the
+ * sprout area, up to `x1`, and its folded copy is drawn `shift` pixels to the right, inside the
+ * right half.
+ */
+export const SIDE_BY_SIDE = { shift: 240, x1: SPROUT_AREA.x1 - 240 } as const;
+
+/**
+ * What a sprout is in a garden of bees and flowers (chapter 3): a bee only pairs with a flower, so
+ * the garden is two-sided without anybody saying so.
+ */
+export const sproutKind = z.enum(['bee', 'flower']);
+
+/** A bee or a flower. */
+export type SproutKind = z.infer<typeof sproutKind>;
+
+/** A sprout and where it sits, inside `SPROUT_AREA`; bee or flower only in such gardens. */
+const sprout = z.strictObject({
   label,
   x: z.number().int().min(SPROUT_AREA.x0).max(SPROUT_AREA.x1),
   y: z.number().int().min(SPROUT_AREA.y0).max(SPROUT_AREA.y1),
+  kind: sproutKind.optional(),
 });
+
+/**
+ * The sprouts of a garden, a level's or a counterexample's, in id order. Either none says what it
+ * is or every one does: a garden of bees and flowers has no sprout that is neither. The rule needs
+ * only the list, so the file is refused as it loads; that each vine joins a bee and a flower needs
+ * the vines too and is an integrity check (`kinds.ts`).
+ */
+export const sprouts = z
+  .array(sprout)
+  .min(1)
+  .refine(
+    (list) => list.every((s) => s.kind === undefined) || list.every((s) => s.kind !== undefined),
+    'if one sprout is a bee or a flower, every sprout must be one',
+  );
 
 /** A vine, or a lantern on it, between two named sprouts. */
 export const vine = z.tuple([label, label]);

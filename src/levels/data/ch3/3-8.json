@@ -1,0 +1,92 @@
+{
+  "id": "3.8",
+  "sprouts": [
+    { "label": "1", "x": 50, "y": 90, "kind": "bee" },
+    { "label": "2", "x": 130, "y": 60, "kind": "flower" },
+    { "label": "3", "x": 210, "y": 90, "kind": "bee" },
+    { "label": "4", "x": 290, "y": 60, "kind": "flower" },
+    { "label": "5", "x": 370, "y": 90, "kind": "bee" },
+    { "label": "S", "x": 60, "y": 180, "kind": "bee" },
+    { "label": "a", "x": 140, "y": 145, "kind": "flower" },
+    { "label": "b", "x": 220, "y": 145, "kind": "bee" },
+    { "label": "c", "x": 140, "y": 212, "kind": "flower" },
+    { "label": "d", "x": 220, "y": 212, "kind": "bee" },
+    { "label": "e", "x": 300, "y": 180, "kind": "flower" },
+    { "label": "f", "x": 380, "y": 180, "kind": "bee" }
+  ],
+  "vines": [
+    ["1", "2"],
+    ["2", "3"],
+    ["3", "4"],
+    ["4", "5"],
+    ["S", "a"],
+    ["a", "b"],
+    ["S", "c"],
+    ["c", "d"],
+    ["b", "e"],
+    ["d", "e"],
+    ["e", "f"]
+  ],
+  "lanterns": [
+    ["2", "3"],
+    ["4", "5"],
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "coverCertificate" },
+  "hints": [
+    { "line": "ch3.8.sauce.02" },
+    { "line": "ch3.8.sauce.03", "highlight": ["2", "4", "a", "c", "e"] },
+    { "line": "ch3.8.sauce.04" }
+  ],
+  "notebook": {
+    "prompt": "ch3.8.notebook.07",
+    "options": [
+      { "line": "ch3.8.notebook.08", "correct": true, "reply": "ch3.8.sauce.11" },
+      {
+        "line": "ch3.8.notebook.09",
+        "correct": false,
+        "counterexample": {
+          "mode": "play",
+          "line": "ch3.8.sauce.12",
+          "sprouts": [
+            { "label": "A", "x": 160, "y": 127, "kind": "bee" },
+            { "label": "B", "x": 240, "y": 127, "kind": "flower" },
+            { "label": "C", "x": 320, "y": 127, "kind": "bee" }
+          ],
+          "vines": [
+            ["A", "B"],
+            ["B", "C"]
+          ],
+          "actions": ["join", "split", "placeScarecrow", "removeScarecrow"]
+        }
+      },
+      { "line": "ch3.8.notebook.10", "correct": false, "reply": "ch3.8.sauce.13" }
+    ]
+  },
+  "flow": [
+    { "step": "say", "lines": ["ch3.8.sauce.00", "ch3.8.sauce.01"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch3.8.sauce.05", "ch3.8.sauce.06"] },
+    { "step": "notebook" }
+  ],
+  "unlocks": { "codex": ["C4", "C5"] },
+  "solution": [
+    { "type": "markRoot", "vertex": "1" },
+    { "type": "markMoon", "from": "1", "to": "2" },
+    { "type": "markMoon", "from": "3", "to": "4" },
+    { "type": "markRoot", "vertex": "S" },
+    { "type": "markMoon", "from": "S", "to": "a" },
+    { "type": "markMoon", "from": "S", "to": "c" },
+    { "type": "markMoon", "from": "b", "to": "e" },
+    { "type": "placeScarecrow", "vertex": "2" },
+    { "type": "placeScarecrow", "vertex": "4" },
+    { "type": "placeScarecrow", "vertex": "a" },
+    { "type": "placeScarecrow", "vertex": "c" },
+    { "type": "placeScarecrow", "vertex": "e" },
+    { "type": "declareDone" },
+    { "type": "answer", "option": 0 }
+  ]
+}

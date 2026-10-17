@@ -1,0 +1,59 @@
+{
+  "id": "4.8",
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 135 },
+    { "label": "a", "x": 110, "y": 75 },
+    { "label": "b", "x": 190, "y": 75 },
+    { "label": "c", "x": 270, "y": 40 },
+    { "label": "d", "x": 270, "y": 110 },
+    { "label": "g", "x": 110, "y": 195 },
+    { "label": "h", "x": 190, "y": 195 },
+    { "label": "i", "x": 270, "y": 160 },
+    { "label": "j", "x": 270, "y": 224 },
+    { "label": "e", "x": 370, "y": 160 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "b"],
+    ["R", "g"],
+    ["g", "h"],
+    ["h", "i"],
+    ["i", "j"],
+    ["j", "h"],
+    ["i", "e"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["g", "h"],
+    ["i", "j"]
+  ],
+  "goal": { "visible": true, "value": 5 },
+  "roots": ["R"],
+  "victory": { "type": "matchingSize", "value": 5 },
+  "hints": [
+    { "line": "ch4.8.sauce.01" },
+    { "line": "ch4.8.sauce.02", "highlight": ["h", "i", "j"] },
+    { "line": "ch4.8.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch4.8.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch4.8.sauce.04"] }
+  ],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "foldAt", "from": "d", "to": "b" },
+    { "type": "markMoon", "from": "R", "to": "g" },
+    { "type": "markMoon", "from": "h", "to": "i" },
+    { "type": "foldAt", "from": "j", "to": "h" },
+    { "type": "markMoon", "from": "i", "to": "e" },
+    { "type": "unfold", "blossom": 1 },
+    { "type": "chain", "path": ["R", "g", "h", "j", "i", "e"] }
+  ]
+}

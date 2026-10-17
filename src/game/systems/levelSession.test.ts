@@ -3,6 +3,12 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
+import {
+  betrayalLevel,
+  closedFlowerLevel,
+  festivalLevel,
+  fivePetalsLevel,
+} from '../../../tests/support/fixtureLevels';
 import { HINT_DELAY_MS } from './hints';
 import {
   act,
@@ -29,13 +35,13 @@ const playAll = (session: LevelSession, actions: readonly Action[], now = 0) =>
 
 describe('a level session', () => {
   it('playing 4.6 with its solution wins, with the star for no hints', () => {
-    const level = levelById('4.6');
+    const level = fivePetalsLevel();
     const won = playAll(startSession(level, 0), level.solution);
     expect(won.won).toEqual({ total: 2, noHints: true, withinWater: null });
   });
 
   it('a wrong "Terminé" in 4.9 neither wins nor punishes: it is counted, and play goes on', () => {
-    const level = levelById('4.9');
+    const level = closedFlowerLevel();
     const wrong = playAll(startSession(level, 0), [
       { type: 'split', u: 1, v: 2 },
       { type: 'declareDone' },
@@ -73,7 +79,7 @@ describe('a level session', () => {
   });
 
   it('a hint opens grade by grade; at grade 3 the mentor makes the next step of the solution', () => {
-    const level = levelById('4.1');
+    const level = festivalLevel();
     let session = startSession(level, 0);
     const grades = [];
     for (let k = 1; k <= 3; k++) {
@@ -205,7 +211,7 @@ const question = {
 
 describe('a level session follows its script', () => {
   it('the default script opens with its lines and wins as before: both moments coincide', () => {
-    const level = levelById('4.6');
+    const level = fivePetalsLevel();
     expect(openSession(level, 0).effects).toEqual([
       { kind: 'say', lines: ['ch4.6.sauce.00'] },
       { kind: 'play' },
@@ -414,6 +420,61 @@ describe('a level session follows its script', () => {
     const session = startSession(level, 0);
     expect(respond(session, { type: 'answer', option: 1 }, 0).session.won).toBeNull();
     expect(respond(session, { type: 'answer', option: 2 }, 0).session.won).not.toBeNull();
+  });
+
+  it('the vine pointed at is judged by the core: only the conflict of the search ends the step', () => {
+    const level = betrayalLevel();
+    const searched = playAll(startSession(level, 0), level.solution);
+    expect(stepNow(searched)?.step).toBe('pickVine');
+    const wrong = respond(searched, { type: 'pickVine', u: 2, v: 3 }, 0);
+    expect(wrong.session.flow.index).toBe(searched.flow.index);
+    expect(wrong.effects).toEqual([
+      { kind: 'vinePicked', step: 1, u: 2, v: 3, correct: false },
+      { kind: 'say', lines: ['ch4.2.sauce.03'] },
+      { kind: 'pickVine', step: 1, prompt: 'ch4.2.sauce.01' },
+    ]);
+    const right = respond(searched, { type: 'pickVine', u: 4, v: 2 }, 0);
+    expect(right.effects.map((effect) => effect.kind)).toEqual(['vinePicked', 'count']);
+    // Under the pick, the garden takes no move.
+    expect(act(searched, { type: 'markMoon', from: 4, to: 2 }, 0).outcome).toEqual({
+      ok: false,
+      reason: { code: 'notNow' },
+    });
+  });
+
+  it('pointing at a vine offers hints: the level lines, then the conflict glows unanswered', () => {
+    const level = {
+      ...betrayalLevel(),
+      hints: [
+        { line: 'ch4.2.sauce.04', highlight: [] },
+        { line: 'ch4.2.sauce.05', highlight: [2, 4] },
+      ],
+    };
+    let session = playAll(startSession(level, 0), level.solution);
+    const hints = [];
+    for (let k = 1; k <= 3; k++) {
+      expect(isHintAvailable(session, k * HINT_DELAY_MS)).toBe(true);
+      const opened = askHint(session, k * HINT_DELAY_MS);
+      if (opened === null) throw new Error('hint not offered');
+      ({ session } = opened);
+      hints.push(opened.hint);
+    }
+    expect(hints.map((hint) => [hint.line, hint.vine])).toEqual([
+      ['ch4.2.sauce.04', null],
+      ['ch4.2.sauce.05', null],
+      ['hint.generic.3', [2, 4]],
+    ]);
+    // The glow answers nothing: the step still waits for the touch.
+    expect(stepNow(session)?.step).toBe('pickVine');
+  });
+
+  it('a count of the loop is judged by the core on the conflict of the search (4.2)', () => {
+    const level = betrayalLevel();
+    const played = playAll(startSession(level, 0), level.solution);
+    const searched = respond(played, { type: 'pickVine', u: 2, v: 4 }, 0).session;
+    expect(stepNow(searched)?.step).toBe('count');
+    expect(respond(searched, { type: 'answer', option: 4 }, 0).session.won).toBeNull();
+    expect(respond(searched, { type: 'answer', option: 3 }, 0).session.won).not.toBeNull();
   });
 
   it('a script of lines only completes the level as it opens', () => {

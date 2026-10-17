@@ -25,6 +25,16 @@ describe('readable level problems', () => {
         reason: { code: 'notAdjacent', u: 0, v: 2 },
       }),
     ).toBe('script step 3: demo move 1 is refused by the rules: notAdjacent {"u":0,"v":2}');
+    expect(
+      describeProblem({
+        code: 'lightRefused',
+        step: 0,
+        move: 0,
+        reason: { code: 'actionLocked', action: 'markRoot' },
+      }),
+    ).toBe(
+      'script step 1: move 1 of the light\'s own search is refused by the rules: actionLocked {"action":"markRoot"}',
+    );
     expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
       'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
     );
@@ -36,6 +46,12 @@ describe('readable level problems', () => {
       }),
     ).toBe(
       'notebook statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
+    );
+    expect(describeProblem({ code: 'sameKindVine', u: 'b', v: 'c', kind: 'flower' })).toBe(
+      'vine b–c joins two flowers, but a bee only pairs with a flower',
+    );
+    expect(describeProblem({ code: 'notAFlower', error: { code: 'evenLength', length: 4 } })).toBe(
+      'the declared flower is no flower of the starting lanterns: evenLength {"length":4}',
     );
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
@@ -57,8 +73,18 @@ describe('readable level problems', () => {
       { code: 'mirrorMissing', step: 0 },
       { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
       { code: 'drawUnbeatable', step: 5 },
+      { code: 'noConflict', step: 1 },
       { code: 'counterexampleLocked', option: 1, action: 'fold' },
       { code: 'counterexampleUnbeatable', option: 2 },
+      { code: 'sameKindVine', u: 'a', v: 'b', kind: 'bee' },
+      { code: 'counterexampleSameKindVine', option: 1, u: 'a', v: 'b', kind: 'flower' },
+      { code: 'notAFlower', error: { code: 'evenLength', length: 4 } },
+      { code: 'flowerBaseLit', base: 'b' },
+      { code: 'flowerBaseNotFirst', base: 'b' },
+      { code: 'flowerOffSide', sprout: 't' },
+      { code: 'flowerMissing', step: 1 },
+      { code: 'noChainToDraw', step: 1 },
+      { code: 'flowerAfterPlay', step: 1 },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

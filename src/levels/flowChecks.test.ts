@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { BLOOM } from '../../tests/support/fixtureLevels';
 import { checkFlow } from './flowChecks';
 import { loadLevel } from './loader';
 
@@ -51,6 +52,38 @@ const count = (piece: string) => ({
   of: 'mirror',
   range: 3,
 });
+
+/**
+ * The garden of 4.1 searched from R alone, as 4.2 does: R sun, a moon, b sun, c moon, d sun, and
+ * d–b closes the loop b, c, d. No reflection: the loop needs none to be counted.
+ */
+const betrayal = {
+  id: '4.2',
+  sprouts: ['R', 'a', 'b', 'c', 'd', 'e'].map((label, i) => ({ label, x: 40 + 60 * i, y: 135 })),
+  vines: [
+    ['R', 'a'],
+    ['a', 'b'],
+    ['b', 'c'],
+    ['c', 'd'],
+    ['d', 'b'],
+    ['c', 'e'],
+  ],
+  lanterns: [
+    ['a', 'b'],
+    ['c', 'd'],
+  ],
+  roots: ['R'],
+  goal: { visible: true, value: 3 },
+  victory: { type: 'searchComplete' },
+  flow: [{ step: 'play' }],
+  solution: [
+    { type: 'markRoot', vertex: 'R' },
+    { type: 'markMoon', from: 'R', to: 'a' },
+    { type: 'markMoon', from: 'b', to: 'c' },
+  ],
+};
+
+const loopCount = { step: 'count', prompt: 'ch4.2.sauce.01', of: 'loop', range: 6 };
 
 describe('the checks of a level script', () => {
   it('a sound script has no problems', () => {
@@ -179,5 +212,70 @@ describe('the checks of a level script', () => {
     expect(flowProblemsOf({ ...pond, flow: [{ step: 'mirror' }, demo] })).toEqual([
       { code: 'demoRefused', step: 1, move: 1, reason: { code: 'notAdjacent', u: 0, v: 2 } },
     ]);
+  });
+
+  it('the loop of a conflict is counted without a reflection, once the search has met itself', () => {
+    expect(flowProblemsOf({ ...betrayal, flow: [{ step: 'play' }, loopCount] })).toEqual([]);
+  });
+
+  it('a loop is counted only where the reference search leaves a conflict', () => {
+    expect(flowProblemsOf({ ...betrayal, flow: [loopCount, { step: 'play' }] })).toEqual([
+      { code: 'noConflict', step: 0 },
+    ]);
+    const unmet = { ...betrayal, solution: betrayal.solution.slice(0, 2) };
+    expect(flowProblemsOf({ ...unmet, flow: [{ step: 'play' }, loopCount] })).toEqual([
+      { code: 'noConflict', step: 1 },
+    ]);
+  });
+
+  it('the vine of the conflict is pointed at only where the reference search leaves one', () => {
+    const pick = { step: 'pickVine', prompt: 'ch4.2.sauce.02' };
+    expect(flowProblemsOf({ ...betrayal, flow: [{ step: 'play' }, pick, loopCount] })).toEqual([]);
+    expect(flowProblemsOf({ ...betrayal, flow: [pick, { step: 'play' }] })).toEqual([
+      { code: 'noConflict', step: 0 },
+    ]);
+  });
+
+  it('after the light searches by itself, its conflict can be pointed at and its loop counted', () => {
+    const pick = { step: 'pickVine', prompt: 'ch4.2.sauce.02' };
+    const lit = {
+      ...betrayal,
+      victory: undefined,
+      solution: [{ type: 'pickVine', u: 'd', v: 'b' }],
+    };
+    expect(flowProblemsOf({ ...lit, flow: [{ step: 'autoSearch' }, pick, loopCount] })).toEqual([]);
+  });
+
+  it('the light searches with the moves the level allows, from the garden it has', () => {
+    // Without marks unlocked (chapter 0), the light's first sun is refused.
+    const early = { ...betrayal, id: '0.5', victory: undefined, solution: [{ type: 'tapGarden' }] };
+    expect(flowProblemsOf({ ...early, flow: [{ step: 'autoSearch' }] })).toEqual([
+      {
+        code: 'lightRefused',
+        step: 0,
+        move: 0,
+        reason: { code: 'actionLocked', action: 'markRoot' },
+      },
+    ]);
+  });
+
+  it('the flower challenge needs a flower, a chain to draw, and comes before any play', () => {
+    const challenge = { step: 'flowerChallenge', attempts: 3 };
+    expect(flowProblemsOf({ ...BLOOM, flow: [challenge] })).toEqual([]);
+    expect(flowProblemsOf({ ...BLOOM, flower: undefined, flow: [challenge] })).toEqual([
+      { code: 'flowerMissing', step: 0 },
+    ]);
+    // With e and t lit together, the open garden holds the most: no chain to draw.
+    const full = { ...BLOOM, lanterns: [...BLOOM.lanterns, ['e', 't']] };
+    expect(flowProblemsOf({ ...full, flow: [challenge] })).toEqual([
+      { code: 'noChainToDraw', step: 0 },
+    ]);
+    const played = {
+      ...BLOOM,
+      victory: { type: 'maximum' },
+      flow: [{ step: 'play' }, challenge],
+      solution: [{ type: 'join', u: 'e', v: 't' }],
+    };
+    expect(flowProblemsOf(played)).toEqual([{ code: 'flowerAfterPlay', step: 1 }]);
   });
 });

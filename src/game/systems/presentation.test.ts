@@ -64,6 +64,8 @@ describe('the order the player sees things in', () => {
     expect(blocksInput(present(emptyStage, [lines('a'), replay]).stage)).toBe(false);
     expect(blocksInput(present(emptyStage, [replay, lines('a')]).stage)).toBe(true);
     expect(blocksInput(present(emptyStage, [victory]).stage)).toBe(false);
+    // The light searching by itself is a day replaying too (4.1, 4.2).
+    expect(blocksInput(present(emptyStage, [{ ...replay, light: true }]).stage)).toBe(true);
   });
 
   it('a question waits for the lines before it, and what follows waits for its answer', () => {

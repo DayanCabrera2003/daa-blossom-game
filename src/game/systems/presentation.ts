@@ -22,8 +22,16 @@ export type Presentation =
   | { readonly kind: 'lines'; readonly lines: readonly string[] }
   /** A question or a bet, until it is answered; its panel keeps the garden from taking touches. */
   | { readonly kind: 'question'; readonly question: Question }
-  /** The day replaying itself through these states, dawn to dusk; the garden takes no input. */
-  | { readonly kind: 'replay'; readonly day: readonly GardenState[] }
+  /**
+   * The day replaying itself through these states, dawn to dusk; the garden takes no input. With
+   * `light`, these are the marks of the light searching by itself (4.1, 4.2), not yet in the
+   * player's day: at dusk the scene reports that the search was shown, and the session keeps it.
+   */
+  | {
+      readonly kind: 'replay';
+      readonly day: readonly GardenState[];
+      readonly light?: boolean;
+    }
   /**
    * The garden that refutes a false notebook statement (`option`), in a screen of its own; over when
    * the player goes back to the notebook.

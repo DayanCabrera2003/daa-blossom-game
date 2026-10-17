@@ -19,6 +19,8 @@ function stepLines(step: FlowStep): string[] {
     case 'bet':
     case 'count':
       return [step.prompt];
+    case 'pickVine':
+      return step.reply === undefined ? [step.prompt] : [step.prompt, step.reply];
     default:
       return [];
   }

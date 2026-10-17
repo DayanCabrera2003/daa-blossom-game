@@ -136,4 +136,32 @@ describe('level schema', () => {
     expect(levelSchema.parse({ ...twoSprouts, draft: true }).draft).toBe(true);
     expect(levelSchema.safeParse({ ...twoSprouts, draft: 'yes' }).success).toBe(false);
   });
+
+  it('a sprout may be a bee or a flower (chapter 3), and is neither by default', () => {
+    expect(levelSchema.parse(twoSprouts).sprouts[0]?.kind).toBeUndefined();
+    const meadow = {
+      ...twoSprouts,
+      sprouts: [
+        { label: 'A', x: 200, y: 135, kind: 'bee' },
+        { label: 'B', x: 280, y: 135, kind: 'flower' },
+      ],
+    };
+    expect(levelSchema.parse(meadow).sprouts.map((sprout) => sprout.kind)).toEqual([
+      'bee',
+      'flower',
+    ]);
+    const wasp = { ...meadow, sprouts: [{ label: 'A', x: 200, y: 135, kind: 'wasp' }] };
+    expect(levelSchema.safeParse(wasp).success).toBe(false);
+  });
+
+  it('a garden with bees and flowers says what every one of its sprouts is', () => {
+    const mixed = {
+      ...twoSprouts,
+      sprouts: [
+        { label: 'A', x: 200, y: 135, kind: 'bee' },
+        { label: 'B', x: 280, y: 135 },
+      ],
+    };
+    expect(levelSchema.safeParse(mixed).success).toBe(false);
+  });
 });

@@ -3,16 +3,15 @@ import { applyAction } from '@core/rules/applyAction';
 import { actionsUnlockedBy } from '@core/rules/permissions';
 import type { GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
-import { catalog } from '@levels/catalog';
 import { describe, expect, it } from 'vitest';
+import {
+  festivalLevel,
+  helixLevel,
+  nestedFlowersLevel,
+} from '../../../tests/support/fixtureLevels';
 import { NO_SELECTION } from '../input/selection';
 import { gardenPicture, NO_EXTRAS } from './garden';
 
-const levelById = (id: string): Level => {
-  const level = catalog().find((l) => l.data.id === id);
-  if (level === undefined) throw new Error(`no level ${id}`);
-  return level;
-};
 const after = (state: GardenState, actions: Action[]) =>
   actions.reduce((s, action) => {
     const outcome = applyAction(s, action);
@@ -23,7 +22,7 @@ const placesOf = (level: Level) => level.data.sprouts.map(({ x, y }) => ({ x, y 
 const labelsOf = (level: Level) => level.data.sprouts.map(({ label }) => label);
 
 describe('the picture of the garden', () => {
-  const festival = levelById('4.1');
+  const festival = festivalLevel();
   const picture = (state: GardenState, extras = NO_EXTRAS) =>
     gardenPicture(state, placesOf(festival), labelsOf(festival), extras);
 
@@ -67,7 +66,7 @@ describe('the picture of the garden', () => {
   });
 
   it('nested flowers are drawn one inside the other, outermost first (5.1, 5.2)', () => {
-    const wild = levelById('5.1');
+    const wild = nestedFlowersLevel();
     const twice = after(wild.start, wild.solution.slice(0, 6) as Action[]);
     const { flowers } = gardenPicture(twice, placesOf(wild), labelsOf(wild), NO_EXTRAS);
     expect(flowers.map((f) => [f.id, f.depth])).toEqual([
@@ -103,8 +102,15 @@ describe('the picture of the garden', () => {
     ).toBe(true);
   });
 
+  it('a vine a hint makes glow is told from the rest, touched from either end', () => {
+    const glowing = (extras: typeof NO_EXTRAS) =>
+      picture(festival.start, extras).vines.filter((vine) => vine.glowing);
+    expect(glowing({ ...NO_EXTRAS, vineGlow: [4, 2] })).toMatchObject([{ u: 2, v: 4 }]);
+    expect(glowing(NO_EXTRAS)).toEqual([]);
+  });
+
   it('stones and scarecrows sit on their sprouts; lifted stones outline the odd groups (7.3)', () => {
-    const helix = levelById('7.3');
+    const helix = helixLevel();
     const lifted = { ...helix.start, stones: [0], scarecrows: [4] };
     const { sprouts, oddGroups } = gardenPicture(
       lifted,
@@ -121,12 +127,30 @@ describe('the picture of the garden', () => {
   });
 
   it('nothing pointed at by default', () => {
-    expect(NO_EXTRAS).toEqual({ selection: NO_SELECTION, highlight: [], chain: null });
+    expect(NO_EXTRAS).toEqual({
+      selection: NO_SELECTION,
+      highlight: [],
+      chain: null,
+      vineGlow: null,
+    });
     expect(picture(festival.start).chain).toBeNull();
   });
 
   it('a sprout without a name (a random garden) shows its number', () => {
     const { sprouts } = gardenPicture(festival.start, placesOf(festival), [], NO_EXTRAS);
     expect(sprouts.map((s) => s.label)).toEqual(['0', '1', '2', '3', '4', '5']);
+  });
+
+  it('marks each sprout as a bee or a flower, and as neither in other gardens (chapter 3)', () => {
+    const kinds = ['bee', 'flower', 'bee', 'flower', 'bee', 'flower'] as const;
+    const { sprouts } = gardenPicture(
+      festival.start,
+      placesOf(festival),
+      labelsOf(festival),
+      NO_EXTRAS,
+      kinds,
+    );
+    expect(sprouts.map((s) => s.kind)).toEqual(kinds);
+    expect(picture(festival.start).sprouts.map((s) => s.kind)).toEqual(Array(6).fill(null));
   });
 });

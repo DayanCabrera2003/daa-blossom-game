@@ -17,6 +17,20 @@ function named(labels: Labels, name: string): Result<VertexId, LabelError> {
   return vertex === undefined ? err({ code: 'unknownName', name }) : ok(vertex);
 }
 
+/** The ids of a list of named sprouts, stopping at the first unknown name. */
+export function toSprouts(
+  labels: Labels,
+  names: readonly string[],
+): Result<VertexId[], LabelError> {
+  const vertices: VertexId[] = [];
+  for (const name of names) {
+    const vertex = named(labels, name);
+    if (!vertex.ok) return vertex;
+    vertices.push(vertex.value);
+  }
+  return ok(vertices);
+}
+
 const SPROUT_FIELDS = ['u', 'v', 'from', 'to', 'vertex'] as const;
 const PATH_FIELDS = ['path', 'stem', 'loop'] as const;
 
@@ -37,13 +51,9 @@ export function toAction(labels: Labels, step: LevelAction): Result<Action, Labe
   for (const field of PATH_FIELDS) {
     const names = (step as Record<string, unknown>)[field];
     if (!Array.isArray(names)) continue;
-    const vertices: VertexId[] = [];
-    for (const name of names as string[]) {
-      const vertex = named(labels, name);
-      if (!vertex.ok) return vertex;
-      vertices.push(vertex.value);
-    }
-    translated[field] = vertices;
+    const vertices = toSprouts(labels, names as string[]);
+    if (!vertices.ok) return vertices;
+    translated[field] = vertices.value;
   }
   return ok(translated as Action);
 }
@@ -62,10 +72,14 @@ export function toActions(
   return ok(actions);
 }
 
-/** Translates one step of a script: the sprout a `count` asks about and the moves of a demo. */
+/**
+ * Translates one step of a script: the sprout a `count` of lanterns asks about and the moves of a
+ * demo.
+ */
 export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, LabelError> {
   switch (step.step) {
     case 'count': {
+      if (step.of === 'loop') return ok(step);
       const piece = named(labels, step.piece);
       return piece.ok ? ok({ ...step, piece: piece.value }) : piece;
     }
@@ -79,12 +93,25 @@ export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, L
   }
 }
 
-/** Translates one script input of a walkthrough: the sprout touched, the reflection drawn. */
+/**
+ * Translates one script input of a walkthrough: the sprout touched, the vine pointed at, the
+ * reflection or the chain drawn.
+ */
 function toFlowInput(labels: Labels, input: LevelFlowInput): Result<FlowInput, LabelError> {
   switch (input.type) {
     case 'tapSprout': {
       const vertex = named(labels, input.vertex);
       return vertex.ok ? ok({ type: 'tapSprout', vertex: vertex.value }) : vertex;
+    }
+    case 'pickVine': {
+      const u = named(labels, input.u);
+      if (!u.ok) return u;
+      const v = named(labels, input.v);
+      return v.ok ? ok({ type: 'pickVine', u: u.value, v: v.value }) : v;
+    }
+    case 'drawChain': {
+      const path = toSprouts(labels, input.path);
+      return path.ok ? ok({ type: 'drawChain', path: path.value }) : path;
     }
     case 'drawMirror': {
       const lanterns = toEdges(labels, input.lanterns);

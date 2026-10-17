@@ -1,0 +1,63 @@
+{
+  "id": "3.2",
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 127, "kind": "bee" },
+    { "label": "a1", "x": 125, "y": 55, "kind": "flower" },
+    { "label": "a2", "x": 125, "y": 127, "kind": "flower" },
+    { "label": "a3", "x": 125, "y": 199, "kind": "flower" },
+    { "label": "b1", "x": 205, "y": 55, "kind": "bee" },
+    { "label": "b2", "x": 205, "y": 127, "kind": "bee" },
+    { "label": "b3", "x": 205, "y": 199, "kind": "bee" },
+    { "label": "c1", "x": 285, "y": 55, "kind": "flower" },
+    { "label": "d1", "x": 365, "y": 55, "kind": "bee" },
+    { "label": "T", "x": 290, "y": 127, "kind": "flower" },
+    { "label": "c3", "x": 285, "y": 199, "kind": "flower" },
+    { "label": "d3", "x": 365, "y": 199, "kind": "bee" }
+  ],
+  "vines": [
+    ["R", "a1"],
+    ["R", "a2"],
+    ["R", "a3"],
+    ["a1", "b1"],
+    ["a2", "b2"],
+    ["a3", "b3"],
+    ["b1", "c1"],
+    ["c1", "d1"],
+    ["b2", "T"],
+    ["b3", "c3"],
+    ["c3", "d3"]
+  ],
+  "lanterns": [
+    ["a1", "b1"],
+    ["a2", "b2"],
+    ["a3", "b3"],
+    ["c1", "d1"],
+    ["c3", "d3"]
+  ],
+  "goal": { "visible": true, "value": 6 },
+  "fog": true,
+  "water": 12,
+  "victory": { "type": "matchingSize", "value": 6 },
+  "hints": [
+    { "line": "ch3.2.sauce.01" },
+    { "line": "ch3.2.sauce.02", "highlight": ["a1", "a2", "a3"] },
+    { "line": "ch3.2.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch3.2.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch3.2.sauce.04"] }
+  ],
+  "solution": [
+    { "type": "inspect", "vertex": "R" },
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a1" },
+    { "type": "inspect", "vertex": "b1" },
+    { "type": "markMoon", "from": "b1", "to": "c1" },
+    { "type": "inspect", "vertex": "d1" },
+    { "type": "markMoon", "from": "R", "to": "a2" },
+    { "type": "inspect", "vertex": "b2" },
+    { "type": "markMoon", "from": "b2", "to": "T" },
+    { "type": "chain", "path": ["R", "a2", "b2", "T"] }
+  ]
+}

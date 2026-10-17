@@ -123,13 +123,18 @@ describe('the demo of a mechanic card', () => {
     ).toMatchObject({ ok: false, error: { code: 'badStep', why: 'choiceOutOfRange' } });
   });
 
-  it('touches on a sprout or on the garden are shown, and change no lantern', () => {
+  it('touches on a sprout, a vine or the garden are shown, and change no lantern', () => {
     const demo = built({
       ...path3,
-      steps: [{ type: 'tapSprout', vertex: 'b' }, { type: 'tapGarden' }],
+      steps: [
+        { type: 'tapSprout', vertex: 'b' },
+        { type: 'pickVine', u: 'c', v: 'b' },
+        { type: 'tapGarden' },
+      ],
     });
     expect(demo.frames.map((frame) => frame.gesture)).toEqual([
       { kind: 'touch', sprouts: [1] },
+      { kind: 'vines', vines: [[2, 1]] },
       { kind: 'tapGarden' },
       { kind: 'none' },
     ]);
@@ -163,6 +168,19 @@ describe('the demo of a mechanic card', () => {
       ],
     });
     expect(itemAt(drawn.frames, 1).gesture).toEqual({ kind: 'vines', vines: [[2, 3]] });
+  });
+
+  it('a chain drawn in the flower challenge is dragged and changes no lantern', () => {
+    const demo = built({ ...path3, steps: [{ type: 'drawChain', path: ['a', 'b'] }] });
+    expect(itemAt(demo.frames, 0).gesture).toEqual({ kind: 'drag', path: [0, 1] });
+    expect(lit(demo, 1, 0)).toBe(false);
+    const lantern = { ...path3, lanterns: [['b', 'c']] };
+    expect(
+      buildDemo(card({ ...lantern, steps: [{ type: 'drawChain', path: ['a', 'b'] }] })),
+    ).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'badChain' },
+    });
   });
 
   it('silver lanterns that are not a valid set of lanterns are an error', () => {

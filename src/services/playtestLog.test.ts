@@ -42,7 +42,7 @@ describe('playtest log', () => {
     expect(parseLog(log)).toEqual(log);
   });
 
-  it('reads back the answers, bets, notebook choices, counterexamples and mirror checks', () => {
+  it('reads back answers, bets, notebook choices, counterexamples, mirror checks, vines and chains', () => {
     const log = {
       version: 1,
       entries: [
@@ -51,6 +51,8 @@ describe('playtest log', () => {
         { kind: 'notebook', at: 3, level: '1.9', option: 2, right: false },
         { kind: 'counterexample', at: 4, level: '1.9', option: 2 },
         { kind: 'mirrorCheck', at: 5, level: '2.4', beats: true, counted: true },
+        { kind: 'pickVine', at: 6, level: '4.2', step: 1, vine: ['b', 'c'], right: false },
+        { kind: 'flowerChain', at: 7, level: '4.11', path: ['e', 't'], counted: true },
       ],
     };
     expect(parseLog(log)).toEqual(log);

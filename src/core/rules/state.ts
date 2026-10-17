@@ -30,6 +30,11 @@ export interface GardenState {
   readonly declaredDone: boolean;
   /** The actions this level unlocks. */
   readonly allowed: ReadonlySet<ActionType>;
+  /**
+   * The only sprouts a search may start from (a level's `roots`, 4.1: "from R"), or null when any
+   * sprout in the dark may.
+   */
+  readonly roots: readonly VertexId[] | null;
 }
 
 /** How a level sets up its garden. */
@@ -40,6 +45,8 @@ export interface GardenSetup {
   /** Whether the garden starts covered in fog (chapter 3). */
   readonly fog?: boolean;
   readonly allowed: readonly ActionType[];
+  /** The only sprouts a search may start from; any sprout in the dark by default. */
+  readonly roots?: readonly VertexId[];
 }
 
 /** The garden at the start of a level: open, unmarked, nothing spent or placed. */
@@ -57,5 +64,6 @@ export function createGardenState(setup: GardenSetup): GardenState {
     chainSeen: null,
     declaredDone: false,
     allowed: new Set(setup.allowed),
+    roots: setup.roots ?? null,
   };
 }

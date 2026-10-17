@@ -2,9 +2,18 @@ import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { ActionType } from '@core/rules/actions';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
-import { catalog } from '@levels/catalog';
+import { catalog, compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
 import { describe, expect, it } from 'vitest';
+import {
+  betrayalLevel,
+  bloomLevel,
+  festivalLevel,
+  fivePetalsLevel,
+  lightLevel,
+  pentagonLevel,
+  stemRotationLevel,
+} from '../../../tests/support/fixtureLevels';
 import {
   ACTION_CARD,
   helpCards,
@@ -26,11 +35,10 @@ const levelOf = (id: string): Level => {
  * Plays the game in order, as one player who closes every card: the cards each level shows, at
  * its start and as each step of its script is reached.
  */
-function walk(ids: readonly string[]): Map<string, CardId[]> {
+function walkLevels(played: readonly Level[]): Map<string, CardId[]> {
   const seen = new Set<CardId>();
   const shown = new Map<string, CardId[]>();
-  for (const id of ids) {
-    const level = levelOf(id);
+  for (const level of played) {
     const cards = [...startCards(level, seen)];
     for (const card of cards) seen.add(card);
     for (const step of level.flow) {
@@ -39,10 +47,13 @@ function walk(ids: readonly string[]): Map<string, CardId[]> {
       cards.push(card);
       seen.add(card);
     }
-    shown.set(id, cards);
+    shown.set(level.data.id, cards);
   }
   return shown;
 }
+
+/** The same walk, through the levels of the catalog with these ids. */
+const walk = (ids: readonly string[]): Map<string, CardId[]> => walkLevels(ids.map(levelOf));
 
 const playedInOrder = levels.filter((level) => !level.data.draft).map((level) => level.data.id);
 
@@ -54,7 +65,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(all).toEqual([...new Set(all)]);
   });
 
-  it('chapters 0 to 2 bring their mechanics in the levels that first use them', () => {
+  it('the written chapters bring their mechanics in the levels that first use them', () => {
     expect(Object.fromEntries([...shown].filter(([, cards]) => cards.length > 0))).toEqual({
       '0.1': ['lanterns'],
       '0.2': ['undo'],
@@ -67,6 +78,14 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '2.1': ['reflection'],
       '2.2': ['count'],
       '2.4': ['draw'],
+      '3.1': ['inspect', 'marks'],
+      '3.7': ['scarecrows'],
+      '4.1': ['autoSearch'],
+      '4.2': ['pickVine'],
+      '4.4': ['fold'],
+      '4.5': ['unfold'],
+      '4.10': ['rotateStem'],
+      '4.11': ['flowerChallenge'],
     });
   });
 
@@ -90,12 +109,47 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     ]);
   });
 
-  it('the draft levels of later chapters bring the cards of their own tools', () => {
-    const later = walk(levels.map((level) => level.data.id));
+  it('gardens of later chapters bring the cards of their own tools', () => {
+    // Chapters 0 to 2 as written, then gardens of chapters 4 and 7 that open new tools.
+    const written = levels.filter(
+      (level) => !level.data.draft && compareLevelIds(level.data.id, '3.0') < 0,
+    );
+    const later = walkLevels([
+      ...written,
+      festivalLevel(),
+      fivePetalsLevel(),
+      stemRotationLevel(),
+      pentagonLevel(),
+    ]);
     expect(later.get('4.1')).toEqual(['inspect', 'marks', 'scarecrows']);
     expect(later.get('4.6')).toEqual(['fold', 'unfold']);
     expect(later.get('4.10')).toEqual(['rotateStem']);
     expect(later.get('7.2')).toEqual(['stones']);
+  });
+
+  it('the first step that points at a vine brings its card (4.2), and only the first', () => {
+    const written = levels.filter(
+      (level) => !level.data.draft && compareLevelIds(level.data.id, '3.0') < 0,
+    );
+    const shown = walkLevels([...written, festivalLevel(), betrayalLevel()]);
+    expect(shown.get('4.2')).toEqual(['pickVine']);
+    expect(stepCard('pickVine', new Set())).toBe('pickVine');
+    expect(stepCard('pickVine', new Set(['pickVine']))).toBeNull();
+    expect(helpCards(betrayalLevel(), 1)).toContain('pickVine');
+    expect(helpCards(betrayalLevel(), 0)).not.toContain('pickVine');
+  });
+
+  it('the light searching by itself brings its card when it is reached, and only the first time', () => {
+    expect(stepCard('autoSearch', new Set())).toBe('autoSearch');
+    expect(stepCard('autoSearch', new Set(['autoSearch']))).toBeNull();
+    expect(helpCards(lightLevel(), 0)).toContain('autoSearch');
+  });
+
+  it('the flower challenge brings its card when it is reached (4.11), and only the first time', () => {
+    expect(stepCard('flowerChallenge', new Set())).toBe('flowerChallenge');
+    expect(stepCard('flowerChallenge', new Set(['flowerChallenge']))).toBeNull();
+    expect(helpCards(bloomLevel(), 1)).toContain('flowerChallenge');
+    expect(helpCards(bloomLevel(), 0)).not.toContain('flowerChallenge');
   });
 
   it('every action that unlocks has a card, and every card has something that shows it', () => {

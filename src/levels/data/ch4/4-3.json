@@ -1,6 +1,5 @@
 {
   "id": "4.3",
-  "draft": true,
   "sprouts": [
     { "label": "R", "x": 40, "y": 135 },
     { "label": "a", "x": 100, "y": 135 },
@@ -27,8 +26,18 @@
     ["e", "f"]
   ],
   "goal": { "visible": true, "value": 4 },
+  "roots": ["R"],
   "victory": { "type": "matchingSize", "value": 4 },
-  "flow": [{ "step": "say", "lines": ["ch4.3.sauce.00"] }, { "step": "play" }],
+  "hints": [
+    { "line": "ch4.3.sauce.01" },
+    { "line": "ch4.3.sauce.02", "highlight": ["b", "c", "d", "e"] },
+    { "line": "ch4.3.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch4.3.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch4.3.sauce.04"] }
+  ],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
     { "type": "markMoon", "from": "R", "to": "a" },

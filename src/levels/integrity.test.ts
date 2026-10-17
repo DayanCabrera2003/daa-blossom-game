@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { BLOOM } from '../../tests/support/fixtureLevels';
 import { checkIntegrity } from './integrity';
 import { loadLevel } from './loader';
 
@@ -100,6 +101,52 @@ describe('level integrity', () => {
     expect(problemsOf(short)).toContainEqual({ code: 'solutionFallsShort' });
   });
 
+  it('a search from R alone that ends without a chain completes the play of 4.2', () => {
+    const lying = {
+      id: '4.2',
+      sprouts: ['R', 'a', 'b', 'c', 'd', 'e'].map((label, i) => ({
+        label,
+        x: 40 + 70 * i,
+        y: 135,
+      })),
+      vines: [
+        ['R', 'a'],
+        ['a', 'b'],
+        ['b', 'c'],
+        ['c', 'd'],
+        ['d', 'b'],
+        ['c', 'e'],
+      ],
+      lanterns: [
+        ['a', 'b'],
+        ['c', 'd'],
+      ],
+      roots: ['R'],
+      goal: { visible: true, value: 3 },
+      victory: { type: 'searchComplete' },
+      flow: [{ step: 'play' }],
+      solution: [
+        { type: 'markRoot', vertex: 'R' },
+        { type: 'markMoon', from: 'R', to: 'a' },
+        { type: 'markMoon', from: 'b', to: 'c' },
+      ],
+    };
+    expect(problemsOf(lying)).toEqual([]);
+    // A search that is over needs "Terminé" to be claimed.
+    expect(problemsOf({ ...lying, victory: { type: 'searchExhausted' } })).toEqual([
+      { code: 'solutionFallsShort' },
+    ]);
+    expect(
+      problemsOf({
+        ...lying,
+        victory: { type: 'searchExhausted' },
+        solution: [...lying.solution, { type: 'declareDone' }],
+      }),
+    ).toEqual([]);
+    // With nobody allowed to start in the dark, there is no search to play.
+    expect(problemsOf({ ...lying, roots: ['a'] })).toContainEqual({ code: 'wonAtStart' });
+  });
+
   it('the solution must earn the water star when the level has a budget', () => {
     const thirsty = {
       ...trap,
@@ -186,6 +233,13 @@ describe('level integrity', () => {
     expect(problemsOf(notebookless)).toEqual([{ code: 'notebookMissing', step: 1 }]);
   });
 
+  it('the checks of the flower a level declares are part of its integrity', () => {
+    expect(problemsOf(BLOOM)).toEqual([]);
+    expect(problemsOf({ ...BLOOM, flower: ['c', 'd', 'f', 'g', 'b'] })).toEqual([
+      { code: 'flowerBaseNotFirst', base: 'b' },
+    ]);
+  });
+
   it('what a level unlocks must match the unlock table of the rules', () => {
     const wrong = { ...trap, unlocks: { actions: ['chain'] } };
     expect(problemsOf(wrong)).toContainEqual({
@@ -193,5 +247,20 @@ describe('level integrity', () => {
       action: 'chain',
       unlockedAt: '1.3',
     });
+  });
+
+  it('in a garden of bees and flowers, every vine joins a bee and a flower', () => {
+    const kinded = (kinds: string[]) => ({
+      ...trap,
+      sprouts: trap.sprouts.map((sprout, i) => ({ ...sprout, kind: kinds[i] })),
+    });
+    expect(problemsOf(kinded(['bee', 'flower', 'bee', 'flower']))).toEqual([]);
+    expect(problemsOf(kinded(['bee', 'flower', 'flower', 'bee']))).toEqual([
+      { code: 'sameKindVine', u: 'B', v: 'C', kind: 'flower' },
+    ]);
+    expect(problemsOf(kinded(['bee', 'bee', 'flower', 'flower']))).toEqual([
+      { code: 'sameKindVine', u: 'A', v: 'B', kind: 'bee' },
+      { code: 'sameKindVine', u: 'C', v: 'D', kind: 'flower' },
+    ]);
   });
 });
