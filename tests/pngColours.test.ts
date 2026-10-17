@@ -1,6 +1,6 @@
 import { deflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import { pngColourAt, pngColours } from '../tools/assets/pngColours';
+import { pngColours, pngPixels } from '../tools/assets/pngColours';
 
 /** One PNG chunk: length, type, data and a CRC the decoder does not check (left as zero). */
 function chunk(type: string, data: Uint8Array): Buffer {
@@ -126,9 +126,11 @@ describe('the colours of a PNG image', () => {
       ],
       [0, 2],
     );
-    expect(pngColourAt(image, 2, 0)).toBe(0x4a5270);
-    expect(pngColourAt(image, 1, 1)).toBe(0xd14b34);
-    expect(pngColourAt(image, 1, 0)).toBeNull();
-    expect(() => pngColourAt(image, 3, 0)).toThrow(/outside/);
+    const colourAt = pngPixels(image);
+    expect(colourAt(2, 0)).toBe(0x4a5270);
+    expect(colourAt(1, 1)).toBe(0xd14b34);
+    expect(colourAt(1, 0)).toBeNull();
+    expect(() => colourAt(3, 0)).toThrow(/outside/);
+    expect(() => colourAt(0, -1)).toThrow(/outside/);
   });
 });

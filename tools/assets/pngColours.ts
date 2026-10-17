@@ -108,13 +108,16 @@ export function pngColours(bytes: Uint8Array): number[] {
 }
 
 /**
- * The colour of the pixel at (x, y) as 0xRRGGBB, or null where the image is fully transparent; a
- * test reads with it the face of a wooden button, to measure the contrast of its label.
+ * Reads the pixels of an image, decoded once: the colour at (x, y) as 0xRRGGBB, or null where the
+ * image is fully transparent. A test reads with it the face of a wooden button, to measure the
+ * contrast of its label.
  */
-export function pngColourAt(bytes: Uint8Array, x: number, y: number): number | null {
+export function pngPixels(bytes: Uint8Array): (x: number, y: number) => number | null {
   const image = decode(bytes);
-  if (x < 0 || y < 0 || x >= image.width || y >= image.height) {
-    throw new Error(`(${x}, ${y}) is outside the ${image.width} × ${image.height} image`);
-  }
-  return colourOf(image, x, y);
+  return (x, y) => {
+    if (x < 0 || y < 0 || x >= image.width || y >= image.height) {
+      throw new Error(`(${x}, ${y}) is outside the ${image.width} × ${image.height} image`);
+    }
+    return colourOf(image, x, y);
+  };
 }
