@@ -2,8 +2,8 @@
 
 Florecer's code is released under the MIT License (see `LICENSE`). Every piece of art, music and
 sound that the game ships comes from the packs below, all released under **CC0-1.0** (Creative
-Commons Zero, https://creativecommons.org/publicdomain/zero/1.0/). CC0 asks for no attribution;
-they are credited here anyway, with thanks.
+Commons Zero, https://creativecommons.org/publicdomain/zero/1.0/), or is the project's original
+work (the last section). CC0 asks for no attribution; they are credited here anyway, with thanks.
 
 The packs live in `assets-src/packs/` and are not committed; `npm run assets` extracts exactly the
 files listed under each pack into `public/assets/` (wave files brought to mono at 22.05 kHz), and
@@ -169,6 +169,31 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 
 ## Original work
 
-The shapes drawn by code (sprout bodies and faces, sun and moon badges, folded flowers, the faces
-of the Council) and the sounds synthesized from versioned parameters by the project's own tools
-are original work of the project, under the same MIT License as the code.
+- Author: Dayan Cabrera
+- License: MIT
+- Source: https://github.com/DayanCabrera2003/daa-blossom-game
+- Used for: The shapes drawn by code (sprout bodies and faces, sun and moon badges, folded flowers, the faces of the Council) and the sounds synthesized from versioned parameters by the project's own tools.
+
+The shapes are drawn by the game at run time. The sounds are additive bell synthesis
+(`tools/synth/bell.ts`) from the parameters in `tools/synth/sounds.ts`: `npm run sounds` (or
+`npm run assets`) writes them, mono at 22.05 kHz, and lists them in the manifest. Each line below
+is `the sound's parameters` → `file under public/assets/`.
+
+- `chime 1 (C5)` → `audio/sfx/chime-01.wav`
+- `chime 2 (D5)` → `audio/sfx/chime-02.wav`
+- `chime 3 (E5)` → `audio/sfx/chime-03.wav`
+- `chime 4 (G5)` → `audio/sfx/chime-04.wav`
+- `chime 5 (A5)` → `audio/sfx/chime-05.wav`
+- `chime 6 (C6)` → `audio/sfx/chime-06.wav`
+- `chime 7 (D6)` → `audio/sfx/chime-07.wav`
+- `chime 8 (E6)` → `audio/sfx/chime-08.wav`
+- `chime 9 (G6)` → `audio/sfx/chime-09.wav`
+- `chime 10 (A6)` → `audio/sfx/chime-10.wav`
+- `chime 11 (C7)` → `audio/sfx/chime-11.wav`
+- `chime 12 (D7)` → `audio/sfx/chime-12.wav`
+- `chime 13 (E7)` → `audio/sfx/chime-13.wav`
+- `chime 14 (G7)` → `audio/sfx/chime-14.wav`
+- `chime 15 (A7)` → `audio/sfx/chime-15.wav`
+- `sparkle (E7, G7, A7)` → `audio/sfx/sparkle.wav`
+- `fold chord (C5, E5, G5)` → `audio/sfx/fold.wav`
+- `unfold arpeggio (G5, E5, C5)` → `audio/sfx/unfold.wav`

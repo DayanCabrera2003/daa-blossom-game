@@ -48,6 +48,13 @@
       "author": "Kenney",
       "license": "CC0-1.0",
       "url": "https://kenney.nl/assets/rpg-audio"
+    },
+    "own": {
+      "name": "Original work",
+      "version": null,
+      "author": "Dayan Cabrera",
+      "license": "MIT",
+      "url": "https://github.com/DayanCabrera2003/daa-blossom-game"
     }
   },
   "assets": {
@@ -1176,6 +1183,168 @@
       "source": "Audio/Sounds/Voice/Voice10.wav",
       "bytes": 12674,
       "sha256": "6998938bca52a85f8408c4413084b238acdaba72232f4f2c5a32fe8760eafc0d"
+    },
+    "sfx.chime1": {
+      "path": "assets/audio/sfx/chime-01.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 1 (C5)",
+      "bytes": 35324,
+      "sha256": "44eff882289f280aee8e2cf19ef828e5f0e1167f05c7c76e71ffed97a2fd3913"
+    },
+    "sfx.chime2": {
+      "path": "assets/audio/sfx/chime-02.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 2 (D5)",
+      "bytes": 35324,
+      "sha256": "d29850773539a6c0ea4d40cc01581cfee0b6d44d1528142737b3478ec612388e"
+    },
+    "sfx.chime3": {
+      "path": "assets/audio/sfx/chime-03.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 3 (E5)",
+      "bytes": 35324,
+      "sha256": "711976ee5a3f368390aa55713f92d58a11acc7521f6368c1ce8cd0dd29fafa9a"
+    },
+    "sfx.chime4": {
+      "path": "assets/audio/sfx/chime-04.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 4 (G5)",
+      "bytes": 35324,
+      "sha256": "81333c095290ea3d6008e3499877f8334afc8099e2ccc4f419be93d3ee555b47"
+    },
+    "sfx.chime5": {
+      "path": "assets/audio/sfx/chime-05.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 5 (A5)",
+      "bytes": 35324,
+      "sha256": "78e1b8eac599a700e2a4a6c67d2553882c2adf4d44e99a7a6534b866fe1fab55"
+    },
+    "sfx.chime6": {
+      "path": "assets/audio/sfx/chime-06.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 6 (C6)",
+      "bytes": 35324,
+      "sha256": "92212aead3823ab828a597695ebd362d821929d781291957283383fa98a44797"
+    },
+    "sfx.chime7": {
+      "path": "assets/audio/sfx/chime-07.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 7 (D6)",
+      "bytes": 35324,
+      "sha256": "a20e04dabf753155fc43e34da1164f676ae79866a500d82559aeba635facf380"
+    },
+    "sfx.chime8": {
+      "path": "assets/audio/sfx/chime-08.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 8 (E6)",
+      "bytes": 35324,
+      "sha256": "a31c634455247350e647b73c709ba39eca1908f825219f4ef7eb00f08cf515c5"
+    },
+    "sfx.chime9": {
+      "path": "assets/audio/sfx/chime-09.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 9 (G6)",
+      "bytes": 35324,
+      "sha256": "eb8bde5296da0b8fcbc2dc127d3a56f8a3846a22467074eb30047e5506ff0267"
+    },
+    "sfx.chime10": {
+      "path": "assets/audio/sfx/chime-10.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 10 (A6)",
+      "bytes": 35324,
+      "sha256": "58b8fed4f0eb8464e60cd33c68c7abd0623a378c8e3b609b390614a83904dadc"
+    },
+    "sfx.chime11": {
+      "path": "assets/audio/sfx/chime-11.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 11 (C7)",
+      "bytes": 35324,
+      "sha256": "5edb28fb71faa84ff4b6ea050f70c2a95fd5a81976450c893f86d426f4d7c636"
+    },
+    "sfx.chime12": {
+      "path": "assets/audio/sfx/chime-12.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 12 (D7)",
+      "bytes": 35324,
+      "sha256": "4adb4fe7f63cd771f290b91a5dcee1c2cfc5aca09caa99ad23af1f373146b634"
+    },
+    "sfx.chime13": {
+      "path": "assets/audio/sfx/chime-13.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 13 (E7)",
+      "bytes": 35324,
+      "sha256": "b844c56d8225671eaa19b4ec03a8be35c344e65fd66e401e9d899813f5c4bd68"
+    },
+    "sfx.chime14": {
+      "path": "assets/audio/sfx/chime-14.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 14 (G7)",
+      "bytes": 35324,
+      "sha256": "128527bfcdb916b5169d66183e2953633d8d8236fb213470206d6ca52832cc96"
+    },
+    "sfx.chime15": {
+      "path": "assets/audio/sfx/chime-15.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 15 (A7)",
+      "bytes": 35324,
+      "sha256": "93bcc9551627e9e80d3b06edef2bd2711de751b467aac367b54156964e6689a6"
+    },
+    "sfx.sparkle": {
+      "path": "assets/audio/sfx/sparkle.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "sparkle (E7, G7, A7)",
+      "bytes": 41498,
+      "sha256": "efc18d6c57d1130ae7caa169020a0d8b6149f7138d03febe7827870f90ee7c57"
+    },
+    "sfx.fold": {
+      "path": "assets/audio/sfx/fold.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "fold chord (C5, E5, G5)",
+      "bytes": 48554,
+      "sha256": "40c75bb6707d1412fd7752b17c02ecc9bde957b4b8f7c11d5df59a2374dab396"
+    },
+    "sfx.unfold": {
+      "path": "assets/audio/sfx/unfold.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "unfold arpeggio (G5, E5, C5)",
+      "bytes": 56492,
+      "sha256": "5317889cd268c64fc95cc98389a31e2a5a0621638d973adff407939c37f103e2"
     }
   }
 }

@@ -38,7 +38,10 @@ The game's art, music and sounds come from CC0 packs (listed with their authors 
 ```sh
 npm run assets        # extract the chosen files into public/assets/ and regenerate src/game/assets/manifest.json
 npm run assets:check  # check, without writing, that the committed files are exactly what the zips give
+npm run sounds        # synthesize the lantern chimes and the fold chords alone, without the zips
 ```
+
+The chimes, the sparkle and the fold chords are not taken from a pack: they are synthesized from the parameters in `tools/synth/sounds.ts`, credited as original work, and listed in the same manifest. `npm run assets` makes them too, so both commands agree.
 
 To use another file of a pack, add it to `tools/assets/selection.ts` (at the end of its group), run `npm run assets`, and credit it in `CREDITS.md`.
 

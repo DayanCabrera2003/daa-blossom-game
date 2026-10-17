@@ -4,6 +4,7 @@
 // that needs more appends entries at the end of the right group (or a new group at the end of
 // FILES), never reordering what is there, so parallel work merges cleanly.
 import type { AssetKind, LoadGroup } from '../../src/game/assets/manifestSchema';
+import { OWN_WORK } from '../synth/sounds';
 import type { PackSource, SelectedFile, Selection } from './types';
 
 /** The packs, as their license files and pages name them. Only CC0 packs are used. */
@@ -543,4 +544,6 @@ export const SELECTION: Selection = {
     ...SFX,
     ...VOICE,
   ],
+  // The chimes, the sparkle and the fold chords, synthesized by the project (`npm run sounds`).
+  own: OWN_WORK,
 };
