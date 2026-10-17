@@ -2,7 +2,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { closedFlowerLevel } from '../../../tests/support/fixtureLevels';
+import { closedFlowerLevel, helixLevel } from '../../../tests/support/fixtureLevels';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { initialPointer } from '../input/pointer';
 import { HINT_DELAY_MS } from '../systems/hints';
@@ -40,6 +40,16 @@ describe('the picture of the HUD', () => {
       canCheckMirror: false,
       prompt: null,
       layers: null,
+      council: null,
+    });
+  });
+
+  it("from 7.2 the Council's count is on the bar, as the stones leave the garden (7.3)", () => {
+    const level = helixLevel();
+    const lifted = act(startSession(level, 0), { type: 'liftStone', vertex: 0 }, 0).session;
+    expect(hudPicture(lifted, initialPointer('stones'), 0).council).toEqual({
+      key: 'hud.council',
+      params: { groups: 3, stones: 1, atLeast: 2, dark: 2 },
     });
   });
 

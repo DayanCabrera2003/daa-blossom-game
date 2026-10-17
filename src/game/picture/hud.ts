@@ -6,6 +6,7 @@ import { canRedo, canUndo } from '../systems/history';
 import { garden, isHintAvailable, stepNow, type LevelSession } from '../systems/levelSession';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
+import { councilCount } from './council';
 import { shownReflection, ties } from './pond';
 
 /** An interface text to show, as a key of `content/` and its parameters. */
@@ -53,6 +54,12 @@ export interface HudPicture {
    * null before they unlock (5.2).
    */
   readonly layers: number | null;
+  /**
+   * The Council's count (chapter 7, from 7.2): odd groups, stones and the sprouts that must sleep in
+   * the dark against those that do, or in the fog a reminder that it is worked out with "Terminé";
+   * null before 7.2.
+   */
+  readonly council: TextRef | null;
 }
 
 /** The steps that wait for a gesture outside the garden's own moves, and what to say for each. */
@@ -127,5 +134,6 @@ export function hudPicture(
     canCheckMirror: step === 'draw',
     prompt: prompt === undefined ? null : { key: prompt, params: {} },
     layers: layers ? depth : null,
+    council: councilCount(session.level, state),
   };
 }
