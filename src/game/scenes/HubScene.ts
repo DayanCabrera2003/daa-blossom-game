@@ -43,7 +43,7 @@ export class HubScene extends Phaser.Scene {
     const open = unlockedLevels(shown, save, teacherMode);
     const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] as string))];
 
-    // The buttons are made first, to measure them; then the layout says where each one goes.
+    // The buttons and titles are made first, to measure them; then the layout says where they go.
     const rows = chapters.map((chapter) =>
       shown
         .filter((level) => level.id.startsWith(`${chapter}.`))
@@ -57,14 +57,19 @@ export class HubScene extends Phaser.Scene {
           return { button: button.setEnabled(open.has(id)), room };
         }),
     );
+    const titles = chapters.map((chapter) => {
+      const title = chapterTitle(chapter);
+      return this.add.text(HUB.margin, 0, t(title.key, title.params), textStyle(8));
+    });
     const height = rows[0]?.[0]?.button.height ?? 0;
     const layout = layoutHub(
       rows.map((row) => row.map(({ button }) => button.width)),
       height,
+      titles.map((title) => title.width),
     );
     layout.chapters.forEach((placement, c) => {
-      const title = chapterTitle(itemAt(chapters, c));
-      this.add.text(HUB.margin, placement.titleY, t(title.key, title.params), textStyle(8));
+      // On the line of its first buttons' labels.
+      itemAt(titles, c).setY(placement.titleY);
       placement.buttons.forEach((at, b) => {
         const { button, room } = itemAt(itemAt(rows, c), b);
         button.moveTo(at.x, at.y);
