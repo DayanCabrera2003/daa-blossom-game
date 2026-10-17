@@ -11,8 +11,11 @@ import {
   type UiEvent,
 } from '../systems/levelController';
 import { playtestEntries } from '../systems/playtestEntries';
+import { replayCues } from '../systems/replayCues';
+import { effectCues } from '../systems/soundCues';
 import type { StarResult } from '../systems/stars';
 import { startCards, stepCard } from '../systems/tutorials';
+import { SfxPlayer } from '../audio/SfxPlayer';
 import { fitCamera } from '../view/fitCamera';
 import { LAYOUT } from '../view/layout';
 import { showVictoryPanel } from '../view/VictoryPanel';
@@ -50,6 +53,8 @@ export class LevelScene extends Phaser.Scene {
   private cards!: LevelCards;
   /** Where the controller's effects are shown (`level/levelEffects.ts`). */
   private stage!: EffectStage;
+  /** Plays the sounds of moves, refusals and replays on the effects channel. */
+  private sfx!: SfxPlayer;
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -88,6 +93,7 @@ export class LevelScene extends Phaser.Scene {
       { kind: 'levelStart', at: this.context.clock(), level: level.data.id },
     ]);
     const { t } = this.context;
+    this.sfx = new SfxPlayer(this, this.context.audio);
     this.views = buildLevelViews(this, t, {
       dispatch: (event) => this.dispatch(event),
       back: () => this.leave(),
@@ -113,7 +119,11 @@ export class LevelScene extends Phaser.Scene {
             : this.painter.renderReplayed(state, this.time.now),
         searched: () => this.forward({ kind: 'searched' }),
         raced: () => this.forward({ kind: 'raced' }),
-        stopAnimation: () => this.views.animation.finish(),
+        stopAnimation: () => {
+          this.views.animation.finish();
+          this.sfx.cancel();
+        },
+        replayed: (from, to) => this.sfx.schedule(replayCues(from, to)),
         victory: (stars) => this.offerNext(stars),
         answer: (question, value) =>
           this.dispatch(
@@ -177,7 +187,10 @@ export class LevelScene extends Phaser.Scene {
    * the end of the light's own search, which the presenter reports while its day is on screen.
    */
   private forward(event: UiEvent): void {
-    if (event.kind !== 'move') this.views.animation.finish();
+    if (event.kind !== 'move') {
+      this.views.animation.finish();
+      this.sfx.cancel();
+    }
     const step = handle(this.controller, event, this.time.now);
     this.context.playtest.record(
       playtestEntries(this.controller, event, step, this.context.clock()),
@@ -192,6 +205,7 @@ export class LevelScene extends Phaser.Scene {
     const card = stepCard(effect.kind, this.cards.seen);
     if (card !== null) this.cards.offer([card]);
     showEffect(effect, this.stage);
+    this.sfx.schedule(effectCues(effect));
   }
 
   /** Back to the hub; a level left unwon is logged as left. */

@@ -81,6 +81,8 @@ export interface PresenterHooks {
   readonly card: (card: CardId) => ShownCard;
   /** The player closed a mechanic card: it is seen. */
   readonly cardClosed: (card: CardId) => void;
+  /** The replayed day stepped on from `from` to `to`, for the sound of that step. */
+  readonly replayed?: (from: GardenState, to: GardenState) => void;
 }
 
 /**
@@ -281,6 +283,12 @@ export class Presenter {
     const replaying = this.replaying;
     if (replaying === null) return;
     const elapsed = time - replaying.startedAt;
+    // The step to dusk is heard too, though dusk then shows the player's own day again.
+    const reached = replayAt(replaying.plan, elapsed);
+    if (reached > replaying.cursor) {
+      const from = itemAt(replaying.day, replaying.cursor);
+      this.hooks.replayed?.(from, itemAt(replaying.day, reached));
+    }
     if (elapsed >= replaying.plan.duration) {
       this.replaying = null;
       if (replaying.light) this.hooks.searched();
@@ -288,7 +296,7 @@ export class Presenter {
       this.start(finishShowing(this.stage));
       return;
     }
-    replaying.cursor = replayAt(replaying.plan, elapsed);
+    replaying.cursor = reached;
     this.hooks.showDay(itemAt(replaying.day, replaying.cursor));
   }
 }
