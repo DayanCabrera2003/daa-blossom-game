@@ -3,6 +3,7 @@ import type { SproutKind } from '@levels/fields';
 import { NO_EXTRAS, type PointingExtras } from '../../picture/garden';
 import { hudPicture } from '../../picture/hud';
 import { layerPicture } from '../../picture/layerPicture';
+import { moonGlow } from '../../picture/moonGlow';
 import { pondPicture } from '../../picture/pond';
 import { recipePicture } from '../../picture/recipePanel';
 import { sideBySidePicture } from '../../picture/sideBySide';
@@ -66,9 +67,13 @@ export class LevelRenderer {
   /** Repaints the garden as the session shows it, with what the player is pointing at. */
   render(now: number): void {
     const controller = this.source.controller();
-    const { session, pointer, highlight, vineGlow } = controller;
+    const { session, pointer, vineGlow } = controller;
+    const state = garden(session);
+    // What a hint lights up, and in 7.4 the moons of the search over, still to be lifted.
+    const moons = moonGlow(session.level.data.victory, state);
+    const highlight = [...new Set([...controller.highlight, ...moons])];
     this.renderGarden(
-      garden(session),
+      state,
       { selection: pointer.selection, highlight, chain: pointer.chain, vineGlow },
       splitBadges(session),
     );
