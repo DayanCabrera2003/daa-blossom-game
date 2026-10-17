@@ -34,6 +34,9 @@ export const PALETTE = {
   button: 0xbd7959,
   buttonActive: 0xd3865f,
   buttonOff: 0x695953,
+  // Dark letters on light wood (the dialogue page, a button at rest), and the moss of the oaks.
+  ink: 0x141b1b,
+  moss: 0x345a52,
 } as const;
 
 /** A colour as the CSS string Phaser text styles expect. */
