@@ -6,9 +6,11 @@ import { raceBetReveal } from '../../picture/raceBetReveal';
 import { raceDurationAt } from '../../picture/racePanel';
 import { checkText } from '../../picture/mirrorDrawing';
 import { reasonText } from '../../picture/reasonText';
+import type { AssetKey } from '../../assets/keys';
 import { layerOf, type Controller, type Effect } from '../../systems/levelController';
 import { automatonDayOf, garden } from '../../systems/levelSession';
 import { lightDay } from '../../systems/lightSearch';
+import { effectJingle } from '../../systems/musicFor';
 import { questionAt } from '../../systems/question';
 import { dayToReplay } from '../../systems/replayDay';
 import type { StarResult } from '../../systems/stars';
@@ -34,15 +36,21 @@ export interface EffectStage {
   readonly win: (stars: StarResult) => void;
   /** Writes the level's statement in the player's notebook. */
   readonly writeNotebook: () => void;
+  /** Rings a jingle over the music. */
+  readonly jingle: (key: AssetKey) => void;
 }
 
 /**
  * Shows one effect of the level controller: a toast for a refusal, an animation for accepted
  * moves, an item for the presenter's queue (lines, a question, a replay, a counterexample, the
- * victory panel), or nothing at all when the garden painted from the session already shows it.
+ * victory panel), or nothing at all when the garden painted from the session already shows it; a
+ * bet won also rings its jingle (`systems/musicFor.ts`).
  */
 export const showEffect = (effect: Effect, stage: EffectStage): void => {
   const { t, line } = stage;
+  // A bet won rings its jingle as it is told.
+  const jingle = effectJingle(effect);
+  if (jingle !== null) stage.jingle(jingle);
   switch (effect.kind) {
     case 'rejected': {
       // Before folding opens, the conflict of a search is not told apart (4.1).

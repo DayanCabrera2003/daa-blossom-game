@@ -8,6 +8,7 @@ import { HUB, layoutHub } from '../picture/hubLayout';
 import { PIXEL_FONT } from '../picture/pixelFont';
 import { labelStars, STAR_SIZE } from '../picture/starIcon';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { trackFor } from '../systems/musicFor';
 import { Button } from '../view/Button';
 import { fitCamera } from '../view/fitCamera';
 import { GEAR_SIZE } from '../view/GearButton';
@@ -32,7 +33,9 @@ export class HubScene extends Phaser.Scene {
 
   create(): void {
     fitCamera(this);
-    const { catalog, t, save, teacherMode, playtest, clock } = contextOf(this);
+    const { catalog, t, save, teacherMode, playtest, clock, music } = contextOf(this);
+    // The hub's own track; coming back from a level crossfades to it.
+    music.play(trackFor({ kind: 'hub' }));
     this.add.text(HUB.margin, 6, t('hub.title'), textStyle(12, PALETTE.lit));
 
     // Drafts (test levels of chapters not yet written) are shown in teacher mode only.

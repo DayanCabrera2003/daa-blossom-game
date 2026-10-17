@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
-import { visibleLevels } from '@services/progress';
+import { unlockedLevels, visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook, writeSave } from '@services/save';
+import type { AssetKey } from '../assets/keys';
 import { levelKeys, loadRequests } from '../assets/loadPlan';
 import {
   handle,
@@ -10,6 +11,7 @@ import {
   type Effect,
   type UiEvent,
 } from '../systems/levelController';
+import { cardJingle, levelScreen, trackFor, victoryJingle } from '../systems/musicFor';
 import { playtestEntries } from '../systems/playtestEntries';
 import { replayCues } from '../systems/replayCues';
 import { effectCues } from '../systems/soundCues';
@@ -55,6 +57,8 @@ export class LevelScene extends Phaser.Scene {
   private stage!: EffectStage;
   /** Plays the sounds of moves, refusals and replays on the effects channel. */
   private sfx!: SfxPlayer;
+  /** The jingle of the win, rung when the victory panel shows. */
+  private winJingle: AssetKey = 'jingle.victory';
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -86,6 +90,9 @@ export class LevelScene extends Phaser.Scene {
       return;
     }
     this.level = level;
+    // The chapter's track (its race variant in a level of races); a level of the same chapter as
+    // the one before goes on with it.
+    this.context.music.play(trackFor(levelScreen(level)));
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
     const opened = openController(level, this.time.now);
     this.controller = opened.controller;
@@ -130,7 +137,12 @@ export class LevelScene extends Phaser.Scene {
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
         counterexample: (question, option) => this.openCounterexample(question, option),
-        card: (card) => this.cards.shown(card),
+        card: (card) => {
+          // A tool shown for the first time rings the unlock.
+          const jingle = cardJingle(card, new Set(this.context.save.tutorialsSeen));
+          if (jingle !== null) this.context.music.jingle(jingle);
+          return this.cards.shown(card);
+        },
         cardClosed: (card) => this.cards.closed(card),
       },
       { t, line: this.context.line },
@@ -148,6 +160,7 @@ export class LevelScene extends Phaser.Scene {
       presenter: this.presenter,
       win: (stars) => this.win(stars),
       writeNotebook: () => this.writeNotebook(),
+      jingle: (key) => this.context.music.jingle(key),
     };
     // The settings, at the bottom left, clear of the buttons laid out from the right.
     const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
@@ -251,17 +264,28 @@ export class LevelScene extends Phaser.Scene {
     this.scene.sleep();
   }
 
-  /** Records the win at once; the victory panel waits its turn behind any lines or replay. */
+  /**
+   * Records the win at once; the victory panel waits its turn behind any lines or replay, and so
+   * does its jingle, chosen now from the levels the win opens.
+   */
   private win(stars: StarResult): void {
     const id = this.level.data.id;
+    const { catalog, teacherMode } = this.context;
+    const shown = visibleLevels(
+      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
+      teacherMode,
+    );
+    const before = unlockedLevels(shown, this.context.save, teacherMode);
     this.context.save = recordCompletion(this.context.save, id, stars.total);
     writeSave(this.context.storage, this.context.save);
+    this.winJingle = victoryJingle(before, unlockedLevels(shown, this.context.save, teacherMode));
     this.presenter.present({ kind: 'victory', stars });
   }
 
   /** Shows the victory panel, offering the next level (if any) or the hub. */
   private offerNext(stars: StarResult): void {
     const id = this.level.data.id;
+    this.context.music.jingle(this.winJingle);
     // The next level the player can see: outside teacher mode, drafts are skipped.
     const { catalog, teacherMode } = this.context;
     const shown = visibleLevels(
