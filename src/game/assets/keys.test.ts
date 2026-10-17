@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ASSET_KEYS, assetEntry, keysOfKind, packCredits, type AssetKey } from './keys';
+import { ASSET_KEYS, assetEntry, keysOfKind, packCredit, packCredits, type AssetKey } from './keys';
 
 describe('asset keys', () => {
   it('lists every key of the manifest, in its order', () => {
@@ -50,5 +50,10 @@ describe('asset keys', () => {
 
   it('gives the credits of each pack used', () => {
     expect(packCredits().map((pack) => pack.name)).toContain('Ninja Adventure Asset Pack');
+  });
+
+  it('gives the credits of one pack by its id, and fails loudly on an unknown one', () => {
+    expect(packCredit('monogram').author).toBe('Vinícius Menézio (datagoblin)');
+    expect(() => packCredit('elsewhere')).toThrow(/elsewhere/);
   });
 });

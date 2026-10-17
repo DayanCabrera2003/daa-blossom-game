@@ -35,3 +35,10 @@ export function keysOfKind(kind: AssetKind): AssetKey[] {
 export function packCredits(): PackCredit[] {
   return Object.values(MANIFEST.packs);
 }
+
+/** The credits of one pack, by the id the manifest's entries name it with. */
+export function packCredit(id: string): PackCredit {
+  const pack = MANIFEST.packs[id];
+  invariant(pack !== undefined, `the asset manifest has no pack ${id}`);
+  return pack;
+}
