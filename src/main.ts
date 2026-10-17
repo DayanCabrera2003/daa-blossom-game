@@ -8,9 +8,11 @@ import { createTranslator } from '@services/i18n';
 import { createLines } from '@services/lines';
 import { playtestRecorder } from '@services/playtestRecorder';
 import { loadSave } from '@services/save';
+import { loadSettings } from '@services/settings';
 import { requestedLevel } from '@services/startLevel';
 import { isTeacherMode } from '@services/teacherMode';
 import Phaser from 'phaser';
+import { AudioBus } from './game/audio/AudioBus';
 import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
 import { CANVAS_HEIGHT, CANVAS_WIDTH, integerZoom } from './game/scale/integerZoom';
@@ -24,6 +26,7 @@ const zoomForWindow = (): number => integerZoom(window.innerWidth, window.innerH
 setRenderZoom(zoomForWindow());
 const game = new Phaser.Game(gameConfig(document.body, renderZoom()));
 const levels = catalog();
+const settings = loadSettings(storage);
 provideContext(game, {
   catalog: levels,
   t: createTranslator(strings),
@@ -35,6 +38,8 @@ provideContext(game, {
     levels.map((level) => level.data.id),
   ),
   save: loadSave(storage),
+  settings,
+  audio: new AudioBus(game, settings),
   playtest,
   clock,
 });

@@ -4,11 +4,13 @@ import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import type { PlaytestRecorder } from '@services/playtestRecorder';
 import type { KeyValueStore, SaveData } from '@services/save';
+import type { Settings } from '@services/settings';
+import type { AudioBus } from '../audio/AudioBus';
 
 /**
  * What every scene shares, created once in `main.ts` and kept in the game registry: the levels,
- * the texts, where progress and the playtest log are kept, and whether teacher mode is on. `save` is the only part that
- * changes, when a level is won.
+ * the texts, where progress and the playtest log are kept, and whether teacher mode is on. `save` changes
+ * when a level is won, and `settings` when the player moves a volume or mutes.
  */
 export interface GameContext {
   readonly catalog: readonly Level[];
@@ -22,6 +24,10 @@ export interface GameContext {
   readonly playtest: PlaytestRecorder;
   readonly clock: () => number;
   save: SaveData;
+  /** The player's volumes and mute, read at start-up and changed in the settings panel. */
+  settings: Settings;
+  /** The game's three audio channels, at the gains `settings` gives them. */
+  readonly audio: AudioBus;
 }
 
 const KEY = 'florecer.context';
