@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { racesLevel } from '../../../tests/support/fixtureLevels';
+import { recipeLevel, racesLevel } from '../../../tests/support/fixtureLevels';
 import { openSession, respond, type LevelSession } from '../systems/levelSession';
 import { raceDuration } from './raceClock';
 import { raceDurationAt, racePicture, type RaceLayout } from './racePanel';
@@ -71,6 +71,10 @@ describe('the race panel (6.4, 6.5)', () => {
     ];
     expect(raceDurationAt(level.flow, 0)).toBe(raceDuration(runs));
     expect(raceDurationAt(level.flow, 1)).toBe(0);
+  });
+
+  it('stays closed in a level with no race', () => {
+    expect(racePicture(openSession(recipeLevel(), 0).session, null, layout)).toBeNull();
   });
 
   it('closes once the script is over', () => {

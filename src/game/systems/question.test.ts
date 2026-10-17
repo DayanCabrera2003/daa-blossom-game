@@ -201,6 +201,11 @@ describe('the questions of a script', () => {
     expect(hintedOption(question)).toBeNull();
   });
 
+  it('a doubling bet with no races around it has no right answer to offer', () => {
+    const level = scripted([{ step: 'raceBet', prompt: 'ch6.5.sauce.02', runner: 'bruto' }]);
+    expect(questionAt(level, 0, yours(level))?.right).toEqual([]);
+  });
+
   it('a count of the loop offers 0 to its range; the right one is the sprouts of the loop', () => {
     const level = betrayalLevel();
     const searched = level.solution.reduce((state, action) => {
