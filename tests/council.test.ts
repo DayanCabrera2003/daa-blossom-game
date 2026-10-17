@@ -1,3 +1,4 @@
+import { nestingDepth } from '@core/blossom/hierarchy';
 import { stonesFromForest } from '@core/certificates/fromForest';
 import { oddComponents } from '@core/certificates/oddComponents';
 import { checkTutteBerge, tutteBergeBound } from '@core/certificates/tutteBerge';
@@ -13,6 +14,7 @@ import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import { isVictory } from '@core/rules/victory';
 import { searchStatus } from '@core/search/searchStatus';
+import { councilCount } from '@game/picture/council';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { counterexampleAt } from '@levels/counterexample';
@@ -244,5 +246,51 @@ describe('7.4: the gift of the search II', () => {
 
   it('opens the Codex entry of the stones (C12)', () => {
     expect(level.data.unlocks.codex).toEqual(['C12']);
+  });
+});
+
+describe('7.5: before the Council', () => {
+  const level = levelOf('7.5');
+  /** Every garden of the reference solution, from the start of the play. */
+  const day = level.solution.reduce<GardenState[]>(
+    (states, move) => [...states, play(states.at(-1) ?? level.start, [move])],
+    [gardenAtPlay(level)],
+  );
+  const end = solved(level);
+
+  it('is 22 sprouts in the fog, the goal hidden, won by presenting lanterns and stones', () => {
+    expect(level.graph.n).toBe(22);
+    expect(level.data.fog).toBe(true);
+    expect(level.data.goal.visible).toBe(false);
+    expect(level.data.victory).toEqual({ type: 'tutteBergeCertificate' });
+    expect(isVictory(end, { type: 'tutteBergeCertificate' })).toBe(true);
+  });
+
+  it('starts short of the most lanterns: a chain has to be lit before the proof can close', () => {
+    expect(size(level.start.matching)).toBeLessThan(maximumSize(level.graph));
+    expect(size(end.matching)).toBe(maximumSize(level.graph));
+  });
+
+  it('its flowers nest: on the way a flower is folded inside another', () => {
+    const deepest = Math.max(
+      ...day.flatMap((state) =>
+        [...Array(state.graph.n).keys()].map((v) => nestingDepth(state.layer, v)),
+      ),
+    );
+    expect(deepest).toBe(2);
+  });
+
+  it('the stones presented are the moons of its last search, over without a chain', () => {
+    const status = searchStatus(end.layer, end.search, { roots: null, foldAllowed: true });
+    expect(status).toBe('exhausted');
+    if (end.search === null) throw new Error('no search');
+    expect([...end.stones].sort((a, b) => a - b)).toEqual(stonesFromForest(end.layer, end.search));
+  });
+
+  it("in the fog, the Council's count only shows once the proof is presented", () => {
+    const beforeClaim = day.at(-2);
+    if (beforeClaim === undefined) throw new Error('no garden before "Terminé"');
+    expect(councilCount(level, beforeClaim)).toEqual({ key: 'hud.councilHidden', params: {} });
+    expect(councilCount(level, end)?.key).toBe('hud.council');
   });
 });
