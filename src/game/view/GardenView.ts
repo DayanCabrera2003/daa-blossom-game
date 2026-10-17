@@ -10,8 +10,6 @@ import { ensurePieceTextures } from './pieceTextures';
 import { SproutCrowns } from './SproutCrowns';
 import { textStyle } from './textStyle';
 
-export { SPROUT_RADIUS } from './paintSprout';
-
 /** Depths of the garden's layers: the lanterns' halo under the vines, the lanterns over them. */
 const HALO_DEPTH = 19;
 const VINE_DEPTH = 20;

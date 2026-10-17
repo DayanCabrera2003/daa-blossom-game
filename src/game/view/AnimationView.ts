@@ -4,7 +4,7 @@ import { itemAt } from '@core/shared/itemAt';
 import { stepAt, totalDuration, type AnimationStep } from '../animation/plan';
 import type { Point } from '../input/target';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
-import { SPROUT_RADIUS } from './GardenView';
+import { SPROUT_RADIUS } from './paintSprout';
 import { PALETTE } from './palette';
 
 /**
