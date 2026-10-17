@@ -23,6 +23,7 @@
     "bench": "tsx tools/bench.ts",
     "assets": "tsx tools/extract-assets.ts",
     "assets:check": "tsx tools/extract-assets.ts --check",
+    "sounds": "tsx tools/synthesize-sounds.ts",
     "format": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\""
   },
