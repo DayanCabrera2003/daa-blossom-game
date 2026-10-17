@@ -5,12 +5,13 @@ import { CounterexampleScene } from './scenes/CounterexampleScene';
 import { HubScene } from './scenes/HubScene';
 import { LevelScene } from './scenes/LevelScene';
 import { PreloadScene } from './scenes/PreloadScene';
+import { PALETTE } from './view/palette';
 
 /**
  * The Phaser setup. The game is laid out on a 480×270 logical canvas (GDD §4.1); the real canvas is
  * that size times the whole zoom chosen by `integerZoom`, and each scene's camera zooms by the same
  * factor (`fitCamera`). Pixel art stays unsmoothed, while text is rasterised at full resolution and
- * stays legible. Scenes are listed in the order Phaser starts them.
+ * stays legible. The canvas clears to the palette's background, the colour views erase with. Scenes are listed in the order Phaser starts them.
  */
 export function gameConfig(parent: HTMLElement, zoom: number): Phaser.Types.Core.GameConfig {
   return {
@@ -20,7 +21,7 @@ export function gameConfig(parent: HTMLElement, zoom: number): Phaser.Types.Core
     height: CANVAS_HEIGHT * zoom,
     pixelArt: true,
     roundPixels: true,
-    backgroundColor: '#1d2433',
+    backgroundColor: PALETTE.background,
     scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH },
     scene: [BootScene, PreloadScene, HubScene, LevelScene, CounterexampleScene],
   };
