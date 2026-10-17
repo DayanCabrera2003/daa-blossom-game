@@ -131,7 +131,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 
 - **Lienzo lógico:** 480 × 270 píxeles: todo el arte y los niveles viven en esa rejilla. Se dibuja escalado por entero (×3 en 1440p, ×4 en 4K) con una cámara ampliada sobre un lienzo real del tamaño de la pantalla: pixel perfect y sin filtrado para el arte, y el texto rasterizado a resolución completa para que se lea nítido.
 - **Tiles:** 16 × 16. Brotes: 16 × 16 (cuerpo) con carita animada; flores plegadas: 32 × 32 con el número de pétalos visible como pétalos reales.
-- **Paleta:** una paleta base de 32 colores (estilo Endesga o similar, elegida al inicio y respetada en todo el juego). Cada estación aplica un subconjunto y un tinte:
+- **Paleta:** la de Ninja Adventure (53 colores, elegida al inicio y respetada en todo el juego). Cada estación aplica un subconjunto y un tinte:
   - Prólogo, Huerto: verdes suaves, marrón tierra, cielo de atardecer.
   - Primavera, Prado: verdes claros, rosas, blanco de flores, cielo azul.
   - Invernadero: cristal turquesa, niebla gris-lila, madera.
@@ -178,7 +178,7 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | Tiles de entorno, plantas, flores, árboles, rocas, agua | **Ninja Adventure** (Pixel-boy, itch.io) + **Kenney Tiny Town** (kenney.nl) | CC0 | Escala 16 × 16 común. Sprout Lands se descartó: su versión gratis prohíbe redistribuir y el repositorio es público |
 | Retratos de diálogo | Facesets de **Ninja Adventure** (el anciano para Abuelo Sauce) | CC0 | Los Robles: un roble del tileset con cara compuesta en el motor |
 | UI (paneles 9-slice, botones, iconos, cajas de diálogo) | **Ninja Adventure** UI + **Kenney UI Pack Pixel Adventure** | CC0 | Se recolorea a la paleta del juego si desentona |
-| Tipografías pixel | **m5x7** y **m6x11** (Daniel Linssen) | Gratis, uso libre | Legibles a escala 1× y 2×; cubren acentos y ñ |
+| Tipografía pixel | **monogram extended** (Vinícius Menézio, datagoblin.itch.io) | CC0 | Cubre acentos, ñ, ¿ ¡ « » y los símbolos del juego; los pocos que faltan se dibujan como iconos |
 | Paleta | La de **Ninja Adventure** como base | CC0 | Kenney se recolorea a ella cuando desentona; los colores propios (farol, sol, luna) salen de ella |
 | Música | Pistas de **Ninja Adventure** (Peaceful, Calm Village, Chill, Sunny, Dream…) + **Kenney Music Jingles**; si falta, OpenGameArt CC0 | CC0 | Un tema por estación; jingles para victoria y desbloqueos |
 | Efectos de sonido | **Kenney Interface Sounds / RPG Audio**, sonidos de **Ninja Adventure**, **jsfxr** (síntesis por parámetros, sin IA) | CC0 | Las campanitas de farol se sintetizan para poder afinarlas a la escala pentatónica |
