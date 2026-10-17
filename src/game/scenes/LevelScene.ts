@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { Level } from '@levels/build';
 import { visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook, writeSave } from '@services/save';
+import { levelKeys, loadRequests } from '../assets/loadPlan';
 import {
   handle,
   openController,
@@ -23,6 +24,7 @@ import { bindLevelInput } from './level/levelInput';
 import { showEffect, type EffectStage } from './level/levelEffects';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
 import { Presenter } from './presenter';
+import { queueLoads } from './queueLoads';
 import { addSettings } from './settingsPanel';
 
 /**
@@ -57,6 +59,16 @@ export class LevelScene extends Phaser.Scene {
 
   constructor() {
     super('level');
+  }
+
+  /**
+   * Loads the music of the level's chapter (its race variant too, in chapter 6) unless an earlier
+   * level of the chapter already did; the boot group is loaded by then.
+   */
+  preload(): void {
+    const { levelId } = this.sys.settings.data as { levelId: string };
+    const missing = levelKeys(levelId, (key) => this.cache.audio.exists(key));
+    queueLoads(this.load, loadRequests(missing));
   }
 
   create(data: { levelId: string }): void {
