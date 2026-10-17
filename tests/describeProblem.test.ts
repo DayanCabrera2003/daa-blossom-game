@@ -51,6 +51,15 @@ describe('readable level problems', () => {
     expect(describeProblem({ code: 'betOutOfRange', step: 0, range: 3, optimum: 4 })).toBe(
       'script step 1 bets from 1 to 3 lanterns, but the garden holds 4: nobody can win it',
     );
+    expect(describeProblem({ code: 'raceBetWithoutRaces', step: 2 })).toBe(
+      'script step 3 is a doubling bet, but it needs a race before it and one after it',
+    );
+    expect(describeProblem({ code: 'raceNotDoubled', step: 2, before: 8, after: 10 })).toBe(
+      'script step 3 bets on a doubling, but the races go from 8 to 10 sprouts of the same family',
+    );
+    expect(describeProblem({ code: 'raceBetUnclear', step: 2, answer: 'double' })).toBe(
+      'script step 3 bets on a doubling whose steps sit near an edge of "double": pick other seeds',
+    );
     expect(
       describeProblem({
         code: 'badCounterexample',

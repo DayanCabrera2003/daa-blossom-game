@@ -1,3 +1,4 @@
+import type { DoublingAnswer } from '@core/cost/doubling';
 import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
 import { RECIPE_CASES, RIGHT_RECIPE, withoutCases } from '@core/recipe/recipe';
 import { runOptionsOf, runRecipe } from '@core/recipe/run';
@@ -14,6 +15,8 @@ import { findConflict } from '@core/search/conflict';
 import type { Level } from './build';
 import { compareLevelIds } from './catalog';
 import { demoStart } from './demoStart';
+import type { LevelStep } from './flow';
+import { raceBetVerdict, racesAround } from './races';
 import { TAUGHT_IN } from './recipeCards';
 
 /** Something wrong with the script of a level; `step` is the index of the step in the script. */
@@ -57,6 +60,17 @@ export type FlowProblem =
       readonly move: number;
       readonly reason: RejectReason;
     }
+  /** A doubling bet with no race before it, or none after it, to compare. */
+  | { readonly code: 'raceBetWithoutRaces'; readonly step: number }
+  /** A doubling bet between races whose gardens are not one twice the other, of the same family. */
+  | {
+      readonly code: 'raceNotDoubled';
+      readonly step: number;
+      readonly before: number;
+      readonly after: number;
+    }
+  /** A doubling bet whose measured ratio sits near the edge of two answers (`answer` the nearer). */
+  | { readonly code: 'raceBetUnclear'; readonly step: number; readonly answer: DoublingAnswer }
   | {
       readonly code: 'demoRefused';
       readonly step: number;
@@ -81,6 +95,27 @@ function replay(
   return { state, refused: null };
 }
 
+/**
+ * What is wrong with the doubling bet at `step`: it needs a race on each side, the one after twice
+ * the size of the one before and of the same family, and a ratio of steps that falls clearly in
+ * one answer, so the player who reads the counters right is never told wrong. Null when all holds.
+ */
+function raceBetProblem(steps: readonly LevelStep[], step: number): FlowProblem | null {
+  const { before, after } = racesAround(steps, step);
+  const [small, large] = [before, after].map((at) => (at === null ? undefined : steps[at]));
+  if (small?.step !== 'race' || large?.step !== 'race') {
+    return { code: 'raceBetWithoutRaces', step };
+  }
+  if (large.size !== 2 * small.size || large.family !== small.family) {
+    return { code: 'raceNotDoubled', step, before: small.size, after: large.size };
+  }
+  const verdict = raceBetVerdict(steps, step);
+  if (verdict !== null && !verdict.clear) {
+    return { code: 'raceBetUnclear', step, answer: verdict.answer };
+  }
+  return null;
+}
+
 /** Whether a sprout lies on some thread or loop of the tangle `yours ⊕ mirror`. */
 function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean {
   return decomposeSymmetricDifference(yours, mirror).some((piece) =>
@@ -96,7 +131,8 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
  * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
  * challenge has a flower and a chain to draw in the garden the level starts with, every demo is
  * accepted by the rules, and so is every move of the light's own search and of the automaton's run
- * (whose recipe must be one it can run), and a recipe recalls only levels that come before it.
+ * (whose recipe must be one it can run), a recipe recalls only levels that come before it, and a
+ * doubling bet stands between a race and one twice its size, with a clear right answer.
  *
  * Lanterns and marks only move in a play step, where the reference solution is played, and when the
  * light searches by itself (4.1, 4.2), where its marks are added, and when the automaton runs from
@@ -200,6 +236,11 @@ export function checkFlow(level: Level): FlowProblem[] {
             problems.push({ code: 'recallAhead', step, level: taught });
           }
         }
+        break;
+      }
+      case 'raceBet': {
+        const problem = raceBetProblem(level.flow, step);
+        if (problem !== null) problems.push(problem);
         break;
       }
       case 'replay': {

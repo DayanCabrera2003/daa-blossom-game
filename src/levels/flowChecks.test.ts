@@ -332,4 +332,39 @@ describe('the checks of a level script', () => {
       { code: 'recallAhead', step: 0, level: '3.6' },
     ]);
   });
+
+  it('a doubling bet stands between a race and one twice its size, with a clear answer', () => {
+    const race = (size: number, seed: number) => ({
+      step: 'race',
+      family: 'half',
+      size,
+      seed,
+      budget: 1_000_000,
+    });
+    const bet = (runner: string) => ({ step: 'raceBet', prompt: 'ch6.5.sauce.01', runner });
+    const races = (flow: unknown[]) => ({
+      ...pond,
+      id: '6.5',
+      mirror: undefined,
+      flow,
+      solution: [{ type: 'tapGarden' }],
+    });
+    // 41 steps of the automaton at 8 sprouts, 183 at 16: about four times, clearly.
+    expect(
+      flowProblemsOf(races([race(8, 4), bet('automaton'), bet('bruto'), race(16, 26)])),
+    ).toEqual([]);
+    expect(flowProblemsOf(races([bet('bruto'), race(16, 26)]))).toEqual([
+      { code: 'raceBetWithoutRaces', step: 0 },
+    ]);
+    expect(flowProblemsOf(races([race(8, 4), bet('bruto')]))).toEqual([
+      { code: 'raceBetWithoutRaces', step: 1 },
+    ]);
+    expect(flowProblemsOf(races([race(8, 4), bet('bruto'), race(10, 13)]))).toEqual([
+      { code: 'raceNotDoubled', step: 1, before: 8, after: 10 },
+    ]);
+    // 69 steps at 8 sprouts against 183 at 16 sit between double and four times.
+    expect(flowProblemsOf(races([race(8, 27), bet('automaton'), race(16, 26)]))).toEqual([
+      { code: 'raceBetUnclear', step: 1, answer: 'double' },
+    ]);
+  });
 });

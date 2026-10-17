@@ -56,6 +56,12 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is a flower challenge after a play step, whose moves may undo the flower`;
     case 'betOutOfRange':
       return `script step ${problem.step + 1} bets from 1 to ${problem.range} lanterns, but the garden holds ${problem.optimum}: nobody can win it`;
+    case 'raceBetWithoutRaces':
+      return `script step ${problem.step + 1} is a doubling bet, but it needs a race before it and one after it`;
+    case 'raceNotDoubled':
+      return `script step ${problem.step + 1} bets on a doubling, but the races go from ${problem.before} to ${problem.after} sprouts of the same family`;
+    case 'raceBetUnclear':
+      return `script step ${problem.step + 1} bets on a doubling whose steps sit near an edge of "${problem.answer}": pick other seeds`;
     case 'demoRefused':
       return `script step ${problem.step + 1}: demo move ${problem.move + 1} is refused by the rules: ${withDetails(problem.reason)}`;
     case 'lightRefused':
