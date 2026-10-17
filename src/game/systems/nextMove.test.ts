@@ -156,6 +156,25 @@ describe("the mentor's next step (hint grade 3)", () => {
     expect(nextMove(goal, { ...start, scarecrows: [1, 3] })).toEqual({ type: 'declareDone' });
   });
 
+  it('scarecrows however many: guards each vine left unguarded, then says "Terminé" (7.1)', () => {
+    // The five-cycle with its two lanterns: guarding every vine takes three scarecrows.
+    const five = cycleGraph(5);
+    const start = createGardenState({
+      graph: five,
+      matching: unwrap(
+        createMatching(five, [
+          [0, 1],
+          [2, 3],
+        ]),
+      ),
+      allowed: ['placeScarecrow', 'removeScarecrow', 'declareDone'],
+    });
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'coverComplete' } };
+    expect(nextMove(goal, start)).toEqual({ type: 'placeScarecrow', vertex: 0 });
+    expect(mentorPlays(goal, start)).toBe(4);
+    expect(nextMove(goal, { ...start, scarecrows: [0, 2, 4] })).toEqual({ type: 'declareDone' });
+  });
+
   it('stones: lifts the moons of the failed search when no solution guides it (7.3)', () => {
     const level = helixLevel();
     const goal: MentorGoal = { ...goalOf(level), solution: [] };

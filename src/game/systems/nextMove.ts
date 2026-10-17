@@ -121,6 +121,23 @@ function toTheEndOfTheSearch(state: GardenState): Action | null {
 }
 
 /**
+ * The next step towards scarecrows on every vine, however many (7.1): the sprout that guards the
+ * most vines still unguarded (the first such sprout on a tie), then "Terminé".
+ */
+function guardTheRest(state: GardenState): Action {
+  const guarded = new Set(state.scarecrows);
+  const open = state.graph.edges.filter(([u, v]) => !guarded.has(u) && !guarded.has(v));
+  if (open.length === 0) return { type: 'declareDone' };
+  const reach = new Array<number>(state.graph.n).fill(0);
+  for (const [u, v] of open) {
+    reach[u] = itemAt(reach, u) + 1;
+    reach[v] = itemAt(reach, v) + 1;
+  }
+  const best = reach.indexOf(Math.max(...reach));
+  return { type: 'placeScarecrow', vertex: best };
+}
+
+/**
  * The step the mentor takes for the player at hint grade 3 (GDD §5.3). It is always a move the
  * rules accept and that brings the level closer to its victory, or null once the level is won:
  * on the reference solution, its next step; otherwise a step computed by the core for the
@@ -148,6 +165,9 @@ function computedStep(goal: MentorGoal, state: GardenState): Action | null {
     default:
       break;
   }
+
+  // Guarding every vine, however many scarecrows it takes, has nothing to do with the lanterns.
+  if (goal.victory.type === 'coverComplete') return guardTheRest(state);
 
   if (!isMaximum(state.graph, state.matching)) return lightMore(state);
 
