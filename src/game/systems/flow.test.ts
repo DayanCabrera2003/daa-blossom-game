@@ -206,6 +206,61 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('a race waits until it has been seen to its end', () => {
+    const race: LevelStep = { step: 'race', family: 'half', size: 6, seed: 1, budget: 100 };
+    const started = start([race, say('ch6.4.sauce.01')]);
+    expect(started.effects).toEqual([{ kind: 'race', step: 0 }]);
+    expect(advanceFlow(started.flow, { type: 'searched' }).flow).toBe(started.flow);
+    expect(advanceFlow(started.flow, { type: 'raced' }).effects).toEqual([
+      { kind: 'raced', step: 0, bets: [] },
+      { kind: 'say', lines: ['ch6.4.sauce.01'] },
+      { kind: 'finished' },
+    ]);
+  });
+
+  it('a doubling bet takes one of its answers, right or not, and the next race settles it', () => {
+    const race = (size: number): LevelStep => ({
+      step: 'race',
+      family: 'half',
+      size,
+      seed: 1,
+      budget: 100,
+    });
+    const raceBet = (runner: 'automaton' | 'bruto'): LevelStep => ({
+      step: 'raceBet',
+      prompt: 'ch6.5.sauce.01',
+      runner,
+    });
+    const started = start([race(8), raceBet('automaton'), raceBet('bruto'), race(16)]);
+    const opened = advanceFlow(started.flow, { type: 'raced' });
+    expect(opened.effects).toEqual([
+      { kind: 'raced', step: 0, bets: [] },
+      { kind: 'raceBet', step: 1, prompt: 'ch6.5.sauce.01', runner: 'automaton' },
+    ]);
+    // An answer that is none of the three, or with no right one to judge it, is not taken.
+    expect(advanceFlow(opened.flow, { type: 'answer', option: 3, right: 1 }).flow).toBe(
+      opened.flow,
+    );
+    expect(advanceFlow(opened.flow, { type: 'answer', option: 1, right: null }).flow).toBe(
+      opened.flow,
+    );
+    const { flow, effects } = send(started.flow, [
+      { type: 'raced' },
+      { type: 'answer', option: 1, right: 1 },
+      { type: 'answer', option: 0, right: 2 },
+      { type: 'raced' },
+    ]);
+    expect(isFinished(flow)).toBe(true);
+    const bets = [
+      { step: 1, value: 1, correct: true },
+      { step: 2, value: 0, correct: false },
+    ];
+    expect(flow.answers).toEqual(bets);
+    expect(effects).toContainEqual({ kind: 'raced', step: 3, bets });
+    // A doubling bet earns no star: it is no bet on lanterns.
+    expect(betRight(flow)).toBeNull();
+  });
+
   it('explore ends with a touch on a sprout, separate with a touch on the garden', () => {
     const { flow, effects } = start([{ step: 'explore' }, { step: 'separate' }]);
     expect(effects).toEqual([{ kind: 'explore' }]);
