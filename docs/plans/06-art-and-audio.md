@@ -122,7 +122,7 @@ Pistas de `Audio/Musics/`, elegidas por carácter y nombre; el autor las escucha
 | Pantalla | Pista | Duración | Tamaño |
 |---|---|---|---|
 | Hub | `4 - Village.ogg` | 52 s | 1,0 MB |
-| 0 Huerto | `5 - Peaceful.ogg` | 59 s | 1,1 MB |
+| 0 Huerto | Grillos sintetizados (`tools/synth/crickets.ts`, sin música, como pide el GDD) | 8 s en bucle | 345 KB |
 | 1 Prado | `31 - Sunny.ogg` | 70 s | 1,6 MB |
 | 2 Estanque | `39 - Boat.ogg` | 96 s | 2,2 MB |
 | 3 Invernadero | `22 - Dream.ogg` | 96 s | 2,2 MB |
