@@ -174,7 +174,7 @@ describe('7.3: choose your stones', () => {
 
   it('then writes it in the notebook, after the mentor names it, the true statement first', () => {
     expect(stepsOf(level)).toEqual(['say', 'play', 'say', 'notebook']);
-    const options = level.data.notebook?.options ?? [];
+    const options = level.data.notebook?.[0]?.options ?? [];
     expect(options.map((option) => option.correct)).toEqual([true, false, false]);
     expect(options.map((option) => option.counterexample?.mode)).toEqual([
       undefined,
@@ -184,7 +184,7 @@ describe('7.3: choose your stones', () => {
   });
 
   it('"exactly g in the dark" fails: lifting the middle of a row of three, only one is dark', () => {
-    const refuted = counterexampleAt(level, 1);
+    const refuted = counterexampleAt(level, 0, 1);
     if (refuted === null) throw new Error('no counterexample');
     const middle = idOf(refuted.labels, 'B');
     if (middle === undefined) throw new Error('no sprout B');
@@ -194,7 +194,7 @@ describe('7.3: choose your stones', () => {
   });
 
   it('"even groups leave someone in the dark too" fails: the square lights everyone', () => {
-    const refuted = counterexampleAt(level, 2);
+    const refuted = counterexampleAt(level, 0, 2);
     if (refuted === null) throw new Error('no counterexample');
     expect(oddComponents(refuted.start.graph, [])).toEqual([]);
     expect(2 * maximumSize(refuted.start.graph)).toBe(refuted.start.graph.n);
