@@ -9,8 +9,9 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
  */
 export const LAYOUT = {
   margin: 4,
-  topY: 3,
-  secondY: 13,
+  // Two lines of the pixel font (12 px each) above the garden, which starts at y 24.
+  topY: 1,
+  secondY: 12,
   toolbarY: CANVAS_HEIGHT - 27,
   bottomY: CANVAS_HEIGHT - 13,
   sunTrack: { x0: CANVAS_WIDTH - 150, x1: CANVAS_WIDTH - 10, y: 8 },
