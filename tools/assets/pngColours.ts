@@ -1,6 +1,7 @@
 // The distinct opaque colours of a small PNG, so a test can prove that the palette written in
-// code is exactly the one of the pack's `Palette.png`. Only what that sheet needs is decoded:
-// 8-bit RGB or RGBA, not interlaced; anything else is refused rather than misread.
+// code is exactly the one of the pack's `Palette.png`, and the colour of one pixel, so a test can
+// measure a label on a wooden button. Only what those images need is decoded: 8-bit RGB or RGBA,
+// not interlaced; anything else is refused rather than misread.
 import { inflateSync } from 'node:zlib';
 import { pngSize } from './pngSize';
 
@@ -57,11 +58,16 @@ function unfilter(raw: Uint8Array, height: number, stride: number, bpp: number):
   return rows;
 }
 
-/**
- * Every opaque colour of the image as 0xRRGGBB, once each, in reading order (row by row, left to
- * right). Fully transparent pixels are skipped: they are the empty cells of a palette sheet.
- */
-export function pngColours(bytes: Uint8Array): number[] {
+/** The decoded pixels of an image: its size, its channels per pixel and its raw rows. */
+interface Decoded {
+  readonly width: number;
+  readonly height: number;
+  readonly bpp: number;
+  readonly rows: readonly Uint8Array[];
+}
+
+/** Decodes the pixels of an 8-bit RGB or RGBA image that is not interlaced; refuses the rest. */
+function decode(bytes: Uint8Array): Decoded {
   const { width, height } = pngSize(bytes);
   const [depth, colourType, , , interlace] = bytes.subarray(24, 29);
   if (depth !== 8) throw new Error(`only 8-bit images are read, not ${depth}-bit`);
@@ -71,17 +77,44 @@ export function pngColours(bytes: Uint8Array): number[] {
   }
   if (interlace !== 0) throw new Error('interlaced images are not read');
   const rows = unfilter(inflateSync(imageData(bytes)), height, width * bpp, bpp);
+  return { width, height, bpp, rows };
+}
+
+/** The colour of the pixel at (x, y) as 0xRRGGBB, or null when it is fully transparent. */
+function colourOf({ bpp, rows }: Decoded, x: number, y: number): number | null {
+  const row = rows[y] ?? new Uint8Array();
+  const [r = 0, g = 0, b = 0, alpha = 255] = row.subarray(x * bpp, x * bpp + bpp);
+  if (bpp === 4 && alpha === 0) return null;
+  return (r << 16) | (g << 8) | b;
+}
+
+/**
+ * Every opaque colour of the image as 0xRRGGBB, once each, in reading order (row by row, left to
+ * right). Fully transparent pixels are skipped: they are the empty cells of a palette sheet.
+ */
+export function pngColours(bytes: Uint8Array): number[] {
+  const image = decode(bytes);
   const seen = new Set<number>();
   const colours: number[] = [];
-  for (const row of rows) {
-    for (let x = 0; x < width; x++) {
-      const [r = 0, g = 0, b = 0, alpha = 255] = row.subarray(x * bpp, x * bpp + bpp);
-      const colour = (r << 16) | (g << 8) | b;
-      if (bpp === 4 && alpha === 0) continue;
-      if (seen.has(colour)) continue;
+  for (let y = 0; y < image.height; y++) {
+    for (let x = 0; x < image.width; x++) {
+      const colour = colourOf(image, x, y);
+      if (colour === null || seen.has(colour)) continue;
       seen.add(colour);
       colours.push(colour);
     }
   }
   return colours;
+}
+
+/**
+ * The colour of the pixel at (x, y) as 0xRRGGBB, or null where the image is fully transparent; a
+ * test reads with it the face of a wooden button, to measure the contrast of its label.
+ */
+export function pngColourAt(bytes: Uint8Array, x: number, y: number): number | null {
+  const image = decode(bytes);
+  if (x < 0 || y < 0 || x >= image.width || y >= image.height) {
+    throw new Error(`(${x}, ${y}) is outside the ${image.width} × ${image.height} image`);
+  }
+  return colourOf(image, x, y);
 }
