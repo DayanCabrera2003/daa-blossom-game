@@ -14,6 +14,7 @@ import { isTeacherMode } from '@services/teacherMode';
 import Phaser from 'phaser';
 import { AudioBus } from './game/audio/AudioBus';
 import { PIXEL_FONT } from './game/picture/pixelFont';
+import { MusicPlayer } from './game/audio/MusicPlayer';
 import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
 import { CANVAS_HEIGHT, CANVAS_WIDTH, integerZoom } from './game/scale/integerZoom';
@@ -31,6 +32,7 @@ await document.fonts.load(`${PIXEL_FONT.nativeSize}px ${PIXEL_FONT.family}`).cat
 const game = new Phaser.Game(gameConfig(document.body, renderZoom()));
 const levels = catalog();
 const settings = loadSettings(storage);
+const audio = new AudioBus(game, settings);
 provideContext(game, {
   catalog: levels,
   t: createTranslator(strings),
@@ -43,7 +45,8 @@ provideContext(game, {
   ),
   save: loadSave(storage),
   settings,
-  audio: new AudioBus(game, settings),
+  audio,
+  music: new MusicPlayer(game, audio),
   playtest,
   clock,
 });
