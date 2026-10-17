@@ -13,6 +13,7 @@ import { requestedLevel } from '@services/startLevel';
 import { isTeacherMode } from '@services/teacherMode';
 import Phaser from 'phaser';
 import { AudioBus } from './game/audio/AudioBus';
+import { PIXEL_FONT } from './game/picture/pixelFont';
 import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
 import { CANVAS_HEIGHT, CANVAS_WIDTH, integerZoom } from './game/scale/integerZoom';
@@ -24,6 +25,9 @@ const playtest = playtestRecorder(storage);
 playtest.record([{ kind: 'sessionStart', at: clock() }]);
 const zoomForWindow = (): number => integerZoom(window.innerWidth, window.innerHeight);
 setRenderZoom(zoomForWindow());
+// Text is laid out when a scene starts, so the pixel font must be ready first. A failed load leaves
+// the monospace fallback of the text styles, never a game that does not start.
+await document.fonts.load(`${PIXEL_FONT.nativeSize}px ${PIXEL_FONT.family}`).catch(() => []);
 const game = new Phaser.Game(gameConfig(document.body, renderZoom()));
 const levels = catalog();
 const settings = loadSettings(storage);
