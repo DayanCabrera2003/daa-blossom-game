@@ -4,6 +4,7 @@
 import { createHash } from 'node:crypto';
 import { invariant } from '../../src/core/shared/invariant';
 import type { Manifest, ManifestEntry, PackCredit } from '../../src/game/assets/manifestSchema';
+import { makeOwnWork } from './ownWork';
 import { pngSize } from './pngSize';
 import type { PackSource, SelectedFile, Selection } from './types';
 import { toMono22k } from './wav';
@@ -31,7 +32,7 @@ export interface Extraction {
 const sha256 = (bytes: Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
 
 /** Throws on a repeated key or output path: either would make one file silently replace another. */
-function checkUnique(files: readonly SelectedFile[]): void {
+function checkUnique(files: readonly Pick<SelectedFile, 'key' | 'out'>[]): void {
   const keys = new Set<string>();
   const outs = new Set<string>();
   for (const file of files) {
@@ -92,7 +93,11 @@ const credit = ({ name, version, author, license, url }: PackSource): PackCredit
  * on every run, so comparing it with what is committed tells whether the two agree.
  */
 export function extract(selection: Selection, readZip: (zip: string) => Uint8Array): Extraction {
-  checkUnique(selection.files);
+  const { own } = selection;
+  checkUnique([...selection.files, ...(own?.files ?? [])]);
+  if (own !== undefined && own.id in selection.packs) {
+    throw new Error(`the own work cannot take the id ${own.id} of a pack`);
+  }
   const archives = openPacks(selection, readZip);
   const files: OutputFile[] = [];
   const assets: Record<string, ManifestEntry> = {};
@@ -118,8 +123,21 @@ export function extract(selection: Selection, readZip: (zip: string) => Uint8Arr
     packs[file.pack] = credit(pack);
   }
 
+  // The project's own files (the synthesized bells) come last, credited under its own id.
+  if (own !== undefined) {
+    const made = makeOwnWork(own);
+    files.push(...made.files);
+    Object.assign(assets, made.assets);
+    packs[own.id] = own.credit;
+  }
+
   const manifest: Manifest = { packs, assets };
-  const text = `${JSON.stringify(manifest, null, 2)}\n`;
-  files.push({ path: MANIFEST_PATH, bytes: new Uint8Array(Buffer.from(text, 'utf8')) });
+  files.push(manifestFile(manifest));
   return { files, manifest };
+}
+
+/** The manifest as the JSON file the game imports, two spaces deep and ending in a new line. */
+export function manifestFile(manifest: Manifest): OutputFile {
+  const text = `${JSON.stringify(manifest, null, 2)}\n`;
+  return { path: MANIFEST_PATH, bytes: new Uint8Array(Buffer.from(text, 'utf8')) };
 }

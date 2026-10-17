@@ -32,8 +32,34 @@ export interface SelectedFile {
   readonly frame?: { readonly width: number; readonly height: number };
 }
 
-/** Every pack and every chosen file, in the order the manifest lists them. */
+/**
+ * A file the project makes itself instead of taking it from a pack (the bells synthesized from
+ * versioned parameters, section 1.8): the second source of the manifest, next to the packs.
+ */
+export interface MadeFile {
+  readonly key: string;
+  /** What it is made from, as the credits name it (the name of its parameters). */
+  readonly source: string;
+  /** Where it goes, relative to `public/assets/`. */
+  readonly out: string;
+  readonly kind: AssetKind;
+  readonly group: LoadGroup;
+  /** Makes its bytes: the same on every run, so the committed copy can be checked. */
+  readonly make: () => Uint8Array;
+}
+
+/** The project's own work: credited in the manifest like a pack, but made by its own tools. */
+export interface OwnWork {
+  /** The id its files name as their pack in the manifest. */
+  readonly id: string;
+  readonly credit: PackCredit;
+  readonly files: readonly MadeFile[];
+}
+
+/** Every pack and every chosen file, in the order the manifest lists them, then the own work. */
 export interface Selection {
   readonly packs: Readonly<Record<string, PackSource>>;
   readonly files: readonly SelectedFile[];
+  /** Files the project makes itself, listed after every pack file. */
+  readonly own?: OwnWork;
 }

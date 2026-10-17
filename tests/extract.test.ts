@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { parseManifest } from '../src/game/assets/manifestSchema';
 import { extract, MANIFEST_PATH } from '../tools/assets/extract';
-import type { PackSource, SelectedFile, Selection } from '../tools/assets/types';
+import { makeOwnWork, withOwnWork } from '../tools/assets/ownWork';
+import type { OwnWork, PackSource, SelectedFile, Selection } from '../tools/assets/types';
 import { encodeWav, parseWav } from '../tools/assets/wav';
 import { buildZip } from './support/buildZip';
 
@@ -200,5 +201,58 @@ describe('extracting the chosen files', () => {
     if (sheet === undefined) throw new Error('fixture');
     const huge = { ...sheet, frame: { width: 64, height: 16 } };
     expect(() => extract({ ...SELECTION, files: [huge] }, readZip)).toThrow(/frame/);
+  });
+});
+
+describe('extracting with the own work', () => {
+  const BELL = Uint8Array.from([7, 7, 7]);
+  const OWN: OwnWork = {
+    id: 'own',
+    credit: {
+      name: 'Original work',
+      version: null,
+      author: 'The author',
+      license: 'MIT',
+      url: 'https://example.org/game',
+    },
+    files: [
+      {
+        key: 'sfx.bell',
+        source: 'bell',
+        out: 'audio/sfx/bell.wav',
+        kind: 'sfx',
+        group: 'boot',
+        make: () => BELL,
+      },
+    ],
+  };
+  const WITH_OWN: Selection = { ...SELECTION, own: OWN };
+
+  it('writes the made files after every pack file, before the manifest', () => {
+    const { files } = extract(WITH_OWN, readZip);
+    expect(files.map((file) => file.path).slice(-2)).toEqual([
+      'public/assets/audio/sfx/bell.wav',
+      MANIFEST_PATH,
+    ]);
+    expect(files.at(-2)?.bytes).toEqual(BELL);
+  });
+
+  it('gives the manifest that putting the own work into the packs-only manifest gives', () => {
+    const packsOnly = extract(SELECTION, readZip).manifest;
+    const expected = withOwnWork(packsOnly, OWN, makeOwnWork(OWN).assets);
+    expect(extract(WITH_OWN, readZip).manifest).toEqual(expected);
+  });
+
+  it('refuses a made file written where a pack file goes, or under its key', () => {
+    const [bell] = OWN.files;
+    if (bell === undefined) throw new Error('fixture');
+    const samePath = { ...OWN, files: [{ ...bell, out: 'audio/music/ch0.ogg' }] };
+    expect(() => extract({ ...SELECTION, own: samePath }, readZip)).toThrow(/ch0\.ogg/);
+    const sameKey = { ...OWN, files: [{ ...bell, key: 'voice.1' }] };
+    expect(() => extract({ ...SELECTION, own: sameKey }, readZip)).toThrow(/voice\.1/);
+  });
+
+  it('refuses an own work under the id of a pack', () => {
+    expect(() => extract({ ...SELECTION, own: { ...OWN, id: 'test' } }, readZip)).toThrow(/test/);
   });
 });
