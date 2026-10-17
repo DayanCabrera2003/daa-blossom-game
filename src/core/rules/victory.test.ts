@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pathGraph } from '../generators/families';
+import { cycleGraph, pathGraph } from '../generators/families';
 import { createGraph } from '../graph/createGraph';
 import { createMatching } from '../matching/createMatching';
 import { unwrap } from '../shared/result';
@@ -49,6 +49,34 @@ describe('victory conditions', () => {
     expect(certify([1, 3])).toBe(true);
     expect(certify([1])).toBe(false);
     expect(certify([0, 1, 3])).toBe(false);
+  });
+
+  it('coverComplete: scarecrows guard every vine, however many, once presented (7.1)', () => {
+    // Level 7.1: the five-cycle holds two lanterns, yet guarding its vines takes three scarecrows.
+    const c5 = cycleGraph(5);
+    const five = createGardenState({
+      graph: c5,
+      matching: unwrap(
+        createMatching(c5, [
+          [0, 1],
+          [2, 3],
+        ]),
+      ),
+      allowed: [],
+    });
+    const presented = (scarecrows: number[]) =>
+      isVictory({ ...five, scarecrows, declaredDone: true }, { type: 'coverComplete' });
+    expect(presented([0, 2, 4])).toBe(true);
+    expect(presented([0, 1, 2, 3, 4])).toBe(true);
+    expect(presented([0, 2])).toBe(false);
+    expect(isVictory({ ...five, scarecrows: [0, 2, 4] }, { type: 'coverComplete' })).toBe(false);
+    // The greenhouse proof does not close here: three scarecrows against two lanterns.
+    expect(
+      isVictory(
+        { ...five, scarecrows: [0, 2, 4], declaredDone: true },
+        { type: 'coverCertificate' },
+      ),
+    ).toBe(false);
   });
 
   it('tutteBergeCertificate: the stones prove the lanterns (the helix, 7.3)', () => {

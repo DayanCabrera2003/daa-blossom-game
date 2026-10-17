@@ -35,6 +35,12 @@ export type VictoryCondition =
    * level whose certificate already closes would be won before the player does anything (7.2).
    */
   | { readonly type: 'coverCertificate' }
+  /**
+   * Scarecrows guard every vine, however many they are, presented with "Terminé" (7.1): the
+   * greenhouse proof tried where it does not close, so the player sees it take more scarecrows than
+   * there are lanterns. Winning it proves nothing; the level then asks whether it closed.
+   */
+  | { readonly type: 'coverComplete' }
   /** The lifted stones prove the lanterns maximum: Tutte–Berge (chapter 7). */
   | { readonly type: 'tutteBergeCertificate' };
 
@@ -65,6 +71,8 @@ export function isVictory(state: GardenState, condition: VictoryCondition): bool
         state.scarecrows.length === lanterns &&
         checkVertexCover(state.graph, state.scarecrows).ok
       );
+    case 'coverComplete':
+      return state.declaredDone && checkVertexCover(state.graph, state.scarecrows).ok;
     case 'tutteBergeCertificate':
       return state.declaredDone && checkTutteBerge(state.graph, state.matching, state.stones).ok;
   }
