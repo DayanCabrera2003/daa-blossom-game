@@ -35,9 +35,11 @@ describe('the asset selection', () => {
     expect(music.filter((file) => file.group === 'boot').map((file) => file.key)).toEqual([
       'music.hub',
     ]);
-    for (const chapter of [0, 1, 2, 3, 4, 5, 6, 7]) {
+    // Chapter 0 has no pack track: its night is the synthesized crickets (`tools/synth`).
+    for (const chapter of [1, 2, 3, 4, 5, 6, 7]) {
       expect(music.some((file) => file.group === `ch${chapter}`)).toBe(true);
     }
+    expect(music.some((file) => file.group === 'ch0')).toBe(false);
   });
 
   it('loads everything that is not music at boot', () => {

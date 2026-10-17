@@ -395,9 +395,6 @@ const UI: readonly SelectedFile[] = [
  */
 const MUSIC: readonly SelectedFile[] = [
   pick('music.hub', 'music', ninja('Audio/Musics/4 - Village.ogg'), 'audio/music/hub.ogg'),
-  pick('music.ch0', 'music', ninja('Audio/Musics/5 - Peaceful.ogg'), 'audio/music/ch0.ogg', {
-    group: 'ch0',
-  }),
   pick('music.ch1', 'music', ninja('Audio/Musics/31 - Sunny.ogg'), 'audio/music/ch1.ogg', {
     group: 'ch1',
   }),

@@ -40,11 +40,18 @@ describe('the synthesized sounds', () => {
       'sfx.fold',
       'sfx.unfold',
     ]);
-    for (const file of OWN_WORK.files) {
+    for (const file of OWN_WORK.files.filter((made) => made.kind === 'sfx')) {
       expect(file.kind).toBe('sfx');
       expect(file.group).toBe('boot');
       expect(file.out).toMatch(/^audio\/sfx\/[a-z0-9-]+\.wav$/);
     }
+  });
+
+  it('give the prologue its crickets as the music of chapter 0, loaded with the chapter', () => {
+    const night = OWN_WORK.files.filter((made) => made.kind !== 'sfx');
+    expect(night.map((made) => [made.key, made.kind, made.group, made.out])).toEqual([
+      ['music.ch0', 'music', 'ch0', 'audio/music/ch0-night.wav'],
+    ]);
   });
 
   it('play one note each for the chimes, the highest three rising for the sparkle', () => {

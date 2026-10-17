@@ -16,7 +16,7 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - Version: not stated by the pack
 - License: CC0-1.0
 - Source: https://pixel-boy.itch.io/ninja-adventure-asset-pack
-- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, all the music, two jingles, a few effects and the babble syllables.
+- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, the music of the hub and of chapters 1 to 7, two jingles, a few effects and the babble syllables.
 
 - `Palette.png` → `images/palette.png`
 - `Backgrounds/Tilesets/TilesetFloor.png` → `images/tiles/floor.png`
@@ -67,7 +67,6 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - `Items/Food/Seed1.png` → `images/ui/icons/seed.png`
 - `Items/Object/Hourglass.png` → `images/ui/icons/hourglass.png`
 - `Audio/Musics/4 - Village.ogg` → `audio/music/hub.ogg`
-- `Audio/Musics/5 - Peaceful.ogg` → `audio/music/ch0.ogg`
 - `Audio/Musics/31 - Sunny.ogg` → `audio/music/ch1.ogg`
 - `Audio/Musics/39 - Boat.ogg` → `audio/music/ch2.ogg`
 - `Audio/Musics/22 - Dream.ogg` → `audio/music/ch3.ogg`
@@ -172,10 +171,11 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - Author: Dayan Cabrera
 - License: MIT
 - Source: https://github.com/DayanCabrera2003/daa-blossom-game
-- Used for: The shapes drawn by code (sprout bodies and faces, sun and moon badges, folded flowers, the faces of the Council) and the sounds synthesized from versioned parameters by the project's own tools.
+- Used for: The shapes drawn by code (sprout bodies and faces, sun and moon badges, folded flowers, the faces of the Council), and the sounds and the crickets of the prologue synthesized from versioned parameters by the project's own tools.
 
 The shapes are drawn by the game at run time. The sounds are additive bell synthesis
-(`tools/synth/bell.ts`) from the parameters in `tools/synth/sounds.ts`: `npm run sounds` (or
+(`tools/synth/bell.ts`) and, for the crickets of the prologue, trains of sine pulses
+(`tools/synth/crickets.ts`), from the parameters in `tools/synth/sounds.ts`: `npm run sounds` (or
 `npm run assets`) writes them, mono at 22.05 kHz, and lists them in the manifest. Each line below
 is `the sound's parameters` → `file under public/assets/`.
 
@@ -197,3 +197,4 @@ is `the sound's parameters` → `file under public/assets/`.
 - `sparkle (E7, G7, A7)` → `audio/sfx/sparkle.wav`
 - `fold chord (C5, E5, G5)` → `audio/sfx/fold.wav`
 - `unfold arpeggio (G5, E5, C5)` → `audio/sfx/unfold.wav`
+- `crickets of the prologue night` → `audio/music/ch0-night.wav`

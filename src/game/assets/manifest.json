@@ -806,15 +806,6 @@
       "bytes": 1049153,
       "sha256": "2b121eb7cf1de26caa54f620259835959ba121a07b66b91c2ea00eda5c1ec96b"
     },
-    "music.ch0": {
-      "path": "assets/audio/music/ch0.ogg",
-      "kind": "music",
-      "group": "ch0",
-      "pack": "ninja",
-      "source": "Audio/Musics/5 - Peaceful.ogg",
-      "bytes": 1198029,
-      "sha256": "ac4578d928e6d616e9b4804117524692c12a86be700e46f973672de644046e21"
-    },
     "music.ch1": {
       "path": "assets/audio/music/ch1.ogg",
       "kind": "music",
@@ -1345,6 +1336,15 @@
       "source": "unfold arpeggio (G5, E5, C5)",
       "bytes": 56492,
       "sha256": "5317889cd268c64fc95cc98389a31e2a5a0621638d973adff407939c37f103e2"
+    },
+    "music.ch0": {
+      "path": "assets/audio/music/ch0-night.wav",
+      "kind": "music",
+      "group": "ch0",
+      "pack": "own",
+      "source": "crickets of the prologue night",
+      "bytes": 352844,
+      "sha256": "9c48c6698606f2bf608a38ec0daf03ad701ce839da90a09b168c0685b449bc8c"
     }
   }
 }

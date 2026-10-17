@@ -1,10 +1,12 @@
 // The versioned parameters of every sound the project synthesizes (plan 06, section 1.8): the
 // lantern chimes on a major pentatonic scale from C5, the sparkle at the end of a chain, and the
-// chord of a folding flower with its downward arpeggio when it unfolds. Changing a number here
+// chord of a folding flower with its downward arpeggio when it unfolds, and the crickets that are
+// the only music of the prologue (`crickets.ts`). Changing a number here
 // and running `npm run sounds` remakes the wave files and their manifest entries.
 import type { MadeFile, OwnWork } from '../assets/types';
 import { encodeWav } from '../assets/wav';
 import { renderBell, type BellTimbre } from './bell';
+import { CRICKETS, renderCrickets } from './crickets';
 
 /** How many chimes the scale has: three octaves of five notes, C5 to A7. */
 export const CHIME_COUNT = 15;
@@ -138,5 +140,16 @@ export const OWN_WORK: OwnWork = {
     license: 'MIT',
     url: 'https://github.com/DayanCabrera2003/daa-blossom-game',
   },
-  files: SOUNDS.map(made),
+  files: [
+    ...SOUNDS.map(made),
+    {
+      key: 'music.ch0',
+      source: 'crickets of the prologue night',
+      out: 'audio/music/ch0-night.wav',
+      kind: 'music',
+      group: 'ch0',
+      make: () =>
+        encodeWav({ sampleRate: SAMPLE_RATE, channels: [renderCrickets(CRICKETS, SAMPLE_RATE)] }),
+    },
+  ],
 };
