@@ -5,7 +5,7 @@ import { textStyle } from './textStyle';
 
 /**
  * The dialogue box: lines shown one at a time, advancing with a touch. In the greybox most lines
- * are not written yet and show as their id (`⟨ch4.1.sauce.01⟩`), so playtesters see where each
+ * are not written yet and show as their id (`‹ch4.1.sauce.01›`), so playtesters see where each
  * line will be spoken. While open, it takes the touches meant for it, not the garden.
  */
 export class DialogueView {

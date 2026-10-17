@@ -4,7 +4,7 @@ import { missing } from './i18n';
 export type LineText = (id: string) => string;
 
 /**
- * Looks up dialogue lines. In the greybox most lines are not written yet: they show as `⟨id⟩`, so
+ * Looks up dialogue lines. In the greybox most lines are not written yet: they show as `‹id›`, so
  * playtesters see where each line will be spoken.
  */
 export function createLines(lines: Readonly<Record<string, string>>): LineText {

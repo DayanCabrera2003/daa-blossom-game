@@ -8,6 +8,6 @@ describe('dialogue lines by id', () => {
   });
 
   it('shows the id of a line not written yet (greybox), so the playtest sees where it goes', () => {
-    expect(createLines({})('ch4.1.sauce.01')).toBe('⟨ch4.1.sauce.01⟩');
+    expect(createLines({})('ch4.1.sauce.01')).toBe('‹ch4.1.sauce.01›');
   });
 });
