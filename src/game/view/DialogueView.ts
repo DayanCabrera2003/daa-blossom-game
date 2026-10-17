@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import { BabblePlayer } from '../audio/BabblePlayer';
+import { playUiSound } from '../audio/uiSound';
 import { dialogueBox, type DialogueBoxLayout } from '../picture/dialogueBox';
 import { portraitOf } from '../picture/portrait';
 import { WOOD_DIALOGUE } from '../picture/wood';
@@ -109,6 +110,7 @@ export class DialogueView {
       this.complete();
       return;
     }
+    playUiSound(this.scene, 'sfx.advance');
     this.advance();
   }
 
