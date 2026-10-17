@@ -18,9 +18,9 @@ export interface Halo {
 
 /** The three frames, a breath in and out: small, large, middle. */
 export const HALO_FRAMES: readonly [Halo, Halo, Halo] = [
-  { inner: { radius: 7, alpha: 0.35 }, outer: { radius: 11, alpha: 0.14 } },
-  { inner: { radius: 8, alpha: 0.42 }, outer: { radius: 13, alpha: 0.18 } },
-  { inner: { radius: 7, alpha: 0.38 }, outer: { radius: 12, alpha: 0.16 } },
+  { inner: { radius: 8, alpha: 0.5 }, outer: { radius: 12, alpha: 0.22 } },
+  { inner: { radius: 9, alpha: 0.58 }, outer: { radius: 14, alpha: 0.28 } },
+  { inner: { radius: 8, alpha: 0.54 }, outer: { radius: 13, alpha: 0.25 } },
 ];
 
 /** How long each frame shows, in milliseconds. */
