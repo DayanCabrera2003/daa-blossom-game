@@ -80,13 +80,21 @@ export function questionLayout(promptHeight: number, widths: readonly number[]):
   };
 }
 
-/** The notebook page laid out: where its statement, each ending's row and its footer start. */
+/** The notebook page laid out: where its statement and each ending's row start, and its height. */
 export interface NotebookLayout {
   readonly promptY: number;
   readonly rows: readonly number[];
-  readonly footerY: number;
   readonly height: number;
 }
+
+/**
+ * The top row of the notebook page: the book of the pack and the notebook's name on the left, what
+ * to do on the right, so the page is a row shorter. As tall as the book icon.
+ */
+export const NOTEBOOK_HEADER = 16;
+
+/** The room the book takes before the notebook's name: the icon and a gap. */
+export const NOTEBOOK_ICON = 16 + 2;
 
 /** The notebook page for a statement `promptHeight` tall and rows of `rowHeights`. */
 export function notebookLayout(
@@ -94,15 +102,15 @@ export function notebookLayout(
   rowHeights: readonly number[],
 ): NotebookLayout {
   const { y } = QUESTION_PANEL;
-  // The notebook's name, a line, on top of the page.
-  const promptY = y + PANEL.pad + LINE_HEIGHT + PANEL.gap;
+  const promptY = y + PANEL.pad + NOTEBOOK_HEADER + PANEL.gap;
   let rowY = promptY + promptHeight + PANEL.gap;
   const rows = rowHeights.map((height) => {
     const at = rowY;
     rowY += height + PANEL.gap;
     return at;
   });
-  return { promptY, rows, footerY: rowY, height: rowY + LINE_HEIGHT + PANEL.pad - y };
+  // The last row's gap is the page's padding instead.
+  return { promptY, rows, height: rowY - PANEL.gap + PANEL.pad - y };
 }
 
 /** The window of a card laid out: where its body, demo and button start, and its height. */

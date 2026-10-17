@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   BUTTON_HEIGHT,
   flowButtons,
+  NOTEBOOK_HEADER,
   notebookLayout,
   PANEL,
   QUESTION_PANEL,
@@ -40,15 +41,14 @@ describe('how the panels lay out their texts and buttons', () => {
     expect(layout.height).toBe(layout.footer.y + LINE_HEIGHT + PANEL.pad - y);
   });
 
-  it('the notebook: its name, the statement, one row per ending, the footer', () => {
+  it('the notebook: its name and what to do on top, the statement, one row per ending', () => {
     const layout = notebookLayout(LINE_HEIGHT, [20, 30]);
     const { y } = QUESTION_PANEL;
-    const promptY = y + PANEL.pad + LINE_HEIGHT + PANEL.gap;
+    const promptY = y + PANEL.pad + NOTEBOOK_HEADER + PANEL.gap;
     expect(layout.promptY).toBe(promptY);
     const firstRow = promptY + LINE_HEIGHT + PANEL.gap;
     expect(layout.rows).toEqual([firstRow, firstRow + 20 + PANEL.gap]);
-    expect(layout.footerY).toBe(firstRow + 20 + PANEL.gap + 30 + PANEL.gap);
-    expect(layout.height).toBe(layout.footerY + LINE_HEIGHT + PANEL.pad - y);
+    expect(layout.height).toBe(firstRow + 20 + PANEL.gap + 30 + PANEL.pad - y);
   });
 
   it('a card: its title, its body, the demo and the button, each under the one before', () => {
