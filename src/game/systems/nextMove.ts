@@ -121,6 +121,28 @@ function toTheEndOfTheSearch(state: GardenState): Action | null {
 }
 
 /**
+ * The next step towards the stones handed over by the search (7.4): the search to its end, which
+ * lights a chain first if one is within reach; then exactly its moons lifted, and "Terminé".
+ */
+function toTheMoons(state: GardenState): Action | null {
+  const status = searchStatus(state.layer, state.search, {
+    roots: state.roots,
+    foldAllowed: state.allowed.has('foldAt'),
+  });
+  if (status === 'chain') return lightMore(state);
+  if (status !== 'exhausted' || state.search === null) return searchStep(state);
+  const moons = stonesFromForest(state.layer, state.search);
+  return (
+    placeTowards(
+      state.stones,
+      moons,
+      (vertex) => ({ type: 'dropStone', vertex }),
+      (vertex) => ({ type: 'liftStone', vertex }),
+    ) ?? { type: 'declareDone' }
+  );
+}
+
+/**
  * The next step towards scarecrows on every vine, however many (7.1): the sprout that guards the
  * most vines still unguarded (the first such sprout on a tie), then "Terminé".
  */
@@ -168,6 +190,7 @@ function computedStep(goal: MentorGoal, state: GardenState): Action | null {
 
   // Guarding every vine, however many scarecrows it takes, has nothing to do with the lanterns.
   if (goal.victory.type === 'coverComplete') return guardTheRest(state);
+  if (goal.victory.type === 'moonCertificate') return toTheMoons(state);
 
   if (!isMaximum(state.graph, state.matching)) return lightMore(state);
 

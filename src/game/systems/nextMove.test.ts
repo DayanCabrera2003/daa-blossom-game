@@ -182,6 +182,18 @@ describe("the mentor's next step (hint grade 3)", () => {
     mentorPlays(goal, level.start);
   });
 
+  it('stones from the moons: searches to the end, lifts exactly its moons, then "Terminé" (7.4)', () => {
+    const level = twoComponentsLevel();
+    const goal: MentorGoal = {
+      start: level.start,
+      solution: [],
+      victory: { type: 'moonCertificate' },
+    };
+    // A stone that proves nothing of the search comes off once the search is over.
+    expect(nextMove(goal, level.start)).toEqual({ type: 'markRoot', vertex: 0 });
+    mentorPlays(goal, { ...level.start, stones: [2] });
+  });
+
   it('when nothing it may do leads anywhere, it says nothing rather than something wrong', () => {
     // A garden with no chain to find: the search runs out of looks.
     const path = pathGraph(2);
