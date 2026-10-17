@@ -10,6 +10,7 @@ import { RUNNERS } from '@core/cost/benchmark';
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { doublingTextKey } from '@levels/races';
 import { AUDIO_CHANNELS } from '@services/settings';
+import { SPEAKERS } from '@game/systems/speaker';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
@@ -228,4 +229,6 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
+  // The name of each speaker, on the tab of the dialogue box.
+  ...Object.fromEntries(SPEAKERS.map((speaker) => [`speaker.${speaker}`, []])),
 };

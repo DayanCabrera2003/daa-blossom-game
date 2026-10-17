@@ -233,5 +233,10 @@
   "settings.voice": "Voces",
   "settings.volume": "{percent} %",
   "settings.mute": "Silencio (M)",
-  "settings.close": "Cerrar"
+  "settings.close": "Cerrar",
+  "speaker.sauce": "Sauce",
+  "speaker.bruto": "Bruto",
+  "speaker.oaks": "Los Robles",
+  "speaker.gardener": "Tú",
+  "speaker.notebook": "Cuaderno"
 }
