@@ -3,7 +3,7 @@ import { channelGain, soundGain } from '@services/audioGain';
 import type { AudioChannel, Settings } from '@services/settings';
 
 /** A sound as the game's sound manager makes it, whichever manager the browser got. */
-type BusSound = ReturnType<Phaser.Game['sound']['add']>;
+export type BusSound = ReturnType<Phaser.Game['sound']['add']>;
 
 /** How a sound is asked for: its own volume within its channel, and whether it loops. */
 export interface PlayOptions {
@@ -13,11 +13,11 @@ export interface PlayOptions {
   readonly loop?: boolean;
 }
 
-/** A sound playing on a channel, with the volume it was asked for. */
+/** A sound playing on a channel, with the volume it was asked for (a fading track changes it). */
 interface Playing {
   readonly sound: BusSound;
   readonly channel: AudioChannel;
-  readonly volume: number;
+  volume: number;
 }
 
 /** A looping sound asked for before the browser let audio start. */
@@ -85,6 +85,27 @@ export class AudioBus {
     for (const playing of [...this.playing]) {
       if (playing.channel === channel) this.release(playing);
     }
+  }
+
+  /**
+   * Sets the own volume of a sound this bus plays, between 0 and 1 of its channel (a track fading
+   * in or out, the music ducking under a jingle); a sound already stopped is left alone.
+   */
+  setVolume(sound: BusSound, volume: number): void {
+    const playing = this.find(sound);
+    if (playing === undefined) return;
+    playing.volume = volume;
+    sound.setVolume(this.gainOf(playing));
+  }
+
+  /** Stops one sound this bus plays (a track that has faded out), leaving the rest of its channel. */
+  stopSound(sound: BusSound): void {
+    const playing = this.find(sound);
+    if (playing !== undefined) this.release(playing);
+  }
+
+  private find(sound: BusSound): Playing | undefined {
+    return [...this.playing].find((playing) => playing.sound === sound);
   }
 
   private gainOf(playing: Playing): number {
