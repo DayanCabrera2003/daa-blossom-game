@@ -17,4 +17,10 @@ describe('the unlock of interface pieces that are not actions', () => {
     for (const id of ['0.5', '4.12', '5.1']) expect(isUiUnlocked('layers', id)).toBe(false);
     for (const id of ['5.2', '5.5', '6.1', '7.4']) expect(isUiUnlocked('layers', id)).toBe(true);
   });
+
+  it("the Council's count appears at 7.2 (GDD 7.2): not in 7.1, where scarecrows are tried", () => {
+    expect(UI_UNLOCKED_AT.council).toBe('7.2');
+    for (const id of ['3.8', '6.6', '7.1']) expect(isUiUnlocked('council', id)).toBe(false);
+    for (const id of ['7.2', '7.3', '7.5']) expect(isUiUnlocked('council', id)).toBe(true);
+  });
 });
