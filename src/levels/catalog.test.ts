@@ -92,6 +92,19 @@ describe('the level catalog', () => {
     expect(early.filter((level) => level.data.draft)).toEqual([]);
   });
 
+  it('holds the written chapter 6 whole, with no draft among its levels', () => {
+    const recipes = catalog().filter((level) => level.data.id.startsWith('6.'));
+    expect(recipes.map((level) => level.data.id)).toEqual([
+      '6.1',
+      '6.2',
+      '6.3',
+      '6.4',
+      '6.5',
+      '6.6',
+    ]);
+    expect(recipes.filter((level) => level.data.draft)).toEqual([]);
+  });
+
   it('holds the written chapter 7 whole, with no draft among its levels', () => {
     const council = catalog().filter((level) => level.data.id.startsWith('7.'));
     expect(council.map((level) => level.data.id)).toEqual(['7.1', '7.2', '7.3', '7.4', '7.5']);
