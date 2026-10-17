@@ -1,0 +1,29 @@
+{
+  "id": "6.4",
+  "sprouts": [
+    { "label": "M", "x": 200, "y": 135 },
+    { "label": "B", "x": 280, "y": 135 }
+  ],
+  "vines": [["M", "B"]],
+  "goal": { "visible": false },
+  "flow": [
+    { "step": "say", "lines": ["ch6.4.sauce.00", "ch6.4.bruto.01"] },
+    { "step": "race", "family": "half", "size": 6, "seed": 9, "budget": 1000000 },
+    { "step": "say", "lines": ["ch6.4.sauce.02", "ch6.4.bruto.03"] },
+    { "step": "race", "family": "half", "size": 8, "seed": 4, "budget": 1000000 },
+    { "step": "say", "lines": ["ch6.4.sauce.04"] },
+    { "step": "race", "family": "half", "size": 10, "seed": 13, "budget": 1000000 },
+    { "step": "say", "lines": ["ch6.4.bruto.05"] },
+    {
+      "step": "ask",
+      "prompt": "ch6.4.sauce.06",
+      "options": [
+        { "line": "ch6.4.sauce.07", "correct": true, "reply": "ch6.4.sauce.08" },
+        { "line": "ch6.4.sauce.09", "correct": false, "reply": "ch6.4.sauce.10" },
+        { "line": "ch6.4.sauce.11", "correct": false, "reply": "ch6.4.sauce.10" }
+      ],
+      "retry": true
+    }
+  ],
+  "solution": [{ "type": "answer", "option": 0 }]
+}
