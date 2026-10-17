@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { ASSET_KEYS, assetEntry } from '../src/game/assets/keys';
 import { parseWav } from '../tools/assets/wav';
 import { CHIME_COUNT, OWN_WORK, pentatonicFrequency, SOUNDS } from '../tools/synth/sounds';
 import { strongest } from './support/spectrum';
@@ -89,4 +92,20 @@ describe('the synthesized sounds', () => {
     expect(OWN_WORK.credit.name).toBe('Original work');
     expect(OWN_WORK.credit.license).toBe('MIT');
   });
+});
+
+describe('the committed synthesized sounds', () => {
+  const PUBLIC = fileURLToPath(new URL('../public/', import.meta.url));
+
+  // Unlike the pack files, these can be checked without any zip: CI remakes them from the parameters.
+  it.each(OWN_WORK.files.map((file) => [file.key, file] as const))(
+    '%s is exactly what its parameters make, listed under the original work',
+    (key, file) => {
+      expect(ASSET_KEYS).toContain(key);
+      const entry = assetEntry(key as (typeof ASSET_KEYS)[number]);
+      expect(entry.pack).toBe(OWN_WORK.id);
+      expect(entry.source).toBe(file.source);
+      expect(new Uint8Array(readFileSync(PUBLIC + entry.path))).toEqual(file.make());
+    },
+  );
 });
