@@ -178,7 +178,7 @@ describe('level integrity', () => {
         { line: 'ch2.2.notebook.02', correct: false },
       ],
     };
-    expect(problemsOf({ ...trap, notebook })).toEqual([
+    expect(problemsOf({ ...trap, notebook: [notebook] })).toEqual([
       { code: 'foreignLine', line: 'ch2.2.notebook.02' },
     ]);
   });
@@ -201,9 +201,10 @@ describe('level integrity', () => {
         },
       ],
     };
-    expect(problemsOf({ ...trap, notebook })).toEqual([
+    expect(problemsOf({ ...trap, notebook: [notebook] })).toEqual([
       {
         code: 'badCounterexample',
+        question: 0,
         option: 1,
         error: { code: 'badGraph', error: expect.anything() },
       },

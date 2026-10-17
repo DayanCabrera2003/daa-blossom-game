@@ -135,8 +135,16 @@ export type FlowEffect =
   | { readonly kind: 'recipe'; readonly step: number; readonly missing: readonly RecipeCase[] }
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
-  /** A false statement of the notebook (`option`) is refuted by its garden, which opens. */
-  | { readonly kind: 'counterexample'; readonly step: number; readonly option: number }
+  /**
+   * A false statement (`option`) of the notebook question `question` is refuted by its garden,
+   * which opens.
+   */
+  | {
+      readonly kind: 'counterexample';
+      readonly step: number;
+      readonly question: number;
+      readonly option: number;
+    }
   /** The right statement was chosen: it is written in the player's notebook. */
   | { readonly kind: 'written' }
   /** The last step is over: the level is complete. */
@@ -154,8 +162,8 @@ export interface NotebookKey {
 /** Where a script is, and what the player has given it so far. */
 export interface FlowState {
   readonly steps: readonly LevelStep[];
-  /** The statements of the level's notebook question, in order (empty without one). */
-  readonly notebook: readonly NotebookKey[];
+  /** The statements of each notebook question of the level, in order (empty without one). */
+  readonly notebook: readonly (readonly NotebookKey[])[];
   /** The index of the current step; equal to the number of steps once the script is finished. */
   readonly index: number;
   /** Every answer and bet, in the order given. */
@@ -269,7 +277,7 @@ function enter(flow: FlowState, index: number, effects: FlowEffect[]): FlowTurn 
 /** The script at its start: the effects of its first steps, up to the first one that waits. */
 export function startFlow(
   steps: readonly LevelStep[],
-  key: { readonly notebook: readonly NotebookKey[] },
+  key: { readonly notebook: readonly (readonly NotebookKey[])[] },
 ): FlowTurn {
   const flow: FlowState = {
     steps,
@@ -360,7 +368,7 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       // A false statement is answered by the mentor and refuted by its garden, if it has them;
       // then the question opens again. Only the right one is written down and ends the step.
       if (signal.type !== 'answer') return unchanged;
-      const statement = flow.notebook[signal.option];
+      const statement = flow.notebook[step.question]?.[signal.option];
       if (statement === undefined) return unchanged;
       const given = answered(flow, signal.option, statement.correct);
       if (statement.reply !== null) given.effects.push({ kind: 'say', lines: [statement.reply] });
@@ -369,7 +377,13 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
         return next(given);
       }
       if (statement.refuted) {
-        given.effects.push({ kind: 'counterexample', step: flow.index, option: signal.option });
+        const { question } = step;
+        given.effects.push({
+          kind: 'counterexample',
+          step: flow.index,
+          question,
+          option: signal.option,
+        });
       }
       given.effects.push(opening(step, flow.index));
       return given;

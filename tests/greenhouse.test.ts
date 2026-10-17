@@ -29,7 +29,7 @@ const levelOf = (id: string): Level => {
 
 /** The counterexample of statement `option` of level `id`, built. */
 const counterexampleOf = (id: string, option: number): Counterexample => {
-  const data = levelOf(id).data.notebook?.options[option]?.counterexample;
+  const data = levelOf(id).data.notebook?.[0]?.options[option]?.counterexample;
   if (data === undefined) throw new Error(`statement ${option} of ${id} has no counterexample`);
   const built = buildCounterexample(data);
   if (!built.ok) throw new Error(`the counterexample of statement ${option} does not build`);

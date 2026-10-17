@@ -107,8 +107,8 @@ const flowStep = z.discriminatedUnion('step', [
    * the level's `flower` and never applied, until `attempts` of them are chains.
    */
   z.strictObject({ step: z.literal('flowerChallenge'), attempts: z.number().int().min(1) }),
-  /** The level's notebook question. */
-  z.strictObject({ step: z.literal('notebook') }),
+  /** A notebook question of the level: the one at `question` in its list, the first by default. */
+  z.strictObject({ step: z.literal('notebook'), question: z.number().int().min(0).default(0) }),
   /**
    * The recipe with cards (6.1): the player builds it, and the step is over once a check finds it
    * right. With `missing`, the right recipe arrives without the cards of those cases, to be

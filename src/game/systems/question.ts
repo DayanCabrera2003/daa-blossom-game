@@ -74,9 +74,9 @@ export function questionAt(level: Level, index: number, yours: GardenState): Que
         right: [countAnswer(level, yours, step)],
       };
     case 'notebook': {
-      // Level integrity gives every notebook step the notebook question of its level.
-      const { notebook } = level.data;
-      invariant(notebook !== undefined, 'a notebook step needs the notebook of its level');
+      // Level integrity gives every notebook step its notebook question among the level's.
+      const notebook = level.data.notebook?.[step.question];
+      invariant(notebook !== undefined, 'a notebook step needs its question in the level');
       return {
         ...base,
         kind: 'notebook',

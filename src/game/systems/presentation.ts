@@ -34,10 +34,10 @@ export type Presentation =
       readonly light?: boolean;
     }
   /**
-   * The garden that refutes a false notebook statement (`option`), in a screen of its own; over when
-   * the player goes back to the notebook.
+   * The garden that refutes a false statement (`option`) of the notebook question `question`, in a
+   * screen of its own; over when the player goes back to the notebook.
    */
-  | { readonly kind: 'counterexample'; readonly option: number }
+  | { readonly kind: 'counterexample'; readonly question: number; readonly option: number }
   /** The victory panel; the level ends with it, so nothing after it ever shows. */
   | { readonly kind: 'victory'; readonly stars: StarResult };
 

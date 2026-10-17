@@ -37,40 +37,42 @@
     { "line": "ch3.3.sauce.02", "highlight": ["b1", "b2", "m"] },
     { "line": "ch3.3.sauce.03" }
   ],
-  "notebook": {
-    "prompt": "ch3.3.notebook.06",
-    "options": [
-      { "line": "ch3.3.notebook.07", "correct": true, "reply": "ch3.3.sauce.10" },
-      { "line": "ch3.3.notebook.08", "correct": false, "reply": "ch3.3.sauce.11" },
-      {
-        "line": "ch3.3.notebook.09",
-        "correct": false,
-        "counterexample": {
-          "mode": "play",
-          "line": "ch3.3.sauce.12",
-          "sprouts": [
-            { "label": "R", "x": 120, "y": 127, "kind": "bee" },
-            { "label": "a", "x": 200, "y": 80, "kind": "flower" },
-            { "label": "b", "x": 290, "y": 80, "kind": "bee" },
-            { "label": "c", "x": 330, "y": 170, "kind": "flower" },
-            { "label": "d", "x": 230, "y": 190, "kind": "bee" }
-          ],
-          "vines": [
-            ["R", "a"],
-            ["a", "b"],
-            ["b", "c"],
-            ["c", "d"],
-            ["d", "a"]
-          ],
-          "lanterns": [
-            ["a", "b"],
-            ["c", "d"]
-          ],
-          "actions": ["markRoot", "markMoon"]
+  "notebook": [
+    {
+      "prompt": "ch3.3.notebook.06",
+      "options": [
+        { "line": "ch3.3.notebook.07", "correct": true, "reply": "ch3.3.sauce.10" },
+        { "line": "ch3.3.notebook.08", "correct": false, "reply": "ch3.3.sauce.11" },
+        {
+          "line": "ch3.3.notebook.09",
+          "correct": false,
+          "counterexample": {
+            "mode": "play",
+            "line": "ch3.3.sauce.12",
+            "sprouts": [
+              { "label": "R", "x": 120, "y": 127, "kind": "bee" },
+              { "label": "a", "x": 200, "y": 80, "kind": "flower" },
+              { "label": "b", "x": 290, "y": 80, "kind": "bee" },
+              { "label": "c", "x": 330, "y": 170, "kind": "flower" },
+              { "label": "d", "x": 230, "y": 190, "kind": "bee" }
+            ],
+            "vines": [
+              ["R", "a"],
+              ["a", "b"],
+              ["b", "c"],
+              ["c", "d"],
+              ["d", "a"]
+            ],
+            "lanterns": [
+              ["a", "b"],
+              ["c", "d"]
+            ],
+            "actions": ["markRoot", "markMoon"]
+          }
         }
-      }
-    ]
-  },
+      ]
+    }
+  ],
   "flow": [
     { "step": "say", "lines": ["ch3.3.sauce.00"] },
     { "step": "play" },

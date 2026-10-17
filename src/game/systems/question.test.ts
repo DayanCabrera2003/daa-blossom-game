@@ -53,7 +53,7 @@ describe('the questions of a script', () => {
         { line: 'ch1.6.notebook.02', correct: true },
       ],
     };
-    const level = scripted([{ step: 'notebook' }], { notebook });
+    const level = scripted([{ step: 'notebook' }], { notebook: [notebook] });
     expect(questionAt(level, 0, yours(level))).toEqual({
       kind: 'notebook',
       step: 0,
@@ -64,6 +64,31 @@ describe('the questions of a script', () => {
       ],
       right: [1],
       preview: null,
+    });
+  });
+
+  it('a notebook step asks the question it names among the level’s', () => {
+    const question = (first: number) => ({
+      prompt: `ch1.6.notebook.0${first}`,
+      options: [
+        { line: `ch1.6.notebook.0${first + 1}`, correct: true },
+        { line: `ch1.6.notebook.0${first + 2}`, correct: false },
+      ],
+    });
+    const steps = [
+      { step: 'notebook', question: 0 },
+      { step: 'notebook', question: 1 },
+    ];
+    const level = scripted(steps, { notebook: [question(0), question(3)] });
+    expect(questionAt(level, 1, yours(level))).toMatchObject({
+      kind: 'notebook',
+      step: 1,
+      prompt: 'ch1.6.notebook.03',
+      options: [
+        { value: 0, line: 'ch1.6.notebook.04' },
+        { value: 1, line: 'ch1.6.notebook.05' },
+      ],
+      right: [0],
     });
   });
 

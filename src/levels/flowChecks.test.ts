@@ -104,13 +104,15 @@ describe('the checks of a level script', () => {
         { step: 'replay', demo: [{ type: 'chain', path: ['A', 'B', 'C', 'D', 'E', 'F'] }] },
         { step: 'notebook' },
       ],
-      notebook: {
-        prompt: 'ch2.1.notebook.00',
-        options: [
-          { line: 'ch2.1.notebook.01', correct: true },
-          { line: 'ch2.1.notebook.02', correct: false },
-        ],
-      },
+      notebook: [
+        {
+          prompt: 'ch2.1.notebook.00',
+          options: [
+            { line: 'ch2.1.notebook.01', correct: true },
+            { line: 'ch2.1.notebook.02', correct: false },
+          ],
+        },
+      ],
     };
     expect(flowProblemsOf(sound)).toEqual([]);
   });
@@ -132,6 +134,25 @@ describe('the checks of a level script', () => {
   it('a notebook step needs the notebook question of the level', () => {
     expect(flowProblemsOf({ ...pond, flow: [{ step: 'notebook' }] })).toEqual([
       { code: 'notebookMissing', step: 0 },
+    ]);
+  });
+
+  it('a notebook step asks one of the questions the level writes', () => {
+    const notebook = [
+      {
+        prompt: 'ch2.1.notebook.00',
+        options: [
+          { line: 'ch2.1.notebook.01', correct: true },
+          { line: 'ch2.1.notebook.02', correct: false },
+        ],
+      },
+    ];
+    const flow = [
+      { step: 'notebook', question: 0 },
+      { step: 'notebook', question: 1 },
+    ];
+    expect(flowProblemsOf({ ...pond, notebook, flow })).toEqual([
+      { code: 'notebookMissing', step: 1 },
     ]);
   });
 

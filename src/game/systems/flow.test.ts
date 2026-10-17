@@ -280,7 +280,9 @@ describe('the script engine', () => {
   });
 
   it('the notebook ends only with a right option, which is written down', () => {
-    const started = startFlow([{ step: 'notebook' }], { notebook: [plainWrong, plainRight] });
+    const started = startFlow([{ step: 'notebook', question: 0 }], {
+      notebook: [[plainWrong, plainRight]],
+    });
     expect(started.effects).toEqual([{ kind: 'notebook', step: 0 }]);
     const wrong = advanceFlow(started.flow, { type: 'answer', option: 0, right: null });
     expect(wrong.effects).toEqual([
@@ -301,7 +303,7 @@ describe('the script engine', () => {
       { correct: false, reply: null, refuted: true },
       { correct: true, reply: 'ch1.5.sauce.05', refuted: false },
     ];
-    const started = startFlow([play, { step: 'notebook' }], { notebook });
+    const started = startFlow([play, { step: 'notebook', question: 0 }], { notebook: [notebook] });
     const noting = advanceFlow(started.flow, { type: 'won' }).flow;
     expect(advanceFlow(noting, { type: 'answer', option: 0, right: null }).effects).toEqual([
       { kind: 'answered', step: 1, value: 0, correct: false },
@@ -311,12 +313,43 @@ describe('the script engine', () => {
     const refuted = advanceFlow(noting, { type: 'answer', option: 1, right: null });
     expect(refuted.effects).toEqual([
       { kind: 'answered', step: 1, value: 1, correct: false },
-      { kind: 'counterexample', step: 1, option: 1 },
+      { kind: 'counterexample', step: 1, question: 0, option: 1 },
       { kind: 'notebook', step: 1 },
     ]);
     expect(advanceFlow(refuted.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([
       { kind: 'answered', step: 1, value: 2, correct: true },
       { kind: 'say', lines: ['ch1.5.sauce.05'] },
+      { kind: 'written' },
+      { kind: 'finished' },
+    ]);
+  });
+
+  it('each notebook step asks its own question, judged by its own statements', () => {
+    const first = [plainRight, plainWrong];
+    const second = [plainWrong, { correct: false, reply: null, refuted: true }, plainRight];
+    const steps: LevelStep[] = [
+      { step: 'notebook', question: 0 },
+      { step: 'notebook', question: 1 },
+    ];
+    const started = startFlow(steps, { notebook: [first, second] });
+    const asked = advanceFlow(started.flow, { type: 'answer', option: 0, right: null });
+    expect(asked.effects).toEqual([
+      { kind: 'answered', step: 0, value: 0, correct: true },
+      { kind: 'written' },
+      { kind: 'notebook', step: 1 },
+    ]);
+    // The same option means another statement in the second question.
+    expect(advanceFlow(asked.flow, { type: 'answer', option: 0, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 0, correct: false },
+      { kind: 'notebook', step: 1 },
+    ]);
+    expect(advanceFlow(asked.flow, { type: 'answer', option: 1, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 1, correct: false },
+      { kind: 'counterexample', step: 1, question: 1, option: 1 },
+      { kind: 'notebook', step: 1 },
+    ]);
+    expect(advanceFlow(asked.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 2, correct: true },
       { kind: 'written' },
       { kind: 'finished' },
     ]);
@@ -387,7 +420,9 @@ describe('the script engine', () => {
   it('an option that is not on offer is no answer', () => {
     const asking = start([ask(true)]).flow;
     expect(advanceFlow(asking, { type: 'answer', option: 2, right: null }).effects).toEqual([]);
-    const noting = startFlow([{ step: 'notebook' }], { notebook: [plainRight] }).flow;
+    const noting = startFlow([{ step: 'notebook', question: 0 }], {
+      notebook: [[plainRight]],
+    }).flow;
     expect(advanceFlow(noting, { type: 'answer', option: 1, right: null }).effects).toEqual([]);
     expect(advanceFlow(noting, { type: 'tap' })).toEqual({ flow: noting, effects: [] });
     const counting = start([

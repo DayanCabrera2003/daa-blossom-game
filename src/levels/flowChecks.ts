@@ -90,7 +90,7 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
 
 /**
  * The checks of a level script (plan 03, phase 1) that the schema cannot see: every question has a
- * right answer, the notebook step has a notebook to show, the steps of the pond have a reflection,
+ * right answer, each notebook step has its notebook question to show, the steps of the pond have a reflection,
  * a `count` of lanterns asks about a sprout that is in the tangle, pointing at the conflict and a
  * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
  * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
@@ -153,7 +153,9 @@ export function checkFlow(level: Level): FlowProblem[] {
         break;
       }
       case 'notebook':
-        if (data.notebook === undefined) problems.push({ code: 'notebookMissing', step });
+        if (data.notebook?.[flowStep.question] === undefined) {
+          problems.push({ code: 'notebookMissing', step });
+        }
         break;
       case 'mirror':
       case 'explore':

@@ -178,11 +178,13 @@ export function openSession(
   now: number,
 ): { session: LevelSession; effects: FlowEffect[] } {
   // What the script needs of each notebook statement: right or not, the reply, and its garden.
-  const notebook = (level.data.notebook?.options ?? []).map((option) => ({
-    correct: option.correct,
-    reply: option.reply ?? null,
-    refuted: option.counterexample !== undefined,
-  }));
+  const notebook = (level.data.notebook ?? []).map((question) =>
+    question.options.map((option) => ({
+      correct: option.correct,
+      reply: option.reply ?? null,
+      refuted: option.counterexample !== undefined,
+    })),
+  );
   const { flow, effects } = startFlow(level.flow, { notebook });
   const session: LevelSession = {
     level,

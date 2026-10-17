@@ -287,14 +287,16 @@ describe('playtest entries of bets, counts and the notebook', () => {
       actions: ['join'],
     };
     const notebook = scripted([{ step: 'notebook' }], {
-      notebook: {
-        prompt: 'ch1.9.notebook.00',
-        options: [
-          { line: 'ch1.9.notebook.01', correct: true },
-          { line: 'ch1.9.notebook.02', correct: false, counterexample },
-          { line: 'ch1.9.notebook.03', correct: false },
-        ],
-      },
+      notebook: [
+        {
+          prompt: 'ch1.9.notebook.00',
+          options: [
+            { line: 'ch1.9.notebook.01', correct: true },
+            { line: 'ch1.9.notebook.02', correct: false, counterexample },
+            { line: 'ch1.9.notebook.03', correct: false },
+          ],
+        },
+      ],
     });
     const { entries } = play(startController(notebook, 0), [
       { kind: 'answer', option: 1 },

@@ -54,11 +54,12 @@ describe('readable level problems', () => {
     expect(
       describeProblem({
         code: 'badCounterexample',
+        question: 1,
         option: 1,
         error: { code: 'badLabel', error: { code: 'unknownName', name: 'z' } },
       }),
     ).toBe(
-      'notebook statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
+      'notebook question 2, statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
     );
     expect(describeProblem({ code: 'sameKindVine', u: 'b', v: 'c', kind: 'flower' })).toBe(
       'vine b–c joins two flowers, but a bee only pairs with a flower',
@@ -87,10 +88,17 @@ describe('readable level problems', () => {
       { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
       { code: 'drawUnbeatable', step: 5 },
       { code: 'noConflict', step: 1 },
-      { code: 'counterexampleLocked', option: 1, action: 'fold' },
-      { code: 'counterexampleUnbeatable', option: 2 },
+      { code: 'counterexampleLocked', question: 0, option: 1, action: 'fold' },
+      { code: 'counterexampleUnbeatable', question: 0, option: 2 },
       { code: 'sameKindVine', u: 'a', v: 'b', kind: 'bee' },
-      { code: 'counterexampleSameKindVine', option: 1, u: 'a', v: 'b', kind: 'flower' },
+      {
+        code: 'counterexampleSameKindVine',
+        question: 0,
+        option: 1,
+        u: 'a',
+        v: 'b',
+        kind: 'flower',
+      },
       { code: 'notAFlower', error: { code: 'evenLength', length: 4 } },
       { code: 'flowerBaseLit', base: 'b' },
       { code: 'flowerBaseNotFirst', base: 'b' },

@@ -23,7 +23,7 @@ const level15 = (): Level => {
 
 /** The counterexample of statement `option` of 1.5, built. */
 const counterexampleOf = (option: number): Counterexample => {
-  const data = level15().data.notebook?.options[option]?.counterexample;
+  const data = level15().data.notebook?.[0]?.options[option]?.counterexample;
   if (data === undefined) throw new Error(`statement ${option} of 1.5 has no counterexample`);
   const built = buildCounterexample(data);
   if (!built.ok) throw new Error(`the counterexample of statement ${option} does not build`);
@@ -41,7 +41,11 @@ describe('the notebook of 1.5', () => {
   it('asks after the garden is lit, and only statement (a) is true', () => {
     const { flow, data } = level15();
     expect(flow.map((step) => step.step)).toEqual(['play', 'say', 'notebook']);
-    expect(data.notebook?.options.map((option) => option.correct)).toEqual([true, false, false]);
+    expect(data.notebook?.[0]?.options.map((option) => option.correct)).toEqual([
+      true,
+      false,
+      false,
+    ]);
   });
 
   it('(b): a chain through 6 sprouts, from the dark to the dark, lights exactly one lantern', () => {

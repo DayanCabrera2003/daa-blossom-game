@@ -25,13 +25,15 @@ const levelWith = (counterexample: unknown) => ({
   goal: { visible: true, value: 1 },
   victory: { type: 'matchingSize', value: 1 },
   flow: [{ step: 'play' }, { step: 'notebook' }],
-  notebook: {
-    prompt: 'ch1.5.notebook.00',
-    options: [
-      { line: 'ch1.5.notebook.01', correct: true },
-      { line: 'ch1.5.notebook.02', correct: false, counterexample },
-    ],
-  },
+  notebook: [
+    {
+      prompt: 'ch1.5.notebook.00',
+      options: [
+        { line: 'ch1.5.notebook.01', correct: true },
+        { line: 'ch1.5.notebook.02', correct: false, counterexample },
+      ],
+    },
+  ],
   solution: [
     { type: 'join', u: 'A', v: 'B' },
     { type: 'answer', option: 0 },
@@ -65,16 +67,39 @@ describe('the checks of a notebook', () => {
     expect(notebookProblemsOf(levelWith({ mode: 'play', ...twoOnB, actions: ['chain'] }))).toEqual([
       {
         code: 'badCounterexample',
+        question: 0,
         option: 1,
         error: { code: 'badLanterns', error: { code: 'alreadyMatched', edge: [1, 2], vertex: 1 } },
       },
     ]);
   });
 
+  it('checks the counterexamples of every question, telling which question each one refutes', () => {
+    const level = levelWith(undefined);
+    const [first] = level.notebook;
+    const folding = { mode: 'play', ...row, actions: ['chain', 'fold'] };
+    const second = {
+      prompt: 'ch1.5.notebook.03',
+      options: [
+        { line: 'ch1.5.notebook.04', correct: false, counterexample: folding },
+        { line: 'ch1.5.notebook.05', correct: true },
+      ],
+    };
+    const asked = {
+      ...level,
+      flow: [...level.flow, { step: 'notebook', question: 1 }],
+      solution: [...level.solution, { type: 'answer', option: 1 }],
+      notebook: [first, second],
+    };
+    expect(notebookProblemsOf(asked)).toEqual([
+      { code: 'counterexampleLocked', question: 1, option: 0, action: 'fold' },
+    ]);
+  });
+
   it('a counterexample is touched with tools the player already has in the level', () => {
     const folding = { mode: 'play', ...row, actions: ['chain', 'fold'] };
     expect(notebookProblemsOf(levelWith(folding))).toEqual([
-      { code: 'counterexampleLocked', option: 1, action: 'fold' },
+      { code: 'counterexampleLocked', question: 0, option: 1, action: 'fold' },
     ]);
   });
 
@@ -88,7 +113,7 @@ describe('the checks of a notebook', () => {
     };
     const drawn = { mode: 'mirrorDraw', ...full, found: 'ch1.5.sauce.02' };
     expect(notebookProblemsOf(levelWith(drawn))).toEqual([
-      { code: 'counterexampleUnbeatable', option: 1 },
+      { code: 'counterexampleUnbeatable', question: 0, option: 1 },
     ]);
   });
 
@@ -96,7 +121,14 @@ describe('the checks of a notebook', () => {
     const kinds = ['bee', 'flower', 'flower', 'bee'];
     const kinded = { ...row, sprouts: row.sprouts.map((s, i) => ({ ...s, kind: kinds[i] })) };
     expect(notebookProblemsOf(levelWith({ mode: 'play', ...kinded, actions: ['chain'] }))).toEqual([
-      { code: 'counterexampleSameKindVine', option: 1, u: 'b', v: 'c', kind: 'flower' },
+      {
+        code: 'counterexampleSameKindVine',
+        question: 0,
+        option: 1,
+        u: 'b',
+        v: 'c',
+        kind: 'flower',
+      },
     ]);
   });
 });

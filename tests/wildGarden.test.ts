@@ -244,7 +244,7 @@ describe('5.3: the wrong petal', () => {
   });
 
   it('(b): in the garden of 5.1 the chain from t leaves the inner flower by c, not by its base', () => {
-    const data = level.data.notebook?.options[1]?.counterexample;
+    const data = level.data.notebook?.[0]?.options[1]?.counterexample;
     if (data === undefined) throw new Error('statement (b) has no counterexample');
     const built = buildCounterexample(data);
     if (!built.ok) throw new Error('the counterexample does not build');
