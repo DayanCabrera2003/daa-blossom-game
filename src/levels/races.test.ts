@@ -2,7 +2,7 @@ import { race } from '@core/cost/benchmark';
 import { raceGarden } from '@core/generators/raceGarden';
 import { describe, expect, it } from 'vitest';
 import type { LevelStep } from './flow';
-import { raceBetVerdict, raceOf, racesAround, racesOf } from './races';
+import { doublingTextKey, raceBetVerdict, raceOf, racesAround, racesOf } from './races';
 
 const race8: LevelStep = { step: 'race', family: 'half', size: 8, seed: 3, budget: 100_000 };
 const race16: LevelStep = { step: 'race', family: 'half', size: 16, seed: 26, budget: 1_000 };
@@ -53,5 +53,9 @@ describe('the races of a level script', () => {
     expect(raceBetVerdict([onBruto, race16], 0)).toBeNull();
     expect(raceBetVerdict([race8, onBruto], 1)).toBeNull();
     expect(raceBetVerdict([race8, onBruto, race16], 0)).toBeNull();
+  });
+
+  it('names the interface text of each answer of a bet', () => {
+    expect(doublingTextKey('fourToEight')).toBe('raceBet.answer.fourToEight');
   });
 });

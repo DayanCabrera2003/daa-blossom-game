@@ -1,5 +1,5 @@
 import { race, runOf, type RaceResult } from '@core/cost/benchmark';
-import { doublingAnswer, type DoublingVerdict } from '@core/cost/doubling';
+import { doublingAnswer, type DoublingAnswer, type DoublingVerdict } from '@core/cost/doubling';
 import { raceGarden } from '@core/generators/raceGarden';
 import type { LevelStep } from './flow';
 
@@ -9,6 +9,9 @@ import type { LevelStep } from './flow';
  * steps on the counters, the points of the chart and the right answer of every doubling bet all
  * come from here, never from the level file.
  */
+
+/** The interface text of an answer of a doubling bet, as a key of `content/`. */
+export const doublingTextKey = (answer: DoublingAnswer): string => `raceBet.answer.${answer}`;
 
 /** A race step of a script. */
 export type RaceStep = Extract<LevelStep, { step: 'race' }>;

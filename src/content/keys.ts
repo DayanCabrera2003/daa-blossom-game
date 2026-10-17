@@ -6,6 +6,8 @@ import type { RefusalCode } from '@game/systems/refusal';
 import { CARD_IDS } from '@levels/cards/schema';
 import { RECIPE_CARDS, RECIPE_CASES } from '@core/recipe/recipe';
 import { cardTextKey, failureTextKey, RECALL_KEY } from '@levels/recipeCards';
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
+import { doublingTextKey } from '@levels/races';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
@@ -197,6 +199,8 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
     ]),
   ),
   [RECALL_KEY]: ['level'],
+  // The three answers of a doubling bet (GDD 6.5).
+  ...Object.fromEntries(DOUBLING_ANSWERS.map((answer) => [doublingTextKey(answer), []])),
   // The name of each named chapter, over its levels in the hub.
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
 };

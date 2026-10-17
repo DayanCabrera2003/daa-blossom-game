@@ -1,7 +1,9 @@
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { GardenState } from '@core/rules/state';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
-import { countAnswer, rightBet } from './answerKey';
+import { doublingTextKey } from '@levels/races';
+import { countAnswer, rightBet, rightRaceBet } from './answerKey';
 
 /**
  * The questions of a script as the player sees them (plan 03, phases 4 and 6): what is asked, the
@@ -13,17 +15,22 @@ import { countAnswer, rightBet } from './answerKey';
 /** One option of a question. */
 export interface QuestionOption {
   /**
-   * What choosing it gives the script: the option's index in an ask or the notebook, the number in a
-   * bet or count.
+   * What choosing it gives the script: the option's index in an ask, the notebook or a doubling
+   * bet, the number in a bet or count.
    */
   readonly value: number;
   /** The line id of a written option; null for a number, which shows as itself. */
   readonly line: string | null;
+  /**
+   * An option the game writes, not the level: its interface text, as a key of `content/` (the
+   * answers of a doubling bet). Absent for the others.
+   */
+  readonly text?: string;
 }
 
-/** A question on screen: an ask, a bet, a count or the notebook. */
+/** A question on screen: an ask, a bet, a count, the notebook or a doubling bet. */
 export interface Question {
-  readonly kind: 'ask' | 'bet' | 'count' | 'notebook';
+  readonly kind: 'ask' | 'bet' | 'count' | 'notebook' | 'raceBet';
   /** The index of the step that asks, in the script. */
   readonly step: number;
   readonly prompt: string;
@@ -73,6 +80,21 @@ export function questionAt(level: Level, index: number, yours: GardenState): Que
         options: numbers(0, step.range),
         right: [countAnswer(level, yours, step)],
       };
+    case 'raceBet': {
+      // Level integrity gives every doubling bet a race on each side, so it has a right answer.
+      const right = rightRaceBet(level, index);
+      return {
+        ...base,
+        kind: 'raceBet',
+        prompt: step.prompt,
+        options: DOUBLING_ANSWERS.map((answer, value) => ({
+          value,
+          line: null,
+          text: doublingTextKey(answer),
+        })),
+        right: right === null ? [] : [right],
+      };
+    }
     case 'notebook': {
       // Level integrity gives every notebook step its notebook question among the level's.
       const notebook = level.data.notebook?.[step.question];
@@ -91,8 +113,8 @@ export function questionAt(level: Level, index: number, yours: GardenState): Que
 }
 
 /**
- * The option a grade-3 hint points at: the first right one of an ask or a count. A bet is a guess
- * the player makes before knowing, so a hint never gives it away.
+ * The option a grade-3 hint points at: the first right one of an ask or a count. A bet, on lanterns
+ * or on a doubling, is a guess the player makes before knowing, so a hint never gives it away.
  */
 export const hintedOption = (question: Question): number | null =>
-  question.kind === 'bet' ? null : (question.right[0] ?? null);
+  question.kind === 'bet' || question.kind === 'raceBet' ? null : (question.right[0] ?? null);

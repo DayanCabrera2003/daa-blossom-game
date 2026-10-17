@@ -206,17 +206,26 @@ export class Presenter {
     const { t, line } = this.texts;
     return {
       prompt: line(question.prompt),
-      footer: t(question.kind === 'bet' ? 'bet.choose' : 'question.choose'),
+      footer: t(
+        question.kind === 'bet' || question.kind === 'raceBet' ? 'bet.choose' : 'question.choose',
+      ),
       options: question.options.map((option) => this.option(option)),
     };
   }
 
-  /** An option in the player's words: a written one translated, a number as itself. */
+  /**
+   * An option in the player's words: one the game writes in its interface text, a line of the level
+   * translated, a number as itself.
+   */
   private option(option: QuestionOption): ShownOption {
-    return {
-      value: option.value,
-      label: option.line === null ? String(option.value) : this.texts.line(option.line),
-    };
+    const { t, line } = this.texts;
+    const label =
+      option.text !== undefined
+        ? t(option.text)
+        : option.line === null
+          ? String(option.value)
+          : line(option.line);
+    return { value: option.value, label };
   }
 
   /** The notebook question in the player's words: the page's name, the statement, its endings. */

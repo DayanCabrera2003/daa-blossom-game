@@ -2,7 +2,7 @@ import { applyAction } from '@core/rules/applyAction';
 import type { Level } from '@levels/build';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { betrayalLevel } from '../../../tests/support/fixtureLevels';
+import { betrayalLevel, racesLevel } from '../../../tests/support/fixtureLevels';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { hintedOption, questionAt } from './question';
 
@@ -179,6 +179,26 @@ describe('the questions of a script', () => {
     expect(at(0)).toBe(1);
     expect(at(1)).toBeNull();
     expect(at(2)).toBe(1);
+  });
+
+  it('a doubling bet offers its three answers in words; the right one is what the races measured', () => {
+    const level = racesLevel();
+    const question = questionAt(level, 2, level.start);
+    expect(question).toEqual({
+      kind: 'raceBet',
+      step: 2,
+      prompt: 'ch6.5.sauce.02',
+      options: [
+        { value: 0, line: null, text: 'raceBet.answer.double' },
+        { value: 1, line: null, text: 'raceBet.answer.fourToEight' },
+        { value: 2, line: null, text: 'raceBet.answer.farMore' },
+      ],
+      right: [2],
+      preview: null,
+    });
+    // Like any bet, it is a guess made before knowing: a hint never gives it away.
+    if (question === null) throw new Error('a doubling bet is a question');
+    expect(hintedOption(question)).toBeNull();
   });
 
   it('a count of the loop offers 0 to its range; the right one is the sprouts of the loop', () => {
