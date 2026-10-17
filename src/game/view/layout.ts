@@ -15,7 +15,15 @@ export const LAYOUT = {
   bottomY: CANVAS_HEIGHT - 13,
   sunTrack: { x0: CANVAS_WIDTH - 150, x1: CANVAS_WIDTH - 10, y: 8 },
   toastY: CANVAS_HEIGHT - 38,
-  dialogue: { x: 40, y: CANVAS_HEIGHT - 82, width: CANVAS_WIDTH - 80, height: 40 },
+  /** Wide and tall enough for the longest line, three lines of the pixel font, and the hint. */
+  dialogue: {
+    x: 16,
+    y: CANVAS_HEIGHT - 98,
+    width: CANVAS_WIDTH - 32,
+    height: 56,
+    padX: 6,
+    padY: 5,
+  },
   /** The garden between the bars: what a question blocks and a bet's veil covers. */
   garden: { y: 24, height: CANVAS_HEIGHT - 27 - 2 - 24 },
   /** The question panel, near the top so the dialogue box below stays free. */

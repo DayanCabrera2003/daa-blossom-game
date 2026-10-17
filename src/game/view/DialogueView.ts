@@ -17,7 +17,7 @@ export class DialogueView {
   private onClosed: (() => void) | null = null;
 
   constructor(scene: Phaser.Scene, continueLabel: string) {
-    const { x, y, width, height } = LAYOUT.dialogue;
+    const { x, y, width, height, padX, padY } = LAYOUT.dialogue;
     this.panel = scene.add
       .rectangle(x, y, width, height, PALETTE.panel, 0.95)
       .setOrigin(0, 0)
@@ -32,7 +32,7 @@ export class DialogueView {
         },
       );
     this.text = scene.add
-      .text(x + 6, y + 5, '', { ...textStyle(8), wordWrap: { width: width - 12 } })
+      .text(x + padX, y + padY, '', { ...textStyle(8), wordWrap: { width: width - 2 * padX } })
       .setDepth(201);
     this.hint = scene.add
       .text(x + width - 4, y + height - 3, continueLabel, textStyle(8))
