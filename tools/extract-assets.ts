@@ -1,5 +1,6 @@
 // extract-assets: turns the CC0 pack zips of assets-src/packs/ into the files the game ships.
-// Usage: npm run assets         writes public/assets/** and src/game/assets/manifest.json
+// Usage: npm run assets         writes public/assets/**, src/game/assets/manifest.json and the
+//                               table of the characters each font draws (glyphs.json)
 //        npm run assets:check   writes nothing; exits with code 1 unless the committed files are
 //                               exactly what the zips give (local only: the zips are not committed)
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -7,6 +8,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compareOutputs } from './assets/compareOutputs';
 import { extract } from './assets/extract';
+import { glyphTable } from './assets/glyphTable';
 import { SELECTION } from './assets/selection';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -29,7 +31,21 @@ const readZip = (zip: string): Uint8Array => {
   return new Uint8Array(readFileSync(path));
 };
 
-const { files } = extract(SELECTION, readZip);
+const extracted = extract(SELECTION, readZip).files;
+
+// The characters each font draws, read from the extracted bytes rather than from the disk, which
+// the write below replaces.
+const fonts = Object.fromEntries(
+  SELECTION.files
+    .filter((file) => file.kind === 'font')
+    .map((file) => [file.key, `${ASSETS_DIR}/${file.out}`]),
+);
+const extractedBytes = (path: string): Uint8Array => {
+  const found = extracted.find((file) => file.path === path);
+  if (found === undefined) throw new Error(`${path} is not among the extracted files`);
+  return found.bytes;
+};
+const files = [...extracted, glyphTable(fonts, extractedBytes)];
 
 if (process.argv.includes('--check')) {
   const problems = compareOutputs(files, {
