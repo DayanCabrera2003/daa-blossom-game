@@ -5,12 +5,14 @@ import type { AudioChannel, Settings } from '@services/settings';
 /** A sound as the game's sound manager makes it, whichever manager the browser got. */
 export type BusSound = ReturnType<Phaser.Game['sound']['add']>;
 
-/** How a sound is asked for: its own volume within its channel, and whether it loops. */
+/** How a sound is asked for: its own volume within its channel, its rate, and whether it loops. */
 export interface PlayOptions {
   /** Between 0 and 1, relative to the channel (1 by default). */
   readonly volume?: number;
   /** A looping sound (a music track) waits for the first touch instead of being dropped. */
   readonly loop?: boolean;
+  /** Playback rate (1 by default): a babble syllable played slower sounds lower. */
+  readonly rate?: number;
 }
 
 /** A sound playing on a channel, with the volume it was asked for (a fading track changes it). */
@@ -69,7 +71,10 @@ export class AudioBus {
       return null;
     }
     const volume = options.volume ?? 1;
-    const sound = this.game.sound.add(key, { loop: options.loop ?? false });
+    const sound = this.game.sound.add(key, {
+      loop: options.loop ?? false,
+      rate: options.rate ?? 1,
+    });
     const playing: Playing = { sound, channel, volume };
     this.playing.add(playing);
     sound.once(Phaser.Sound.Events.COMPLETE, () => this.release(playing));
