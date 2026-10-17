@@ -44,7 +44,7 @@ export function starRow(earned: number, total: number): RowStar[] {
 }
 
 /** The width of `count` stars side by side, without the air after the last one. */
-const rowWidth = (count: number): number => (count === 0 ? 0 : count * STAR_STEP - 1);
+export const rowWidth = (count: number): number => (count === 0 ? 0 : count * STAR_STEP - 1);
 
 /**
  * Room for `count` stars at the end of a text label (a level's button in the hub): how many spaces

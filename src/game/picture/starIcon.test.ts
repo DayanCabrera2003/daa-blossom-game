@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PIXEL_FONT } from './pixelFont';
-import { STAR_PIXELS, STAR_SIZE, STAR_STEP, labelStars, starRow } from './starIcon';
+import { STAR_PIXELS, STAR_SIZE, STAR_STEP, labelStars, rowWidth, starRow } from './starIcon';
 
 describe('the drawn star (the pixel font has no ★)', () => {
   it('is a symmetric shape as tall as a capital letter, inside its square', () => {
@@ -23,6 +23,9 @@ describe('the drawn star (the pixel font has no ★)', () => {
       { x: 2 * STAR_STEP, earned: false },
     ]);
     expect(starRow(0, 0)).toEqual([]);
+    // Three stars and the two pixels of air between them; nothing after the last.
+    expect(rowWidth(3)).toBe(3 * STAR_SIZE + 2);
+    expect(rowWidth(0)).toBe(0);
   });
 
   it('reserves whole character cells in a label for its stars, centred in them', () => {
