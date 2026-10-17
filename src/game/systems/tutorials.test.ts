@@ -15,6 +15,7 @@ import {
   pentagonLevel,
   recipeLevel,
   automatonLevel,
+  racesLevel,
   stemRotationLevel,
 } from '../../../tests/support/fixtureLevels';
 import {
@@ -179,6 +180,15 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(stepCard('automaton', new Set(['automaton']))).toBeNull();
     expect(helpCards(automatonLevel(), 1)).toContain('automaton');
     expect(helpCards(automatonLevel(), 0)).not.toContain('automaton');
+  });
+
+  it('a race and a doubling bet bring their cards when first reached (6.4, 6.5)', () => {
+    expect(stepCard('race', new Set())).toBe('race');
+    expect(stepCard('raceBet', new Set())).toBe('raceBet');
+    expect(stepCard('raceBet', new Set(['raceBet']))).toBeNull();
+    expect(helpCards(racesLevel(), 0)).toContain('race');
+    expect(helpCards(racesLevel(), 0)).not.toContain('raceBet');
+    expect(helpCards(racesLevel(), 1)).toContain('raceBet');
   });
 
   it('every action that unlocks has a card, and every card has something that shows it', () => {

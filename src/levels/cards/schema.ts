@@ -35,6 +35,8 @@ export const CARD_IDS = [
   'rotateStem',
   'recipe',
   'automaton',
+  'race',
+  'raceBet',
   'stones',
 ] as const;
 

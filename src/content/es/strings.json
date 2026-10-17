@@ -219,6 +219,10 @@
   "tutorial.recipe.body": "Toca una tarjeta suelta para ponerla en su sitio de la receta; tócala en la receta para devolverla. Cuando la tengas, pulsa «Comprobar».",
   "tutorial.automaton.title": "El jardinero mecánico",
   "tutorial.automaton.body": "Mira cómo trabaja el jardinero mecánico: sigue la receta él solo, paso a paso, y tú no tocas nada. Cuando termine, mueve el sol para repasarlo.",
+  "tutorial.race.title": "La carrera",
+  "tutorial.race.body": "El jardinero mecánico y Bruto encienden el mismo jardín, cada uno a su manera. Cada contador cuenta los pasos de uno. Tú no tocas nada: mira quién termina antes.",
+  "tutorial.raceBet.title": "Apostar por el doble",
+  "tutorial.raceBet.body": "Antes de la carrera, toca una de las tres respuestas: cuántos pasos más crees que dará ese corredor en un jardín el doble de grande. Luego mira la carrera.",
   "tutorial.stones.title": "Piedras",
   "tutorial.stones.body": "Con Piedras, toca un brote para levantarlo como una piedra. Tócalo otra vez para devolverlo.",
   "tutorial.ok": "Entendido"

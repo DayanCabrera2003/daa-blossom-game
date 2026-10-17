@@ -426,6 +426,36 @@
     ]
   },
   {
+    "id": "race",
+    "sprouts": [
+      { "label": "a", "x": 20, "y": 30 },
+      { "label": "b", "x": 60, "y": 30 },
+      { "label": "c", "x": 100, "y": 30 }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"]
+    ],
+    "alone": true,
+    "steps": [
+      { "type": "join", "u": "a", "v": "b" },
+      { "type": "split", "u": "a", "v": "b" },
+      { "type": "join", "u": "b", "v": "c" },
+      { "type": "split", "u": "b", "v": "c" },
+      { "type": "join", "u": "a", "v": "b" }
+    ]
+  },
+  {
+    "id": "raceBet",
+    "sprouts": [
+      { "label": "a", "x": 40, "y": 30 },
+      { "label": "b", "x": 80, "y": 30 }
+    ],
+    "vines": [["a", "b"]],
+    "choices": { "count": 3, "kind": "lines" },
+    "steps": [{ "type": "raceBet", "answer": "fourToEight" }]
+  },
+  {
     "id": "stones",
     "sprouts": [
       { "label": "a", "x": 20, "y": 27 },
