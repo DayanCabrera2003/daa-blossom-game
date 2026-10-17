@@ -147,6 +147,34 @@ describe('level integrity', () => {
     expect(problemsOf({ ...lying, roots: ['a'] })).toContainEqual({ code: 'wonAtStart' });
   });
 
+  it('the solution is played on the garden the script leaves for the play step (7.4)', () => {
+    // The garden of 4.9: the automaton searches it to the end, and the player lifts its moon.
+    const gift = {
+      id: '7.4',
+      sprouts: ['R', 'a', 'b', 'c', 'd'].map((label, i) => ({ label, x: 60 + 80 * i, y: 135 })),
+      vines: [
+        ['R', 'a'],
+        ['a', 'b'],
+        ['b', 'c'],
+        ['c', 'd'],
+        ['d', 'b'],
+      ],
+      lanterns: [
+        ['a', 'b'],
+        ['c', 'd'],
+      ],
+      goal: { visible: false },
+      victory: { type: 'moonCertificate' },
+      flow: [{ step: 'automaton' }, { step: 'play' }],
+      solution: [{ type: 'liftStone', vertex: 'a' }, { type: 'declareDone' }],
+    };
+    expect(problemsOf(gift)).toEqual([]);
+    // Without the automaton's search before it, the same stone is no moon of any search.
+    expect(problemsOf({ ...gift, flow: [{ step: 'play' }] })).toEqual([
+      { code: 'solutionFallsShort' },
+    ]);
+  });
+
   it('the solution must earn the water star when the level has a budget', () => {
     const thirsty = {
       ...trap,
