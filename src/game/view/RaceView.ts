@@ -4,6 +4,7 @@ import type { CostChart } from '../picture/costChart';
 import type { CounterPicture } from '../picture/raceClock';
 import { raceCounterText } from '../picture/raceCounterText';
 import type { RaceLayout, RacePanelPicture } from '../picture/racePanel';
+import { fontMetrics } from '../picture/pixelFont';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
@@ -31,6 +32,12 @@ export const RACE_LAYOUT: RaceLayout = {
  * dialogue box (200), so the lines and bets of a race are read over it.
  */
 const PANEL_DEPTH = 110;
+
+/**
+ * Where each runner's counter is written, under the miniature: from the panel's padding to just
+ * short of the chart, wrapping in up to two rows, so a long count never runs into the chart.
+ */
+export const RACE_COUNTERS = { x: PAD + 4, width: CHART_AT.x - PAD - 8, rows: 2 } as const;
 
 /** The colours of the two runners, on the chart and in their counters. */
 const AUTOMATON = PALETTE.lit;
@@ -86,9 +93,10 @@ export class RaceView {
     this.drawMiniature(picture);
     const { miniature } = RACE_LAYOUT;
     const below = miniature.y + miniature.height + 4;
+    const rows = RACE_COUNTERS.rows * fontMetrics(8).fontSize;
     this.counters = {
-      automaton: this.text(PAD + 4, below, '', AUTOMATON),
-      bruto: this.text(PAD + 4, below + 12, '', BRUTO),
+      automaton: this.counter(below, AUTOMATON),
+      bruto: this.counter(below + rows, BRUTO),
     };
     this.drawChart(picture.chart);
   }
@@ -150,6 +158,11 @@ export class RaceView {
   private counterText(runner: 'automaton' | 'bruto', counter: CounterPicture): string {
     const { key, params } = raceCounterText(runner, counter);
     return this.t(key, params);
+  }
+
+  /** A runner's counter, wrapping before the chart. */
+  private counter(y: number, colour: number): Phaser.GameObjects.Text {
+    return this.text(RACE_COUNTERS.x, y, '', colour).setWordWrapWidth(RACE_COUNTERS.width);
   }
 
   /** A line of text on the panel. */
