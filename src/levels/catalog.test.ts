@@ -92,6 +92,12 @@ describe('the level catalog', () => {
     expect(early.filter((level) => level.data.draft)).toEqual([]);
   });
 
+  it('holds the written chapter 7 whole, with no draft among its levels', () => {
+    const council = catalog().filter((level) => level.data.id.startsWith('7.'));
+    expect(council.map((level) => level.data.id)).toEqual(['7.1', '7.2', '7.3', '7.4', '7.5']);
+    expect(council.filter((level) => level.data.draft)).toEqual([]);
+  });
+
   it('keeps drafts only in chapters not yet written, all after the written ones', () => {
     const chapterOf = (id: string) => Number(id.split('.')[0]);
     const chapters = (draft: boolean) =>

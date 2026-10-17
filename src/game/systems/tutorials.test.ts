@@ -92,6 +92,7 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '5.2': ['layers'],
       '6.1': ['recipe'],
       '6.2': ['automaton'],
+      '7.2': ['stones'],
     });
   });
 
