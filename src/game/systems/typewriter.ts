@@ -45,8 +45,8 @@ function pauseAfter(char: string, next: string | undefined, pace: Pace): number 
 
 /**
  * When each character of `text` appears, in ms after the line starts: the first at once, each
- * next one a beat later, plus the pause after a mark. Characters are code points, so the text is
- * cut the same way `typedText` cuts it.
+ * next one a beat later, plus the pause after a mark. Characters are code points (`Array.from`), so
+ * one outside the basic plane counts once.
  */
 export function revealTimes(text: string, pace: Pace): number[] {
   const chars = Array.from(text);
@@ -63,7 +63,3 @@ export function revealTimes(text: string, pace: Pace): number[] {
 /** How many characters have appeared `elapsed` ms after the line started (all, once it is over). */
 export const visibleCount = (times: readonly number[], elapsed: number): number =>
   times.filter((time) => time <= elapsed).length;
-
-/** The first `count` characters of `text`: what the box shows while the line is being typed. */
-export const typedText = (text: string, count: number): string =>
-  Array.from(text).slice(0, count).join('');

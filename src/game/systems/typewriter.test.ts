@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { SPEAKERS } from './speaker';
-import { PACES, revealTimes, typedText, visibleCount, type Pace } from './typewriter';
+import { PACES, revealTimes, visibleCount, type Pace } from './typewriter';
 
 /** A pace with round numbers: one character every 100 ms, pauses of 50 and 200 ms. */
 const ROUND: Pace = { lettersPerSecond: 10, commaPause: 50, stopPause: 200 };
@@ -64,11 +64,5 @@ describe('what the box shows after some time', () => {
     expect(visibleCount(times, 150)).toBe(2);
     expect(visibleCount(times, 300)).toBe(4);
     expect(visibleCount(times, Infinity)).toBe(4);
-  });
-
-  it('cuts the text at that many characters', () => {
-    expect(typedText('hola', 2)).toBe('ho');
-    expect(typedText('a😀b', 2)).toBe('a😀');
-    expect(typedText('hola', 9)).toBe('hola');
   });
 });
