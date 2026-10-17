@@ -29,6 +29,17 @@ npm run bench      # steps of the recipe, the fast version and Bruto per garden 
 npm run test:explore  # property tests with a random seed and 2000 cases each
 ```
 
+### Art, music and sound
+
+The game's art, music and sounds come from CC0 packs (listed with their authors in [`CREDITS.md`](CREDITS.md)). The zips are not committed: download them into `assets-src/packs/` (file names and sha256 checksums are in `tools/assets/selection.ts`). The files the game uses are extracted from them and committed under `public/assets/`, so building and testing never need the zips.
+
+```sh
+npm run assets        # extract the chosen files into public/assets/ and regenerate src/game/assets/manifest.json
+npm run assets:check  # check, without writing, that the committed files are exactly what the zips give
+```
+
+To use another file of a pack, add it to `tools/assets/selection.ts` (at the end of its group), run `npm run assets`, and credit it in `CREDITS.md`.
+
 Property-based tests use a fixed seed by default, so every run (and CI) is reproducible. When a property fails, fast-check prints its seed; replay it with `FC_SEED=<seed> npm test`. `FC_RUNS=<n>` sets the number of cases per property.
 
 ## License
