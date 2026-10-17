@@ -62,16 +62,17 @@ const stripStart = (sheet: AssetKey): SheetCut => ({
 
 /**
  * One piece of an ornament, `dx`, `dy` from its top-left corner. An animated piece has `frames`
- * frames side by side in its sheet, each as wide as `cut`; a still one has 1. `tint` recolours the
- * piece on top of the backdrop's own tint (the turquoise glass of the hub's greenhouse), and
- * `alpha` lets the backdrop show through it.
+ * frames side by side in its sheet, each as wide as `cut`; a still one has 1. `glass` is the
+ * colour a still piece is recoloured to, keeping only its light and shade (the turquoise glass of
+ * the hub's greenhouse, `glass.ts`), or null to draw it as it is; `alpha` lets the backdrop show
+ * through it.
  */
 export interface OrnamentPart {
   readonly cut: SheetCut;
   readonly dx: number;
   readonly dy: number;
   readonly frames: number;
-  readonly tint: number;
+  readonly glass: number | null;
   readonly alpha: number;
 }
 
@@ -128,7 +129,7 @@ export const still = (cut: SheetCut, dx = 0, dy = 0): OrnamentPart => ({
   dx,
   dy,
   frames: 1,
-  tint: 0xffffff,
+  glass: null,
   alpha: 1,
 });
 

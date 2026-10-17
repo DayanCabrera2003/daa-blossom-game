@@ -1,5 +1,6 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { boxesOverlap, type Rect } from './boxDistance';
+import { backdropTint } from './dayTint';
 import { HUB } from './hubLayout';
 import {
   AUTUMN_TREE,
@@ -10,6 +11,7 @@ import {
   LILY_POND,
   OAKS,
   ornament,
+  seasonOf,
   SOIL_PATCH,
   still,
   type Ornament,
@@ -26,6 +28,9 @@ import {
 /** The signpost before each chapter title, and the room it leaves before the title. */
 export const HUB_SIGN = { width: 16, gap: 2 } as const;
 
+/** The hub at dusk: the orchard's colour at the hour the day's work is done. */
+export const HUB_TINT = backdropTint(seasonOf('0').tint, 2 / 3);
+
 /** Between a piece and what it must not cover, and between two pieces. */
 const PIECE_GAP = 4;
 
@@ -34,7 +39,7 @@ export const HUB_PIECES: readonly Ornament[] = [
   SOIL_PATCH,
   ornament([...CHERRY.parts, still(cutOf('daisy'), 32, 16)]),
   LILY_POND,
-  ornament([{ ...still(cutOf('greenhouseHouse')), tint: 0x8feff1, alpha: 0.6 }]),
+  ornament([{ ...still(cutOf('greenhouseHouse')), glass: 0x8feff1, alpha: 0.6 }]),
   ornament([0, 1, 2, 3].map((k) => still(cutOf('bunting', k, 0, 1, 2), 16 * k, 0))),
   AUTUMN_TREE,
   CABIN,

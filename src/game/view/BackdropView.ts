@@ -1,12 +1,11 @@
 import type Phaser from 'phaser';
 import { BACKDROP } from '../picture/backdrop';
-import { multiplyColours } from '../picture/dayTint';
 import { driftAt } from '../picture/drift';
 import type { Drift, Ornament, OrnamentPart, SheetCut } from '../picture/seasons';
 import { TILE } from '../picture/seasons';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { PALETTE } from './palette';
-import { cutFrame } from './sheetCuts';
+import { cutFrame, glassFrame } from './sheetCuts';
 
 /** Under everything else on the screen, the fog of the greenhouse included. */
 const BACKDROP_DEPTH = -10;
@@ -24,11 +23,10 @@ export interface BackdropPaint {
   }[];
 }
 
-/** An animated piece on screen, with its frames and its own tint. */
+/** An animated piece on screen, with its frames. */
 interface Moving {
   readonly image: Phaser.GameObjects.Image;
   readonly frames: readonly string[];
-  readonly part: OrnamentPart;
   readonly phase: number;
 }
 
@@ -99,7 +97,10 @@ export class BackdropView {
     const first = frames[0];
     if (first === undefined) return;
     if (part.frames === 1) {
-      this.still.drawFrame(cut.sheet, first, x, y, part.alpha, part.tint);
+      // A piece of glass is drawn from its recoloured copy.
+      const glass = part.glass === null ? null : glassFrame(this.scene.textures, cut, part.glass);
+      if (glass === null) this.still.drawFrame(cut.sheet, first, x, y, part.alpha);
+      else this.still.drawFrame(glass.key, glass.frame, x, y, part.alpha);
       return;
     }
     const image = this.scene.add
@@ -107,7 +108,7 @@ export class BackdropView {
       .setOrigin(0, 0)
       .setDepth(BACKDROP_DEPTH + 1)
       .setAlpha(BACKDROP.alpha * part.alpha);
-    this.moving.push({ image, frames, part, phase });
+    this.moving.push({ image, frames, phase });
   }
 
   /** Lets `drift` fall across the backdrop, on paths drawn from `seed`; null for none. */
@@ -141,7 +142,7 @@ export class BackdropView {
     if (colour === this.tinted) return;
     this.tinted = colour;
     this.still.setTint(colour);
-    for (const { image, part } of this.moving) image.setTint(multiplyColours(colour, part.tint));
+    for (const { image } of this.moving) image.setTint(colour);
     for (const particle of this.particles) particle.setTint(colour);
   }
 

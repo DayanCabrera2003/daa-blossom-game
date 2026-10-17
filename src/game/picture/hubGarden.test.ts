@@ -68,7 +68,7 @@ describe('the hub that grows (plan 06, section 1.5)', () => {
     expect(HUB_PIECES[7]).toBe(OAKS);
     // The greenhouse is glass: turquoise and half see-through.
     const glass = HUB_PIECES[3]?.parts[0];
-    expect(glass?.tint).toBe(0x8feff1);
+    expect(glass?.glass).toBe(0x8feff1);
     expect(glass?.alpha).toBeLessThan(1);
   });
 
