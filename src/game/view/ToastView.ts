@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LAYOUT } from './layout';
+import { css, PALETTE } from './palette';
 import { textStyle } from './textStyle';
 
 /** How long a message stays before fading, in milliseconds. */
@@ -18,7 +19,7 @@ export class ToastView {
     this.text = scene.add
       .text(CANVAS_WIDTH / 2, LAYOUT.toastY, '', {
         ...textStyle(8),
-        backgroundColor: '#2e2a24',
+        backgroundColor: css(PALETTE.panel),
         padding: { x: 4, y: 2 },
       })
       .setOrigin(0.5, 0.5)

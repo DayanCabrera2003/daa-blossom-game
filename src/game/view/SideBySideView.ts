@@ -6,7 +6,7 @@ import type { CutPicture, SideBySidePicture } from '../picture/sideBySide';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { SPROUT_RADIUS } from './GardenView';
 import { LAYOUT } from './layout';
-import { PALETTE } from './palette';
+import { css, PALETTE } from './palette';
 import { textStyle } from './textStyle';
 
 /** Under the garden's vines, so the flower's outline and the cut never hide a sprout. */
@@ -41,7 +41,7 @@ export class SideBySideView {
     this.caption = scene.add
       .text(CANVAS_WIDTH / 2, LAYOUT.garden.y, '', {
         ...textStyle(8, PALETTE.highlight),
-        backgroundColor: '#1d2433cc',
+        backgroundColor: `${css(PALETTE.background)}cc`,
         align: 'center',
         wordWrap: { width: CANVAS_WIDTH - 16 },
       })
