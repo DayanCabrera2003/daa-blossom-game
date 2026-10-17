@@ -16,6 +16,12 @@ describe('named frames', () => {
     expect(frameRect('fence')).toEqual({ x: 128, y: 64, width: 112, height: 48 });
   });
 
+  it('finds the beehive and the mushrooms where the Tiny Town sheet draws them', () => {
+    // Column 9 of row 7 holds a yellow sack and column 4 of row 2 a pine: both sit one cell on.
+    expect(frameRect('beehive')).toEqual({ x: 160, y: 112, width: 16, height: 16 });
+    expect(frameRect('mushrooms')).toEqual({ x: 80, y: 32, width: 16, height: 16 });
+  });
+
   it('uses the frame size of its sheet', () => {
     expect(frameRect('lanternBack')).toEqual({ x: 16, y: 0, width: 16, height: 16 });
   });
