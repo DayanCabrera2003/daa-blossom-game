@@ -14,18 +14,39 @@ export const PIXEL_FONT = {
   advance: 6,
   /** The height of a capital letter at the native size. */
   capHeight: 7,
+  /** From the top of a line to the baseline: a capital and the accent over it (Á, Ñ). */
+  ascent: 10,
+  /** From the baseline to the bottom of a line: the tails of g, j, p, q, y. */
+  descent: 2,
 } as const;
 
 /**
- * The size the views asked for in the greybox, where 8 was body text (GDD §4.1), that fills one
- * native size. Larger requests get whole multiples of it: titles and long text, twice.
+ * The size the views ask for body text (GDD §4.1: 8, "with double scale for long text"). Each
+ * whole multiple of it is one more multiple of the native size: the 8 to 12 of the greybox's body
+ * text and titles are drawn at the native size, a request of 16 at twice it.
  */
 const BODY_REQUEST = 8;
 
-/**
- * The font size, in logical pixels, to draw a text the views ask for at `requested`: the whole
- * multiple of the native size nearest to it, and never less than one.
- */
+/** How many times the native size a text asked for at `requested` is drawn: one at least. */
+const scale = (requested: number): number => Math.max(1, Math.floor(requested / BODY_REQUEST));
+
+/** The font size, in logical pixels, to draw a text the views ask for at `requested`. */
 export function fontSize(requested: number): number {
-  return PIXEL_FONT.nativeSize * Math.max(1, Math.round(requested / BODY_REQUEST));
+  return PIXEL_FONT.nativeSize * scale(requested);
+}
+
+/**
+ * The line measures of a text asked for at `requested`, as Phaser takes them (`fontSize` is the
+ * height of a line). Given rather than measured, so every line is the same height whether or not
+ * the page has loaded the font yet, and layouts can count on it.
+ */
+export function fontMetrics(requested: number): {
+  ascent: number;
+  descent: number;
+  fontSize: number;
+} {
+  const times = scale(requested);
+  const ascent = PIXEL_FONT.ascent * times;
+  const descent = PIXEL_FONT.descent * times;
+  return { ascent, descent, fontSize: ascent + descent };
 }
