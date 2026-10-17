@@ -11,6 +11,7 @@ import {
   hudRow,
   toolbarRow,
 } from './bottomRows';
+import { iconRoom, TOOL_ICONS } from './buttonIcon';
 
 const text = strings as Readonly<Record<string, string>>;
 
@@ -23,6 +24,10 @@ const label = (key: string): string => {
 
 /** Every tool at once, as the toolbar would show them if a level opened them all. */
 const allTools = Object.keys(TOOL_ACTIONS) as ToolId[];
+
+/** The width of a tool's button: its name and, for some, the icon before it. */
+const toolWidth = (tool: ToolId, advance?: number): number =>
+  estimatedButtonWidth(label(`tool.${tool}`), advance) + iconRoom(TOOL_ICONS[tool] ?? null);
 
 /** Panels as [left, right] from their left edges and widths. */
 const spans = (lefts: readonly number[], widths: readonly number[]): [number, number][] =>
@@ -63,9 +68,9 @@ describe('the two bottom rows of the level HUD', () => {
     ]);
   });
 
-  it('all seven tools fit in their row, with the labels of the game', () => {
+  it('all seven tools fit in their row, with the labels and icons of the game', () => {
     expect(allTools).toHaveLength(7);
-    const widths = allTools.map((tool) => estimatedButtonWidth(label(`tool.${tool}`)));
+    const widths = allTools.map((tool) => toolWidth(tool));
     expect(fitsOnCanvas(toolbarRow(widths), widths)).toBe(true);
   });
 
@@ -77,7 +82,7 @@ describe('the two bottom rows of the level HUD', () => {
 
   it('both rows still fit if the fallback face is a pixel wider per letter', () => {
     const wide = CHAR_ADVANCE + 1;
-    const tools = allTools.map((tool) => estimatedButtonWidth(label(`tool.${tool}`), wide));
+    const tools = allTools.map((tool) => toolWidth(tool, wide));
     const hud = HUD_BUTTONS.map((name) => estimatedButtonWidth(label(`hud.${name}`), wide));
     expect(fitsOnCanvas(toolbarRow(tools), tools)).toBe(true);
     expect(fitsOnCanvas(hudRow(hud), hud)).toBe(true);
