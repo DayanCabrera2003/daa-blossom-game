@@ -155,6 +155,13 @@ const UI = {
   'recipe.empty': [],
   'recipe.check': [],
   'recipe.right': [],
+  'race.title': ['count'],
+  'race.counter.brutoAsleep': [],
+  'race.legend.automaton': [],
+  'race.legend.bruto': [],
+  'race.axis.steps': [],
+  'race.axis.sprouts': [],
+  'race.asleep': [],
   'raceBet.revealRight': ['runner', 'answer'],
   'raceBet.revealWrong': ['runner', 'answer', 'bet'],
   'hud.checkMirror': [],
@@ -205,6 +212,13 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   // The three answers of a doubling bet (GDD 6.5).
   ...Object.fromEntries(DOUBLING_ANSWERS.map((answer) => [doublingTextKey(answer), []])),
   ...Object.fromEntries(RUNNERS.map((runner) => [`raceBet.runner.${runner}`, []])),
+  // The counters of a race (GDD 6.4): each runner's steps, running and once finished.
+  ...Object.fromEntries(
+    RUNNERS.flatMap((runner) => [
+      [`race.counter.${runner}`, ['steps']],
+      [`race.counter.${runner}Done`, ['steps']],
+    ]),
+  ),
   // The name of each named chapter, over its levels in the hub.
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
 };
