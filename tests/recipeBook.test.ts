@@ -1,7 +1,15 @@
+import lines from '@content/es/lines.json';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import { size } from '@core/matching/queries';
 import { checkRecipe } from '@core/recipe/check';
-import { EMPTY_RECIPE, placeCard, type Recipe, type RecipeCardId } from '@core/recipe/recipe';
+import {
+  EMPTY_RECIPE,
+  placeCard,
+  RIGHT_RECIPE,
+  type Recipe,
+  type RecipeCardId,
+  withoutCases,
+} from '@core/recipe/recipe';
 import { AUTOMATON_MOVES, runRecipe } from '@core/recipe/run';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
@@ -17,6 +25,8 @@ import { describe, expect, it } from 'vitest';
  * that follows it lights the most lanterns, a recipe without the fold card falls short in the
  * garden of 5.1, and the two notebook questions of 6.6 say why the recipe always ends.
  */
+
+const lineTable: Record<string, string> = lines;
 
 const levelOf = (id: string): Level => {
   const level = catalog().find((candidate) => candidate.data.id === id);
@@ -54,6 +64,9 @@ const gardenOf = (level: Level) => ({
   vines: level.data.vines,
   lanterns: level.data.lanterns,
 });
+
+/** The text of a line of dialogue. */
+const said = (id: string): string | undefined => lineTable[id];
 
 describe('6.1: cards', () => {
   const level = levelOf('6.1');
@@ -104,5 +117,53 @@ describe('6.2: the automaton', () => {
     expect(size(ran.matching)).toBe(maximumSize(level.graph));
     expect(size(ran.matching)).toBeGreaterThan(size(level.start.matching));
     expect(ran.declaredDone).toBe(true);
+  });
+});
+
+describe('6.3: the broken recipe', () => {
+  const level = levelOf('6.3');
+
+  it('is played in the garden of 5.1, which can light 4 lanterns', () => {
+    expect(gardenOf(level)).toEqual(gardenOf(levelOf('5.1')));
+    expect(level.data.goal).toEqual({ visible: true, value: 4 });
+  });
+
+  it('Bruto brings his shorter recipe, the mentor answers, and the player repairs it', () => {
+    expect(stepsOf(level)).toEqual(['say', 'automaton', 'say', 'recipe', 'automaton', 'say']);
+    expect(level.flow[1]).toEqual({ step: 'automaton', missing: ['sameTree'] });
+    expect(level.flow[3]).toEqual({ step: 'recipe', missing: ['sameTree'] });
+    expect(level.flow[4]).toEqual({ step: 'automaton' });
+    const [bruto] = level.flow;
+    const brutoSays = bruto?.step === 'say' ? bruto.lines.map(said) : [];
+    expect(brutoSays).toContain('¡Menos pasos! ¡Más rápido!');
+    const answer = level.flow[2];
+    const sauceSays = answer?.step === 'say' ? answer.lines.map(said) : [];
+    expect(sauceSays).toContain('Más rápido para equivocarse.');
+  });
+
+  it('searches from every sprout in the dark, with every move the automaton makes allowed', () => {
+    expect(level.start.roots).toBeNull();
+    for (const move of AUTOMATON_MOVES) expect(level.start.allowed.has(move)).toBe(true);
+  });
+
+  it('without folding the run stops short of the most, with folding it reaches it', () => {
+    const optimum = maximumSize(level.graph);
+    const broken = play(level.start, runRecipe(level.start, { fold: false }));
+    expect(size(broken.matching)).toBeLessThan(optimum);
+    expect([size(broken.matching), broken.declaredDone]).toEqual([3, true]);
+    const repaired = play(level.start, runRecipe(level.start, { fold: true }));
+    expect([size(repaired.matching), repaired.declaredDone]).toEqual([optimum, true]);
+    expect(optimum).toBe(4);
+  });
+
+  it('the repair is the fold card put back: the right recipe', () => {
+    const [repaired] = recipesOf(level);
+    expect(repaired).toBeDefined();
+    if (repaired === undefined) return;
+    expect(checkRecipe(repaired)).toEqual({ right: true });
+    expect(checkRecipe(withoutCases(RIGHT_RECIPE, ['sameTree']))).toMatchObject({
+      right: false,
+      failure: { kind: 'missing', case: 'sameTree' },
+    });
   });
 });
