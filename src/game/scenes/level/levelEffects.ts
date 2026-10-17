@@ -2,6 +2,8 @@ import type { Level } from '@levels/build';
 import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import { planAnimation } from '../../animation/plan';
+import { raceBetReveal } from '../../picture/raceBetReveal';
+import { raceDurationAt } from '../../picture/racePanel';
 import { checkText } from '../../picture/mirrorDrawing';
 import { reasonText } from '../../picture/reasonText';
 import { layerOf, type Controller, type Effect } from '../../systems/levelController';
@@ -111,12 +113,35 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       if (day !== null) stage.presenter.present({ kind: 'replay', day, light: true });
       break;
     }
+    case 'race':
+      // The race runs on the panel, painted from the session and the presenter's clock; at its
+      // end, the presenter reports it run.
+      stage.presenter.present({
+        kind: 'race',
+        step: effect.step,
+        duration: raceDurationAt(stage.level.flow, effect.step),
+      });
+      break;
+    case 'raced': {
+      // The bets this race settles are told, right or wrong, beside what was measured.
+      const lines = effect.bets.flatMap((bet) => {
+        const reveal = raceBetReveal(stage.level.flow, bet);
+        if (reveal === null) return [];
+        const params = Object.fromEntries(
+          Object.entries(reveal.params).map(([name, key]) => [name, t(key)]),
+        );
+        return [t(reveal.key, params)];
+      });
+      if (lines.length > 0) stage.presenter.present({ kind: 'lines', lines });
+      break;
+    }
     case 'won':
       stage.win(effect.stars);
       break;
     case 'ask':
     case 'bet':
     case 'count':
+    case 'raceBet':
     case 'notebook': {
       // The options and right answers come from the core, on the garden as it is now.
       const yours = garden(stage.controller().session);

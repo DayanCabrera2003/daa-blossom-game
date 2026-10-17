@@ -36,6 +36,13 @@ interface Replaying {
   cursor: number;
 }
 
+/** A race running on screen: the index of its step, when it began and how long it lasts. */
+interface Racing {
+  readonly step: number;
+  readonly startedAt: number;
+  readonly duration: number;
+}
+
 /** The views the presenter opens items in. */
 export interface PresenterViews {
   readonly dialogue: DialogueView;
@@ -60,6 +67,8 @@ export interface PresenterHooks {
    * its moves.
    */
   readonly searched: () => void;
+  /** A race has been run to its end on screen: the script may move on. */
+  readonly raced: () => void;
   /** Ends any move animation still playing: a replay owns the garden from dawn. */
   readonly stopAnimation: () => void;
   /** Shows the victory panel. */
@@ -86,6 +95,8 @@ export class Presenter {
   private stage: Stage = emptyStage;
   /** The day replaying now, if any; while it plays, the garden takes no input. */
   private replaying: Replaying | null = null;
+  /** The race running now, if any; while it runs, the garden takes no input. */
+  private racing: Racing | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -110,6 +121,14 @@ export class Presenter {
     return replaying === null
       ? null
       : { fraction: fractionOfStep(replaying.cursor, replaying.day.length) };
+  }
+
+  /** The race running now and how long since it began, or null when none runs. */
+  get raceClock(): { readonly step: number; readonly elapsed: number } | null {
+    const { racing } = this;
+    return racing === null
+      ? null
+      : { step: racing.step, elapsed: this.scene.time.now - racing.startedAt };
   }
 
   /** Queues an item to show on its own; it starts at once if nothing else is showing. */
@@ -140,9 +159,16 @@ export class Presenter {
     if (option !== null) this.views.question.mark(option);
   }
 
-  /** Moves a replay on; called every frame by the scene. */
+  /** Moves a replay or a race on; called every frame by the scene. */
   update(time: number): void {
     if (this.replaying !== null) this.replayFrame(time);
+    const { racing } = this;
+    if (racing !== null && time - racing.startedAt >= racing.duration) {
+      // The race is over: the scene is told first, so the script moves on before what follows.
+      this.racing = null;
+      this.hooks.raced();
+      this.start(finishShowing(this.stage));
+    }
   }
 
   /** Takes a turn of the queue and starts the item it puts on screen, if any. */
@@ -174,6 +200,13 @@ export class Presenter {
         break;
       case 'question':
         this.ask(start.question);
+        break;
+      case 'race':
+        this.racing = {
+          step: start.step,
+          startedAt: this.scene.time.now,
+          duration: start.duration,
+        };
         break;
       case 'counterexample':
         this.hooks.counterexample(start.question, start.option);

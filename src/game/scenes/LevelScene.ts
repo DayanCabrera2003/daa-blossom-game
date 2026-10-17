@@ -83,7 +83,11 @@ export class LevelScene extends Phaser.Scene {
     this.painter = new LevelRenderer(
       this.views,
       { labels: this.labels, kinds: level.data.sprouts.map((sprout) => sprout.kind) },
-      { controller: () => this.controller, replaySun: () => this.presenter.replaySun },
+      {
+        controller: () => this.controller,
+        replaySun: () => this.presenter.replaySun,
+        raceClock: () => this.presenter.raceClock,
+      },
     );
     this.presenter = new Presenter(
       this,
@@ -94,6 +98,7 @@ export class LevelScene extends Phaser.Scene {
             ? this.painter.render(this.time.now)
             : this.painter.renderReplayed(state, this.time.now),
         searched: () => this.forward({ kind: 'searched' }),
+        raced: () => this.forward({ kind: 'raced' }),
         stopAnimation: () => this.views.animation.finish(),
         victory: (stars) => this.offerNext(stars),
         answer: (question, value) =>
