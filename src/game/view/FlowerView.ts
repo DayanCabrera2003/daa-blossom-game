@@ -1,48 +1,35 @@
 import type Phaser from 'phaser';
 import type { FlowerPicture } from '../picture/garden';
+import { flowerLooks } from '../picture/petals';
+import { paintFlower } from './paintFlower';
 import { PALETTE } from './palette';
-import { textStyle } from './textStyle';
 
 /**
- * Folded flowers in greybox: an outline around their petals, numbered, nested outlines inside
- * outer ones and thinner the deeper they are (the "Layers" view, GDD 5.2). The real petals and
- * their folding animation arrive at the art phase.
+ * Folded flowers (GDD §4.1, plan 06 section 1.4): in the middle of the sprouts each flower on top
+ * folds, a 32 × 32 flower of as many petals as its cycle has sprouts, with the flower folded inside
+ * it smaller in its middle; round its sprouts, the outline that can be touched, faintly filled,
+ * and the thinner outlines of the flowers nested in it (the "Layers" view, GDD 5.2).
  */
 export class FlowerView {
   private readonly outlines: Phaser.GameObjects.Graphics;
-  private readonly numbers: Phaser.GameObjects.Text[] = [];
+  private readonly petals: Phaser.GameObjects.Graphics;
 
-  constructor(private readonly scene: Phaser.Scene) {
+  constructor(scene: Phaser.Scene) {
     this.outlines = scene.add.graphics().setDepth(10);
+    this.petals = scene.add.graphics().setDepth(11);
   }
 
   render(flowers: readonly FlowerPicture[]): void {
     const g = this.outlines.clear();
     for (const flower of flowers) {
       const points = flower.outline as Phaser.Types.Math.Vector2Like[];
-      if (flower.depth === 0) g.fillStyle(PALETTE.flower, 0.12).fillPoints(points, true);
-      g.lineStyle(
-        flower.depth === 0 ? 2 : 1,
-        PALETTE.flower,
-        1 - 0.25 * Math.min(flower.depth, 3),
-      ).strokePoints(points, true);
-    }
-    while (this.numbers.length < flowers.length) {
-      this.numbers.push(
-        this.scene.add.text(0, 0, '', textStyle(8, PALETTE.flower)).setOrigin(0.5, 1).setDepth(11),
+      if (flower.depth === 0) g.fillStyle(PALETTE.flower, 0.1).fillPoints(points, true);
+      g.lineStyle(1, PALETTE.flower, 0.8 - 0.2 * Math.min(flower.depth, 3)).strokePoints(
+        points,
+        true,
       );
     }
-    this.numbers.forEach((text, i) => {
-      const flower = flowers[i];
-      if (flower === undefined) {
-        text.setVisible(false);
-        return;
-      }
-      const top = flower.outline.reduce((best, p) => (p.y < best.y ? p : best));
-      text
-        .setVisible(true)
-        .setText(`#${flower.id}`)
-        .setPosition(top.x, top.y - 1);
-    });
+    const p = this.petals.clear();
+    for (const look of flowerLooks(flowers)) paintFlower(p, look.centre, look.petals, look.inner);
   }
 }
