@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FRAMES, frameRect, type FrameName } from './frames';
+import { FRAMES, frameIndex, frameRect, type FrameName } from './frames';
 import { assetEntry } from './keys';
 
 describe('named frames', () => {
@@ -24,6 +24,19 @@ describe('named frames', () => {
 
   it('uses the frame size of its sheet', () => {
     expect(frameRect('lanternBack')).toEqual({ x: 16, y: 0, width: 16, height: 16 });
+  });
+
+  it('numbers a single cell the way Phaser numbers the frames of its sheet', () => {
+    // TilesetFloorDetail is 16 cells wide: row 2, column 6 is frame 2 × 16 + 6.
+    expect(frameIndex('sproutLeaves')).toBe(38);
+    expect(frameIndex('lanternBack')).toBe(1);
+    // The flower's picture is two frames of 10 × 8: the first one is frame 0.
+    expect(frameIndex('flowerHead')).toBe(0);
+    expect(frameRect('flowerHead')).toEqual({ x: 0, y: 0, width: 10, height: 8 });
+  });
+
+  it('refuses a frame number for a piece wider or taller than one cell', () => {
+    expect(() => frameIndex('fence')).toThrow(/fence/);
   });
 
   it('fails loudly on a frame name it does not know', () => {

@@ -37,6 +37,8 @@ export const FRAMES = {
   lanternBack: cell('actor.lantern', 1, 0),
   stoneSmall: cell('tiles.nature', 18, 9),
   scarecrowPost: cell('tiles.element', 6, 4),
+  // The first of the two frames of the animated flower: the petals on a chapter 3 flower.
+  flowerHead: cell('anim.flower', 0, 0),
 
   // 1.5 Backdrops by chapter: grounds (one strip of variants each) and decorations.
   grassLight: { sheet: 'tiles.floor', col: 0, row: 12, cols: 5, rows: 1 },
@@ -91,4 +93,17 @@ export function frameRect(name: FrameName): PixelRect {
     width: frame.cols * size.width,
     height: frame.rows * size.height,
   };
+}
+
+/**
+ * The number Phaser gives a single-cell named frame in its sheet: cells are numbered row by row
+ * from the top left (`sheetGrid.ts`), so it is the row times the cells in a row, plus the column.
+ * A piece of several cells has no single number and is an error.
+ */
+export function frameIndex(name: FrameName): number {
+  const frame: NamedFrame = FRAMES[name];
+  invariant(frame.cols === 1 && frame.rows === 1, `${name} is more than one cell`);
+  const { image, frame: size } = assetEntry(frame.sheet);
+  invariant(image !== undefined && size !== undefined, `${frame.sheet} is not a sheet`);
+  return frame.row * Math.floor(image.width / size.width) + frame.col;
 }
