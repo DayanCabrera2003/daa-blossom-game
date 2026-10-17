@@ -71,11 +71,18 @@ const TOOL_CARDS: ReadonlySet<CardId> = new Set<CardId>([
 ]);
 
 /**
+ * The card of the tool the game opens with (0.1): nothing is unlocked yet, it is the first thing
+ * the player sees, so it rings nothing and the prologue starts with only its crickets.
+ */
+const OPENING_CARD: CardId = 'lanterns';
+
+/**
  * The jingle of a mechanic card as it shows: the unlock when it brings a tool the player had never
- * seen (`seen`, the cards closed before); none for one seen before, shown again on "?", nor for
- * the card of a script step (a bet, a question), which opens no tool.
+ * seen (`seen`, the cards closed before); none for one seen before, shown again on "?", for the
+ * card of a script step (a bet, a question), which opens no tool, nor for the opening card.
  */
 export function cardJingle(card: CardId, seen: ReadonlySet<string>): AssetKey | null {
+  if (card === OPENING_CARD) return null;
   return TOOL_CARDS.has(card) && !seen.has(card) ? JINGLES.unlock : null;
 }
 

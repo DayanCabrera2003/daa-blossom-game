@@ -99,6 +99,10 @@ describe('the jingle of each moment', () => {
     expect(cardJingle('sun', new Set())).toBe('jingle.unlock');
   });
 
+  it('the card the game opens with gives none: the first screen starts in silence', () => {
+    expect(cardJingle('lanterns', new Set())).toBeNull();
+  });
+
   it('a card seen before, or the card of a script step, gives none', () => {
     expect(cardJingle('stones', new Set(['stones']))).toBeNull();
     expect(cardJingle('bet', new Set())).toBeNull();
