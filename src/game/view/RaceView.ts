@@ -47,7 +47,7 @@ const BRUTO = PALETTE.moon;
 const LEGEND_DOT_ROOM = 7;
 
 /**
- * The races in greybox (GDD 6.4, 6.5, plan 05 phase 4): over the garden, the garden of the race
+ * The races (GDD 6.4, 6.5, plan 05 phase 4): over the garden, the garden of the race
  * zoomed out with its sprouts tiny on a ring, a counter for each runner under it, and in the lower
  * right the chart of the races seen so far, the automaton's dots joined in a gentle curve and
  * Bruto's leaving through the top, or asleep. The counters run every frame; the rest is rebuilt
@@ -101,14 +101,20 @@ export class RaceView {
     this.drawChart(picture.chart);
   }
 
-  /** The garden of the race seen from far away: thin vines, tiny sprouts. */
+  /**
+   * The garden of the race seen from far away: thin vines, and tiny sprouts in the garden's own
+   * look, cold blue bodies with the near-black outline of the pieces and a glint of light.
+   */
   private drawMiniature(picture: RacePanelPicture): void {
     const g = this.scene.add.graphics().setDepth(PANEL_DEPTH + 1);
     this.parts.push(g);
     g.lineStyle(1, PALETTE.darkVine, 0.35);
     for (const [a, b] of picture.miniature.vines) g.lineBetween(a.x, a.y, b.x, b.y);
-    g.fillStyle(PALETTE.dark, 1);
-    for (const { x, y } of picture.miniature.sprouts) g.fillCircle(x, y, 1.5);
+    for (const { x, y } of picture.miniature.sprouts) {
+      g.fillStyle(PALETTE.background, 1).fillCircle(x, y, 2.5);
+      g.fillStyle(PALETTE.dark, 1).fillCircle(x, y, 1.5);
+      g.fillStyle(PALETTE.moon, 0.8).fillRect(Math.round(x) - 1, Math.round(y) - 1, 1, 1);
+    }
   }
 
   /** The chart: its axes and labels, the sizes along the bottom, and the dots seen so far. */
