@@ -91,6 +91,35 @@ export default tseslint.config(
     },
   },
   {
+    // The view never changes the logic: views and audio may name the types of the controller, the
+    // reducer and the level flow, but never call them. A separate rule, so ui/ stays forbidden.
+    files: ['src/game/{view,audio}/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@game/systems', '@game/systems/**', '**/systems', '**/systems/**'],
+              allowTypeImports: true,
+              message: 'views and audio only read the logic: import its types, never its values.',
+            },
+            {
+              group: ['@core/rules', '@core/rules/**', '**/core/rules', '**/core/rules/**'],
+              allowTypeImports: true,
+              message: 'views and audio only read the logic: import its types, never its values.',
+            },
+            {
+              group: ['@levels/flow*', '**/levels/flow*'],
+              allowTypeImports: true,
+              message: 'views and audio only read the logic: import its types, never its values.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/ui/**/*.ts'],
     rules: {
       'no-restricted-imports': forbidLayers(
