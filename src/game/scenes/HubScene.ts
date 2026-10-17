@@ -5,14 +5,20 @@ import { exportLog } from '@services/exportLog';
 import { unlockedLevels, visibleLevels } from '@services/progress';
 import { chapterTitle } from '../picture/chapterTitle';
 import { HUB, layoutHub } from '../picture/hubLayout';
+import { PIXEL_FONT } from '../picture/pixelFont';
+import { labelStars, STAR_SIZE } from '../picture/starIcon';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from '../view/Button';
 import { fitCamera } from '../view/fitCamera';
 import { GEAR_SIZE } from '../view/GearButton';
 import { PALETTE } from '../view/palette';
+import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
 import { addSettings } from './settingsPanel';
+
+/** Above the buttons' labels, which sit at depth 101. */
+const STAR_DEPTH = 102;
 
 /**
  * The greybox hub: the levels of the game by chapter, each chapter under its name, with their
@@ -42,23 +48,33 @@ export class HubScene extends Phaser.Scene {
       shown
         .filter((level) => level.id.startsWith(`${chapter}.`))
         .map(({ id }) => {
-          const stars = save.levels[id]?.stars ?? 0;
-          const label = open.has(id) ? `${id} ${'★'.repeat(stars)}` : `${id} ·`;
+          // The pixel font has no star: the label leaves blank cells where its stars are drawn.
+          const room = labelStars(open.has(id) ? (save.levels[id]?.stars ?? 0) : 0);
+          const label = open.has(id) ? `${id} ${' '.repeat(room.spaces)}` : `${id} ·`;
           const button = new Button(this, 0, 0, label, () =>
             this.scene.start('level', { levelId: id }),
           );
-          return button.setEnabled(open.has(id));
+          return { button: button.setEnabled(open.has(id)), room };
         }),
     );
-    const height = rows[0]?.[0]?.height ?? 0;
+    const height = rows[0]?.[0]?.button.height ?? 0;
     const layout = layoutHub(
-      rows.map((row) => row.map((button) => button.width)),
+      rows.map((row) => row.map(({ button }) => button.width)),
       height,
     );
     layout.chapters.forEach((placement, c) => {
       const title = chapterTitle(itemAt(chapters, c));
       this.add.text(HUB.margin, placement.titleY, t(title.key, title.params), textStyle(8));
-      placement.buttons.forEach((at, b) => itemAt(itemAt(rows, c), b).moveTo(at.x, at.y));
+      placement.buttons.forEach((at, b) => {
+        const { button, room } = itemAt(itemAt(rows, c), b);
+        button.moveTo(at.x, at.y);
+        if (room.spaces === 0) return;
+        // The blank cells end where the label does, 2 px inside the button's right edge.
+        const left = at.x + button.width - 2 - room.spaces * PIXEL_FONT.advance;
+        const top = at.y + Math.round((button.height - 2 - STAR_SIZE) / 2);
+        const stars = room.offsets.map((x) => ({ x, earned: true }));
+        drawStars(this, left, top, stars, STAR_DEPTH);
+      });
     });
 
     // Playtesters send this file back; nothing leaves the browser otherwise (GDD §10).
