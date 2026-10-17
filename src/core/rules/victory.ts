@@ -1,3 +1,4 @@
+import { stonesFromForest } from '../certificates/fromForest';
 import { checkTutteBerge } from '../certificates/tutteBerge';
 import { checkVertexCover } from '../certificates/vertexCover';
 import { isMaximum } from '../edmonds/fast/maximum';
@@ -42,7 +43,14 @@ export type VictoryCondition =
    */
   | { readonly type: 'coverComplete' }
   /** The lifted stones prove the lanterns maximum: Tutte–Berge (chapter 7). */
-  | { readonly type: 'tutteBergeCertificate' };
+  | { readonly type: 'tutteBergeCertificate' }
+  /**
+   * The certificate built from the moons (7.4, GDD: "a partir de las lunas"): the search is over
+   * without a chain, the stones lifted are exactly its moons (`stonesFromForest`), and they prove the
+   * lanterns, presented with "Terminé". Other stones that also prove them do not count here: the
+   * lesson is that the failed search hands the stones over.
+   */
+  | { readonly type: 'moonCertificate' };
 
 /** Where the player's search stands, under the level's roots and with folding if it is allowed. */
 const statusOf = (state: GardenState): SearchStatus =>
@@ -50,6 +58,14 @@ const statusOf = (state: GardenState): SearchStatus =>
     roots: state.roots,
     foldAllowed: state.allowed.has('foldAt'),
   });
+
+/** Whether the stones lifted are exactly the moons of a search that is over without a chain. */
+function stonesAreTheMoons(state: GardenState): boolean {
+  if (state.search === null || statusOf(state) !== 'exhausted') return false;
+  const moons = stonesFromForest(state.layer, state.search);
+  const lifted = [...state.stones].sort((a, b) => a - b);
+  return lifted.length === moons.length && lifted.every((stone, i) => stone === moons[i]);
+}
 
 /** Whether the garden meets the condition. */
 export function isVictory(state: GardenState, condition: VictoryCondition): boolean {
@@ -75,5 +91,11 @@ export function isVictory(state: GardenState, condition: VictoryCondition): bool
       return state.declaredDone && checkVertexCover(state.graph, state.scarecrows).ok;
     case 'tutteBergeCertificate':
       return state.declaredDone && checkTutteBerge(state.graph, state.matching, state.stones).ok;
+    case 'moonCertificate':
+      return (
+        state.declaredDone &&
+        stonesAreTheMoons(state) &&
+        checkTutteBerge(state.graph, state.matching, state.stones).ok
+      );
   }
 }

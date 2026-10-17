@@ -20,6 +20,7 @@ const victory = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('coverCertificate') }),
   z.strictObject({ type: z.literal('tutteBergeCertificate') }),
   z.strictObject({ type: z.literal('coverComplete') }),
+  z.strictObject({ type: z.literal('moonCertificate') }),
 ]);
 
 /** The goal shown to the player: "this garden can light N lanterns", or hidden (GDD §5.2). */

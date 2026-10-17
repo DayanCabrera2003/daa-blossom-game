@@ -226,3 +226,68 @@ describe('the search as a victory (chapters 3 and 4)', () => {
     expect(isVictory(early, { type: 'searchExhausted' })).toBe(false);
   });
 });
+
+// Level 7.4: the garden of 4.9 twice, R–a=b with the loop b–c=d–b, as 0..4 and 5..9.
+const twiceGraph = unwrap(
+  createGraph(10, [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [2, 4],
+    [5, 6],
+    [6, 7],
+    [7, 8],
+    [8, 9],
+    [7, 9],
+  ]),
+);
+const twice = createGardenState({
+  graph: twiceGraph,
+  matching: unwrap(
+    createMatching(twiceGraph, [
+      [1, 2],
+      [3, 4],
+      [6, 7],
+      [8, 9],
+    ]),
+  ),
+  allowed: ['markRoot', 'markMoon', 'foldAt', 'liftStone', 'dropStone', 'declareDone'],
+});
+/** The search of the half whose R is `r`, to its end: a moon, then the loop folded. */
+const searchHalf = (r: number): Action[] => [
+  { type: 'markRoot', vertex: r },
+  { type: 'markMoon', from: r, to: r + 1 },
+  { type: 'markMoon', from: r + 2, to: r + 3 },
+  { type: 'foldAt', from: r + 4, to: r + 2 },
+];
+/** These stones lifted, then "Terminé". */
+const lift = (...stones: number[]): Action[] => [
+  ...stones.map((vertex): Action => ({ type: 'liftStone', vertex })),
+  { type: 'declareDone' },
+];
+
+describe('the stones handed over by the search as a victory (7.4)', () => {
+  const searched = play(twice, [...searchHalf(0), ...searchHalf(5)]);
+
+  it('moonCertificate: the stones are exactly the moons of the search over, presented', () => {
+    expect(isVictory(play(searched, lift(1, 6)), { type: 'moonCertificate' })).toBe(true);
+    expect(isVictory(play(searched, lift(6, 1)), { type: 'moonCertificate' })).toBe(true);
+    const unclaimed = play(searched, lift(1, 6).slice(0, 2));
+    expect(isVictory(unclaimed, { type: 'moonCertificate' })).toBe(false);
+  });
+
+  it('other stones that also prove the lanterns are not the ones the search handed over', () => {
+    // Lifting a alone also closes the count: {R}, {b, c, d} and the other half are odd.
+    const alone = play(searched, lift(1));
+    expect(isVictory(alone, { type: 'tutteBergeCertificate' })).toBe(true);
+    expect(isVictory(alone, { type: 'moonCertificate' })).toBe(false);
+  });
+
+  it('needs the search over: with no marks, or half a search, no moons are handed over', () => {
+    expect(isVictory(play(twice, lift(1, 6)), { type: 'moonCertificate' })).toBe(false);
+    const half = play(twice, [...searchHalf(0), ...lift(1)]);
+    expect(isVictory(half, { type: 'tutteBergeCertificate' })).toBe(true);
+    expect(isVictory(half, { type: 'moonCertificate' })).toBe(false);
+  });
+});
