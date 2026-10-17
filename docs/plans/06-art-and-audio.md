@@ -13,7 +13,7 @@
 - **Reproducible desde los zips.** Los zips viven en `assets-src/packs/` y no se versionan. Un script de `tools/` extrae exactamente los archivos elegidos (lista escrita a mano, con el sha256 de cada zip) a `public/assets/`, y esos archivos sí se versionan, para que CI y GitHub Pages no necesiten los zips. Ningún paso necesita dependencias nuevas: zip con `node:zlib`, WAV con código propio, tamaños de PNG leyendo su cabecera.
 - **Todo recurso ajeno está en `CREDITS.md`**, con pack, autor, licencia, URL y qué se usa; un test lo comprueba contra el manifiesto.
 - **Legible antes que bonito.** El farol se distingue a un metro (GDD §4.1); sol y luna difieren en forma además de color; los fondos son de bajo contraste y nunca ponen adornos bajo un brote o una enredadera. Cada fase deja el juego jugable de punta a punta.
-- **Nada de assets por línea de diálogo.** Con el balbuceo (GDD §4.2) no hay un archivo de voz por id de línea: la voz es un conjunto de sílabas por personaje. Lo que las reglas del proyecto dicen de `public/assets/audio/voice/<id>.ogg` queda obsoleto (pregunta abierta para el autor).
+- **Nada de assets por línea de diálogo.** Con el balbuceo (GDD §4.2) no hay un archivo de voz por id de línea: la voz es un conjunto de sílabas por personaje. Las reglas del proyecto ya lo recogen.
 
 Definición de "hecho" de cada fase: la del Plan 03, más `npm run assets:check` en local cuando la fase cambia la selección.
 
@@ -63,7 +63,7 @@ Se comprobó la tabla `cmap` de cada TTF y se renderizó una muestra en español
 | Kenney Pixel, Mini, Mini Square, High… (CC0) | Tienen los códigos, pero **las minúsculas acentuadas se dibujan como mayúsculas** (`á`→`Á`, `ñ`→`Ñ`, `ó`→`Ó`) y la tilde es una barra plana. Ninguna tiene `★ – − ≈ ● ⟨ ⟩ ∅ →`. **No sirven** para texto corrido |
 | m5x7 / m6x11 (Daniel Linssen, citadas en GDD §4.3) | **No están en los packs descargados** y su licencia es "gratis con crédito", no CC0 |
 
-Propuesta (pregunta abierta): **monogram** (datagoblin, CC0) para todo el texto, o m5x7 (cuerpo) y m6x11 (títulos) si el autor acepta una licencia libre no CC0 como dice la tabla del GDD. Sea cual sea, el zip se añade a `assets-src/packs/` y a la selección, y la fase 1 no se cierra hasta que el test de cobertura pase. Los símbolos que la fuente no tenga no se escriben: `★` y `●` pasan a iconos dibujados, y `− ≈ –` del texto se sustituyen por equivalentes cubiertos (`-`, "unas", `-`) en `content/es/`.
+Decisión: **monogram extended** (datagoblin, CC0) para todo el texto. Sea cual sea, el zip se añade a `assets-src/packs/` y a la selección, y la fase 1 no se cierra hasta que el test de cobertura pase. Los símbolos que la fuente no tenga no se escriben: `★` y `●` pasan a iconos dibujados, y `− ≈ –` del texto se sustituyen por equivalentes cubiertos (`-`, "unas", `-`) en `content/es/`.
 
 ### 1.3 Personajes y retratos
 
@@ -398,12 +398,12 @@ F0 va primero: todas las demás leen el manifiesto. Tras F0 pueden trabajar en p
 - **Fondos por código en vez de Tiled:** deterministas, comprobables y apartados de los brotes de cada nivel.
 - **Las campanitas se sintetizan en `tools/` y se versionan como WAV**, en vez de afinarse en tiempo real con `detune`: suenan igual en todos los navegadores y no dependen de Web Audio.
 
-## Preguntas abiertas para el autor
+## Decisiones del autor sobre las preguntas abiertas
 
-- **Fuente:** ninguna de los packs sirve en español (sección 1.2). ¿monogram (CC0) o m5x7/m6x11 (gratis con crédito, como dice la tabla del GDD §4.3, aunque el criterio de la sección pide CC0)?
-- **Paleta:** el GDD §4.1 habla de 32 colores; la de Ninja Adventure tiene 53. Este plan usa los 53 como base y un subconjunto por estación.
-- **Duración de la música:** las pistas duran 45–100 s, no 2–3 min. ¿Basta el bucle?
-- **Las reglas del proyecto** aún describen un archivo de voz por id de línea (`audio/voice/<id>.ogg`); con el balbuceo ya no aplica.
+- **Fuente:** **monogram extended** (Vinícius Menézio, CC0), `assets-src/packs/monogram.zip` (sha256 `81d0540290f73d6317dc86e34978af80babf8e24129941cdf087b0fdfb75c287`, de https://datagoblin.itch.io/monogram), archivo `monogram/ttf/monogram-extended.ttf`. Cubre todos los caracteres de `content/es/` y de las tarjetas salvo `●`, que pasa a icono dibujado (sección 1.2).
+- **Paleta:** los 53 colores de Ninja Adventure (el GDD §4.1 ya lo dice).
+- **Duración de la música:** basta el bucle de las pistas tal como son.
+- **Reglas del proyecto:** ya describen el balbuceo, sin un archivo de voz por línea.
 
 ## Riesgos y cómo se mitigan
 
