@@ -4,7 +4,7 @@ import { completeGraph, cycleGraph, pathGraph } from '../generators/families';
 import { randomGraph } from '../generators/random';
 import type { Graph } from '../graph/types';
 import { createRng } from '../shared/rng';
-import { benchmark, race } from './benchmark';
+import { benchmark, race, runOf } from './benchmark';
 
 /** A sparse random garden with about three vines per sprout, grown from its size as seed. */
 const sparse = (n: number): Graph => randomGraph(n, Math.min(1, 3 / n), createRng(n));
@@ -24,6 +24,14 @@ describe('the race against Bruto (chapter 6)', () => {
     const result = race(half(32), 100_000);
     expect(result.bruto.status).toBe('gaveUp');
     expect(result.bruto.steps).toBeLessThanOrEqual(100_000);
+  });
+
+  it('tells each runner apart: the steps the player watches, and whether Bruto slept', () => {
+    const small = race(half(6), 1_000_000);
+    expect(runOf(small, 'automaton')).toEqual({ steps: small.didacticSteps, asleep: false });
+    expect(runOf(small, 'bruto')).toEqual({ steps: small.bruto.steps, asleep: false });
+    const big = race(half(32), 1_000);
+    expect(runOf(big, 'bruto')).toEqual({ steps: 1_000, asleep: true });
   });
 
   it('measures a whole series in order, one row per size (the chart of level 6.5)', () => {

@@ -44,6 +44,27 @@ export function race(graph: Graph, brutoBudget: number): RaceResult {
   };
 }
 
+/** The two runners of a race: the automaton running the recipe, and Bruto. */
+export const RUNNERS = ['automaton', 'bruto'] as const;
+
+/** One runner of a race. */
+export type Runner = (typeof RUNNERS)[number];
+
+/**
+ * What one runner did in a race: the steps the player watches him take, and whether he fell asleep
+ * before the finish. A sleeper's steps are only his budget, never a result to compare.
+ */
+export interface Run {
+  readonly steps: number;
+  readonly asleep: boolean;
+}
+
+/** The run of one runner in a race; the automaton never sleeps. */
+export const runOf = (result: RaceResult, runner: Runner): Run =>
+  runner === 'automaton'
+    ? { steps: result.didacticSteps, asleep: false }
+    : { steps: result.bruto.steps, asleep: result.bruto.status === 'gaveUp' };
+
 /**
  * A series of races, one per garden size, each garden grown by `grow` (deterministic, e.g. from a
  * seeded generator): the points of the cost chart drawn in level 6.5 and analysed in Códex C11.
