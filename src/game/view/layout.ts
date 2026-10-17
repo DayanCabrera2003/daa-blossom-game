@@ -18,6 +18,4 @@ export const LAYOUT = {
   toastY: CANVAS_HEIGHT - 38,
   /** The garden between the bars: what a question blocks and a bet's veil covers. */
   garden: { y: 24, height: CANVAS_HEIGHT - 27 - 2 - 24 },
-  /** The question panel, near the top so the dialogue box below stays free. */
-  question: { x: 60, y: 30, width: CANVAS_WIDTH - 120 },
 } as const;
