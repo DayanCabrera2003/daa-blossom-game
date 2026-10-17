@@ -77,6 +77,12 @@ export class WoodFrame {
     return this;
   }
 
+  /** Fades the piece, for a panel that fades away. */
+  setAlpha(alpha: number): this {
+    for (const part of this.parts) part.setAlpha(alpha);
+    return this;
+  }
+
   destroy(): void {
     this.clear();
     this.zoneObject?.destroy();
