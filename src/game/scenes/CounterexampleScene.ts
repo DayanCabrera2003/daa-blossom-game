@@ -4,6 +4,7 @@ import { invariant } from '@core/shared/invariant';
 import { counterexampleAt } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
+import { SfxPlayer } from '../audio/SfxPlayer';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { gardenPicture } from '../picture/garden';
@@ -20,6 +21,7 @@ import {
 } from '../systems/counterexampleController';
 import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
+import { planCues, refusalCues } from '../systems/soundCues';
 import { AnimationView } from '../view/AnimationView';
 import { Button } from '../view/Button';
 import { DialogueView } from '../view/DialogueView';
@@ -82,6 +84,8 @@ export class CounterexampleScene extends Phaser.Scene {
   };
   /** Whether a press started on this screen: the touch that opened it must not end here as a tap. */
   private pressing = false;
+  /** Plays the sounds of moves and refusals on the effects channel. */
+  private sfx!: SfxPlayer;
 
   constructor() {
     super('counterexample');
@@ -91,6 +95,7 @@ export class CounterexampleScene extends Phaser.Scene {
     fitCamera(this);
     this.context = contextOf(this);
     this.pressing = false;
+    this.sfx = new SfxPlayer(this, this.context.audio);
     const { t, line } = this.context;
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
     const asked = level?.data.notebook?.[data.question];
@@ -201,7 +206,10 @@ export class CounterexampleScene extends Phaser.Scene {
 
   /** One event through the controller; a new move ends any animation still playing. */
   private dispatch(event: CounterexampleEvent): void {
-    if (event.kind !== 'move') this.views.animation.finish();
+    if (event.kind !== 'move') {
+      this.views.animation.finish();
+      this.sfx.cancel();
+    }
     const step = handleCounterexample(this.controller, event);
     this.context.playtest.record(
       counterexampleEntries(this.levelId, step.effects, this.context.clock()),
@@ -216,13 +224,16 @@ export class CounterexampleScene extends Phaser.Scene {
     switch (effect.kind) {
       case 'rejected':
         this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
+        this.sfx.schedule(refusalCues());
         break;
       case 'drawRefused':
         this.views.toast.show(reasonText(effect.reason, null, this.labels, t));
+        this.sfx.schedule(refusalCues());
         break;
       case 'animate': {
         const steps = planAnimation(effect.events);
         this.views.animation.play(steps, this.controller.positions, this.time.now);
+        this.sfx.schedule(planCues(steps));
         break;
       }
       case 'say':
