@@ -55,6 +55,15 @@ describe('playtest log', () => {
         { kind: 'flowerChain', at: 7, level: '4.11', path: ['e', 't'], counted: true },
         { kind: 'recipeCheck', at: 8, level: '6.1', step: 0, card: 'moonToSun', case: 'moon' },
         { kind: 'recipeCheck', at: 9, level: '6.1', step: 0, card: null, case: null },
+        {
+          kind: 'raceBet',
+          at: 10,
+          level: '6.5',
+          step: 1,
+          runner: 'bruto',
+          answer: 'farMore',
+          right: true,
+        },
       ],
     };
     expect(parseLog(log)).toEqual(log);

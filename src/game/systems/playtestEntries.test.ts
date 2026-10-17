@@ -4,6 +4,7 @@ import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import {
   betrayalLevel,
+  racesLevel,
   bloomLevel,
   closedFlowerLevel,
   brokenRecipeLevel,
@@ -253,6 +254,34 @@ describe('playtest entries of bets, counts and the notebook', () => {
       { kind: 'recipeCheck', at: 0, level: '6.3', step: 0, card: 'foldFlower', case: 'sameTree' },
       { kind: 'recipeCheck', at: 0, level: '6.3', step: 0, card: null, case: null },
       { kind: 'levelEnd', at: 0, level: '6.3', outcome: 'won', stars: 2 },
+    ]);
+  });
+
+  it('every doubling bet is logged with its runner, the answer picked and whether it was right', () => {
+    const { entries } = play(startController(racesLevel(), 0), [
+      { kind: 'raced' },
+      { kind: 'answer', option: 1 },
+      { kind: 'answer', option: 0 },
+    ]);
+    expect(entries).toEqual([
+      {
+        kind: 'raceBet',
+        at: 0,
+        level: '6.5',
+        step: 1,
+        runner: 'automaton',
+        answer: 'fourToEight',
+        right: true,
+      },
+      {
+        kind: 'raceBet',
+        at: 0,
+        level: '6.5',
+        step: 2,
+        runner: 'bruto',
+        answer: 'double',
+        right: false,
+      },
     ]);
   });
 

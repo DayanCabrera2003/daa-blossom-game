@@ -1,3 +1,4 @@
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { nameOf } from '@core/graph/labels';
 import { itemAt } from '@core/shared/itemAt';
 import type { PlaytestEntry } from '@services/playtestLog';
@@ -14,7 +15,8 @@ const HISTORY_MOVES = { undo: 'undo', redo: 'redo', seek: 'seek' } as const;
 
 /**
  * An answer given to the script, logged by the kind of step that asked: an option of a question or
- * a number of a count, a bet (with whether it was informal), or a notebook statement.
+ * a number of a count, a bet (with whether it was informal), a notebook statement, or the answer
+ * of a doubling bet with its runner.
  */
 function answerEntry(
   before: Controller,
@@ -29,6 +31,11 @@ function answerEntry(
       return { kind: 'bet', at, level, value: answer.value, right, informal: step.informal };
     case 'notebook':
       return { kind: 'notebook', at, level, option: answer.value, right };
+    case 'raceBet': {
+      const { runner } = step;
+      const picked = itemAt(DOUBLING_ANSWERS, answer.value);
+      return { kind: 'raceBet', at, level, step: answer.step, runner, answer: picked, right };
+    }
     default:
       return { kind: 'answer', at, level, step: answer.step, option: answer.value, right };
   }
@@ -50,7 +57,7 @@ export const mirrorCheckEntry = (check: MirrorCheck, at: number, level: string):
  * What the playtest log records for one step of a level (GDD §10, Hito A): moves accepted and
  * refused, "Terminé" right or without reason, hints opened, trips through the day, answers, bets
  * and notebook choices, vines pointed at, the counterexamples they open, reflections checked, chains
- * drawn in the flower challenge, recipes checked, and the win. A counterexample is logged when the script opens it: the screen shows it in its turn,
+ * drawn in the flower challenge, recipes checked, doubling bets, and the win. A counterexample is logged when the script opens it: the screen shows it in its turn,
  * after any lines before it.
  * Pointing, dragging and choosing tools are not recorded, nor history moves that go nowhere.
  * Pure: `before` is the controller the event reached, `step` what it answered, `at` the clock.
