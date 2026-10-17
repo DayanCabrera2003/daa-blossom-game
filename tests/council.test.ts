@@ -1,3 +1,4 @@
+import { checkTutteBerge } from '@core/certificates/tutteBerge';
 import { checkVertexCover } from '@core/certificates/vertexCover';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
@@ -11,6 +12,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import type { LevelStep } from '@levels/flow';
 import { gardenAtPlay } from '@levels/playStart';
+import { isUiUnlocked } from '@levels/uiUnlocks';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -92,5 +94,40 @@ describe('7.1: the scarecrows are not enough', () => {
     const ask = stepOf(level, 'ask');
     expect(ask.retry).toBe(true);
     expect(ask.options.map((option) => option.correct)).toEqual([true, false, false]);
+  });
+});
+
+describe('7.2: stones', () => {
+  const level = levelOf('7.2');
+  const first = levelOf('7.1');
+
+  it('is the loop of five of 7.1, with the same two lanterns', () => {
+    expect(level.data.sprouts).toEqual(first.data.sprouts);
+    expect(level.graph).toEqual(first.graph);
+    expect(level.start.matching).toEqual(first.start.matching);
+  });
+
+  it('with no stone lifted, the loop is one odd group: someone sleeps in the dark, so two at most', () => {
+    const proof = checkTutteBerge(level.graph, level.start.matching, []);
+    expect(proof).toEqual({ ok: true, value: { bound: 2, oddGroups: [[0, 1, 2, 3, 4]] } });
+  });
+
+  it('the Oaks ask why not three; the right answer is that five do not pair up', () => {
+    expect(stepsOf(level)).toEqual(['ask', 'say', 'play', 'say']);
+    const ask = stepOf(level, 'ask');
+    expect(ask.prompt).toMatch(/\.oaks\./);
+    expect(ask.retry).toBe(true);
+    expect(ask.options.map((option) => option.correct)).toEqual([true, false, false]);
+    expect(ask.options[0]?.line).toMatch(/\.gardener\./);
+  });
+
+  it('is won by presenting the count with "Terminé", no stone lifted, and opens the stones', () => {
+    expect(level.solution.filter((move) => move.type === 'liftStone')).toEqual([]);
+    const end = solved(level);
+    expect(end.stones).toEqual([]);
+    expect(isVictory(end, { type: 'tutteBergeCertificate' })).toBe(true);
+    expect(level.data.unlocks.actions).toEqual(['liftStone', 'dropStone']);
+    expect(isUiUnlocked('council', level.data.id)).toBe(true);
+    expect(isUiUnlocked('council', first.data.id)).toBe(false);
   });
 });

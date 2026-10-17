@@ -21,7 +21,22 @@
   ],
   "goal": { "visible": false },
   "victory": { "type": "tutteBergeCertificate" },
-  "flow": [{ "step": "say", "lines": ["ch7.2.oaks.00"] }, { "step": "play" }],
+  "hints": [{ "line": "ch7.2.sauce.08" }],
+  "flow": [
+    {
+      "step": "ask",
+      "prompt": "ch7.2.oaks.00",
+      "options": [
+        { "line": "ch7.2.gardener.01", "correct": true, "reply": "ch7.2.sauce.02" },
+        { "line": "ch7.2.gardener.03", "correct": false, "reply": "ch7.2.sauce.04" },
+        { "line": "ch7.2.gardener.05", "correct": false, "reply": "ch7.2.sauce.06" }
+      ],
+      "retry": true
+    },
+    { "step": "say", "lines": ["ch7.2.sauce.07"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch7.2.oaks.09", "ch7.2.sauce.10"] }
+  ],
   "unlocks": { "actions": ["liftStone", "dropStone"] },
-  "solution": [{ "type": "declareDone" }]
+  "solution": [{ "type": "answer", "option": 0 }, { "type": "declareDone" }]
 }
