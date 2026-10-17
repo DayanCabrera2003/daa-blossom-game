@@ -34,6 +34,11 @@ export type Presentation =
       readonly light?: boolean;
     }
   /**
+   * A race being run (6.4, 6.5): the race of the script step `step`, its counters running for
+   * `duration` milliseconds; the garden takes no input. At its end the scene reports it run.
+   */
+  | { readonly kind: 'race'; readonly step: number; readonly duration: number }
+  /**
    * The garden that refutes a false statement (`option`) of the notebook question `question`, in a
    * screen of its own; over when the player goes back to the notebook.
    */
@@ -70,8 +75,9 @@ export function present(stage: Stage, items: readonly Presentation[]): StageTurn
 /** The item on stage is over: the next one in line starts, if any. */
 export const finishShowing = (stage: Stage): StageTurn => next(stage.waiting);
 
-/** Whether the player's input is held back: only while the day replays. */
-export const blocksInput = (stage: Stage): boolean => stage.showing?.kind === 'replay';
+/** Whether the player's input is held back: only while the day replays or a race runs. */
+export const blocksInput = (stage: Stage): boolean =>
+  stage.showing?.kind === 'replay' || stage.showing?.kind === 'race';
 
 /** The question on stage was answered: it leaves and the next item starts. Anything else stays. */
 export const answerShowing = (stage: Stage): StageTurn =>
