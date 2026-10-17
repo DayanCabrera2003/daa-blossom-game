@@ -55,7 +55,10 @@ export interface GardenPicture {
   readonly vines: readonly VinePicture[];
   /** Outermost flowers first, each followed by the flowers inside it. */
   readonly flowers: readonly FlowerPicture[];
-  /** With stones lifted, the outline of each odd group they leave (GDD §4.1, key animation 4). */
+  /**
+   * With stones lifted, the outline of each odd group they leave (GDD §4.1, key animation 4); in the
+   * fog, only once presented with "Terminé".
+   */
   readonly oddGroups: readonly (readonly Point[])[];
   readonly fog: { readonly revealed: readonly boolean[] } | null;
   /** The chain being dragged, with what letting go would gain (+1, 0 in grey, or not legal). */
@@ -163,8 +166,11 @@ export function gardenPicture(
 
   const flowers = flowerPictures(layer.nodes, at);
 
+  // In the fog the groups would tell which vines join whom before they are inspected, so, like the
+  // Council's count, they are only drawn once the certificate is presented with "Terminé" (7.5).
+  const groupsHidden = revealed !== null && !state.declaredDone;
   const oddGroups =
-    state.stones.length === 0
+    state.stones.length === 0 || groupsHidden
       ? []
       : oddComponents(state.graph, state.stones).map((group) =>
           flowerOutline(group.map(at), GROUP_PADDING),
