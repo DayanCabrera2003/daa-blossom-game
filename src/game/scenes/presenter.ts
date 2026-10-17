@@ -18,6 +18,7 @@ import {
   type StageTurn,
 } from '../systems/presentation';
 import type { Question, QuestionOption } from '../systems/question';
+import type { SpokenLine } from '../systems/speaker';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
 import type { DialogueView } from '../view/DialogueView';
@@ -155,7 +156,7 @@ export class Presenter {
    * Shows the lines of a hint: beside an open question at once, otherwise in turn. `option` is the
    * option a grade-3 hint points at, marked on the question panel.
    */
-  hint(lines: readonly string[], option: number | null): void {
+  hint(lines: readonly SpokenLine[], option: number | null): void {
     if (hintsShowBeside(this.stage)) this.views.dialogue.say(lines);
     else this.present({ kind: 'lines', lines });
     if (option !== null) this.views.question.mark(option);

@@ -13,6 +13,7 @@ import { lightDay } from '../../systems/lightSearch';
 import { effectJingle } from '../../systems/musicFor';
 import { questionAt } from '../../systems/question';
 import { dayToReplay } from '../../systems/replayDay';
+import { spokenLine } from '../../systems/speaker';
 import type { StarResult } from '../../systems/stars';
 import type { AnimationView } from '../../view/AnimationView';
 import type { ToastView } from '../../view/ToastView';
@@ -51,6 +52,9 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
   // A bet won rings its jingle as it is told.
   const jingle = effectJingle(effect);
   if (jingle !== null) stage.jingle(jingle);
+  /** An interface text the mentor says, with its parameters. */
+  const said = (key: string, params?: Readonly<Record<string, string | number>>) =>
+    spokenLine(key, (id) => t(id, params));
   switch (effect.kind) {
     case 'rejected': {
       // Before folding opens, the conflict of a search is not told apart (4.1).
@@ -67,7 +71,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       const { key, params } = checkText(effect.check);
       stage.toast.show(t(key, params));
       if (effect.check.kind === 'notBetter' && effect.check.spared)
-        stage.presenter.present({ kind: 'lines', lines: [t('mirror.spared')] });
+        stage.presenter.present({ kind: 'lines', lines: [said('mirror.spared')] });
       break;
     }
     case 'flowerDrawn': {
@@ -77,7 +81,8 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       if (attempt.kind === 'cut') break;
       const reason = { code: 'invalidPath', error: attempt.error } as const;
       stage.toast.show(reasonText(reason, { type: 'chain', path: attempt.path }, stage.labels, t));
-      if (attempt.spared) stage.presenter.present({ kind: 'lines', lines: [t('flower.spared')] });
+      if (attempt.spared)
+        stage.presenter.present({ kind: 'lines', lines: [said('flower.spared')] });
       break;
     }
     case 'animate':
@@ -91,13 +96,16 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
     case 'hint': {
       const { content } = effect;
       stage.presenter.hint(
-        [content.generic ? t(content.line) : line(content.line)],
+        [content.generic ? said(content.line) : spokenLine(content.line, line)],
         content.option,
       );
       break;
     }
     case 'say':
-      stage.presenter.present({ kind: 'lines', lines: effect.lines.map(line) });
+      stage.presenter.present({
+        kind: 'lines',
+        lines: effect.lines.map((id) => spokenLine(id, line)),
+      });
       break;
     case 'replay': {
       const { level, history } = stage.controller().session;
@@ -138,7 +146,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
         const params = Object.fromEntries(
           Object.entries(reveal.params).map(([name, key]) => [name, t(key)]),
         );
-        return [t(reveal.key, params)];
+        return [said(reveal.key, params)];
       });
       if (lines.length > 0) stage.presenter.present({ kind: 'lines', lines });
       break;
@@ -162,7 +170,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       break;
     case 'pickVine':
       // The mentor asks; the touch on a vine that answers goes through the controller.
-      stage.presenter.present({ kind: 'lines', lines: [line(effect.prompt)] });
+      stage.presenter.present({ kind: 'lines', lines: [spokenLine(effect.prompt, line)] });
       break;
     case 'vinePicked':
       // Nothing to queue: a right pick shows in the garden, painted from the session.
@@ -171,7 +179,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       const key = effect.bet === effect.right ? 'bet.revealRight' : 'bet.revealWrong';
       stage.presenter.present({
         kind: 'lines',
-        lines: [t(key, { bet: effect.bet, count: effect.right })],
+        lines: [said(key, { bet: effect.bet, count: effect.right })],
       });
       break;
     }

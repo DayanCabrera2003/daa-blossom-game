@@ -22,6 +22,7 @@ import {
 import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
 import { planCues, refusalCues } from '../systems/soundCues';
+import { spokenLine } from '../systems/speaker';
 import { AnimationView } from '../view/AnimationView';
 import { Button } from '../view/Button';
 import { DialogueView } from '../view/DialogueView';
@@ -134,7 +135,7 @@ export class CounterexampleScene extends Phaser.Scene {
       ...this.buttons(data.back),
     };
     this.listen(data.back);
-    this.views.dialogue.say([line(counterexample.line)]);
+    this.views.dialogue.say([spokenLine(counterexample.line, line)]);
     this.render();
   }
 
@@ -237,7 +238,7 @@ export class CounterexampleScene extends Phaser.Scene {
         break;
       }
       case 'say':
-        this.views.dialogue.say([line(effect.line)]);
+        this.views.dialogue.say([spokenLine(effect.line, line)]);
         break;
       case 'mirrorChecked': {
         // What the check found is painted from the controller on every render; here it is told.

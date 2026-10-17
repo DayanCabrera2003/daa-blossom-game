@@ -11,7 +11,10 @@ import {
 } from './presentation';
 import type { Question } from './question';
 
-const lines = (...said: string[]): Presentation => ({ kind: 'lines', lines: said });
+const lines = (...said: string[]): Presentation => ({
+  kind: 'lines',
+  lines: said.map((text) => ({ id: text, text, speaker: 'sauce' })),
+});
 const replay: Presentation = { kind: 'replay', day: [] };
 const question: Question = {
   kind: 'ask',

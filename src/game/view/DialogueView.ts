@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { SpokenLine } from '../systems/speaker';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
@@ -12,7 +13,7 @@ export class DialogueView {
   private readonly panel: Phaser.GameObjects.Rectangle;
   private readonly text: Phaser.GameObjects.Text;
   private readonly hint: Phaser.GameObjects.Text;
-  private queue: string[] = [];
+  private queue: SpokenLine[] = [];
   /** Called once when the box closes after the lines it was given with. */
   private onClosed: (() => void) | null = null;
 
@@ -50,7 +51,7 @@ export class DialogueView {
    * Queues lines to show after the current one; `onClosed` runs once the box closes after the last
    * of them (it replaces any earlier callback still pending).
    */
-  say(lines: readonly string[], onClosed: (() => void) | null = null): void {
+  say(lines: readonly SpokenLine[], onClosed: (() => void) | null = null): void {
     this.queue.push(...lines);
     this.onClosed = onClosed;
     if (!this.open) this.advance();
@@ -65,7 +66,7 @@ export class DialogueView {
       closed?.();
       return;
     }
-    this.text.setText(next);
+    this.text.setText(next.text);
     this.setVisible(true);
   }
 
