@@ -88,7 +88,7 @@ export const buildLevelViews = (
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),
     toast: new ToastView(scene),
-    dialogue: new DialogueView(scene, t('dialogue.continue')),
+    dialogue: new DialogueView(scene, t),
   };
 };
 

@@ -130,7 +130,7 @@ export class CounterexampleScene extends Phaser.Scene {
       animation: new AnimationView(this),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
       toast: new ToastView(this),
-      dialogue: new DialogueView(this, t('dialogue.continue')),
+      dialogue: new DialogueView(this, t),
       lanterns: this.add.text(LAYOUT.margin, LAYOUT.bottomY, '', textStyle(8)).setDepth(100),
       ...this.buttons(data.back),
     };
