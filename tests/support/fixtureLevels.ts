@@ -4,7 +4,7 @@ import { loadLevel } from '@levels/loader';
 /**
  * Synthetic levels for tests that need a garden of chapters 4, 5 or 7: copies of the drafts those
  * chapters started from, so the tests keep their data when the level files are rewritten, a
- * garden for the flower challenge (4.11), and the recipe of chapter 6 before its files exist.
+ * garden for the flower challenge (4.11), and the recipe of chapter 6 as it was first drafted.
  * Each one is loaded through the real loader, so it is validated exactly like a level file. The
  * ids are kept, because the tools a level opens follow its id.
  */
@@ -452,7 +452,7 @@ export const BLOOM = {
 };
 
 /**
- * The recipe with cards (GDD 6.1), until chapter 6 has its level files: a small garden, `R–a=b–c`,
+ * The recipe with cards (GDD 6.1), as drafted before chapter 6 had its files: a garden, `R–a=b–c`,
  * that the script does not touch, and a recipe built from nothing. The walkthrough first checks a
  * recipe tempted by a distractor ("si x es luna, cámbiala a sol"), which is told and stays open,
  * then the right one, with its cases in an order of its own.
