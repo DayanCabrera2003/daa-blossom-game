@@ -13,6 +13,7 @@ import { playtestEntries } from '../systems/playtestEntries';
 import type { StarResult } from '../systems/stars';
 import { startCards, stepCard } from '../systems/tutorials';
 import { fitCamera } from '../view/fitCamera';
+import { LAYOUT } from '../view/layout';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
@@ -22,6 +23,7 @@ import { bindLevelInput } from './level/levelInput';
 import { showEffect, type EffectStage } from './level/levelEffects';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
 import { Presenter } from './presenter';
+import { addSettings } from './settingsPanel';
 
 /**
  * A level being played. The scene takes no decision and draws nothing itself: it builds the screen
@@ -132,6 +134,8 @@ export class LevelScene extends Phaser.Scene {
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });
+    // The settings, at the bottom left, clear of the buttons laid out from the right.
+    addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
     this.ready = true;
     // The cards of what opens with the level come first; then the script opens it: its first
     // lines, then whatever step waits for the player.
