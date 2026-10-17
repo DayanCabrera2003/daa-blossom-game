@@ -5,11 +5,14 @@ import { exportLog } from '@services/exportLog';
 import { unlockedLevels, visibleLevels } from '@services/progress';
 import { chapterTitle } from '../picture/chapterTitle';
 import { HUB, layoutHub } from '../picture/hubLayout';
+import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from '../view/Button';
 import { fitCamera } from '../view/fitCamera';
+import { GEAR_SIZE } from '../view/GearButton';
 import { PALETTE } from '../view/palette';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
+import { addSettings } from './settingsPanel';
 
 /**
  * The greybox hub: the levels of the game by chapter, each chapter under its name, with their
@@ -62,5 +65,8 @@ export class HubScene extends Phaser.Scene {
     new Button(this, 0, 0, t('hub.exportLog'), () =>
       download(exportLog(playtest.current(), clock())),
     ).moveTo(HUB.margin, HUB.exportY);
+
+    // The settings, at the top right across from the title.
+    addSettings(this, { x: CANVAS_WIDTH - HUB.margin - GEAR_SIZE, y: 4 });
   }
 }
