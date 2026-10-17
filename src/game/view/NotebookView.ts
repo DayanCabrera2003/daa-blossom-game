@@ -1,4 +1,6 @@
 import type Phaser from 'phaser';
+import { playUiSound } from '../audio/uiSound';
+import type { AssetKey } from '../assets/keys';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
@@ -23,6 +25,8 @@ const PAD = 6;
 /** Depths: the blocker over the garden, then the page, its rows and their text. */
 const BLOCKER_DEPTH = 150;
 const PAGE_DEPTH = 250;
+/** The page turns of the notebook, taken in turn so two answers in a row do not sound alike. */
+const FLIPS: readonly AssetKey[] = ['sfx.bookFlip1', 'sfx.bookFlip2', 'sfx.bookFlip3'];
 
 /**
  * The notebook question (GDD §5.5, plan 03, phase 6): a page with the start of the statement and
@@ -32,6 +36,8 @@ const PAGE_DEPTH = 250;
  */
 export class NotebookView {
   private parts: { destroy(): void }[] = [];
+  /** How many pages have turned, for the next page turn's sound. */
+  private flips = 0;
 
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -42,8 +48,11 @@ export class NotebookView {
 
   /** Opens the page; `onAnswer` gets the value of the ending the player touches. */
   show(notebook: ShownNotebook, onAnswer: (value: number) => void): void {
-    this.close();
+    // A page already open turns to the new one; a closed notebook opens.
+    const turning = this.open;
+    this.clear();
     const { scene } = this;
+    if (!turning) playUiSound(scene, 'sfx.bookOpen');
     const { x, y, width } = LAYOUT.question;
     const inner = width - 2 * PAD;
     const blocker = scene.add
@@ -86,6 +95,7 @@ export class NotebookView {
             event: Phaser.Types.Input.EventData,
           ) => {
             event.stopPropagation();
+            playUiSound(scene, FLIPS[this.flips++ % FLIPS.length] ?? 'sfx.bookFlip1');
             onAnswer(option.value);
           },
         );
@@ -105,8 +115,13 @@ export class NotebookView {
     this.parts.push(footer, page);
   }
 
-  /** Takes the page and its blocker away. */
+  /** Closes the notebook, taking the page and its blocker away. */
   close(): void {
+    if (this.open) playUiSound(this.scene, 'sfx.bookClose');
+    this.clear();
+  }
+
+  private clear(): void {
     for (const part of this.parts) part.destroy();
     this.parts = [];
   }
