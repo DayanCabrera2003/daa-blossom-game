@@ -78,7 +78,8 @@ describe('the season of each chapter (plan 06, section 1.5)', () => {
     expect(council.ornaments.map(({ parts }) => parts[0]?.cut)).toEqual([cutOf('councilOak')]);
     expect(council.ornamentCount).toBe(3);
     const cabin = seasonOf('6').ornaments.find(({ glow }) => glow !== null);
-    expect(cabin?.parts[0]?.cut).toEqual(cutOf('cabin'));
+    // The lower half of the frame is the whole cabin, roof and door; the upper one a second roof.
+    expect(cabin?.parts[0]?.cut).toEqual(cutOf('cabin', 0, 2, 4, 2));
   });
 
   it('only draws pieces that lie inside sheets the manifest has', () => {

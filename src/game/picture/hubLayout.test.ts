@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { HUB_SIGN } from './hubGarden';
 import { HUB, layoutHub } from './hubLayout';
 import { PIXEL_FONT } from './pixelFont';
 
@@ -71,13 +72,17 @@ describe('the hub layout', () => {
     expect(bottom).toBe((lines[1] ?? 0) + HEIGHT);
   });
 
-  it('every chapter, each level with three stars, stays above the export button', () => {
+  it("every chapter, each level with three stars, stays above the bed of the hub's garden", () => {
     // Chapters 0 to 7 as the catalog has them: 5, 9, 4, 9, 12, 5, 6 and 5 levels.
     // The ids of chapter 4 run to "4.12", a digit wider, so its buttons are wider still.
     const counts = [5, 9, 4, 9, 12, 5, 6, 5];
     const widths = counts.map((count, c) => Array<number>(count).fill(c === 4 ? WIDER : WIDE));
-    const { bottom } = layoutHub(widths, HEIGHT, TITLES);
-    expect(bottom + HUB.gap).toBeLessThanOrEqual(HUB.exportY);
+    // Each title hangs from its signpost, which comes before it on the line.
+    const signed = TITLES.map((title) => title + HUB_SIGN.width + HUB_SIGN.gap);
+    const { bottom } = layoutHub(widths, HEIGHT, signed);
+    expect(bottom + HUB.gap).toBeLessThanOrEqual(HUB.gardenTop);
+    // The export button moved up to the top line, out of the way of the chapters.
+    expect(HUB.exportY + HEIGHT).toBeLessThanOrEqual(HUB.top);
     const { buttons, heads } = boxes(widths, TITLES);
     for (const head of heads) for (const button of buttons) expect(apart(head, button)).toBe(true);
   });

@@ -165,8 +165,11 @@ export const LILY_POND = ornament([
   still(cutOf('shore', 0, 0, 3, 3)),
   still(cutOf('lilyPad'), 16, 16),
 ]);
-/** The cabin of the recipe book, a candle lit in its window. */
-export const CABIN = ornament([still(cutOf('cabin'))], { x: 24, y: 40, radius: 7 });
+/**
+ * The cabin of the recipe book, a candle lit in its twin windows. The lower half of the frame is
+ * the whole cabin, roof and door; the upper half is a second roof without a door.
+ */
+export const CABIN = ornament([still(cutOf('cabin', 0, 2, 4, 2))], { x: 32, y: 8, radius: 6 });
 /** The three great oaks of the council. */
 export const OAKS = ornament([still(cutOf('councilOak'))]);
 /** The cherry tree of the meadow. */

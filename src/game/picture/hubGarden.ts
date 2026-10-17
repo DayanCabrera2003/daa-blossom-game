@@ -1,6 +1,5 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { boxesOverlap, type Rect } from './boxDistance';
-import { backdropTint } from './dayTint';
 import { HUB } from './hubLayout';
 import {
   AUTUMN_TREE,
@@ -28,19 +27,22 @@ import {
 /** The signpost before each chapter title, and the room it leaves before the title. */
 export const HUB_SIGN = { width: 16, gap: 2 } as const;
 
-/** The hub at dusk: the orchard's colour at the hour the day's work is done. */
-export const HUB_TINT = backdropTint(seasonOf('0').tint, 2 / 3);
+/** The hub under the orchard's own warm light (it has no sun to follow). */
+export const HUB_TINT = seasonOf('0').tint;
 
 /** Between a piece and what it must not cover, and between two pieces. */
-const PIECE_GAP = 4;
+const PIECE_GAP = 2;
 
-/** The piece each chapter plants, by chapter number. */
+/**
+ * The piece each chapter plants, by chapter number. None is taller than the bed (48 px), and side
+ * by side they fill its width.
+ */
 export const HUB_PIECES: readonly Ornament[] = [
   SOIL_PATCH,
-  ornament([...CHERRY.parts, still(cutOf('daisy'), 32, 16)]),
+  CHERRY,
   LILY_POND,
   ornament([{ ...still(cutOf('greenhouseHouse')), glass: 0x8feff1, alpha: 0.6 }]),
-  ornament([0, 1, 2, 3].map((k) => still(cutOf('bunting', k, 0, 1, 2), 16 * k, 0))),
+  ornament([0, 1, 2].map((k) => still(cutOf('bunting', k, 0, 1, 2), 16 * k, 0))),
   AUTUMN_TREE,
   CABIN,
   OAKS,
@@ -81,22 +83,20 @@ export function finishedChapters(
 }
 
 /**
- * The free place for a `width` × `height` piece furthest left, and of those the lowest, given what
- * is taken already: the places worth trying are at the margin or just right of a box, and at the
- * bottom of the canvas or just above a box. Null when there is none.
+ * The free place furthest left in the bed along the bottom of the canvas for a `width` × `height`
+ * piece, given what is taken already: the places worth trying are at the margin or just right of a
+ * box. Null when there is none.
  */
 function freePlace(width: number, height: number, taken: readonly Rect[]): Rect | null {
-  const xs = [HUB.margin, ...taken.map((box) => box.x + box.width + PIECE_GAP)];
-  const ys = [CANVAS_HEIGHT - height, ...taken.map((box) => box.y - PIECE_GAP - height)];
-  const places = xs
-    .flatMap((x) => ys.map((y) => ({ x, y, width, height })))
+  const y = CANVAS_HEIGHT - height;
+  const places = [HUB.margin, ...taken.map((box) => box.x + box.width + PIECE_GAP)]
+    .map((x) => ({ x, y, width, height }))
     .filter(
       (place) =>
         place.x + width <= CANVAS_WIDTH - HUB.margin &&
-        place.y >= 0 &&
         taken.every((box) => !boxesOverlap(place, box, PIECE_GAP)),
     )
-    .sort((a, b) => a.x - b.x || b.y - a.y);
+    .sort((a, b) => a.x - b.x);
   return places[0] ?? null;
 }
 

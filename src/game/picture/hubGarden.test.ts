@@ -2,36 +2,66 @@ import { describe, expect, it } from 'vitest';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { boxesOverlap, type Rect } from './boxDistance';
 import { HUB, layoutHub } from './hubLayout';
+import { PIXEL_FONT } from './pixelFont';
 import {
   finishedChapters,
   HUB_PIECES,
   HUB_SIGN,
+  HUB_TINT,
   hubGarden,
   signBox,
   type HubPlanting,
 } from './hubGarden';
-import { OAKS, SOIL_PATCH } from './seasons';
+import { OAKS, seasonOf, SOIL_PATCH } from './seasons';
 
 /** The level counts of the hub today, by chapter. */
 const COUNTS = [5, 9, 4, 9, 12, 5, 6, 5];
-const BUTTON = { width: 28, height: 14 };
+/** The height of a button: a line of the pixel font and its panel. */
+const HEIGHT = 14;
+/** The width of a text of `chars` characters in the pixel font, which is monospaced. */
+const text = (chars: number): number => chars * PIXEL_FONT.advance;
+/** The chapter names of the hub (content/es/strings.json). */
+const NAMES = [
+  'El Huerto',
+  'El Prado',
+  'El Estanque',
+  'El Invernadero',
+  'El Festival',
+  'El Jardín Salvaje',
+  'El Recetario',
+  'El Consejo de los Robles',
+];
 
-/** The boxes of a hub laid out as the scene lays it out: title, gear, signs, titles, buttons. */
-function hubBoxes(): Rect[] {
-  const titleWidths = COUNTS.map(() => 70 + HUB_SIGN.width + HUB_SIGN.gap);
-  const layout = layoutHub(
-    COUNTS.map((count) => Array.from({ length: count }, () => BUTTON.width)),
-    BUTTON.height,
-    titleWidths,
+/**
+ * The boxes of the hub as the scene lays it out, every level with no stars yet or with three (the
+ * widest buttons): the heading, the export button and the gear on the top line, then each
+ * chapter's sign, title and buttons.
+ */
+function hubBoxes(stars: boolean): Rect[] {
+  const titleWidths = NAMES.map((name) => text(name.length) + HUB_SIGN.width + HUB_SIGN.gap);
+  // "1.1 ·" or "1.1 " and four blank cells for the stars; a digit more for "4.10" to "4.12".
+  const widths = COUNTS.map((count, c) =>
+    Array.from({ length: count }, () => text((stars ? 8 : 5) + (c === 4 ? 1 : 0)) + 4),
   );
+  const layout = layoutHub(widths, HEIGHT, titleWidths);
   return [
-    { x: HUB.margin, y: 6, width: 60, height: 12 },
-    { x: CANVAS_WIDTH - HUB.margin - 14, y: 4, width: 14, height: 14 },
-    { x: HUB.margin, y: HUB.exportY, width: 168, height: 14 },
+    { x: HUB.margin, y: 6, width: text(8), height: 12 },
+    {
+      x: CANVAS_WIDTH - HUB.margin - 13 - HUB.gap - 168,
+      y: HUB.exportY - 1,
+      width: 168,
+      height: HEIGHT,
+    },
+    { x: CANVAS_WIDTH - HUB.margin - 13, y: 4, width: 13, height: 13 },
     ...layout.chapters.flatMap(({ titleY, buttons }, c) => [
-      signBox(titleY, BUTTON.height),
-      { x: HUB.margin, y: titleY, width: titleWidths[c] ?? 0, height: BUTTON.height },
-      ...buttons.map(({ x, y }) => ({ x, y, ...BUTTON })),
+      signBox(titleY, HEIGHT),
+      { x: HUB.margin, y: titleY, width: titleWidths[c] ?? 0, height: HEIGHT },
+      ...buttons.map(({ x, y }, b) => ({
+        x,
+        y: y - 1,
+        width: widths[c]?.[b] ?? 0,
+        height: HEIGHT,
+      })),
     ]),
   ];
 }
@@ -73,17 +103,19 @@ describe('the hub that grows (plan 06, section 1.5)', () => {
   });
 
   it('shows only the orchard, its ground, when no chapter is finished', () => {
-    expect(hubGarden(new Set(), hubBoxes())).toEqual([]);
+    expect(hubGarden(new Set(), hubBoxes(false))).toEqual([]);
+    // Under the orchard's own warm light.
+    expect(HUB_TINT).toBe(seasonOf('0').tint);
   });
 
   it('plants the oaks once chapter 7 is finished', () => {
-    const garden = hubGarden(new Set(['7']), hubBoxes());
+    const garden = hubGarden(new Set(['7']), hubBoxes(true));
     expect(garden.map(({ chapter }) => chapter)).toEqual(['7']);
     expect(garden[0]?.ornament).toBe(OAKS);
   });
 
   it('keeps each piece where it is as more chapters are finished', () => {
-    const boxes = hubBoxes();
+    const boxes = hubBoxes(true);
     const full = hubGarden(ALL, boxes);
     expect(full.map(({ chapter }) => chapter)).toEqual([...ALL]);
     for (const chapter of ALL) {
@@ -93,19 +125,26 @@ describe('the hub that grows (plan 06, section 1.5)', () => {
     }
   });
 
-  it('never covers a sign, a title or a button, nor another piece, and stays on the canvas', () => {
-    const boxes = hubBoxes();
-    const full = hubGarden(ALL, boxes);
-    full.forEach((piece, i) => {
-      const box = boxOf(piece);
-      expect(box.x).toBeGreaterThanOrEqual(0);
-      expect(box.y).toBeGreaterThanOrEqual(0);
-      expect(box.x + box.width).toBeLessThanOrEqual(CANVAS_WIDTH);
-      expect(box.y + box.height).toBeLessThanOrEqual(CANVAS_HEIGHT);
-      for (const other of boxes) expect(boxesOverlap(box, other, 0)).toBe(false);
-      for (const other of full.slice(i + 1)) expect(boxesOverlap(box, boxOf(other), 0)).toBe(false);
-    });
-  });
+  it.each([false, true])(
+    'never covers a sign, a title or a button, nor another piece (stars: %s)',
+    (stars) => {
+      const boxes = hubBoxes(stars);
+      const full = hubGarden(ALL, boxes);
+      // Every chapter's piece finds room, in a bed along the bottom of the canvas.
+      expect(full).toHaveLength(8);
+      full.forEach((piece, i) => {
+        expect(piece.y + piece.ornament.height).toBe(CANVAS_HEIGHT);
+        const box = boxOf(piece);
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.y).toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width).toBeLessThanOrEqual(CANVAS_WIDTH);
+        expect(box.y + box.height).toBeLessThanOrEqual(CANVAS_HEIGHT);
+        for (const other of boxes) expect(boxesOverlap(box, other, 0)).toBe(false);
+        for (const other of full.slice(i + 1))
+          expect(boxesOverlap(box, boxOf(other), 0)).toBe(false);
+      });
+    },
+  );
 
   it('leaves a piece out rather than cover the hub when there is no room for it', () => {
     const everywhere: Rect = { x: 0, y: 0, width: CANVAS_WIDTH, height: CANVAS_HEIGHT };

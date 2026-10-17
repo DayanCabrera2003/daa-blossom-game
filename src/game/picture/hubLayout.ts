@@ -18,8 +18,13 @@ export const HUB = {
   titleGap: 8,
   /** Between two buttons side by side, between two lines of buttons, and between chapters. */
   gap: 4,
-  /** The top of the "Exportar registro de prueba" button, at the bottom left. */
-  exportY: CANVAS_HEIGHT - 18,
+  /**
+   * The top of the "Exportar registro de prueba" button, on the top line between the hub's title
+   * and the settings, so the bottom of the canvas is free for the hub's garden.
+   */
+  exportY: 5,
+  /** Where the bed of the hub's garden starts, along the bottom: the chapters end above it. */
+  gardenTop: CANVAS_HEIGHT - 48,
 } as const;
 
 /** Where one chapter goes: the top of its title, and the top-left corner of each level button. */
