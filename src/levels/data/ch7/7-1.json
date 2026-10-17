@@ -1,0 +1,51 @@
+{
+  "id": "7.1",
+  "draft": true,
+  "sprouts": [
+    { "label": "A", "x": 240, "y": 40 },
+    { "label": "B", "x": 330, "y": 105 },
+    { "label": "C", "x": 295, "y": 215 },
+    { "label": "D", "x": 185, "y": 215 },
+    { "label": "E", "x": 150, "y": 105 }
+  ],
+  "vines": [
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "A"]
+  ],
+  "lanterns": [
+    ["A", "B"],
+    ["C", "D"]
+  ],
+  "goal": { "visible": false },
+  "victory": { "type": "coverComplete" },
+  "hints": [
+    { "line": "ch7.1.sauce.02" },
+    { "line": "ch7.1.sauce.03", "highlight": ["A", "C"] },
+    { "line": "ch7.1.sauce.04" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch7.1.oaks.00", "ch7.1.sauce.01"] },
+    { "step": "play" },
+    {
+      "step": "ask",
+      "prompt": "ch7.1.sauce.05",
+      "options": [
+        { "line": "ch7.1.gardener.06", "correct": true, "reply": "ch7.1.sauce.07" },
+        { "line": "ch7.1.gardener.08", "correct": false, "reply": "ch7.1.sauce.09" },
+        { "line": "ch7.1.gardener.10", "correct": false, "reply": "ch7.1.sauce.11" }
+      ],
+      "retry": true
+    },
+    { "step": "say", "lines": ["ch7.1.oaks.12"] }
+  ],
+  "solution": [
+    { "type": "placeScarecrow", "vertex": "A" },
+    { "type": "placeScarecrow", "vertex": "C" },
+    { "type": "placeScarecrow", "vertex": "E" },
+    { "type": "declareDone" },
+    { "type": "answer", "option": 0 }
+  ]
+}
