@@ -1,4 +1,5 @@
 import { members, nodesWithin } from '@core/blossom/hierarchy';
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { LabelError } from '@core/graph/labels';
 import { toEdges } from '@core/graph/labels';
 import type { Edge, VertexId } from '@core/graph/types';
@@ -282,6 +283,14 @@ function playInput(
       if (entry.cards.length > card.choices.count) return { kind: 'bad', why: 'choiceOutOfRange' };
       for (const option of entry.cards.keys()) frame({ kind: 'pick', option });
       frame({ kind: 'press', button: 'check' });
+      return null;
+    }
+    case 'raceBet': {
+      // The three answers of a doubling bet are the choices under the garden.
+      const option = DOUBLING_ANSWERS.indexOf(entry.answer);
+      if (card.choices === undefined) return { kind: 'bad', why: 'noChoices' };
+      if (option >= card.choices.count) return { kind: 'bad', why: 'choiceOutOfRange' };
+      frame({ kind: 'pick', option });
       return null;
     }
     case 'drawChain':

@@ -137,6 +137,23 @@ describe('the demo of a mechanic card', () => {
     ).toMatchObject({ ok: false, error: { code: 'badStep', why: 'choiceOutOfRange' } });
   });
 
+  it('a doubling bet picks its answer among the three choices shown, which must be there', () => {
+    const choices = { count: 3, kind: 'lines' };
+    const demo = built({ ...path3, choices, steps: [{ type: 'raceBet', answer: 'farMore' }] });
+    expect(itemAt(demo.frames, 0).gesture).toEqual({ kind: 'pick', option: 2 });
+    const bet = { type: 'raceBet', answer: 'double' };
+    expect(buildDemo(card({ ...path3, steps: [bet] }))).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'noChoices' },
+    });
+    const two = { count: 2, kind: 'lines' };
+    const far = { type: 'raceBet', answer: 'farMore' };
+    expect(buildDemo(card({ ...path3, choices: two, steps: [far] }))).toMatchObject({
+      ok: false,
+      error: { code: 'badStep', why: 'choiceOutOfRange' },
+    });
+  });
+
   it('a recipe picks its cards from the choices, one by one, then presses the check', () => {
     const choices = { count: 3, kind: 'lines' };
     const cards = ['markDarkSuns', 'foldFlower'];

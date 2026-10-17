@@ -1,3 +1,4 @@
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { Edge, VertexId } from '@core/graph/types';
 import { RECIPE_CARD_IDS } from '@core/recipe/recipe';
 import { z } from 'zod';
@@ -5,8 +6,8 @@ import { label, vine } from './fields';
 
 /**
  * What a player gives the script of a level besides garden moves: answers, bets, the sun, touches
- * (on the garden, a sprout or a vine), the mirror challenge, the chains of the flower challenge and
- * the recipe cards. A level's reference walkthrough (`solution`) writes them between its
+ * (on the garden, a sprout or a vine), the mirror challenge, the chains of the flower challenge,
+ * the recipe cards and the answers of doubling bets. A level's reference walkthrough (`solution`) writes them between its
  * moves, so a test can play the whole level, script included. None of these changes the lanterns.
  */
 
@@ -35,6 +36,8 @@ export const flowInputOptions = [
    * whatever was there taken back), then it is checked.
    */
   z.strictObject({ type: z.literal('recipe'), cards: z.array(z.enum(RECIPE_CARD_IDS)) }),
+  /** The answer picked in a `raceBet` step: how many more steps a doubled garden takes. */
+  z.strictObject({ type: z.literal('raceBet'), answer: z.enum(DOUBLING_ANSWERS) }),
 ] as const;
 
 /** Every input type; none of them is the type of a player action. */

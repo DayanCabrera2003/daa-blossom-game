@@ -90,6 +90,8 @@ export type UiEvent =
   | { readonly kind: 'drawChain'; readonly path: readonly VertexId[] }
   /** The light's own search has been shown to the end; the scene says so, not the player. */
   | { readonly kind: 'searched' }
+  /** A race has been shown to its end (6.4, 6.5); the scene says so, not the player. */
+  | { readonly kind: 'raced' }
   /** The recipe (6.1): a card touched, into the recipe or back to the table, and "Comprobar". */
   | { readonly kind: 'recipeCard'; readonly card: RecipeCardId }
   | { readonly kind: 'checkRecipe' };
@@ -386,6 +388,8 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       return drawChain(controller, event.path, now);
     case 'searched':
       return tell(controller, { type: 'searched' }, now);
+    case 'raced':
+      return tell(controller, { type: 'raced' }, now);
     case 'recipeCard':
       return same({ session: touchRecipe(controller.session, event.card) });
     case 'checkRecipe':

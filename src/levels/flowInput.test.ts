@@ -20,9 +20,16 @@ describe('the inputs a walkthrough gives the script', () => {
       { type: 'drawChain', path: ['e', 'c', 'b'] },
       { type: 'recipe', cards: ['markDarkSuns', 'foldFlower'] },
       { type: 'recipe', cards: [] },
+      { type: 'raceBet', answer: 'fourToEight' },
     ]) {
       expect(accepts(input)).toBe(true);
     }
+  });
+
+  it('answers a doubling bet with one of its three answers, never a number', () => {
+    expect(accepts({ type: 'raceBet', answer: 'farMore' })).toBe(true);
+    expect(accepts({ type: 'raceBet', answer: 2 })).toBe(false);
+    expect(accepts({ type: 'raceBet', answer: 'triple' })).toBe(false);
   });
 
   it('keeps the sun inside the day and the numbers whole', () => {

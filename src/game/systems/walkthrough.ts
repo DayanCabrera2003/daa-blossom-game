@@ -1,3 +1,4 @@
+import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { Edge, VertexId } from '@core/graph/types';
 import { placedCards, type RecipeCardId } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
@@ -21,8 +22,9 @@ import type { Refusal } from './refusal';
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
  * vines, a chain of the flower challenge as a drag through its sprouts, a recipe as touches on its
- * cards and "Comprobar", and the end of the light's
- * own search or of the automaton's run as the scene reports it, with no entry of its own. A level whose walkthrough does not
+ * cards and "Comprobar", the answer of a doubling bet as the option of its panel, and the end of
+ * the light's own search, of the automaton's run or of a race as the scene reports it, with no
+ * entry of its own. A level whose walkthrough does not
  * finish its script never reaches the browser (plan 03, §0): the playability test and
  * `check-levels` both run this.
  */
@@ -79,6 +81,8 @@ function inputEvents(
       return [{ kind: 'tapSprout', vertex: input.vertex }];
     case 'checkMirror':
       return [{ kind: 'checkMirror' }];
+    case 'raceBet':
+      return [{ kind: 'answer', option: DOUBLING_ANSWERS.indexOf(input.answer) }];
   }
 }
 
@@ -90,6 +94,7 @@ const ANSWERED: ReadonlySet<FlowInput['type']> = new Set([
   'tapSprout',
   'pickVine',
   'recipe',
+  'raceBet',
 ]);
 
 /**
@@ -282,13 +287,16 @@ function playEntry(
   return { ...played, problem: matches ? null : { code: 'gestureMismatch', entry: index } };
 }
 
-/** The steps where the garden moves by itself: the light's search, and the automaton's run. */
-const SHOWN_ALONE: ReadonlySet<string> = new Set(['autoSearch', 'automaton']);
+/**
+ * The steps that play by themselves: the light's search and the automaton's run, whose moves the
+ * scene reports shown, and a race, which it reports run.
+ */
+const SHOWN_ALONE: ReadonlySet<string> = new Set(['autoSearch', 'automaton', 'race']);
 
 /**
- * Lets the light search by itself, or the automaton run, whenever the script waits for it: the
- * scene shows the moves and then says they are over, which the walkthrough does at once. It writes
- * no entry for them.
+ * Lets the light search by itself, the automaton run or a race be run, whenever the script waits
+ * for it: the scene shows it and then says it is over, which the walkthrough does at once. It
+ * writes no entry for them.
  */
 function showLight(
   controller: Controller,
@@ -296,8 +304,10 @@ function showLight(
 ): { controller: Controller; effects: Effect[] } {
   let current = controller;
   const effects: Effect[] = [];
-  while (SHOWN_ALONE.has(stepNow(current.session)?.step ?? '')) {
-    const step = handle(current, { kind: 'searched' }, now);
+  for (;;) {
+    const shown = stepNow(current.session)?.step ?? '';
+    if (!SHOWN_ALONE.has(shown)) break;
+    const step = handle(current, { kind: shown === 'race' ? 'raced' : 'searched' }, now);
     current = step.controller;
     effects.push(...step.effects);
   }

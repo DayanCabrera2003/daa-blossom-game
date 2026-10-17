@@ -9,6 +9,7 @@ import {
   bloomLevel,
   brokenRecipeLevel,
   lightLevel,
+  racesLevel,
   recipeLevel,
 } from '../../../tests/support/fixtureLevels';
 import { size } from '@core/matching/queries';
@@ -88,6 +89,27 @@ describe('playing a walkthrough with the recipe (6.1, 6.3)', () => {
       'won',
     ]);
     expect(size(garden(played.controller.session).matching)).toBe(4);
+  });
+
+  it('every race runs as the scene reports it shown, and the bets between them are answered', () => {
+    const played = playWalkthrough(racesLevel());
+    expect(played.problem).toBeNull();
+    expect(played.effects.map((effect) => effect.kind)).toEqual([
+      'race',
+      'raced',
+      'raceBet',
+      'answered',
+      'raceBet',
+      'answered',
+      'race',
+      'raced',
+      'won',
+    ]);
+  });
+
+  it('a doubling bet given where nothing waits for it is not waited for', () => {
+    const level = load({ ...BLOOM, solution: [{ type: 'raceBet', answer: 'double' }] });
+    expect(playWalkthrough(level).problem).toEqual({ code: 'inputIgnored', entry: 0 });
   });
 
   it('a recipe given outside its step is not waited for', () => {
