@@ -3,11 +3,21 @@ import type { Translate } from '@services/i18n';
 import { DEMO_AREA } from '@levels/cards/schema';
 import type { Point } from '../input/target';
 import type { CardDemoPicture } from '../picture/cardDemo';
+import { flowerLooks, petalRing } from '../picture/petals';
+import { restingLook } from '../picture/sproutLook';
+import { paintBadge } from './paintBadge';
+import { paintFlower } from './paintFlower';
+import { paintSprout } from './paintSprout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 
 /** Radius of a sprout in the tiny garden, about half of a real one. */
 const MINI_RADIUS = 4;
+/** A tiny flower's petals reach half as far as a real one's, round a smaller heart. */
+const MINI_PETAL_REACH = 7;
+const MINI_PETAL_HEART = 2;
+/** From a tiny sprout's middle up to the middle of its badge, which keeps its real 8 × 8 size. */
+const MINI_BADGE_RISE = MINI_RADIUS + 6;
 
 /** Height of the strip under the tiny garden: the sun's track, the choices, a button pressed. */
 export const DEMO_STRIP = 14;
@@ -36,9 +46,10 @@ function dotted(g: Phaser.GameObjects.Graphics, a: Point, b: Point): void {
 
 /**
  * Paints one frame of a mechanic card's demo (GDD §5.11) in a small box at `origin`: the tiny
- * garden in the same greybox language as the real one (dotted dark vines, amber lanterns, cold and
- * warm sprouts, suns and moons, flowers, stones, scarecrows), silver lanterns, white rings where the
- * finger touches, and under it the sun's track, the choices or the button pressed.
+ * garden in the same pieces as the real one, drawn small (dotted dark vines, amber lanterns,
+ * outlined sprouts with their faces, sun and moon badges, flowers with their petals, stones,
+ * scarecrows), silver lanterns, white rings where the finger touches, and under it the sun's
+ * track, the choices or the button pressed.
  */
 export class CardDemoView {
   private readonly graphics: Phaser.GameObjects.Graphics;
@@ -79,18 +90,24 @@ export class CardDemoView {
   ): void {
     const { garden } = picture;
     for (const flower of garden.flowers) {
-      g.lineStyle(1, PALETTE.flower).strokePoints(
+      g.lineStyle(1, PALETTE.flower, 0.8).strokePoints(
         flower.outline.map(at) as Phaser.Types.Math.Vector2Like[],
         true,
       );
+    }
+    for (const look of flowerLooks(garden.flowers)) {
+      const centre = at(look.centre);
+      const petals = petalRing(centre, look.petals.length, MINI_PETAL_REACH, MINI_PETAL_HEART);
+      paintFlower(g, centre, petals, null);
     }
     for (const vine of garden.vines) {
       if (!vine.visible) continue;
       const a = at(vine.a);
       const b = at(vine.b);
-      if (vine.lit)
+      if (vine.lit) {
         g.lineStyle(2, PALETTE.lit, vine.inFlower ? 0.6 : 1).lineBetween(a.x, a.y, b.x, b.y);
-      else {
+        this.lantern(g, { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, PALETTE.lit, PALETTE.litGlow);
+      } else {
         g.lineStyle(1, PALETTE.darkVine);
         dotted(g, a, b);
       }
@@ -99,6 +116,7 @@ export class CardDemoView {
       const a = at(lantern.a);
       const b = at(lantern.b);
       g.lineStyle(2, PALETTE.mirror, 0.9).lineBetween(a.x, a.y + 2, b.x, b.y + 2);
+      this.lantern(g, { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 + 2 }, PALETTE.mirror, PALETTE.moon);
     }
     if (garden.chain !== null && garden.chain.points.length > 1) {
       const colour =
@@ -116,21 +134,38 @@ export class CardDemoView {
     for (const sprout of garden.sprouts) {
       const p = at(sprout);
       if (sprout.stone) {
+        // A small grey rock, outlined, with the light on its top.
+        const side = 2 * MINI_RADIUS;
+        g.fillStyle(PALETTE.background).fillRect(
+          p.x - MINI_RADIUS - 1,
+          p.y - MINI_RADIUS,
+          side + 2,
+          side,
+        );
         g.fillStyle(PALETTE.stone).fillRect(
           p.x - MINI_RADIUS,
-          p.y - MINI_RADIUS,
-          2 * MINI_RADIUS,
-          2 * MINI_RADIUS,
+          p.y - MINI_RADIUS + 1,
+          side,
+          side - 2,
+        );
+        g.fillStyle(PALETTE.chainNone).fillRect(
+          p.x - MINI_RADIUS + 1,
+          p.y - MINI_RADIUS + 1,
+          side - 3,
+          1,
         );
         continue;
       }
       if (sprout.lit) g.fillStyle(PALETTE.litGlow, 0.25).fillCircle(p.x, p.y, MINI_RADIUS + 2);
       const fogged = hidden !== undefined && hidden[sprout.vertex] !== true;
-      g.fillStyle(sprout.lit ? PALETTE.lit : PALETTE.dark, fogged ? 0.5 : 1).fillCircle(
-        p.x,
-        p.y,
-        MINI_RADIUS,
-      );
+      paintSprout(g, {
+        x: p.x,
+        y: p.y,
+        radius: MINI_RADIUS,
+        lit: sprout.lit,
+        look: restingLook(sprout.lit, sprout.kind ?? 'sprout'),
+        alpha: fogged ? 0.5 : 1,
+      });
       if (sprout.selected) g.lineStyle(1, PALETTE.selected).strokeCircle(p.x, p.y, MINI_RADIUS + 2);
       if (sprout.scarecrow) {
         const r = MINI_RADIUS + 1;
@@ -138,13 +173,15 @@ export class CardDemoView {
           .lineBetween(p.x - r, p.y - r, p.x + r, p.y + r)
           .lineBetween(p.x - r, p.y + r, p.x + r, p.y - r);
       }
-      const badge = p.y - MINI_RADIUS - 4;
-      if (sprout.mark === 'sun') g.fillStyle(PALETTE.sun).fillCircle(p.x, badge, 2.5);
-      else if (sprout.mark === 'moon') {
-        g.fillStyle(PALETTE.moon).fillCircle(p.x, badge, 3);
-        g.fillStyle(PALETTE.background).fillCircle(p.x + 1.5, badge - 1, 2.5);
-      }
+      if (sprout.mark !== null) paintBadge(g, sprout.mark, p.x, p.y - MINI_BADGE_RISE);
     }
+  }
+
+  /** A tiny lantern at `at`: a body of `colour` outlined in near-black, in a halo of `glow`. */
+  private lantern(g: Phaser.GameObjects.Graphics, at: Point, colour: number, glow: number): void {
+    g.fillStyle(glow, 0.3).fillCircle(at.x, at.y, 5);
+    g.fillStyle(PALETTE.background).fillRect(Math.round(at.x) - 2, Math.round(at.y) - 3, 5, 6);
+    g.fillStyle(colour).fillRect(Math.round(at.x) - 1, Math.round(at.y) - 2, 3, 4);
   }
 
   /** Under the garden: the sun on its track, the choices with the picked one lit, a button pressed. */
