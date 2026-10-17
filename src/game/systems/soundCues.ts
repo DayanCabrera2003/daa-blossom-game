@@ -69,6 +69,9 @@ export function planCues(steps: readonly AnimationStep[]): SoundCue[] {
 /** The single sound of a refusal: the soft "back", never a buzzer. */
 const REFUSED: readonly SoundCue[] = [{ key: 'sfx.reject', at: 0 }];
 
+/** The sound of a refusal, for the screens whose effects are not the level controller's. */
+export const refusalCues = (): SoundCue[] => [...REFUSED];
+
 /**
  * The sounds of one effect of the level controller, from the moment it is shown: an accepted move
  * plays its animation's, a refused one (a move, a touch on the reflection, a drawing that is no
@@ -81,9 +84,9 @@ export function effectCues(effect: Effect): SoundCue[] {
       return planCues(planAnimation(effect.events));
     case 'rejected':
     case 'drawRefused':
-      return [...REFUSED];
+      return refusalCues();
     case 'flowerDrawn':
-      return effect.attempt.kind === 'cut' ? [] : [...REFUSED];
+      return effect.attempt.kind === 'cut' ? [] : refusalCues();
     default:
       return [];
   }

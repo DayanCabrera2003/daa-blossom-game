@@ -4,7 +4,7 @@ import type { TraceEvent } from '@core/trace/events';
 import { DURATIONS, planAnimation, type AnimationStep } from '../animation/plan';
 import { ASSET_KEYS, assetEntry } from '../assets/keys';
 import type { Effect } from './levelController';
-import { effectCues, planCues } from './soundCues';
+import { effectCues, planCues, refusalCues } from './soundCues';
 
 /** One step of every kind the plan has. */
 const EVERY_STEP: readonly AnimationStep[] = [
@@ -140,5 +140,11 @@ describe('the sounds of the effects of the controller', () => {
       { kind: 'answered', step: 0, value: 1, correct: true },
     ];
     for (const effect of silent) expect(effectCues(effect)).toEqual([]);
+  });
+});
+
+describe('the sound of a refusal elsewhere', () => {
+  it('is the same gentle sound, for screens with effects of their own', () => {
+    expect(refusalCues()).toEqual([{ key: 'sfx.reject', at: 0 }]);
   });
 });
