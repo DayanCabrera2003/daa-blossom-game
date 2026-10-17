@@ -13,7 +13,7 @@ import type { TraceEvent } from '@core/trace/events';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
-import { countAnswer, rightBet, rightVine } from './answerKey';
+import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
 import { automatonDay } from './automaton';
 import {
   advanceFlow,
@@ -119,7 +119,9 @@ export type ScriptInput =
    * The light's own search, or the automaton's run, has been shown to the end (sent by the scene,
    * not by the player).
    */
-  | { readonly type: 'searched' };
+  | { readonly type: 'searched' }
+  /** A race has been shown to its end (sent by the scene, not by the player). */
+  | { readonly type: 'raced' };
 
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
 const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
@@ -302,8 +304,14 @@ export function respond(
   const { level } = session;
   switch (input.type) {
     case 'answer': {
+      // A count and a doubling bet are judged by the core; a question by its options.
       const step = stepNow(session);
-      const right = step?.step === 'count' ? countAnswer(level, garden(session), step) : null;
+      const right =
+        step?.step === 'count'
+          ? countAnswer(level, garden(session), step)
+          : step?.step === 'raceBet'
+            ? rightRaceBet(level, session.flow.index)
+            : null;
       return advance(session, { type: 'answer', option: input.option, right }, now);
     }
     case 'bet':

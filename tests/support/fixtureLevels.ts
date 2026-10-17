@@ -4,7 +4,8 @@ import { loadLevel } from '@levels/loader';
 /**
  * Synthetic levels for tests that need a garden of chapters 4, 5 or 7: copies of the drafts those
  * chapters started from, so the tests keep their data when the level files are rewritten, a
- * garden for the flower challenge (4.11), and the recipe of chapter 6 as it was first drafted.
+ * garden for the flower challenge (4.11), and the recipe and the races of chapter 6 as they were
+ * first drafted.
  * Each one is loaded through the real loader, so it is validated exactly like a level file. The
  * ids are kept, because the tools a level opens follow its id.
  */
@@ -557,6 +558,31 @@ export const AUTOMATON = {
     { type: 'recipe', cards: RIGHT_CARDS },
   ],
 };
+
+/**
+ * A short race series on the garden of `RECIPE` (GDD 6.5, before its level file): a race at 8
+ * sprouts, a doubling bet on each runner, and a race at 16, where Bruto falls asleep after a
+ * thousand steps so the test stays quick. The automaton takes 41 steps at 8 and 183 at 16, about
+ * four times; Bruto 224 at 8, and then sleeps. The walkthrough bets right on the automaton and
+ * wrong on Bruto.
+ */
+const RACES = {
+  ...RECIPE,
+  id: '6.5',
+  flow: [
+    { step: 'race', family: 'half', size: 8, seed: 4, budget: 1_000_000 },
+    { step: 'raceBet', prompt: 'ch6.5.sauce.01', runner: 'automaton' },
+    { step: 'raceBet', prompt: 'ch6.5.sauce.02', runner: 'bruto' },
+    { step: 'race', family: 'half', size: 16, seed: 26, budget: 1_000 },
+  ],
+  solution: [
+    { type: 'answer', option: 1 },
+    { type: 'answer', option: 0 },
+  ],
+};
+
+/** The level built from `RACES`. */
+export const racesLevel = (): Level => load(RACES);
 
 /** The level built from `RECIPE`. */
 export const recipeLevel = (): Level => load(RECIPE);
