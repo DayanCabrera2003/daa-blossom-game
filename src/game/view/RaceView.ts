@@ -36,6 +36,9 @@ const PANEL_DEPTH = 110;
 const AUTOMATON = PALETTE.lit;
 const BRUTO = PALETTE.moon;
 
+/** Room before a legend's name for the dot of its colour. */
+const LEGEND_DOT_ROOM = 7;
+
 /**
  * The races in greybox (GDD 6.4, 6.5, plan 05 phase 4): over the garden, the garden of the race
  * zoomed out with its sprouts tiny on a ring, a counter for each runner under it, and in the lower
@@ -109,8 +112,15 @@ export class RaceView {
     g.lineStyle(1, PALETTE.label, 0.7)
       .lineBetween(x0, y0, x0, y0 + height)
       .lineBetween(x0, y0 + height, x0 + width, y0 + height);
-    this.text(x0 - 2, y0 - 22, this.t('race.legend.automaton'), AUTOMATON);
-    this.text(x0 + width / 2, y0 - 22, this.t('race.legend.bruto'), BRUTO);
+    // Each runner's name after a dot of its curve's colour, drawn: the pixel font has no ●.
+    const legend = [
+      [x0 - 2, 'race.legend.automaton', AUTOMATON],
+      [x0 + width / 2, 'race.legend.bruto', BRUTO],
+    ] as const;
+    for (const [x, key, colour] of legend) {
+      const label = this.text(x + LEGEND_DOT_ROOM, y0 - 22, this.t(key), colour);
+      g.fillStyle(colour, 1).fillCircle(x + 2, y0 - 22 + label.height / 2, 2);
+    }
     this.text(x0 + 3, y0 - 11, this.t('race.axis.steps'), PALETTE.darkVine);
     this.text(x0 + width - 30, y0 + height + 10, this.t('race.axis.sprouts'), PALETTE.darkVine);
     for (const { n, x } of chart.sizes) {
