@@ -28,6 +28,8 @@ describe('the open and the folded garden side by side (4.11)', () => {
       y: petals.reduce((sum, p) => sum + p.y, 0) / 5,
     };
     expect(shown.nodes[0]).toEqual({ at: centre, label: '', lit: false, flower: true });
+    // The folded flower shows one petal for each of its five sprouts.
+    expect(shown.petals).toBe(5);
     expect(shown.nodes[3]).toEqual({ at: right(7), label: 'h', lit: true, flower: false });
     // c–e, d–h and g–t now leave the flower; h=x stays lit.
     expect(shown.vines).toContainEqual({ a: centre, b: right(5), lit: false });
