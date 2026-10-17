@@ -1,3 +1,4 @@
+import { stonesFromForest } from '@core/certificates/fromForest';
 import { oddComponents } from '@core/certificates/oddComponents';
 import { checkTutteBerge, tutteBergeBound } from '@core/certificates/tutteBerge';
 import { checkVertexCover } from '@core/certificates/vertexCover';
@@ -6,10 +7,12 @@ import { idOf } from '@core/graph/labels';
 import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
 import { size } from '@core/matching/queries';
+import { runRecipe } from '@core/recipe/run';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import { isVictory } from '@core/rules/victory';
+import { searchStatus } from '@core/search/searchStatus';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { counterexampleAt } from '@levels/counterexample';
@@ -193,5 +196,53 @@ describe('7.3: choose your stones', () => {
     if (refuted === null) throw new Error('no counterexample');
     expect(oddComponents(refuted.start.graph, [])).toEqual([]);
     expect(2 * maximumSize(refuted.start.graph)).toBe(refuted.start.graph.n);
+  });
+});
+
+describe('7.4: the gift of the search II', () => {
+  const level = levelOf('7.4');
+  const id = (name: string): VertexId => sproutOf(level, name);
+  const sorted = (list: readonly string[]): VertexId[] => list.map(id).sort((a, b) => a - b);
+  const atPlay = gardenAtPlay(level);
+
+  it('holds the garden of 4.9, and beside it one like it whose loop has five petals', () => {
+    const named = (from: Level) =>
+      from.graph.edges.map(([u, v]) => [from.data.sprouts[u]?.label, from.data.sprouts[v]?.label]);
+    expect(named(level)).toEqual(expect.arrayContaining(named(levelOf('4.9'))));
+    expect(level.graph.n).toBe(12);
+    expect(maximumSize(level.graph)).toBe(size(level.start.matching));
+    expect(level.start.roots).toBeNull();
+  });
+
+  it('is searched by the automaton, which folds where the light of 4.1 would not', () => {
+    expect(stepsOf(level)).toEqual(['say', 'automaton', 'say', 'play', 'say']);
+    expect(stepOf(level, 'automaton').missing).toBeUndefined();
+    const run = runRecipe(level.start, { fold: true });
+    expect(run.filter((move) => move.type === 'foldAt')).toHaveLength(2);
+  });
+
+  it('the search of the automaton ends with no chain; its moons a, a2 are a valid certificate', () => {
+    const status = searchStatus(atPlay.layer, atPlay.search, { roots: null, foldAllowed: true });
+    expect(status).toBe('exhausted');
+    if (atPlay.search === null) throw new Error('no search');
+    const moons = stonesFromForest(atPlay.layer, atPlay.search);
+    expect(moons).toEqual(sorted(['a', 'a2']));
+    const proof = checkTutteBerge(level.graph, atPlay.matching, moons);
+    if (!proof.ok) throw new Error('the moons do not prove the lanterns');
+    // Each sun or flower is left alone: R, the flower b c d, R2 and the flower of five.
+    expect(proof.value.oddGroups.map((group) => group.length).sort()).toEqual([1, 1, 3, 5]);
+    expect(level.graph.n - 2 * size(atPlay.matching)).toBe(2);
+  });
+
+  it('is won by lifting exactly those moons; other stones that also close do not win it', () => {
+    expect(level.data.victory).toEqual({ type: 'moonCertificate' });
+    expect(isVictory(solved(level), { type: 'moonCertificate' })).toBe(true);
+    const alone = play(atPlay, [{ type: 'liftStone', vertex: id('a') }, { type: 'declareDone' }]);
+    expect(isVictory(alone, { type: 'tutteBergeCertificate' })).toBe(true);
+    expect(isVictory(alone, { type: 'moonCertificate' })).toBe(false);
+  });
+
+  it('opens the Codex entry of the stones (C12)', () => {
+    expect(level.data.unlocks.codex).toEqual(['C12']);
   });
 });
