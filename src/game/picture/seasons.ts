@@ -123,7 +123,7 @@ export interface Season {
 }
 
 /** A still piece, as it is in its sheet. */
-const still = (cut: SheetCut, dx = 0, dy = 0): OrnamentPart => ({
+export const still = (cut: SheetCut, dx = 0, dy = 0): OrnamentPart => ({
   cut,
   dx,
   dy,
