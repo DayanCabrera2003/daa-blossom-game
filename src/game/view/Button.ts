@@ -1,8 +1,12 @@
 import Phaser from 'phaser';
+import { playUiSound } from '../audio/uiSound';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 
-/** A small text button of the greybox HUD: a label on a panel, active, idle or switched off. */
+/**
+ * A small text button of the greybox HUD: a label on a panel, active, idle or switched off. A press
+ * clicks, unless the button is switched off.
+ */
 export class Button {
   private readonly panel: Phaser.GameObjects.Rectangle;
   private readonly text: Phaser.GameObjects.Text;
@@ -20,7 +24,9 @@ export class Button {
         'pointerdown',
         (_: Phaser.Input.Pointer, __: number, ___: number, event: Phaser.Types.Input.EventData) => {
           event.stopPropagation();
-          if (this.enabled) onPress();
+          if (!this.enabled) return;
+          playUiSound(scene, 'sfx.button');
+          onPress();
         },
       );
   }
