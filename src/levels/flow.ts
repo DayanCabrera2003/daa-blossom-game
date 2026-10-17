@@ -1,3 +1,5 @@
+import { RUNNERS } from '@core/cost/benchmark';
+import { RACE_FAMILIES } from '@core/generators/raceGarden';
 import type { VertexId } from '@core/graph/types';
 import { RECIPE_CASES } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
@@ -35,6 +37,13 @@ const range = z.number().int().min(1);
 const missingCases = z
   .array(z.enum(RECIPE_CASES))
   .refine((cases) => new Set(cases).size === cases.length, 'a missing case is named twice');
+
+/**
+ * The most sprouts a race garden has: what the miniature view draws (64, GDD 6.5). And the most
+ * steps Bruto may take before he falls asleep, which keeps every race quick in the browser.
+ */
+export const MAX_RACE_SIZE = 64;
+export const MAX_BRUTO_BUDGET = 2_000_000;
 
 const flowStep = z.discriminatedUnion('step', [
   /** Play with the level's rules until its victory holds. */
@@ -123,6 +132,25 @@ const flowStep = z.discriminatedUnion('step', [
    * one: the right recipe without the cards of those cases (Bruto's, 6.3).
    */
   z.strictObject({ step: z.literal('automaton'), missing: missingCases.optional() }),
+  /**
+   * A race (6.4, 6.5): the automaton, running the recipe, against Bruto, on the garden of `size`
+   * sprouts that the `family` grows from `seed` (`core/generators/raceGarden.ts`), so every play sees
+   * the same race. Bruto falls asleep after `budget` steps. The step is over once the race has
+   * been seen to its end; its point then joins the chart of the level's races.
+   */
+  z.strictObject({
+    step: z.literal('race'),
+    family: z.enum(RACE_FAMILIES),
+    size: z.number().int().min(2).max(MAX_RACE_SIZE),
+    seed: z.number().int().min(0),
+    budget: z.number().int().min(1).max(MAX_BRUTO_BUDGET),
+  }),
+  /**
+   * A doubling bet (6.5), between a race and the next one, twice its size: how many more steps
+   * will `runner` take? One of three answers (`core/cost/doubling.ts`), never a number of lanterns
+   * as in `bet`. The race after it tells whether it was right.
+   */
+  z.strictObject({ step: z.literal('raceBet'), prompt: lineId, runner: z.enum(RUNNERS) }),
 ]);
 
 /** The script of a level; without one, the level is played until won. */

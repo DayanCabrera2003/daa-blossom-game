@@ -147,6 +147,24 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ step: 'automaton', missing: ['moon', 'moon'] }])).toBe(false);
   });
 
+  it('reads the race step (6.4, 6.5): a garden by family, size and seed, and Bruto’s budget', () => {
+    const race = { step: 'race', family: 'half', size: 16, seed: 26, budget: 1_000_000 };
+    expect(parse([race])).toEqual([race]);
+    expect(accepts([{ ...race, family: 'wild' }])).toBe(false);
+    // Small enough to draw in miniature, and to race in the browser at once.
+    expect(accepts([{ ...race, size: 65 }])).toBe(false);
+    expect(accepts([{ ...race, size: 1 }])).toBe(false);
+    expect(accepts([{ ...race, budget: 2_000_001 }])).toBe(false);
+    expect(accepts([{ ...race, budget: 0 }])).toBe(false);
+  });
+
+  it('reads the doubling bet (6.5): on the automaton or on Bruto, never a number', () => {
+    const bet = { step: 'raceBet', prompt: 'ch6.5.sauce.01', runner: 'bruto' };
+    expect(parse([bet])).toEqual([bet]);
+    expect(accepts([{ ...bet, runner: 'sauce' }])).toBe(false);
+    expect(accepts([{ ...bet, range: 3 }])).toBe(false);
+  });
+
   it('a question offers at least two options', () => {
     const lonely = {
       step: 'ask',

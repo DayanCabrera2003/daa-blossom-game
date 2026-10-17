@@ -143,6 +143,8 @@ describe('referencedLines', () => {
         { step: 'count', prompt: 'ch4.7.sauce.11', of: 'loop', range: 3 },
         { step: 'pickVine', prompt: 'ch4.7.sauce.12', reply: 'ch4.7.sauce.13' },
         { step: 'pickVine', prompt: 'ch4.7.sauce.14' },
+        { step: 'race', family: 'half', size: 8, seed: 1, budget: 100 },
+        { step: 'raceBet', prompt: 'ch4.7.sauce.15', runner: 'bruto' },
         { step: 'sun' },
       ],
     });
@@ -161,6 +163,7 @@ describe('referencedLines', () => {
       'ch4.7.sauce.12',
       'ch4.7.sauce.13',
       'ch4.7.sauce.14',
+      'ch4.7.sauce.15',
       'ch4.7.sauce.09',
     ]);
   });
