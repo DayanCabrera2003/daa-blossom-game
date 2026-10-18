@@ -27,5 +27,25 @@ describe('the events between the game and the overlays', () => {
     expectTypeOf<BusEvents['teacher.toggle']>().toEqualTypeOf<undefined>();
     expectTypeOf<BusEvents['teacher.panel']>().toEqualTypeOf<{ readonly open: boolean }>();
     expectTypeOf<BusEvents['teacher.sun']>().toEqualTypeOf<{ readonly step: number }>();
+    expectTypeOf<BusEvents['sandbox.share']['code']>().toEqualTypeOf<string | null>();
+    expectTypeOf<BusEvents['sandbox.share']['json']>().toEqualTypeOf<string | null>();
+    expectTypeOf<BusEvents['sandbox.imported']>().toEqualTypeOf<{ readonly text: string }>();
+    expectTypeOf<BusEvents['sandbox.importAnswer']['ok']>().toEqualTypeOf<boolean>();
+  });
+
+  it('carries a text opened in the share sheet as it was written, and the answer back', () => {
+    const bus = createBus<BusEvents>();
+    const answers: BusEvents['sandbox.importAnswer'][] = [];
+    bus.on('sandbox.importAnswer', (answer) => answers.push(answer));
+    // The game reads the text and answers at once, before `emit` returns.
+    bus.on('sandbox.imported', ({ text }) =>
+      bus.emit(
+        'sandbox.importAnswer',
+        text === 'AQRA' ? { ok: true } : { ok: false, reason: 'badCode' },
+      ),
+    );
+    bus.emit('sandbox.imported', { text: '  {"id": ' });
+    bus.emit('sandbox.imported', { text: 'AQRA' });
+    expect(answers).toEqual([{ ok: false, reason: 'badCode' }, { ok: true }]);
   });
 });

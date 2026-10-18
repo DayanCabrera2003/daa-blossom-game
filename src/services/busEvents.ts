@@ -1,6 +1,7 @@
 import type { GardenState } from '@core/rules/state';
 import type { TraceEvent } from '@core/trace/events';
 import type { CodexTab } from '@levels/codex';
+import type { ImportRejection } from '@levels/sandbox/importText';
 import type { LevelData } from '@levels/schema';
 
 /** The two books of the game: the Códex (GDD §5.6) and the Cuaderno (GDD §5.5). */
@@ -48,6 +49,21 @@ export interface Capabilities {
 }
 
 /**
+ * A garden of the free mode offered to share (plan 08, phase 14), as the share sheet shows it. The
+ * sheet builds the link from the code and the page's own address, so the game never reads it.
+ */
+export interface ShareRequest {
+  /** The garden code (sprouts, vines and lanterns, without places nor names); null with no garden. */
+  readonly code: string | null;
+  /** The garden as a level file, written out with places and names; null when it makes none yet. */
+  readonly json: string | null;
+}
+
+/** What the game made of a text opened in the share sheet: a garden, or why not. */
+export type ImportAnswer =
+  { readonly ok: true } | { readonly ok: false; readonly reason: ImportRejection };
+
+/**
  * Every event between the game (`game/`) and the DOM overlays (`ui/`), with its payload. Neither
  * side imports the other: both import this map and share one bus, created in `main.ts`. Payloads
  * only use types of the core and of the level files, never anything of Phaser or of the DOM.
@@ -78,4 +94,13 @@ export interface BusEvents {
    * the game listens to it once it registers that mode (plan 08).
    */
   readonly 'sandbox.open': undefined;
+  /** Open the share sheet over the free mode's editor, with its garden (its "Compartir" button). */
+  readonly 'sandbox.share': ShareRequest;
+  /**
+   * A code or a level file pasted or chosen in the share sheet, as it was written: the game reads
+   * and checks it, and answers at once with `sandbox.importAnswer`.
+   */
+  readonly 'sandbox.imported': { readonly text: string };
+  /** The game's answer to `sandbox.imported`: the sheet closes, or says kindly why not. */
+  readonly 'sandbox.importAnswer': ImportAnswer;
 }
