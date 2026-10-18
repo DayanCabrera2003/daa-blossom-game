@@ -2,7 +2,7 @@ import { size } from '@core/matching/queries';
 import { RIGHT_RECIPE, withoutCases } from '@core/recipe/recipe';
 import { describe, expect, it } from 'vitest';
 import { automatonLevel } from '../../../tests/support/fixtureLevels';
-import { automatonDay } from './automaton';
+import { automatonDay, automatonRun } from './automaton';
 import {
   act,
   automatonDayOf,
@@ -48,6 +48,7 @@ describe('a level session where the automaton runs a recipe (6.2, 6.3)', () => {
     expect(automatonDayOf(session)).toEqual(automatonDay(level.start, broken));
     const shown = respond(session, { type: 'searched' }, 0);
     expect(shown.session.history.states).toEqual(automatonDay(level.start, broken));
+    expect(shown.session.dayEvents).toEqual(automatonRun(level.start, broken).events);
     expect(size(garden(shown.session).matching)).toBe(3);
     expect(garden(shown.session).declaredDone).toBe(true);
     expect(shown.effects).toEqual([{ kind: 'recipe', step: 2, missing: ['sameTree'] }]);

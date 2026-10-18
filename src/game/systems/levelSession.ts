@@ -14,7 +14,7 @@ import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
 import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
-import { automatonDay } from './automaton';
+import { automatonRun } from './automaton';
 import {
   advanceFlow,
   betRight,
@@ -51,7 +51,8 @@ import {
   type MirrorChallenge,
   type MirrorCheck,
 } from './mirrorChallenge';
-import { lightDay } from './lightSearch';
+import { lightRun } from './lightSearch';
+import type { PlayedDay } from './playedDay';
 import { nextMove } from './nextMove';
 import { winningPiece } from './pond';
 import { hintedOption, questionAt } from './question';
@@ -77,6 +78,12 @@ import { computeStars, type StarResult } from './stars';
 export interface LevelSession {
   readonly level: Level;
   readonly history: History<GardenState>;
+  /**
+   * Beside each garden of the history, the events the rules answered to the move that made it
+   * (none at dawn): the player's day as the teacher's panel writes it. Always as long as the
+   * history, and cut with it when acting with the sun in the past.
+   */
+  readonly dayEvents: readonly (readonly TraceEvent[])[];
   readonly hints: HintState;
   readonly rejections: number;
   /** "Terminé" pressed with the most lanterns lit (right) or not (wrong: a claim without reason). */
@@ -191,6 +198,7 @@ export function openSession(
   const session: LevelSession = {
     level,
     history: startHistory(level.start),
+    dayEvents: [[]],
     hints: startHints(now),
     rejections: 0,
     claims: { right: 0, wrong: 0 },
@@ -277,6 +285,7 @@ export function act(
   const moved: LevelSession = {
     ...reacted.session,
     history: push(session.history, after),
+    dayEvents: [...session.dayEvents.slice(0, session.history.cursor + 1), outcome.events],
     hints: afterAccepted(session.hints, now),
     claims,
     waterSpent,
@@ -322,18 +331,23 @@ export function respond(
     }
     case 'searched': {
       // The automaton's run is a day of its own, from the lanterns the level starts with.
-      const run = automatonDayOf(session);
+      const run = automatonRunOf(session);
       if (run !== null) {
-        const [dawn, ...moves] = run;
+        const [dawn, ...moves] = run.states;
         invariant(dawn !== undefined, 'a day has a dawn');
-        return advance({ ...session, history: moves.reduce(push, startHistory(dawn)) }, input, now);
+        const history = moves.reduce(push, startHistory(dawn));
+        return advance({ ...session, history, dayEvents: run.events }, input, now);
       }
       // The light's moves enter the day as moves accepted by the rules, so the sun replays them
       // and the steps after it (pointing at its conflict, 4.2) judge the garden it leaves.
       if (stepNow(session)?.step !== 'autoSearch') return { session, effects: [] };
-      const [, ...moves] = lightDay(garden(session));
-      const history = moves.reduce(push, session.history);
-      return advance({ ...session, history }, input, now);
+      const light = lightRun(garden(session));
+      const history = light.states.slice(1).reduce(push, session.history);
+      const dayEvents = [
+        ...session.dayEvents.slice(0, session.history.cursor + 1),
+        ...light.events.slice(1),
+      ];
+      return advance({ ...session, history, dayEvents }, input, now);
     }
     default:
       return advance(session, input, now);
@@ -551,12 +565,16 @@ function automatonRecipe(session: LevelSession): Recipe | null {
 }
 
 /**
- * The day of the automaton's run in the `automaton` step now, or null in any other step. Every run
- * starts a new day from the lanterns the level starts with, not from the garden a run before it
- * left: a repaired recipe is judged on the same garden as the broken one (6.3, 3 lanterns against
+ * The day of the automaton's run in the `automaton` step now, with the events of each move, or null
+ * in any other step. Every run starts a new day from the lanterns the level starts with, not from
+ * the garden a run before it left: a repaired recipe is judged on the same garden as the broken one (6.3, 3 lanterns against
  * 4), and the sun walks one whole run, from the first sun to "Terminé".
  */
-export function automatonDayOf(session: LevelSession): readonly GardenState[] | null {
+export function automatonRunOf(session: LevelSession): PlayedDay | null {
   const recipe = automatonRecipe(session);
-  return recipe === null ? null : automatonDay(session.level.start, recipe);
+  return recipe === null ? null : automatonRun(session.level.start, recipe);
 }
+
+/** The gardens of the automaton's day in the `automaton` step now, or null in any other step. */
+export const automatonDayOf = (session: LevelSession): readonly GardenState[] | null =>
+  automatonRunOf(session)?.states ?? null;
