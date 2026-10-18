@@ -6,14 +6,15 @@ import { catalog } from '@levels/catalog';
 import { gardenAtPlay } from '@levels/playStart';
 import { renderMath } from '@ui/math/renderMath';
 import { NOTATION_KEYS } from '@ui/model/notationKeys';
+import { teacherTrace } from '@ui/model/teacherTrace';
 import { fillNotation, traceLines } from '@ui/model/traceNotation';
 import { texName } from '@ui/model/texName';
 import { describe, expect, it } from 'vitest';
 
 /**
  * The teacher's notation renders (plan 07, phase 12): on every level of the catalog, the whole run
- * of Edmonds from its starting lanterns and the day of its reference solution, written line by
- * line, are valid TeX for KaTeX in its strict mode; so is every template with any gap, and any
+ * of Edmonds from its starting lanterns with the certificate that closes it, and the day of its
+ * reference solution, written line by line, are valid TeX for KaTeX in its strict mode; so is every template with any gap, and any
  * name a sprout may carry.
  */
 
@@ -49,9 +50,11 @@ describe('the notation of the teacher renders with KaTeX', () => {
 
   for (const level of catalog()) {
     const names = level.data.sprouts.map((sprout) => sprout.label);
-    it(`level ${level.data.id}: the run of Edmonds and the reference day`, () => {
+    it(`level ${level.data.id}: the run of Edmonds, its certificate and the reference day`, () => {
       const run = edmonds(level.graph, level.start.matching);
       for (const line of traceLines(run.trace, names, notation)) renders(line.tex);
+      const feed = { level: level.data.id, day: [level.start], events: [[]], cursor: 0 };
+      for (const line of teacherTrace(feed, names, notation).certificate) renders(line);
       let state = gardenAtPlay(level);
       const day: TraceEvent[] = [];
       for (const move of level.solution) {
