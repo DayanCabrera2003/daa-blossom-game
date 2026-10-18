@@ -93,7 +93,11 @@ export default tseslint.config(
   {
     // Pure game logic: decisions live here and are unit tested; only scenes and views may draw.
     // A later block replaces the earlier no-restricted-imports options, so ui/ is forbidden again.
-    files: ['src/game/{input,systems,animation,scale,picture,assets}/**/*.ts'],
+    files: [
+      'src/game/{input,systems,animation,scale,picture,assets}/**/*.ts',
+      // The mix is a pure table that the players of game/audio read (plan 09, phase 8).
+      'src/game/audio/mix.ts',
+    ],
     rules: {
       'no-restricted-imports': forbidLayers(
         ['ui'],

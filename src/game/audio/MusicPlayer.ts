@@ -9,6 +9,7 @@ import {
 } from '@services/musicFade';
 import type { AssetKey } from '../assets/keys';
 import type { AudioBus, BusSound } from './AudioBus';
+import { MIX } from './mix';
 
 /** A track this player started, and when it rose and (once replaced) began to fall. */
 interface Track {
@@ -20,7 +21,7 @@ interface Track {
  * The music of the game, on the music channel of the audio bus. It lives as long as the game, so a
  * track keeps playing from one scene to the next: the scenes say which track their screen wants
  * (`systems/musicFor.ts` decides) and which jingle a moment rings, and this only plays them. A new
- * track loops, crossfading over 800 ms with the one before; asking again for the track already
+ * track loops, crossfading with the one before (for as long as the mix, `mix.ts`, says); asking again for the track already
  * playing changes nothing. Under a jingle the music ducks, and comes back once the jingle ends
  * (`services/musicFade.ts` gives the levels; they are applied every frame).
  *
@@ -65,7 +66,7 @@ export class MusicPlayer {
   jingle(key: AssetKey): void {
     const sound = this.bus.play('music', key);
     if (sound === null) return;
-    this.duck = startDuck(this.duck, this.now());
+    this.duck = startDuck(this.duck, this.now(), MIX.music);
     this.jingles += 1;
     // Released by the bus when it completes (or stopped with the channel): either way, destroyed.
     sound.once(Phaser.Sound.Events.DESTROY, () => {
@@ -82,12 +83,12 @@ export class MusicPlayer {
   /** Every frame: each track at its crossfade level times the duck; faded tracks are stopped. */
   private update(): void {
     const now = this.now();
-    const duck = duckLevel(this.duck, now);
+    const duck = duckLevel(this.duck, now, MIX.music);
     for (const track of this.tracks) {
-      if (trackFaded(track.span, now)) this.bus.stopSound(track.sound);
-      else this.bus.setVolume(track.sound, trackLevel(track.span, now) * duck);
+      if (trackFaded(track.span, now, MIX.music)) this.bus.stopSound(track.sound);
+      else this.bus.setVolume(track.sound, trackLevel(track.span, now, MIX.music) * duck);
     }
-    this.tracks = this.tracks.filter((track) => !trackFaded(track.span, now));
+    this.tracks = this.tracks.filter((track) => !trackFaded(track.span, now, MIX.music));
   }
 
   private now(): number {

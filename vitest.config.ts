@@ -17,6 +17,8 @@ export default defineConfig({
         'src/levels/**/*.ts',
         'src/services/**/*.ts',
         'src/game/{input,systems,animation,scale,picture,assets}/**/*.ts',
+        // The mix is a pure table among the players that sound it (plan 09, phase 8).
+        'src/game/audio/mix.ts',
         'src/ui/model/**/*.ts',
       ],
       exclude: ['src/**/*.test.ts', 'src/**/types.ts'],
