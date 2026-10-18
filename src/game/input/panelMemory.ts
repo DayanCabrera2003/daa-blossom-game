@@ -1,4 +1,4 @@
-import type { Point } from '../input/target';
+import type { Point } from './target';
 
 /**
  * Where the player left each kind of panel (the post-release fix of plan 09): a panel dragged and
