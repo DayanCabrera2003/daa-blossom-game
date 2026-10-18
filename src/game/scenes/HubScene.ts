@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
+import { codexSources, openCodex } from '@services/codexProgress';
 import { download } from '@services/download';
 import { exportLog } from '@services/exportLog';
 import { unlockedLevels, visibleLevels } from '@services/progress';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
+import { BOOK_ICON } from '../picture/buttonIcon';
 import { chapterTitle } from '../picture/chapterTitle';
 import { finishedChapters, HUB_SIGN, HUB_TINT, hubGarden, signBox } from '../picture/hubGarden';
 import { HUB, layoutHub } from '../picture/hubLayout';
@@ -51,7 +53,7 @@ export class HubScene extends Phaser.Scene {
 
   create(): void {
     fitCamera(this);
-    const { catalog, t, saves, teacherMode, playtest, clock, music } = contextOf(this);
+    const { catalog, t, saves, teacherMode, playtest, clock, music, bus } = contextOf(this);
     const save = saves.get();
     // The hub's own track; coming back from a level crossfades to it.
     music.play(trackFor({ kind: 'hub' }));
@@ -128,6 +130,22 @@ export class HubScene extends Phaser.Scene {
     const exportX = gear.x - HUB.gap - width;
     exportButton.moveTo(exportX, HUB.exportY);
     taken.push({ x: exportX, y: HUB.exportY - 1, width, height: tall });
+
+    // The Códex, before the export on the top line, once some page of it is open: the hub grows
+    // with the game, and in teacher mode the whole book is open from the start.
+    if (openCodex(codexSources(catalog), save, teacherMode).size > 0) {
+      const codex = new Button(
+        this,
+        0,
+        0,
+        t('hub.codex'),
+        () => bus.emit('book.open', { book: 'codex' }),
+        [BOOK_ICON],
+      );
+      const codexX = exportX - HUB.gap - codex.width;
+      codex.moveTo(codexX, HUB.exportY);
+      taken.push({ x: codexX, y: HUB.exportY - 1, width: codex.width, height: codex.height });
+    }
 
     addSettings(this, gear);
     taken.push({ ...gear, width: GEAR_SIZE, height: GEAR_SIZE });
