@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { CREDITS_MODULES, isCredits } from '../tools/assets/credits';
 import { FREE_MODE_MODULES, isFreeMode } from '../tools/assets/freeMode';
 
 // What the initial script holds, read from the sources (plan 08, phase 8): the modules the entry
@@ -123,5 +124,26 @@ describe('the initial script', () => {
     );
     // Their neighbours of the levels' own logic stay where they are.
     expect(isFreeMode('src/game/input/intent.ts')).toBe(false);
+  });
+
+  it('never holds a module of the credits screen: it loads when the credits open', () => {
+    expect([...modules].filter(isCredits)).toEqual([]);
+    expect(isCredits('src/game/scenes/credits/CreditsScene.ts')).toBe(true);
+    // The thin gate that loads it stays in the initial script.
+    expect(isCredits('src/game/scenes/CreditsGate.ts')).toBe(false);
+  });
+
+  it("counts the credits' pure modules as the credits', each a file that exists", () => {
+    for (const module of CREDITS_MODULES) {
+      expect({ module, exists: existsSync(join(ROOT, module)) }).toEqual({ module, exists: true });
+      expect(isCredits(module)).toBe(true);
+    }
+    expect(CREDITS_MODULES).toEqual(
+      expect.arrayContaining([
+        'src/game/assets/creditsModel.ts',
+        'src/game/assets/libraryCredits.ts',
+        'src/game/picture/creditsRoll.ts',
+      ]),
+    );
   });
 });
