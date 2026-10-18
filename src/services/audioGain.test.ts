@@ -37,7 +37,7 @@ describe('how loud each audio channel plays', () => {
     expect(soundGain(Number.NaN, 0.5)).toBe(0);
     expect(soundGain(0.8, Number.NaN)).toBe(0);
     fc.assert(
-      fc.property(fc.double({ min: 0, max: 1 }), fc.double(), (gain, own) => {
+      fc.property(fc.double({ min: 0, max: 1, noNaN: true }), fc.double(), (gain, own) => {
         const played = soundGain(gain, own);
         expect(played).toBeGreaterThanOrEqual(0);
         expect(played).toBeLessThanOrEqual(gain);
