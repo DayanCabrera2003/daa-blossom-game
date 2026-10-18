@@ -62,7 +62,7 @@ export function playDiagram(
   );
   const message = part(page, 'p', 'dg-message');
   message.setAttribute('aria-live', 'polite');
-  figure.append(svg, bar, help, message);
+  figure.append(svg, bar, message, help);
   hole.replaceChildren(figure);
 
   /** Draws the garden as the session has it, keeping the focus on the same sprout or vine. */
