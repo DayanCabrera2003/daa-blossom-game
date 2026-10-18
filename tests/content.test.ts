@@ -5,12 +5,11 @@ import { catalog } from '@levels/catalog';
 import { CARD_IDS } from '@levels/cards/schema';
 import { referencedLines } from '@levels/lines';
 import { describe, expect, it } from 'vitest';
+import { MATHEMATICS } from './support/vocabulary';
 
 const table: Record<string, string> = strings;
 const lineTable: Record<string, string> = lines;
 
-/** Words that belong to the Codex only (GDD §2, principle 2). */
-const MATHEMATICS = /grafo|arista|v[ée]rtice|emparejamiento|camino aumentante/i;
 
 /** The `{name}` placeholders of a text, sorted. */
 const placeholders = (text: string): string[] =>
