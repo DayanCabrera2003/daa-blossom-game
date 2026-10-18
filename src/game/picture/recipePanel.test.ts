@@ -2,7 +2,8 @@ import { RECIPE_CARD_IDS } from '@core/recipe/recipe';
 import { describe, expect, it } from 'vitest';
 import { recipeLevel } from '../../../tests/support/fixtureLevels';
 import { handle, startController, type Controller } from '../systems/levelController';
-import { recipePicture, TABLE_ORDER } from './recipePanel';
+import { checkRecipe } from '@core/recipe/check';
+import { checkFeedback, recipePicture, TABLE_ORDER } from './recipePanel';
 
 /** The level controller after these events. */
 const after = (controller: Controller, events: Parameters<typeof handle>[1][]): Controller =>
@@ -16,7 +17,7 @@ describe('the picture of the recipe panel (6.1)', () => {
 
   it('shows the empty recipe and the whole table as the step opens', () => {
     const picture = recipePicture(startController(recipeLevel(), 0).session);
-    expect(picture).toMatchObject({ mark: null, cases: [], end: null, feedback: [] });
+    expect(picture).toMatchObject({ mark: null, cases: [], end: null });
     expect(picture?.table).toEqual(TABLE_ORDER);
   });
 
@@ -34,32 +35,33 @@ describe('the picture of the recipe panel (6.1)', () => {
   });
 
   it('after a wrong check tells why, and recalls the level that taught the case', () => {
-    const controller = after(startController(recipeLevel(), 0), [
-      { kind: 'recipeCard', card: 'markDarkSuns' },
-      { kind: 'checkRecipe' },
-    ]);
-    expect(recipePicture(controller.session)?.feedback).toEqual([
+    const verdict = checkRecipe({ mark: 'markDarkSuns', cases: [], end: null });
+    expect(verdict.right).toBe(false);
+    if (verdict.right) return;
+    expect(checkFeedback(verdict.failure)).toEqual([
       { key: 'recipe.missing.dark', params: {} },
       { key: 'recipe.recall', params: { level: '3.1' } },
     ]);
-    // A touch puts the verdict away: it was about another recipe.
-    const touched = after(controller, [{ kind: 'recipeCard', card: 'chainToDark' }]);
-    expect(recipePicture(touched.session)?.feedback).toEqual([]);
   });
 
   it('a distractor is told by its own text', () => {
-    const controller = after(startController(recipeLevel(), 0), [
-      { kind: 'recipeCard', card: 'markDarkSuns' },
-      { kind: 'recipeCard', card: 'chainToDark' },
-      { kind: 'recipeCard', card: 'growMoon' },
-      { kind: 'recipeCard', card: 'chainRootToRoot' },
-      { kind: 'recipeCard', card: 'foldAnyLoop' },
-      { kind: 'checkRecipe' },
-    ]);
-    expect(recipePicture(controller.session)?.feedback[0]).toEqual({
+    const verdict = checkRecipe({
+      mark: 'markDarkSuns',
+      cases: ['chainToDark', 'growMoon', 'chainRootToRoot', 'foldAnyLoop'],
+      end: null,
+    });
+    expect(verdict.right ? null : checkFeedback(verdict.failure)[0]).toEqual({
       key: 'recipe.wrong.foldAnyLoop',
       params: {},
     });
+  });
+
+  it('a check leaves the cards where they are', () => {
+    const before = after(startController(recipeLevel(), 0), [
+      { kind: 'recipeCard', card: 'markDarkSuns' },
+    ]);
+    const checked = after(before, [{ kind: 'checkRecipe' }]);
+    expect(recipePicture(checked.session)).toEqual(recipePicture(before.session));
   });
 
   it('there is no panel outside the recipe step', () => {

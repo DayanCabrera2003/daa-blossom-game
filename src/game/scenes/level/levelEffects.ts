@@ -20,6 +20,7 @@ import type { AnimationView } from '../../view/AnimationView';
 import type { ToastView } from '../../view/ToastView';
 import type { Presenter } from '../presenter';
 import { answerAloud } from '../../systems/aloud';
+import { checkFeedback } from '../../picture/recipePanel';
 
 /** Where the effects of the level controller are shown, and what they are read against. */
 export interface EffectStage {
@@ -248,9 +249,15 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       // Nothing to queue: the recipe panel is painted from the session.
       break;
     case 'recipeChecked':
-      // A wrong recipe is told on the panel, painted from the session; a right one closes it, so
-      // it is told here.
-      if (effect.verdict.right) stage.toast.show(t('recipe.right'));
+      // What a check finds is a toast over the panel: why a wrong recipe fails and the level that
+      // taught the case, or that the recipe is right (which closes the panel).
+      stage.toast.show(
+        effect.verdict.right
+          ? t('recipe.right')
+          : checkFeedback(effect.verdict.failure)
+              .map(({ key, params }) => t(key, params))
+              .join(' '),
+      );
       break;
   }
 };

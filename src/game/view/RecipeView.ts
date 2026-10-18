@@ -1,23 +1,23 @@
 import type Phaser from 'phaser';
 import type { RecipeCardId } from '@core/recipe/recipe';
-import { cardTextKey } from '@levels/recipeCards';
 import type { Translate } from '@services/i18n';
 import type { RecipePanelPicture } from '../picture/recipePanel';
-import { CANVAS_WIDTH } from '../scale/integerZoom';
+import {
+  pageOfCard,
+  RECIPE_LAYOUT,
+  recipeLayout,
+  type RecipeButton,
+  type RecipeCardBox,
+  type RecipeLayout,
+  type RecipePages,
+} from '../picture/recipeLayout';
 import { Button } from './Button';
-import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { addFocusable, coverWith } from './focusables';
 
-/** Space between rows, and around the panel's contents, in canvas pixels. */
-const GAP = 1;
-const PAD = 4;
-/**
- * Depths: over the garden and the toasts' layer below, under the dialogue box (200), so a hint the
- * mentor says while the panel is open is read over it.
- */
-const PANEL_DEPTH = 110;
+/** Depths of the panel's parts, over its wood (`picture/recipeLayout.ts`). */
+const PANEL_DEPTH = RECIPE_LAYOUT.depth;
 
 /** What the panel calls when the player touches it. */
 export interface RecipeActions {
@@ -28,17 +28,25 @@ export interface RecipeActions {
 }
 
 /**
- * The recipe with cards in greybox (GDD 6.1, plan 05 phase 2): over the garden, the recipe in its
- * three slots (to start, the cases of a vine, to end) and under it the cards left on the table, one
- * row each. A touch on a card moves it into its slot or back to the table; "Comprobar" asks the
- * core. The cases are a set, and the panel says so: they are listed in the order they were placed,
- * and there is nothing to reorder. What the last check found is told at the bottom. It paints the
- * picture, nothing more, and rebuilds itself only when the picture changes.
+ * The recipe with cards (GDD 6.1, plan 05 phase 2; laid out in two columns by plan 09): over the
+ * garden, on the left the recipe in its three steps (to start, the cases of a vine, to end) with the
+ * cards placed in each, and on the right the cards left on the table, with "Comprobar" under them.
+ * A touch on a card moves it into its step or back to the table, and the column it went to turns
+ * to the page that shows it; "‹" and "›" turn the pages of a column that does not fit at once.
+ * The cases are a set, and the panel says so: they are listed in the order they were placed, and
+ * there is nothing to reorder. What a check finds is a toast, not a row of the panel. It paints
+ * what `picture/recipeLayout.ts` says, nothing more, and rebuilds itself only when that changes.
  */
 export class RecipeView {
   private parts: { destroy(): void }[] = [];
-  /** The picture painted now, as a key, so an unchanged picture is not built again. */
+  /** The panel painted now, as a key, so an unchanged panel is not built again. */
   private shown = 'null';
+  /** The page each column shows. */
+  private pages: RecipePages = { left: 0, right: 0 };
+  /** The picture painted last, to turn its pages. */
+  private picture: RecipePanelPicture | null = null;
+  /** The card touched last, whose new page the next picture turns to. */
+  private follow: RecipeCardId | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -48,60 +56,68 @@ export class RecipeView {
 
   /** Paints the panel; null closes it. */
   render(picture: RecipePanelPicture | null): void {
-    const key = JSON.stringify(picture);
+    if (picture === null) this.pages = { left: 0, right: 0 };
+    else if (this.follow !== null) {
+      const found = pageOfCard(picture, this.t, this.follow);
+      if (found !== null) this.pages = { ...this.pages, [found.side]: found.page };
+    }
+    this.follow = null;
+    this.picture = picture;
+    const key = JSON.stringify({ picture, pages: this.pages });
     if (key === this.shown) return;
     this.shown = key;
     this.close();
-    if (picture !== null) this.build(picture);
+    if (picture !== null) this.build(recipeLayout(picture, this.t, this.pages));
   }
 
-  /** Builds the panel from the top down; its background is drawn last, once its height is known. */
-  private build(picture: RecipePanelPicture): void {
-    const { t } = this;
-    const x = PAD;
-    const top = LAYOUT.garden.y + 1;
-    const width = CANVAS_WIDTH - 2 * PAD;
-    const inner = width - 2 * PAD;
-    let y = top + PAD;
+  /** Turns a column by `step` pages and paints it again. */
+  private turn(side: keyof RecipePages, step: number): void {
+    this.pages = { ...this.pages, [side]: this.pages[side] + step };
+    const { picture } = this;
+    if (picture === null) return;
+    // Clamped to the pages there are, so turning past the last page stays on it.
+    const layout = recipeLayout(picture, this.t, this.pages);
+    this.pages = { left: layout.left.page, right: layout.right.page };
+    this.render(picture);
+  }
 
-    const heading = (text: string, colour: number = PALETTE.label): void => {
-      const shown = this.text(x + PAD, y, text, inner, colour);
-      y += shown.height + GAP;
-    };
-    const rows = (cards: readonly RecipeCardId[], placed: boolean): void => {
-      for (const card of cards) y += this.cardRow(card, placed, x + PAD, y, inner) + GAP;
-    };
-    // A slot with no card says so on its own heading's line, to keep the panel within the garden.
-    const slot = (title: string, cards: readonly RecipeCardId[]): void => {
-      heading(cards.length === 0 ? `${t(title)} ${t('recipe.empty')}` : t(title));
-      rows(cards, true);
-    };
-
-    slot('recipe.mark', picture.mark === null ? [] : [picture.mark]);
-    slot('recipe.cases', picture.cases);
-    slot('recipe.end', picture.end === null ? [] : [picture.end]);
-    y += 2;
-    heading(t('recipe.table'), PALETTE.highlight);
-    rows(picture.table, false);
-
-    // At the bottom, what the last check found beside the button that asks again.
-    const button = new Button(this.scene, 0, 0, t('recipe.check'), () => this.actions.check());
-    button.setDepth(PANEL_DEPTH + 2);
-    button.moveTo(x + width - PAD - button.width, y + 2);
-    this.parts.push(button);
-    const told = picture.feedback.map(({ key, params }) => t(key, params)).join(' ');
-    const feedback = this.text(x + PAD, y + 2, told, inner - button.width - PAD, PALETTE.highlight);
-    const bottom = Math.max(feedback.y + feedback.height, y + 2 + button.height) + PAD;
-
-    const panel = coverWith(
-      this.scene.add
-        .rectangle(x, top, width, bottom - top, PALETTE.panel, 0.97)
-        .setOrigin(0, 0)
-        .setStrokeStyle(1, PALETTE.panelEdge)
-        .setDepth(PANEL_DEPTH)
-        .setInteractive(),
+  /** Builds the panel where its layout says. */
+  private build(layout: RecipeLayout): void {
+    const { panel } = layout;
+    this.parts.push(
+      coverWith(
+        this.scene.add
+          .rectangle(panel.x, panel.y, panel.width, panel.height, PALETTE.panel, 0.97)
+          .setOrigin(0, 0)
+          .setStrokeStyle(1, PALETTE.panelEdge)
+          .setDepth(PANEL_DEPTH)
+          .setInteractive(),
+      ),
     );
-    this.parts.push(panel);
+    for (const side of ['left', 'right'] as const) {
+      const column = layout[side];
+      for (const box of column.texts) {
+        const colour = box.colour === 'highlight' ? PALETTE.highlight : PALETTE.label;
+        this.text(box.x, box.y, box.text, box.width, colour);
+      }
+      for (const card of column.cards) this.cardRow(card);
+      if (column.pager !== null) {
+        const { previous, next, count } = column.pager;
+        this.button(previous, () => this.turn(side, -1)).setEnabled(column.page > 0);
+        this.text(count.x, count.y + 1, count.text, count.width, PALETTE.label);
+        this.button(next, () => this.turn(side, 1)).setEnabled(column.page < column.pages - 1);
+      }
+    }
+    this.button(layout.check, () => this.actions.check());
+  }
+
+  /** A button of the panel where its layout puts it. */
+  private button(place: RecipeButton, press: () => void): Button {
+    const button = new Button(this.scene, 0, 0, place.label, press);
+    button.setDepth(PANEL_DEPTH + 2);
+    button.moveTo(place.at.x, place.at.y);
+    this.parts.push(button);
+    return button;
   }
 
   /** A line of text on the panel, wrapped at `width`. */
@@ -119,18 +135,22 @@ export class RecipeView {
     return shown;
   }
 
-  /** One card as a row that takes the touch; placed cards are lit. Its height. */
-  private cardRow(
-    card: RecipeCardId,
-    placed: boolean,
-    x: number,
-    y: number,
-    width: number,
-  ): number {
+  /** One card as a row that takes the touch; placed cards are lit. */
+  private cardRow(card: RecipeCardBox): void {
     // Dark letters on the light wood of a card, as on a button at rest (`picture/textContrast.ts`).
-    const text = this.text(x + 3, y + 1, this.t(cardTextKey(card)), width - 6, PALETTE.ink);
+    this.text(card.textAt.x, card.textAt.y, card.text, card.textWidth, PALETTE.ink);
+    const press = (): void => {
+      this.follow = card.card;
+      this.actions.card(card.card);
+    };
     const row = this.scene.add
-      .rectangle(x, y, width, text.height + 2, placed ? PALETTE.buttonActive : PALETTE.button)
+      .rectangle(
+        card.x,
+        card.y,
+        card.width,
+        card.height,
+        card.placed ? PALETTE.buttonActive : PALETTE.button,
+      )
       .setOrigin(0, 0)
       .setStrokeStyle(1, PALETTE.panelEdge)
       .setDepth(PANEL_DEPTH + 1)
@@ -139,7 +159,7 @@ export class RecipeView {
         'pointerdown',
         (_: Phaser.Input.Pointer, __: number, ___: number, event: Phaser.Types.Input.EventData) => {
           event.stopPropagation();
-          this.actions.card(card);
+          press();
         },
       );
     this.parts.push(row);
@@ -147,9 +167,8 @@ export class RecipeView {
       box: () => ({ x: row.x, y: row.y, width: row.width, height: row.height }),
       depth: () => row.depth,
       live: () => row.active,
-      press: () => this.actions.card(card),
+      press,
     });
-    return row.height;
   }
 
   /** Takes the panel away. */
