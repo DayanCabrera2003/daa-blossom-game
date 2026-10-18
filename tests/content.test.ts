@@ -4,6 +4,7 @@ import strings from '@content/es/strings.json';
 import { catalog } from '@levels/catalog';
 import { CARD_IDS } from '@levels/cards/schema';
 import { referencedLines } from '@levels/lines';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { MATHEMATICS } from './support/vocabulary';
 
@@ -55,6 +56,20 @@ describe('interface text (content/es/strings.json)', () => {
         /^(codex|diagram|book|notebook|epilogue|teacher)\./.test(key) && text.includes('·'),
     );
     expect(offending).toEqual([]);
+  });
+});
+
+describe('text files (content/es/*.json)', () => {
+  /** The keys written more than once in a JSON object file: parsing keeps only the last copy. */
+  const repeatedKeys = (file: string): string[] => {
+    const raw = readFileSync(new URL(`../src/content/es/${file}`, import.meta.url), 'utf8');
+    const keys = [...raw.matchAll(/^\s*"([^"]+)"\s*:/gm)].map((match) => match[1] as string);
+    return keys.filter((key, index) => keys.indexOf(key) !== index);
+  };
+
+  it('write each key once, so no text silently replaces another', () => {
+    expect(repeatedKeys('strings.json')).toEqual([]);
+    expect(repeatedKeys('lines.json')).toEqual([]);
   });
 });
 
