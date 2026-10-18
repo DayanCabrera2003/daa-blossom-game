@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "katex": "0.19.0",
+    "marked": "18.0.14",
     "phaser": "3.90.0",
     "zod": "4.6.5"
   }
