@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import strings from '../src/content/es/strings.json';
 import { creditLines, OWN_PACK, type CreditLine } from '../src/game/assets/creditsModel';
 import { assetEntry, packCredit, packCredits } from '../src/game/assets/keys';
+import { BOOT_KEYS, groupKeys } from '../src/game/assets/loadPlan';
 import { LIBRARY_CREDITS } from '../src/game/assets/libraryCredits';
 import { CREDITS_ROLL, rollLines, rollTravel } from '../src/game/picture/creditsRoll';
 import { CANVAS_WIDTH } from '../src/game/scale/integerZoom';
@@ -138,5 +139,12 @@ describe('the roll of the credits screen', () => {
     );
     const seconds = oggSeconds(readFileSync(path));
     expect(Math.abs(seconds * 1000 - CREDITS_ROLL.durationMs)).toBeLessThan(1000);
+  });
+});
+
+describe('the music of the credits screen', () => {
+  it('is loaded when the credits first open, not before the hub', () => {
+    expect(groupKeys('credits')).toEqual(['music.credits']);
+    expect(BOOT_KEYS).not.toContain('music.credits');
   });
 });

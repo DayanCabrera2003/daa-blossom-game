@@ -23,6 +23,7 @@ import { PIXEL_FONT } from './game/picture/pixelFont';
 import { MusicPlayer } from './game/audio/MusicPlayer';
 import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
+import { openCredits } from './game/scenes/CreditsGate';
 import { openSandbox } from './game/scenes/SandboxGate';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './game/scale/integerZoom';
 import { panelRoom, panelUnit } from './game/scale/panelRoom';
@@ -86,6 +87,8 @@ mountShell({
 // now that they listen, and the epilogue's button opens it from the scene that is up.
 bus.emit('capabilities', { sandbox: true });
 bus.on('sandbox.open', () => openSandbox(game));
+// The credits' thin gate is registered too: the settings panel and the epilogue open them.
+bus.on('credits.open', () => openCredits(game));
 // In teacher mode, the trace panel beside the garden, folded until asked for.
 if (teacherMode) mountTeacherShell({ bus, host: document.body });
 bus.on('overlay.changed', ({ open }) => {

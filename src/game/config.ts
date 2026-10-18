@@ -6,6 +6,7 @@ import { HubScene } from './scenes/HubScene';
 import { LevelScene } from './scenes/LevelScene';
 import { PreloadScene } from './scenes/PreloadScene';
 import { SandboxGate } from './scenes/SandboxGate';
+import { CreditsGate } from './scenes/CreditsGate';
 import { PALETTE } from './view/palette';
 
 /**
@@ -26,6 +27,14 @@ export function gameConfig(parent: HTMLElement, zoom: number): Phaser.Types.Core
     roundPixels: true,
     backgroundColor: PALETTE.background,
     scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [BootScene, PreloadScene, HubScene, LevelScene, CounterexampleScene, SandboxGate],
+    scene: [
+      BootScene,
+      PreloadScene,
+      HubScene,
+      LevelScene,
+      CounterexampleScene,
+      SandboxGate,
+      CreditsGate,
+    ],
   };
 }

@@ -198,6 +198,7 @@ const UI = {
   'epilogue.sandbox': [],
   'epilogue.back': [],
   'epilogue.keys': [],
+  'credits.back': [],
   'credits.byline': [],
   'credits.art': [],
   'credits.music': [],

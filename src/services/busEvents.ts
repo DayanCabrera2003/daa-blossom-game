@@ -94,6 +94,11 @@ export interface BusEvents {
    * the game listens to it once it registers that mode (plan 08).
    */
   readonly 'sandbox.open': undefined;
+  /**
+   * Open the credits over whatever scenes are up (the settings panel's and the epilogue's
+   * "Créditos"); they come back as they were when the credits end.
+   */
+  readonly 'credits.open': undefined;
   /** Open the share sheet over the free mode's editor, with its garden (its "Compartir" button). */
   readonly 'sandbox.share': ShareRequest;
   /**

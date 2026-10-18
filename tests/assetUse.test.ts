@@ -10,11 +10,11 @@ import { levelScreen, trackFor } from '../src/game/systems/musicFor';
 // downloaded for nothing and a credit for nothing. The few kept for what is still to be built are
 // listed below, each with its reason, and must stay unused until then.
 
-/** Keys shipped ahead of the screen that will use them. */
-const AWAITING: Readonly<Partial<Record<AssetKey, string>>> = {
-  // The credits screen, still to be built (plan 06, section 1.7).
-  'music.credits': 'the music of the credits screen',
-};
+/**
+ * Keys shipped ahead of the screen that will use them, each with its reason. Empty since the
+ * credits screen plays `music.credits` (plan 09, phase 3).
+ */
+const AWAITING: Readonly<Partial<Record<AssetKey, string>>> = {};
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
@@ -50,11 +50,10 @@ describe('the assets the game ships', () => {
     },
   );
 
-  it.each(Object.keys(AWAITING) as AssetKey[])(
-    '%s is still in the manifest and still waiting for its screen',
-    (key) => {
+  it('every key still waiting is in the manifest and still unused', () => {
+    for (const key of Object.keys(AWAITING) as AssetKey[]) {
       expect(ASSET_KEYS).toContain(key);
       expect(used(key)).toBe(false);
-    },
-  );
+    }
+  });
 });

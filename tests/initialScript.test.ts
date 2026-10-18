@@ -72,6 +72,9 @@ describe('the initial script', () => {
     // The free mode's thin gate is registered from the start; its scene loads later.
     expect(modules.has('src/game/scenes/SandboxGate.ts')).toBe(true);
     expect(modules.has('src/game/scenes/sandbox/SandboxScene.ts')).toBe(false);
+    // So is the credits' gate; the credits' scene loads later.
+    expect(modules.has('src/game/scenes/CreditsGate.ts')).toBe(true);
+    expect(modules.has('src/game/scenes/credits/CreditsScene.ts')).toBe(false);
   });
 
   it("leaves the garden-code decoder to the free mode: a shared link's code is only passed on", () => {
