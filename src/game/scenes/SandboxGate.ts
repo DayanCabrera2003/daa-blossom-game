@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { fitCamera } from '../view/fitCamera';
+import { contextOf } from './context';
 import { paintHubGround } from '../view/hubGround';
 
 /** The key of the gate, the scene the game starts to open the free mode. */
@@ -24,8 +25,8 @@ export interface SandboxSceneData {
  * the game registers it from the start, so it can announce the free mode without carrying it.
  * Started, it shows the hub's bare grass, loads the free mode's scene with import() (its own chunk,
  * like the books), adds it to the game the first time and hands it the garden asked for. If the
- * chunk cannot load (offline), the player is back at the hub. It imports nothing of the free mode
- * but through that import().
+ * chunk cannot load (offline, or gone after a new version), the player is back at the hub and the
+ * page says so kindly. It imports nothing of the free mode but through that import().
  */
 export class SandboxGate extends Phaser.Scene {
   constructor() {
@@ -49,8 +50,9 @@ export class SandboxGate extends Phaser.Scene {
         this.scene.start(SANDBOX_SCENE, request);
       })
       .catch((error: unknown) => {
-        // A free mode that does not load never strands the player: report it, back to the hub.
-        console.error(error);
+        // A free mode that does not load never strands the player: back to the hub, and the page
+        // says why (`load.failed`).
+        contextOf(this).bus.emit('load.failed', { part: 'sandbox', error });
         if (this.sys.isActive()) this.scene.start('hub');
       });
   }
