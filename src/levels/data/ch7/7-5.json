@@ -21,8 +21,8 @@
     { "label": "U", "x": 380, "y": 45 },
     { "label": "p", "x": 430, "y": 45 },
     { "label": "q", "x": 440, "y": 105 },
-    { "label": "r", "x": 465, "y": 160 },
-    { "label": "s", "x": 400, "y": 150 }
+    { "label": "o", "x": 465, "y": 160 },
+    { "label": "v", "x": 400, "y": 150 }
   ],
   "vines": [
     ["R", "a"],
@@ -46,9 +46,9 @@
     ["m", "n"],
     ["U", "p"],
     ["p", "q"],
-    ["q", "r"],
-    ["r", "s"],
-    ["s", "q"]
+    ["q", "o"],
+    ["o", "v"],
+    ["v", "q"]
   ],
   "lanterns": [
     ["a", "b"],
@@ -59,7 +59,7 @@
     ["k", "l"],
     ["m", "n"],
     ["p", "q"],
-    ["r", "s"]
+    ["o", "v"]
   ],
   "goal": { "visible": false },
   "fog": true,
@@ -104,8 +104,8 @@
     { "type": "markRoot", "vertex": "U" },
     { "type": "markMoon", "from": "U", "to": "p" },
     { "type": "inspect", "vertex": "q" },
-    { "type": "markMoon", "from": "q", "to": "r" },
-    { "type": "foldAt", "from": "s", "to": "q" },
+    { "type": "markMoon", "from": "q", "to": "o" },
+    { "type": "foldAt", "from": "v", "to": "q" },
     { "type": "liftStone", "vertex": "m" },
     { "type": "liftStone", "vertex": "p" },
     { "type": "declareDone" }
