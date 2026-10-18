@@ -460,9 +460,16 @@
   stroke: var(--dg-moon);
 }
 
-/* The card the mechanical gardener follows (C10), and the whole recipe with that card lit. */
+/*
+ * The card the mechanical gardener follows (C10), and the whole recipe with that card lit. The card
+ * is kept in sight with the garden and its controls: two more lines of the page are left for it.
+ */
+.dg.dg-recipe {
+  --controls-room: calc(66 * var(--px));
+}
+
 .dg-card,
-.dg-recipe {
+.dg-recipe-whole {
   justify-self: stretch;
 }
 

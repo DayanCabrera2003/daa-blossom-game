@@ -25,7 +25,7 @@ export function recipeDiagram(
   const lead = part(page, 'p', 'dg-card-lead');
   const card = part(page, 'p', 'dg-card-text');
   following.append(lead, card);
-  const whole = part(page, 'div', 'dg-recipe');
+  const whole = part(page, 'div', 'dg-recipe-whole');
   const list = part(page, 'ol', 'dg-recipe-list');
   const rows = recipeCards().map((id) => {
     const row = part(page, 'li', 'dg-recipe-card', t(cardTextKey(id)));
