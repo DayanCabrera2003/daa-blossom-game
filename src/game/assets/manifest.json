@@ -1093,6 +1093,125 @@
       "bytes": 12674,
       "sha256": "6998938bca52a85f8408c4413084b238acdaba72232f4f2c5a32fe8760eafc0d"
     },
+    "critter.butterfly": {
+      "path": "assets/images/hub/butterfly.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Monster/Butterfly/SpriteSheet.png",
+      "bytes": 3768,
+      "sha256": "2bce0109569bb24454c78636e93cf97dbae40bbef645af0bc175e62ded0e818c",
+      "image": {
+        "width": 64,
+        "height": 64
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "critter.butterflyBlue": {
+      "path": "assets/images/hub/butterfly-blue.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Monster/ButterflyBlue/SpriteSheet.png",
+      "bytes": 3773,
+      "sha256": "35855c05086fa6ff5f161ed8ed6ac640cfc6d0234bbc418fafda329d0cf23a1e",
+      "image": {
+        "width": 64,
+        "height": 64
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "critter.frog": {
+      "path": "assets/images/hub/frog.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Animal/Frog/SpriteSheet.png",
+      "bytes": 405,
+      "sha256": "78668d63f2b9feea5ad89b4776f79f410819c2725583a96b711b5bc63a7dc198",
+      "image": {
+        "width": 32,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "critter.cat": {
+      "path": "assets/images/hub/cat.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Animal/Cat/SpriteSheet.png",
+      "bytes": 499,
+      "sha256": "87644265e9961e5c3cd47a7de2c92b2fd4279862c1a395530065e6e0efbafe55",
+      "image": {
+        "width": 32,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "critter.chickenWhite": {
+      "path": "assets/images/hub/chicken-white.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Animal/Chicken/SpriteSheetWhite.png",
+      "bytes": 503,
+      "sha256": "9850430832c0fe7074a626f86f8283be1d6fc4418f66612d434d0999f01934e6",
+      "image": {
+        "width": 32,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "critter.chickenBrown": {
+      "path": "assets/images/hub/chicken-brown.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Animal/Chicken/SpriteSheetBrown.png",
+      "bytes": 483,
+      "sha256": "cc4d8874db65b458dce691285123a8e86940d6fb44573e0ebdb7881c7b6b43b6",
+      "image": {
+        "width": 32,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "deco.plant": {
+      "path": "assets/images/hub/plant.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Animated/Plant/SpriteSheet16x16.png",
+      "bytes": 648,
+      "sha256": "63548a84e6c798b37678c8facf85926ee9635f6066de631734d290dbb228b794",
+      "image": {
+        "width": 64,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
     "sfx.chime1": {
       "path": "assets/audio/sfx/chime-01.wav",
       "kind": "sfx",
