@@ -28,6 +28,7 @@ import { openSandbox } from './game/scenes/SandboxGate';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './game/scale/integerZoom';
 import { panelRoom, panelUnit } from './game/scale/panelRoom';
 import { renderZoom, setRenderZoom } from './game/view/renderZoom';
+import { mountLiveRegion } from './ui/a11y/liveRegion';
 import { mountMotionMark } from './ui/a11y/motionMark';
 import { mountShell } from './ui/shell';
 import { mountTeacherShell } from './ui/teacherShell';
@@ -99,6 +100,15 @@ mountMotionMark({
   choice: settings.motion,
   system: window.matchMedia('(prefers-reduced-motion: reduce)'),
 });
+// A screen reader hears the dialogue, the notices and the questions through a live region, and
+// reads the canvas as one picture named after the game.
+mountLiveRegion({ bus, host: document.body });
+const nameCanvas = (): void => {
+  game.canvas.setAttribute('role', 'img');
+  game.canvas.setAttribute('aria-label', createTranslator(strings)('hub.title'));
+};
+if (game.isBooted) nameCanvas();
+else game.events.once(Phaser.Core.Events.READY, nameCanvas);
 // In teacher mode, the trace panel beside the garden, folded until asked for.
 if (teacherMode) mountTeacherShell({ bus, host: document.body });
 bus.on('overlay.changed', ({ open }) => {

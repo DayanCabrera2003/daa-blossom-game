@@ -1,23 +1,10 @@
 import type { Bus } from '@services/bus';
 import type { BusEvents } from '@services/busEvents';
 
-/** The few parts of an element the live region uses, so it can be tried without a DOM. */
-export interface LiveElement {
-  textContent: string | null;
-  readonly style: Record<string, string>;
-  setAttribute(name: string, value: string): void;
-}
-
-/** Where the region goes: an element of the page, which makes it and holds it. */
-export interface LiveHost {
-  appendChild(child: LiveElement): unknown;
-  readonly ownerDocument: { createElement(tag: 'div'): LiveElement };
-}
-
 /** What the region needs: the bus the game speaks on, and the page element to put it in. */
 export interface LiveRegionOptions {
   readonly bus: Bus<BusEvents>;
-  readonly host: LiveHost;
+  readonly host: HTMLElement;
 }
 
 /** Out of sight, but read: one pixel, clipped, never wrapping. */

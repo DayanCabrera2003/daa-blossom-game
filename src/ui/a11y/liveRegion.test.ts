@@ -1,7 +1,7 @@
 import { createBus } from '@services/bus';
 import type { BusEvents } from '@services/busEvents';
 import { describe, expect, it } from 'vitest';
-import { mountLiveRegion, type LiveHost } from './liveRegion';
+import { mountLiveRegion } from './liveRegion';
 
 /** The few parts of an element the region touches; tests run without a DOM. */
 interface FakeElement {
@@ -40,15 +40,18 @@ function fakeElement(): FakeElement {
   return element;
 }
 
-const fakeHost = (): FakeElement & LiveHost => {
+const fakeHost = (): FakeElement => {
   const host = fakeElement();
   return Object.assign(host, { ownerDocument: { createElement: () => fakeElement() } });
 };
 
+/** The fake host as the page element the region takes: it only touches what the fake has. */
+const asHost = (host: FakeElement): HTMLElement => host as unknown as HTMLElement;
+
 describe('the live region a screen reader listens to (plan 09, phase 6)', () => {
   it('is a polite, whole-message region, out of sight but not out of the page', () => {
     const host = fakeHost();
-    mountLiveRegion({ bus: createBus<BusEvents>(), host });
+    mountLiveRegion({ bus: createBus<BusEvents>(), host: asHost(host) });
     const [region] = host.children;
     expect(region?.attributes['aria-live']).toBe('polite');
     expect(region?.attributes['aria-atomic']).toBe('true');
@@ -60,7 +63,7 @@ describe('the live region a screen reader listens to (plan 09, phase 6)', () => 
   it('writes each message once, whole, as the game says it', () => {
     const bus = createBus<BusEvents>();
     const host = fakeHost();
-    mountLiveRegion({ bus, host });
+    mountLiveRegion({ bus, host: asHost(host) });
     const region = host.children[0];
     bus.emit('a11y.say', { text: 'Sauce: Hola, jardinero.' });
     bus.emit('a11y.say', { text: 'Respuesta acertada.' });
@@ -70,7 +73,7 @@ describe('the live region a screen reader listens to (plan 09, phase 6)', () => 
   it('says a message again when it comes again, by changing it invisibly', () => {
     const bus = createBus<BusEvents>();
     const host = fakeHost();
-    mountLiveRegion({ bus, host });
+    mountLiveRegion({ bus, host: asHost(host) });
     const region = host.children[0];
     bus.emit('a11y.say', { text: 'No era esa respuesta.' });
     bus.emit('a11y.say', { text: 'No era esa respuesta.' });
