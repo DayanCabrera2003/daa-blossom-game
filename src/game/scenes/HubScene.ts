@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
+import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
 import { chapterTitle } from '../picture/chapterTitle';
@@ -18,6 +19,7 @@ import { cutFrame } from '../view/sheetCuts';
 import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
+import { addHubSecrets } from './hub/HubSecrets';
 import { addHubTopLine } from './hub/HubTopLine';
 import { addSettings } from './settingsPanel';
 
@@ -94,12 +96,15 @@ export class HubScene extends Phaser.Scene {
     );
     // What the hub's garden must leave uncovered: every sign, title and button.
     const taken: Rect[] = [...topLine.taken];
+    // Each chapter's signpost, where its secret flower grows.
+    const signs = new Map<string, Rect>();
     const signpost = cutOf('signpost');
     const signFrame = cutFrame(this.textures, signpost);
     layout.chapters.forEach((placement, c) => {
       // On the line of its first buttons' labels, hanging from its signpost.
       const title = itemAt(titles, c).setY(placement.titleY);
       const sign = signBox(placement.titleY, height);
+      signs.set(itemAt(chapters, c), sign);
       if (signFrame !== null) {
         this.add.image(sign.x, sign.y, signpost.sheet, signFrame).setOrigin(0, 0);
       }
@@ -127,7 +132,12 @@ export class HubScene extends Phaser.Scene {
     }
 
     // The settings, at the top right across from the title.
-    addSettings(this, topLine.gear);
+    const settings = addSettings(this, topLine.gear);
+
+    // The secret flowers, on the signposts of their chapters: never buttons, found by looking.
+    addHubSecrets(this, secretFlowers(catalogEntries(catalog), save, teacherMode), signs, {
+      blocked: settings.open,
+    });
 
     // The garden grows on the orchard's grass, a piece for each chapter finished.
     const finished = finishedChapters(
