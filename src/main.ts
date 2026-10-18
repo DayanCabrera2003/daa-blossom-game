@@ -6,6 +6,7 @@ import lines from '@content/es/lines.json';
 import { catalog } from '@levels/catalog';
 import { browserStorage } from '@services/browserStorage';
 import { createBus } from '@services/bus';
+import { codexSources, openCodex } from '@services/codexProgress';
 import type { BusEvents } from '@services/busEvents';
 import { createTranslator } from '@services/i18n';
 import { createLines } from '@services/lines';
@@ -45,12 +46,13 @@ const settings = loadSettings(storage);
 const audio = new AudioBus(game, settings);
 const bus = createBus<BusEvents>();
 const saves = createSaveStore(storage);
+const teacherMode = isTeacherMode(window.location.search);
 provideContext(game, {
   catalog: levels,
   t: createTranslator(strings),
   line: createLines(lines),
   storage,
-  teacherMode: isTeacherMode(window.location.search),
+  teacherMode,
   startLevel: requestedLevel(
     window.location.search,
     levels.map((level) => level.data.id),
@@ -65,7 +67,13 @@ provideContext(game, {
 });
 // The DOM overlays, over the canvas. While a book is open the game takes no pointer nor key, so a
 // touch or a key meant for the book never reaches the garden behind it.
-mountShell({ bus, saves, host: document.body });
+const codexLevels = codexSources(levels);
+mountShell({
+  bus,
+  saves,
+  codexOpen: (save) => openCodex(codexLevels, save, teacherMode),
+  host: document.body,
+});
 bus.on('overlay.changed', ({ open }) => {
   game.input.enabled = !open;
   if (game.input.keyboard !== null) game.input.keyboard.enabled = !open;

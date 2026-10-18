@@ -1,10 +1,18 @@
+import type { OpenTabs } from '@levels/codex';
 import type { Bus } from '@services/bus';
 import type { BookRequest, BusEvents } from '@services/busEvents';
+import type { SaveData } from '@services/save';
 import type { SaveStore } from '@services/saveStore';
 
 /** What the layer is asked to show: a book (Códex or Cuaderno), or the epilogue. */
 export type OverlayRequest =
   { readonly kind: 'book'; readonly book: BookRequest } | { readonly kind: 'epilogue' };
+
+/**
+ * What the Codex has open for a progress: the pages its completed levels opened, or all of them in
+ * teacher mode (`services/codexProgress.ts`, bound by `main.ts` to the catalog and the mode).
+ */
+export type CodexOpen = (save: SaveData) => OpenTabs;
 
 /** What the books get from the shell: their layer, the bus, the shared save, and how to close. */
 export interface OverlayFrame {
@@ -12,6 +20,7 @@ export interface OverlayFrame {
   readonly layer: HTMLElement;
   readonly bus: Bus<BusEvents>;
   readonly saves: SaveStore;
+  readonly codexOpen: CodexOpen;
   /** Hides the layer and gives the input back to the game; closing twice does nothing more. */
   close(): void;
 }
@@ -29,6 +38,7 @@ export interface BooksModule {
 export interface ShellOptions {
   readonly bus: Bus<BusEvents>;
   readonly saves: SaveStore;
+  readonly codexOpen: CodexOpen;
   /** The element the layer is added to, over the canvas (the page body). */
   readonly host: HTMLElement;
   /** Loads the books chunk; by default with import(), so the books stay out of the initial script. */
@@ -45,6 +55,7 @@ export interface ShellOptions {
 export function mountShell({
   bus,
   saves,
+  codexOpen,
   host,
   load = () => import('./books'),
 }: ShellOptions): void {
@@ -65,7 +76,7 @@ export function mountShell({
     layer.replaceChildren();
     bus.emit('overlay.changed', { open: false });
   };
-  const frame: OverlayFrame = { layer, bus, saves, close };
+  const frame: OverlayFrame = { layer, bus, saves, codexOpen, close };
 
   const show = (request: OverlayRequest): void => {
     if (!open) {

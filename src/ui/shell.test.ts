@@ -1,5 +1,6 @@
 import { createBus } from '@services/bus';
 import type { BusEvents } from '@services/busEvents';
+import { emptySave } from '@services/save';
 import { createSaveStore } from '@services/saveStore';
 import { describe, expect, it, vi } from 'vitest';
 import { memoryStore } from '../../tests/support/memoryStore';
@@ -52,6 +53,7 @@ function setUp(load?: () => Promise<BooksModule>) {
   mountShell({
     bus,
     saves: createSaveStore(memoryStore()),
+    codexOpen: () => new Map([['C1', new Set(['intuition'] as const)]]),
     host: host as unknown as HTMLElement,
     load:
       load ??
@@ -150,16 +152,24 @@ describe('overlay shell', () => {
     }
   });
 
-  it('the books of this phase close at once, so the game never stays without input', async () => {
+  it('hands the books what the Codex has open for a progress', async () => {
+    const { bus, frames } = setUp();
+    bus.emit('book.open', { book: 'codex' });
+    await settle();
+    expect([...(frames[0]?.codexOpen(emptySave()).keys() ?? [])]).toEqual(['C1']);
+  });
+
+  it('the books not written yet close at once, so the game never stays without input', async () => {
     const bus = createBus<BusEvents>();
     const overlay: boolean[] = [];
     bus.on('overlay.changed', ({ open }) => overlay.push(open));
     mountShell({
       bus,
       saves: createSaveStore(memoryStore()),
+      codexOpen: () => new Map(),
       host: fakeElement() as unknown as HTMLElement,
     });
-    bus.emit('book.open', { book: 'codex' });
+    bus.emit('book.open', { book: 'notebook' });
     await vi.waitFor(() => expect(overlay).toEqual([true, false]));
   });
 });
