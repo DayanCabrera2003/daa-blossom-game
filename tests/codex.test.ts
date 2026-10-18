@@ -28,7 +28,7 @@ import { MATHEMATICS } from './support/vocabulary';
 /**
  * The integrity of the Codex as written (plan 07, phase 3): the fourteen files of
  * `content/es/codex/`, their markers, their formulas, their links and diagrams, the words each tab
- * may use and, entry by entry as the texts are written, the structure of their proofs.
+ * may use, the structure of their proofs and the glossary and notation of C13.
  */
 
 const FOLDER = join(import.meta.dirname, '..', 'src', 'content', 'es', 'codex');
@@ -75,26 +75,6 @@ const textsOf = (entry: CodexEntry): string[] => [
   ...CODEX_TABS.map((tab) => entry.tabs[tab]),
 ];
 
-/**
- * The entries whose texts are written (phases 7–10), so their proofs are held to the structure of
- * rigor. It grows entry by entry, and goes away when it holds all fourteen.
- */
-const RIGOR_READY: readonly CodexEntryId[] = [
-  'C1',
-  'C2',
-  'C3',
-  'C4',
-  'C5',
-  'C6',
-  'C7',
-  'C8',
-  'C9',
-  'C10',
-  'C11',
-  'C12',
-  'C13',
-];
-
 /** The only entries where a result may be stated without proof, out of the scope of the book. */
 const OUT_OF_SCOPE_ALLOWED: readonly CodexEntryId[] = ['C11', 'C14'];
 
@@ -122,6 +102,7 @@ const AWAITING_BOOKS: readonly CodexEntryId[] = [
   'C11',
   'C12',
   'C13',
+  'C14',
 ];
 
 /** The boxes ticked in the rigor comment of a formal tab, or null when it has none. */
@@ -130,7 +111,7 @@ function rigorBoxes(formal: string): number[] | null {
   return comment === null ? null : (comment[1] ?? '').trim().split(/\s+/).map(Number);
 }
 
-/** The boxes a written entry must tick: all eight, or all but 5 while it awaits the books. */
+/** The boxes an entry must tick: all eight, or all but 5 while it awaits the books. */
 const boxesDue = (entry: CodexEntryId): number[] =>
   RIGOR_BOXES.filter((box) => box !== 5 || !AWAITING_BOOKS.includes(entry));
 
@@ -338,8 +319,8 @@ describe('the structure of rigor of the formal tabs', () => {
     }
   });
 
-  it('the entries already written prove every result, numbered in order', () => {
-    for (const entry of entries.filter((written) => RIGOR_READY.includes(written.id))) {
+  it('every entry proves every result, numbered in order', () => {
+    for (const entry of entries) {
       expect({ entry: entry.id, problems: rigorProblems(entry.id, entry.tabs.formal) }).toEqual({
         entry: entry.id,
         problems: [],
@@ -347,8 +328,8 @@ describe('the structure of rigor of the formal tabs', () => {
     }
   });
 
-  it('the entries already written tick their checklist of rigor in a comment', () => {
-    for (const entry of entries.filter((written) => RIGOR_READY.includes(written.id))) {
+  it('every entry ticks its checklist of rigor in a comment', () => {
+    for (const entry of entries) {
       expect({ entry: entry.id, boxes: rigorBoxes(entry.tabs.formal) }).toEqual({
         entry: entry.id,
         boxes: boxesDue(entry.id),
@@ -356,9 +337,9 @@ describe('the structure of rigor of the formal tabs', () => {
     }
   });
 
-  it('the entries already written name their witnesses in the core, and every one exists', () => {
+  it('every entry names its witnesses in the core, and every one exists', () => {
     const root = join(import.meta.dirname, '..');
-    for (const entry of entries.filter((written) => RIGOR_READY.includes(written.id))) {
+    for (const entry of entries) {
       const files = namedFiles(entry.tabs.formal);
       expect({ entry: entry.id, witness: files.some((file) => file.endsWith('.test.ts')) }).toEqual(
         { entry: entry.id, witness: true },
@@ -368,10 +349,8 @@ describe('the structure of rigor of the formal tabs', () => {
     }
   });
 
-  it('the entries already written never wave a step through', () => {
-    const waving = entries.filter(
-      (entry) => RIGOR_READY.includes(entry.id) && HAND_WAVING.test(entry.tabs.formal),
-    );
+  it('no entry waves a step through', () => {
+    const waving = entries.filter((entry) => HAND_WAVING.test(entry.tabs.formal));
     expect(waving.map((entry) => entry.id)).toEqual([]);
   });
 
