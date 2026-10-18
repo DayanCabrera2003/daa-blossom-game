@@ -3,7 +3,8 @@
  * (`layoutChecks.ts`): a level is laid out by hand, and these say how much room each piece of its
  * picture takes. They mirror the views (`game/view/paintSprout.ts`, `SproutCrowns.ts`,
  * `GardenView.ts`, `LanternSprites.ts`) and the pixel font (`game/picture/pixelFont.ts`), which
- * the levels may not import; `tests/pictureSizes.test.ts` keeps both sides equal.
+ * the levels may not import; `tests/pictureSizes.test.ts` keeps both sides equal (the vine stroke
+ * is read by `GardenView.ts` from here).
  */
 export const PICTURE_SIZES = {
   /** The radius a sprout's body is painted with; its name is written under it. */
@@ -34,6 +35,11 @@ export const PICTURE_SIZES = {
    * centred there, and its paper leaves a border of empty pixels, wider on the right and the top.
    */
   lantern: { left: -7, top: -7, right: 6, bottom: 8 },
+  /**
+   * The width of a lit vine's solid stroke, centred on the line between its sprouts; a dark vine's
+   * dotted one is thinner. The garden view draws it with this width.
+   */
+  vineStroke: 2,
   /** The empty pixels a name keeps around it, so that nothing touches its letters. */
   labelClearance: 1,
 } as const;

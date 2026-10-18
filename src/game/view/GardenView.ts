@@ -104,7 +104,12 @@ export class GardenView {
           vine.b.x,
           vine.b.y,
         );
-        g.lineStyle(2, PALETTE.lit, fade).lineBetween(vine.a.x, vine.a.y, vine.b.x, vine.b.y);
+        g.lineStyle(PICTURE_SIZES.vineStroke, PALETTE.lit, fade).lineBetween(
+          vine.a.x,
+          vine.a.y,
+          vine.b.x,
+          vine.b.y,
+        );
       } else {
         g.lineStyle(1, PALETTE.darkVine, vine.inFlower ? 0.5 : 1);
         dotted(g, vine.a, vine.b);
