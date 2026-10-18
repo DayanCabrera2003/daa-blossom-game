@@ -208,7 +208,7 @@ export class LevelScene extends Phaser.Scene {
       jingle: (key) => this.context.music.jingle(key),
     };
     // The settings, at the bottom left, clear of the buttons laid out from the right.
-    const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
+    const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 }, 'level');
     // A garden of the free mode ends the tools' row with its orders: the gardener, the certificate.
     if (orders !== null) addSandboxBar(this, t, orders, (event) => this.dispatch(event));
     bindLevelInput(this, {
@@ -217,6 +217,8 @@ export class LevelScene extends Phaser.Scene {
       insideLayer: () => this.controller.layers.length > 0,
       settingsOpen: settings.open,
       closeSettings: settings.close,
+      keysOpen: settings.keysOpen,
+      closeKeys: settings.closeKeys,
       cardOpen: () => this.presenter.cardOpen,
       closeCard: () => this.presenter.closeCard(),
       answerKey: (key) => this.presenter.optionKey(key),

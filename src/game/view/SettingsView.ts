@@ -32,6 +32,8 @@ export interface SettingsActions {
   readonly exportLog: () => void;
   /** Opens the credits screen over the scene. */
   readonly credits: () => void;
+  /** Opens the card of the keys over the panel. */
+  readonly keys: () => void;
 }
 
 /** The panel's size and the rows on it, in canvas pixels (`picture/settingsPanelLayout.ts`). */
@@ -66,7 +68,7 @@ interface Slider {
 /**
  * The settings panel, in the wooden frame of the other panels and written in its ink: a slider for
  * the music, one for the effects and one for the voices, each with its percentage, the mute box,
- * the button that exports the playtest log, "Créditos" and "Cerrar". A dim layer over the whole screen takes
+ * the button that exports the playtest log, "Créditos", "Teclas" and "Cerrar". A dim layer over the whole screen takes
  * every touch meant for what is below while the panel is open. The panel only draws and reports:
  * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene. The
  * keyboard's focus reaches each slider (the side arrows move it a step) and the mute box.
@@ -128,10 +130,14 @@ export class SettingsView {
     const credits = new Button(scene, 0, 0, t('settings.credits'), () =>
       this.actions.credits(),
     ).setDepth(PANEL_DEPTH + 4);
+    const keys = new Button(scene, 0, 0, t('settings.keys'), () => this.actions.keys()).setDepth(
+      PANEL_DEPTH + 4,
+    );
     exportLog.moveTo(x + Math.round((WIDTH - exportLog.width) / 2), y + rows.exportLog);
     credits.moveTo(x + Math.round((WIDTH - credits.width) / 2), y + rows.credits);
+    keys.moveTo(x + Math.round((WIDTH - keys.width) / 2), y + rows.keys);
     close.moveTo(x + Math.round((WIDTH - close.width) / 2), y + rows.close);
-    this.parts.push(exportLog, credits, close);
+    this.parts.push(exportLog, credits, keys, close);
     this.render(settings);
   }
 

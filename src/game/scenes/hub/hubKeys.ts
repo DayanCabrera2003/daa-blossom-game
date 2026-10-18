@@ -14,8 +14,13 @@ export function bindHubKeys(scene: Phaser.Scene, settings: SettingsPanel): Focus
     screen: () => (settings.open() ? 'settings' : 'hub'),
   });
   scene.input.keyboard?.on('keydown-ESC', () => {
-    const action = escapeAction({ settingsOpen: settings.open(), canLeave: false });
-    if (action === 'closeSettings') settings.close();
+    const action = escapeAction({
+      keysOpen: settings.keysOpen(),
+      settingsOpen: settings.open(),
+      canLeave: false,
+    });
+    if (action === 'closeKeys') settings.closeKeys();
+    else if (action === 'closeSettings') settings.close();
     else focus.blur();
   });
   return focus;

@@ -8,8 +8,10 @@ import {
   writeSettings,
   type Settings,
 } from '@services/settings';
+import { helpLines, type KeyScreen } from '../input/keyBindings';
 import type { Point } from '../input/target';
 import { addGearButton } from '../view/GearButton';
+import { KeysCard } from '../view/KeysCard';
 import { SettingsView } from '../view/SettingsView';
 import { contextOf } from './context';
 
@@ -19,15 +21,20 @@ export interface SettingsPanel {
   readonly open: () => boolean;
   /** Closes the panel, if it is showing. */
   readonly close: () => void;
+  /** Whether the card of the keys is showing over the panel. */
+  readonly keysOpen: () => boolean;
+  /** Closes the card of the keys, if it is showing. */
+  readonly closeKeys: () => void;
 }
 
 /**
  * Gives a scene its settings: the gear button at `at`, which opens the settings panel, and the `M`
  * key, which mutes or unmutes at any time. Every change is kept in the shared context, saved at
  * once, handed to the audio bus and shown on the panel if it is open; the panel also downloads the
- * playtest log and opens the credits. The panel is returned, so the scene's Escape can close it.
+ * playtest log, opens the credits and the card of the keys of `screen` (the hub's or a level's,
+ * `input/keyBindings.ts`). The panel and its card are returned, so the scene's Escape can close them.
  */
-export function addSettings(scene: Phaser.Scene, at: Point): SettingsPanel {
+export function addSettings(scene: Phaser.Scene, at: Point, screen: KeyScreen): SettingsPanel {
   const context = contextOf(scene);
   const change = (next: Settings): void => {
     context.settings = next;
@@ -47,8 +54,25 @@ export function addSettings(scene: Phaser.Scene, at: Point): SettingsPanel {
     exportLog: () => download(exportLog(context.playtest.current(), context.clock())),
     // The credits open over this scene, which sleeps with its panel open until they end.
     credits: () => context.bus.emit('credits.open'),
+    keys: () => {
+      const { t } = context;
+      card.show({
+        title: t('keys.title'),
+        lines: [
+          ...helpLines(screen, context.teacherMode).map((line) => t(`keys.${line}`)),
+          t('keys.pointer'),
+        ],
+        close: t('keys.close'),
+      });
+    },
   });
+  const card = new KeysCard(scene);
   addGearButton(scene, at, () => view.show(context.settings));
   scene.input.keyboard?.on('keydown-M', () => change(toggleMute(context.settings)));
-  return { open: () => view.open, close: () => view.close() };
+  return {
+    open: () => view.open,
+    close: () => view.close(),
+    keysOpen: () => card.open,
+    closeKeys: () => card.close(),
+  };
 }

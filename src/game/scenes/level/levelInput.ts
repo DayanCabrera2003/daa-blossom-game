@@ -17,6 +17,10 @@ export interface LevelInputTarget {
   readonly settingsOpen: () => boolean;
   /** Closes the settings panel. */
   readonly closeSettings: () => void;
+  /** Whether the card of the keys is open over the settings panel: Escape closes it first. */
+  readonly keysOpen: () => boolean;
+  /** Closes the card of the keys. */
+  readonly closeKeys: () => void;
   /** Whether a mechanic card is open: then Escape dismisses it, as its button does. */
   readonly cardOpen: () => boolean;
   /** Dismisses the mechanic card open. */
@@ -44,7 +48,7 @@ const pressOf = (event: KeyboardEvent): KeyPress => ({
  * (`input/keyBindings.ts`): the keyboard's focus walks the buttons, the tools, the sun and the
  * panels, and Enter or Space press what it is on, or move the dialogue on; a digit answers the
  * question open; Ctrl/Cmd+Z undoes and Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redo; Escape closes the
- * settings panel, or the mechanic card, or leaves the flower entered with the layers, or else the
+ * card of the keys, or the settings panel, or the mechanic card, or leaves the flower entered with the layers, or else the
  * level (`input/escape.ts`). The garden itself is played with the pointer or a touch only.
  */
 export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): void => {
@@ -85,12 +89,14 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
 /** Escape: the innermost thing open closes, or else the level is left. */
 function escape(target: LevelInputTarget): void {
   const action = escapeAction({
+    keysOpen: target.keysOpen(),
     settingsOpen: target.settingsOpen(),
     cardOpen: target.cardOpen(),
     insideLayer: target.insideLayer(),
     canLeave: true,
   });
-  if (action === 'closeSettings') target.closeSettings();
+  if (action === 'closeKeys') target.closeKeys();
+  else if (action === 'closeSettings') target.closeSettings();
   else if (action === 'closeCard') target.closeCard();
   else if (action === 'leaveLayer') target.dispatch({ kind: 'leaveLayer' });
   else target.leave();

@@ -143,7 +143,7 @@ export class HubScene extends Phaser.Scene {
     }
 
     // The settings, at the top right across from the title.
-    const settings = addSettings(this, topLine.gear);
+    const settings = addSettings(this, topLine.gear, 'hub');
     // The keyboard's focus walks all of it; Escape closes the settings or takes the focus away.
     const focus = bindHubKeys(this, settings);
 
