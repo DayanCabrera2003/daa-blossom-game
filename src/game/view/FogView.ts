@@ -5,6 +5,7 @@ import type { GardenPicture } from '../picture/garden';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { everyFrame } from './everyFrame';
 import { PALETTE } from './palette';
+import { fogShift } from '../picture/fogShift';
 import { LOOK } from '../picture/look';
 
 /** The clouds of Ninja Adventure, tiled over the veil. */
@@ -14,8 +15,7 @@ const CLEARING_RADIUS = 24;
 const OPEN_MS = 600;
 /** Clearings are cut from textures made for this many radii, up to the full one. */
 const CLEARING_STEPS = 8;
-/** How fast the clouds drift, in logical pixels per millisecond, and how much they show. */
-const DRIFT = LOOK.fogDrift;
+/** How much the clouds show. */
 const CLOUD_ALPHA = LOOK.fogCloudAlpha;
 
 /** The key of the clearing texture of step `step` (1 to `CLEARING_STEPS`). */
@@ -55,7 +55,11 @@ export class FogView {
   private openedAt = new Map<number, number>();
   private seen = false;
 
-  constructor(private readonly scene: Phaser.Scene) {
+  /** `still` says whether to hold the clouds still (less motion, plan 09 phase 6). */
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly still: () => boolean = () => false,
+  ) {
     makeClearings(scene.textures);
     this.veil = scene.add
       .renderTexture(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -92,7 +96,7 @@ export class FogView {
     rt.fill(PALETTE.fog, 0.6);
     if (this.scene.textures.exists(CLOUDS)) {
       const { width, height } = this.scene.textures.get(CLOUDS).getSourceImage();
-      const shift = (now * DRIFT) % width;
+      const shift = fogShift(now, width, this.still());
       for (let y = 0; y < CANVAS_HEIGHT; y += height)
         for (let x = -shift; x < CANVAS_WIDTH; x += width)
           rt.draw(CLOUDS, Math.round(x), y, CLOUD_ALPHA, PALETTE.fogClear);

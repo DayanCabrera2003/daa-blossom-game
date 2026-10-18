@@ -24,6 +24,7 @@ import {
 import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
 import { voiceLine } from '../systems/lineVoice';
+import { movesLess } from './motion';
 import { planCues, refusalCues } from '../systems/soundCues';
 import { spokenLine } from '../systems/speaker';
 import { AnimationView } from '../view/AnimationView';
@@ -125,13 +126,13 @@ export class CounterexampleScene extends Phaser.Scene {
       })
       .setDepth(100);
     this.views = {
-      fog: new FogView(this),
+      fog: new FogView(this, () => movesLess(this)),
       flowers: new FlowerView(this),
       objects: new ObjectsView(this),
       garden: new GardenView(this),
       marks: new MarksView(this),
       mirror: new MirrorView(this, t),
-      animation: new AnimationView(this),
+      animation: new AnimationView(this, () => movesLess(this)),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
       toast: new ToastView(this),
       dialogue: new DialogueView(this, t, voiceLine),
@@ -239,7 +240,7 @@ export class CounterexampleScene extends Phaser.Scene {
         this.sfx.schedule(refusalCues());
         break;
       case 'animate': {
-        const steps = planAnimation(effect.events);
+        const steps = planAnimation(effect.events, movesLess(this));
         const garden = animationGarden(this.controller.history, {
           positions: this.controller.positions,
           path: [],

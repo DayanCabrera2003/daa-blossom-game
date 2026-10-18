@@ -49,7 +49,11 @@ export class BackdropView {
   } | null = null;
   private tinted: number | null = null;
 
-  constructor(private readonly scene: Phaser.Scene) {
+  /** `stillDrift` says whether to hold the leaves and snow still (less motion, plan 09 phase 6). */
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly stillDrift: () => boolean = () => false,
+  ) {
     this.still = scene.add
       .renderTexture(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
       .setOrigin(0, 0)
@@ -155,7 +159,7 @@ export class BackdropView {
     }
     if (this.drift === null) return;
     const { drift, seed, frames } = this.drift;
-    driftAt(drift, seed, time).forEach(({ x, y, frame }, k) => {
+    driftAt(drift, seed, time, this.stillDrift()).forEach(({ x, y, frame }, k) => {
       const particle = this.particles[k];
       const name = frames[frame];
       if (particle === undefined || name === undefined) return;

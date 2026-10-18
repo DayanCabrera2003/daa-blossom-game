@@ -40,8 +40,10 @@ const NO_GARDEN: AnimationGarden = { positions: [], flowers: new Map(), groups: 
  * and the pure pictures what it looks like then (GDD §4.1, key animations): the lantern hops from
  * sprout to sprout with squash and stretch, and where a chain lands its new lantern bursts into a
  * sparkle and pink petals; a flower folds and opens in eight frames; the conflict of sun and moon
- * blinks; a stone set down parts the garden into its groups. A new move by the player stops it all
- * at once. Without the pack's sprites, plain shapes stand in for them.
+ * blinks; a stone set down parts the garden into its groups. With less motion (plan 09, phase 6)
+ * the lantern fades from sprout to sprout, a flower folds as a fade over still sprouts and no
+ * petals fly; what each step tells shows the same. A new move by the player stops it all at once.
+ * Without the pack's sprites, plain shapes stand in for them.
  */
 export class AnimationView {
   private readonly overlay: Phaser.GameObjects.Graphics;
@@ -52,8 +54,14 @@ export class AnimationView {
   private landings: readonly ChainLanding[] = [];
   private garden: AnimationGarden = NO_GARDEN;
   private startedAt = 0;
+  /** Whether the plan playing moves less (plan 09, phase 6), fixed when it starts. */
+  private reduced = false;
 
-  constructor(private readonly scene: Phaser.Scene) {
+  /** `moveLess` says, as each plan starts, whether to play it with less motion. */
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly moveLess: () => boolean = () => false,
+  ) {
     this.overlay = scene.add.graphics().setDepth(OVERLAY_DEPTH);
   }
 
@@ -67,6 +75,7 @@ export class AnimationView {
     this.landings = chainLandings(this.steps);
     this.garden = garden;
     this.startedAt = now;
+    this.reduced = this.moveLess();
   }
 
   /** Skips to the end: the garden view already shows it. */
@@ -167,13 +176,13 @@ export class AnimationView {
 
   /** The lantern on its hop from `from` to `to`, squashed and stretched (`picture/squash.ts`). */
   private hop(g: Phaser.GameObjects.Graphics, from: Point, to: Point, progress: number): void {
-    const pose = hopPose(from, to, progress);
+    const pose = hopPose(from, to, progress, this.reduced);
     const feet = { x: pose.x, y: pose.y - LANTERN_FEET - pose.height };
-    // Its glow stays on the ground under it.
-    g.fillStyle(PALETTE.litGlow, 0.35).fillCircle(pose.x, pose.y, 5);
+    // Its glow stays on the ground under it; with less motion it fades with the lantern.
+    g.fillStyle(PALETTE.litGlow, 0.35 * pose.alpha).fillCircle(pose.x, pose.y, 5);
     const lantern = this.lanternImage();
     if (lantern === null) {
-      g.fillStyle(PALETTE.lit).fillEllipse(
+      g.fillStyle(PALETTE.lit, pose.alpha).fillEllipse(
         feet.x,
         feet.y - 4 * pose.scaleY,
         8 * pose.scaleX,
@@ -184,6 +193,7 @@ export class AnimationView {
     lantern
       .setPosition(Math.round(feet.x), Math.round(feet.y))
       .setScale(pose.scaleX, pose.scaleY)
+      .setAlpha(pose.alpha)
       .setVisible(true);
   }
 
@@ -215,7 +225,11 @@ export class AnimationView {
       this.wash(g, PALETTE.flower, 1 - progress);
       return;
     }
-    const frames = (kind === 'fold' ? foldFrames : unfoldFrames)(shape.open, shape.centre);
+    const frames = (kind === 'fold' ? foldFrames : unfoldFrames)(
+      shape.open,
+      shape.centre,
+      this.reduced,
+    );
     const frame = foldFrameAt(frames, progress);
     g.fillStyle(PALETTE.flower, 0.8 * (1 - frame.closed));
     for (const sprout of frame.positions)
@@ -248,7 +262,7 @@ export class AnimationView {
     for (const landing of this.landings) {
       const [u, v] = [this.at(landing.u), this.at(landing.v)];
       const middle = { x: (u.x + v.x) / 2, y: (u.y + v.y) / 2 };
-      const burst = burstAt(middle, elapsed - landing.at, landing.u * 31 + landing.v);
+      const burst = burstAt(middle, elapsed - landing.at, landing.u * 31 + landing.v, this.reduced);
       if (burst === null) continue;
       for (const petal of burst.petals) {
         const image = this.pooled(this.petals, petals++, PETAL);

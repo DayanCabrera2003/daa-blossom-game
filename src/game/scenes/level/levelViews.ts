@@ -7,6 +7,7 @@ import { AnimationView } from '../../view/AnimationView';
 import { BackdropView } from '../../view/BackdropView';
 import { DialogueView } from '../../view/DialogueView';
 import { FlowerView } from '../../view/FlowerView';
+import { movesLess } from '../motion';
 import { FogView } from '../../view/FogView';
 import { GardenView } from '../../view/GardenView';
 import { HudView, type HudLayout } from '../../view/HudView';
@@ -75,8 +76,8 @@ export const buildLevelViews = (
 ): LevelViews => {
   const { dispatch } = buttons;
   return {
-    backdrop: new BackdropView(scene),
-    fog: new FogView(scene),
+    backdrop: new BackdropView(scene, () => movesLess(scene)),
+    fog: new FogView(scene, () => movesLess(scene)),
     flowers: new FlowerView(scene),
     objects: new ObjectsView(scene),
     garden: new GardenView(scene),
@@ -88,7 +89,7 @@ export const buildLevelViews = (
       check: () => dispatch({ kind: 'checkRecipe' }),
     }),
     race: new RaceView(scene, t),
-    animation: new AnimationView(scene),
+    animation: new AnimationView(scene, () => movesLess(scene)),
     hud: new HudView(
       scene,
       t,

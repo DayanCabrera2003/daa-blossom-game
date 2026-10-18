@@ -27,6 +27,7 @@ import { playtestEntries } from '../systems/playtestEntries';
 import { raceCues } from '../systems/raceCues';
 import { replayCues } from '../systems/replayCues';
 import { effectCues } from '../systems/soundCues';
+import { movesLess } from './motion';
 import type { StarResult } from '../systems/stars';
 import { levelStepCard, startCards } from '../systems/tutorials';
 import { SfxPlayer } from '../audio/SfxPlayer';
@@ -200,6 +201,7 @@ export class LevelScene extends Phaser.Scene {
       line: this.context.line,
       controller: () => this.controller,
       now: () => this.time.now,
+      moveLess: () => movesLess(this),
       toast: this.views.toast,
       animation: this.views.animation,
       presenter: this.presenter,
@@ -299,7 +301,7 @@ export class LevelScene extends Phaser.Scene {
     const card = levelStepCard(this.level, effect.kind, this.cards.seen);
     if (card !== null) this.cards.offer([card]);
     showEffect(effect, this.stage);
-    this.sfx.schedule(effectCues(effect));
+    this.sfx.schedule(effectCues(effect, movesLess(this)));
   }
 
   /** Records `entries` in the playtest log, when the screen logs (never in the free mode). */

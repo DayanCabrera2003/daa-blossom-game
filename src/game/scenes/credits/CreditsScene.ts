@@ -26,6 +26,7 @@ import { contextOf } from '../context';
 import { FocusController } from '../focus/FocusController';
 import { CREDITS_SCENE, paintDawnGround, wakeOpened, type CreditsSceneData } from '../CreditsGate';
 import { queueLoads } from '../queueLoads';
+import { movesLess } from '../motion';
 
 /** The track the credits play, loaded with them the first time they open. */
 const TRACK: AssetKey = 'music.credits';
@@ -38,10 +39,6 @@ const ROLL_WORLD_Y = 10_000;
 
 /** How far a wheel notch or an arrow key moves the roll: two lines of body text. */
 const STEP = 2 * LINE_HEIGHT;
-
-/** Whether the player asked the system for less motion on screen. */
-const lessMotion = (): boolean =>
-  globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 /**
  * The credits screen (plan 09, phase 3), loaded on demand through its gate: the hub's grass at
@@ -95,7 +92,7 @@ export class CreditsScene extends Phaser.Scene {
     }
     this.travel = rollTravel(lines, view.height);
     this.pages = pageStarts(lines, view.height, this.travel);
-    this.still = lessMotion();
+    this.still = movesLess(this);
     this.elapsed = 0;
     this.addRollCamera();
 

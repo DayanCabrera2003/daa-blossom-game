@@ -31,6 +31,8 @@ export interface EffectStage {
   readonly controller: () => Controller;
   /** The scene's clock, in milliseconds. */
   readonly now: () => number;
+  /** Whether the game moves less now (the motion setting, plan 09 phase 6). */
+  readonly moveLess: () => boolean;
   readonly toast: ToastView;
   readonly animation: AnimationView;
   readonly presenter: Presenter;
@@ -89,7 +91,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
     case 'animate':
       // Played where the layer entered draws the sprouts (5.2).
       stage.animation.play(
-        planAnimation(effect.events),
+        planAnimation(effect.events, stage.moveLess()),
         animationGarden(stage.controller().session.history, layerOf(stage.controller())),
         stage.now(),
       );
