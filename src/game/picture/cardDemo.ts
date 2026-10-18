@@ -93,3 +93,19 @@ export function cardDemoPicture(demo: CardDemo, frame: number): CardDemoPicture 
     press: gesture.kind === 'press' ? BUTTON_TEXT[gesture.button] : null,
   };
 }
+
+/**
+ * What the window of a mechanic card loops: how many frames, and the picture of each. A card of
+ * the levels loops its demo of the rules (`demoLoop`); a screen with gestures of its own (the free
+ * mode's editor) may loop pictures it draws itself, in the same window.
+ */
+export interface CardLoop {
+  readonly frames: number;
+  readonly pictureAt: (frame: number) => CardDemoPicture;
+}
+
+/** The loop of a demo of the rules: its frames, each drawn by `cardDemoPicture`. */
+export const demoLoop = (demo: CardDemo): CardLoop => ({
+  frames: demo.frames.length,
+  pictureAt: (frame) => cardDemoPicture(demo, frame),
+});
