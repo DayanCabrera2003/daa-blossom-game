@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type { PixelRect } from '../assets/frames';
 import { playUiSound } from '../audio/uiSound';
 import { badgeAt, buttonContent, ICON_GAP, type ButtonIcon } from '../picture/buttonIcon';
 import { WOOD_BUTTON, type ButtonState } from '../picture/wood';
@@ -96,6 +97,11 @@ export class Button {
     this.onPress();
   }
 
+  /** The rectangle of its wood on the canvas, which a drag of its panel never starts on. */
+  get bounds(): PixelRect {
+    return this.wood.bounds;
+  }
+
   /** Width on the canvas, to lay buttons out side by side. */
   get width(): number {
     return this.wood.bounds.width;
@@ -128,6 +134,12 @@ export class Button {
     }
     this.text.setPosition(content.labelX, y);
     return this;
+  }
+
+  /** Moves the button by (dx, dy) with the panel that holds it. */
+  shift(dx: number, dy: number): this {
+    const { x, y } = this.wood.bounds;
+    return this.moveTo(x + dx, y + 1 + dy);
   }
 
   /**

@@ -63,6 +63,12 @@ export class WoodFrame {
     return this;
   }
 
+  /** Moves the piece by (dx, dy), keeping its size: a panel dragged by the player. */
+  shift(dx: number, dy: number): this {
+    const { x, y, width, height } = this.rect;
+    return this.setRect({ x: x + dx, y: y + dy, width, height });
+  }
+
   setDepth(depth: number): this {
     this.depth = depth;
     for (const part of this.parts) part.setDepth(depth);
