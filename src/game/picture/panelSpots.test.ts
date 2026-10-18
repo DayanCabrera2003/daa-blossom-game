@@ -5,10 +5,10 @@ import {
   CARD_ROOM,
   cardSpots,
   dialogueSpots,
-  NARROW_QUESTION,
   notebookSpots,
   QUESTION_ROOM,
   questionSpots,
+  QUESTION_WIDTHS,
   spotsIn,
   toastSpots,
 } from './panelSpots';
@@ -46,15 +46,22 @@ describe('the spots a panel may take', () => {
   it('a question opens where it always did first, then anywhere in its room, wide or narrow', () => {
     const spots = questionSpots((width) => (width === QUESTION_PANEL.width ? 60 : 72), 30);
     expect(spots[0]).toEqual({ ...QUESTION_PANEL, height: 60 });
-    expect(spots.some((spot) => spot.width === NARROW_QUESTION && spot.height === 72)).toBe(true);
+    expect(new Set(spots.map((spot) => spot.width))).toEqual(new Set(QUESTION_WIDTHS));
+    expect(spots.some((spot) => spot.width === 232 && spot.height === 72)).toBe(true);
     for (const spot of spots) expect(inside(spot, QUESTION_ROOM)).toBe(true);
     // Its room ends above the dialogue box.
     expect(QUESTION_ROOM.y + QUESTION_ROOM.height).toBe(dialogueBox(false).box.y);
   });
 
-  it('a question with an option too wide for the narrow panel stays wide', () => {
-    const spots = questionSpots(() => 60, NARROW_QUESTION);
-    expect(spots.every((spot) => spot.width === QUESTION_PANEL.width)).toBe(true);
+  it('a question keeps to the widths where its widest option fits a row', () => {
+    const spots = questionSpots(() => 60, 210);
+    expect([...new Set(spots.map((spot) => spot.width))]).toEqual([
+      400, 376, 352, 328, 304, 280, 256, 232,
+    ]);
+    // Even an option wider than every panel leaves it where it always was.
+    expect(questionSpots(() => 60, 999).every((spot) => spot.width === QUESTION_PANEL.width)).toBe(
+      true,
+    );
   });
 
   it('the notebook and a card open where they always did first', () => {

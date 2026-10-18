@@ -73,12 +73,14 @@ export interface PanelSpot {
 
 /**
  * The question panel for a prompt `promptHeight` tall and options of `widths`, at `spot` (where
- * it opens by default, unless it is placed elsewhere to keep the garden in sight).
+ * it opens by default, unless it is placed elsewhere to keep the garden in sight), with a footer
+ * `footerHeight` tall: a line, or more in a narrow panel where it wraps.
  */
 export function questionLayout(
   promptHeight: number,
   widths: readonly number[],
   spot: PanelSpot = QUESTION_PANEL,
+  footerHeight: number = LINE_HEIGHT,
 ): QuestionLayout {
   const { x, y, width } = spot;
   const left = x + PANEL.pad;
@@ -90,7 +92,7 @@ export function questionLayout(
     prompt,
     buttons: flow.positions,
     footer,
-    height: footer.y + LINE_HEIGHT + PANEL.pad - y,
+    height: footer.y + footerHeight + PANEL.pad - y,
   };
 }
 

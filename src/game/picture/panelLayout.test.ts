@@ -68,6 +68,10 @@ describe('how the panels lay out their texts and buttons', () => {
     // Options that do not fit a narrower row wrap to the next one.
     const narrow = questionLayout(LINE_HEIGHT, [100, 100], spot);
     expect(narrow.buttons[1]?.y).toBeGreaterThan(narrow.buttons[0]?.y ?? 0);
+    // A footer that wraps in a narrow panel makes it taller.
+    expect(questionLayout(LINE_HEIGHT, [40], spot, 2 * LINE_HEIGHT).height).toBe(
+      moved.height + LINE_HEIGHT,
+    );
     expect(notebookLayout(LINE_HEIGHT, [20], 90).promptY - 90).toBe(
       notebookLayout(LINE_HEIGHT, [20]).promptY - QUESTION_PANEL.y,
     );

@@ -29,8 +29,15 @@ const SIDE = 4;
 /** The top of the room under the top bar, where a question or a card has always opened. */
 const TOP = QUESTION_PANEL.y;
 
-/** The narrower panel of a question, beside a piece of the garden rather than above it. */
-export const NARROW_QUESTION = 232;
+/**
+ * The widths a question's panel may take, widest first: as wide as it always was, then narrower
+ * every 24 pixels down to 112, to fit beside a piece of the garden rather than over it (their
+ * texts wrap, so they grow taller).
+ */
+export const QUESTION_WIDTHS: readonly number[] = Array.from(
+  { length: (QUESTION_PANEL.width - 112) / 24 + 1 },
+  (_, i) => QUESTION_PANEL.width - 24 * i,
+);
 
 /** The positions from `low` to `high` a `step` apart, `high` itself always among them. */
 function stops(low: number, high: number, step: number): number[] {
@@ -78,14 +85,14 @@ export const CARD_ROOM: Rect = {
 
 /**
  * The spots of a question panel, whose height at a width is `heightAt(width)` and whose widest
- * option is `widest` pixels: as wide as it always was, where it always opened, first; then
- * narrower, when every option still fits a row of it.
+ * option is `widest` pixels: as wide as it always was, where it always opened, first; then at each
+ * narrower width where every option still fits a row.
  */
 export function questionSpots(heightAt: (width: number) => number, widest: number): Rect[] {
   const { x, y, width } = QUESTION_PANEL;
   const home = { x, y, width, height: heightAt(width) };
-  const narrow = widest <= innerWidth(NARROW_QUESTION) ? [NARROW_QUESTION] : [];
-  return [home, ...[width, ...narrow].flatMap((w) => spotsIn(QUESTION_ROOM, w, heightAt(w)))];
+  const widths = QUESTION_WIDTHS.filter((w) => w === width || widest <= innerWidth(w));
+  return [home, ...widths.flatMap((w) => spotsIn(QUESTION_ROOM, w, heightAt(w)))];
 }
 
 /** The spots of the notebook's page, `height` tall: where it always opened first. */
