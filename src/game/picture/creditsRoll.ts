@@ -32,7 +32,7 @@ export const CREDITS_ROLL: {
   window: { x: 70, y: 16, width: 340, height: 220 },
   /** The top of the row under the panel: the way back and the keys. */
   backRow: 252,
-  /** How long the music of the credits plays (`music.credits`, 68 s): the roll lasts as long. */
+  /** How long the music of the credits plays (68 s): the roll lasts as long. */
   durationMs: 68_000,
   /** How long the title stays still before the roll moves. */
   holdMs: 4_000,
@@ -140,19 +140,3 @@ export const pageAfter = (offset: number, pages: readonly number[]): number | nu
 /** The start of the page before the one at `offset`, or null at the first page. */
 export const pageBefore = (offset: number, pages: readonly number[]): number | null =>
   [...pages].reverse().find((start) => start < offset) ?? null;
-
-/** What of a line the window shows: where it is drawn and which rows of it, from its top. */
-export interface LineClip {
-  /** From the window's top to the line's top, above the window when negative. */
-  readonly y: number;
-  readonly cropTop: number;
-  readonly cropHeight: number;
-}
-
-/** What of `line` a window `height` tall shows with the roll at `offset`; null if nothing. */
-export function lineClip(line: RollLine, offset: number, height: number): LineClip | null {
-  const y = line.top - offset;
-  if (y + line.height <= 0 || y >= height) return null;
-  const cropTop = Math.max(0, -y);
-  return { y, cropTop, cropHeight: Math.min(line.height, height - y) - cropTop };
-}

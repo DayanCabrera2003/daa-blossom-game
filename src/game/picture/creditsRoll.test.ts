@@ -3,7 +3,6 @@ import type { CreditLine } from '../assets/creditsModel';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import {
   CREDITS_ROLL,
-  lineClip,
   offsetAt,
   pageStarts,
   pageAfter,
@@ -155,25 +154,5 @@ describe('the roll by hand', () => {
       const tall = rollLines([{ style: 'title', text: 'a' }, text('b')], 200);
       expect(pageStarts(tall, 20, rollTravel(tall, 20))).toEqual([0, 28]);
     });
-  });
-});
-
-describe('what of a line the window shows', () => {
-  const [line] = rollLines([text('abc')], 100);
-  if (line === undefined) throw new Error('no line');
-  const moved = { ...line, top: 40 };
-
-  it('shows a line whole inside the window, at its place under the offset', () => {
-    expect(lineClip(moved, 10, 100)).toEqual({ y: 30, cropTop: 0, cropHeight: 12 });
-  });
-
-  it('cuts what falls above or below the window', () => {
-    expect(lineClip(moved, 45, 100)).toEqual({ y: -5, cropTop: 5, cropHeight: 7 });
-    expect(lineClip(moved, 0, 46)).toEqual({ y: 40, cropTop: 0, cropHeight: 6 });
-  });
-
-  it('shows nothing of a line wholly out of the window', () => {
-    expect(lineClip(moved, 52, 100)).toBeNull();
-    expect(lineClip(moved, 0, 40)).toBeNull();
   });
 });
