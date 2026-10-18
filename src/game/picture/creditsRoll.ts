@@ -38,6 +38,13 @@ export const CREDITS_ROLL: {
   holdMs: 4_000,
 };
 
+/**
+ * The left of the way back's label, `width` wide with its wood: its wood ends where the panel's
+ * right edge does, on the row under the panel.
+ */
+export const backLeft = (width: number): number =>
+  CREDITS_ROLL.panel.x + CREDITS_ROLL.panel.width - width + 2;
+
 /** How many times the native size of the font each style is drawn at. */
 const SCALE: Readonly<Record<CreditStyle, number>> = { title: 3, heading: 2, name: 1, text: 1 };
 

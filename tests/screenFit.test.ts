@@ -13,6 +13,7 @@ import { racesOf } from '../src/levels/races';
 import { costChart } from '../src/game/picture/costChart';
 import { PIXEL_FONT } from '../src/game/picture/pixelFont';
 import { RACE_CHART, RACE_LAYOUT } from '../src/game/view/RaceView';
+import { backLeft, CREDITS_ROLL } from '../src/game/picture/creditsRoll';
 import { CANVAS_WIDTH } from '../src/game/scale/integerZoom';
 import { LAYOUT } from '../src/game/view/layout';
 import manifest from '../src/game/assets/manifest.json';
@@ -343,5 +344,15 @@ describe("the race chart's words", () => {
     const legendY = at.y + RACE_CHART.legendDy;
     const steps = t('race.axis.steps');
     expect(overlap(rows(stepsY, steps), rows(legendY, t('race.legend.automaton')))).toBe(false);
+  });
+});
+
+describe("the credits' way back", () => {
+  it("ends at the panel's right edge, under it and on the canvas, with its real words", () => {
+    const width = estimatedButtonWidth(t('credits.back'));
+    const { panel } = CREDITS_ROLL;
+    const left = backLeft(width);
+    expect(left).toBeGreaterThanOrEqual(panel.x);
+    expect(left - 2 + width).toBeLessThanOrEqual(CANVAS_WIDTH);
   });
 });
