@@ -421,74 +421,6 @@
         "height": 16
       }
     },
-    "anim.flagBlack": {
-      "path": "assets/images/animated/flag-black.png",
-      "kind": "sheet",
-      "group": "boot",
-      "pack": "ninja",
-      "source": "Backgrounds/Animated/Flag/FlagBlack16x16.png",
-      "bytes": 419,
-      "sha256": "21506fe111f46386d1c921ddc7e1940af5dc498dd6f94ca2069b4b4efdb6c8ad",
-      "image": {
-        "width": 64,
-        "height": 16
-      },
-      "frame": {
-        "width": 16,
-        "height": 16
-      }
-    },
-    "anim.flagBrown": {
-      "path": "assets/images/animated/flag-brown.png",
-      "kind": "sheet",
-      "group": "boot",
-      "pack": "ninja",
-      "source": "Backgrounds/Animated/Flag/FlagBrown16x16.png",
-      "bytes": 419,
-      "sha256": "d8eb8e876bc500190e2afadf00e07ec39c2ed8986a45b2ce453f504134c7a9fe",
-      "image": {
-        "width": 64,
-        "height": 16
-      },
-      "frame": {
-        "width": 16,
-        "height": 16
-      }
-    },
-    "anim.flagGray": {
-      "path": "assets/images/animated/flag-gray.png",
-      "kind": "sheet",
-      "group": "boot",
-      "pack": "ninja",
-      "source": "Backgrounds/Animated/Flag/FlagGray16x16.png",
-      "bytes": 420,
-      "sha256": "f7ad2563a0b2ae6289895a344896a9f57b71652fbfc36b94efa24e033f4ff264",
-      "image": {
-        "width": 64,
-        "height": 16
-      },
-      "frame": {
-        "width": 16,
-        "height": 16
-      }
-    },
-    "anim.flagWhite": {
-      "path": "assets/images/animated/flag-white.png",
-      "kind": "sheet",
-      "group": "boot",
-      "pack": "ninja",
-      "source": "Backgrounds/Animated/Flag/FlagWhite16x16.png",
-      "bytes": 418,
-      "sha256": "af78fb9f6344637103f0c600328419e670f261bf63d8b94c8650b623ba3e028c",
-      "image": {
-        "width": 64,
-        "height": 16
-      },
-      "frame": {
-        "width": 16,
-        "height": 16
-      }
-    },
     "fx.leaf": {
       "path": "assets/images/fx/leaf.png",
       "kind": "image",
@@ -556,19 +488,6 @@
       "image": {
         "width": 16,
         "height": 16
-      }
-    },
-    "wood.buttonNormal": {
-      "path": "assets/images/ui/wood/button-normal.png",
-      "kind": "image",
-      "group": "boot",
-      "pack": "ninja",
-      "source": "Ui/Theme/Theme Wood/button_normal.png",
-      "bytes": 177,
-      "sha256": "53e9576a0e1ff0932575db46e8d8963f4fb2660c7d6285f4c4c2a0864db91f45",
-      "image": {
-        "width": 16,
-        "height": 8
       }
     },
     "wood.buttonHover": {
@@ -709,19 +628,6 @@
       "source": "Ui/Skill Icon/Meteo/Sun.png",
       "bytes": 422,
       "sha256": "a48466770239fa5a135ec0f06ac11870861adef35c0f6a9199ae26cd3ab6fb61",
-      "image": {
-        "width": 24,
-        "height": 24
-      }
-    },
-    "icon.moon": {
-      "path": "assets/images/ui/icons/moon.png",
-      "kind": "image",
-      "group": "boot",
-      "pack": "ninja",
-      "source": "Ui/Skill Icon/Meteo/Moon.png",
-      "bytes": 352,
-      "sha256": "a8c50817ea49379b8abe5302ab0aa4faa61a1854f1585aae1b879b7fca417539",
       "image": {
         "width": 24,
         "height": 24

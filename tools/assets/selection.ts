@@ -231,7 +231,10 @@ const GARDEN_PIECES: readonly SelectedFile[] = [
   }),
 ];
 
-/** Seasonal decorations and particles beyond the tilesets (section 1.5). */
+/**
+ * Seasonal decorations and particles beyond the tilesets (section 1.5). Of the pack's flags, only
+ * the four bright ones wave at the festival; the black, brown, grey and white ones stay out.
+ */
 const SEASONS: readonly SelectedFile[] = [
   pick(
     'anim.flagRed',
@@ -261,34 +264,6 @@ const SEASONS: readonly SelectedFile[] = [
     'images/animated/flag-green.png',
     { frame: TILE },
   ),
-  pick(
-    'anim.flagBlack',
-    'sheet',
-    ninja('Backgrounds/Animated/Flag/FlagBlack16x16.png'),
-    'images/animated/flag-black.png',
-    { frame: TILE },
-  ),
-  pick(
-    'anim.flagBrown',
-    'sheet',
-    ninja('Backgrounds/Animated/Flag/FlagBrown16x16.png'),
-    'images/animated/flag-brown.png',
-    { frame: TILE },
-  ),
-  pick(
-    'anim.flagGray',
-    'sheet',
-    ninja('Backgrounds/Animated/Flag/FlagGray16x16.png'),
-    'images/animated/flag-gray.png',
-    { frame: TILE },
-  ),
-  pick(
-    'anim.flagWhite',
-    'sheet',
-    ninja('Backgrounds/Animated/Flag/FlagWhite16x16.png'),
-    'images/animated/flag-white.png',
-    { frame: TILE },
-  ),
   pick('fx.leaf', 'image', ninja('FX/Particle/Leaf.png'), 'images/fx/leaf.png'),
   pick('fx.snow', 'image', ninja('FX/Particle/Snow.png'), 'images/fx/snow.png'),
   pick(
@@ -300,7 +275,11 @@ const SEASONS: readonly SelectedFile[] = [
   ),
 ];
 
-/** Wooden panels, buttons, sliders, checkboxes and icons (section 1.6). */
+/**
+ * Wooden panels, buttons, sliders, checkboxes and icons (section 1.6). The plain button and the
+ * moon are left out: no label reads on the plain button's orange face (`picture/wood.ts`), and the
+ * toolbar has no room for a moon beside the sun of the tool of marks (`picture/buttonIcon.ts`).
+ */
 const UI: readonly SelectedFile[] = [
   pick('ui.dialogBox', 'image', ninja('Ui/Dialog/DialogBox.png'), 'images/ui/dialog-box.png'),
   pick(
@@ -308,12 +287,6 @@ const UI: readonly SelectedFile[] = [
     'image',
     ninja('Ui/Theme/Theme Wood/nine_path_panel.png'),
     'images/ui/wood/panel.png',
-  ),
-  pick(
-    'wood.buttonNormal',
-    'image',
-    ninja('Ui/Theme/Theme Wood/button_normal.png'),
-    'images/ui/wood/button-normal.png',
   ),
   pick(
     'wood.buttonHover',
@@ -376,7 +349,6 @@ const UI: readonly SelectedFile[] = [
     'images/ui/wood/unchecked.png',
   ),
   pick('icon.sun', 'image', ninja('Ui/Skill Icon/Meteo/Sun.png'), 'images/ui/icons/sun.png'),
-  pick('icon.moon', 'image', ninja('Ui/Skill Icon/Meteo/Moon.png'), 'images/ui/icons/moon.png'),
   pick('icon.water', 'image', ninja('Items/Resource/Water.png'), 'images/ui/icons/water.png'),
   pick('icon.rock', 'image', ninja('Items/Resource/Rock.png'), 'images/ui/icons/rock.png'),
   pick('icon.book', 'image', ninja('Items/Object/Book.png'), 'images/ui/icons/book.png'),
