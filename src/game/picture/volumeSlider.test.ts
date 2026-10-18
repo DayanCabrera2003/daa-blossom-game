@@ -1,6 +1,13 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { knobAt, volumeAt, volumePercent } from './volumeSlider';
+import {
+  grabberCentre,
+  grabberLeft,
+  knobAt,
+  sliderFill,
+  volumeAt,
+  volumePercent,
+} from './volumeSlider';
 
 const track = { x0: 100, x1: 200 };
 
@@ -35,5 +42,32 @@ describe('a volume slider of the settings panel', () => {
     expect(volumePercent(0.8)).toBe(80);
     expect(volumePercent(0.3)).toBe(30);
     expect(volumePercent(0)).toBe(0);
+  });
+});
+
+describe('the wooden pieces of a volume slider', () => {
+  it('the knob is centred on where the volume puts it, on a whole pixel', () => {
+    expect(grabberLeft(0, track, 13)).toBe(94);
+    expect(grabberLeft(0.5, track, 13)).toBe(144);
+    expect(grabberLeft(1, track, 13)).toBe(194);
+    fc.assert(
+      fc.property(fc.integer({ min: 0, max: 10 }), (tenths) => {
+        expect(Number.isInteger(grabberLeft(tenths / 10, { x0: 64, x1: 150 }, 13))).toBe(true);
+      }),
+    );
+  });
+
+  it('a drag of the knob asks for the volume under its centre', () => {
+    expect(volumeAt(grabberLeft(0.7, track, 13) + grabberCentre(13), track)).toBe(0.7);
+  });
+
+  it('the fill runs from the start of the track to under the knob, centred on the track', () => {
+    expect(sliderFill(0.5, track, 40, 6)).toEqual({ x: 100, y: 37, width: 53, height: 7 });
+    expect(sliderFill(1, track, 40, 6)).toEqual({ x: 100, y: 37, width: 103, height: 7 });
+  });
+
+  it('a fill too short to hold its two rounded ends is not drawn', () => {
+    expect(sliderFill(0, track, 40, 6)).toBeNull();
+    expect(sliderFill(0.1, track, 40, 6)).not.toBeNull();
   });
 });
