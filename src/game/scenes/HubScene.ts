@@ -4,7 +4,7 @@ import { codexSources, hasNewPages, openCodex } from '@services/codexProgress';
 import { download } from '@services/download';
 import { exportLog } from '@services/exportLog';
 import type { SaveData } from '@services/save';
-import { unlockedLevels, visibleLevels } from '@services/progress';
+import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
 import { BOOK_ICON } from '../picture/buttonIcon';
@@ -68,11 +68,9 @@ export class HubScene extends Phaser.Scene {
     const backdrop = new BackdropView(this);
     const heading = this.add.text(HUB.margin, 6, t('hub.title'), textStyle(12, PALETTE.lit));
 
-    // Drafts (test levels of chapters not yet written) are shown in teacher mode only.
-    const shown = visibleLevels(
-      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
-      teacherMode,
-    );
+    // Drafts (test levels of chapters not yet written) are shown in teacher mode only; secret
+    // flowers are never buttons.
+    const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const open = unlockedLevels(shown, save, teacherMode);
     const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] as string))];
 
@@ -227,7 +225,7 @@ export class HubScene extends Phaser.Scene {
 
     // The garden grows on the orchard's grass, a piece for each chapter finished.
     const finished = finishedChapters(
-      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
+      catalogEntries(catalog),
       (id) => save.levels[id] !== undefined,
     );
     backdrop.paint({

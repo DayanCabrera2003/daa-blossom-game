@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
 import { codexSources, openCodex, pagesOpened } from '@services/codexProgress';
-import { unlockedLevels, visibleLevels } from '@services/progress';
+import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook } from '@services/save';
 import type { AssetKey } from '../assets/keys';
 import { levelKeys, loadRequests } from '../assets/loadPlan';
@@ -306,10 +306,7 @@ export class LevelScene extends Phaser.Scene {
   private win(stars: StarResult): void {
     const id = this.level.data.id;
     const { catalog, teacherMode, saves } = this.context;
-    const shown = visibleLevels(
-      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
-      teacherMode,
-    );
+    const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const before = unlockedLevels(shown, saves.get(), teacherMode);
     const pages = codexSources(catalog);
     const pagesBefore = openCodex(pages, saves.get(), teacherMode);
@@ -330,10 +327,7 @@ export class LevelScene extends Phaser.Scene {
     this.context.music.jingle(this.winJingle);
     // The next level the player can see: outside teacher mode, drafts are skipped.
     const { catalog, teacherMode, t } = this.context;
-    const shown = visibleLevels(
-      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
-      teacherMode,
-    );
+    const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const { next, back } = afterVictory(this.level.data.id, shown);
     const toHub: HubSceneData = { epilogue: back === 'epilogue' };
     showVictoryPanel(this, t, stars, {

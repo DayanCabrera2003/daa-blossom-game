@@ -3,7 +3,7 @@ import { afterVictory } from '@game/systems/afterVictory';
 import { EPILOGUE_LEVEL, epilogueReached } from '@game/systems/epilogue';
 import { catalog } from '@levels/catalog';
 import { codexSources, openCodex } from '@services/codexProgress';
-import { visibleLevels } from '@services/progress';
+import { catalogEntries, visibleLevels } from '@services/progress';
 import { emptySave, recordCompletion } from '@services/save';
 import { EPILOGUE_ENTRY, EPILOGUE_USES, epilogueChoices, paragraphsOf } from '@ui/model/epilogue';
 import { describe, expect, it } from 'vitest';
@@ -48,10 +48,7 @@ describe('the words of the epilogue', () => {
 
 describe('the way to the epilogue', () => {
   const levels = catalog();
-  const shown = visibleLevels(
-    levels.map((level) => ({ id: level.data.id, draft: level.data.draft })),
-    false,
-  );
+  const shown = visibleLevels(catalogEntries(levels), false);
 
   it('its level is the last garden the player sees, and winning it leads there', () => {
     expect(shown.at(-1)?.id).toBe(EPILOGUE_LEVEL);
