@@ -24,3 +24,9 @@ export const LAYOUT_PROPERTY_TIMEOUT = 60_000;
  * quick case by case, but thousands of them when exploring pass vitest's default of 5 s per test.
  */
 export const PIXEL_PROPERTY_TIMEOUT = 30_000;
+
+/**
+ * Time allowed to properties that grow the touch zones of up to thirty buttons against each other:
+ * about a second when exploring with thousands of cases, more under coverage on a busy machine.
+ */
+export const TOUCH_PROPERTY_TIMEOUT = 30_000;

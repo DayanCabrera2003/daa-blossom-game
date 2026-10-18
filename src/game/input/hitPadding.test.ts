@@ -2,6 +2,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { Rect } from '../picture/boxDistance';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
+import { TOUCH_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { HIT_PADDING, hitZone, touchRoom, type TouchRoom } from './hitPadding';
 
 const CANVAS: Rect = { x: 0, y: 0, width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
@@ -114,42 +115,50 @@ describe('the touch zone of a button (plan 09, phase 7)', () => {
         ),
     );
 
-  it('property: every zone holds its box, stays on the canvas, and no two zones overlap', () => {
-    fc.assert(
-      fc.property(boxes, (all) => {
-        const zones = all.map((box, i) =>
-          hitZone(box, room({ neighbours: all.filter((_, j) => j !== i) })),
-        );
-        zones.forEach((zone, i) => {
-          const box = all[i] as Rect;
-          expect(within(box, zone)).toBe(true);
-          expect(within(zone, CANVAS)).toBe(true);
-          expect(zone.x).toBeGreaterThanOrEqual(box.x - max);
-          expect(zone.width).toBeLessThanOrEqual(box.width + 2 * max);
-          expect(zone.height).toBeLessThanOrEqual(box.height + 2 * max);
-          zones.forEach((other, j) => {
-            if (j !== i) expect(overlap(zone, other), `${i} and ${j}`).toBe(false);
-          });
-        });
-      }),
-    );
-  });
-
-  it('property: no zone reaches into a room kept clear', () => {
-    fc.assert(
-      fc.property(boxes, (all) => {
-        const [keep, ...buttons] = all;
-        if (keep === undefined) return;
-        buttons.forEach((box, i) => {
-          const zone = hitZone(
-            box,
-            room({ neighbours: buttons.filter((_, j) => j !== i), keepClear: [keep] }),
+  it(
+    'property: every zone holds its box, stays on the canvas, and no two zones overlap',
+    () => {
+      fc.assert(
+        fc.property(boxes, (all) => {
+          const zones = all.map((box, i) =>
+            hitZone(box, room({ neighbours: all.filter((_, j) => j !== i) })),
           );
-          expect(overlap(zone, keep)).toBe(false);
-        });
-      }),
-    );
-  });
+          zones.forEach((zone, i) => {
+            const box = all[i] as Rect;
+            expect(within(box, zone)).toBe(true);
+            expect(within(zone, CANVAS)).toBe(true);
+            expect(zone.x).toBeGreaterThanOrEqual(box.x - max);
+            expect(zone.width).toBeLessThanOrEqual(box.width + 2 * max);
+            expect(zone.height).toBeLessThanOrEqual(box.height + 2 * max);
+            zones.forEach((other, j) => {
+              if (j !== i) expect(overlap(zone, other), `${i} and ${j}`).toBe(false);
+            });
+          });
+        }),
+      );
+    },
+    TOUCH_PROPERTY_TIMEOUT,
+  );
+
+  it(
+    'property: no zone reaches into a room kept clear',
+    () => {
+      fc.assert(
+        fc.property(boxes, (all) => {
+          const [keep, ...buttons] = all;
+          if (keep === undefined) return;
+          buttons.forEach((box, i) => {
+            const zone = hitZone(
+              box,
+              room({ neighbours: buttons.filter((_, j) => j !== i), keepClear: [keep] }),
+            );
+            expect(overlap(zone, keep)).toBe(false);
+          });
+        }),
+      );
+    },
+    TOUCH_PROPERTY_TIMEOUT,
+  );
 });
 
 describe('the room round a button on a screen', () => {
