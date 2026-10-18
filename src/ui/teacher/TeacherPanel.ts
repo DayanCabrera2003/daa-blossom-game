@@ -75,6 +75,13 @@ export function mountTeacherPanel(
   const certificate = part(page, 'section', 'teacher-section teacher-certificate');
   panel.append(head, keys, figure, daySection, edmondsSection, certificate);
   layer.replaceChildren(panel);
+  // Escape anywhere in the panel folds it, and never reaches the garden (it would leave the level).
+  panel.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    event.stopPropagation();
+    fold();
+  });
 
   // What is drawn now: the feed, its garden and traces, and the step chosen.
   let fed: TeacherFeed | null = null;
