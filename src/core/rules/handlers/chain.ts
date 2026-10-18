@@ -2,6 +2,7 @@ import { flipAlong } from '../../matching/augment';
 import { checkAugmentingPath, checkStem } from '../../matching/paths';
 import { isExposed } from '../../matching/queries';
 import type { Action } from '../actions';
+import { judgeLighting } from '../chainRule';
 import { requireSprouts, requireUnfolded, requireVisibleVines } from '../checks';
 import { reject, type ActionOutcome } from '../outcome';
 import { relight } from '../relight';
@@ -17,6 +18,7 @@ import type { GardenState } from '../state';
  * elsewhere are no obstacle (4.8). Lighting the chain changes the lanterns, so the whole garden
  * opens again and the marks are wiped, as at the end of a round of the recipe (`relight`). In the
  * fog it only goes along vines in sight, checked first so a refusal never tells what the fog hides.
+ * Last, the level's chain rule has its say (`chainRule.ts`: only the chain seen, from the base…).
  */
 export function chain(
   state: GardenState,
@@ -31,5 +33,7 @@ export function chain(
     ? checkAugmentingPath(state.graph, state.matching, path)
     : checkStem(state.graph, state.matching, path);
   if (!checked.ok) return reject({ code: 'invalidPath', error: checked.error });
+  const ruled = judgeLighting(state, path);
+  if (ruled) return reject(ruled);
   return relight(state, flipAlong(state.matching, path), [{ type: 'augment', path }]);
 }

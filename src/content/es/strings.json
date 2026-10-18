@@ -1,5 +1,6 @@
 {
   "reason.actionLocked": "Todavía no sabes {action}. Ya llegará.",
+  "reason.actionClosed": "Hoy no se puede {action} en este jardín.",
   "reason.vertexOutOfRange": "Ese brote no está en este jardín.",
   "reason.notAdjacent": "{u} y {v} no comparten enredadera.",
   "reason.alreadyLit": "{vertex} ya tiene farol: un farol es para dos.",
@@ -25,6 +26,8 @@
   "reason.notPlaced": "{vertex} no tiene nada que quitar.",
   "reason.notNow": "Ahora no toca mover faroles: el jardín espera otra cosa.",
   "reason.twoSilver": "{vertex} ya tiene un farol plateado: quítaselo antes de darle otro.",
+  "reason.chainNotSeen": "Hoy los faroles solo se mueven por donde llegó tu luz. Busca la cadena con tus marcas.",
+  "reason.flowerClosed": "La flor está cerrada por hoy: una cadena solo puede rodearla si sale de su base o llega a ella.",
   "reason.invalidPath.empty": "Arrastra desde un brote.",
   "reason.invalidPath.vertexOutOfRange": "Ese brote no está en este jardín.",
   "reason.invalidPath.repeatedVertex": "La cadena ya pasó por {vertex}.",

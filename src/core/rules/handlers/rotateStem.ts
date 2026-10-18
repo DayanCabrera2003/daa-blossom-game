@@ -1,5 +1,6 @@
 import { rotateStem as rotate } from '../../blossom/rotateStem';
 import type { Action } from '../actions';
+import { judgeLighting } from '../chainRule';
 import { requireOpenGarden, requireSprouts, requireVisibleVines } from '../checks';
 import { reject, type ActionOutcome } from '../outcome';
 import { relight } from '../relight';
@@ -19,5 +20,9 @@ export function rotateStem(
   if (invalid) return reject(invalid);
   const rotated = rotate(state.graph, state.matching, stem);
   if (!rotated.ok) return reject({ code: 'invalidPath', error: rotated.error });
+  // Where only the chain seen may move lanterns, a chain of gain 0 is refused even if the level
+  // forgot to close this move (`seenRuleOpen` checks that it does).
+  const ruled = judgeLighting(state, stem);
+  if (ruled) return reject(ruled);
   return relight(state, rotated.value, [{ type: 'augment', path: stem }]);
 }

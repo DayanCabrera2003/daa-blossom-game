@@ -1,5 +1,6 @@
 import { addPair } from '../../matching/edit';
 import type { Action } from '../actions';
+import { judgeLighting } from '../chainRule';
 import { requireOpenGarden, requireSprouts, requireVisibleVines } from '../checks';
 import { reject, type ActionOutcome } from '../outcome';
 import { relight } from '../relight';
@@ -21,5 +22,8 @@ export function join(
         : { code: 'notAdjacent', u, v },
     );
   }
+  // Two neighbors in the dark make a chain of one vine, judged by the level's rule as any other.
+  const ruled = judgeLighting(state, [u, v]);
+  if (ruled) return reject(ruled);
   return relight(state, result.value, [{ type: 'light', u, v }]);
 }

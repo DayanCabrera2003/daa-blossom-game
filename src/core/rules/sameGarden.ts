@@ -2,8 +2,8 @@ import type { GardenState } from './state';
 
 /**
  * Which parts of a garden tell two gardens apart for the player. Water spent is ignored on purpose
- * (undoing gives the fog back, not the water), and so are the graph, the allowed actions and the
- * allowed roots, which the level fixes. Typed as a full record of `GardenState`, so a field added to the garden does
+ * (undoing gives the fog back, not the water), and so are the graph, the allowed and closed actions,
+ * the allowed roots and the chain rule, which the level fixes. Typed as a full record of `GardenState`, so a field added to the garden does
  * not compile until it is classified here.
  */
 const FIELDS = {
@@ -19,6 +19,8 @@ const FIELDS = {
   declaredDone: 'compared',
   allowed: 'ignored',
   roots: 'ignored',
+  chains: 'ignored',
+  closed: 'ignored',
 } as const satisfies Record<keyof GardenState, 'compared' | 'ignored'>;
 
 const COMPARED = (Object.keys(FIELDS) as (keyof GardenState)[]).filter(

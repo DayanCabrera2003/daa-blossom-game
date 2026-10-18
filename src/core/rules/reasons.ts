@@ -9,6 +9,8 @@ import type { ActionType } from './actions';
  */
 export type RejectReason =
   | { readonly code: 'actionLocked'; readonly action: ActionType }
+  /** Unlocked by now, but closed by this level for the day (4.10 closes folding). */
+  | { readonly code: 'actionClosed'; readonly action: ActionType }
   | { readonly code: 'vertexOutOfRange'; readonly vertex: number }
   | { readonly code: 'notAdjacent'; readonly u: VertexId; readonly v: VertexId }
   | { readonly code: 'alreadyLit'; readonly vertex: VertexId }
@@ -31,7 +33,11 @@ export type RejectReason =
   | { readonly code: 'notAFlower'; readonly error: BlossomError }
   | { readonly code: 'noSuchFlower'; readonly blossom: number }
   | { readonly code: 'alreadyPlaced'; readonly vertex: VertexId }
-  | { readonly code: 'notPlaced'; readonly vertex: VertexId };
+  | { readonly code: 'notPlaced'; readonly vertex: VertexId }
+  /** The level only lets lanterns move along the chain the marks reached (`chainRule.ts`). */
+  | { readonly code: 'chainNotSeen' }
+  /** The level's flower is closed: a chain only goes round it from its base (`chainRule.ts`). */
+  | { readonly code: 'flowerClosed' };
 
 /** The stable code of a rejection. */
 export type RejectCode = RejectReason['code'];

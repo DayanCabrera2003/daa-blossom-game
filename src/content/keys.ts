@@ -59,6 +59,7 @@ const IMPORT_REASONS = {
 /** Why an action was refused (`core/rules/reasons.ts`, and the game's own in `game/systems/refusal.ts`). */
 const REASONS = {
   actionLocked: ['action'],
+  actionClosed: ['action'],
   vertexOutOfRange: [],
   notAdjacent: ['u', 'v'],
   alreadyLit: ['vertex'],
@@ -84,6 +85,8 @@ const REASONS = {
   notPlaced: ['vertex'],
   notNow: [],
   twoSilver: ['vertex'],
+  chainNotSeen: [],
+  flowerClosed: [],
 } as const satisfies Record<RefusalCode, Params>;
 
 /** Where a dragged chain goes wrong (`core/matching/paths.ts`), named by the sprouts involved. */

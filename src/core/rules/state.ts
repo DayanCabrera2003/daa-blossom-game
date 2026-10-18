@@ -5,6 +5,7 @@ import { emptyMatching } from '../matching/createMatching';
 import type { Matching } from '../matching/types';
 import type { AlternatingForest } from '../search/forest';
 import type { ActionType } from './actions';
+import { ANY_CHAIN, type ChainRule } from './chainRule';
 
 /**
  * Everything the rules need to know about a garden being played. Immutable: every accepted action
@@ -35,6 +36,13 @@ export interface GardenState {
    * sprout in the dark may.
    */
   readonly roots: readonly VertexId[] | null;
+  /** Which chains the lanterns may slide along (`chainRule.ts`); any legal chain by default. */
+  readonly chains: ChainRule;
+  /**
+   * The actions unlocked by now that this level closes for the day (its `forbid`), refused as
+   * closed rather than as not learnt yet.
+   */
+  readonly closed: ReadonlySet<ActionType>;
 }
 
 /** How a level sets up its garden. */
@@ -47,6 +55,10 @@ export interface GardenSetup {
   readonly allowed: readonly ActionType[];
   /** The only sprouts a search may start from; any sprout in the dark by default. */
   readonly roots?: readonly VertexId[];
+  /** Which chains the lanterns may slide along; any legal chain by default. */
+  readonly chains?: ChainRule;
+  /** Actions the level closes for the day although they are unlocked; none by default. */
+  readonly closed?: readonly ActionType[];
 }
 
 /** The garden at the start of a level: open, unmarked, nothing spent or placed. */
@@ -65,5 +77,7 @@ export function createGardenState(setup: GardenSetup): GardenState {
     declaredDone: false,
     allowed: new Set(setup.allowed),
     roots: setup.roots ?? null,
+    chains: setup.chains ?? ANY_CHAIN,
+    closed: new Set(setup.closed ?? []),
   };
 }
