@@ -42,6 +42,11 @@ const boxOf = (thing: { x: number; y: number; width: number; height: number }): 
   height: thing.height,
 });
 
+/** What a scene can ask of the hub it starts: to open the epilogue over it (after the last garden). */
+export interface HubSceneData {
+  readonly epilogue?: boolean;
+}
+
 /**
  * The hub: the levels of the game by chapter, each chapter's name hanging from a signpost, with
  * their stars; levels not yet open are shown greyed out. It stands on the orchard's grass, and each
@@ -53,7 +58,7 @@ export class HubScene extends Phaser.Scene {
     super('hub');
   }
 
-  create(): void {
+  create(data: HubSceneData = {}): void {
     fitCamera(this);
     const { catalog, t, saves, teacherMode, playtest, clock, music, bus } = contextOf(this);
     const save = saves.get();
@@ -214,5 +219,10 @@ export class HubScene extends Phaser.Scene {
       ornaments: hubGarden(finished, taken),
     });
     backdrop.tint(HUB_TINT);
+    // After the last garden the epilogue opens over the hub, now laid out behind it. Phaser keeps
+    // a scene's data when it is started again without any, so the request is spent here: coming
+    // back to the hub later never opens the epilogue again by itself.
+    this.sys.settings.data = {};
+    if (data.epilogue === true) bus.emit('epilogue.open');
   }
 }

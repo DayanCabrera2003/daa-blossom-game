@@ -16,12 +16,18 @@ const MAX_STARS = 3;
 /** Between the row of stars and their count in words. */
 const STARS_GAP = 6;
 
-/** Shows the wooden panel of a won level: its stars, and where to go next (none after the last level). */
+/**
+ * Shows the wooden panel of a won level: its stars, and where to go next (none after the last
+ * level). The way back is named by the scene: the hub, or the epilogue after the last garden.
+ */
 export function showVictoryPanel(
   scene: Phaser.Scene,
   t: Translate,
   stars: StarResult,
-  actions: { readonly next: (() => void) | null; readonly hub: () => void },
+  actions: {
+    readonly next: (() => void) | null;
+    readonly back: { readonly label: string; readonly go: () => void };
+  },
 ): void {
   const width = 200;
   const height = 70;
@@ -42,7 +48,7 @@ export function showVictoryPanel(
   const left = Math.round((CANVAS_WIDTH - starsWidth - STARS_GAP - count.width) / 2);
   count.setX(left + starsWidth + STARS_GAP);
   drawStars(scene, left, y + 26 + Math.round((count.height - STAR_SIZE) / 2), row, 301);
-  new Button(scene, x + 10, y + height - 19, t('victory.hub'), actions.hub).setDepth(302);
+  new Button(scene, x + 10, y + height - 19, actions.back.label, actions.back.go).setDepth(302);
   if (actions.next !== null) {
     const next = new Button(scene, 0, y + height - 19, t('victory.next'), actions.next).setDepth(
       302,

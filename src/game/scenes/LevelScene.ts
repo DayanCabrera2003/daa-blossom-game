@@ -12,6 +12,7 @@ import {
   type Effect,
   type UiEvent,
 } from '../systems/levelController';
+import { afterVictory } from '../systems/afterVictory';
 import { cardJingle, levelScreen, trackFor, victoryJingle } from '../systems/musicFor';
 import { playtestEntries } from '../systems/playtestEntries';
 import { raceCues } from '../systems/raceCues';
@@ -25,6 +26,7 @@ import { LAYOUT } from '../view/layout';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
+import type { HubSceneData } from './HubScene';
 import { LevelCards } from './level/LevelCards';
 import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
@@ -300,22 +302,26 @@ export class LevelScene extends Phaser.Scene {
   }
 
   /**
-   * Shows the victory panel, offering the next level (if any) or the hub; a toast below it tells
-   * when the win opened pages of the Codex.
+   * Shows the victory panel, offering the next level (if any) and the way back: the hub, or after
+   * the last garden the epilogue, shown over the hub. A toast below it tells when the win opened
+   * pages of the Codex.
    */
   private offerNext(stars: StarResult): void {
-    const id = this.level.data.id;
     this.context.music.jingle(this.winJingle);
     // The next level the player can see: outside teacher mode, drafts are skipped.
-    const { catalog, teacherMode } = this.context;
+    const { catalog, teacherMode, t } = this.context;
     const shown = visibleLevels(
       catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
       teacherMode,
     );
-    const next = shown[shown.findIndex((level) => level.id === id) + 1];
-    showVictoryPanel(this, this.context.t, stars, {
-      next: next === undefined ? null : () => this.scene.start('level', { levelId: next.id }),
-      hub: () => this.scene.start('hub'),
+    const { next, back } = afterVictory(this.level.data.id, shown);
+    const toHub: HubSceneData = { epilogue: back === 'epilogue' };
+    showVictoryPanel(this, t, stars, {
+      next: next === null ? null : () => this.scene.start('level', { levelId: next }),
+      back: {
+        label: t(back === 'epilogue' ? 'epilogue.title' : 'victory.hub'),
+        go: () => this.scene.start('hub', toHub),
+      },
     });
     if (this.codexNotice) this.views.toast.show(this.context.t('codex.unlocked'));
   }
