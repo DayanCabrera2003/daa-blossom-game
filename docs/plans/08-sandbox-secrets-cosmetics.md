@@ -443,6 +443,7 @@ Lo que el autor dejó para el pulido tras las revisiones en pantalla:
 - La fila de abajo del modo libre se pisa 2 px con la fuente de reserva, más ancha (nunca con la fuente pixel del juego; decisión de F13).
 - La navegación con teclado del hub más allá de F / Mayús+F (las flores secretas).
 - Las flores secretas enseñan tarjetas de mecánica en un perfil nuevo de modo profesor.
+- Un jardín abierto desde un JSON cuyos brotes caen bajo la cabecera del editor (y 28–36) se desplaza hacia abajo al abrirse, conservando las posiciones relativas, en vez de quedar en parte tapado (decisión del autor sobre la pregunta 2 de la fase 15).
 
 ### Comprobaciones a mano del autor
 
