@@ -115,7 +115,8 @@ describe('the hub layout', () => {
         },
       ),
     );
-  });
+    // Many boxes per case: exploring with thousands of runs needs more than the default 5 s.
+  }, 30_000);
 
   it('a button too wide for the room after its title starts a line of its own, from the margin', () => {
     const wide = CANVAS_WIDTH - 2 * HUB.margin;
