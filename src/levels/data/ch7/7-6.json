@@ -1,0 +1,135 @@
+{
+  "id": "7.6",
+  "secret": {
+    "stars": 8
+  },
+  "sprouts": [
+    {
+      "label": "a",
+      "x": 200,
+      "y": 55
+    },
+    {
+      "label": "b",
+      "x": 260,
+      "y": 55
+    },
+    {
+      "label": "c",
+      "x": 320,
+      "y": 55
+    },
+    {
+      "label": "p",
+      "x": 80,
+      "y": 150
+    },
+    {
+      "label": "q",
+      "x": 140,
+      "y": 210
+    },
+    {
+      "label": "r",
+      "x": 160,
+      "y": 130
+    },
+    {
+      "label": "C",
+      "x": 240,
+      "y": 130
+    },
+    {
+      "label": "s",
+      "x": 320,
+      "y": 130
+    },
+    {
+      "label": "t",
+      "x": 340,
+      "y": 210
+    },
+    {
+      "label": "o",
+      "x": 400,
+      "y": 150
+    }
+  ],
+  "vines": [
+    ["a", "b"],
+    ["b", "c"],
+    ["p", "q"],
+    ["q", "r"],
+    ["r", "p"],
+    ["r", "C"],
+    ["C", "s"],
+    ["s", "t"],
+    ["t", "o"],
+    ["o", "s"]
+  ],
+  "lanterns": [
+    ["p", "q"],
+    ["s", "t"]
+  ],
+  "goal": {
+    "visible": false
+  },
+  "victory": {
+    "type": "tutteBergeCertificate"
+  },
+  "hints": [
+    {
+      "line": "ch7.6.sauce.08"
+    },
+    {
+      "line": "ch7.6.sauce.09",
+      "highlight": ["r", "C"]
+    },
+    {
+      "line": "ch7.6.sauce.10"
+    }
+  ],
+  "flow": [
+    {
+      "step": "say",
+      "lines": ["ch7.6.oaks.00", "ch7.6.sauce.01"]
+    },
+    {
+      "step": "play"
+    },
+    {
+      "step": "say",
+      "lines": ["ch7.6.oaks.02", "ch7.6.sauce.03"]
+    },
+    {
+      "step": "certifyAgain",
+      "repeated": "ch7.6.oaks.04"
+    },
+    {
+      "step": "say",
+      "lines": ["ch7.6.oaks.05", "ch7.6.oaks.06", "ch7.6.sauce.07"]
+    }
+  ],
+  "solution": [
+    {
+      "type": "join",
+      "u": "a",
+      "v": "b"
+    },
+    {
+      "type": "join",
+      "u": "r",
+      "v": "C"
+    },
+    {
+      "type": "declareDone"
+    },
+    {
+      "type": "liftStone",
+      "vertex": "C"
+    },
+    {
+      "type": "declareDone"
+    }
+  ]
+}

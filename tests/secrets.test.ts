@@ -1,4 +1,5 @@
 import type { Blossom, GardenNode } from '@core/blossom/types';
+import { checkTutteBerge, tutteBergeBound } from '@core/certificates/tutteBerge';
 import { checkVertexCover } from '@core/certificates/vertexCover';
 import { encodeGarden } from '@core/codes/gardenCode';
 import { runOf } from '@core/cost/benchmark';
@@ -29,7 +30,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 /** The secret flowers of these tests, by id. */
-const FLOWERS = ['1.10', '2.5', '3.10', '4.13', '5.6', '6.7'] as const;
+const FLOWERS = ['1.10', '2.5', '3.10', '4.13', '5.6', '6.7', '7.6'] as const;
 
 /** Closest two sprouts of a secret flower may sit, in pixels: twice a sprout's radius and air. */
 const MIN_SPACING = 18;
@@ -302,5 +303,33 @@ describe('6.7: when is thinking worth it', () => {
     const ask = level().flow.find((step) => step.step === 'ask');
     if (ask?.step !== 'ask') throw new Error('6.7 asks when thinking pays');
     expect(ask.options.map((option) => option.correct)).toEqual([true, false, false]);
+  });
+});
+
+describe('7.6: another proof', () => {
+  const level = () => levelOf('7.6');
+  const names = (stones: readonly VertexId[]) =>
+    stones.map((stone) => level().data.sprouts[stone]?.label);
+
+  it('four lanterns fit, and four sets of stones prove it: none, b, C, and b with C', () => {
+    const { graph } = level();
+    const proving = [...Array(2 ** graph.n).keys()]
+      .map((subset) => [...Array(graph.n).keys()].filter((v) => (subset >> v) & 1))
+      .filter((stones) => tutteBergeBound(graph, stones) === 4);
+    expect(proving.map(names)).toEqual([[], ['b'], ['C'], ['b', 'C']]);
+  });
+
+  it('the walkthrough presents two different sets of stones, and both prove its lanterns', () => {
+    const { start, solution } = level();
+    const presented: VertexId[][] = [];
+    let state = start;
+    for (const move of solution) {
+      state = play(state, [move]);
+      if (move.type === 'declareDone') presented.push([...state.stones].sort((x, y) => x - y));
+    }
+    expect(presented.map(names)).toEqual([[], ['C']]);
+    for (const stones of presented) {
+      expect(checkTutteBerge(state.graph, state.matching, stones).ok).toBe(true);
+    }
   });
 });
