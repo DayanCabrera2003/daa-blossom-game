@@ -1,20 +1,23 @@
 import type Phaser from 'phaser';
 import { playUiSound } from '../audio/uiSound';
-import { ICON_GAP, type ButtonIcon } from '../picture/buttonIcon';
+import { badgeAt, buttonContent, ICON_GAP, type ButtonIcon } from '../picture/buttonIcon';
 import { WOOD_BUTTON, type ButtonState } from '../picture/wood';
 import { css, PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 
 /**
- * A small button of the HUD and the panels: a label, maybe after icons, on a wooden button of the
- * pack (`picture/wood.ts`), at rest, in hand or switched off, its letters in the colour that reads
- * on each look. A press clicks, unless the button is switched off.
+ * A small button of the HUD and the panels: a label, maybe after icons (the first maybe wearing a
+ * badge on its corner, `picture/buttonIcon.ts`), on a wooden button of the pack
+ * (`picture/wood.ts`), at rest, in hand or switched off, its letters in the colour that reads on
+ * each look. A press clicks, unless the button is switched off.
  */
 export class Button {
   private readonly wood: WoodFrame;
   private readonly text: Phaser.GameObjects.Text;
   private readonly icons: Phaser.GameObjects.Image[];
+  /** The badge on the first icon's corner, if it has one and both pictures are loaded. */
+  private readonly badge: Phaser.GameObjects.Image | null;
   /** The width the icons and their gaps take before the label. */
   private readonly iconRoom: number;
   private enabled = true;
@@ -27,6 +30,7 @@ export class Button {
     label: string,
     onPress: () => void,
     icons: readonly ButtonIcon[] = [],
+    badge: ButtonIcon | null = null,
   ) {
     // An icon whose picture is not loaded is left out.
     this.icons = icons
@@ -34,6 +38,10 @@ export class Button {
       .map((icon) =>
         scene.add.image(0, 0, icon.texture).setOrigin(0, 0).setScale(icon.scale).setDepth(101),
       );
+    this.badge =
+      badge !== null && this.icons.length > 0 && scene.textures.exists(badge.texture)
+        ? scene.add.image(0, 0, badge.texture).setOrigin(0, 0).setScale(badge.scale).setDepth(102)
+        : null;
     this.text = scene.add.text(0, 0, label, textStyle()).setOrigin(0, 0).setDepth(101);
     this.iconRoom = this.icons.reduce((room, icon) => room + icon.displayWidth + ICON_GAP, 0);
     this.wood = new WoodFrame(
@@ -78,12 +86,22 @@ export class Button {
     const { width, height } = this.wood.bounds;
     this.wood.setRect({ x, y: y - 1, width, height });
     // Each icon is centred on the button's height, the label after them.
-    let left = x + 2;
-    for (const icon of this.icons) {
-      icon.setPosition(left, Math.round(y - 1 + (height - icon.displayHeight) / 2));
-      left += icon.displayWidth + ICON_GAP;
+    const content = buttonContent(
+      x,
+      y,
+      height,
+      this.icons.map((icon) => ({ width: icon.displayWidth, height: icon.displayHeight })),
+    );
+    this.icons.forEach((icon, i) => {
+      const at = content.icons[i];
+      if (at !== undefined) icon.setPosition(at.x, at.y);
+    });
+    const [first] = content.icons;
+    if (this.badge !== null && first !== undefined) {
+      const at = badgeAt(first, this.badge.displayWidth);
+      this.badge.setPosition(at.x, at.y);
     }
-    this.text.setPosition(left, y);
+    this.text.setPosition(content.labelX, y);
     return this;
   }
 
@@ -102,6 +120,7 @@ export class Button {
   setDepth(depth: number): this {
     this.wood.setDepth(depth);
     for (const icon of this.icons) icon.setDepth(depth + 1);
+    this.badge?.setDepth(depth + 2);
     this.text.setDepth(depth + 1);
     return this;
   }
@@ -121,6 +140,7 @@ export class Button {
   setVisible(visible: boolean): this {
     this.wood.setVisible(visible);
     for (const icon of this.icons) icon.setVisible(visible);
+    this.badge?.setVisible(visible);
     this.text.setVisible(visible);
     return this;
   }
@@ -128,6 +148,7 @@ export class Button {
   destroy(): void {
     this.wood.destroy();
     for (const icon of this.icons) icon.destroy();
+    this.badge?.destroy();
     this.text.destroy();
   }
 
@@ -143,6 +164,7 @@ export class Button {
     this.wood.setPiece(piece);
     this.text.setColor(css(PALETTE[piece.text]));
     for (const icon of this.icons) icon.setAlpha(this.enabled ? 1 : 0.5);
+    this.badge?.setAlpha(this.enabled ? 1 : 0.5);
     return this;
   }
 }
