@@ -121,6 +121,7 @@ describe('the panels fit their texts', () => {
     for (const label of [
       t('settings.exportLog'),
       t('settings.credits'),
+      t('settings.keys'),
       t('settings.close'),
       t('settings.mute'),
     ]) {

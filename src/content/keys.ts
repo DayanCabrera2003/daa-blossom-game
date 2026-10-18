@@ -15,6 +15,7 @@ import { GENERATORS } from '@levels/sandbox/generators';
 import type { DesignRejection } from '@levels/sandbox/design';
 import type { ImportRejection } from '@levels/sandbox/importText';
 import { DESIGN_TOOLS } from '@game/input/designIntent';
+import { KEY_HELP } from '@game/input/keyBindings';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
 
@@ -364,6 +365,10 @@ const UI = {
   'settings.close': [],
   'settings.exportLog': [],
   'settings.credits': [],
+  'settings.keys': [],
+  'keys.title': [],
+  'keys.pointer': [],
+  'keys.close': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>
@@ -482,6 +487,7 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ),
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
+  ...Object.fromEntries(KEY_HELP.map((line) => [`keys.${line}`, []])),
   // The name of each speaker, on the tab of the dialogue box.
   ...Object.fromEntries(SPEAKERS.map((speaker) => [`speaker.${speaker}`, []])),
 };
