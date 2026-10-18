@@ -1,5 +1,6 @@
-// The weight budget of the shipped game (plan 06, phase 11): how many bytes each part may take,
-// and how the parts are weighed from the asset manifest and the built JavaScript.
+// The weight budget of the shipped game (plan 06, phase 11; the deferred books, plan 07, phase 2):
+// how many bytes each part may take, and how the parts are weighed from the asset manifest and
+// the built files.
 import type { AssetKind, Manifest } from '../../src/game/assets/manifestSchema';
 
 /** Decimal units, as browsers and `du --si` report sizes: the stricter reading of "MB". */
@@ -7,19 +8,24 @@ const KB = 1000;
 const MB = 1000 * KB;
 
 /** A part of the budget: the JavaScript, the assets by kind, and what the first screen waits for. */
-export type BudgetPart = 'js' | 'images' | 'fonts' | 'sounds' | 'initial' | 'music';
+export type BudgetPart = 'js' | 'images' | 'fonts' | 'sounds' | 'initial' | 'music' | 'codex';
 
 /** The most bytes each part may take. */
 export const BUDGET: Readonly<Record<BudgetPart, number>> = {
+  // The initial script: the entry and what it imports statically (the books load later).
   js: 1.8 * MB,
   images: 600 * KB,
   fonts: 100 * KB,
   // Effects, babble syllables and jingles.
   sounds: 1.5 * MB,
-  // The JavaScript plus the boot group, the hub's music among it.
+  // The initial script plus the boot group, the hub's music among it; never the deferred books.
   initial: 5 * MB,
   // Every track, though each is loaded with its own chapter.
   music: 20 * MB,
+  // The books, loaded on demand: KaTeX, marked, their stylesheets, KaTeX's woff2 fonts, the
+  // entries, the diagrams and the teacher's panel. Settled at the close of plan 07, when all
+  // fourteen entries weighed 873 KB: about an eighth to spare, no more.
+  codex: 1 * MB,
 };
 
 /** The asset kinds weighed under each part of the budget that the manifest alone decides. */
@@ -62,8 +68,14 @@ export interface BudgetRow {
   readonly over: boolean;
 }
 
-/** Every part of the budget, weighed from the manifest's sizes and the built JavaScript. */
-export function budgetReport(sizes: ManifestSizes & { readonly js: number }): BudgetRow[] {
+/** What the build weighs: the initial script and the deferred books, as `buildFiles` sorts them. */
+export interface BuildSizes {
+  readonly js: number;
+  readonly codex: number;
+}
+
+/** Every part of the budget, weighed from the manifest's sizes and the built files. */
+export function budgetReport(sizes: ManifestSizes & BuildSizes): BudgetRow[] {
   const weights: Record<BudgetPart, number> = {
     js: sizes.js,
     images: sizes.images,
@@ -71,6 +83,7 @@ export function budgetReport(sizes: ManifestSizes & { readonly js: number }): Bu
     sounds: sizes.sounds,
     initial: sizes.js + sizes.boot,
     music: sizes.music,
+    codex: sizes.codex,
   };
   return (Object.keys(BUDGET) as BudgetPart[]).map((part) => ({
     part,

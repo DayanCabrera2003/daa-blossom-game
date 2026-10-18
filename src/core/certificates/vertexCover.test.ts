@@ -1,9 +1,17 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { bipartiteWithMatchingArb } from '../../../tests/support/arbitraries';
+import {
+  bipartiteGraphArb,
+  bipartiteWithMatchingArb,
+  graphArb,
+} from '../../../tests/support/arbitraries';
+import { bruteForceMatching } from '../bruteforce/maximumMatching';
 import { cycleGraph, pathGraph, starGraph } from '../generators/families';
+import { bipartition } from '../graph/bipartition';
 import { createGraph } from '../graph/createGraph';
-import { createMatching } from '../matching/createMatching';
+import { neighbors } from '../graph/queries';
+import type { Graph, VertexId } from '../graph/types';
+import { createMatching, emptyMatching } from '../matching/createMatching';
 import { size } from '../matching/queries';
 import { unwrap } from '../shared/result';
 import { bipartiteMatching } from '../search/bipartiteMatching';
@@ -27,6 +35,20 @@ describe('vertex cover (scarecrows)', () => {
       ok: false,
       error: { code: 'uncoveredEdge', edge: [2, 3] },
     });
+  });
+
+  it('property (C5, Lemma 5.2): any set of scarecrows guarding every vine is at least ν', () => {
+    const coverAndGarden = graphArb({ maxN: 9 }).chain((graph) =>
+      fc.tuple(fc.constant(graph), fc.subarray([...Array(graph.n).keys()])),
+    );
+    fc.assert(
+      fc.property(coverAndGarden, ([graph, cover]) => {
+        if (!checkVertexCover(graph, cover).ok) return;
+        const best = bruteForceMatching(graph);
+        if (best.status !== 'complete') throw new Error('brute force gave up');
+        expect(cover.length).toBeGreaterThanOrEqual(size(best.matching));
+      }),
+    );
   });
 
   it('a garden without vines needs no scarecrows', () => {
@@ -85,6 +107,32 @@ describe('König cover from the final forest', () => {
     expect(() => koenigCover(cycleGraph(5), run.forest)).toThrow();
   });
 
+  it("property (C5, Lemma 5.3): in bees and flowers a sun is on its root's side, a moon across", () => {
+    fc.assert(
+      fc.property(bipartiteWithMatchingArb(), ([graph, initial]) => {
+        const { forest } = unwrap(bipartiteMatching(graph, initial));
+        const sides = bipartition(graph);
+        if (sides.kind !== 'bipartite') throw new Error('the garden should be bees and flowers');
+        forest.label.forEach((label, v) => {
+          if (label === 'none') return;
+          const root = forest.root[v] as number;
+          expect(sides.side[v] === sides.side[root]).toBe(label === 'outer');
+        });
+      }),
+    );
+  });
+
+  it('property (C5, Observation 5.5): when the search reaches everyone, the moons alone guard', () => {
+    fc.assert(
+      fc.property(bipartiteWithMatchingArb(), ([graph, initial]) => {
+        const { forest } = unwrap(bipartiteMatching(graph, initial));
+        if (forest.label.includes('none')) return;
+        const moons = forest.label.flatMap((label, v) => (label === 'inner' ? [v] : []));
+        expect(koenigCover(graph, forest)).toEqual(moons);
+      }),
+    );
+  });
+
   it('property (König, C5): in bees and flowers there are as many scarecrows as lanterns', () => {
     fc.assert(
       fc.property(bipartiteWithMatchingArb(), ([graph, initial]) => {
@@ -92,6 +140,51 @@ describe('König cover from the final forest', () => {
         const cover = koenigCover(graph, run.forest);
         expect(checkVertexCover(graph, cover).ok).toBe(true);
         expect(cover.length).toBe(size(run.matching));
+      }),
+    );
+  });
+});
+
+/** The sprouts on side 0 of a garden of bees and flowers (a bug if it has an odd loop). */
+function beesOf(graph: Graph): VertexId[] {
+  const sides = bipartition(graph);
+  if (sides.kind !== 'bipartite') throw new Error('not bees and flowers');
+  return sides.side.flatMap((side, v) => (side === 0 ? [v] : []));
+}
+
+/** N(S): every sprout with a vine to some sprout of `group`. */
+const neighborhood = (graph: Graph, group: readonly VertexId[]): Set<VertexId> =>
+  new Set(group.flatMap((v) => neighbors(graph, v)));
+
+/** Every subset of `items`. */
+const subsets = <T>(items: readonly T[]): T[][] =>
+  items.reduce<T[][]>((all, item) => [...all, ...all.map((subset) => [...subset, item])], [[]]);
+
+describe("Hall's condition from König (C14, Theorem 14.6)", () => {
+  it('property: every bee finds a flower exactly when no group of bees has fewer flowers', () => {
+    fc.assert(
+      fc.property(bipartiteGraphArb({ maxN: 10 }), (graph) => {
+        const bees = beesOf(graph);
+        const outcome = bruteForceMatching(graph);
+        if (outcome.status !== 'complete') throw new Error('brute force gave up');
+        const everyBee = size(outcome.matching) === bees.length;
+        const hall = subsets(bees).every(
+          (group) => neighborhood(graph, group).size >= group.length,
+        );
+        expect(hall).toBe(everyBee);
+      }),
+    );
+  });
+
+  it('property: when a bee is left without a flower, the bees off a smallest cover are the culprits', () => {
+    fc.assert(
+      fc.property(bipartiteGraphArb({ maxN: 10 }), (graph) => {
+        const bees = beesOf(graph);
+        const run = unwrap(bipartiteMatching(graph, emptyMatching(graph)));
+        if (size(run.matching) === bees.length) return;
+        const cover = new Set(koenigCover(graph, run.forest));
+        const group = bees.filter((bee) => !cover.has(bee));
+        expect(neighborhood(graph, group).size).toBeLessThan(group.length);
       }),
     );
   });

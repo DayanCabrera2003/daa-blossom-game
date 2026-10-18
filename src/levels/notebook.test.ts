@@ -18,6 +18,7 @@ const row = {
 /** A notebook whose second (wrong) option carries `counterexample`. */
 const withCounterexample = (counterexample: unknown) => ({
   prompt: 'ch1.5.notebook.00',
+  codex: 'C2',
   options: [
     { line: 'ch1.5.notebook.01', correct: true },
     { line: 'ch1.5.notebook.02', correct: false, counterexample },
@@ -54,6 +55,7 @@ describe('the notebook schema', () => {
   it('a right option is never refuted', () => {
     const notebook = {
       prompt: 'ch1.5.notebook.00',
+      codex: 'C2',
       options: [
         {
           line: 'ch1.5.notebook.01',
@@ -69,6 +71,7 @@ describe('the notebook schema', () => {
   it('any option may carry what the mentor answers to it', () => {
     const notebook = {
       prompt: 'ch1.5.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch1.5.notebook.01', correct: true },
         { line: 'ch1.5.notebook.02', correct: false, reply: 'ch1.5.sauce.04' },
@@ -99,5 +102,11 @@ describe('the notebook schema', () => {
       ]),
     ).toBe(true);
     expect(kinds([{ ...a, kind: 'bee' }, b, c])).toBe(false);
+  });
+  it('each question names the Codex entry that translates it, and only a real one', () => {
+    const question = withCounterexample(undefined);
+    expect(notebookSchema.parse(question).codex).toBe('C2');
+    expect(notebookSchema.safeParse({ ...question, codex: undefined }).success).toBe(false);
+    expect(notebookSchema.safeParse({ ...question, codex: 'C15' }).success).toBe(false);
   });
 });

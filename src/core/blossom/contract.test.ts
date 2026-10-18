@@ -180,6 +180,31 @@ describe('folding a flower', () => {
     expect(optimum(folded.graph) - size(folded.matching)).toBe(2);
   });
 
+  it('without a stem, folding can hide a chain (C8, Observation 8.4)', () => {
+    // A triangle b–c=d–b whose base b holds a lantern to u, a leaf: no stem reaches b. Two sprouts
+    // in the dark, p at c and q at d. b c d u p q = 0 1 2 3 4 5.
+    const garden = unwrap(
+      createGraph(6, [
+        [0, 1],
+        [1, 2],
+        [0, 2],
+        [0, 3],
+        [1, 4],
+        [2, 5],
+      ]),
+    );
+    const lanterns = unwrap(
+      createMatching(garden, [
+        [1, 2],
+        [0, 3],
+      ]),
+    );
+    const folded = contract(openLayer(garden, lanterns), [0, 1, 2]).layer;
+    // p c d q is a chain of G, so M is not maximum there; but G/B is a star, and M/B is maximum.
+    expect(optimum(garden) - size(lanterns)).toBe(1);
+    expect(optimum(folded.graph) - size(folded.matching)).toBe(0);
+  });
+
   it('property (flower lemma, C8): M is maximum in G exactly when M/B is maximum in G/B', () => {
     fc.assert(
       fc.property(graphWithMatchingArb({ maxN: 9 }), ([graph, matching]) => {

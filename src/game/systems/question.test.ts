@@ -48,6 +48,7 @@ describe('the questions of a script', () => {
   it('the notebook offers its statements, by index; its right one is the true statement', () => {
     const notebook = {
       prompt: 'ch1.6.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch1.6.notebook.01', correct: false, reply: 'ch1.6.sauce.05' },
         { line: 'ch1.6.notebook.02', correct: true },
@@ -70,6 +71,7 @@ describe('the questions of a script', () => {
   it('a notebook step asks the question it names among the level’s', () => {
     const question = (first: number) => ({
       prompt: `ch1.6.notebook.0${first}`,
+      codex: 'C2',
       options: [
         { line: `ch1.6.notebook.0${first + 1}`, correct: true },
         { line: `ch1.6.notebook.0${first + 2}`, correct: false },

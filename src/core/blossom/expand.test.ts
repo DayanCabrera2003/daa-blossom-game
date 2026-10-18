@@ -13,7 +13,8 @@ import { bipartiteSearch, type SearchOutcome } from '../search/bipartiteSearch';
 import { contract, openLayer } from './contract';
 import { findOddCycle } from './detect';
 import { expandPath } from './expand';
-import type { Layer } from './types';
+import { baseVertex, members } from './hierarchy';
+import type { GardenNode, Layer } from './types';
 
 const optimum = (graph: Graph): number => {
   const outcome = bruteForceMatching(graph);
@@ -125,6 +126,28 @@ describe('unfolding nested flowers', () => {
         if (outcome.kind !== 'augmentingPath') return;
         const path = expandPath(layer, outcome.path);
         expect(checkAugmentingPath(graph, matching, path).ok).toBe(true);
+      }),
+    );
+  });
+
+  it('property (C9, Prop. 9.4): each flower crossed, at any depth, in one stretch from its base', () => {
+    const everyFlower = (nodes: readonly GardenNode[]): GardenNode[] =>
+      nodes.flatMap((node) => (node.kind === 'blossom' ? [node, ...everyFlower(node.cycle)] : []));
+    fc.assert(
+      fc.property(graphWithMatchingArb({ maxN: 10 }), ([graph, matching]) => {
+        const { layer, outcome } = foldAndSearch(graph, matching);
+        if (outcome.kind !== 'augmentingPath') return;
+        const path = expandPath(layer, outcome.path);
+        for (const flower of everyFlower(layer.nodes)) {
+          const inside = new Set(members(flower));
+          const at = path.flatMap((v, i) => (inside.has(v) ? [i] : []));
+          if (at.length === 0) continue;
+          const [first, last] = [at[0] as number, at[at.length - 1] as number];
+          // One stretch: entered once and left once, never coming back.
+          expect(last - first + 1).toBe(at.length);
+          // One of its two ends is the base, where the only lantern leaving a flower is.
+          expect([path[first], path[last]]).toContain(baseVertex(flower));
+        }
       }),
     );
   });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  describeCodexProblem,
   describeLoadError,
   describeProblem,
   describeWalkthroughProblem,
@@ -145,5 +146,22 @@ describe('readable level problems', () => {
     expect(describeWalkthroughProblem({ code: 'unfinished', step: 3 })).toBe(
       'the walkthrough ends with the script still waiting at step 4',
     );
+  });
+  it('explains how the catalog opens the Codex wrongly', () => {
+    expect(describeCodexProblem({ code: 'codexNeverWhole', entry: 'C13' })).toBe(
+      'Codex entry C13 never opens whole in a playable level',
+    );
+    expect(describeCodexProblem({ code: 'codexPartAfterWhole', entry: 'C1', level: '2.1' })).toBe(
+      'level 2.1 opens only some tabs of Codex entry C1, already whole before',
+    );
+    expect(
+      describeCodexProblem({
+        code: 'notebookLinkBehind',
+        level: '2.4',
+        question: 0,
+        entry: 'C2',
+        opensAt: '1.8',
+      }),
+    ).toBe('level 2.4: notebook question 1 links to C2, already open since 1.8');
   });
 });

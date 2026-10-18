@@ -77,3 +77,13 @@ export function layoutHub(
   });
   return { chapters, bottom };
 }
+
+/**
+ * Where the sign "Más allá del jardín" stands once the last garden is won (plan 07, phase 11): in
+ * the bed of the hub's garden, centred along the bottom, a margin above the edge, given its width
+ * and height. The top line is full and the chapters reach the bed, so it grows out of the garden.
+ */
+export const epilogueSignAt = (width: number, height: number): Point => ({
+  x: Math.round((CANVAS_WIDTH - width) / 2),
+  y: CANVAS_HEIGHT - HUB.margin - height,
+});

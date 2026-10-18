@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   emptySave,
   loadSave,
+  recordGlossaryRows,
+  recordPageRead,
   recordCompletion,
   recordNotebook,
   recordTutorialSeen,
@@ -28,8 +30,63 @@ describe('saved progress', () => {
     expect(twice.levels['1.1']).toEqual({ stars: 3 });
   });
 
-  it('a new player has written nothing in the notebook and seen no mechanic card', () => {
-    expect(emptySave()).toEqual({ version: 3, levels: {}, notebook: [], tutorialsSeen: [] });
+  it('a new player has written nothing in the notebook, seen no mechanic card, read no page', () => {
+    expect(emptySave()).toEqual({
+      version: 4,
+      levels: {},
+      notebook: [],
+      tutorialsSeen: [],
+      codexRead: [],
+      glossaryRead: [],
+    });
+  });
+
+  it('records each Codex page read once, tab by tab, in the order read', () => {
+    const read = recordPageRead(
+      recordPageRead(recordPageRead(emptySave(), 'C1:intuition'), 'C1:formal'),
+      'C1:intuition',
+    );
+    expect(read.codexRead).toEqual(['C1:intuition', 'C1:formal']);
+    expect(recordPageRead(read, 'C1:formal')).toBe(read);
+  });
+
+  it('records the glossary rows seen of each entry once, keeping the order seen', () => {
+    const seen = recordGlossaryRows(recordGlossaryRows(emptySave(), ['C1', 'C2']), ['C2', 'C3']);
+    expect(seen.glossaryRead).toEqual(['C1', 'C2', 'C3']);
+    expect(recordGlossaryRows(seen, ['C3', 'C1'])).toBe(seen);
+  });
+
+  it('what was read comes back from the store', () => {
+    const store = memoryStore();
+    const save = recordGlossaryRows(recordPageRead(emptySave(), 'C13:bridge'), ['C1']);
+    writeSave(store, save);
+    expect(loadSave(store)).toEqual(save);
+  });
+
+  it('a save of version 3 keeps its progress, notebook and cards, with no page read', () => {
+    const v3 =
+      '{"version":3,"levels":{"2.4":{"stars":3}},"notebook":["1.5","2.4"],"tutorialsSeen":["sun"]}';
+    expect(loadSave(memoryStore({ [SAVE_KEY]: v3 }))).toEqual({
+      version: 4,
+      levels: { '2.4': { stars: 3 } },
+      notebook: ['1.5', '2.4'],
+      tutorialsSeen: ['sun'],
+      codexRead: [],
+      glossaryRead: [],
+    });
+  });
+
+  it('a page read that is not a tab of the Codex is damage, like any other', () => {
+    const save = (read: string, rows: string): string =>
+      `{"version":4,"levels":{},"notebook":[],"tutorialsSeen":[],"codexRead":${read},"glossaryRead":${rows}}`;
+    for (const bad of [save('["C15:formal"]', '[]'), save('["C1"]', '[]'), save('[]', '["C15"]')]) {
+      expect(loadSave(memoryStore({ [SAVE_KEY]: bad }))).toEqual(emptySave());
+    }
+    expect(loadSave(memoryStore({ [SAVE_KEY]: save('["C1:formal"]', '["C1"]') }))).toEqual({
+      ...emptySave(),
+      codexRead: ['C1:formal'],
+      glossaryRead: ['C1'],
+    });
   });
 
   it('records each mechanic card once, in the order seen', () => {
@@ -43,10 +100,12 @@ describe('saved progress', () => {
   it('a save of version 2 keeps all its progress and notebook, with no card seen', () => {
     const v2 = '{"version":2,"levels":{"1.5":{"stars":2}},"notebook":["1.5"]}';
     expect(loadSave(memoryStore({ [SAVE_KEY]: v2 }))).toEqual({
-      version: 3,
+      version: 4,
       levels: { '1.5': { stars: 2 } },
       notebook: ['1.5'],
       tutorialsSeen: [],
+      codexRead: [],
+      glossaryRead: [],
     });
   });
 
@@ -58,10 +117,12 @@ describe('saved progress', () => {
   it('a save of version 1 keeps all its progress, with an empty notebook', () => {
     const v1 = '{"version":1,"levels":{"0.1":{"stars":3},"1.2":{"stars":1}}}';
     expect(loadSave(memoryStore({ [SAVE_KEY]: v1 }))).toEqual({
-      version: 3,
+      version: 4,
       levels: { '0.1': { stars: 3 }, '1.2': { stars: 1 } },
       notebook: [],
       tutorialsSeen: [],
+      codexRead: [],
+      glossaryRead: [],
     });
   });
 

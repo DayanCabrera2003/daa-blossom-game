@@ -1,7 +1,9 @@
 import strings from '@content/es/strings.json';
+import { catalog } from '@levels/catalog';
+import { isUiUnlocked } from '@levels/uiUnlocks';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { TOOL_ACTIONS, type ToolId } from '../input/tools';
+import { availableTools, TOOL_ACTIONS, type ToolId } from '../input/tools';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import {
   BOTTOM_ROWS,
@@ -10,6 +12,7 @@ import {
   HUD_BUTTONS,
   hudRow,
   toolbarRow,
+  traceButtonLeft,
 } from './bottomRows';
 import { iconRoom, TOOL_ICONS } from './buttonIcon';
 
@@ -100,5 +103,17 @@ describe('the two bottom rows of the level HUD', () => {
         }
       }),
     );
+  });
+
+  it("the teacher's trace button ends the tools' row, clear of the tools of every level", () => {
+    const trace = estimatedButtonWidth(label('hud.trace'));
+    const left = traceButtonLeft(trace);
+    expect(left + trace).toBe(CANVAS_WIDTH - BOTTOM_ROWS.margin);
+    for (const level of catalog()) {
+      const tools = availableTools(level.start.allowed, isUiUnlocked('layers', level.data.id));
+      const widths = [...tools.map((tool) => toolWidth(tool)), trace];
+      const lefts = [...toolbarRow(widths.slice(0, -1)), left];
+      expect(fitsOnCanvas(lefts, widths), level.data.id).toBe(true);
+    }
   });
 });

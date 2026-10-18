@@ -15,6 +15,8 @@ export class Button {
   private readonly wood: WoodFrame;
   private readonly text: Phaser.GameObjects.Text;
   private readonly icons: Phaser.GameObjects.Image[];
+  /** The width the icons and their gaps take before the label. */
+  private readonly iconRoom: number;
   private enabled = true;
   private active = false;
 
@@ -33,11 +35,16 @@ export class Button {
         scene.add.image(0, 0, icon.texture).setOrigin(0, 0).setScale(icon.scale).setDepth(101),
       );
     this.text = scene.add.text(0, 0, label, textStyle()).setOrigin(0, 0).setDepth(101);
-    const iconRoom = this.icons.reduce((room, icon) => room + icon.displayWidth + ICON_GAP, 0);
+    this.iconRoom = this.icons.reduce((room, icon) => room + icon.displayWidth + ICON_GAP, 0);
     this.wood = new WoodFrame(
       scene,
       WOOD_BUTTON.idle,
-      { x: x - 2, y: y - 1, width: iconRoom + this.text.width + 4, height: this.text.height + 2 },
+      {
+        x: x - 2,
+        y: y - 1,
+        width: this.iconRoom + this.text.width + 4,
+        height: this.text.height + 2,
+      },
       100,
       PALETTE.button,
     );
@@ -77,6 +84,17 @@ export class Button {
       left += icon.displayWidth + ICON_GAP;
     }
     this.text.setPosition(left, y);
+    return this;
+  }
+
+  /**
+   * Writes another label on the button, which grows or shrinks to it from its left edge (a hub
+   * sign that gains or loses the room of its seal); its height stays.
+   */
+  setLabel(label: string): this {
+    this.text.setText(label);
+    const { x, y, height } = this.wood.bounds;
+    this.wood.setRect({ x, y, width: this.iconRoom + this.text.width + 4, height });
     return this;
   }
 

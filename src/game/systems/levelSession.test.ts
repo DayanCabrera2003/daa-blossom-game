@@ -252,6 +252,7 @@ describe('a level session follows its script', () => {
   it('the notebook ends only with the right statement; false ones are refuted or answered', () => {
     const notebook = {
       prompt: 'ch2.9.notebook.00',
+      codex: 'C2',
       options: [
         {
           line: 'ch2.9.notebook.01',

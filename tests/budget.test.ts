@@ -48,7 +48,7 @@ describe('manifestSizes', () => {
 
 describe('budgetReport', () => {
   it('weighs the initial load as the JavaScript plus the boot group', () => {
-    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500 });
+    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500, codex: 9000 });
     expect(report.find((row) => row.part === 'initial')).toEqual({
       part: 'initial',
       bytes: 1848,
@@ -57,16 +57,32 @@ describe('budgetReport', () => {
     });
   });
 
+  it('weighs the deferred books apart, out of the initial load', () => {
+    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500, codex: 9000 });
+    expect(report.find((row) => row.part === 'codex')).toEqual({
+      part: 'codex',
+      bytes: 9000,
+      limit: BUDGET.codex,
+      over: false,
+    });
+    expect(BUDGET.codex).toBe(1e6);
+  });
+
   it('flags every part over its limit, and only those', () => {
     const report = budgetReport({
       js: BUDGET.js + 1,
+      codex: BUDGET.codex + 1,
       images: BUDGET.images,
       fonts: 0,
       sounds: 0,
       music: BUDGET.music + 1,
       boot: 0,
     });
-    expect(report.filter((row) => row.over).map((row) => row.part)).toEqual(['js', 'music']);
+    expect(report.filter((row) => row.over).map((row) => row.part)).toEqual([
+      'js',
+      'music',
+      'codex',
+    ]);
   });
 
   it('leaves room in the initial load for the whole JavaScript budget', () => {

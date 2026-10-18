@@ -8,15 +8,26 @@ import tseslint from 'typescript-eslint';
 /** Import patterns that point at a given layer, whether through its alias or a relative path. */
 const layer = (name) => [`@${name}`, `@${name}/**`, `**/${name}`, `**/${name}/**`];
 
-/** Builds a no-restricted-imports rule that forbids the given layers (and optionally Phaser). */
-const forbidLayers = (layers, message, { phaser = true } = {}) => [
+/** The libraries that render the Códex: heavy, so only ui/math (in the deferred chunk) uses them. */
+const MATH_LIBRARIES = {
+  group: ['katex', 'katex/**', 'marked', 'marked/**'],
+  message: 'only src/ui/math may import katex and marked; they load with the books, never before.',
+};
+
+/**
+ * The import patterns that forbid the given layers, Phaser (unless `phaser` is false) and the math
+ * libraries (unless `math` is false).
+ */
+const layerPatterns = (layers, message, { phaser = true, math = true } = {}) => [
+  ...(phaser ? [{ group: ['phaser', 'phaser/**'], message }] : []),
+  ...(math ? [MATH_LIBRARIES] : []),
+  ...layers.map((name) => ({ group: layer(name), message })),
+];
+
+/** Builds a no-restricted-imports rule from `layerPatterns`. */
+const forbidLayers = (layers, message, options) => [
   'error',
-  {
-    patterns: [
-      ...(phaser ? [{ group: ['phaser', 'phaser/**'], message }] : []),
-      ...layers.map((name) => ({ group: layer(name), message })),
-    ],
-  },
+  { patterns: layerPatterns(layers, message, options) },
 ];
 
 export default tseslint.config(
@@ -120,12 +131,76 @@ export default tseslint.config(
     },
   },
   {
+    // Services are shared by the game and the overlays; they never render the Códex.
+    files: ['src/services/**/*.ts'],
+    rules: {
+      'no-restricted-imports': forbidLayers([], 'services/ never render the Códex.', {
+        phaser: false,
+      }),
+    },
+  },
+  {
     files: ['src/ui/**/*.ts'],
     rules: {
       'no-restricted-imports': forbidLayers(
         ['game'],
         'ui/ must not import game/; use the event bus.',
       ),
+    },
+  },
+  {
+    // Pure overlay models: what the books show is decided here without the DOM, and unit tested.
+    files: ['src/ui/model/**/*.ts'],
+    rules: {
+      'no-restricted-globals': [
+        'error',
+        { name: 'window', message: 'ui/model is pure: pass what it needs from the DOM parts.' },
+        { name: 'document', message: 'ui/model is pure: pass what it needs from the DOM parts.' },
+        {
+          name: 'localStorage',
+          message: 'ui/model is pure: the save comes from the shared store.',
+        },
+      ],
+    },
+  },
+  {
+    // The only home of KaTeX and marked; it loads with the books, in the deferred chunk.
+    files: ['src/ui/math/**/*.ts'],
+    rules: {
+      'no-restricted-imports': forbidLayers(
+        ['game'],
+        'ui/ must not import game/; use the event bus.',
+        { math: false },
+      ),
+    },
+  },
+  {
+    // The shells are part of the initial script: they reach the heavy books (and the teacher's
+    // panel) only through import(), so KaTeX, marked and the entries stay in the deferred chunk.
+    // ESLint only sees static imports.
+    files: ['src/ui/shell.ts', 'src/ui/teacherShell.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            ...layerPatterns(['game'], 'ui/ must not import game/; use the event bus.'),
+            {
+              group: [
+                'codex',
+                'math',
+                'notebook',
+                'teacher',
+                'epilogue',
+                'diagram',
+                'book',
+                'books',
+              ].flatMap((name) => [`./${name}`, `./${name}/**`, `@ui/${name}`, `@ui/${name}/**`]),
+              message: 'the shell loads the books with import() the first time one opens.',
+            },
+          ],
+        },
+      ],
     },
   },
   // Must be last: turns off stylistic rules that Prettier owns.

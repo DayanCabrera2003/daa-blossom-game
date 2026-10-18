@@ -5,12 +5,10 @@ import { catalog } from '@levels/catalog';
 import { CARD_IDS } from '@levels/cards/schema';
 import { referencedLines } from '@levels/lines';
 import { describe, expect, it } from 'vitest';
+import { MATHEMATICS } from './support/vocabulary';
 
 const table: Record<string, string> = strings;
 const lineTable: Record<string, string> = lines;
-
-/** Words that belong to the Codex only (GDD §2, principle 2). */
-const MATHEMATICS = /grafo|arista|v[ée]rtice|emparejamiento|camino aumentante/i;
 
 /** The `{name}` placeholders of a text, sorted. */
 const placeholders = (text: string): string[] =>
@@ -48,6 +46,14 @@ describe('interface text (content/es/strings.json)', () => {
 
   it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
     const offending = Object.entries(table).filter(([, text]) => MATHEMATICS.test(text));
+    expect(offending).toEqual([]);
+  });
+
+  it('the overlays separate their words without the middle dot, which the pixel font draws raised', () => {
+    const offending = Object.entries(table).filter(
+      ([key, text]) =>
+        /^(codex|diagram|book|notebook|epilogue|teacher)\./.test(key) && text.includes('·'),
+    );
     expect(offending).toEqual([]);
   });
 });

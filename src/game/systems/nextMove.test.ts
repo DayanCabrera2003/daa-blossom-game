@@ -136,6 +136,40 @@ describe("the mentor's next step (hint grade 3)", () => {
     );
   });
 
+  it('before chains exist, never passes the same lanterns back and forth in a garden with a triangle', () => {
+    // Found by exploring: passing the first lantern of whatever chain the search finds can undo the
+    // previous pass (7→6, then 3→6, then 7→6…). Passing along the shortest chain always shortens it.
+    const graph = unwrap(
+      createGraph(8, [
+        [0, 1],
+        [0, 2],
+        [0, 3],
+        [0, 5],
+        [0, 7],
+        [1, 2],
+        [1, 4],
+        [1, 6],
+        [1, 7],
+        [3, 6],
+        [4, 5],
+        [4, 6],
+        [6, 7],
+      ]),
+    );
+    const start = createGardenState({
+      graph,
+      matching: unwrap(
+        createMatching(graph, [
+          [0, 5],
+          [1, 4],
+        ]),
+      ),
+      allowed: ['join', 'split', 'passLantern'],
+    });
+    const victory: VictoryCondition = { type: 'matchingSize', value: size(fastEdmonds(graph)) };
+    mentorPlays({ start, solution: [], victory }, start, 10 * graph.n + 10);
+  });
+
   it('scarecrows: takes away the wrong one, places the right ones, then says "Terminé" (3.7)', () => {
     // 1–2–3–4–5 as 0..4, two lanterns lit, a scarecrow on the wrong sprout.
     const path = pathGraph(5);

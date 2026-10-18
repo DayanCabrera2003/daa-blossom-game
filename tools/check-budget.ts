@@ -1,24 +1,35 @@
-// check-budget: weighs the built game against its budget (plan 06, phase 11): the JavaScript of
-// dist/, which only a build knows, with the assets of the manifest.
-// Usage: npm run build && npm run budget. Exits with code 1 if any part is over its limit.
-import { existsSync, readdirSync, statSync } from 'node:fs';
+// check-budget: weighs the built game against its budget (plan 06, phase 11): the built files of
+// dist/, which only a build knows, with the assets of the manifest. The build manifest tells the
+// initial script from the books loaded on demand (plan 07, phase 2), and KaTeX and marked must be
+// in the books only.
+// Usage: npm run build && npm run budget. Exits with code 1 if any part is over its limit, or if
+// the initial script bundles KaTeX or marked.
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import manifestJson from '../src/game/assets/manifest.json';
 import { parseManifest } from '../src/game/assets/manifestSchema';
 import { budgetReport, manifestSizes } from './assets/budget';
+import { buildFiles, parseViteManifest } from './assets/buildChunks';
+import { librariesIn } from './assets/deferredLibraries';
 import { formatTable } from './formatTable';
 
 const DIST = fileURLToPath(new URL('../dist', import.meta.url));
+const BUILD_MANIFEST = join(DIST, '.vite', 'manifest.json');
 
-if (!existsSync(DIST)) throw new Error('no dist/ folder: run npm run build first');
+if (!existsSync(BUILD_MANIFEST)) throw new Error('no dist/.vite/manifest.json: run npm run build');
 
-// Every script the build emits; the copied assets of public/ hold none.
-const js = readdirSync(DIST, { recursive: true, withFileTypes: true })
-  .filter((entry) => entry.isFile() && entry.name.endsWith('.js'))
-  .reduce((total, entry) => total + statSync(join(entry.parentPath, entry.name)).size, 0);
+const files = buildFiles(parseViteManifest(JSON.parse(readFileSync(BUILD_MANIFEST, 'utf8'))));
 
-const report = budgetReport({ ...manifestSizes(parseManifest(manifestJson)), js });
+/** The bytes of some built files. */
+const weigh = (paths: readonly string[]): number =>
+  paths.reduce((total, path) => total + statSync(join(DIST, path)).size, 0);
+
+const report = budgetReport({
+  ...manifestSizes(parseManifest(manifestJson)),
+  js: weigh(files.initial),
+  codex: weigh(files.deferred),
+});
 
 /** A size in kilobytes, decimal like the budget. */
 const kb = (bytes: number): string => `${(bytes / 1000).toFixed(0)} KB`;
@@ -29,4 +40,21 @@ console.log(
     report.map((row) => [row.part, kb(row.bytes), kb(row.limit), row.over ? 'OVER' : 'ok']),
   ),
 );
-if (report.some((row) => row.over)) process.exitCode = 1;
+
+// Shipped for old browsers but never fetched, so listed and not weighed.
+console.log(`\nnot weighed, older font formats (${kb(weigh(files.skipped))}):`);
+for (const path of files.skipped) console.log(`  ${path}`);
+
+// The heavy libraries of the books must never reach the first screen.
+const leaks = files.initial
+  .filter((path) => path.endsWith('.js'))
+  .flatMap((path) =>
+    librariesIn(readFileSync(join(DIST, path), 'utf8')).map((name) => `${name} in ${path}`),
+  );
+console.log(
+  leaks.length === 0
+    ? '\nKaTeX and marked: not in the initial script'
+    : `\nOVER: the initial script bundles ${leaks.join(', ')}`,
+);
+
+if (report.some((row) => row.over) || leaks.length > 0) process.exitCode = 1;

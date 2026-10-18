@@ -1,0 +1,84 @@
+/*
+ * The Codex's own look (plan 07, phase 3), on the frame every book shares (ui/book/book.css): its
+ * index of entries, its tabs, and its formulas in KaTeX.
+ */
+
+/*
+ * An entry of the index: two lines at most, its garden title and, once earned, its formal title,
+ * each cut short with an ellipsis when it does not fit (the page on the right, and the row's
+ * tooltip, give them whole). The closed ones are greyed.
+ */
+.codex-row {
+  border-bottom: var(--px) solid var(--paper);
+}
+
+.codex-closed {
+  padding: var(--px) calc(3 * var(--px));
+  color: var(--button-off);
+}
+
+.codex-entry {
+  display: grid;
+  grid-template-columns: calc(14 * var(--px)) minmax(0, 1fr) auto;
+  width: 100%;
+  padding: var(--px) calc(3 * var(--px));
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.codex-entry:hover,
+.codex-entry[aria-current='page'] {
+  background: var(--paper);
+}
+
+.codex-name,
+.codex-sub {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.codex-sub {
+  grid-column: 2 / -1;
+  color: var(--link);
+}
+
+/* A tab is its number and its name on one line, with a dot beside it while it is new. */
+.codex-tab {
+  display: flex;
+  flex: none;
+  align-items: center;
+  padding: 0 calc(4 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  border-bottom: 0;
+  background: var(--button);
+  white-space: nowrap;
+}
+
+.codex-tab[aria-selected='true'] {
+  background: var(--paper);
+}
+
+/* KaTeX's em is far taller than the pixel font's letters: this brings their heights together. */
+.book-text .katex {
+  font-size: 0.75em;
+}
+
+/* A formula and the word or punctuation that hugs it ("$M$-aumentante", "$G/B$,") share a line. */
+.book-text .math-nowrap {
+  white-space: nowrap;
+}
+
+.book-text .katex-display {
+  margin: calc(4 * var(--px)) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* The holes the diagrams and the glossary fill in later phases take no room while empty. */
+.book-text .codex-diagram:empty,
+.book-text .codex-bridge:empty,
+.book-text .codex-glossary:empty {
+  display: none;
+}

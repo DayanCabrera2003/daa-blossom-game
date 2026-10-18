@@ -1,6 +1,11 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { graphWithDensityArb, matchingArb } from '../../../../tests/support/arbitraries';
+import {
+  graphWithDensityArb,
+  graphWithMatchingArb,
+  matchingArb,
+} from '../../../../tests/support/arbitraries';
+import { everyChain } from '../../../../tests/support/plantedFlower';
 import { BRUTO_PROPERTY_TIMEOUT } from '../../../../tests/support/timeouts';
 import { bruteForceMatching } from '../../bruteforce/maximumMatching';
 import { createOperationCounter } from '../../cost/operationCounter';
@@ -8,7 +13,8 @@ import { cycleGraph, pathGraph } from '../../generators/families';
 import { randomGraph } from '../../generators/random';
 import { createGraph } from '../../graph/createGraph';
 import type { Graph } from '../../graph/types';
-import { size } from '../../matching/queries';
+import { flipAlong } from '../../matching/augment';
+import { isExposed, size } from '../../matching/queries';
 import { validateMate } from '../../matching/validate';
 import { unwrap } from '../../shared/result';
 import { createRng } from '../../shared/rng';
@@ -93,6 +99,46 @@ describe('fast Edmonds (the second oracle)', () => {
         },
       ),
       { numRuns: 30 },
+    );
+  });
+
+  it('property (C11, Lemma 11.3): a root with no chain gets none when a chain elsewhere is lit', () => {
+    fc.assert(
+      fc.property(graphWithMatchingArb({ maxN: 8 }), ([graph, matching]) => {
+        const chains = everyChain(graph, matching);
+        const stuck = [...Array(graph.n).keys()].filter(
+          (r) => isExposed(matching, r) && !chains.some((chain) => chain[0] === r),
+        );
+        for (const chain of chains.slice(0, 6)) {
+          const lit = flipAlong(matching, chain);
+          const after = everyChain(graph, lit);
+          for (const r of stuck) {
+            expect(isExposed(lit, r)).toBe(true);
+            expect(after.some((next) => next[0] === r)).toBe(false);
+          }
+        }
+      }),
+    );
+  });
+
+  it('property (C11, Theorem 11.5): its counted work stays within the cubic bound', () => {
+    fc.assert(
+      fc.property(
+        graphWithDensityArb({ maxN: 30 }).chain((graph) =>
+          fc.tuple(fc.constant(graph), matchingArb(graph)),
+        ),
+        ([graph, initial]) => {
+          const counter = createOperationCounter();
+          fastEdmonds(graph, initial, counter);
+          const { n } = graph;
+          const m = graph.edges.length;
+          // n searches of ≤ 2n labels, ≤ 2m scans and ≤ (n−1)/2 folds of ≤ n rebases each,
+          // and at most n/2 chains of at most n/2 flips each.
+          expect(counter.total).toBeLessThanOrEqual(
+            n * (2 * n + 2 * m + (n * (n - 1)) / 2) + (n * n) / 4,
+          );
+        },
+      ),
     );
   });
 });

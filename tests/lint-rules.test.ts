@@ -151,6 +151,114 @@ describe('the view never changes the logic', () => {
   });
 });
 
+describe('the math libraries of the Códex', () => {
+  // KaTeX and marked are heavy and only render the books: they live in ui/math, in the deferred chunk.
+  const IMPORTS = ["import katex from 'katex';", "import { marked } from 'marked';"];
+  const FORBIDDEN = [
+    'src/core/virtual.ts',
+    'src/levels/virtual.ts',
+    'src/services/virtual.ts',
+    'src/game/virtual.ts',
+    'src/game/scenes/virtual.ts',
+    'src/game/systems/virtual.ts',
+    'src/game/view/virtual.ts',
+    'src/ui/codex/virtual.ts',
+    'src/ui/model/virtual.ts',
+    'src/ui/shell.ts',
+    'src/ui/teacherShell.ts',
+  ];
+
+  it.each(FORBIDDEN)('%s may not import katex nor marked', async (filePath) => {
+    for (const code of IMPORTS) {
+      expect(await firedRules(filePath, `${code}\nexport {};`)).toContain('no-restricted-imports');
+    }
+  });
+
+  it.each(['src/ui/math/virtual.ts', 'tests/virtual.test.ts'])(
+    '%s may import katex and marked',
+    async (filePath) => {
+      for (const code of IMPORTS) {
+        expect(await firedRules(filePath, `${code}\nexport {};`)).not.toContain(
+          'no-restricted-imports',
+        );
+      }
+    },
+  );
+
+  it('ui/math still may not import game', async () => {
+    expect(
+      await firedRules('src/ui/math/virtual.ts', "import { x } from '@game/scene';\nexport { x };"),
+    ).toContain('no-restricted-imports');
+  });
+});
+
+describe('pure overlay models', () => {
+  // ui/model decides what the books show without the DOM, so it is unit tested like the core.
+  it.each(['document.body', 'window.innerWidth', "localStorage.getItem('x')"])(
+    'src/ui/model may not use the global in %s',
+    async (expr) => {
+      expect(await firedRules('src/ui/model/virtual.ts', `export const v = ${expr};`)).toContain(
+        'no-restricted-globals',
+      );
+    },
+  );
+
+  it('src/ui/model still may not import game', async () => {
+    expect(
+      await firedRules(
+        'src/ui/model/virtual.ts',
+        "import { x } from '@game/scene';\nexport { x };",
+      ),
+    ).toContain('no-restricted-imports');
+  });
+
+  it('the DOM parts of ui/ may use the browser', async () => {
+    expect(
+      await firedRules('src/ui/codex/virtual.ts', 'export const v = document.body;'),
+    ).not.toContain('no-restricted-globals');
+  });
+});
+
+describe('the light overlay shells', () => {
+  // The shells are in the initial script; the books, and the teacher's panel with them, load with
+  // import() the first time they open.
+  const HEAVY = ['codex', 'math', 'notebook', 'teacher', 'epilogue', 'diagram', 'book'];
+  const SHELLS = ['src/ui/shell.ts', 'src/ui/teacherShell.ts'];
+
+  describe.each(SHELLS)('%s', (shell) => {
+    it.each(HEAVY)('may not import ui/%s statically', async (folder) => {
+      for (const from of [`./${folder}/Book`, `@ui/${folder}/Book`, `@ui/${folder}`]) {
+        expect(await firedRules(shell, `import { x } from '${from}';\nexport { x };`)).toContain(
+          'no-restricted-imports',
+        );
+      }
+    });
+
+    it('may not import the books entry statically', async () => {
+      expect(await firedRules(shell, "import { x } from './books';\nexport { x };")).toContain(
+        'no-restricted-imports',
+      );
+    });
+
+    it('may load the books with import()', async () => {
+      const code = "export const load = () => import('./codex/CodexBook');";
+      expect(await firedRules(shell, code)).not.toContain('no-restricted-imports');
+    });
+
+    it('still may not import game', async () => {
+      expect(await firedRules(shell, "import { x } from '@game/scene';\nexport { x };")).toContain(
+        'no-restricted-imports',
+      );
+    });
+  });
+
+  it('other ui files may import the books statically', async () => {
+    expect(
+      await firedRules('src/ui/books.ts', "import { x } from './codex/CodexBook';\nexport { x };"),
+    ).not.toContain('no-restricted-imports');
+  });
+});
+
 describe('one responsibility per file', () => {
   const lines = (count: number): string =>
     Array.from({ length: count }, (_, i) => `export const v${i} = ${i};`).join('\n');

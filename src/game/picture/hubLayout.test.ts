@@ -1,8 +1,8 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { HUB_SIGN } from './hubGarden';
-import { HUB, layoutHub } from './hubLayout';
+import { epilogueSignAt, HUB, layoutHub } from './hubLayout';
 import { PIXEL_FONT } from './pixelFont';
 
 /** The height of a button: a line of the pixel font (12 px) and its panel. */
@@ -137,5 +137,15 @@ describe('the hub layout', () => {
       chapters: [{ titleY: HUB.top, buttons: [] }],
       bottom: HUB.top + HEIGHT,
     });
+  });
+
+  it('the sign of the epilogue stands centred in the bed of the garden, a margin above the bottom', () => {
+    const width = text('Más allá del jardín'.length) + 4;
+    const at = epilogueSignAt(width, HEIGHT);
+    expect(at).toEqual({
+      x: Math.round((CANVAS_WIDTH - width) / 2),
+      y: CANVAS_HEIGHT - HUB.margin - HEIGHT,
+    });
+    expect(at.y).toBeGreaterThanOrEqual(HUB.gardenTop);
   });
 });

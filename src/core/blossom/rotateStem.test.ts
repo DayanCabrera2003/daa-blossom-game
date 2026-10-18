@@ -8,6 +8,7 @@ import { isExposed, size } from '../matching/queries';
 import { unwrap } from '../shared/result';
 import { bipartiteSearch } from '../search/bipartiteSearch';
 import { pathToRoot } from '../search/pathToRoot';
+import { contract, openLayer } from './contract';
 import { findOddCycle } from './detect';
 import { checkBlossom } from './isBlossom';
 import { rotateStem } from './rotateStem';
@@ -66,6 +67,11 @@ describe('rotating the stem', () => {
         expect(size(rotated)).toBe(size(matching));
         expect(isExposed(rotated, base)).toBe(true);
         expect(checkBlossom(graph, rotated, loop)).toEqual({ ok: true, value: loop });
+        // Lemma 8.3 (C8): folded, the flower keeps as many lanterns, and now sits in the dark.
+        const before = contract(openLayer(graph, matching), loop);
+        const after = contract(openLayer(graph, rotated), loop);
+        expect(size(after.layer.matching)).toBe(size(before.layer.matching));
+        expect(isExposed(after.layer.matching, after.blossom)).toBe(true);
       }),
     );
   });

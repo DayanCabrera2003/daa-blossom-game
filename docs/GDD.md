@@ -250,7 +250,7 @@ Tras dominar una idea, el mentor pide "escríbelo". El jugador elige entre 3–4
 
 ### 5.6 El Códex
 
-Libro accesible desde el menú y el hub. Cada entrada tiene tres pestañas:
+Libro accesible desde el botón de libro del HUD (en cuanto alguna página está abierta) y desde el hub. Cada entrada tiene tres pestañas:
 - **Intuición:** la explicación con las palabras del jardín y un diagrama interactivo (el mismo motor del juego, en pequeño).
 - **Formal:** definiciones, enunciados y demostraciones con notación matemática (KaTeX), escritas en el nivel de un buen curso de DAA.
 - **Puente:** la tabla de traducción de ese concepto y una nota histórica.
@@ -429,7 +429,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Enseña:** la incomodidad. El jugador llega a 4, no encuentra cadena, pulsa "Terminé". Sauce: "¿Cómo lo sabes?" Opciones: "Lo probé todo" / "No encuentro más cadenas" / "No lo sé". Cualquiera lleva al mismo sitio: "Ven al estanque".
 - **Por qué aquí:** toda la teoría del juego responde a esta pregunta. Hay que dejar que el jugador se la haga solo.
 - **Victoria:** 4 faroles + pulsar "Terminé".
-- **Desbloquea:** Códex **C1** completo y **C2 La cadena**. Hub: el prado florece.
+- **Desbloquea:** Códex **C1** completo, **C2 La cadena** y **C13 Glosario** (solo con las filas de las entradas ya abiertas; crece con ellas). Hub: el prado florece.
 
 #### 1.9 Maestría del Prado
 - **Jardín:** 14 brotes con faroles iniciales mal puestos, tres cadenas necesarias, una de ellas de longitud 7 con dos callejones.
@@ -766,7 +766,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 ### Epílogo — Más allá del jardín
 
 - Una pantalla sobria, sin puzles, que abre el Códex **C14** y el modo libre.
-- **Usos reales:** intercambio cruzado de donantes de riñón (tratado con respeto y brevedad: "hay jardines donde encender un farol salva una vida"); estructuras de Kekulé en química (los dobles enlaces de una molécula forman un emparejamiento perfecto); asignación de parejas de trabajo, turnos y equipos.
+- **Usos reales:** intercambio cruzado de donantes de riñón (tratado con respeto y brevedad: "hay jardines donde encender un farol salva una vida"); estructuras de Kekulé en química (los dobles enlaces de una molécula se reparten como faroles, cada brote con uno; dicho con las palabras de las matemáticas, «forman un emparejamiento perfecto», va en C14 y no en el epílogo, que habla como el jardín); asignación de parejas de trabajo, turnos y equipos.
 - Cierre con un texto del autor.
 
 ---
@@ -788,19 +788,19 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Formal** (KaTeX), **Puente** (traducción y nota histórica). Se resume aquí el contenido de cada una; los textos completos se redactan en producción y se revisan contra un texto de referencia (Lovász–Plummer, *Matching Theory*; Korte–Vygen, *Combinatorial Optimization*; Tarjan, *Data Structures and Network Algorithms*).
 
 - **C1 Emparejamiento.** Grafo, emparejamiento, vértice cubierto/expuesto. Maximal vs máximo, con el jardín de 1.1 como diagrama. ν(G).
-- **C2 La cadena.** Camino alternante y camino aumentante. Intercambiar a lo largo de un camino aumentante da un emparejamiento de tamaño |M| + 1; a lo largo de uno alternante par, del mismo tamaño. Diagrama: la brigada de 1.2.
+- **C2 La cadena.** Camino alternante y camino aumentante. Intercambiar a lo largo de un camino aumentante da un emparejamiento de tamaño |M| + 1; a lo largo de uno alternante par, del mismo tamaño. Diagrama: la brigada de 1.3.
 - **C3 Lema de Berge (1957).** Enunciado y demostración completa: M ⊕ M\* tiene grado ≤ 2 en cada vértice, luego es unión de caminos y ciclos alternantes; los ciclos aportan igual; si |M\*| > |M| algún camino tiene más aristas de M\* que de M, empieza y termina con aristas de M\*, sus extremos están expuestos en M: es aumentante para M. Diagrama: el estanque de 2.1–2.3, manipulable.
 - **C4 La búsqueda.** Bosque alternante: raíces en vértices expuestos, vértices exteriores (sol, distancia par) e interiores (luna, impar). Reglas de crecimiento. Arista exterior–exterior entre árboles distintos ⇒ camino aumentante. Cada vértice se etiqueta una vez ⇒ O(m) por búsqueda en bipartitos.
 - **C5 Abejas, flores y espantapájaros (König, 1931).** Grafo bipartito. Cobertura por vértices. Cota trivial ν ≤ τ. Igualdad en bipartitos: a partir del bosque final, cover = interiores ∪ (no alcanzados de un lado). Por qué no hay sol–sol en bipartitos (paridad). Diagrama: 3.8.
 - **C6 Bucles impares.** Un grafo es bipartito ⇔ no tiene ciclos impares. Por qué una arista exterior–exterior en el mismo árbol cierra un ciclo impar (par + par + 1). Por qué la búsqueda ingenua falla: el vértice tendría las dos paridades. Diagrama: 4.1–4.2.
 - **C7 La flor.** Definición de blossom (ciclo alternante de longitud impar 2k+1 con k aristas de M), base, tallo. Contracción G/B, M/B. Todo vértice del blossom es alcanzable desde la base por un camino alternante par (recorriendo el ciclo en el sentido adecuado), y por eso el blossom contraído se trata como exterior. Diagrama: 4.4–4.6 con desplegado paso a paso.
-- **C8 Lema de la flor (Edmonds, 1965).** Enunciado: M es máximo en G ⇔ M/B es máximo en G/B. Demostración en dos partes: (i) un camino aumentante en G/B se levanta a G (si atraviesa B, se entra por un pétalo y se sale por la base recorriendo el ciclo en el sentido que alterna; siempre existe uno); (ii) suponiendo, sin pérdida de generalidad, la base expuesta (girar el tallo no cambia |M|), todo camino aumentante en G tiene un extremo fuera de B, y su prefijo hasta el primer vértice de B es un camino aumentante en G/B. Diagrama: 4.11 manipulable.
+- **C8 Lema de la flor (Edmonds, 1965).** Hipótesis explícita: B es un blossom **con tallo**, como el que encuentra la búsqueda. Enunciado: G tiene camino M-aumentante ⇔ G/B tiene camino M/B-aumentante; por tanto, M es máximo en G ⇔ M/B es máximo en G/B. Sin tallo la parte (ii) puede fallar, y la entrada da el contraejemplo. Demostración en dos partes: (i) un camino aumentante en G/B se levanta a G (si atraviesa B, se entra por un pétalo y se sale por la base recorriendo el ciclo en el sentido que alterna; siempre existe uno); (ii) suponiendo, sin pérdida de generalidad, la base expuesta (girar el tallo no cambia |M|), todo camino aumentante en G tiene un extremo fuera de B, y su prefijo hasta el primer vértice de B es un camino aumentante en G/B. Diagrama: 4.11 manipulable.
 - **C9 Flores anidadas.** Contracciones sucesivas; el desplegado se hace de fuera hacia dentro; en cada flor interior el camino entra por un vértice y sale por otro y existe exactamente un recorrido alternante entre ellos por el ciclo. Diagrama: 5.1 con capas.
 - **C10 La receta (algoritmo de Edmonds).** Pseudocódigo completo, correspondencia tarjeta ↔ línea. Corrección: cuando la búsqueda termina sin camino aumentante en el grafo contraído, por C8 no lo hay en G, y por C3 M es máximo. Terminación: a lo sumo n/2 aumentos; cada búsqueda etiqueta cada vértice una vez y cada contracción reduce el número de vértices.
-- **C11 El costo.** Por búsqueda: O(m) etiquetados, hasta n/2 contracciones de costo O(n) cada una con la implementación sencilla ⇒ O(n²) o O(n·m) por fase según implementación; n/2 fases ⇒ O(n³) (O(n²·m) en la versión más ingenua). Comparación con la búsqueda exhaustiva: número de emparejamientos crece exponencialmente. Gráfica de 6.5 con los datos reales del jugador. Nota: Micali–Vazirani O(√n · m) existe, y por qué no se aborda.
+- **C11 El costo.** La versión didáctica, la que traza el juego, construye cada G/B explícitamente: O(n²) pasos de traza y O(n(n+m)) operaciones por fase, a lo sumo n/2 + 1 fases ⇒ O(n²(n+m)), que es O(n²·m) si m ≥ n (la cota que mide el código). La versión compacta (arreglo base[]) hace una sola búsqueda por raíz, gracias al lema «si ningún camino aumentante empieza en r, tampoco empieza en r tras aumentar»: n búsquedas de O(m) exámenes, hasta n/2 contracciones de costo O(n) y un aumento O(n) cada una ⇒ O(n³). Comparación con la búsqueda exhaustiva: número de emparejamientos crece exponencialmente. Gráfica de 6.5 con los datos reales del jugador. Nota: Micali–Vazirani O(√n · m) existe, y por qué no se aborda.
 - **C12 Las piedras (Tutte–Berge, 1958).** def(G) = |V| − 2ν(G). Para todo U ⊆ V: def(G) ≥ odd(G − U) − |U| (cada componente impar deja un vértice sin cubrir dentro o cubierto por U). Igualdad para algún U: el conjunto de vértices interiores del bosque final; las componentes de G − U son los exteriores (vértices o blossoms, impares) y los no alcanzados (perfectamente emparejados). Demuestra la optimalidad y da la fórmula ν(G) = min_U (|V| + |U| − odd(G − U)) / 2. Caso bipartito: se recupera König. Diagrama: 7.4.
-- **C13 Glosario jardín ↔ matemáticas.** La tabla de 3.3 completa.
-- **C14 Más allá del jardín.** Intercambio de riñones (Roth, Sönmez, Ünver; Nobel 2012 a Roth y Shapley), estructuras de Kekulé, asignaciones. Bibliografía.
+- **C13 Glosario jardín ↔ matemáticas.** La tabla de 3.3 completa. Se abre en 1.8 mostrando solo las filas de las entradas ya abiertas, y crece con ellas hasta quedar completa tras 7.4.
+- **C14 Más allá del jardín.** Intercambio de riñones (Roth, Sönmez, Ünver; Nobel 2012 a Roth y Shapley), estructuras de Kekulé (los dobles enlaces de una molécula forman un emparejamiento perfecto; el benceno tiene dos), asignaciones. Bibliografía.
 
 ---
 

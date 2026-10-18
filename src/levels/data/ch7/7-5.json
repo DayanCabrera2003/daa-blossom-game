@@ -74,6 +74,7 @@
     { "step": "play" },
     { "step": "say", "lines": ["ch7.5.oaks.05", "ch7.5.oaks.06", "ch7.5.sauce.07"] }
   ],
+  "unlocks": { "codex": ["C14"] },
   "solution": [
     { "type": "inspect", "vertex": "R" },
     { "type": "markRoot", "vertex": "R" },

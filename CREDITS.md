@@ -192,3 +192,36 @@ is `the sound's parameters` → `file under public/assets/`.
 - `fold chord (C5, E5, G5)` → `audio/sfx/fold.wav`
 - `unfold arpeggio (G5, E5, C5)` → `audio/sfx/unfold.wav`
 - `crickets of the prologue night` → `audio/music/ch0-night.wav`
+
+## Libraries
+
+The game also ships the code of the libraries below, which the Codex loads only when a book is
+first opened. They are not art, music or sound, so the CC0 rule of this file does not apply to
+them; their licenses ask for the notices kept in their folders under `node_modules/`, and they are
+credited here.
+
+### KaTeX
+
+- Authors: Khan Academy and the KaTeX contributors
+- Version: 0.19.0
+- License: MIT
+- Source: https://katex.org (https://github.com/KaTeX/KaTeX)
+- Used for: Typesetting the formulas of the Codex (its stylesheet included); `contrib/` is not used.
+
+### KaTeX fonts
+
+- Authors: Design Science, Inc. (the MathJax fonts, 2009-2010) and Khan Academy (2014-2018)
+- Version: the one shipped with KaTeX 0.19.0
+- License: SIL Open Font License 1.1 (https://openfontlicense.org)
+- Source: https://github.com/KaTeX/katex-fonts
+- Used for: The letters and symbols of the formulas of the Codex. The build copies them in woff2,
+  woff and ttf, as KaTeX's stylesheet names them; browsers fetch only the woff2.
+
+### marked
+
+- Authors: MarkedJS and Christopher Jeffrey
+- Version: 18.0.14
+- License: MIT (with the BSD-style notice of John Gruber's original Markdown, kept in its license)
+- Source: https://marked.js.org (https://github.com/markedjs/marked)
+- Used for: Turning the Markdown of the Codex entries into pages, with the project's own extension
+  for the formulas.

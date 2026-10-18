@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
+import { codexSources, openCodex, pagesOpened } from '@services/codexProgress';
 import { unlockedLevels, visibleLevels } from '@services/progress';
-import { recordCompletion, recordNotebook, writeSave } from '@services/save';
+import { recordCompletion, recordNotebook } from '@services/save';
 import type { AssetKey } from '../assets/keys';
 import { levelKeys, loadRequests } from '../assets/loadPlan';
 import {
@@ -11,6 +12,7 @@ import {
   type Effect,
   type UiEvent,
 } from '../systems/levelController';
+import { afterVictory } from '../systems/afterVictory';
 import { cardJingle, levelScreen, trackFor, victoryJingle } from '../systems/musicFor';
 import { playtestEntries } from '../systems/playtestEntries';
 import { raceCues } from '../systems/raceCues';
@@ -24,11 +26,13 @@ import { LAYOUT } from '../view/layout';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
+import type { HubSceneData } from './HubScene';
 import { LevelCards } from './level/LevelCards';
 import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
 import { showEffect, type EffectStage } from './level/levelEffects';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
+import { TeacherBridge } from './level/teacherBridge';
 import { Presenter } from './presenter';
 import { queueLoads } from './queueLoads';
 import { addSettings } from './settingsPanel';
@@ -60,6 +64,10 @@ export class LevelScene extends Phaser.Scene {
   private sfx!: SfxPlayer;
   /** The jingle of the win, rung when the victory panel shows. */
   private winJingle: AssetKey = 'jingle.victory';
+  /** Whether the win opened pages of the Codex, told when the victory panel shows. */
+  private codexNotice = false;
+  /** Teacher mode's side of the screen: the trace panel's feed and the jumps between levels. */
+  private teacher!: TeacherBridge;
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -106,6 +114,8 @@ export class LevelScene extends Phaser.Scene {
       dispatch: (event) => this.dispatch(event),
       back: () => this.leave(),
       help: () => this.cards.help(level, this.controller.session.flow.index),
+      book: () => this.context.bus.emit('book.open', { book: 'codex' }),
+      trace: () => this.context.bus.emit('teacher.toggle'),
     });
     // A new painter for every level: its timing starts afresh with the level.
     this.painter = new LevelRenderer(
@@ -141,7 +151,7 @@ export class LevelScene extends Phaser.Scene {
         counterexample: (question, option) => this.openCounterexample(question, option),
         card: (card) => {
           // A tool shown for the first time rings the unlock.
-          const jingle = cardJingle(card, new Set(this.context.save.tutorialsSeen));
+          const jingle = cardJingle(card, new Set(this.context.saves.get().tutorialsSeen));
           if (jingle !== null) this.context.music.jingle(jingle);
           return this.cards.shown(card);
         },
@@ -175,12 +185,34 @@ export class LevelScene extends Phaser.Scene {
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });
+    this.teacher = new TeacherBridge(this.context.bus, this.context.teacherMode);
+    this.teacher.bindKeys(
+      this,
+      this.context.catalog.map((candidate) => candidate.data.id),
+      level.data.id,
+      (levelId) => this.scene.start('level', { levelId }),
+    );
+    this.teacher.followPanel(
+      this,
+      () => this.controller.session.history.states.length,
+      (event) => this.dispatch(event),
+    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teacher.leave());
+    this.views.hud.showTrace(this.context.teacherMode);
     this.ready = true;
     // The cards of what opens with the level come first; then the script opens it: its first
     // lines, then whatever step waits for the player.
     this.cards.offer(startCards(level, this.cards.seen));
     for (const effect of opened.effects) this.show(effect);
     this.painter.render(this.time.now);
+    this.showBook();
+    this.teacher.feed(this.controller.session);
+  }
+
+  /** The Códex button of the HUD shows once some page of the book is open. */
+  private showBook(): void {
+    const { catalog, saves, teacherMode } = this.context;
+    this.views.hud.showBook(openCodex(codexSources(catalog), saves.get(), teacherMode).size > 0);
   }
 
   override update(time: number): void {
@@ -215,6 +247,7 @@ export class LevelScene extends Phaser.Scene {
     this.controller = step.controller;
     for (const effect of step.effects) this.show(effect);
     this.painter.render(this.time.now);
+    this.teacher.feed(this.controller.session);
   }
 
   private show(effect: Effect): void {
@@ -243,8 +276,7 @@ export class LevelScene extends Phaser.Scene {
 
   /** Writes the level's statement in the player's notebook, saved at once, and says so. */
   private writeNotebook(): void {
-    this.context.save = recordNotebook(this.context.save, this.level.data.id);
-    writeSave(this.context.storage, this.context.save);
+    this.context.saves.update((save) => recordNotebook(save, this.level.data.id));
     this.views.toast.show(this.context.t('notebook.written'));
   }
 
@@ -268,36 +300,49 @@ export class LevelScene extends Phaser.Scene {
 
   /**
    * Records the win at once; the victory panel waits its turn behind any lines or replay, and so
-   * does its jingle, chosen now from the levels the win opens.
+   * do its jingle, chosen now from the levels the win opens, and the notice of the Codex pages it
+   * opens.
    */
   private win(stars: StarResult): void {
     const id = this.level.data.id;
-    const { catalog, teacherMode } = this.context;
+    const { catalog, teacherMode, saves } = this.context;
     const shown = visibleLevels(
       catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
       teacherMode,
     );
-    const before = unlockedLevels(shown, this.context.save, teacherMode);
-    this.context.save = recordCompletion(this.context.save, id, stars.total);
-    writeSave(this.context.storage, this.context.save);
-    this.winJingle = victoryJingle(before, unlockedLevels(shown, this.context.save, teacherMode));
+    const before = unlockedLevels(shown, saves.get(), teacherMode);
+    const pages = codexSources(catalog);
+    const pagesBefore = openCodex(pages, saves.get(), teacherMode);
+    saves.update((save) => recordCompletion(save, id, stars.total));
+    this.winJingle = victoryJingle(before, unlockedLevels(shown, saves.get(), teacherMode));
+    this.codexNotice = pagesOpened(pagesBefore, openCodex(pages, saves.get(), teacherMode));
+    // The first win that opens a page also brings the book's button.
+    this.showBook();
     this.presenter.present({ kind: 'victory', stars });
   }
 
-  /** Shows the victory panel, offering the next level (if any) or the hub. */
+  /**
+   * Shows the victory panel, offering the next level (if any) and the way back: the hub, or after
+   * the last garden the epilogue, shown over the hub. A toast below it tells when the win opened
+   * pages of the Codex.
+   */
   private offerNext(stars: StarResult): void {
-    const id = this.level.data.id;
     this.context.music.jingle(this.winJingle);
     // The next level the player can see: outside teacher mode, drafts are skipped.
-    const { catalog, teacherMode } = this.context;
+    const { catalog, teacherMode, t } = this.context;
     const shown = visibleLevels(
       catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
       teacherMode,
     );
-    const next = shown[shown.findIndex((level) => level.id === id) + 1];
-    showVictoryPanel(this, this.context.t, stars, {
-      next: next === undefined ? null : () => this.scene.start('level', { levelId: next.id }),
-      hub: () => this.scene.start('hub'),
+    const { next, back } = afterVictory(this.level.data.id, shown);
+    const toHub: HubSceneData = { epilogue: back === 'epilogue' };
+    showVictoryPanel(this, t, stars, {
+      next: next === null ? null : () => this.scene.start('level', { levelId: next }),
+      back: {
+        label: t(back === 'epilogue' ? 'epilogue.title' : 'victory.hub'),
+        go: () => this.scene.start('hub', toHub),
+      },
     });
+    if (this.codexNotice) this.views.toast.show(this.context.t('codex.unlocked'));
   }
 }

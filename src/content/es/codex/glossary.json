@@ -1,0 +1,123 @@
+{
+  "headers": {
+    "garden": "En el jardín",
+    "math": "En matemáticas",
+    "entry": "Página"
+  },
+  "rows": [
+    { "garden": "Brote", "math": "Vértice $v\\in V$", "entry": "C1" },
+    { "garden": "Enredadera", "math": "Arista $uv\\in E$", "entry": "C1" },
+    { "garden": "Jardín", "math": "Grafo $G=(V,E)$", "entry": "C1" },
+    { "garden": "Farol compartido", "math": "Arista de un emparejamiento $M$", "entry": "C1" },
+    {
+      "garden": "Brote con farol / a oscuras (solitario)",
+      "math": "Vértice cubierto / expuesto (libre)",
+      "entry": "C1"
+    },
+    {
+      "garden": "Noche bien aprovechada",
+      "math": "Emparejamiento máximo: $\\lvert M\\rvert=\\nu(G)$",
+      "entry": "C1"
+    },
+    {
+      "garden": "«No puedo añadir ningún farol sin mover nada»",
+      "math": "Emparejamiento maximal",
+      "entry": "C1"
+    },
+    {
+      "garden": "Pasar el farol",
+      "math": "Intercambiar $M$ a lo largo de un camino alternante: $M\\oplus E(P)$",
+      "entry": "C2"
+    },
+    { "garden": "Cadena (que gana un farol)", "math": "Camino $M$-aumentante", "entry": "C2" },
+    {
+      "garden": "Cadena que no gana nada",
+      "math": "Camino $M$-alternante de longitud par desde un vértice expuesto",
+      "entry": "C2"
+    },
+    {
+      "garden": "El reflejo del estanque",
+      "math": "Otro emparejamiento $M^*$; la maraña es $M\\oplus M^*$",
+      "entry": "C3"
+    },
+    {
+      "garden": "Caminar de noche con luz",
+      "math": "Búsqueda de un camino $M$-aumentante, por capas desde los vértices expuestos",
+      "entry": "C4"
+    },
+    {
+      "garden": "Marca de sol / de luna",
+      "math": "Vértice exterior ($O$, profundidad par) / interior ($I$, profundidad impar)",
+      "entry": "C4"
+    },
+    {
+      "garden": "Cada brote solitario lanza su luz",
+      "math": "Bosque alternante con raíces en todos los vértices expuestos",
+      "entry": "C4"
+    },
+    {
+      "garden": "Abejas y flores",
+      "math": "Grafo bipartito con bipartición $(A,B)$",
+      "entry": "C5"
+    },
+    {
+      "garden": "Espantapájaros",
+      "math": "Vértice de una cobertura por vértices $C$; hacen falta $\\tau(G)$ (König)",
+      "entry": "C5"
+    },
+    {
+      "garden": "Un brote que debe ser sol y luna",
+      "math": "Arista entre dos exteriores del mismo árbol: cierra un ciclo impar",
+      "entry": "C6"
+    },
+    {
+      "garden": "Flor",
+      "math": "Blossom $B$: ciclo de longitud $2k+1$ con $k$ aristas de $M$, con un tallo",
+      "entry": "C7"
+    },
+    {
+      "garden": "Base de la flor",
+      "math": "Base $b$: el único vértice de $B$ que no cubre ninguna arista de $M\\cap E(B)$",
+      "entry": "C7"
+    },
+    {
+      "garden": "Tallo",
+      "math": "Camino $M$-alternante de longitud par desde un vértice expuesto hasta $b$",
+      "entry": "C7"
+    },
+    { "garden": "Plegar la flor", "math": "Contraer: $G/B$ y $M/B$", "entry": "C7" },
+    {
+      "garden": "Desplegar",
+      "math": "Volver de $G/B$ a $G$ al levantar el camino, por el lado que alterna",
+      "entry": "C7"
+    },
+    {
+      "garden": "Girar el tallo",
+      "math": "$M\\oplus E(S)$: mismo tamaño y la base queda expuesta",
+      "entry": "C8"
+    },
+    {
+      "garden": "Flor dentro de flor",
+      "math": "Blossoms anidados: contracciones sucesivas $G_0,G_1,\\dots,G_k$",
+      "entry": "C9"
+    },
+    { "garden": "La receta", "math": "El algoritmo de Edmonds (Algoritmo 10.1)", "entry": "C10" },
+    { "garden": "El jardinero mecánico", "math": "Una ejecución del algoritmo", "entry": "C10" },
+    {
+      "garden": "Gotas de agua / pasos",
+      "math": "Operaciones elementales; pasos de la traza (costo)",
+      "entry": "C11"
+    },
+    { "garden": "Piedras", "math": "El conjunto $U\\subseteq V$ de Tutte–Berge", "entry": "C12" },
+    {
+      "garden": "Grupos impares",
+      "math": "Componentes conexas de $G-U$ con un número impar de vértices: $\\operatorname{odd}(G-U)$",
+      "entry": "C12"
+    },
+    {
+      "garden": "«Nadie más puede tener farol, y aquí está la prueba»",
+      "math": "Certificado de optimalidad: la cota de Tutte–Berge alcanza $\\lvert M\\rvert$",
+      "entry": "C12"
+    }
+  ]
+}

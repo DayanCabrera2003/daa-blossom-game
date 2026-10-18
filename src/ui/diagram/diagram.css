@@ -1,0 +1,480 @@
+/*
+ * The small gardens of the Codex (plan 07, phase 4), drawn in SVG on the page of the book. Their
+ * colours are the game's own, copied as tokens named after the colour of src/game/view/palette.ts
+ * they copy (tests/diagramPalette.test.ts holds them to it). The garden is one logical pixel per
+ * unit of its picture at most, `--px` being the game's zoom, so its sprouts and names are as big
+ * as the game's; once on its page, `fitToPage.ts` sets its width so that the whole block (the
+ * garden, its controls and its message lines) is seen at once in the height of the page shown.
+ */
+
+.codex-diagram {
+  --dg-background: #141b1b;
+  --dg-dark: #4a5270;
+  --dg-dark-vine: #5f7160;
+  --dg-lit: #ef914f;
+  --dg-lit-glow: #ffe18d;
+  --dg-label: #f2eaf1;
+  --dg-sun: #f1c471;
+  --dg-moon: #79b8ce;
+  --dg-flower: #d3a2c0;
+  --dg-stone: #8d977f;
+  --dg-scarecrow: #c8966b;
+  --dg-selected: #ffffff;
+  --dg-highlight: #fce2ca;
+  --dg-chain-gain: #ef914f;
+  --dg-panel-edge: #543c52;
+  --dg-ink: #141b1b;
+  --dg-button: #bd7959;
+  --dg-button-active: #d3865f;
+  --dg-button-off: #695953;
+  --dg-mirror: #b8dce5;
+  --dg-chain-none: #abc2bc;
+  --dg-chain-wrong: #e0394c;
+  --dg-odd-group: #a5608b;
+  margin: calc(4 * var(--px)) 0 calc(6 * var(--px));
+}
+
+.dg {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: calc(2 * var(--px));
+}
+
+.dg-title {
+  justify-self: start;
+}
+
+/*
+ * The garden: as wide as its picture in logical pixels and never wider than the page until its
+ * page fits it (an inline width, `fitToPage.ts`). It keeps its shape.
+ */
+.dg-svg {
+  display: block;
+  width: min(100%, calc(var(--diagram-width) * var(--px)));
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: var(--diagram-width) / var(--diagram-height);
+  border: var(--px) solid var(--dg-panel-edge);
+  background: var(--dg-background);
+  /* The pixel font at its native size: one unit of the picture is one logical pixel. */
+  font-family: monogram, monospace;
+  font-size: 16px;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.dg-ground {
+  fill: var(--dg-background);
+}
+
+/* Vines: dark ones dotted, lit ones solid and warm, the chain being drawn bright. */
+.dg-vine {
+  stroke: var(--dg-dark-vine);
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+  fill: none;
+}
+
+.dg-vine.dg-lit {
+  stroke: var(--dg-lit);
+  stroke-width: 3;
+  stroke-dasharray: none;
+}
+
+.dg-vine.dg-in-flower:not(.dg-lit) {
+  stroke: var(--dg-flower);
+}
+
+.dg-vine.dg-chosen {
+  stroke: var(--dg-highlight);
+  stroke-width: 3;
+  stroke-dasharray: none;
+}
+
+/* A wide, invisible stroke along a vine that can be touched, so a finger finds it. */
+.dg-vine-hit {
+  stroke: var(--dg-background);
+  stroke-opacity: 0;
+  stroke-width: 10;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.dg-halo {
+  fill: var(--dg-lit-glow);
+  fill-opacity: 0.35;
+}
+
+.dg-lantern {
+  fill: var(--dg-lit);
+  stroke: var(--dg-background);
+  stroke-width: 1;
+}
+
+.dg-lantern-cap {
+  fill: var(--dg-lit-glow);
+}
+
+/* Flowers: a soft outline round their petals, deeper ones inside. */
+.dg-flower {
+  fill: var(--dg-flower);
+  fill-opacity: 0.18;
+  stroke: var(--dg-flower);
+  stroke-width: 1;
+}
+
+.dg-petal {
+  fill: var(--dg-flower);
+}
+
+/* Sprouts: cold blue in the dark, amber with a lantern, a near-black outline round both. */
+.dg-outline {
+  fill: var(--dg-background);
+}
+
+.dg-body {
+  fill: var(--dg-dark);
+}
+
+.dg-lit .dg-body {
+  fill: var(--dg-lit);
+}
+
+.dg-glint {
+  fill: var(--dg-moon);
+  fill-opacity: 0.7;
+}
+
+.dg-lit .dg-glint {
+  fill: var(--dg-lit-glow);
+}
+
+.dg-face {
+  fill: var(--dg-background);
+}
+
+.dg-cheek {
+  fill: var(--dg-flower);
+}
+
+.dg-wing {
+  fill: var(--dg-label);
+  fill-opacity: 0.85;
+  stroke: var(--dg-background);
+  stroke-width: 1;
+}
+
+.dg-name {
+  fill: var(--dg-label);
+  text-anchor: middle;
+}
+
+.dg-sun {
+  fill: var(--dg-sun);
+  stroke: var(--dg-background);
+  stroke-width: 1;
+}
+
+.dg-moon {
+  fill: var(--dg-moon);
+  stroke: var(--dg-background);
+  stroke-width: 1;
+}
+
+.dg-moon-shade {
+  fill: var(--dg-background);
+}
+
+.dg-base {
+  fill: none;
+  stroke: var(--dg-flower);
+  stroke-width: 1;
+  stroke-dasharray: 2 1;
+}
+
+.dg-scarecrow {
+  stroke: var(--dg-scarecrow);
+  stroke-width: 2;
+}
+
+.dg-stone {
+  fill: var(--dg-stone);
+  stroke: var(--dg-background);
+  stroke-width: 1;
+}
+
+/* What can be touched shows it: a pointer, a ring under the pointer or the keyboard focus. */
+.dg-touchable {
+  cursor: pointer;
+  outline: none;
+}
+
+.dg-ring {
+  fill: none;
+  stroke: var(--dg-selected);
+  stroke-width: 1;
+  visibility: hidden;
+}
+
+.dg-touchable:hover .dg-ring,
+.dg-touchable:focus-visible .dg-ring,
+.dg-touched .dg-ring {
+  visibility: visible;
+}
+
+.dg-touched .dg-ring {
+  stroke: var(--dg-highlight);
+  stroke-width: 2;
+}
+
+.dg-touchable:hover > .dg-vine-hit,
+.dg-touchable:focus-visible > .dg-vine-hit {
+  stroke: var(--dg-selected);
+  stroke-opacity: 0.35;
+}
+
+/*
+ * What a special diagram marks on its garden (plan 07, phase 5): soft halos round groups of
+ * sprouts, strands along vines, rings round sprouts and the numbers of the groups.
+ */
+.dg-group {
+  opacity: 0.35;
+}
+
+.dg-group-link {
+  stroke: currentcolor;
+  stroke-linecap: round;
+}
+
+.dg-group-spot {
+  fill: currentcolor;
+}
+
+.dg-group-gain {
+  color: var(--dg-chain-gain);
+}
+
+.dg-group-tie,
+.dg-group-even {
+  color: var(--dg-chain-none);
+}
+
+.dg-group-loss {
+  color: var(--dg-moon);
+}
+
+.dg-group-odd {
+  color: var(--dg-odd-group);
+}
+
+.dg-group-chosen {
+  color: var(--dg-highlight);
+}
+
+.dg-group-inner {
+  color: var(--dg-flower);
+}
+
+.dg-group-label {
+  fill: var(--dg-label);
+  stroke: var(--dg-background);
+  stroke-width: 3;
+  paint-order: stroke;
+  text-anchor: middle;
+}
+
+.dg-strand {
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.dg-strand-yours {
+  stroke: var(--dg-lit);
+}
+
+.dg-strand-mirror {
+  stroke: var(--dg-mirror);
+  stroke-dasharray: 4 2;
+}
+
+.dg-strand-guarded {
+  stroke: var(--dg-scarecrow);
+}
+
+.dg-strand-chain {
+  stroke: var(--dg-highlight);
+  stroke-width: 3;
+}
+
+.dg-strand-stretch {
+  stroke: var(--dg-chain-gain);
+  stroke-width: 4;
+}
+
+.dg-mark {
+  fill: none;
+  stroke-width: 2;
+}
+
+.dg-mark-end {
+  stroke: var(--dg-lit-glow);
+}
+
+.dg-mark-petal {
+  stroke: var(--dg-flower);
+}
+
+.dg-mark-base {
+  stroke: var(--dg-highlight);
+  stroke-dasharray: 2 2;
+}
+
+/* Two gardens side by side (the open and the folded garden of C8), each half the page at most. */
+.dg-pair {
+  display: flex;
+  justify-content: center;
+  gap: calc(2 * var(--px));
+  width: 100%;
+}
+
+.dg-pair > .dg-svg {
+  width: min(calc(50% - var(--px)), calc(var(--diagram-width) * var(--px)));
+  max-width: calc(50% - var(--px));
+}
+
+/* The name of a garden of a pair, in its top-left corner. */
+.dg-caption {
+  fill: var(--dg-label);
+}
+
+/* The controls under the garden: the book's own wooden buttons. */
+.dg-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(2 * var(--px)) calc(4 * var(--px));
+}
+
+.dg-button {
+  padding: 0 calc(3 * var(--px));
+  border: var(--px) solid var(--dg-panel-edge);
+  background: var(--dg-button);
+  color: var(--dg-ink);
+}
+
+.dg-button:hover:not(:disabled) {
+  background: var(--dg-button-active);
+}
+
+/* The view shown, among buttons that choose one, is the pressed one. */
+.dg-button[aria-pressed='true'] {
+  background: var(--dg-label);
+}
+
+.dg-button:disabled {
+  background: var(--dg-button-off);
+  cursor: default;
+}
+
+/* The sun takes the width its two step buttons leave on their row. */
+.dg-sun-slider {
+  flex: 1 1 calc(60 * var(--px));
+  min-width: 0;
+  max-width: calc(160 * var(--px));
+  accent-color: var(--dg-lit);
+}
+
+.dg-bar-sun {
+  flex-wrap: nowrap;
+  justify-self: stretch;
+}
+
+.dg-help,
+.dg-message,
+.dg-step {
+  margin: 0;
+  justify-self: stretch;
+}
+
+/* The chart of the races (C11): the gardener in amber, Bruto in blue, as in the game. */
+.dg-axis {
+  fill: none;
+  stroke: var(--dg-label);
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+}
+
+.dg-chart-text {
+  fill: var(--dg-label);
+}
+
+.dg-chart-axis {
+  fill: var(--dg-dark-vine);
+}
+
+.dg-chart-end {
+  text-anchor: end;
+}
+
+.dg-chart-middle {
+  text-anchor: middle;
+}
+
+.dg-runner-automaton {
+  fill: var(--dg-lit);
+}
+
+.dg-runner-bruto,
+.dg-chart-bruto {
+  fill: var(--dg-moon);
+}
+
+.dg-curve-automaton,
+.dg-curve-bruto {
+  fill: none;
+  stroke-width: 1;
+}
+
+.dg-curve-automaton {
+  stroke: var(--dg-lit);
+}
+
+.dg-curve-bruto {
+  stroke: var(--dg-moon);
+}
+
+/*
+ * The card the mechanical gardener follows (C10), kept in sight with the garden and its controls,
+ * and below them the whole recipe with that card lit.
+ */
+.dg-card,
+.dg-recipe-whole {
+  justify-self: stretch;
+}
+
+.dg-card {
+  padding: var(--px) calc(3 * var(--px));
+  border: var(--px) solid var(--dg-panel-edge);
+  background: var(--dg-highlight);
+}
+
+.dg-card-lead,
+.dg-card-text {
+  margin: 0;
+}
+
+.dg-recipe-list {
+  margin: 0;
+  padding-left: calc(12 * var(--px));
+}
+
+.dg-recipe-card[aria-current='step'] {
+  background: var(--dg-highlight);
+}
+
+.dg-message:empty {
+  display: none;
+}

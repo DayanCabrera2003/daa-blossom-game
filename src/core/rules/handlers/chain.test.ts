@@ -4,6 +4,8 @@ import { createGraph } from '../../graph/createGraph';
 import { createMatching } from '../../matching/createMatching';
 import { checkAugmentingPath } from '../../matching/paths';
 import { unwrap } from '../../shared/result';
+import type { TraceEvent } from '../../trace/events';
+import { stateAt } from '../../trace/replay';
 import type { Action } from '../actions';
 import { applyAction } from '../applyAction';
 import { createGardenState, type GardenState } from '../state';
@@ -150,8 +152,35 @@ describe('chain: with flowers folded off its path (level 4.8)', () => {
     expect(state.chainSeen).toBeNull();
     expect(outcome.events).toEqual([
       { type: 'augment', path: [0, 5, 6, 7] },
+      { type: 'expand', blossom: 0 },
       { type: 'searchCleared' },
     ]);
+  });
+
+  it('the day told by its events opens the flowers too, as the rules do', () => {
+    // Replaying the events of every move (the sun of a day told by its trace) must end where the
+    // rules end: lanterns passed along the chain, and no flower left folded.
+    const moves: Action[] = [
+      { type: 'markRoot', vertex: 0 },
+      { type: 'markMoon', from: 0, to: 1 },
+      { type: 'markMoon', from: 2, to: 3 },
+      { type: 'foldAt', from: 4, to: 2 },
+      { type: 'markMoon', from: 0, to: 5 },
+      { type: 'markMoon', from: 6, to: 7 },
+      { type: 'chain', path: [0, 5, 6, 7] },
+    ];
+    let garden = branchesStart;
+    const events: TraceEvent[] = [];
+    for (const move of moves) {
+      const outcome = applyAction(garden, move);
+      if (!outcome.ok) throw new Error(`${move.type} refused: ${outcome.reason.code}`);
+      garden = outcome.state;
+      events.push(...outcome.events);
+    }
+    const told = stateAt(branchesStart.matching, events, events.length);
+    expect(told.mate).toEqual(garden.matching.mate);
+    expect(told.flowers).toEqual([]);
+    expect(told.label.every((label) => label === 'none')).toBe(true);
   });
 
   it('a chain through the folded flower still needs it opened first', () => {

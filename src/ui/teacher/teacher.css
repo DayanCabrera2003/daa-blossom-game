@@ -1,0 +1,160 @@
+/*
+ * The teacher's trace panel (plan 07, phase 13), at the right of the window in the room the canvas
+ * leaves it. Night ground and paper ink, like the game round it, with the wood of the books on its
+ * edge. Its unit `--px` is the books' logical pixel at the canvas's zoom, a step smaller only when a
+ * line would hold too few letters (`--teacher-unit`, from `game/scale/panelRoom.ts`), so its words
+ * read at the size of the books' and the pixel font stays sharp; the formulas are KaTeX's, a little
+ * smaller than the words, never under a comfortable reading size. The small garden stays in sight at the
+ * top while the traces scroll under it.
+ */
+
+.teacher-panel {
+  --px: calc(1px * var(--teacher-unit, 1));
+  --ink: #f2eaf1;
+  --ink-soft: #abc2bc;
+  --night: #141b1b;
+  --wood-edge: #543c52;
+  --sun: #f1c471;
+  --chosen: #2d697b;
+  box-sizing: border-box;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 calc(4 * var(--px)) calc(6 * var(--px));
+  border-left: calc(3 * var(--px)) solid var(--wood-edge);
+  background: var(--night);
+  color: var(--ink);
+  font-family: monogram, monospace;
+  font-size: calc(16 * var(--px));
+  line-height: calc(13 * var(--px));
+}
+
+.teacher-panel button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.teacher-panel :focus-visible {
+  outline: var(--px) solid var(--sun);
+  outline-offset: var(--px);
+}
+
+/* The head: the badge of teacher mode, the title and the way to fold the panel. */
+.teacher-head {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--px));
+  padding-top: calc(4 * var(--px));
+}
+
+.teacher-badge {
+  padding: 0 calc(3 * var(--px));
+  background: var(--sun);
+  color: var(--night);
+}
+
+.teacher-title {
+  flex: 1;
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+}
+
+.teacher-keys,
+.teacher-help {
+  margin: calc(2 * var(--px)) 0;
+  color: var(--ink-soft);
+}
+
+/* The small garden of the step chosen, kept in sight while the traces scroll. */
+.teacher-garden {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: calc(2 * var(--px)) 0;
+  background: var(--night);
+}
+
+.teacher-garden .dg-svg {
+  width: 100%;
+}
+
+.teacher-caption {
+  text-align: center;
+  color: var(--sun);
+}
+
+.teacher-heading {
+  margin: calc(6 * var(--px)) 0 0;
+  font-size: inherit;
+  font-weight: normal;
+  color: var(--sun);
+}
+
+/* The run's sun and the button that hides or shows the vines examined. */
+.teacher-controls {
+  display: grid;
+  justify-items: center;
+  gap: calc(2 * var(--px));
+  margin: calc(2 * var(--px)) 0;
+}
+
+/* A trace: one row per step, its number apart from its formulas. */
+.teacher-list,
+.teacher-proof {
+  margin: calc(2 * var(--px)) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teacher-row {
+  display: grid;
+  grid-template-columns: calc(18 * var(--px)) 1fr;
+  gap: calc(2 * var(--px));
+  padding: var(--px) calc(2 * var(--px));
+  border-left: calc(2 * var(--px)) solid transparent;
+  cursor: pointer;
+}
+
+.teacher-row:hover {
+  background: rgb(242 234 241 / 0.08);
+}
+
+.teacher-step {
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+/* The step the sun shows on the canvas, and the one shown in the small garden. */
+.teacher-row.is-sun {
+  border-left-color: var(--sun);
+}
+
+.teacher-row.is-chosen {
+  background: var(--chosen);
+}
+
+.teacher-tex {
+  display: grid;
+  gap: var(--px);
+  min-width: 0;
+}
+
+/* The formulas, at a size read without effort; long ones wrap where KaTeX allows. */
+.teacher-line,
+.teacher-proof-line {
+  font-size: max(13px, calc(8 * var(--px)));
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  /* A formula too long to wrap scrolls inside its own line, never widening the panel. */
+  overflow-x: auto;
+}
+
+.teacher-proof-line {
+  padding: var(--px) calc(2 * var(--px));
+}
+
+.teacher-list:focus-visible .is-chosen {
+  outline: var(--px) solid var(--sun);
+}

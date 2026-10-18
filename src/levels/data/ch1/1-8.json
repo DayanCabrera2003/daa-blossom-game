@@ -36,7 +36,7 @@
       ]
     }
   ],
-  "unlocks": { "actions": ["declareDone"], "codex": ["C1", "C2"] },
+  "unlocks": { "actions": ["declareDone"], "codex": ["C1", "C2", "C13"] },
   "solution": [
     { "type": "join", "u": "B", "v": "C" },
     { "type": "join", "u": "D", "v": "E" },

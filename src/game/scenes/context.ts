@@ -1,17 +1,21 @@
 import type Phaser from 'phaser';
 import type { Level } from '@levels/build';
+import type { Bus } from '@services/bus';
+import type { BusEvents } from '@services/busEvents';
 import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import type { PlaytestRecorder } from '@services/playtestRecorder';
-import type { KeyValueStore, SaveData } from '@services/save';
+import type { KeyValueStore } from '@services/save';
+import type { SaveStore } from '@services/saveStore';
 import type { Settings } from '@services/settings';
 import type { AudioBus } from '../audio/AudioBus';
 import type { MusicPlayer } from '../audio/MusicPlayer';
 
 /**
  * What every scene shares, created once in `main.ts` and kept in the game registry: the levels,
- * the texts, where progress and the playtest log are kept, and whether teacher mode is on. `save` changes
- * when a level is won, and `settings` when the player moves a volume or mutes.
+ * the texts, where progress and the playtest log are kept, and whether teacher mode is on. The
+ * progress lives in `saves`, the store shared with the books; `settings` changes when the player
+ * moves a volume or mutes.
  */
 export interface GameContext {
   readonly catalog: readonly Level[];
@@ -24,7 +28,10 @@ export interface GameContext {
   /** The playtest log of this browser (GDD §10), and the wall clock that dates its entries. */
   readonly playtest: PlaytestRecorder;
   readonly clock: () => number;
-  save: SaveData;
+  /** The typed bus shared with the DOM overlays (books, epilogue, teacher panel). */
+  readonly bus: Bus<BusEvents>;
+  /** The player's progress, read and changed only through this store, which writes it at once. */
+  readonly saves: SaveStore;
   /** The player's volumes and mute, read at start-up and changed in the settings panel. */
   settings: Settings;
   /** The game's three audio channels, at the gains `settings` gives them. */

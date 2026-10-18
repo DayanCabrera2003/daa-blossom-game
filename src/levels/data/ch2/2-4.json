@@ -58,6 +58,7 @@
   "notebook": [
     {
       "prompt": "ch2.4.notebook.04",
+      "codex": "C3",
       "options": [
         { "line": "ch2.4.notebook.05", "correct": true, "reply": "ch2.4.sauce.09" },
         { "line": "ch2.4.notebook.06", "correct": false, "reply": "ch2.4.sauce.10" },

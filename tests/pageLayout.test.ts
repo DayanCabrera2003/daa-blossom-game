@@ -15,4 +15,13 @@ describe('the page around the canvas', () => {
   it('leaves no margin around the page', () => {
     expect(page).toMatch(/body\s*\{[^}]*margin:\s*0;[^}]*\}/);
   });
+
+  // Phaser centres the canvas in the box of its parent, the body. Left as tall as its content, the
+  // body would hug a canvas a zoom smaller than the window (beside the open teacher's panel) and
+  // leave it at the top. As tall as the window, and a block of its own so the canvas's top margin
+  // never escapes it (which would push the page down and make it scroll), the canvas centres.
+  it('makes the body as tall as the window, so the canvas centres in it', () => {
+    expect(page).toMatch(/body\s*\{[^}]*min-height:\s*100vh;[^}]*\}/);
+    expect(page).toMatch(/body\s*\{[^}]*display:\s*flow-root;[^}]*\}/);
+  });
 });

@@ -1,0 +1,289 @@
+/*
+ * The books over the canvas (plan 07, phases 3 and 6): a wooden book of the pack (the 9-slice panel
+ * of the dialogue and the notebook, 16 x 16 with borders 6 5 5 6) holding a page of light paper.
+ * Every size is a whole number of logical pixels, `--px`, which is `--zoom` screen pixels like the
+ * canvas under it, so the pixel font stays sharp and the book keeps its place at every zoom. The
+ * measures are those of `ui/model/bookLayout.ts` (tests/bookGeometry.test.ts holds them together)
+ * and the colours those of the game's palette (src/game/view/palette.ts). What both books share is
+ * here; each book's own look is in its stylesheet.
+ */
+
+.book-backdrop {
+  --px: calc(1px * var(--zoom, 2));
+  --ink: #141b1b;
+  --paper: #f2eaf1;
+  --paper-edge: #fce2ca;
+  --wood: #965340;
+  --wood-edge: #543c52;
+  --button: #bd7959;
+  --button-active: #d3865f;
+  --button-off: #695953;
+  --seal: #ef914f;
+  --link: #2d697b;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(20 27 27 / 0.6);
+}
+
+.book {
+  box-sizing: border-box;
+  width: min(100vw, calc(464 * var(--px)));
+  height: min(100vh, calc(258 * var(--px)));
+  display: grid;
+  grid-template-columns: calc(176 * var(--px)) 1fr;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: calc(4 * var(--px));
+  padding: calc(4 * var(--px));
+  border-style: solid;
+  border-width: calc(6 * var(--px)) calc(5 * var(--px)) calc(5 * var(--px)) calc(6 * var(--px));
+  border-color: var(--wood-edge);
+  border-image: var(--wood-panel) 6 5 5 6 fill / calc(6 * var(--px)) calc(5 * var(--px))
+    calc(5 * var(--px)) calc(6 * var(--px)) stretch;
+  background-color: var(--wood);
+  image-rendering: pixelated;
+  color: var(--ink);
+  font-family: monogram, monospace;
+  font-size: calc(16 * var(--px));
+  line-height: calc(13 * var(--px));
+  outline: none;
+}
+
+.book button {
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.book :focus-visible {
+  outline: var(--px) solid var(--ink);
+  outline-offset: var(--px);
+}
+
+/*
+ * The head, the only row besides the page: over the index the ribbons of the two books and the
+ * arrows that turn the pages, over the page the heading of the page shown with the way out beside it, always
+ * in the same corner.
+ */
+.book-corner {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: calc(2 * var(--px));
+}
+
+/* The ribbons of the two books: the open one on paper, the other one to follow. */
+.book-ribbon {
+  flex: none;
+  padding: 0 calc(3 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--button);
+}
+
+.book-ribbon:hover:not(:disabled) {
+  background: var(--button-active);
+}
+
+.book-ribbon[aria-current='true'] {
+  background: var(--paper);
+  cursor: default;
+}
+
+.book-ribbon:disabled {
+  background: var(--button-off);
+  color: var(--paper);
+  cursor: default;
+}
+
+.book-turns {
+  display: flex;
+  gap: calc(2 * var(--px));
+  margin-left: auto;
+}
+
+.book-head {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--px));
+  min-width: 0;
+}
+
+.book-close {
+  flex: none;
+}
+
+/* The arrows that turn the pages: one character each, named in full for a screen reader. */
+.book-turn {
+  flex: none;
+  min-width: calc(14 * var(--px));
+}
+
+/*
+ * The heading of the page on one line: its main title (the garden title of an entry), then a
+ * second one (the formal title once earned), set apart by a stroke of the wood. The pixel font has
+ * one sharp size, so the second is told apart by the stroke and by giving way alone: the main title
+ * never shrinks, and only the second is cut short with an ellipsis.
+ */
+.book-heading {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.book-main-title {
+  flex: none;
+  color: var(--ink);
+}
+
+.book-sub-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: calc(4 * var(--px));
+  padding-left: calc(4 * var(--px));
+  border-left: var(--px) solid var(--wood-edge);
+  color: var(--ink);
+}
+
+.book-button {
+  padding: 0 calc(3 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--button);
+}
+
+.book-button:hover:not(:disabled) {
+  background: var(--button-active);
+}
+
+.book-button:disabled {
+  background: var(--button-off);
+  color: var(--paper);
+  cursor: default;
+}
+
+/* The index, on the left: its list on the paper's edge, and the help of the keys under it. */
+.book-index {
+  grid-column: 1;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.book-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--paper-edge);
+  border: var(--px) solid var(--wood-edge);
+}
+
+/* How the keys work, under the index, on the wood. */
+.book-keys {
+  margin: calc(2 * var(--px)) 0 0;
+  color: var(--ink);
+  /* Set apart by wide spaces, which the page must not fold into one. */
+  white-space: pre-wrap;
+}
+
+/* The "new" seal, after a title of the index, and as a small dot beside a tab. */
+.book-seal {
+  align-self: start;
+  margin-left: calc(2 * var(--px));
+  padding: 0 var(--px);
+  background: var(--seal);
+  color: var(--ink);
+}
+
+.book-dot {
+  width: calc(3 * var(--px));
+  height: calc(3 * var(--px));
+  margin-left: calc(3 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--seal);
+}
+
+/* The page, on the right: the tabs, and the text on paper. */
+.book-page {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.book-tabs {
+  grid-row: 1;
+  display: flex;
+  gap: calc(2 * var(--px));
+}
+
+/*
+ * The text of the page, in the row that takes the room left. The small gardens of the Codex
+ * measure it, so each one fits with its controls in the height shown (ui/diagram/fitToPage.ts).
+ */
+.book-text {
+  grid-row: 2;
+  overflow-y: auto;
+  padding: calc(3 * var(--px)) calc(6 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--paper);
+  overflow-wrap: break-word;
+}
+
+.book-text p,
+.book-text ul,
+.book-text ol {
+  margin: 0 0 calc(6 * var(--px));
+}
+
+.book-text h2,
+.book-text h3 {
+  margin: calc(6 * var(--px)) 0 calc(3 * var(--px));
+  font-size: inherit;
+  color: var(--wood);
+}
+
+.book-text a {
+  color: var(--link);
+}
+
+.book-notice {
+  grid-row: 3;
+  margin: var(--px) 0 0;
+  color: var(--ink);
+}
+
+/* With nothing to say, the notice gives its line to the text (and stays, for screen readers). */
+.book-notice:empty {
+  margin: 0;
+}
+
+/* A new page slides in, unless the player asked for less motion. */
+.book-turned {
+  animation: book-turn 160ms ease-out;
+}
+
+@keyframes book-turn {
+  from {
+    opacity: 0;
+    transform: translateX(calc(6 * var(--px)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-turned {
+    animation: none;
+  }
+}

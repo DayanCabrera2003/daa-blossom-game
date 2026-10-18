@@ -1,0 +1,101 @@
+/*
+ * The epilogue's own look (plan 07, phase 11), on the frame and the colours every book shares
+ * (ui/book/book.css): the same wood, one column instead of an index and a page. The title on the
+ * wood, a sheet of paper that scrolls with the uses and the author's note, and the ways on under
+ * it, the way back always last. Behind it the hub shows at dawn, warmer than the books' dim night.
+ * Every size is a whole number of logical pixels, `--px`, so the pixel font stays sharp.
+ */
+
+.book-backdrop.epilogue-backdrop {
+  background: linear-gradient(to bottom, rgb(239 145 79 / 0.35), rgb(20 27 27 / 0.6));
+}
+
+.book.epilogue {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  animation: epilogue-dawn 600ms ease-out;
+}
+
+.epilogue-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* The sheet of paper: it takes the room left and scrolls, with the wheel or the arrows. */
+.epilogue-text {
+  min-height: 0;
+  overflow-y: auto;
+  padding: calc(3 * var(--px)) calc(10 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--paper);
+  overflow-wrap: break-word;
+}
+
+.epilogue-text p {
+  margin: 0 0 calc(6 * var(--px));
+}
+
+/* The three uses, each marked by a small lantern of the seal's colour. */
+.epilogue-uses {
+  margin: 0 0 calc(6 * var(--px));
+  padding: 0;
+  list-style: none;
+}
+
+.epilogue-use {
+  position: relative;
+  margin: 0 0 calc(6 * var(--px));
+  padding-left: calc(9 * var(--px));
+}
+
+.epilogue-use::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(5 * var(--px));
+  width: calc(3 * var(--px));
+  height: calc(3 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--seal);
+}
+
+/* The author's note, set apart from the uses by a rule of the wood. */
+.epilogue-note {
+  padding-top: calc(3 * var(--px));
+  border-top: var(--px) solid var(--wood-edge);
+}
+
+.epilogue-author {
+  margin: 0 0 calc(3 * var(--px));
+  font-size: inherit;
+  font-weight: normal;
+  color: var(--wood);
+}
+
+/* The ways on, at the right end of the row; the help of the keys at its left, on the wood. */
+.epilogue-actions {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--px));
+}
+
+.epilogue-keys {
+  margin: 0 auto 0 0;
+  color: var(--ink);
+}
+
+/* The paper comes in like the morning, unless the player asked for less motion. */
+@keyframes epilogue-dawn {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book.epilogue {
+    animation: none;
+  }
+}
