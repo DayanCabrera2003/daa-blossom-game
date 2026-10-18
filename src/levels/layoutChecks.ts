@@ -127,6 +127,14 @@ function crowdedLabels(level: Layout): LayoutProblem[] {
 }
 
 /**
+ * Whether the vine from `a` to `b`, lit as it may be later (its widest solid stroke), is drawn
+ * through a name's box or closer to it than the names' margin, in a straight line.
+ */
+export function vineOverLabel(a: Point, b: Point, box: Box): boolean {
+  return segmentNearBox(a, b, box, vineStroke / 2 + clearance);
+}
+
+/**
  * The names a vine is drawn through or against, lit as it may be later (its widest solid stroke),
  * each name with each vine once. A vine of the name's own sprout leaves from right above it and
  * is never counted: the name is read as part of its sprout. Only the catalog's levels are held to
@@ -134,12 +142,11 @@ function crowdedLabels(level: Layout): LayoutProblem[] {
  */
 export function labelsOnVines(level: Layout): LayoutProblem[] {
   const vines = placedVines(level);
-  const reach = vineStroke / 2 + clearance;
   return level.sprouts.flatMap((sprout) => {
     const box = labelBox(sprout);
     return vines
       .filter(({ vine }) => !vine.includes(sprout.label))
-      .filter(({ a, b }) => segmentNearBox(a, b, box, reach))
+      .filter(({ a, b }) => vineOverLabel(a, b, box))
       .map(({ vine }): LayoutProblem => ({ code: 'labelOnVine', label: sprout.label, vine }));
   });
 }
