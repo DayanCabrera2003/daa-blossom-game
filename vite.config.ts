@@ -1,6 +1,9 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
+import strings from './src/content/es/strings.json';
+import manifest from './src/game/assets/manifest.json';
 import { BROWSER_TARGETS } from './tools/page/browsers';
+import { pagePlugin } from './tools/page/pagePlugin';
 
 /** Resolves a project-relative folder to an absolute path for aliasing. */
 const dir = (path: string): string => fileURLToPath(new URL(path, import.meta.url));
@@ -19,6 +22,8 @@ export default defineConfig({
   // Relative base so the build works under the GitHub Pages sub-path.
   base: './',
   resolve: { alias: aliases },
+  // The page's title, description, words without script and 404 page, from the locale.
+  plugins: [pagePlugin(strings, manifest.assets['font.monogram'].path)],
   build: {
     // dist/.vite/manifest.json tells the budget which chunks load at start and which on demand.
     manifest: true,
