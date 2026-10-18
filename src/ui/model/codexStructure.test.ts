@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { codexStructure, resultId } from './codexStructure';
+import { codexStructure, resultId, resultTitle } from './codexStructure';
 
 const formal = [
   '**Definición 3.1 (camino).** Un camino es…',
@@ -57,6 +57,13 @@ describe('codexStructure', () => {
     expect(resultId({ kind: 'Observación', entry: 5, number: 5 })).toBe('O5.5');
     expect(resultId({ kind: 'Algoritmo', entry: 10, number: 1 })).toBe('A10.1');
     expect(resultId({ kind: 'Modelo', entry: 14, number: 2 })).toBe('M14.2');
+  });
+
+  it('reads back how the text writes the result a link names', () => {
+    expect(resultTitle('T8.1')).toBe('Teorema 8.1');
+    expect(resultTitle('D10.12')).toBe('Definición 10.12');
+    expect(resultTitle('X8.1')).toBeNull();
+    expect(resultTitle('T8')).toBeNull();
   });
 
   it('lists the links to entries and results, outside code', () => {

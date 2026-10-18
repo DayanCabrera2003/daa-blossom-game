@@ -72,6 +72,19 @@ const END = '$\\blacksquare$';
 export const resultId = (result: Pick<CodexResult, 'kind' | 'entry' | 'number'>): string =>
   `${KINDS[result.kind]}${result.entry}.${result.number}`;
 
+/** A result as a link names it (`T8.1`). */
+const RESULT_ID = /^([A-Z])(\d+)\.(\d+)$/;
+
+/**
+ * How the text writes the result a link names: `T8.1` is "Teorema 8.1", so the book can find it
+ * in the page. Null for a name that is no result.
+ */
+export function resultTitle(id: string): string | null {
+  const parts = RESULT_ID.exec(id);
+  const kind = Object.entries(KINDS).find(([, letter]) => letter === parts?.[1]);
+  return parts === null || kind === undefined ? null : `${kind[0]} ${parts[2]}.${parts[3]}`;
+}
+
 /** The proof state of a result, from its heading line and the text up to the next result. */
 function proofOf(heading: string, body: string): ProofState {
   if (heading.includes(OUT_OF_SCOPE)) return 'outOfScope';
