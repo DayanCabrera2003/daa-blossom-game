@@ -92,6 +92,7 @@ const RIGOR_READY: readonly CodexEntryId[] = [
   'C10',
   'C11',
   'C12',
+  'C13',
 ];
 
 /** The only entries where a result may be stated without proof, out of the scope of the book. */
@@ -120,6 +121,7 @@ const AWAITING_BOOKS: readonly CodexEntryId[] = [
   'C10',
   'C11',
   'C12',
+  'C13',
 ];
 
 /** The boxes ticked in the rigor comment of a formal tab, or null when it has none. */
@@ -456,6 +458,34 @@ describe('the glossary of C13 (plan 07, phase 10)', () => {
     expect(() => markdownToHtml(table, 'strict')).not.toThrow();
     const links = codexStructure(table).links;
     expect(links.map((link) => link.entry)).toEqual(glossary.rows.map((row) => row.entry));
+  });
+});
+
+/** A formula with its bars written as `|`, the way inline text writes them outside a table. */
+const plainBars = (tex: string): string => tex.replace(/\\lvert\s*/g, '|').replace(/\\rvert/g, '|');
+
+/** The rows of the notation table of C13: the formulas of its symbol cell and where it points. */
+function notationRows(): { symbols: string[]; entry: string }[] {
+  const formal = entries.find((entry) => entry.id === 'C13')?.tabs.formal ?? '';
+  return formal
+    .split('\n')
+    .filter((line) => line.startsWith('| $'))
+    .map((line) => {
+      const [symbol = '', , where = ''] = line.slice(1).split(' | ');
+      const symbols = [...symbol.matchAll(/\$([^$]+)\$/g)].map((match) => match[1] as string);
+      return { symbols, entry: /\(#(C\d+)/.exec(where)?.[1] ?? '' };
+    });
+}
+
+describe('the notation of C13', () => {
+  it('writes each symbol exactly as the formal tab of the entry it points to', () => {
+    const rows = notationRows();
+    expect(rows.length).toBeGreaterThan(20);
+    for (const { symbols, entry } of rows) {
+      const formal = plainBars(entries.find((written) => written.id === entry)?.tabs.formal ?? '');
+      const missing = symbols.map(plainBars).filter((tex) => !formal.includes(tex));
+      expect({ entry, missing }).toEqual({ entry, missing: [] });
+    }
   });
 });
 
