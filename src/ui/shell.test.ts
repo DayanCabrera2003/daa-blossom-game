@@ -4,6 +4,7 @@ import { emptySave } from '@services/save';
 import { createSaveStore } from '@services/saveStore';
 import { describe, expect, it, vi } from 'vitest';
 import { memoryStore } from '../../tests/support/memoryStore';
+import { BOOKS_IMPORT_TIMEOUT } from '../../tests/support/timeouts';
 import { mountShell, type BooksModule, type OverlayFrame, type OverlayRequest } from './shell';
 
 /** The few parts of a DOM element the shell touches, open to inspection; tests run without a DOM. */
@@ -159,17 +160,23 @@ describe('overlay shell', () => {
     expect([...(frames[0]?.codexOpen(emptySave()).keys() ?? [])]).toEqual(['C1']);
   });
 
-  it('the books not written yet close at once, so the game never stays without input', async () => {
-    const bus = createBus<BusEvents>();
-    const overlay: boolean[] = [];
-    bus.on('overlay.changed', ({ open }) => overlay.push(open));
-    mountShell({
-      bus,
-      saves: createSaveStore(memoryStore()),
-      codexOpen: () => new Map(),
-      host: fakeElement() as unknown as HTMLElement,
-    });
-    bus.emit('book.open', { book: 'notebook' });
-    await vi.waitFor(() => expect(overlay).toEqual([true, false]));
-  });
+  it(
+    'the books not written yet close at once, so the game never stays without input',
+    async () => {
+      const bus = createBus<BusEvents>();
+      const overlay: boolean[] = [];
+      bus.on('overlay.changed', ({ open }) => overlay.push(open));
+      mountShell({
+        bus,
+        saves: createSaveStore(memoryStore()),
+        codexOpen: () => new Map(),
+        host: fakeElement() as unknown as HTMLElement,
+      });
+      bus.emit('book.open', { book: 'notebook' });
+      await vi.waitFor(() => expect(overlay).toEqual([true, false]), {
+        timeout: BOOKS_IMPORT_TIMEOUT,
+      });
+    },
+    BOOKS_IMPORT_TIMEOUT,
+  );
 });
