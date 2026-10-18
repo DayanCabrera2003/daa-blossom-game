@@ -103,6 +103,12 @@ export class HubScene extends Phaser.Scene {
     );
     // What the hub's garden must leave uncovered: every sign, title and button.
     const taken: Rect[] = [boxOf(heading)];
+    // In teacher mode the hub says so, after its title: every level, page and sign is open.
+    if (teacherMode) {
+      const badgeX = heading.x + heading.width + HUB.margin * 2;
+      const badge = this.add.text(badgeX, 9, t('teacher.badge'), textStyle(8, PALETTE.sun));
+      taken.push(boxOf(badge));
+    }
     const signpost = cutOf('signpost');
     const signFrame = cutFrame(this.textures, signpost);
     layout.chapters.forEach((placement, c) => {
