@@ -109,9 +109,22 @@ describe('targetOf and targetName', () => {
     expect(targetOf('v1-2')).toEqual({ kind: 'vine', u: 1, v: 2 });
   });
 
+  it('name a folded flower by its id, and read it back', () => {
+    expect(targetName({ kind: 'flower', id: 4 })).toBe('f4');
+    expect(targetOf('f4')).toEqual({ kind: 'flower', id: 4 });
+  });
+
+  it('a touch on a flower asks the rules for nothing in a garden to play', () => {
+    expect(touchDiagram(startOf('1.3'), chains, [0], { kind: 'flower', id: 0 })).toEqual({
+      action: null,
+      touched: [0],
+    });
+  });
+
   it('read nothing from a name that is neither', () => {
     expect(targetOf('x')).toBeNull();
     expect(targetOf('s')).toBeNull();
     expect(targetOf('v1')).toBeNull();
+    expect(targetOf('f')).toBeNull();
   });
 });

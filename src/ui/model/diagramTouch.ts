@@ -13,10 +13,11 @@ import type { DiagramMove } from './diagramSpec';
  * A move the block does not allow makes nothing happen at all.
  */
 
-/** What a touch lands on: a sprout, or a vine by its two sprouts. */
+/** What a touch lands on: a sprout, a vine by its two sprouts, or a folded flower by its id. */
 export type DiagramTarget =
   | { readonly kind: 'sprout'; readonly vertex: VertexId }
-  | { readonly kind: 'vine'; readonly u: VertexId; readonly v: VertexId };
+  | { readonly kind: 'vine'; readonly u: VertexId; readonly v: VertexId }
+  | { readonly kind: 'flower'; readonly id: number };
 
 /** What a touch does: a move for the rules (or none yet), and the sprouts touched after it. */
 export interface TouchOutcome {
@@ -64,6 +65,8 @@ export function touchDiagram(
   target: DiagramTarget,
 ): TouchOutcome {
   const chains = moves.has('chain');
+  // A flower is only looked into (a replayed day), never a move of a garden to play.
+  if (target.kind === 'flower') return { action: null, touched };
   if (target.kind === 'vine') {
     if (isMatchedEdge(state.matching, target.u, target.v)) {
       return act({ type: 'split', u: target.u, v: target.v }, moves);
@@ -84,14 +87,24 @@ export function chainOf(
   return moves.has('chain') && touched.length >= 2 ? { type: 'chain', path: touched } : null;
 }
 
-/** The name a target carries in the picture: `s3` for sprout 3, `v1-2` for the vine 1–2. */
-export const targetName = (target: DiagramTarget): string =>
-  target.kind === 'sprout' ? `s${target.vertex}` : `v${target.u}-${target.v}`;
+/** The name a target carries in the picture: `s3` for sprout 3, `v1-2` for the vine 1–2, `f0`. */
+export function targetName(target: DiagramTarget): string {
+  switch (target.kind) {
+    case 'sprout':
+      return `s${target.vertex}`;
+    case 'vine':
+      return `v${target.u}-${target.v}`;
+    case 'flower':
+      return `f${target.id}`;
+  }
+}
 
 /** The target a picture's name stands for, or null for a name that is no target. */
 export function targetOf(name: string): DiagramTarget | null {
   const sprout = /^s(\d+)$/.exec(name);
   if (sprout !== null) return { kind: 'sprout', vertex: Number(sprout[1]) };
+  const flower = /^f(\d+)$/.exec(name);
+  if (flower !== null) return { kind: 'flower', id: Number(flower[1]) };
   const vine = /^v(\d+)-(\d+)$/.exec(name);
   return vine === null ? null : { kind: 'vine', u: Number(vine[1]), v: Number(vine[2]) };
 }
