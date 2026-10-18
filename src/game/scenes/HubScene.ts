@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
-import { codexSources, openCodex } from '@services/codexProgress';
+import { codexSources, hasNewPages, openCodex } from '@services/codexProgress';
 import { download } from '@services/download';
 import { exportLog } from '@services/exportLog';
+import type { SaveData } from '@services/save';
 import { unlockedLevels, visibleLevels } from '@services/progress';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
@@ -19,7 +20,7 @@ import { BackdropView } from '../view/BackdropView';
 import { Button } from '../view/Button';
 import { fitCamera } from '../view/fitCamera';
 import { GEAR_SIZE } from '../view/GearButton';
-import { PALETTE } from '../view/palette';
+import { css, PALETTE } from '../view/palette';
 import { cutFrame } from '../view/sheetCuts';
 import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
@@ -133,7 +134,8 @@ export class HubScene extends Phaser.Scene {
 
     // The Códex, before the export on the top line, once some page of it is open: the hub grows
     // with the game, and in teacher mode the whole book is open from the start.
-    if (openCodex(codexSources(catalog), save, teacherMode).size > 0) {
+    const codexOpen = openCodex(codexSources(catalog), save, teacherMode);
+    if (codexOpen.size > 0) {
       const codex = new Button(
         this,
         0,
@@ -145,6 +147,23 @@ export class HubScene extends Phaser.Scene {
       const codexX = exportX - HUB.gap - codex.width;
       codex.moveTo(codexX, HUB.exportY);
       taken.push({ x: codexX, y: HUB.exportY - 1, width: codex.width, height: codex.height });
+      // The book's "new" seal, just before its sign, while some open page is still unread; reading
+      // the book over the hub updates the save, and the seal follows it.
+      const seal = this.add
+        .text(0, HUB.exportY, t('codex.new'), {
+          ...textStyle(8, PALETTE.ink),
+          backgroundColor: css(PALETTE.lit),
+          padding: { x: 2 },
+        })
+        .setDepth(STAR_DEPTH);
+      seal.setX(codexX - HUB.gap - seal.width);
+      taken.push(boxOf(seal));
+      const showSeal = (now: SaveData): void => {
+        seal.setVisible(hasNewPages(codexOpen, now));
+      };
+      showSeal(save);
+      const unsubscribe = saves.subscribe(showSeal);
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribe);
     }
 
     addSettings(this, gear);
