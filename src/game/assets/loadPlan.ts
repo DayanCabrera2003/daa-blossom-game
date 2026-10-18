@@ -1,4 +1,5 @@
 import { invariant } from '@core/shared/invariant';
+import { audioSources } from './audioSources';
 import { ASSET_KEYS, assetEntry, packCredit, type AssetKey } from './keys';
 import { LOAD_GROUPS, type LoadGroup } from './manifestSchema';
 
@@ -38,7 +39,11 @@ export function levelKeys(levelId: string, loaded: (key: AssetKey) => boolean): 
   return groupKeys(group).filter((key) => !loaded(key));
 }
 
-/** One call to Phaser's loader: which file type, under which key, from which path. */
+/**
+ * One call to Phaser's loader: which file type, under which key, from which path; a sound from the
+ * files it is offered as, in order (`audioSources`), of which the loader fetches the first one the
+ * browser can play.
+ */
 export type LoadRequest =
   | { readonly loader: 'image'; readonly key: string; readonly path: string }
   | {
@@ -48,7 +53,7 @@ export type LoadRequest =
       readonly frameWidth: number;
       readonly frameHeight: number;
     }
-  | { readonly loader: 'audio'; readonly key: string; readonly path: string };
+  | { readonly loader: 'audio'; readonly key: string; readonly paths: readonly string[] };
 
 /** A Kenney picture, which is loaded raw and then recoloured to the palette under its own key. */
 export interface Recolour {
@@ -94,7 +99,7 @@ function requestOf(key: AssetKey): LoadRequest | null {
     case 'sfx':
     case 'voice':
     case 'jingle':
-      return { loader: 'audio', key, path };
+      return { loader: 'audio', key, paths: audioSources(key) };
   }
 }
 

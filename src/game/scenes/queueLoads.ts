@@ -3,7 +3,7 @@ import type { LoadRequest } from '../assets/loadPlan';
 
 /**
  * Hands the load requests `game/assets/loadPlan.ts` decided to a scene's loader. Nothing is
- * decided here: each request names its loader, key and path.
+ * decided here: each request names its loader, key and path (a sound, its files in order).
  */
 export function queueLoads(
   load: Phaser.Loader.LoaderPlugin,
@@ -21,7 +21,8 @@ export function queueLoads(
         });
         break;
       case 'audio':
-        load.audio(request.key, request.path);
+        // The loader takes the first file the browser says it can play.
+        load.audio(request.key, [...request.paths]);
         break;
     }
   }

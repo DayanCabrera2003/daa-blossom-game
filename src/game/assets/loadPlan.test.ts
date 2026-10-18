@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { audioSources } from './audioSources';
 import { ASSET_KEYS, assetEntry, type AssetKey } from './keys';
 import {
   BOOT_KEYS,
@@ -99,13 +100,20 @@ describe('loadRequests', () => {
     ]);
   });
 
-  it('loads music, effects, syllables and jingles as audio', () => {
-    expect(loadRequests(['music.hub', 'sfx.stone', 'voice.6', 'jingle.unlock'])).toEqual([
-      { loader: 'audio', key: 'music.hub', path: 'assets/audio/music/hub.ogg' },
-      { loader: 'audio', key: 'sfx.stone', path: 'assets/audio/sfx/stone.ogg' },
-      { loader: 'audio', key: 'voice.6', path: 'assets/audio/voice/voice6.wav' },
-      { loader: 'audio', key: 'jingle.unlock', path: 'assets/audio/jingles/unlock.wav' },
+  it('loads music, effects, syllables and jingles as audio, each offered as its files', () => {
+    const keys = ['music.hub', 'sfx.stone', 'voice.6', 'jingle.unlock'] as const;
+    expect(loadRequests(keys)).toEqual(
+      keys.map((key) => ({ loader: 'audio', key, paths: audioSources(key) })),
+    );
+  });
+
+  it('offers a sound its original first, so a browser that plays it never fetches the fallback', () => {
+    expect(loadRequests(['voice.6'])).toEqual([
+      { loader: 'audio', key: 'voice.6', paths: ['assets/audio/voice/voice6.wav'] },
     ]);
+    for (const request of loadRequests(['music.hub', 'sfx.stone'])) {
+      expect(request.loader === 'audio' && request.paths[0]?.endsWith('.ogg')).toBe(true);
+    }
   });
 
   it('leaves the font to the page, which loads it before the game starts', () => {
