@@ -1,6 +1,6 @@
-// The weight budget of the shipped game (plan 06, phase 11; the deferred books, plan 07, phase 2):
-// how many bytes each part may take, and how the parts are weighed from the asset manifest and
-// the built files.
+// The weight budget of the shipped game (plan 06, phase 11; the deferred books, plan 07, phase 2;
+// the deferred free mode, plan 08, phase 9): how many bytes each part may take, and how the parts
+// are weighed from the asset manifest and the built files.
 import type { AssetKind, Manifest } from '../../src/game/assets/manifestSchema';
 
 /** Decimal units, as browsers and `du --si` report sizes: the stricter reading of "MB". */
@@ -8,7 +8,8 @@ const KB = 1000;
 const MB = 1000 * KB;
 
 /** A part of the budget: the JavaScript, the assets by kind, and what the first screen waits for. */
-export type BudgetPart = 'js' | 'images' | 'fonts' | 'sounds' | 'initial' | 'music' | 'codex';
+export type BudgetPart =
+  'js' | 'images' | 'fonts' | 'sounds' | 'initial' | 'music' | 'codex' | 'sandbox';
 
 /** The most bytes each part may take. */
 export const BUDGET: Readonly<Record<BudgetPart, number>> = {
@@ -26,6 +27,13 @@ export const BUDGET: Readonly<Record<BudgetPart, number>> = {
   // entries, the diagrams and the teacher's panel. Settled at the close of plan 07, when all
   // fourteen entries weighed 873 KB: about an eighth to spare, no more.
   codex: 1 * MB,
+  // The free mode, loaded on demand when it opens, apart from the books (the author's decision in
+  // plan 08, phase 9). Measured then: its pure modules (the design, its limits, layout, import,
+  // level file and generators) weigh 9.7 KB, plus the 1.5 KB garden code it shares with the books.
+  // The plan estimates the whole free mode (scene, editor, generate menu, share sheet) at 50 to
+  // 80 KB; the limit takes the top of that estimate and the measured part, with about a third to
+  // spare, until phase 15 settles it on what is built.
+  sandbox: 120 * KB,
 };
 
 /** The asset kinds weighed under each part of the budget that the manifest alone decides. */
@@ -68,10 +76,14 @@ export interface BudgetRow {
   readonly over: boolean;
 }
 
-/** What the build weighs: the initial script and the deferred books, as `buildFiles` sorts them. */
+/**
+ * What the build weighs, as `buildFiles` sorts it: the initial script, the deferred books and the
+ * deferred free mode.
+ */
 export interface BuildSizes {
   readonly js: number;
   readonly codex: number;
+  readonly sandbox: number;
 }
 
 /** Every part of the budget, weighed from the manifest's sizes and the built files. */
@@ -84,6 +96,7 @@ export function budgetReport(sizes: ManifestSizes & BuildSizes): BudgetRow[] {
     initial: sizes.js + sizes.boot,
     music: sizes.music,
     codex: sizes.codex,
+    sandbox: sizes.sandbox,
   };
   return (Object.keys(BUDGET) as BudgetPart[]).map((part) => ({
     part,

@@ -48,7 +48,7 @@ describe('manifestSizes', () => {
 
 describe('budgetReport', () => {
   it('weighs the initial load as the JavaScript plus the boot group', () => {
-    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500, codex: 9000 });
+    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500, codex: 9000, sandbox: 70 });
     expect(report.find((row) => row.part === 'initial')).toEqual({
       part: 'initial',
       bytes: 1848,
@@ -58,7 +58,7 @@ describe('budgetReport', () => {
   });
 
   it('weighs the deferred books apart, out of the initial load', () => {
-    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500, codex: 9000 });
+    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500, codex: 9000, sandbox: 70 });
     expect(report.find((row) => row.part === 'codex')).toEqual({
       part: 'codex',
       bytes: 9000,
@@ -68,10 +68,24 @@ describe('budgetReport', () => {
     expect(BUDGET.codex).toBe(1e6);
   });
 
+  it('weighs the free mode in a part of its own, apart from the books and the start', () => {
+    const report = budgetReport({ ...manifestSizes(MANIFEST), js: 500, codex: 9000, sandbox: 70 });
+    expect(report.find((row) => row.part === 'sandbox')).toEqual({
+      part: 'sandbox',
+      bytes: 70,
+      limit: BUDGET.sandbox,
+      over: false,
+    });
+    expect(report.find((row) => row.part === 'codex')?.bytes).toBe(9000);
+    expect(report.find((row) => row.part === 'initial')?.bytes).toBe(1848);
+    expect(BUDGET.sandbox).toBe(120e3);
+  });
+
   it('flags every part over its limit, and only those', () => {
     const report = budgetReport({
       js: BUDGET.js + 1,
       codex: BUDGET.codex + 1,
+      sandbox: BUDGET.sandbox + 1,
       images: BUDGET.images,
       fonts: 0,
       sounds: 0,
@@ -82,6 +96,7 @@ describe('budgetReport', () => {
       'js',
       'music',
       'codex',
+      'sandbox',
     ]);
   });
 

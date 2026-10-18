@@ -1,7 +1,8 @@
 // check-budget: weighs the built game against its budget (plan 06, phase 11): the built files of
 // dist/, which only a build knows, with the assets of the manifest. The build manifest tells the
-// initial script from the books loaded on demand (plan 07, phase 2), and KaTeX and marked must be
-// in the books only.
+// initial script from the books loaded on demand (plan 07, phase 2) and from the free mode, also
+// loaded on demand and weighed in its own part (plan 08, phase 9); KaTeX and marked must be in the
+// books only.
 // Usage: npm run build && npm run budget. Exits with code 1 if any part is over its limit, or if
 // the initial script bundles KaTeX or marked.
 import { existsSync, readFileSync, statSync } from 'node:fs';
@@ -11,6 +12,7 @@ import manifestJson from '../src/game/assets/manifest.json';
 import { parseManifest } from '../src/game/assets/manifestSchema';
 import { budgetReport, manifestSizes } from './assets/budget';
 import { buildFiles, parseViteManifest } from './assets/buildChunks';
+import { isFreeMode } from './assets/freeMode';
 import { librariesIn } from './assets/deferredLibraries';
 import { formatTable } from './formatTable';
 
@@ -19,7 +21,10 @@ const BUILD_MANIFEST = join(DIST, '.vite', 'manifest.json');
 
 if (!existsSync(BUILD_MANIFEST)) throw new Error('no dist/.vite/manifest.json: run npm run build');
 
-const files = buildFiles(parseViteManifest(JSON.parse(readFileSync(BUILD_MANIFEST, 'utf8'))));
+const files = buildFiles(
+  parseViteManifest(JSON.parse(readFileSync(BUILD_MANIFEST, 'utf8'))),
+  isFreeMode,
+);
 
 /** The bytes of some built files. */
 const weigh = (paths: readonly string[]): number =>
@@ -29,6 +34,7 @@ const report = budgetReport({
   ...manifestSizes(parseManifest(manifestJson)),
   js: weigh(files.initial),
   codex: weigh(files.deferred),
+  sandbox: weigh(files.freeMode),
 });
 
 /** A size in kilobytes, decimal like the budget. */
