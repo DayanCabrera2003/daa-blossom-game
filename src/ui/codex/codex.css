@@ -1,0 +1,258 @@
+/*
+ * The books over the canvas (plan 07, phase 3): a wooden book of the pack (the 9-slice panel of the
+ * dialogue and the notebook, 16 x 16 with borders 6 5 5 6) holding a page of light paper. Every
+ * size is a whole number of logical pixels, `--px`, which is `--zoom` screen pixels like the
+ * canvas under it, so the pixel font stays sharp and the book keeps its place at every zoom. The
+ * colours are those of the game's palette (src/game/view/palette.ts).
+ */
+
+.book-backdrop {
+  --px: calc(1px * var(--zoom, 2));
+  --ink: #141b1b;
+  --paper: #f2eaf1;
+  --paper-edge: #fce2ca;
+  --wood: #965340;
+  --wood-edge: #543c52;
+  --button: #bd7959;
+  --button-active: #d3865f;
+  --button-off: #695953;
+  --seal: #ef914f;
+  --link: #2d697b;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(20 27 27 / 0.6);
+}
+
+.book {
+  box-sizing: border-box;
+  width: min(100vw, calc(464 * var(--px)));
+  height: min(100vh, calc(258 * var(--px)));
+  display: grid;
+  grid-template-columns: calc(128 * var(--px)) 1fr;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: calc(4 * var(--px));
+  padding: calc(4 * var(--px));
+  border-style: solid;
+  border-width: calc(6 * var(--px)) calc(5 * var(--px)) calc(5 * var(--px)) calc(6 * var(--px));
+  border-color: var(--wood-edge);
+  border-image: var(--wood-panel) 6 5 5 6 fill / calc(6 * var(--px)) calc(5 * var(--px))
+    calc(5 * var(--px)) calc(6 * var(--px)) stretch;
+  background-color: var(--wood);
+  image-rendering: pixelated;
+  color: var(--ink);
+  font-family: monogram, monospace;
+  font-size: calc(16 * var(--px));
+  line-height: calc(13 * var(--px));
+  outline: none;
+}
+
+.book button {
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.book :focus-visible {
+  outline: var(--px) solid var(--ink);
+  outline-offset: var(--px);
+}
+
+/* The head: the book's name and the way out, always in the same corner. */
+.codex-head {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.codex-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+  color: var(--paper);
+}
+
+.codex-button {
+  padding: 0 calc(3 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--button);
+}
+
+.codex-button:hover:not(:disabled) {
+  background: var(--button-active);
+}
+
+.codex-button:disabled {
+  background: var(--button-off);
+  color: var(--paper);
+  cursor: default;
+}
+
+/* The index, on the left: one line per entry, the closed ones greyed. */
+.codex-index {
+  overflow-y: auto;
+  background: var(--paper-edge);
+  border: var(--px) solid var(--wood-edge);
+}
+
+.codex-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.codex-row {
+  border-bottom: var(--px) solid var(--paper);
+}
+
+.codex-closed {
+  padding: var(--px) calc(3 * var(--px));
+  color: var(--button-off);
+}
+
+.codex-entry {
+  display: grid;
+  grid-template-columns: calc(14 * var(--px)) 1fr auto;
+  width: 100%;
+  padding: var(--px) calc(3 * var(--px));
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.codex-entry:hover,
+.codex-entry[aria-current='page'] {
+  background: var(--paper);
+}
+
+.codex-sub {
+  grid-column: 2 / -1;
+  color: var(--link);
+}
+
+.codex-seal {
+  align-self: start;
+  margin-left: calc(2 * var(--px));
+  padding: 0 var(--px);
+  background: var(--seal);
+  color: var(--ink);
+}
+
+/* The page, on the right: the titles, the tabs, and the text on paper. */
+.codex-page {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.codex-garden-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+  color: var(--paper);
+}
+
+.codex-formal-title {
+  margin: 0;
+  color: var(--paper-edge);
+}
+
+.codex-tabs {
+  display: flex;
+  gap: calc(2 * var(--px));
+  margin-top: calc(2 * var(--px));
+}
+
+.codex-tab {
+  padding: 0 calc(4 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  border-bottom: 0;
+  background: var(--button);
+}
+
+.codex-tab[aria-selected='true'] {
+  background: var(--paper);
+}
+
+.codex-text {
+  overflow-y: auto;
+  padding: calc(3 * var(--px)) calc(6 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--paper);
+  overflow-wrap: break-word;
+}
+
+.codex-text p,
+.codex-text ul,
+.codex-text ol {
+  margin: 0 0 calc(6 * var(--px));
+}
+
+.codex-text h2,
+.codex-text h3 {
+  margin: calc(6 * var(--px)) 0 calc(3 * var(--px));
+  font-size: inherit;
+  color: var(--wood);
+}
+
+.codex-text a {
+  color: var(--link);
+}
+
+/* KaTeX's em is far taller than the pixel font's letters: this brings their heights together. */
+.codex-text .katex {
+  font-size: 0.75em;
+}
+
+.codex-text .katex-display {
+  margin: calc(4 * var(--px)) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* The holes the diagrams and the glossary fill in later phases take no room while empty. */
+.codex-text .codex-diagram:empty,
+.codex-text .codex-bridge:empty,
+.codex-text .codex-glossary:empty {
+  display: none;
+}
+
+.codex-notice {
+  margin: var(--px) 0 0;
+  min-height: calc(13 * var(--px));
+  color: var(--paper);
+}
+
+/* The foot: the pages back and forth, and how the keys work. */
+.codex-foot {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(4 * var(--px));
+}
+
+.codex-keys {
+  color: var(--paper-edge);
+  text-align: center;
+}
+
+/* A new page slides in, unless the player asked for less motion. */
+.codex-turned {
+  animation: codex-turn 160ms ease-out;
+}
+
+@keyframes codex-turn {
+  from {
+    opacity: 0;
+    transform: translateX(calc(6 * var(--px)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .codex-turned {
+    animation: none;
+  }
+}
