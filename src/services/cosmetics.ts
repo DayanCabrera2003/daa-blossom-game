@@ -24,6 +24,12 @@ const SEEDLING = 'seedling' as const;
 /** A cosmetic of the hub. */
 export type CosmeticId = (typeof COSMETICS)[number]['id'] | typeof SEEDLING;
 
+/** Every cosmetic, in the order they come: those of the stars, then the seedlings. */
+export const COSMETIC_IDS: readonly CosmeticId[] = [
+  ...COSMETICS.map((cosmetic) => cosmetic.id),
+  SEEDLING,
+];
+
 /**
  * The cosmetics a player has, in the order they come: those whose threshold the stars reach, and
  * the seedlings once there is a seed. Teacher mode shows them all (GDD §5.8).

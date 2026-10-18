@@ -1,7 +1,7 @@
 import { catalog } from '@levels/catalog';
 import { starsCeiling } from '@levels/starsCeiling';
 import { describe, expect, it } from 'vitest';
-import { COSMETICS, newCosmetics, openCosmetics } from './cosmetics';
+import { COSMETIC_IDS, COSMETICS, newCosmetics, openCosmetics } from './cosmetics';
 import { emptySave, recordCosmeticsSeen } from './save';
 
 describe('the cosmetics of the hub', () => {
@@ -23,6 +23,11 @@ describe('the cosmetics of the hub', () => {
       ...COSMETICS.map((cosmetic) => cosmetic.id),
       'seedling',
     ]);
+  });
+
+  it('names every cosmetic once, in the order they come', () => {
+    expect(COSMETIC_IDS).toEqual(openCosmetics({ stars: 0, seeds: 0 }, true));
+    expect(new Set(COSMETIC_IDS).size).toBe(COSMETIC_IDS.length);
   });
 
   it('a cosmetic is new until it has been announced', () => {
