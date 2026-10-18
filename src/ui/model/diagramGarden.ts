@@ -5,7 +5,7 @@ import type { Level } from '@levels/build';
 import type { CardDemo } from '@levels/cards/demo';
 import type { CardId } from '@levels/cards/schema';
 import type { SproutKind } from '@levels/fields';
-import type { DiagramSpec } from './diagramSpec';
+import type { GardenSource } from './diagramSpec';
 
 /**
  * The garden a diagram of the Codex starts from (plan 07, phase 4): a level as it starts, the
@@ -66,7 +66,7 @@ const ringOf = (n: number): Point[] =>
 
 /** The garden a diagram block names, from `sources`. */
 export function diagramGarden(
-  spec: Pick<DiagramSpec, 'level' | 'card' | 'code'>,
+  spec: GardenSource,
   sources: DiagramSources,
 ): Result<DiagramGarden, DiagramGardenError> {
   if (spec.level !== undefined) {

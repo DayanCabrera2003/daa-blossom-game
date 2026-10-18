@@ -37,13 +37,21 @@ function report(problem: unknown): void {
 export function mountDiagram(hole: HTMLElement, t: Translate): void {
   const spec = parseDiagramSpec(hole.dataset['diagram'] ?? '');
   if (!spec.ok) return report(spec.error);
-  const garden = diagramGarden(spec.value, diagramSources());
+  const block = spec.value;
+  if (block.kind === 'chart') return report(`no chart is drawn yet: ${block.races.join(', ')}`);
+  const garden = diagramGarden(block, diagramSources());
   if (!garden.ok) return report(garden.error);
-  if (spec.value.kind === 'play') {
-    playDiagram(hole, garden.value, spec.value, t);
-    return;
+  switch (block.kind) {
+    case 'play':
+      playDiagram(hole, garden.value, block, t);
+      return;
+    case 'replay': {
+      const steps = replaySteps(garden.value, block.trace);
+      if (!steps.ok) return report(steps.error);
+      replayDiagram(hole, garden.value, block, steps.value, t);
+      return;
+    }
+    default:
+      report(`no ${block.kind} diagram is drawn yet`);
   }
-  const steps = replaySteps(garden.value, spec.value.trace);
-  if (!steps.ok) return report(steps.error);
-  replayDiagram(hole, garden.value, spec.value, steps.value, t);
 }

@@ -154,6 +154,10 @@ describe('what the Codex points at', () => {
   it('every diagram block is a diagram, and the level, card or garden code it names exists', () => {
     const levels = new Set(catalog().map((level) => level.data.id));
     for (const [, spec] of diagrams) {
+      if (spec.kind === 'chart') {
+        for (const level of spec.races) expect(levels.has(level)).toBe(true);
+        continue;
+      }
       if (spec.level !== undefined) expect(levels.has(spec.level)).toBe(true);
       if (spec.card !== undefined) expect(CARD_IDS).toContain(spec.card);
       if (spec.code !== undefined) expect(decodeGarden(spec.code).ok).toBe(true);
@@ -175,6 +179,7 @@ describe('the diagrams of the Codex (plan 07, phase 4)', () => {
   it('every block builds its garden, and every replayed day plays to its end', () => {
     expect(diagrams.length).toBeGreaterThan(0);
     for (const [entry, spec] of diagrams) {
+      if (spec.kind === 'chart') continue;
       const garden = diagramGarden(spec, sources);
       expect({ entry, ok: garden.ok }).toEqual({ entry, ok: true });
       if (!garden.ok || spec.kind !== 'replay') continue;
@@ -188,8 +193,8 @@ describe('the diagrams of the Codex (plan 07, phase 4)', () => {
     const drawn = diagrams.map(([entry, spec]) => ({
       entry,
       kind: spec.kind,
-      garden: spec.level ?? spec.card ?? spec.code,
-      day: spec.kind === 'replay' ? spec.trace : spec.moves.join(' '),
+      garden: spec.kind === 'chart' ? spec.races.join(' ') : (spec.level ?? spec.card ?? spec.code),
+      day: spec.kind === 'replay' ? spec.trace : spec.kind === 'play' ? spec.moves.join(' ') : '',
     }));
     expect(drawn).toEqual([
       { entry: 'C1', kind: 'play', garden: '1.1', day: 'join split' },

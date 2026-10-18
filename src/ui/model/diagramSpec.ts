@@ -1,12 +1,14 @@
 import { z } from 'zod';
 import { err, ok, type Result } from '@core/shared/result';
-import { CARD_IDS } from '@levels/cards/schema';
+import { CARD_IDS, type CardId } from '@levels/cards/schema';
 
 /**
- * A `diagram` block of a Codex entry (plan 07, §1.1 and phase 4): the small garden the intuition
- * tab draws, as JSON. It names its garden (a level of the catalog, the tiny garden of a mechanic
- * card, or a garden code), what kind of diagram it is and, by kind, the moves the reader may make
- * (`play`) or the day that is replayed under the sun (`replay`). Its title and help line, when
+ * A `diagram` block of a Codex entry (plan 07, §1.1 and phases 4 and 5): the small garden the
+ * intuition tab draws, as JSON. It names its garden (a level of the catalog, the tiny garden of a
+ * mechanic card, or a garden code), what kind of diagram it is and, by kind, the moves the reader
+ * may make (`play`), the day that is replayed under the sun (`replay`), or one of the special
+ * diagrams (the pond, the scarecrows, the cut at a flower, the stones, the recipe, and the chart
+ * of the races, which names the levels whose races it shows instead of a garden). Its title and help line, when
  * given, are keys of `strings.json`; the content tests check that every block names what exists.
  */
 
@@ -26,12 +28,12 @@ export const TRACE_SOURCES = ['solution', 'edmonds', 'autoSearch', 'recipe'] as 
 /** Where a replayed day comes from. */
 export type TraceSource = (typeof TRACE_SOURCES)[number];
 
+/** A level of the catalog, by its id. */
+const levelId = z.string().regex(/^\d+\.\d+$/, 'expected chapter.level, like 4.10');
+
 /** The garden of a diagram: exactly one of a level, a card or a garden code. */
 const garden = {
-  level: z
-    .string()
-    .regex(/^\d+\.\d+$/, 'expected chapter.level, like 4.10')
-    .optional(),
+  level: levelId.optional(),
   card: z.enum(CARD_IDS).optional(),
   code: z.string().min(1).optional(),
 };
@@ -58,21 +60,67 @@ const replay = z.strictObject({
   ...words,
 });
 
+/**
+ * A special diagram of plan 07, phase 5, on its garden: the pond with a level's reflection (C3),
+ * scarecrows to place (C5), the cut of a chain at a level's flower (C8), the mechanical gardener
+ * following the recipe card by card (C10) and stones to lift (C12).
+ */
+const special = (kind: 'pond' | 'cover' | 'cut' | 'recipe' | 'stones') =>
+  z.strictObject({ kind: z.literal(kind), ...garden, ...words });
+
+/** The kinds that need a level of their own: its reflection, or its flower. */
+const LEVEL_ONLY: readonly string[] = ['pond', 'cut'];
+
+/** The chart of the races some levels run (C11): the gardens are the races', not the block's. */
+const chart = z.strictObject({
+  kind: z.literal('chart'),
+  races: z.array(levelId).min(1),
+  ...words,
+});
+
 /** A diagram block as the entry writes it. */
 export const diagramSpec = z
-  .discriminatedUnion('kind', [play, replay])
+  .discriminatedUnion('kind', [
+    play,
+    replay,
+    special('pond'),
+    special('cover'),
+    special('cut'),
+    special('recipe'),
+    special('stones'),
+    chart,
+  ])
   .refine(
-    (spec) =>
-      [spec.level, spec.card, spec.code].filter((source) => source !== undefined).length === 1,
+    (spec) => spec.kind === 'chart' || gardensNamed(spec) === 1,
     'name exactly one garden: a level, a card or a code',
   )
   .refine(
     (spec) => spec.kind !== 'replay' || spec.trace !== 'solution' || spec.level !== undefined,
     'only a level has a reference solution to replay',
+  )
+  .refine(
+    (spec) =>
+      !LEVEL_ONLY.includes(spec.kind) || (spec.kind !== 'chart' && spec.level !== undefined),
+    'only a level has a reflection or a flower to draw',
   );
+
+/** Where the garden of a block is found: a level, a card or a code (exactly one of them). */
+export interface GardenSource {
+  readonly level?: string | undefined;
+  readonly card?: CardId | undefined;
+  readonly code?: string | undefined;
+}
+
+/** How many gardens a block names. */
+const gardensNamed = (spec: GardenSource): number =>
+  [spec.level, spec.card, spec.code].filter((source) => source !== undefined).length;
 
 /** A diagram block, read. */
 export type DiagramSpec = z.infer<typeof diagramSpec>;
+
+/** The kinds of diagram, and the blocks that draw a garden of their own (all but the chart). */
+export type DiagramKind = DiagramSpec['kind'];
+export type GardenDiagramSpec = Exclude<DiagramSpec, { kind: 'chart' }>;
 
 /** The spec of a diagram block, or its issues as `path: message` lines. */
 export function parseDiagramSpec(json: string): Result<DiagramSpec, readonly string[]> {

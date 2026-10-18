@@ -40,6 +40,29 @@ describe('parseDiagramSpec', () => {
     expect(parse({ kind: 'replay', code: 'AQYA', trace: 'solution' }).ok).toBe(false);
   });
 
+  it('reads the special diagrams of phase 5, each on the garden it needs', () => {
+    for (const kind of ['cover', 'stones', 'recipe']) {
+      expect(parse({ kind, level: '3.8' })).toEqual({ ok: true, value: { kind, level: '3.8' } });
+      expect(parse({ kind, code: 'AQYA' }).ok).toBe(true);
+    }
+    // The pond needs a level's reflection, the cut a level's flower: a level, nothing else.
+    for (const kind of ['pond', 'cut']) {
+      expect(parse({ kind, level: '2.1', help: 'a' }).ok).toBe(true);
+      expect(parse({ kind, code: 'AQYA' }).ok).toBe(false);
+    }
+    expect(parse({ kind: 'cover', level: '3.8', moves: ['join'] }).ok).toBe(false);
+  });
+
+  it('reads the chart of the races of some levels, which has no garden of its own', () => {
+    expect(parse({ kind: 'chart', races: ['6.4', '6.5'] })).toEqual({
+      ok: true,
+      value: { kind: 'chart', races: ['6.4', '6.5'] },
+    });
+    expect(parse({ kind: 'chart', races: [] }).ok).toBe(false);
+    expect(parse({ kind: 'chart', races: ['six'] }).ok).toBe(false);
+    expect(parse({ kind: 'chart', races: ['6.4'], level: '6.4' }).ok).toBe(false);
+  });
+
   it('says why a block is no JSON at all', () => {
     const parsed = parseDiagramSpec('{ kind: play');
     expect(parsed.ok).toBe(false);
