@@ -48,6 +48,41 @@ describe('markdownToHtml: formulas', () => {
   });
 });
 
+describe('markdownToHtml: a formula kept with what hugs it', () => {
+  /** The no-wrap span the formula and its attached suffix share, or null when there is none. */
+  const nowrap = (markdown: string): string | null => {
+    const out = html(markdown);
+    const start = out.indexOf('<span class="math-nowrap"><span class="katex">');
+    // KaTeX's own spans hold no bare text after a closing tag, so the first one is the suffix.
+    return start < 0 ? null : (/<\/span>([^<]+)<\/span>/.exec(out.slice(start))?.[1] ?? null);
+  };
+
+  it('keeps a hyphenated word attached to a formula on its line', () => {
+    expect(nowrap('un camino $M$-aumentante corto')).toBe('-aumentante');
+    expect(nowrap('los $k$-ésimos y-más')).toBe('-ésimos');
+  });
+
+  it('keeps directly attached punctuation with the formula', () => {
+    expect(nowrap('el jardín $G/B$, luego')).toBe(',');
+    expect(nowrap('cuando ($k=1$) basta')).toBe(')');
+    expect(nowrap('y $x$.')).toBe('.');
+    expect(nowrap('si $a$: y $b$; fin')).toBe(':');
+    expect(nowrap('($M$-aumentante).')).toBe('-aumentante).');
+  });
+
+  it('leaves a formula with nothing attached, or a dash after a space, as it was', () => {
+    expect(nowrap('una $x$ sola')).toBeNull();
+    expect(nowrap('una $x$ - sola')).toBeNull();
+    expect(nowrap('una $x$- sola')).toBeNull();
+    expect(html('una $x$ sola')).not.toContain('math-nowrap');
+    expect(html('so $$a+b$$, holds')).not.toContain('math-nowrap');
+  });
+
+  it('ends the suffix at the first character that is neither a letter nor punctuation', () => {
+    expect(html('$x$-a&b')).toContain('-a</span>&amp;b');
+  });
+});
+
 describe('markdownToHtml: holes the book fills', () => {
   it('leaves a diagram block as an empty hole that carries its JSON', () => {
     const out = html('```diagram\n{ "kind": "pond", "level": "2.1" }\n```');

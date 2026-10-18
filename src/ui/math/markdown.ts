@@ -36,7 +36,16 @@ const escapeHtml = (text: string): string =>
 interface MathToken extends Tokens.Generic {
   readonly tex: string;
   readonly display: boolean;
+  /** What hugs an inline formula on its right and must stay on its line ('' when nothing does). */
+  readonly suffix?: string;
 }
+
+/**
+ * What directly follows an inline formula and must not be parted from it by a line break: hyphenated
+ * words ("$M$-aumentante") and closing punctuation ("$G/B$,", "($k=1$)"). A browser may break
+ * between a formula and the text after it, so both go in one no-wrap span.
+ */
+const ATTACHED_SUFFIX = /^(?:-[\p{L}\p{N}]+)*[,.;:)!?]*/u;
 
 /**
  * The two math extensions: a display formula on its own lines is a block (no paragraph around it),
@@ -74,9 +83,17 @@ function mathExtensions(mode: MathMode): TokenizerAndRendererExtension[] {
       },
       tokenizer(src): MathToken | undefined {
         const formula = matchMath(src);
-        return formula === null ? undefined : { type: 'math', ...formula };
+        if (formula === null) return undefined;
+        // A display formula takes its own line anyway, so only an inline one keeps a suffix.
+        const rest = src.slice(formula.raw.length);
+        const suffix = formula.display ? '' : (ATTACHED_SUFFIX.exec(rest)?.[0] ?? '');
+        return { type: 'math', ...formula, raw: formula.raw + suffix, suffix };
       },
-      renderer,
+      renderer(token): string {
+        const suffix = (token as MathToken).suffix ?? '';
+        if (suffix === '') return renderer(token);
+        return `<span class="math-nowrap">${renderer(token)}${escapeHtml(suffix)}</span>`;
+      },
     },
   ];
 }
