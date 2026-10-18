@@ -71,7 +71,7 @@
   margin: 0;
   font-size: inherit;
   font-weight: normal;
-  color: var(--paper);
+  color: var(--ink);
 }
 
 .codex-button {
@@ -151,12 +151,12 @@
   margin: 0;
   font-size: inherit;
   font-weight: normal;
-  color: var(--paper);
+  color: var(--ink);
 }
 
 .codex-formal-title {
   margin: 0;
-  color: var(--paper-edge);
+  color: var(--ink);
 }
 
 .codex-tabs {
@@ -222,7 +222,7 @@
 .codex-notice {
   margin: var(--px) 0 0;
   min-height: calc(13 * var(--px));
-  color: var(--paper);
+  color: var(--ink);
 }
 
 /* The foot: the pages back and forth, and how the keys work. */
@@ -235,7 +235,7 @@
 }
 
 .codex-keys {
-  color: var(--paper-edge);
+  color: var(--ink);
   text-align: center;
 }
 
