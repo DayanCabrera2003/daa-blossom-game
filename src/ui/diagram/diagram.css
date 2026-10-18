@@ -27,6 +27,10 @@
   --dg-button: #bd7959;
   --dg-button-active: #d3865f;
   --dg-button-off: #695953;
+  --dg-mirror: #b8dce5;
+  --dg-chain-none: #abc2bc;
+  --dg-chain-wrong: #e0394c;
+  --dg-odd-group: #a5608b;
   margin: calc(4 * var(--px)) 0 calc(6 * var(--px));
 }
 
@@ -242,6 +246,103 @@
 .dg-touchable:focus-visible > .dg-vine-hit {
   stroke: var(--dg-selected);
   stroke-opacity: 0.35;
+}
+
+/*
+ * What a special diagram marks on its garden (plan 07, phase 5): soft halos round groups of
+ * sprouts, strands along vines, rings round sprouts and the numbers of the groups.
+ */
+.dg-group {
+  opacity: 0.35;
+}
+
+.dg-group-link {
+  stroke: currentcolor;
+  stroke-linecap: round;
+}
+
+.dg-group-spot {
+  fill: currentcolor;
+}
+
+.dg-group-gain {
+  color: var(--dg-chain-gain);
+}
+
+.dg-group-tie,
+.dg-group-even {
+  color: var(--dg-chain-none);
+}
+
+.dg-group-loss {
+  color: var(--dg-moon);
+}
+
+.dg-group-odd {
+  color: var(--dg-odd-group);
+}
+
+.dg-group-chosen {
+  color: var(--dg-highlight);
+}
+
+.dg-group-inner {
+  color: var(--dg-flower);
+}
+
+.dg-group-label {
+  fill: var(--dg-label);
+  stroke: var(--dg-background);
+  stroke-width: 3;
+  paint-order: stroke;
+  text-anchor: middle;
+}
+
+.dg-strand {
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.dg-strand-yours {
+  stroke: var(--dg-lit);
+}
+
+.dg-strand-mirror {
+  stroke: var(--dg-mirror);
+  stroke-dasharray: 4 2;
+}
+
+.dg-strand-guarded {
+  stroke: var(--dg-scarecrow);
+}
+
+.dg-strand-chain {
+  stroke: var(--dg-highlight);
+  stroke-width: 3;
+}
+
+.dg-strand-stretch {
+  stroke: var(--dg-chain-gain);
+  stroke-width: 4;
+}
+
+.dg-mark {
+  fill: none;
+  stroke-width: 2;
+}
+
+.dg-mark-end {
+  stroke: var(--dg-lit-glow);
+}
+
+.dg-mark-petal {
+  stroke: var(--dg-flower);
+}
+
+.dg-mark-base {
+  stroke: var(--dg-highlight);
+  stroke-dasharray: 2 2;
 }
 
 /* The controls under the garden: the book's own wooden buttons. */

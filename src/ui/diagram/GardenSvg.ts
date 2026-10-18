@@ -2,6 +2,8 @@ import type { Translate } from '@services/i18n';
 import type { MiniFlower, MiniGarden, MiniSprout, MiniVine } from '@ui/model/miniGarden';
 import { targetName } from '@ui/model/diagramTouch';
 import { sproutWords, vineWords } from '@ui/model/diagramWords';
+import { NO_OVERLAY, type Overlay } from '@ui/model/overlay';
+import { overlayOver, overlayStrands, overlayUnder } from './OverlaySvg';
 import { pointsOf, shape } from './svgShape';
 
 /**
@@ -251,13 +253,15 @@ function paintSprout(
 }
 
 /**
- * Draws `picture` into `svg`, replacing what was there: ground, flowers, vines and lanterns, then
- * the sprouts on top. The SVG is one unit per logical pixel; the page scales it by its zoom.
+ * Draws `picture` into `svg`, replacing what was there: ground, the groups a special diagram wraps,
+ * flowers, vines and lanterns, its strands, then the sprouts on top and its rings and labels over
+ * them. The SVG is one unit per logical pixel; the page scales it by its zoom.
  */
 export function drawGarden(
   svg: SVGSVGElement,
   picture: MiniGarden,
   options: GardenSvgOptions,
+  overlay: Overlay = NO_OVERLAY,
 ): void {
   const page = svg.ownerDocument;
   const { width, height } = picture;
@@ -267,9 +271,12 @@ export function drawGarden(
   const names = picture.sprouts.map((sprout) => sprout.label);
   svg.replaceChildren(
     shape(page, 'rect', { class: 'dg-ground', width, height }),
+    ...overlayUnder(page, overlay),
     ...picture.flowers.map((flower) => paintFlower(page, flower)),
     ...picture.vines.map((vine) => paintVine(page, vine, names, options)),
+    ...overlayStrands(page, overlay),
     ...picture.sprouts.map((sprout) => paintSprout(page, sprout, picture.radius, options)),
+    ...overlayOver(page, overlay, picture.radius),
   );
 }
 
