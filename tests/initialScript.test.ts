@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isFreeMode } from '../tools/assets/freeMode';
+import { FREE_MODE_MODULES, isFreeMode } from '../tools/assets/freeMode';
 
 // What the initial script holds, read from the sources (plan 08, phase 8): the modules the entry
 // reaches through static imports, as the bundler follows them; `import()` starts a deferred chunk
@@ -88,5 +88,22 @@ describe('the initial script', () => {
     expect(isFreeMode('src/levels/sandbox/design.ts')).toBe(true);
     // The thin gate that loads them stays in the initial script.
     expect(isFreeMode('src/game/scenes/SandboxGate.ts')).toBe(false);
+  });
+
+  it("counts the editor's pure modules as the free mode's, each a file that exists", () => {
+    for (const module of FREE_MODE_MODULES) {
+      expect({ module, exists: existsSync(join(ROOT, module)) }).toEqual({ module, exists: true });
+      expect(isFreeMode(module)).toBe(true);
+    }
+    expect(FREE_MODE_MODULES).toEqual(
+      expect.arrayContaining([
+        'src/game/input/designIntent.ts',
+        'src/game/systems/designHistory.ts',
+        'src/game/picture/designPicture.ts',
+        'src/game/picture/designToolbar.ts',
+      ]),
+    );
+    // Their neighbours of the levels' own logic stay where they are.
+    expect(isFreeMode('src/game/input/intent.ts')).toBe(false);
   });
 });
