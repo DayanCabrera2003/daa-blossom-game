@@ -1,7 +1,7 @@
 import { checkVertexCover } from '@core/certificates/vertexCover';
 import { size } from '@core/matching/queries';
 import type { Translate } from '@services/i18n';
-import { coverNow, type CoverSession } from './coverPlay';
+import { placingNow, type PlacingSession } from './placing';
 import type { MiniLayout, MiniMoment } from './miniGarden';
 import { NO_OVERLAY, STRAND_GAP, strandOf, type Overlay } from './overlay';
 
@@ -31,8 +31,8 @@ export interface CoverPicture {
 }
 
 /** The picture of `session`, its sprouts placed by `layout`. */
-export function coverPicture(layout: MiniLayout, session: CoverSession): CoverPicture {
-  const now = coverNow(session);
+export function coverPicture(layout: MiniLayout, session: PlacingSession): CoverPicture {
+  const now = placingNow(session);
   const { graph, matching, scarecrows } = now;
   const guarded = graph.edges.filter(([u, v]) => scarecrows.includes(u) || scarecrows.includes(v));
   return {

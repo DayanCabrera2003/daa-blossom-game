@@ -5,7 +5,8 @@ import { catalog } from '@levels/catalog';
 import { cardDemos } from '@levels/cards/catalog';
 import { createTranslator } from '@services/i18n';
 import { coverPicture, coverWords } from './coverPicture';
-import { onTheMoons, startCover, touchCover } from './coverPlay';
+import { onTheMoons } from './coverPlay';
+import { startPlacing, touchPlacing } from './placing';
 import { diagramGarden, type DiagramGarden, type DiagramSources } from './diagramGarden';
 import { fitGarden } from './miniGarden';
 
@@ -22,7 +23,7 @@ const layout = fitGarden(bees.positions);
 describe('the picture of the scarecrows of C5', () => {
   it('marks the vines a scarecrow guards, and counts them with the scarecrows and lanterns', () => {
     // Sprout 1 (the flower "2") guards the vines 1–2 and 2–3.
-    const picture = coverPicture(layout, touchCover(startCover(bees), 1));
+    const picture = coverPicture(layout, touchPlacing(startPlacing(bees, 'scarecrow'), 1));
     expect(picture.overlay.strands.map((strand) => strand.tone)).toEqual(['guarded', 'guarded']);
     expect(picture.moment.scarecrows).toEqual([1]);
     expect(picture.count).toEqual({
@@ -35,17 +36,17 @@ describe('the picture of the scarecrows of C5', () => {
   });
 
   it('on the moons, guards every vine and shows the marks of the search', () => {
-    const picture = coverPicture(layout, onTheMoons(startCover(bees)));
+    const picture = coverPicture(layout, onTheMoons(startPlacing(bees, 'scarecrow')));
     expect(picture.count).toMatchObject({ guarded: 11, scarecrows: 5, covers: true });
     expect(picture.moment.snapshot.label).toContain('inner');
   });
 
   it('says how much is guarded and, once all is, what that proves', () => {
-    const none = coverPicture(layout, startCover(bees)).count;
+    const none = coverPicture(layout, startPlacing(bees, 'scarecrow')).count;
     expect(coverWords(none, t)).toEqual([
       'Enredaderas vigiladas: 0 de 11. Espantapájaros: 0. Faroles: 5.',
     ]);
-    const moons = coverPicture(layout, onTheMoons(startCover(bees))).count;
+    const moons = coverPicture(layout, onTheMoons(startPlacing(bees, 'scarecrow'))).count;
     expect(coverWords(moons, t)).toEqual([
       'Enredaderas vigiladas: 11 de 11. Espantapájaros: 5. Faroles: 5.',
       t('diagram.cover.tight'),
