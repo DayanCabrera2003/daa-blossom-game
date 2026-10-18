@@ -68,6 +68,20 @@ describe('dragging a chain', () => {
     expect(drag([0, 1, 1])).toEqual({ path: [0, 1], rejection: null });
   });
 
+  it('in the fog, never goes into a vine the fog still hides, and says so (chapter 3)', () => {
+    // Only S and b are inspected: S–a and a=b, b–c are in sight; c=d is not.
+    const fog = {
+      ...brigade,
+      revealed: [true, false, true, false, false, false, false, false, false],
+    };
+    expect(drag([0, 1, 2, 3], fog)).toEqual({ path: [0, 1, 2, 3], rejection: null });
+    expect(drag([0, 1, 2, 3, 4], fog)).toEqual({
+      path: [0, 1, 2, 3],
+      rejection: { code: 'vineHidden', vertex: 3 },
+    });
+    expect(chainGain(fog, [0, 1, 2, 3, 4, 5])).toBeNull();
+  });
+
   it('an empty drag cannot be extended', () => {
     expect(extendChain(brigade, [], 0)).toEqual({ path: [], rejection: null });
   });
