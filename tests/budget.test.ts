@@ -77,6 +77,8 @@ describe('budgetReport', () => {
       limit: BUDGET.initial,
       over: false,
     });
+    // Settled once the hub's music left the first load (plan 09, phase 9): 3115 KB measured.
+    expect(BUDGET.initial).toBe(3.5e6);
   });
 
   it('weighs the deferred books apart, out of the initial load', () => {

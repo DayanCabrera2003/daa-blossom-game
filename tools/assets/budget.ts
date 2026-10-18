@@ -21,8 +21,9 @@ export const BUDGET: Readonly<Record<BudgetPart, number>> = {
   // Effects, babble syllables and jingles.
   sounds: 1.5 * MB,
   // The initial script plus the boot group; never the deferred books, nor the hub's music, which
-  // loads behind the hub (plan 09, phase 9).
-  initial: 5 * MB,
+  // loads behind the hub (plan 09, phase 9). Settled then, when it weighed 3115 KB (1844 KB
+  // gzipped): about a tenth to spare, and still room for the whole JavaScript budget.
+  initial: 3.5 * MB,
   // Every track, though each is loaded with its own chapter.
   music: 20 * MB,
   // The books, loaded on demand: KaTeX, marked, their stylesheets, KaTeX's woff2 fonts, the
