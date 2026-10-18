@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import type { UiEvent } from '../../systems/levelController';
 import { voiceLine } from '../../systems/lineVoice';
+import { nudgedFraction } from '../../systems/sun';
 import { AnimationView } from '../../view/AnimationView';
 import { BackdropView } from '../../view/BackdropView';
 import { DialogueView } from '../../view/DialogueView';
@@ -106,7 +107,13 @@ export const buildLevelViews = (
       buttons.hud,
     ),
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
-    sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),
+    sun: new SunSliderView(
+      scene,
+      (fraction) => dispatch({ kind: 'seek', fraction }),
+      // A side arrow on the sun seeks the step beside it, as a drag to that step would.
+      (direction, { fraction, steps }) =>
+        dispatch({ kind: 'seek', fraction: nudgedFraction(fraction, steps, direction) }),
+    ),
     toast: new ToastView(scene),
     dialogue: new DialogueView(scene, t, voiceLine),
   };
