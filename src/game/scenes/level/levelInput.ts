@@ -3,6 +3,7 @@ import { escapeAction } from '../../input/escape';
 import { historyKey, keyAction, type KeyPress } from '../../input/keyBindings';
 import type { Point } from '../../input/target';
 import type { UiEvent } from '../../systems/levelController';
+import { keepGardenClear } from '../../view/touchZone';
 import { FocusController } from '../focus/FocusController';
 
 /** What the input of the level screen needs to know, and where it sends what it hears. */
@@ -56,6 +57,8 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
   const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
   const free = (over: Phaser.GameObjects.GameObject[]) =>
     over.length === 0 && !target.dialogueOpen();
+  // The buttons' grown touch zones keep off the garden, whose touches are the player's moves.
+  keepGardenClear(scene);
   scene.input.on(
     'pointerdown',
     (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {

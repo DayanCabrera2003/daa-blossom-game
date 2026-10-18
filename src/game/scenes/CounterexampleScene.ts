@@ -43,6 +43,7 @@ import { PALETTE } from '../view/palette';
 import { textStyle } from '../view/textStyle';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
+import { keepGardenClear } from '../view/touchZone';
 import { FocusController } from './focus/FocusController';
 import { contextOf, type GameContext } from './context';
 
@@ -181,6 +182,8 @@ export class CounterexampleScene extends Phaser.Scene {
     const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
     const free = (over: Phaser.GameObjects.GameObject[]) =>
       over.length === 0 && !this.views.dialogue.open;
+    // The buttons' grown touch zones keep off the garden, whose touches are the player's moves.
+    keepGardenClear(this);
     this.input.on(
       'pointerdown',
       (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {

@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type { Point } from '../input/target';
 import { gearOutline } from '../picture/gear';
 import { addFocusable } from './focusables';
+import { growTouchZone } from './touchZone';
 import { PALETTE } from './palette';
 
 /** The side of the button's square panel, in canvas pixels. */
@@ -10,7 +11,8 @@ export const GEAR_SIZE = 13;
 /**
  * Adds the settings button: a gear drawn on a small square panel, like the other greybox buttons, at
  * `at` (its panel's top-left corner). The gear is a polygon (`picture/gear.ts`), so it needs no
- * glyph from the font. The keyboard's focus reaches it like any button.
+ * glyph from the font. The keyboard's focus reaches it like any button, and a touch counts a little
+ * round it like round any button (`view/touchZone.ts`).
  */
 export function addGearButton(scene: Phaser.Scene, at: Point, onPress: () => void): void {
   const panel = scene.add
@@ -26,12 +28,14 @@ export function addGearButton(scene: Phaser.Scene, at: Point, onPress: () => voi
         onPress();
       },
     );
-  addFocusable(scene, {
+  const focusable = {
     box: () => ({ x: at.x, y: at.y, width: GEAR_SIZE, height: GEAR_SIZE }),
     depth: () => panel.depth,
     live: () => panel.active && panel.visible,
     press: onPress,
-  });
+  };
+  addFocusable(scene, focusable);
+  growTouchZone(panel, focusable);
   const centre = { x: at.x + GEAR_SIZE / 2, y: at.y + GEAR_SIZE / 2 };
   scene.add
     .graphics()

@@ -55,6 +55,7 @@ import { paintHubGround } from '../../view/hubGround';
 import { PALETTE } from '../../view/palette';
 import { textStyle } from '../../view/textStyle';
 import { ToastView } from '../../view/ToastView';
+import { keepGardenClear } from '../../view/touchZone';
 import { TutorialView } from '../../view/TutorialView';
 import { contextOf, type GameContext } from '../context';
 import { SANDBOX_SCENE, type SandboxSceneData } from '../SandboxGate';
@@ -197,6 +198,8 @@ export class SandboxScene extends Phaser.Scene {
   /** Listens to the pointer on the garden and to the keys. */
   private bindInput(): void {
     const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
+    // The buttons' grown touch zones keep off the editor's garden, where sprouts are placed.
+    keepGardenClear(this);
     this.input.on(
       'pointerdown',
       (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {

@@ -3,6 +3,7 @@ import { playUiSound } from '../audio/uiSound';
 import { badgeAt, buttonContent, ICON_GAP, type ButtonIcon } from '../picture/buttonIcon';
 import { WOOD_BUTTON, type ButtonState } from '../picture/wood';
 import { addFocusable } from './focusables';
+import { growTouchZone } from './touchZone';
 import { css, PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
@@ -11,7 +12,8 @@ import { WoodFrame } from './WoodFrame';
  * A small button of the HUD and the panels: a label, maybe after icons (the first maybe wearing a
  * badge on its corner, `picture/buttonIcon.ts`), on a wooden button of the pack
  * (`picture/wood.ts`), at rest, in hand or switched off, its letters in the colour that reads on
- * each look. A press clicks, unless the button is switched off. The keyboard's focus reaches it
+ * each look. A press clicks, unless the button is switched off; a touch counts a little round the
+ * wood too (`view/touchZone.ts`). The keyboard's focus reaches it
  * while it is shown and switched on, and Enter or Space on it press it the same way
  * (`view/focusables.ts`).
  */
@@ -76,12 +78,15 @@ export class Button {
       );
     this.moveTo(x, y);
     this.restyle();
-    addFocusable(scene, {
+    const focusable = {
       box: () => this.wood.bounds,
       depth: () => this.depth,
       live: () => this.visible && this.enabled && !this.destroyed,
       press: () => this.press(),
-    });
+    };
+    addFocusable(scene, focusable);
+    // A finger may land a little off the wood: the button takes touches round it too.
+    growTouchZone(this.wood.zone, focusable);
   }
 
   /** What a touch does, and Enter or Space on the button in focus: it clicks, unless switched off. */
