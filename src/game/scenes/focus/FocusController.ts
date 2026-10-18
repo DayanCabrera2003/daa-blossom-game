@@ -139,14 +139,19 @@ export class FocusController {
     this.paint();
   }
 
-  /** Draws the ring round the thing in focus, or nothing. */
+  /** Draws the ring round the thing in focus, its dark line and its light one, or nothing. */
   private paint(): void {
     this.ring.clear();
     const { current } = this.state;
     if (current === null) return;
-    this.ring.fillStyle(PALETTE[FOCUS_RING.colour], 1);
-    for (const line of focusRing(current.box())) {
-      this.ring.fillRect(line.x, line.y, line.width, line.height);
+    const ring = focusRing(current.box());
+    // The dark line first: where the canvas's edge folds the two together, the light one shows.
+    for (const [colour, lines] of [
+      [FOCUS_RING.dark, ring.dark],
+      [FOCUS_RING.light, ring.light],
+    ] as const) {
+      this.ring.fillStyle(PALETTE[colour], 1);
+      for (const line of lines) this.ring.fillRect(line.x, line.y, line.width, line.height);
     }
   }
 }

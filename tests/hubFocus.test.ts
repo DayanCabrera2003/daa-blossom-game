@@ -138,7 +138,8 @@ describe.each(STATES)('the keyboard on the hub: $name', ({ save, teacher }) => {
   it("the ring of each thing in focus covers no other thing's label", () => {
     const covered: string[] = [];
     for (const spot of spots) {
-      for (const line of focusRing(spot.box)) {
+      const ring = focusRing(spot.box);
+      for (const line of [...ring.light, ...ring.dark]) {
         for (const other of spots) {
           if (other !== spot && ringCovers(line, other.box))
             covered.push(`${spot.id} over ${other.id}`);
