@@ -1,6 +1,7 @@
 // The weight budget of the shipped game (plan 06, phase 11; the deferred books, plan 07, phase 2;
 // the deferred free mode, plan 08, phase 9): how many bytes each part may take, and how the parts
 // are weighed from the asset manifest and the built files.
+import type { Fallbacks } from '../../src/game/assets/fallbackSchema';
 import type { AssetKind, Manifest } from '../../src/game/assets/manifestSchema';
 
 /** Decimal units, as browsers and `du --si` report sizes: the stricter reading of "MB". */
@@ -43,20 +44,37 @@ const PARTS_BY_KIND: Readonly<Record<'images' | 'fonts' | 'sounds' | 'music', As
   music: ['music'],
 };
 
-/** What the manifest weighs: each part by kind, and the boot group the first screen waits for. */
+/**
+ * What the manifest weighs: each part by kind, and the boot group the first screen waits for, as
+ * one browser fetches them; and what the deployment holds, every file of every sound.
+ */
 export interface ManifestSizes {
   readonly images: number;
   readonly fonts: number;
   readonly sounds: number;
   readonly music: number;
   readonly boot: number;
+  /** Every asset file the deployment serves, the audio fallbacks among them; not limited. */
+  readonly deployed: number;
 }
 
-/** Sums the bytes of the manifest's entries for each part of the budget and for the boot group. */
-export function manifestSizes(manifest: Manifest): ManifestSizes {
-  const entries = Object.values(manifest.assets);
+/** No audio fallbacks: every sound has its one file. */
+const NO_FALLBACKS: Fallbacks = { encoder: 'none', files: {} };
+
+/**
+ * Sums the bytes of the manifest's entries for each part of the budget and for the boot group. A
+ * sound with a fallback (plan 09, phase 8) weighs the larger of its two files, since a browser
+ * fetches one of them and the budget holds for whichever browser fetches the heavier.
+ */
+export function manifestSizes(manifest: Manifest, fallbacks = NO_FALLBACKS): ManifestSizes {
+  const entries = Object.entries(manifest.assets).map(([key, entry]) => ({
+    ...entry,
+    bytes: Math.max(entry.bytes, fallbacks.files[key]?.bytes ?? 0),
+  }));
   const sum = (keep: (entry: (typeof entries)[number]) => boolean): number =>
     entries.filter(keep).reduce((total, entry) => total + entry.bytes, 0);
+  const shipped = Object.values(manifest.assets).reduce((total, entry) => total + entry.bytes, 0);
+  const copies = Object.values(fallbacks.files).reduce((total, file) => total + file.bytes, 0);
   const ofKinds = (kinds: AssetKind[]): number => sum((entry) => kinds.includes(entry.kind));
   return {
     images: ofKinds(PARTS_BY_KIND.images),
@@ -64,6 +82,7 @@ export function manifestSizes(manifest: Manifest): ManifestSizes {
     sounds: ofKinds(PARTS_BY_KIND.sounds),
     music: ofKinds(PARTS_BY_KIND.music),
     boot: sum((entry) => entry.group === 'boot'),
+    deployed: shipped + copies,
   };
 }
 
@@ -86,7 +105,7 @@ export interface BuildSizes {
 }
 
 /** Every part of the budget, weighed from the manifest's sizes and the built files. */
-export function budgetReport(sizes: ManifestSizes & BuildSizes): BudgetRow[] {
+export function budgetReport(sizes: Omit<ManifestSizes, 'deployed'> & BuildSizes): BudgetRow[] {
   const weights: Record<BudgetPart, number> = {
     js: sizes.js,
     images: sizes.images,

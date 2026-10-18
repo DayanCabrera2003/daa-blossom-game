@@ -8,6 +8,8 @@
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import fallbackJson from '../src/game/assets/fallbacks.json';
+import { parseFallbacks } from '../src/game/assets/fallbackSchema';
 import manifestJson from '../src/game/assets/manifest.json';
 import { parseManifest } from '../src/game/assets/manifestSchema';
 import { budgetReport, manifestSizes } from './assets/budget';
@@ -30,8 +32,10 @@ const files = buildFiles(
 const weigh = (paths: readonly string[]): number =>
   paths.reduce((total, path) => total + statSync(join(DIST, path)).size, 0);
 
+// Each sound weighs the larger of its original and its fallback: what one browser fetches.
+const sizes = manifestSizes(parseManifest(manifestJson), parseFallbacks(fallbackJson));
 const report = budgetReport({
-  ...manifestSizes(parseManifest(manifestJson)),
+  ...sizes,
   js: weigh(files.initial),
   codex: weigh(files.deferred),
   sandbox: weigh(files.freeMode),
@@ -46,6 +50,9 @@ console.log(
     report.map((row) => [row.part, kb(row.bytes), kb(row.limit), row.over ? 'OVER' : 'ok']),
   ),
 );
+
+// What the deployment holds, both files of every sound with a fallback: not limited.
+console.log(`\ndeployed assets, the audio fallbacks among them: ${kb(sizes.deployed)}`);
 
 // Shipped for old browsers but never fetched, so listed and not weighed.
 console.log(`\nnot weighed, older font formats (${kb(weigh(files.skipped))}):`);
