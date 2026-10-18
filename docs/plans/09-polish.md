@@ -156,6 +156,11 @@ El jardín en sí (juntar, pasar el farol, cadena, plegar…) **no** se juega co
 
 **Tests clave:** con el catálogo y las palabras reales, cada pantalla del hub (0, mitad y todo ganado; profesor) tiene un orden de foco que recorre todas sus cajas pulsables una vez y vuelve al principio; el anillo de foco cabe en el lienzo para cada caja; no hay teclas repetidas por pantalla; Intro sobre un botón de nivel produce el mismo evento que su toque (sobre el descriptor, no sobre Phaser); con un libro abierto el juego no recibe teclas (lo de hoy, `overlay.changed`, sigue probado).
 
+**Revisión en pantalla de F4 (sesión principal, 2026-10-18).** Dos hallazgos que se arreglan en la fase 6:
+
+1. **El anillo de foco no contrasta lo bastante:** sobre los paneles de madera el ámbar (`lit`) solo llega a 2,45:1. Debe llegar a **3:1 o más en todo lo que tiene debajo** (por ejemplo, una línea de 1 px de `ink` por dentro o por fuera del ámbar), probado con `picture/contrast.ts` contra cada superficie sobre la que se dibuja.
+2. **El rótulo de una flor secreta tapa los botones del hub:** el rótulo de pasar el puntero o el foco ("Flor secreta: tócala para entrar", y los del capullo y la flor ganada) se dibuja encima de los botones de nivel del capítulo y los oculta. Los rótulos van donde nunca cubren un botón, un título ni un cartel: decisión pura de colocación, con un test de solapes sobre el hub real en todos sus estados.
+
 ---
 
 ## Fase 5 — El jardín con teclado — **descartada por el autor**
@@ -182,6 +187,8 @@ El jardín en sí (juntar, pasar el farol, cadena, plegar…) **no** se juega co
 | `game/view/SettingsView.ts` | Un control de tres posiciones para el movimiento |
 | `game/picture/textContrast.ts` | Pura: cada estilo de texto (`view/textStyle.ts`) con el fondo sobre el que se dibuja (panel, papel, caja de diálogo, hierba del hub), y su relación de contraste |
 | `ui/a11y/liveRegion.ts`, `services/busEvents.ts` | Una región DOM `aria-live="polite"` invisible que repite cada línea de diálogo completa (quién habla y qué dice), cada aviso y el resultado de cada pregunta; el juego la alimenta por el bus (`a11y.say`). El lienzo lleva `role="img"` y una etiqueta con el título (de `strings.json`) |
+| `game/picture/focusRing.ts`, `game/scenes/focus/FocusController.ts` | Hallazgo 1 de la revisión de F4: el anillo de foco llega a 3:1 o más sobre todo lo que tiene debajo |
+| `game/picture/secretFlower.ts`, `game/scenes/hub/HubSecrets.ts` | Hallazgo 2 de la revisión de F4: el rótulo de una flor secreta nunca cubre un botón, un título ni un cartel del hub |
 
 **Tests clave:** sin preferencia y con el sistema pidiendo menos movimiento, se reduce; con `full`, no; el guardado de ajustes anterior migra; con movimiento reducido el plan de una cadena de 5 saltos tiene los mismos pasos en el mismo orden y dura menos; cada par texto–fondo del juego da al menos 4,5:1 (o el umbral que se fije en la fase para texto pixel grande, justificado) — los que no lleguen se corrigen dentro de la paleta de 53 colores; `a11y.say` recibe la línea completa (no letra a letra) y nada en modo de juego normal escribe en la región más de una vez por línea.
 
