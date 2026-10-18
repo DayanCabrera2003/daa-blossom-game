@@ -26,6 +26,7 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from './game/scale/integerZoom';
 import { panelRoom } from './game/scale/panelRoom';
 import { renderZoom, setRenderZoom } from './game/view/renderZoom';
 import { mountShell } from './ui/shell';
+import { mountTeacherShell } from './ui/teacherShell';
 
 const storage = browserStorage();
 const clock = (): number => Date.now();
@@ -78,6 +79,8 @@ mountShell({
   codexOpen: (save) => openCodex(codexLevels, save, teacherMode),
   host: document.body,
 });
+// In teacher mode, the trace panel beside the garden, folded until asked for.
+if (teacherMode) mountTeacherShell({ bus, host: document.body });
 bus.on('overlay.changed', ({ open }) => {
   game.input.enabled = !open;
   if (game.input.keyboard !== null) game.input.keyboard.enabled = !open;
