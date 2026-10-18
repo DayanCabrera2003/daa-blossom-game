@@ -116,6 +116,11 @@ export interface BusEvents {
    * it, a notice, a question, whether an answer was the one. The page's live region writes it.
    */
   readonly 'a11y.say': { readonly text: string };
+  /**
+   * The canvas has drawn its loading bar (plan 09, phase 9): the lantern the page drew in CSS before
+   * the script goes, the bar taking over in its place and tones.
+   */
+  readonly 'loading.drawn': undefined;
   /** The motion setting changed in the settings panel: the page's styles follow it. */
   readonly 'motion.changed': { readonly motion: MotionChoice };
 }

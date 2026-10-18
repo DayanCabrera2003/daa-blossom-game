@@ -1,13 +1,21 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
-import { loadingBar } from './loadingBar';
+import { PALETTE } from '../view/palette';
+import { LOADING_TONES, loadingBar } from './loadingBar';
 
 describe('loadingBar', () => {
   it('sits centred on the logical canvas', () => {
     const { frame } = loadingBar(0);
     expect(frame.x * 2 + frame.width).toBe(CANVAS_WIDTH);
     expect(frame.y * 2 + frame.height).toBe(CANVAS_HEIGHT);
+  });
+
+  it("is drawn in the tones of the page's lantern, which stands where it appears", () => {
+    // The lantern of index.html (tests/pageHead.test.ts) is centred on the window, as the canvas
+    // is, and drawn in these colours: the bar takes over from it with no jump in place or tone.
+    expect(LOADING_TONES).toEqual({ edge: 'panelEdge', fill: 'lit', empty: 'background' });
+    for (const tone of Object.values(LOADING_TONES)) expect(PALETTE[tone]).toBeTypeOf('number');
   });
 
   it('is empty before anything loads and full once everything has', () => {

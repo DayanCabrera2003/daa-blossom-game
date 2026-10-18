@@ -50,9 +50,54 @@
         -webkit-touch-callout: none;
         -webkit-tap-highlight-color: transparent;
       }
+      /* Before the script arrives, a lantern drawn in CSS beats on the dark page, with no text: its
+         light and its edge are the tones of the canvas's loading bar (game/picture/loadingBar.ts),
+         and it stands at the centre of the window, as the canvas and its bar do, so the bar takes
+         over in its place when the preload scene draws it and this goes (ui/pageLoader.ts). Its
+         pixel is about the canvas's: a whole CSS pixel where the browser can round one. */
+      #page-loader {
+        --pixel: max(1px, min(100vw / 480, 100vh / 270));
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        box-sizing: border-box;
+        width: calc(8 * var(--pixel));
+        height: calc(10 * var(--pixel));
+        transform: translate(-50%, -50%);
+        background: #ef914f;
+        border: var(--pixel) solid #543c52;
+        animation: page-loader-beat 1.2s ease-in-out infinite alternate;
+      }
+      @supports (width: round(down, 1.5px, 1px)) {
+        #page-loader {
+          --pixel: max(1px, round(down, min(100vw / 480, 100vh / 270), 1px));
+        }
+      }
+      /* Its cap, in the colour of its edge. */
+      #page-loader::before {
+        content: '';
+        position: absolute;
+        left: calc(1 * var(--pixel));
+        top: calc(-3 * var(--pixel));
+        width: calc(4 * var(--pixel));
+        height: calc(2 * var(--pixel));
+        background: #543c52;
+      }
+      /* The beat: from the lantern's light to its pale glow and back. */
+      @keyframes page-loader-beat {
+        to {
+          background: #ffe18d;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #page-loader {
+          animation: none;
+        }
+      }
     </style>
   </head>
   <body>
+    <div id="page-loader" aria-hidden="true"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -34,6 +34,7 @@ import { viewportSize } from './game/scale/viewport';
 import { renderZoom, setRenderZoom } from './game/view/renderZoom';
 import { mountLiveRegion } from './ui/a11y/liveRegion';
 import { mountMotionMark } from './ui/a11y/motionMark';
+import { dismissPageLoader } from './ui/pageLoader';
 import { mountRotateNotice } from './ui/rotateNotice';
 import { mountShell } from './ui/shell';
 import { mountTeacherShell } from './ui/teacherShell';
@@ -107,6 +108,8 @@ mountShell({
   codexOpen: (save) => openCodex(codexLevels, save, teacherMode),
   host: document.body,
 });
+// The lantern the page drew before the script goes once the canvas draws its loading bar.
+bus.on('loading.drawn', () => dismissPageLoader(document));
 // The free mode and the credits are registered (their thin gates, which load them on demand): the
 // overlays may offer them now that they listen, and the epilogue's buttons open them from the scene
 // that is up.

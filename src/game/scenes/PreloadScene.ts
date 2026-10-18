@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { AssetKey } from '../assets/keys';
 import { BOOT_KEYS, loadRequests, recolouredSheets } from '../assets/loadPlan';
-import { loadingBar } from '../picture/loadingBar';
+import { LOADING_TONES, loadingBar } from '../picture/loadingBar';
 import { fitCamera } from '../view/fitCamera';
 import { PALETTE } from '../view/palette';
 import { contextOf } from './context';
@@ -13,7 +13,8 @@ import { paletteFrom, recolourSheets } from './recolourSheets';
 const PALETTE_KEY: AssetKey = 'image.palette';
 
 /**
- * Loads the `boot` group (`game/assets/loadPlan.ts` says what it holds) behind a loading bar, then
+ * Loads the `boot` group (`game/assets/loadPlan.ts` says what it holds) behind a loading bar, which
+ * takes over from the lantern the page drew before the script (it says so on the bus), then
  * recolours the Kenney sheets to the Ninja Adventure palette read from its swatch, and hands over
  * to the hub, or straight to a level when teacher mode asks for one (`?teacher&level=ID`), or to
  * the free mode when a shared link brings a garden (`?garden=CODE`; a teacher's level comes first).
@@ -29,12 +30,15 @@ export class PreloadScene extends Phaser.Scene {
     const bar = this.add.graphics();
     const draw = (progress: number): void => {
       const { frame, fill } = loadingBar(progress);
+      const { edge, empty, fill: lit } = LOADING_TONES;
       bar.clear();
-      bar.fillStyle(PALETTE.panelEdge).fillRect(frame.x, frame.y, frame.width, frame.height);
-      bar.fillStyle(PALETTE.background).fillRect(fill.x, fill.y, frame.width - 2, fill.height);
-      bar.fillStyle(PALETTE.lit).fillRect(fill.x, fill.y, fill.width, fill.height);
+      bar.fillStyle(PALETTE[edge]).fillRect(frame.x, frame.y, frame.width, frame.height);
+      bar.fillStyle(PALETTE[empty]).fillRect(fill.x, fill.y, frame.width - 2, fill.height);
+      bar.fillStyle(PALETTE[lit]).fillRect(fill.x, fill.y, fill.width, fill.height);
     };
     draw(0);
+    // The bar is drawn: the lantern the page drew before the script makes way for it.
+    contextOf(this).bus.emit('loading.drawn');
     this.load.on(Phaser.Loader.Events.PROGRESS, draw);
     this.load.once(Phaser.Loader.Events.COMPLETE, () => bar.destroy());
     queueLoads(this.load, loadRequests(BOOT_KEYS));
