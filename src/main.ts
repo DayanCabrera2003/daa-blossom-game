@@ -35,6 +35,8 @@ import { renderZoom, setRenderZoom } from './game/view/renderZoom';
 import { mountLiveRegion } from './ui/a11y/liveRegion';
 import { mountMotionMark } from './ui/a11y/motionMark';
 import { dismissPageLoader } from './ui/pageLoader';
+import { watchLoadFailures } from './ui/loadFailures';
+import { mountPageNotice } from './ui/pageNotice';
 import { mountRotateNotice } from './ui/rotateNotice';
 import { mountShell } from './ui/shell';
 import { mountTeacherShell } from './ui/teacherShell';
@@ -136,6 +138,16 @@ if (game.isBooted) nameCanvas();
 else game.events.once(Phaser.Core.Events.READY, nameCanvas);
 // In teacher mode, the trace panel beside the garden, folded until asked for.
 const teacherShell = teacherMode ? mountTeacherShell({ bus, host: document.body }) : null;
+// At the top of the window, the page's own notice: a part that did not load (offline, or gone after
+// a new version), said kindly with a way to reload; and, once, a browser that will not store.
+const t = createTranslator(strings);
+const notice = mountPageNotice({
+  host: document.body,
+  words: { close: t('notice.close'), reload: t('notice.reload') },
+  reload: () => window.location.reload(),
+});
+watchLoadFailures({ bus, t, notice });
+storage.onRefused(() => notice.show(t('notice.storage'), false));
 // Over everything, the notice that asks to turn a phone held upright, out of sight until then.
 const turnNotice = mountRotateNotice({
   host: document.body,
