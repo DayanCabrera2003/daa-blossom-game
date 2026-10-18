@@ -1,8 +1,14 @@
+import { checkVertexCover } from '@core/certificates/vertexCover';
 import { idOf } from '@core/graph/labels';
 import { degree, neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
 import { checkAugmentingPath } from '@core/matching/paths';
-import { isExposed, isMatchedEdge, mateOf } from '@core/matching/queries';
+import { isExposed, isMatchedEdge, mateOf, size } from '@core/matching/queries';
+import type { Action } from '@core/rules/actions';
+import { applyAction } from '@core/rules/applyAction';
+import type { GardenState } from '@core/rules/state';
+import { searchStatus } from '@core/search/searchStatus';
+import { itemAt } from '@core/shared/itemAt';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { describe, expect, it } from 'vitest';
@@ -14,7 +20,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 /** The secret flowers of these tests, by id. */
-const FLOWERS = ['1.10'] as const;
+const FLOWERS = ['1.10', '3.10'] as const;
 
 /** Closest two sprouts of a secret flower may sit, in pixels: twice a sprout's radius and air. */
 const MIN_SPACING = 18;
@@ -31,6 +37,20 @@ const sproutOf = (level: Level, name: string): VertexId => {
   if (vertex === undefined) throw new Error(`no sprout ${name}`);
   return vertex;
 };
+
+/** Plays moves from a garden; every one must be accepted. */
+const play = (from: GardenState, moves: readonly Action[]): GardenState =>
+  moves.reduce((state, move) => {
+    const outcome = applyAction(state, move);
+    if (!outcome.ok) throw new Error(`refused: ${JSON.stringify(outcome.reason)}`);
+    return outcome.state;
+  }, from);
+
+/** The sprouts carrying the mark `mark` in a garden. */
+const marked = (state: GardenState, mark: 'outer' | 'inner' | 'none'): VertexId[] =>
+  [...Array(state.graph.n).keys()].filter(
+    (v) => state.search?.label[itemAt(state.layer.nodeOf, v)] === mark,
+  );
 
 /**
  * Every winning chain that starts at `from`, found by trying every path: dark vine out of a sun,
@@ -100,5 +120,47 @@ describe('1.10: twelve dead ends', () => {
         }),
     );
     expect(deadEnds).toHaveLength(12);
+  });
+});
+
+describe('3.10: those the light does not reach', () => {
+  const level = () => levelOf('3.10');
+  /** The walkthrough's moves before its first scarecrow: the chain, then the search, nothing else. */
+  const search = (): readonly Action[] => {
+    const moves = level().solution;
+    return moves.slice(
+      0,
+      moves.findIndex((move) => move.type === 'placeScarecrow'),
+    );
+  };
+  const names = (vertices: readonly VertexId[]) =>
+    vertices.map((vertex) => level().data.sprouts[vertex]?.label);
+
+  it('after the chain, the search from S fails having reached only S, a and R', () => {
+    const end = play(level().start, search());
+    const status = searchStatus(end.layer, end.search, { roots: end.roots, foldAllowed: false });
+    expect(status).toBe('exhausted');
+    expect(names(marked(end, 'outer'))).toEqual(['R', 'S']);
+    expect(names(marked(end, 'inner'))).toEqual(['a']);
+  });
+
+  it('scarecrows on the moons alone leave vines unguarded', () => {
+    const end = play(level().start, search());
+    expect(checkVertexCover(end.graph, marked(end, 'inner')).ok).toBe(false);
+  });
+
+  it("the walkthrough's scarecrows guard every vine, as many as the lanterns", () => {
+    const { start, solution } = level();
+    const end = play(start, solution);
+    expect(checkVertexCover(end.graph, end.scarecrows).ok).toBe(true);
+    expect(end.scarecrows).toHaveLength(size(end.matching));
+    expect(names([...end.scarecrows].sort((a, b) => a - b))).toEqual([
+      'a',
+      'b',
+      'd',
+      'x',
+      'z',
+      'v',
+    ]);
   });
 });
