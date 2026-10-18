@@ -1,6 +1,7 @@
 // Which built files the first screen waits for and which load later (plan 07, phase 2), read from
 // the manifest Vite writes to dist/.vite/manifest.json. The budget weighs the two apart: the books
-// (KaTeX, marked, the entries) load with import() the first time one opens.
+// (KaTeX, marked, the entries) load with import() the first time one opens. The free mode (plan 08,
+// phase 9) loads on demand as well, and is weighed apart from the books.
 import { z } from 'zod';
 
 /** One chunk of Vite's manifest, as far as the budget reads it; keys name other chunks. */
@@ -27,8 +28,16 @@ export function parseViteManifest(json: unknown): ViteManifest {
 export interface BuildFiles {
   /** The entry and its static imports, transitively, with their stylesheets and assets. */
   readonly initial: string[];
-  /** What loads on demand (dynamic imports, transitively), less what the first screen has already. */
+  /**
+   * What loads on demand (dynamic imports, transitively), less what the first screen has already:
+   * the books and every other dynamic import that is not the free mode's.
+   */
   readonly deferred: string[];
+  /**
+   * What opening the free mode loads: its dynamic imports, transitively, less what the first screen
+   * has already. A chunk it shares with the books is listed in both, as either downloads it.
+   */
+  readonly freeMode: string[];
   /** Fonts in older formats that the stylesheets name after woff2: shipped, never fetched. */
   readonly skipped: string[];
 }
@@ -39,8 +48,15 @@ export interface BuildFiles {
  */
 const LEGACY_FONT = /\.(?:woff|ttf)$/;
 
-/** Sorts the built files of `manifest` into initial, deferred and skipped. */
-export function buildFiles(manifest: ViteManifest): BuildFiles {
+/**
+ * Sorts the built files of `manifest` into initial, deferred, the free mode's and skipped. A chunk
+ * loaded on demand belongs to the free mode when `isFreeMode` says so of its key (the source path
+ * of a dynamic entry); with no such test, nothing does.
+ */
+export function buildFiles(
+  manifest: ViteManifest,
+  isFreeMode: (key: string) => boolean = () => false,
+): BuildFiles {
   const chunk = (key: string): ViteManifest[string] => {
     const found = manifest[key];
     if (found === undefined) throw new Error(`the manifest imports ${key}, which it does not list`);
@@ -63,7 +79,11 @@ export function buildFiles(manifest: ViteManifest): BuildFiles {
   };
   const initialChunks = reach(entries, false);
   const onDemand = [...initialChunks].flatMap((key) => chunk(key).dynamicImports ?? []);
-  const deferredChunks = [...reach(onDemand, true)].filter((key) => !initialChunks.has(key));
+  // What some on-demand entries load, transitively, that the first screen does not have.
+  const later = (starts: string[]): string[] =>
+    [...reach(starts, true)].filter((key) => !initialChunks.has(key));
+  const deferredChunks = later(onDemand.filter((key) => !isFreeMode(key)));
+  const freeModeChunks = later(onDemand.filter(isFreeMode));
 
   // Every file of a set of chunks: its script, its stylesheets and its assets.
   const filesOf = (keys: Iterable<string>): Set<string> =>
@@ -74,11 +94,21 @@ export function buildFiles(manifest: ViteManifest): BuildFiles {
       }),
     );
   const initialFiles = filesOf(initialChunks);
-  const deferredFiles = [...filesOf(deferredChunks)].filter((file) => !initialFiles.has(file));
-  const sorted = (files: Iterable<string>): string[] => [...files].sort();
+  const laterFiles = (keys: string[]): string[] =>
+    [...filesOf(keys)].filter((file) => !initialFiles.has(file));
+  const deferredFiles = laterFiles(deferredChunks);
+  const freeModeFiles = laterFiles(freeModeChunks);
+  const sorted = (files: Iterable<string>): string[] => [...new Set(files)].sort();
+  const fetched = (files: Iterable<string>): string[] =>
+    sorted([...files].filter((file) => !LEGACY_FONT.test(file)));
   return {
-    initial: sorted([...initialFiles].filter((file) => !LEGACY_FONT.test(file))),
-    deferred: sorted(deferredFiles.filter((file) => !LEGACY_FONT.test(file))),
-    skipped: sorted([...initialFiles, ...deferredFiles].filter((file) => LEGACY_FONT.test(file))),
+    initial: fetched(initialFiles),
+    deferred: fetched(deferredFiles),
+    freeMode: fetched(freeModeFiles),
+    skipped: sorted(
+      [...initialFiles, ...deferredFiles, ...freeModeFiles].filter((file) =>
+        LEGACY_FONT.test(file),
+      ),
+    ),
   };
 }

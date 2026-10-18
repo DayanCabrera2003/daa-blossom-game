@@ -35,6 +35,35 @@ const MANIFEST = parseViteManifest({
   'node_modules/katex/dist/fonts/KaTeX_Main.woff2': { file: 'assets/KaTeX_Main.woff2' },
 });
 
+/**
+ * The synthetic manifest with the free mode as well: the entry loads it on demand too, and it
+ * imports the shared chunk (already initial), a chunk of its own, and the garden code it shares
+ * with the books.
+ */
+const WITH_FREE_MODE = parseViteManifest({
+  ...MANIFEST,
+  'index.html': {
+    ...MANIFEST['index.html'],
+    file: 'assets/index.js',
+    dynamicImports: ['src/ui/books.ts', 'src/levels/sandbox/entry.ts'],
+  },
+  'src/ui/books.ts': {
+    ...MANIFEST['src/ui/books.ts'],
+    file: 'assets/books.js',
+    imports: ['_shared.js', '_katex.js', '_code.js'],
+  },
+  'src/levels/sandbox/entry.ts': {
+    file: 'assets/sandbox.js',
+    isDynamicEntry: true,
+    imports: ['_shared.js', '_design.js', '_code.js'],
+  },
+  '_design.js': { file: 'assets/design.js' },
+  '_code.js': { file: 'assets/code.js', imports: ['_shared.js'] },
+});
+
+/** Whether a chunk's key names a source of the free mode. */
+const freeMode = (key: string): boolean => key.startsWith('src/levels/sandbox/');
+
 describe('buildFiles', () => {
   it('counts as initial the entry and everything it imports statically, transitively', () => {
     expect(buildFiles(MANIFEST).initial).toEqual([
@@ -78,5 +107,24 @@ describe('buildFiles', () => {
   it('refuses a manifest without an entry, or that is not a manifest', () => {
     expect(() => buildFiles(parseViteManifest({ a: { file: 'a.js' } }))).toThrow('entry');
     expect(() => parseViteManifest({ a: { imports: [] } })).toThrow();
+  });
+
+  it('weighs the free mode apart from the books: what its own dynamic imports load', () => {
+    const files = buildFiles(WITH_FREE_MODE, freeMode);
+    expect(files.freeMode).toEqual(['assets/code.js', 'assets/design.js', 'assets/sandbox.js']);
+    expect(files.deferred).not.toContain('assets/sandbox.js');
+    expect(files.deferred).not.toContain('assets/design.js');
+  });
+
+  it('counts what the books and the free mode share in both, and nothing the start has', () => {
+    const files = buildFiles(WITH_FREE_MODE, freeMode);
+    expect(files.deferred).toContain('assets/code.js');
+    expect(files.freeMode).not.toContain('assets/shared.js');
+  });
+
+  it('leaves the free mode empty when no chunk is said to be of it', () => {
+    expect(buildFiles(WITH_FREE_MODE).freeMode).toEqual([]);
+    expect(buildFiles(MANIFEST, freeMode).freeMode).toEqual([]);
+    expect(buildFiles(WITH_FREE_MODE).deferred).toContain('assets/sandbox.js');
   });
 });
