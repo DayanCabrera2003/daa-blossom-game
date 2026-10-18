@@ -1,0 +1,59 @@
+/*
+ * The Cuaderno's own look (plan 07, phase 6), on the frame every book shares (ui/book/book.css):
+ * its index of statements, each with the level where it was written, and its page ruled like a
+ * notebook, a rule under every line of the pixel font, in the moon blue of the game's palette.
+ */
+
+.notebook-book {
+  --rule: #79b8ce;
+}
+
+.notebook-row {
+  border-bottom: var(--px) solid var(--paper);
+}
+
+/* A statement of the index: the level where it was written and its start, on one line. */
+.notebook-entry {
+  display: grid;
+  grid-template-columns: calc(24 * var(--px)) minmax(0, 1fr);
+  width: 100%;
+  padding: var(--px) calc(3 * var(--px));
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.notebook-entry:hover,
+.notebook-entry[aria-current='page'] {
+  background: var(--paper);
+}
+
+.notebook-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The ruled page: a rule at the foot of every line, scrolling with the text. */
+.notebook-book .book-text {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(12 * var(--px)),
+    var(--rule) calc(12 * var(--px)) calc(13 * var(--px))
+  );
+  background-position: 0 calc(3 * var(--px));
+  background-attachment: local;
+}
+
+/* The paragraphs of the page keep to the rules: a whole line between them. */
+.notebook-book .book-text p {
+  margin: 0 0 calc(13 * var(--px));
+}
+
+.notebook-ending {
+  color: var(--wood);
+}
+
+.notebook-later {
+  color: var(--button-off);
+}
