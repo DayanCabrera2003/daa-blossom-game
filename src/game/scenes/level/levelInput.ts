@@ -3,6 +3,7 @@ import { escapeAction } from '../../input/escape';
 import { historyKey, keyAction, pressOf } from '../../input/keyBindings';
 import type { Point } from '../../input/target';
 import type { UiEvent } from '../../systems/levelController';
+import { heldByPanel } from '../../view/PanelGrip';
 import { keepGardenClear } from '../../view/touchZone';
 import { FocusController } from '../focus/FocusController';
 
@@ -48,14 +49,15 @@ export interface LevelInputTarget {
 export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): void => {
   const { dispatch } = target;
   const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
-  const free = (over: Phaser.GameObjects.GameObject[]) =>
-    over.length === 0 && !target.dialogueOpen();
+  // A press that grabbed a panel's frame is a drag of the panel, never a move in the garden.
+  const free = (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) =>
+    over.length === 0 && !target.dialogueOpen() && !heldByPanel(scene, pointer);
   // The buttons' grown touch zones keep off the garden, whose touches are the player's moves.
   keepGardenClear(scene);
   scene.input.on(
     'pointerdown',
     (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-      if (free(over)) dispatch({ kind: 'press', point: at(pointer) });
+      if (free(pointer, over)) dispatch({ kind: 'press', point: at(pointer) });
     },
   );
   scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
@@ -64,7 +66,7 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
   scene.input.on(
     'pointerup',
     (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-      if (free(over)) dispatch({ kind: 'release', point: at(pointer) });
+      if (free(pointer, over)) dispatch({ kind: 'release', point: at(pointer) });
     },
   );
   const screen = () => (target.settingsOpen() ? 'settings' : 'level');
