@@ -411,6 +411,51 @@ Si el último estado de `runRecipe` no conserva el bosque de la búsqueda final 
 
 Todo el modo libre ya va tras `import()`: en el inicial solo queda el cabo. Si la parte `sandbox` se acercara a su límite, se revisa con lo medido en F15, como se cerró la de los libros en el Plan 07.
 
+*En ejecución (cierre del plan):*
+
+**Presupuesto medido** sobre el build real (`npm run build && npm run budget`, unidades decimales):
+
+| Parte | Medido | Límite |
+|---|---|---|
+| Script inicial (`js`) | 1724 KB | 1800 KB |
+| Imágenes | 226 KB | 600 KB |
+| Fuentes | 59 KB | 100 KB |
+| Efectos, sílabas y jingles | 1070 KB | 1500 KB |
+| Primera carga (`initial`) | 4128 KB | 5000 KB |
+| Música | 15412 KB | 20000 KB |
+| Libros (`codex`) | 874 KB | 1000 KB |
+| Modo libre (`sandbox`) | 50 KB | **60 KB** (antes 120, provisional) |
+
+La parte `sandbox` pesa 50,2 KB: la escena del editor con su menú y los módulos puros (34,9 KB), la hoja de compartir con su hoja de estilo (5,1 KB) y lo que comparte con los libros, el marco de las capas (8,1 KB) y el código de jardín (2,0 KB). Su límite queda en **60 KB**, una quinta parte de holgura para la fase de pulido, como se cerró la de los libros en el Plan 07. Desde F8 el script inicial pasó de 1710 a 1724 KB (el cabo `SandboxGate`, los textos del modo libre y de la hoja, que viven en `strings.json`, y la capa que abre la hoja); los animales y las plantas pesan 10,1 KB en `images`. Ninguna música nueva.
+
+**Segunda revisión en pantalla del modo libre (corregido en F15).** (1) Las comprobaciones de nombres (`labelOnSprout`) medían cada brote como un círculo de 7 px: no veían la **corona** que lleva encima (las hojas de un brote, los pétalos de una flor, las alas de una abeja), que sube 11 px sobre su centro, ni el contorno oscuro del cuerpo (8 px, o 9,5 hasta las esquinas del rombo de una flor). En una columna apretada de "Abejas y flores" la corona de cada flor tapaba el nombre de la de arriba. Ahora `levels/sproutExtent.ts` da lo que ocupa el dibujo de cada especie (cuerpo y corona, medidos del arte como el farol: `PICTURE_SIZES.body` y `.crowns`, vigilados por `tests/pictureSizes.test.ts`) y lo usan la integridad de los niveles, el reductor del editor y `untangle.ts`, que ahora conoce la especie de cada brote; las columnas de abejas y flores se separan 32 px (antes 27) y un lado puede tener más de tres columnas. Ningún nivel del catálogo tuvo que moverse. (2) El hueco del editor (`levels/sandbox/editorArea.ts`) empieza bajo la segunda línea de su cabecera y acaba sobre sus filas de botones, con 2 px de margen y contando la corona más alta y la cola de un nombre (de y = 37 a y = 221; `tests/editorArea.test.ts` lo ata a `designHeader.ts` y `designToolbar.ts`). Lo usan las disposiciones y los brotes puestos o movidos a mano; un jardín abierto de un JSON conserva sus posiciones, que solo deben caber en `SPROUT_AREA` como las de cualquier nivel.
+
+**El GDD** ya recogía en sus fases las seis diferencias de la lista de abajo ("Cambios pequeños…"); al cerrar se ajustaron además: la flor secreta florece *junto* al poste, en un hueco reservado (§5.10); cada cosmético vive en un hueco propio que no tapa nada y el de 130 ★ es el brillo de un farol en cada poste (§5.4); el editor nunca deja tapar un nombre, y resolver con el jardinero no gana el jardín ni un jardín libre da estrellas (§5.7).
+
+**`CREDITS.md`** ya acredita todo lo nuevo: las seis hojas de animales y la de la planta, con su ruta en el pack y en `public/assets/` (Ninja Adventure, CC0); ningún recurso de otro pack.
+
+### Pendiente para la fase de pulido
+
+Lo que el autor dejó para el pulido tras las revisiones en pantalla:
+
+- En algunos niveles el nombre de un brote cae sobre la línea de una enredadera (4.11: a, c, g; 7.5: j, d). Las comprobaciones de nombres no miran las enredaderas, solo brotes, nombres y faroles.
+- El icono de una flor secreta ganada podría leerse mejor.
+- La fila de abajo del modo libre se pisa 2 px con la fuente de reserva, más ancha (nunca con la fuente pixel del juego; decisión de F13).
+- La navegación con teclado del hub más allá de F / Mayús+F (las flores secretas).
+- Las flores secretas enseñan tarjetas de mecánica en un perfil nuevo de modo profesor.
+
+### Comprobaciones a mano del autor
+
+Lo que los tests no ven y conviene mirar en pantalla antes del merge a `main`:
+
+- [ ] "Abejas y flores" a 17 y a 20 brotes: ninguna corona tapa un nombre y el brote más alto queda bajo las dos líneas de la cabecera.
+- [ ] Poner y arrastrar un brote a mano hasta el borde de arriba y el de abajo del editor: se rechaza con "Ahí no: los brotes crecen dentro del jardín." antes de pisar la cabecera o los botones.
+- [ ] Los capítulos 3 (abejas y flores) y 4–5 (flores) se siguen leyendo igual (ningún nivel se movió).
+- [ ] Las siete flores secretas con `?teacher&level=1.10` … `7.6`, y desde el hub con un guardado sintético: capullo, aviso de estrellas, flor abierta, flor ganada.
+- [ ] Hub con 0, 60 y 134 estrellas: contador, avisos de cada cosmético una sola vez, nada tapa un cartel ni un botón; con movimiento reducido, todo quieto.
+- [ ] Modo libre de punta a punta: diseñar, generar cada forma, jugar, Jardinero, Certificado (piedras y espantapájaros), Compartir (copiar, descargar el JSON), abrir el enlace `?garden=` en otra pestaña e importar el JSON y el archivo.
+- [ ] Tras el merge: `npm run build` y `npm run budget` en CI, despliegue en GitHub Pages y tag `v0.8.0-sandbox`.
+
 ---
 
 ## Orden y dependencias
@@ -435,7 +480,7 @@ Una fase a la vez, siempre. F1 necesita el campo `secret` de F0 solo para sus fi
 - **El diseño se guarda aparte** (`florecer.sandbox`), sin versión de guardado compartida: un diseño a medias nunca rompe el progreso.
 - **El código de jardín no lleva posiciones** (es canónico y corto, Plan 01); el JSON sí. Importar un código dispone el jardín de nuevo.
 
-## Cambios pequeños que el GDD necesitaría (no se editan aquí)
+## Cambios pequeños que el GDD necesitaría (hechos en el GDD durante el plan, cada uno en su commit)
 
 - §5.10 dice "uno o dos por capítulo"; §7.9 lista uno por capítulo del Prado al Consejo y ninguno para el Huerto. El plan sigue §7.9.
 - §5.4 no dice qué cosméticos hay ni cómo se ganan; §5.1 dice que la apuesta da semillas sin decir para qué. El plan fija la tabla de 1.2 y las semillas como plantas del hub; las apuestas de las carreras de 6.5 también dan semilla.
