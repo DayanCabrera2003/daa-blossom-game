@@ -37,7 +37,9 @@ interface Typing {
  *
  * A line is typed letter by letter at its speaker's pace while he babbles (plan 06, phase 7); the
  * first touch completes the line and silences him, the next one moves on. The text is broken into
- * rows before it is typed, so a word never jumps to the next row halfway through.
+ * rows before it is typed, so a word never jumps to the next row halfway through. A screen reader
+ * is told each line once, whole, with who says it, as it starts (`sayAloud`), never letter by
+ * letter.
  */
 export class DialogueView {
   private readonly wood: WoodFrame;
@@ -58,6 +60,7 @@ export class DialogueView {
     private readonly scene: Phaser.Scene,
     private readonly t: Translate,
     private readonly voice: LineVoice,
+    private readonly sayAloud: (line: SpokenLine) => void = () => undefined,
   ) {
     this.layouts = { plain: dialogueBox(false), portrayed: dialogueBox(true) };
     const { box, tab, text, hint, portrait } = this.layouts.portrayed;
@@ -157,6 +160,7 @@ export class DialogueView {
     this.portrait.show(portrait);
     this.portrait.speak();
     this.babble.play(voiced.syllables);
+    this.sayAloud(line);
     this.type();
   }
 

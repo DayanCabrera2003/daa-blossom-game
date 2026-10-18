@@ -61,6 +61,7 @@ import { SANDBOX_SCENE, type SandboxSceneData } from '../SandboxGate';
 import { DesignBar } from './DesignBar';
 import { GenerateMenu } from './GenerateMenu';
 import { FocusController } from '../focus/FocusController';
+import { sayAloud } from '../sayAloud';
 
 /**
  * The free mode's last design, opened the first time the editor is (with this chunk, so its reading
@@ -149,7 +150,7 @@ export class SandboxScene extends Phaser.Scene {
       another: () => this.choose(anotherSeed(this.choice)),
       done: () => this.closeMenu(),
     });
-    this.toast = new ToastView(this);
+    this.toast = new ToastView(this, sayAloud(this));
     this.tutorial = new TutorialView(this, t);
     this.bindInput();
     // A garden opened in the share sheet, while this editor is up.

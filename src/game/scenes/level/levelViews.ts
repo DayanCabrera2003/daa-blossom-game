@@ -8,6 +8,7 @@ import { BackdropView } from '../../view/BackdropView';
 import { DialogueView } from '../../view/DialogueView';
 import { FlowerView } from '../../view/FlowerView';
 import { movesLess } from '../motion';
+import { sayAloud, sayLineAloud } from '../sayAloud';
 import { FogView } from '../../view/FogView';
 import { GardenView } from '../../view/GardenView';
 import { HudView, type HudLayout } from '../../view/HudView';
@@ -115,8 +116,8 @@ export const buildLevelViews = (
       (direction, { fraction, steps }) =>
         dispatch({ kind: 'seek', fraction: nudgedFraction(fraction, steps, direction) }),
     ),
-    toast: new ToastView(scene),
-    dialogue: new DialogueView(scene, t, voiceLine),
+    toast: new ToastView(scene, sayAloud(scene)),
+    dialogue: new DialogueView(scene, t, voiceLine, sayLineAloud(scene)),
   };
 };
 

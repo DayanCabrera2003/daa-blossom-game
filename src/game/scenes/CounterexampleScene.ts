@@ -25,6 +25,7 @@ import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
 import { voiceLine } from '../systems/lineVoice';
 import { movesLess } from './motion';
+import { sayAloud, sayLineAloud } from './sayAloud';
 import { planCues, refusalCues } from '../systems/soundCues';
 import { spokenLine } from '../systems/speaker';
 import { AnimationView } from '../view/AnimationView';
@@ -134,8 +135,8 @@ export class CounterexampleScene extends Phaser.Scene {
       mirror: new MirrorView(this, t),
       animation: new AnimationView(this, () => movesLess(this)),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
-      toast: new ToastView(this),
-      dialogue: new DialogueView(this, t, voiceLine),
+      toast: new ToastView(this, sayAloud(this)),
+      dialogue: new DialogueView(this, t, voiceLine, sayLineAloud(this)),
       lanterns: this.add.text(LAYOUT.margin, LAYOUT.bottomY, '', textStyle(8)).setDepth(100),
       ...this.buttons(data.back),
     };

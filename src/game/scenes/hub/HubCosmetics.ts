@@ -11,6 +11,7 @@ import { HubCrittersView } from '../../view/HubCrittersView';
 import { ToastView } from '../../view/ToastView';
 import { contextOf } from '../context';
 import { movesLess } from '../motion';
+import { sayAloud } from '../sayAloud';
 
 /** When the first notice of a new cosmetic shows after the hub opens, in milliseconds. */
 const FIRST_NOTICE_MS = 800;
@@ -51,7 +52,7 @@ export function addHubCosmetics(scene: Phaser.Scene, place: HubCosmeticsPlace): 
   new HubCrittersView(scene, homes, place.signs, !movesLess(scene));
   if (teacherMode) return;
 
-  const toast = new ToastView(scene);
+  const toast = new ToastView(scene, sayAloud(scene));
   newCosmetics(open, save).forEach((id, i) => {
     scene.time.delayedCall(FIRST_NOTICE_MS + i * NOTICE_EVERY_MS, () => {
       toast.show(t(`cosmetic.${id}`));

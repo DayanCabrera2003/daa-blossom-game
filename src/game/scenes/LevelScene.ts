@@ -28,6 +28,7 @@ import { raceCues } from '../systems/raceCues';
 import { replayCues } from '../systems/replayCues';
 import { effectCues } from '../systems/soundCues';
 import { movesLess } from './motion';
+import { sayAloud } from './sayAloud';
 import type { StarResult } from '../systems/stars';
 import { levelStepCard, startCards } from '../systems/tutorials';
 import { SfxPlayer } from '../audio/SfxPlayer';
@@ -191,7 +192,7 @@ export class LevelScene extends Phaser.Scene {
         },
         cardClosed: (card) => this.cards.closed(card),
       },
-      { t, line: this.context.line },
+      { t, line: this.context.line, say: sayAloud(this) },
     );
     this.cards = new LevelCards(this.context, this.presenter);
     this.stage = {
@@ -202,6 +203,7 @@ export class LevelScene extends Phaser.Scene {
       controller: () => this.controller,
       now: () => this.time.now,
       moveLess: () => movesLess(this),
+      say: sayAloud(this),
       toast: this.views.toast,
       animation: this.views.animation,
       presenter: this.presenter,
