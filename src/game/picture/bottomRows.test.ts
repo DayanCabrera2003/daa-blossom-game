@@ -83,6 +83,20 @@ describe('the two bottom rows of the level HUD', () => {
     expect(fitsOnCanvas(hudRow(widths), widths)).toBe(true);
   });
 
+  it('a garden of the free mode fits: back says Diseñar, and every tool may sit beside the trace', () => {
+    // A free garden has no script, so never the mirror challenge's "Comprobar".
+    const shown = HUD_BUTTONS.filter((name) => name !== 'checkMirror');
+    const names = shown.map((name) => (name === 'back' ? 'sandbox.design' : `hud.${name}`));
+    for (const advance of [CHAR_ADVANCE, CHAR_ADVANCE + 1]) {
+      const widths = names.map((key) => estimatedButtonWidth(label(key), advance));
+      expect(fitsOnCanvas(hudRow(widths), widths)).toBe(true);
+    }
+    const trace = estimatedButtonWidth(label('hud.trace'));
+    const widths = [...allTools.map((tool) => toolWidth(tool)), trace];
+    const lefts = [...toolbarRow(widths.slice(0, -1)), traceButtonLeft(trace)];
+    expect(fitsOnCanvas(lefts, widths)).toBe(true);
+  });
+
   it('both rows still fit if the fallback face is a pixel wider per letter', () => {
     const wide = CHAR_ADVANCE + 1;
     const tools = allTools.map((tool) => toolWidth(tool, wide));
