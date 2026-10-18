@@ -1,6 +1,7 @@
 import type { Blossom, GardenNode } from '@core/blossom/types';
 import { checkVertexCover } from '@core/certificates/vertexCover';
 import { encodeGarden } from '@core/codes/gardenCode';
+import { runOf } from '@core/cost/benchmark';
 import { nestedFlowers } from '@core/generators/hardCases';
 import { createGraph } from '@core/graph/createGraph';
 import { idOf } from '@core/graph/labels';
@@ -18,6 +19,7 @@ import { itemAt } from '@core/shared/itemAt';
 import { unwrap } from '@core/shared/result';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { racesOf } from '@levels/races';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -27,7 +29,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 /** The secret flowers of these tests, by id. */
-const FLOWERS = ['1.10', '2.5', '3.10', '4.13', '5.6'] as const;
+const FLOWERS = ['1.10', '2.5', '3.10', '4.13', '5.6', '6.7'] as const;
 
 /** Closest two sprouts of a secret flower may sit, in pixels: twice a sprout's radius and air. */
 const MIN_SPACING = 18;
@@ -271,5 +273,34 @@ describe('5.6: four flowers, one inside another', () => {
     expect(flowers.map((flower) => depth(flower))).toEqual([4]);
     const unfolds = solution.flatMap((move) => (move.type === 'unfold' ? [move.blossom] : []));
     expect(unfolds).toEqual([3, 2, 1, 0]);
+  });
+});
+
+describe('6.7: when is thinking worth it', () => {
+  const level = () => levelOf('6.7');
+  /** Each race of the level: its garden's size, and the steps of the automaton and of Bruto. */
+  const races = () =>
+    racesOf(level().flow).map(({ race, result }) => ({
+      size: race.size,
+      automaton: runOf(result, 'automaton').steps,
+      bruto: runOf(result, 'bruto').steps,
+      asleep: runOf(result, 'bruto').asleep,
+    }));
+
+  it('races four gardens of 4, 5, 6 and 8 sprouts, and Bruto finishes every one', () => {
+    expect(races().map((race) => race.size)).toEqual([4, 5, 6, 8]);
+    expect(races().every((race) => !race.asleep)).toBe(true);
+  });
+
+  it('Bruto takes fewer steps in the two tiny gardens, and more in the two larger ones', () => {
+    const [first, second, third, fourth] = races();
+    for (const race of [first, second]) expect(race?.bruto).toBeLessThan(race?.automaton ?? 0);
+    for (const race of [third, fourth]) expect(race?.bruto).toBeGreaterThan(race?.automaton ?? 0);
+  });
+
+  it('asks when thinking pays, and only "when the garden grows" is right', () => {
+    const ask = level().flow.find((step) => step.step === 'ask');
+    if (ask?.step !== 'ask') throw new Error('6.7 asks when thinking pays');
+    expect(ask.options.map((option) => option.correct)).toEqual([true, false, false]);
   });
 });
