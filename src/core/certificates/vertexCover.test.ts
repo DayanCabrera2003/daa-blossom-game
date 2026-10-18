@@ -1,7 +1,9 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { bipartiteWithMatchingArb } from '../../../tests/support/arbitraries';
+import { bipartiteWithMatchingArb, graphArb } from '../../../tests/support/arbitraries';
+import { bruteForceMatching } from '../bruteforce/maximumMatching';
 import { cycleGraph, pathGraph, starGraph } from '../generators/families';
+import { bipartition } from '../graph/bipartition';
 import { createGraph } from '../graph/createGraph';
 import { createMatching } from '../matching/createMatching';
 import { size } from '../matching/queries';
@@ -27,6 +29,20 @@ describe('vertex cover (scarecrows)', () => {
       ok: false,
       error: { code: 'uncoveredEdge', edge: [2, 3] },
     });
+  });
+
+  it('property (C5, Lemma 5.2): any set of scarecrows guarding every vine is at least ν', () => {
+    const coverAndGarden = graphArb({ maxN: 9 }).chain((graph) =>
+      fc.tuple(fc.constant(graph), fc.subarray([...Array(graph.n).keys()])),
+    );
+    fc.assert(
+      fc.property(coverAndGarden, ([graph, cover]) => {
+        if (!checkVertexCover(graph, cover).ok) return;
+        const best = bruteForceMatching(graph);
+        if (best.status !== 'complete') throw new Error('brute force gave up');
+        expect(cover.length).toBeGreaterThanOrEqual(size(best.matching));
+      }),
+    );
   });
 
   it('a garden without vines needs no scarecrows', () => {
@@ -83,6 +99,32 @@ describe('König cover from the final forest', () => {
   it('only applies to bees and flowers', () => {
     const run = unwrap(bipartiteMatching(cycleGraph(4)));
     expect(() => koenigCover(cycleGraph(5), run.forest)).toThrow();
+  });
+
+  it("property (C5, Lemma 5.3): in bees and flowers a sun is on its root's side, a moon across", () => {
+    fc.assert(
+      fc.property(bipartiteWithMatchingArb(), ([graph, initial]) => {
+        const { forest } = unwrap(bipartiteMatching(graph, initial));
+        const sides = bipartition(graph);
+        if (sides.kind !== 'bipartite') throw new Error('the garden should be bees and flowers');
+        forest.label.forEach((label, v) => {
+          if (label === 'none') return;
+          const root = forest.root[v] as number;
+          expect(sides.side[v] === sides.side[root]).toBe(label === 'outer');
+        });
+      }),
+    );
+  });
+
+  it('property (C5, Observation 5.5): when the search reaches everyone, the moons alone guard', () => {
+    fc.assert(
+      fc.property(bipartiteWithMatchingArb(), ([graph, initial]) => {
+        const { forest } = unwrap(bipartiteMatching(graph, initial));
+        if (forest.label.includes('none')) return;
+        const moons = forest.label.flatMap((label, v) => (label === 'inner' ? [v] : []));
+        expect(koenigCover(graph, forest)).toEqual(moons);
+      }),
+    );
   });
 
   it('property (König, C5): in bees and flowers there are as many scarecrows as lanterns', () => {
