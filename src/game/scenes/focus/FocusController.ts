@@ -7,7 +7,7 @@ import {
   type FocusSpot,
   type FocusState,
 } from '../../input/focusOrder';
-import { keyAction, type KeyAction, type KeyScreen } from '../../input/keyBindings';
+import { keyAction, pressOf, type KeyAction, type KeyScreen } from '../../input/keyBindings';
 import { FOCUS_RING, focusRing } from '../../picture/focusRing';
 import { everyFrame } from '../../view/everyFrame';
 import { focusablesOf, type Focusable } from '../../view/focusables';
@@ -76,11 +76,7 @@ export class FocusController {
 
   /** A key: a move of the focus, a press, an arrow on a slider; any other key is not the focus's. */
   private key(event: KeyboardEvent): void {
-    const action = keyAction(this.options.screen(), {
-      key: event.key,
-      ctrl: event.ctrlKey || event.metaKey,
-      shift: event.shiftKey,
-    });
+    const action = keyAction(this.options.screen(), pressOf(event));
     if (action === 'press') {
       // Space must not scroll the page under the canvas; a key held down presses only once, so it
       // never runs on into the screen the press opens.

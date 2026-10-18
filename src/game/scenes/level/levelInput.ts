@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import { escapeAction } from '../../input/escape';
-import { historyKey, keyAction, type KeyPress } from '../../input/keyBindings';
+import { historyKey, keyAction, pressOf } from '../../input/keyBindings';
 import type { Point } from '../../input/target';
 import type { UiEvent } from '../../systems/levelController';
 import { keepGardenClear } from '../../view/touchZone';
@@ -35,13 +35,6 @@ export interface LevelInputTarget {
   /** Whether a chain is being drawn: only then does a drag move it on. */
   readonly drawing: () => boolean;
 }
-
-/** A key of the browser's event, as the table of keys reads it (Cmd counts as Ctrl). */
-const pressOf = (event: KeyboardEvent): KeyPress => ({
-  key: event.key,
-  ctrl: event.ctrlKey || event.metaKey,
-  shift: event.shiftKey,
-});
 
 /**
  * Listens to the pointer and the keys of the level screen. Presses and releases on the garden go to

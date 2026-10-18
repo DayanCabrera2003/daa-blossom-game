@@ -5,7 +5,7 @@ import { counterexampleAt } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
-import { historyKey, keyAction } from '../input/keyBindings';
+import { historyKey, keyAction, pressOf } from '../input/keyBindings';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { animationGarden } from '../picture/animationGarden';
@@ -211,7 +211,7 @@ export class CounterexampleScene extends Phaser.Scene {
       fallback: () => this.views.dialogue.touch(),
     });
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
-      const press = { key: event.key, ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey };
+      const press = pressOf(event);
       const history = historyKey(press);
       if (history !== null) this.dispatch({ kind: history });
       else if (keyAction('counterexample', press) === 'escape') this.leave(back);

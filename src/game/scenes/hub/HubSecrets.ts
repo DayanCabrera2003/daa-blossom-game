@@ -3,7 +3,7 @@ import { itemAt } from '@core/shared/itemAt';
 import type { SecretFlower } from '@services/secretFlowers';
 import { playUiSound } from '../../audio/uiSound';
 import { flowerKey } from '../../input/flowerFocus';
-import { keyAction } from '../../input/keyBindings';
+import { keyAction, pressOf } from '../../input/keyBindings';
 import type { Rect } from '../../picture/boxDistance';
 import type { TextRef } from '../../picture/hud';
 import { PIXEL_FONT } from '../../picture/pixelFont';
@@ -174,7 +174,7 @@ export function addHubSecrets(
   // F and Shift+F, unless the settings panel is up: the next or previous flower takes the focus.
   scene.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
     if (target.blocked()) return;
-    const action = keyAction('hub', { key: event.key, ctrl: event.ctrlKey, shift: event.shiftKey });
+    const action = keyAction('hub', pressOf(event));
     if (action !== 'flowerNext' && action !== 'flowerPrevious') return;
     const at = items.findIndex((item) => item === target.focus.current);
     const after = flowerKey(

@@ -7,6 +7,7 @@ import {
   KEY_SCREENS,
   keyAction,
   keyBindings,
+  pressOf,
   type KeyPress,
 } from './keyBindings';
 
@@ -103,5 +104,12 @@ describe('the card of the keys', () => {
     expect(helpLines('hub', false)).toContain('flowers');
     expect(helpLines('level', false)).toContain('answer');
     expect(helpLines('hub', false)).not.toContain('answer');
+  });
+});
+
+describe('a key event of the browser', () => {
+  it('reads its key and modifiers, Cmd as Ctrl', () => {
+    const event = { key: 'z', ctrlKey: false, metaKey: true, shiftKey: true };
+    expect(pressOf(event)).toEqual({ key: 'z', ctrl: true, shift: true });
   });
 });

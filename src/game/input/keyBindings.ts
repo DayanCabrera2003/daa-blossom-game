@@ -35,6 +35,16 @@ export interface KeyPress {
   readonly shift: boolean;
 }
 
+/** What a key event of the browser says: its key and which modifiers were held. */
+export type KeyEventLike = Pick<KeyboardEvent, 'key' | 'ctrlKey' | 'metaKey' | 'shiftKey'>;
+
+/** A key event of the browser as the table reads it: Cmd counts as Ctrl, as on a Mac it is. */
+export const pressOf = (event: KeyEventLike): KeyPress => ({
+  key: event.key,
+  ctrl: event.ctrlKey || event.metaKey,
+  shift: event.shiftKey,
+});
+
 /** What a key asks for. */
 export type KeyAction =
   | 'focusNext'
