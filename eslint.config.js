@@ -148,6 +148,21 @@ export default tseslint.config(
     },
   },
   {
+    // Pure overlay models: what the books show is decided here without the DOM, and unit tested.
+    files: ['src/ui/model/**/*.ts'],
+    rules: {
+      'no-restricted-globals': [
+        'error',
+        { name: 'window', message: 'ui/model is pure: pass what it needs from the DOM parts.' },
+        { name: 'document', message: 'ui/model is pure: pass what it needs from the DOM parts.' },
+        {
+          name: 'localStorage',
+          message: 'ui/model is pure: the save comes from the shared store.',
+        },
+      ],
+    },
+  },
+  {
     // The only home of KaTeX and marked; it loads with the books, in the deferred chunk.
     files: ['src/ui/math/**/*.ts'],
     rules: {

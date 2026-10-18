@@ -191,6 +191,33 @@ describe('the math libraries of the Códex', () => {
   });
 });
 
+describe('pure overlay models', () => {
+  // ui/model decides what the books show without the DOM, so it is unit tested like the core.
+  it.each(['document.body', 'window.innerWidth', "localStorage.getItem('x')"])(
+    'src/ui/model may not use the global in %s',
+    async (expr) => {
+      expect(await firedRules('src/ui/model/virtual.ts', `export const v = ${expr};`)).toContain(
+        'no-restricted-globals',
+      );
+    },
+  );
+
+  it('src/ui/model still may not import game', async () => {
+    expect(
+      await firedRules(
+        'src/ui/model/virtual.ts',
+        "import { x } from '@game/scene';\nexport { x };",
+      ),
+    ).toContain('no-restricted-imports');
+  });
+
+  it('the DOM parts of ui/ may use the browser', async () => {
+    expect(
+      await firedRules('src/ui/codex/virtual.ts', 'export const v = document.body;'),
+    ).not.toContain('no-restricted-globals');
+  });
+});
+
 describe('one responsibility per file', () => {
   const lines = (count: number): string =>
     Array.from({ length: count }, (_, i) => `export const v${i} = ${i};`).join('\n');
