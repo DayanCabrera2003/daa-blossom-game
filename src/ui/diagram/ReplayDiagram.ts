@@ -19,9 +19,13 @@ import { keepingFocus, listenForTouches } from './touches';
  * the arrow keys itself; the buttons take Enter and Space.
  */
 
-/** What a diagram built on a replayed day adds to it: parts under the controls, kept in step. */
+/**
+ * What a diagram built on a replayed day adds to it, kept in step: parts under the controls, kept
+ * in sight with the garden, and parts below the step told, which may lie below the page shown.
+ */
 export interface ReplayExtras {
   readonly parts: readonly HTMLElement[];
+  readonly below?: readonly HTMLElement[];
   /** Called with each step shown, to bring the parts up to it. */
   readonly onShow: (step: number) => void;
 }
@@ -54,12 +58,20 @@ export function replayDiagram(
   const help = part(
     page,
     'p',
-    'dg-help',
+    'dg-help dg-aside',
     [...helpKeys(spec), ...(foldsFlowers ? ['diagram.help.layers'] : [])]
       .map((key) => t(key))
       .join(' '),
   );
-  figure.append(svg, ...controls.rows, inside, ...extras.parts, told, help);
+  figure.append(
+    svg,
+    ...controls.rows,
+    inside,
+    ...extras.parts,
+    told,
+    ...(extras.below ?? []),
+    help,
+  );
   hole.replaceChildren(figure);
 
   /** Shows step `k` of the day (kept between dawn and dusk). */

@@ -10,6 +10,7 @@ import { reflectionOf } from '@ui/model/pondPicture';
 import { recipeDay } from '@ui/model/recipePicture';
 import { flowerOf } from '@ui/model/cutPlay';
 import { cutDiagram } from './CutDiagram';
+import { fitToPage } from './fitToPage';
 import { placingDiagram } from './PlacingDiagram';
 import { SCARECROWS, STONES } from './placingKinds';
 import { chartDiagram } from './ChartDiagram';
@@ -53,8 +54,18 @@ function report(problem: unknown): void {
   console.error('a Codex diagram cannot be drawn', problem);
 }
 
-/** Draws the diagram the block in `hole` describes. */
+/**
+ * Draws the diagram the block in `hole` describes, its garden sized so the whole block is seen at
+ * once on the page (`fitToPage.ts`).
+ */
 export function mountDiagram(hole: HTMLElement, t: Translate): void {
+  drawDiagram(hole, t);
+  const figure = hole.firstElementChild;
+  if (figure instanceof HTMLElement) fitToPage(figure);
+}
+
+/** Builds the diagram of the block in `hole`, of its kind. */
+function drawDiagram(hole: HTMLElement, t: Translate): void {
   const spec = parseDiagramSpec(hole.dataset['diagram'] ?? '');
   if (!spec.ok) return report(spec.error);
   const block = spec.value;

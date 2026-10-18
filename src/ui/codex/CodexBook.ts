@@ -108,6 +108,8 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   text.setAttribute('role', 'tabpanel');
   text.tabIndex = 0;
   text.dataset['focus'] = 'text';
+  // The page its diagrams fit their gardens to (ui/diagram/fitToPage.ts).
+  text.dataset['diagramPage'] = '';
   const notice = make(page, 'p', 'codex-notice');
   notice.setAttribute('aria-live', 'polite');
   sheet.append(tabs, text, notice);

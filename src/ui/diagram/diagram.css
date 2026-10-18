@@ -3,8 +3,8 @@
  * colours are the game's own, copied as tokens named after the colour of src/game/view/palette.ts
  * they copy (tests/diagramPalette.test.ts holds them to it). The garden is one logical pixel per
  * unit of its picture at most, `--px` being the game's zoom, so its sprouts and names are as big
- * as the game's; on a narrow page it shrinks with the page, and on a short one it shrinks until
- * the garden and the controls under it fit together in the height of the page shown.
+ * as the game's; once on its page, `fitToPage.ts` sets its width so that the whole block (the
+ * garden, its controls and its message lines) is seen at once in the height of the page shown.
  */
 
 .codex-diagram {
@@ -35,8 +35,6 @@
 }
 
 .dg {
-  /* The room kept under the garden for its controls: two rows of buttons, and the gaps. */
-  --controls-room: calc(36 * var(--px));
   margin: 0;
   display: grid;
   justify-items: center;
@@ -47,23 +45,14 @@
   justify-self: start;
 }
 
-/* A title above the garden takes a line more of the page's height. */
-.dg:has(> .dg-title) {
-  --controls-room: calc(51 * var(--px));
-}
-
 /*
- * The garden: as wide as its picture in logical pixels, never wider than the page, and never so
- * tall that its controls fall below the page shown (`100cqh` is the height of the text of the tab,
- * codex.css), though never smaller than a small garden can be read at. It keeps its shape.
+ * The garden: as wide as its picture in logical pixels and never wider than the page until its
+ * page fits it (an inline width, `fitToPage.ts`). It keeps its shape.
  */
 .dg-svg {
   display: block;
-  --fit-by-height: max(
-    calc(96 * var(--px)),
-    calc((100cqh - var(--controls-room)) * var(--diagram-width) / var(--diagram-height))
-  );
-  width: min(100%, calc(var(--diagram-width) * var(--px)), var(--fit-by-height));
+  width: min(100%, calc(var(--diagram-width) * var(--px)));
+  max-width: 100%;
   height: auto;
   aspect-ratio: var(--diagram-width) / var(--diagram-height);
   border: var(--px) solid var(--dg-panel-edge);
@@ -351,11 +340,8 @@
 }
 
 .dg-pair > .dg-svg {
-  width: min(
-    calc(50% - var(--px)),
-    calc(var(--diagram-width) * var(--px)),
-    var(--fit-by-height)
-  );
+  width: min(calc(50% - var(--px)), calc(var(--diagram-width) * var(--px)));
+  max-width: calc(50% - var(--px));
 }
 
 /* The name of a garden of a pair, in its top-left corner. */
@@ -461,13 +447,9 @@
 }
 
 /*
- * The card the mechanical gardener follows (C10), and the whole recipe with that card lit. The card
- * is kept in sight with the garden and its controls: two more lines of the page are left for it.
+ * The card the mechanical gardener follows (C10), kept in sight with the garden and its controls,
+ * and below them the whole recipe with that card lit.
  */
-.dg.dg-recipe {
-  --controls-room: calc(66 * var(--px));
-}
-
 .dg-card,
 .dg-recipe-whole {
   justify-self: stretch;

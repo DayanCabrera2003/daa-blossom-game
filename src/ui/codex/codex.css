@@ -240,12 +240,11 @@
 }
 
 /*
- * The text of the tab, in the row that takes the room left. It is the container the small gardens
- * measure (`cqh` in diagram.css), so each one fits with its controls in the height shown.
+ * The text of the tab, in the row that takes the room left. Its small gardens measure it, so each
+ * one fits with its controls in the height shown (ui/diagram/fitToPage.ts).
  */
 .codex-text {
   grid-row: 2;
-  container-type: size;
   overflow-y: auto;
   padding: calc(3 * var(--px)) calc(6 * var(--px));
   border: var(--px) solid var(--wood-edge);

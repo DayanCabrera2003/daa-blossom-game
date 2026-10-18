@@ -55,7 +55,7 @@ export function playDiagram(
   const help = part(
     page,
     'p',
-    'dg-help',
+    'dg-help dg-aside',
     helpKeys(spec)
       .map((key) => t(key))
       .join(' '),

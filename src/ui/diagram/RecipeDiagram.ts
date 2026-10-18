@@ -9,8 +9,9 @@ import { replayDiagram } from './ReplayDiagram';
 
 /**
  * The recipe of C10 card by card (plan 07, phase 5; level 6.2): the day of the mechanical gardener
- * under the sun, and right under its controls the card it follows at the step shown; below, the
- * whole right recipe with that card lit. The cards' texts are the game's own (`recipe.card.*`).
+ * under the sun, and right under its controls the card it follows at the step shown, kept in sight
+ * with the garden; below what happened, the whole right recipe with that card lit. The cards'
+ * texts are the game's own (`recipe.card.*`).
  */
 export function recipeDiagram(
   hole: HTMLElement,
@@ -25,7 +26,7 @@ export function recipeDiagram(
   const lead = part(page, 'p', 'dg-card-lead');
   const card = part(page, 'p', 'dg-card-text');
   following.append(lead, card);
-  const whole = part(page, 'div', 'dg-recipe-whole');
+  const whole = part(page, 'div', 'dg-recipe-whole dg-aside');
   const list = part(page, 'ol', 'dg-recipe-list');
   const rows = recipeCards().map((id) => {
     const row = part(page, 'li', 'dg-recipe-card', t(cardTextKey(id)));
@@ -36,7 +37,8 @@ export function recipeDiagram(
   whole.append(part(page, 'p', 'dg-card-lead', t('diagram.recipe.whole')), list);
 
   replayDiagram(hole, garden, spec, steps, t, {
-    parts: [following, whole],
+    parts: [following],
+    below: [whole],
     onShow: (k) => {
       const active = itemAt(steps, k).card;
       lead.textContent = t(active === null ? 'diagram.recipe.dawn' : 'diagram.recipe.following');
