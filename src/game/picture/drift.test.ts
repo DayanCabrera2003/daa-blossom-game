@@ -36,3 +36,12 @@ describe('what drifts across a backdrop (leaves, snow)', () => {
     expect(frames.size).toBe(LEAVES.frames);
   });
 });
+
+describe('the drift with less motion (plan 09, phase 6)', () => {
+  it('stands still: the particles are where they were at the start, whatever the time', () => {
+    const still = driftAt(LEAVES, 5, 0, true);
+    for (const time of [0, 400, 7_000, 90_000])
+      expect(driftAt(LEAVES, 5, time, true)).toEqual(still);
+    expect(still).toEqual(driftAt(LEAVES, 5, 0));
+  });
+});
