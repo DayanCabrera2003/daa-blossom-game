@@ -276,9 +276,10 @@ const SEASONS: readonly SelectedFile[] = [
 ];
 
 /**
- * Wooden panels, buttons, sliders, checkboxes and icons (section 1.6). The plain button and the
- * moon are left out: no label reads on the plain button's orange face (`picture/wood.ts`), and the
- * toolbar has no room for a moon beside the sun of the tool of marks (`picture/buttonIcon.ts`).
+ * Wooden panels, buttons, sliders, checkboxes and icons (section 1.6). The plain button is left
+ * out: no label reads on its orange face (`picture/wood.ts`). The toolbar has no room for a moon
+ * beside the sun of the tool of marks, so the moon is a small badge on the sun's corner
+ * (`picture/buttonIcon.ts`).
  */
 const UI: readonly SelectedFile[] = [
   pick('ui.dialogBox', 'image', ninja('Ui/Dialog/DialogBox.png'), 'images/ui/dialog-box.png'),
@@ -366,6 +367,8 @@ const UI: readonly SelectedFile[] = [
     'images/kenney/ui-pixel.png',
     { frame: TILE },
   ),
+  // The moon of the tool of marks, a badge on the corner of its sun (plan 09, phase 2).
+  pick('icon.moon', 'image', ninja('Ui/Skill Icon/Meteo/Moon.png'), 'images/ui/icons/moon.png'),
 ];
 
 /**

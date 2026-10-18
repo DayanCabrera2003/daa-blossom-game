@@ -60,6 +60,7 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - `Items/Object/Book.png` → `images/ui/icons/book.png`
 - `Items/Food/Seed1.png` → `images/ui/icons/seed.png`
 - `Items/Object/Hourglass.png` → `images/ui/icons/hourglass.png`
+- `Ui/Skill Icon/Meteo/Moon.png` → `images/ui/icons/moon.png`
 - `Audio/Musics/4 - Village.ogg` → `audio/music/hub.ogg`
 - `Audio/Musics/31 - Sunny.ogg` → `audio/music/ch1.ogg`
 - `Audio/Musics/39 - Boat.ogg` → `audio/music/ch2.ogg`

@@ -715,6 +715,19 @@
         "height": 16
       }
     },
+    "icon.moon": {
+      "path": "assets/images/ui/icons/moon.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Skill Icon/Meteo/Moon.png",
+      "bytes": 352,
+      "sha256": "a8c50817ea49379b8abe5302ab0aa4faa61a1854f1585aae1b879b7fca417539",
+      "image": {
+        "width": 24,
+        "height": 24
+      }
+    },
     "music.hub": {
       "path": "assets/audio/music/hub.ogg",
       "kind": "music",
