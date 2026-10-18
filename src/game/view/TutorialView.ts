@@ -36,11 +36,23 @@ const PANEL_DEPTH = 260;
 export class TutorialView {
   private parts: { destroy(): void }[] = [];
   private timer: Phaser.Time.TimerEvent | null = null;
+  /** What "Entendido" does on the window open now, for Escape to do the same. */
+  private dismissal: (() => void) | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
     private readonly t: Translate,
   ) {}
+
+  /** Whether a card is on screen. */
+  get open(): boolean {
+    return this.parts.length > 0;
+  }
+
+  /** Does what "Entendido" does (Escape on the card): closes it and runs its `onClose`. */
+  dismiss(): void {
+    this.dismissal?.();
+  }
 
   /** Opens the window; `onClose` runs once the player presses "Entendido". */
   show(card: ShownCard, onClose: () => void): void {
@@ -75,10 +87,13 @@ export class TutorialView {
       PANEL_DEPTH + 2,
       this.t,
     );
-    const button = new Button(scene, 0, 0, this.t('tutorial.ok'), () => {
+    this.dismissal = () => {
       this.close();
       onClose();
-    }).setDepth(PANEL_DEPTH + 4);
+    };
+    const button = new Button(scene, 0, 0, this.t('tutorial.ok'), this.dismissal).setDepth(
+      PANEL_DEPTH + 4,
+    );
     button.moveTo(x + (width - button.width) / 2, layout.buttonY + 1);
     const panel = new WoodFrame(
       scene,
@@ -110,6 +125,7 @@ export class TutorialView {
 
   /** Takes the window, its demo and its blocker away, silently. */
   private clear(): void {
+    this.dismissal = null;
     this.timer?.remove();
     this.timer = null;
     for (const part of this.parts) part.destroy();
