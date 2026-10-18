@@ -333,6 +333,8 @@ Tras la revisión del hito final y el visto bueno del autor: merge `develop → 
 
 **Tests clave:** los de siempre; un test de contenido comprueba que el README nombra cada tecla de `keyBindings` y cada parámetro de URL que `services/startLevel.ts` y `startGarden.ts` aceptan.
 
+*En ejecución:* **README** final (en inglés, como el código): qué es el juego, el enlace publicado, cómo se juega (el jardín con puntero o toque; la tabla de teclas de `keyBindings` y las de los libros), accesibilidad (movimiento, teclado, lector, vertical), navegadores, modo profesor con sus direcciones (`?teacher`, `&level=`, `&codex=`, `&tab=`), modo libre y `?garden=`, flores secretas y recompensas, créditos, desarrollo, pruebas y CI, herramientas (`solve`, `bench`, `save`, `lines`), recursos y presupuesto, el kit del autor y la licencia; sin "still to come" ni "working title". `tests/readme.test.ts` comprueba que nombra cada tecla de cada pantalla (los dígitos como rango, `1`–`5`), cada parámetro que leen `teacherMode.ts`, `startLevel.ts` y `startGarden.ts` (sacados de su código), el enlace publicado, que cada enlace a un archivo del repositorio existe y que no promete nada pendiente. Al escribirlo se corrigió un dato viejo: la carga inicial tiene 3,5 MB de límite (no 5). **GDD:** §5.9 apunta a su guion en la sección 9 (decía 10); el título *Florecer* deja de ser provisional (cabecera y §12). De lo demás que el autor contestó en el Apéndice A (insignia de la luna en "Marcas", aviso en vertical, sin jardín con teclado, firma de los créditos) el GDD no dice nada que lo contradiga, así que no cambia. **`CREDITS.md`** ya estaba al día (favicon, copias AAC, obra propia, bibliotecas): sin cambios. **Presupuesto** medido sobre el build final, y se quedan los límites que había: script inicial 1769 de 1800 KB; imágenes 226 de 600; fuente 59 de 100; sonidos 1071 de 1500; carga inicial 3125 de 3500; música 15 412 de 20 000; libros 879 de 1000; modo libre 49 de 60; el despliegue entero, con las copias AAC, 27 777 KB. **Versión** `1.0.0` en `package.json` (y en `package-lock.json`), en su commit; el tag `v1.0.0` lo pone el autor tras dar su visto bueno.
+
 ---
 
 ## Orden y dependencias
@@ -408,6 +410,30 @@ Lo que ningún test ni el navegador headless pueden ver; antes del merge a `main
 - [ ] El juego arranca y se juega sin ningún sonido cargado (en Safari o Firefox, con los archivos de audio bloqueados en el inspector).
 - [ ] Un lector de pantalla (VoiceOver, NVDA u Orca) lee el diálogo de 0.1.
 - [ ] El juego publicado tras el merge: carga, la 404, un despliegue nuevo con una pestaña vieja abierta (aviso de recargar).
+
+---
+
+## Cierre del plan
+
+**Hecho (2026-10-18).** F0–F4 y F6–F12; F5 descartada por el autor (Apéndice A, 16). Nombres sobre enredaderas legibles; arreglos del modo libre y de las flores secretas; piezas y animaciones medidas; pantalla de créditos; teclado y foco en todo el juego salvo el jardín; movimiento reducido con ajuste propio, contraste y región `aria-live`; zoom entero en píxeles físicos y táctil, con el aviso de girar el teléfono; audio con respaldo AAC y mezcla como datos; carga diferida y presupuesto; navegadores prometidos, 404 propia y avisos de fallo de red y de despliegue nuevo; el kit del autor (guardados, hoja de líneas, kit de playtests, guion del video); README, GDD y versión 1.0.0. Suite: 5379 tests, cobertura de líneas 99,8 %.
+
+**Lo que es del autor** (ningún test ni el navegador headless lo pueden hacer):
+
+- Dar el visto bueno al hito final; entonces merge `develop → main`, despliegue y tag `v1.0.0`, y comprobar el juego publicado (carga, un nivel, un libro, la 404, una pestaña vieja tras un despliegue nuevo).
+- Decidir las preguntas pendientes del Apéndice A (1–13 y 19); hasta entonces todo sigue como está. Entre ellas, revisar la hoja de líneas `docs/review/lineas.md` (pregunta 12) y confirmar los umbrales de los playtests (pregunta 10).
+- La lista de escucha de la fase 8 (sección "Comprobaciones a mano del autor"): bucles, balbuceo, ritmo, volúmenes, la música bajo los jingles, el sol, los volúmenes iniciales, Safari con el respaldo AAC.
+- Los playtests A, B y C con personas, con `docs/playtest/kit.md`.
+- Grabar y montar el video del Paseo guiado con `docs/video/guion.md` (GDD §5.9, §9).
+- Comprobar a mano Firefox, Safari de macOS y de iOS, y un teléfono real (apaisado, vertical, girado con el juego en marcha, sin sonido cargado), y un lector de pantalla en 0.1.
+- La revisión de rigor del Códex por un compañero (`docs/codex-review.md`) y presentar el GDD al profesor.
+
+**Pulido que se deja a propósito** (aceptado por el autor o fuera de este plan):
+
+- Las zonas de toque del HUD de un nivel se quedan en 16 px CSS en los teléfonos más pequeños de la tabla (24 en el hub); llegar a 24 pide otra disposición del HUD (tras P3).
+- La fila de arriba del modo libre con todo aprendido se desborda solo con la fuente de reserva (511 de 472 px); el juego trae su fuente y con ella cabe (decisión sobre F1).
+- La receta de 6.1 y 6.3 se lee por páginas porque sus tarjetas, con los textos del GDD, no caben en dos columnas enteras (decisión sobre F11).
+- El jardín no se juega con teclado (Apéndice A, 16).
+- Fuera del plan: la traducción al inglés, un modo sin conexión con *service worker* y cualquier contenido nuevo.
 
 ---
 
