@@ -8,14 +8,18 @@ import type { MiniSprout } from './miniGarden';
  * the reader can touch. The texts are keys of `strings.json`.
  */
 
-/** The keys of the help line of a diagram: the block's own, or one per thing it lets the reader do. */
+/**
+ * The keys of the help line of a diagram: the block's own, or its kind's, or for a garden to play
+ * one per thing it lets the reader do.
+ */
 export function helpKeys(spec: {
   readonly kind: DiagramSpec['kind'];
   readonly help?: string | undefined;
   readonly moves?: readonly DiagramMove[] | undefined;
 }): string[] {
   if (spec.help !== undefined) return [spec.help];
-  if (spec.kind === 'replay') return ['diagram.help.replay'];
+  // A replayed day and each special diagram have one help line of their own.
+  if (spec.kind !== 'play') return [`diagram.help.${spec.kind}`];
   const moves = new Set(spec.moves);
   const keys: string[] = [];
   if (moves.has('chain')) keys.push('diagram.help.chain');

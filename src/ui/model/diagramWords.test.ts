@@ -41,6 +41,10 @@ describe('helpKeys', () => {
     expect(helpKeys({ kind: 'replay' })).toEqual(['diagram.help.replay']);
   });
 
+  it('tells how to use a special diagram by its kind', () => {
+    expect(helpKeys({ kind: 'pond' })).toEqual(['diagram.help.pond']);
+  });
+
   it('takes the help the block names instead, when it names one', () => {
     expect(helpKeys({ kind: 'replay', help: 'diagram.help.chain' })).toEqual([
       'diagram.help.chain',
