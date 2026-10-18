@@ -5,11 +5,13 @@ import { diagramGarden, type DiagramSources } from '@ui/model/diagramGarden';
 import { replaySteps } from '@ui/model/diagramReplay';
 import { parseDiagramSpec } from '@ui/model/diagramSpec';
 import { reflectionOf } from '@ui/model/pondPicture';
+import { recipeDay } from '@ui/model/recipePicture';
 import { flowerOf } from '@ui/model/cutPlay';
 import { cutDiagram } from './CutDiagram';
 import { placingDiagram } from './PlacingDiagram';
 import { SCARECROWS, STONES } from './placingKinds';
 import { playDiagram } from './PlayDiagram';
+import { recipeDiagram } from './RecipeDiagram';
 import { pondDiagram } from './PondDiagram';
 import { replayDiagram } from './ReplayDiagram';
 import './diagram.css';
@@ -75,7 +77,11 @@ export function mountDiagram(hole: HTMLElement, t: Translate): void {
       cutDiagram(hole, garden.value, flower.value, block, t);
       return;
     }
-    default:
-      report(`no ${block.kind} diagram is drawn yet`);
+    case 'recipe': {
+      const day = recipeDay(garden.value);
+      if (!day.ok) return report(day.error);
+      recipeDiagram(hole, garden.value, block, day.value, t);
+      return;
+    }
   }
 }

@@ -413,6 +413,32 @@
   justify-self: stretch;
 }
 
+/* The card the mechanical gardener follows (C10), and the whole recipe with that card lit. */
+.dg-card,
+.dg-recipe {
+  justify-self: stretch;
+}
+
+.dg-card {
+  padding: var(--px) calc(3 * var(--px));
+  border: var(--px) solid var(--dg-panel-edge);
+  background: var(--dg-highlight);
+}
+
+.dg-card-lead,
+.dg-card-text {
+  margin: 0;
+}
+
+.dg-recipe-list {
+  margin: 0;
+  padding-left: calc(12 * var(--px));
+}
+
+.dg-recipe-card[aria-current='step'] {
+  background: var(--dg-highlight);
+}
+
 .dg-message:empty {
   display: none;
 }
