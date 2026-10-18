@@ -1,15 +1,18 @@
+import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { cardDemos } from '@levels/cards/catalog';
 import type { Translate } from '@services/i18n';
 import { diagramGarden, type DiagramSources } from '@ui/model/diagramGarden';
 import { replaySteps } from '@ui/model/diagramReplay';
 import { parseDiagramSpec } from '@ui/model/diagramSpec';
+import { chartRaces } from '@ui/model/chartPicture';
 import { reflectionOf } from '@ui/model/pondPicture';
 import { recipeDay } from '@ui/model/recipePicture';
 import { flowerOf } from '@ui/model/cutPlay';
 import { cutDiagram } from './CutDiagram';
 import { placingDiagram } from './PlacingDiagram';
 import { SCARECROWS, STONES } from './placingKinds';
+import { chartDiagram } from './ChartDiagram';
 import { playDiagram } from './PlayDiagram';
 import { recipeDiagram } from './RecipeDiagram';
 import { pondDiagram } from './PondDiagram';
@@ -26,12 +29,21 @@ import './diagram.css';
 /** The real levels and cards, gathered the first time a diagram asks. */
 let sources: DiagramSources | null = null;
 
+/** The real levels, by id, gathered the first time a diagram asks. */
+let levels: ReadonlyMap<string, Level> | null = null;
+
+/** The levels of the catalog by id. */
+function levelsById(): ReadonlyMap<string, Level> {
+  levels ??= new Map(catalog().map((level) => [level.data.id, level]));
+  return levels;
+}
+
 /** Where the diagrams find their gardens. */
 function diagramSources(): DiagramSources {
   if (sources === null) {
-    const levels = new Map(catalog().map((level) => [level.data.id, level]));
+    const byId = levelsById();
     const cards = cardDemos();
-    sources = { level: (id) => levels.get(id), card: (id) => cards.get(id) };
+    sources = { level: (id) => byId.get(id), card: (id) => cards.get(id) };
   }
   return sources;
 }
@@ -46,7 +58,12 @@ export function mountDiagram(hole: HTMLElement, t: Translate): void {
   const spec = parseDiagramSpec(hole.dataset['diagram'] ?? '');
   if (!spec.ok) return report(spec.error);
   const block = spec.value;
-  if (block.kind === 'chart') return report(`no chart is drawn yet: ${block.races.join(', ')}`);
+  if (block.kind === 'chart') {
+    const races = chartRaces(block.races.flatMap((id) => levelsById().get(id) ?? []));
+    if (races.length === 0) return report(`no races in ${block.races.join(', ')}`);
+    chartDiagram(hole, races, block, t);
+    return;
+  }
   const garden = diagramGarden(block, diagramSources());
   if (!garden.ok) return report(garden.error);
   switch (block.kind) {

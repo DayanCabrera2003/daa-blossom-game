@@ -413,6 +413,53 @@
   justify-self: stretch;
 }
 
+/* The chart of the races (C11): the gardener in amber, Bruto in blue, as in the game. */
+.dg-axis {
+  fill: none;
+  stroke: var(--dg-label);
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+}
+
+.dg-chart-text {
+  fill: var(--dg-label);
+}
+
+.dg-chart-axis {
+  fill: var(--dg-dark-vine);
+}
+
+.dg-chart-end {
+  text-anchor: end;
+}
+
+.dg-chart-middle {
+  text-anchor: middle;
+}
+
+.dg-runner-automaton {
+  fill: var(--dg-lit);
+}
+
+.dg-runner-bruto,
+.dg-chart-bruto {
+  fill: var(--dg-moon);
+}
+
+.dg-curve-automaton,
+.dg-curve-bruto {
+  fill: none;
+  stroke-width: 1;
+}
+
+.dg-curve-automaton {
+  stroke: var(--dg-lit);
+}
+
+.dg-curve-bruto {
+  stroke: var(--dg-moon);
+}
+
 /* The card the mechanical gardener follows (C10), and the whole recipe with that card lit. */
 .dg-card,
 .dg-recipe {
