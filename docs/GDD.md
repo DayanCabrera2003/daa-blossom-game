@@ -281,6 +281,8 @@ Se abre al terminar el capítulo 1 (un cartel en el hub), con las acciones que e
 
 Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredaderas, con los brotes a 18 px o más unos de otros y un farol por brote; sin niebla. Los jardines generados salen del núcleo, deterministas por semilla (hilera, corro, estrella, todos con todos, al azar, abejas y flores, flor de tallo largo, flores anidadas, hélice, muchas flores); si uno pasaría de los límites, se encoge hasta caber y lo dice.
 
+El jardinero mecánico aparece tras 6.2 y usa todas sus herramientas aunque el jugador aún no las tenga (no se las da). El certificado a demanda sale del bosque de la última búsqueda sin cadena: piedras en las lunas (tras 7.4) y, si el jardín es de abejas y flores, espantapájaros (tras 3.8). No hay carrera contra Bruto en el modo libre.
+
 ### 5.8 Modo profesor
 
 Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, panel con la traza del algoritmo en notación matemática junto al jardín.
