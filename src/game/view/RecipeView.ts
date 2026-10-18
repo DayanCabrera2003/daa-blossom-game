@@ -81,7 +81,7 @@ export class RecipeView {
     slot('recipe.cases', picture.cases);
     slot('recipe.end', picture.end === null ? [] : [picture.end]);
     y += 2;
-    heading(t('recipe.table'), PALETTE.darkVine);
+    heading(t('recipe.table'), PALETTE.highlight);
     rows(picture.table, false);
 
     // At the bottom, what the last check found beside the button that asks again.

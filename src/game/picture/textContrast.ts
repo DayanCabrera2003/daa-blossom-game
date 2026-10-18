@@ -273,34 +273,35 @@ export const TEXTS: readonly TextOnSurface[] = [
     surface: fill('buttonActive', 1),
     outlined: false,
   },
-  // The race's and the recipe's panels, a flat wood over the garden.
+  // The race's and the recipe's panels, a flat wood over the garden; the race's texts outlined, for
+  // its runners' colours.
   {
     file: 'view/RaceView.ts',
     what: 'title',
     text: 'label',
     surface: fill('panel', 0.97),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'view/RaceView.ts',
     what: "the automaton's counter",
     text: 'lit',
     surface: fill('panel', 0.97),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'view/RaceView.ts',
     what: "Bruto's counter",
     text: 'moon',
     surface: fill('panel', 0.97),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'view/RaceView.ts',
     what: 'axes',
-    text: 'darkVine',
+    text: 'highlight',
     surface: fill('panel', 0.97),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'view/RecipeView.ts',
@@ -312,7 +313,7 @@ export const TEXTS: readonly TextOnSurface[] = [
   {
     file: 'view/RecipeView.ts',
     what: 'table heading',
-    text: 'darkVine',
+    text: 'highlight',
     surface: fill('panel', 0.97),
     outlined: false,
   },
@@ -341,7 +342,7 @@ export const TEXTS: readonly TextOnSurface[] = [
   {
     file: 'view/VeilView.ts',
     what: 'veil',
-    text: 'darkVine',
+    text: 'chainNone',
     surface: fill('fog', 1),
     outlined: false,
   },
