@@ -38,6 +38,11 @@ interface Waiting {
  * one-off sound is dropped (it would otherwise burst out late, all at once) and a looping one waits
  * and starts on the unlock. While the tab is hidden every channel is silent. A key with no loaded
  * sound is simply not played, so the bus works before any sound exists.
+ *
+ * On a phone (plan 09, phase 7) the unlock is the same: Phaser listens for the first touch on the
+ * whole page (its end, as iOS asks), and the canvas taking every touch for the game does not stop
+ * it from hearing one. On an iPhone the silent switch also silences Web Audio, which the game plays
+ * through: with the switch on the game is silent, as it should be, and nothing here can change it.
  */
 export class AudioBus {
   private readonly playing = new Set<Playing>();
