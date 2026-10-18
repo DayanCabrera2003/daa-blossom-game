@@ -7,10 +7,13 @@ import { showCodex } from './codex/CodexBook';
 import { showEpilogue } from './epilogue/EpilogueScreen';
 import { showNotebook } from './notebook/NotebookBook';
 import type { BooksModule } from './shell';
+import { mountTeacherPanel } from './teacher/TeacherPanel';
+import type { TeacherModule } from './teacherShell';
 
 /**
  * The entry of the deferred books chunk, loaded by the shell with import() the first time a book
- * or the epilogue opens: the Códex, the Cuaderno and the epilogue "Más allá del jardín".
+ * or the epilogue opens: the Códex, the Cuaderno and the epilogue "Más allá del jardín"; and, in
+ * teacher mode, the trace panel, loaded the first time it opens.
  */
 
 /** The interface texts of the books, in the only language written. */
@@ -24,3 +27,7 @@ export const show: BooksModule['show'] = (request, frame) => {
   else if (request.book.book === 'codex') showCodex(frame, request.book, t);
   else showNotebook(frame, t, line);
 };
+
+/** Builds the teacher's trace panel in the layer its light shell keeps (`ui/teacherShell.ts`). */
+export const mountTeacher: TeacherModule['mountTeacher'] = (layer, bus) =>
+  mountTeacherPanel(layer, bus, t);
