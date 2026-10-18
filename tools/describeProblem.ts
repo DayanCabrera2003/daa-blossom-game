@@ -3,6 +3,7 @@ import type { WalkthroughProblem } from '@game/systems/walkthrough';
 import type { CodexProblem } from '@levels/codexChecks';
 import type { IntegrityProblem } from '@levels/integrity';
 import type { LoadError } from '@levels/loader';
+import type { SecretProblem } from '@levels/secretChecks';
 
 /** A reason's code followed by its details, e.g. `notAdjacent {"u":0,"v":2}`. */
 const withDetails = ({ code, ...details }: { readonly code: string }): string =>
@@ -119,6 +120,24 @@ export function describeCodexProblem(problem: CodexProblem): string {
       return `level ${problem.level} opens only some tabs of Codex entry ${problem.entry}, already whole before`;
     case 'notebookLinkBehind':
       return `level ${problem.level}: notebook question ${problem.question + 1} links to ${problem.entry}, already open since ${problem.opensAt}`;
+  }
+}
+
+/** One readable line for a problem of a secret flower. */
+export function describeSecretProblem(problem: SecretProblem): string {
+  switch (problem.code) {
+    case 'secretNotLast':
+      return `secret flower ${problem.level} comes before ${problem.before} of its chapter; it must close the chapter`;
+    case 'secretTwice':
+      return `chapter ${problem.chapter} has more than one secret flower: ${problem.levels.join(', ')}`;
+    case 'secretUnlocks':
+      return `secret flower ${problem.level} unlocks something; it must open nothing`;
+    case 'secretNotebook':
+      return `secret flower ${problem.level} asks a notebook question`;
+    case 'secretDraft':
+      return `secret flower ${problem.level} is a draft`;
+    case 'secretStarsOutOfRange':
+      return `secret flower ${problem.level} asks for ${problem.stars} stars; its chapter allows ${problem.least} to ${problem.most}`;
   }
 }
 

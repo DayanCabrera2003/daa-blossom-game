@@ -3,6 +3,7 @@ import {
   describeCodexProblem,
   describeLoadError,
   describeProblem,
+  describeSecretProblem,
   describeWalkthroughProblem,
 } from '../tools/describeProblem';
 
@@ -163,5 +164,32 @@ describe('readable level problems', () => {
         opensAt: '1.8',
       }),
     ).toBe('level 2.4: notebook question 1 links to C2, already open since 1.8');
+  });
+
+  it('explains what is wrong with a secret flower', () => {
+    expect(describeSecretProblem({ code: 'secretNotLast', level: '1.5', before: '1.9' })).toBe(
+      'secret flower 1.5 comes before 1.9 of its chapter; it must close the chapter',
+    );
+    expect(
+      describeSecretProblem({ code: 'secretTwice', chapter: '1', levels: ['1.10', '1.11'] }),
+    ).toBe('chapter 1 has more than one secret flower: 1.10, 1.11');
+    expect(describeSecretProblem({ code: 'secretUnlocks', level: '1.10' })).toBe(
+      'secret flower 1.10 unlocks something; it must open nothing',
+    );
+    expect(describeSecretProblem({ code: 'secretNotebook', level: '1.10' })).toBe(
+      'secret flower 1.10 asks a notebook question',
+    );
+    expect(describeSecretProblem({ code: 'secretDraft', level: '1.10' })).toBe(
+      'secret flower 1.10 is a draft',
+    );
+    expect(
+      describeSecretProblem({
+        code: 'secretStarsOutOfRange',
+        level: '1.10',
+        stars: 20,
+        least: 10,
+        most: 19,
+      }),
+    ).toBe('secret flower 1.10 asks for 20 stars; its chapter allows 10 to 19');
   });
 });
