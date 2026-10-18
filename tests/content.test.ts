@@ -10,7 +10,6 @@ import { MATHEMATICS } from './support/vocabulary';
 const table: Record<string, string> = strings;
 const lineTable: Record<string, string> = lines;
 
-
 /** The `{name}` placeholders of a text, sorted. */
 const placeholders = (text: string): string[] =>
   [...text.matchAll(/\{(\w+)\}/g)].map((match) => match[1] as string).sort();
