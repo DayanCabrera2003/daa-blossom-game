@@ -5,6 +5,7 @@ import type { PondPicture } from '../picture/tangle';
 import { restingLook } from '../picture/sproutLook';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LanternSprites } from './LanternSprites';
+import { OutlinedName } from './OutlinedName';
 import { LAYOUT } from './layout';
 import { paintSprout, SPROUT_RADIUS } from './paintSprout';
 import { PALETTE } from './palette';
@@ -48,7 +49,7 @@ export class MirrorView {
   private readonly crowns: SproutCrowns;
   private readonly silver: LanternSprites;
   private readonly amber: LanternSprites;
-  private readonly labels: Phaser.GameObjects.Text[] = [];
+  private readonly labels: OutlinedName[] = [];
   private readonly degree: Phaser.GameObjects.Text;
   private picture: PondPicture | null = null;
   /** When the pieces began to drift apart, and when the reflection began to dissolve. */
@@ -176,9 +177,9 @@ export class MirrorView {
   ): void {
     const shown = picture.separated ? picture.sprouts : [];
     while (this.labels.length < shown.length) {
-      const label = this.scene.add.text(0, 0, '', textStyle(8)).setOrigin(0.5, 0);
+      const label = new OutlinedName(this.scene, 0);
       this.labels.push(label);
-      this.layer.addAt(label, this.layer.getIndex(this.degree));
+      this.layer.addAt([...label.parts], this.layer.getIndex(this.degree));
     }
     this.labels.forEach((label, i) => label.setVisible(i < shown.length));
     const g = this.bodies.clear();
@@ -186,7 +187,7 @@ export class MirrorView {
       const at = moved(sprout.at, sprout.piece);
       const look = restingLook(sprout.lit);
       paintSprout(g, { x: at.x, y: at.y, radius: SPROUT_RADIUS, lit: sprout.lit, look });
-      this.labels[i]?.setText(sprout.label).setPosition(at.x, at.y + SPROUT_RADIUS + 1);
+      this.labels[i]?.show(sprout.label, at.x, at.y + SPROUT_RADIUS + 1);
       return { x: at.x, y: at.y, radius: SPROUT_RADIUS, species: look.species };
     });
     this.crowns.render(crowns);

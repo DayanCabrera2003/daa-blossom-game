@@ -5,11 +5,11 @@ import type { GardenPicture, SproutPicture } from '../picture/garden';
 import { sproutLook } from '../picture/sproutLook';
 import { everyFrame } from './everyFrame';
 import { LanternSprites } from './LanternSprites';
+import { OutlinedName } from './OutlinedName';
 import { paintSprout, SPROUT_RADIUS } from './paintSprout';
 import { PALETTE } from './palette';
 import { ensurePieceTextures } from './pieceTextures';
 import { SproutCrowns } from './SproutCrowns';
-import { textStyle } from './textStyle';
 
 /** Depths of the garden's layers: the lanterns' halo under the vines, the lanterns over them. */
 const HALO_DEPTH = 19;
@@ -41,7 +41,7 @@ const middle = (a: Point, b: Point): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b
  * vine, the sprouts composed from code and the pack (an outlined round body, cold blue in the dark
  * and warm amber with a lantern, the two-leaf sprout on top, a little face asleep or smiling that
  * blinks now and then; a chapter 3 flower as a diamond with petals, a bee with wings and stripes),
- * their names, the rings of what the player points at, and the chain being dragged with what it
+ * their names (each with a dark outline, so it reads over any vine), the rings of what the player points at, and the chain being dragged with what it
  * would gain. Pieces keep the sizes of the greybox, so hit-testing still takes every sprout as a
  * circle of `SPROUT_RADIUS`.
  */
@@ -51,7 +51,7 @@ export class GardenView {
   private readonly rings: Phaser.GameObjects.Graphics;
   private readonly crowns: SproutCrowns;
   private readonly lanterns: LanternSprites;
-  private readonly labels: Phaser.GameObjects.Text[] = [];
+  private readonly labels: OutlinedName[] = [];
   /** The sprouts painted last, repainted every frame so that they blink. */
   private shown: readonly SproutPicture[] = [];
 
@@ -155,12 +155,7 @@ export class GardenView {
 
   private drawLabels(sprouts: readonly SproutPicture[]): void {
     while (this.labels.length < sprouts.length) {
-      this.labels.push(
-        this.scene.add
-          .text(0, 0, '', textStyle(8))
-          .setOrigin(0.5, 0)
-          .setDepth(SPROUT_DEPTH + 1),
-      );
+      this.labels.push(new OutlinedName(this.scene, SPROUT_DEPTH + 1));
     }
     // Inside a flower of the layers fewer sprouts show: the names left over are hidden.
     this.labels.forEach((label, i) => {
@@ -169,7 +164,7 @@ export class GardenView {
       // The layout checks of the levels keep every name clear of the pieces around it with the
       // same gap (levels/pictureSizes.ts).
       const top = SPROUT_RADIUS + PICTURE_SIZES.labelGap;
-      if (s !== undefined) label.setText(s.label).setPosition(s.x, s.y + top);
+      if (s !== undefined) label.show(s.label, s.x, s.y + top);
     });
   }
 }
