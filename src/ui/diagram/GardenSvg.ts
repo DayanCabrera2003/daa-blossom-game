@@ -1,8 +1,8 @@
 import type { Translate } from '@services/i18n';
-import type { Point } from '@ui/model/diagramGarden';
 import type { MiniFlower, MiniGarden, MiniSprout, MiniVine } from '@ui/model/miniGarden';
 import { targetName } from '@ui/model/diagramTouch';
 import { sproutWords, vineWords } from '@ui/model/diagramWords';
+import { pointsOf, shape } from './svgShape';
 
 /**
  * Paints a small garden of the Codex (`ui/model/miniGarden.ts`) in SVG, with the game's look
@@ -16,8 +16,6 @@ import { sproutWords, vineWords } from '@ui/model/diagramWords';
  * garden listens for touches and keys on the whole picture.
  */
 
-const SVG = 'http://www.w3.org/2000/svg';
-
 /** What the reader may touch in the garden, and the words for it. */
 export interface GardenSvgOptions {
   /** Whether the sprouts can be touched. */
@@ -29,21 +27,6 @@ export interface GardenSvgOptions {
 
 /** Nothing can be touched: a garden only looked at. */
 export const LOOK_ONLY = { sprouts: false, vine: () => false } as const;
-
-/** A new SVG element with its attributes. */
-function shape<K extends keyof SVGElementTagNameMap>(
-  page: Document,
-  tag: K,
-  attributes: Readonly<Record<string, string | number>>,
-): SVGElementTagNameMap[K] {
-  const made = page.createElementNS(SVG, tag);
-  for (const [name, value] of Object.entries(attributes)) made.setAttribute(name, String(value));
-  return made;
-}
-
-/** The points of a polygon as SVG writes them. */
-const pointsOf = (points: readonly Point[]): string =>
-  points.map(({ x, y }) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
 
 /** Lets an element be touched: focusable, a button for a screen reader, named by `target`. */
 function touchable(element: SVGElement, target: string, words: string): void {
