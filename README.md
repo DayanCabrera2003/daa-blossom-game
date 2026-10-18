@@ -6,7 +6,7 @@ Built as a creative project for the course *Diseño y Análisis de Algoritmos* (
 
 ## Status
 
-Early development: the pure algorithmic core is being built first, with tests and validations. See [`docs/plans/01-core-foundation.md`](docs/plans/01-core-foundation.md).
+Chapters 0–7 are playable: their greybox levels now wear the art and sound of the CC0 packs ([`docs/plans/06-art-and-audio.md`](docs/plans/06-art-and-audio.md)), on top of the tested algorithmic core. The Códex, the extra modes and the final polish are still to come.
 
 ## Documentation
 
