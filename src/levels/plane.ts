@@ -135,6 +135,16 @@ function segmentMeetsBox(a: Point, b: Point, box: Box): boolean {
  * or the foot of a corner of the box on it.
  */
 export function segmentNearBox(a: Point, b: Point, box: Box, reach: number): boolean {
+  // A segment whose own bounding box stays `reach` away from the box cannot come nearer: the
+  // cheap answer for most vines, far from most names.
+  if (
+    Math.max(a.x, b.x) <= box.left - reach ||
+    Math.min(a.x, b.x) >= box.right + reach ||
+    Math.max(a.y, b.y) <= box.top - reach ||
+    Math.min(a.y, b.y) >= box.bottom + reach
+  ) {
+    return false;
+  }
   if (segmentMeetsBox(a, b, box)) return true;
   const corners: Point[] = [
     { x: box.left, y: box.top },
