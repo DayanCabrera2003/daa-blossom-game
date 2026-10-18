@@ -153,6 +153,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
   3. El "conflicto" de sol y luna.
   4. Levantar una piedra y ver el jardín partirse.
 - **UI:** paneles de madera en 9-slice, iconos de 16 × 16, tipografía pixel legible (tamaño 8 con doble escala para texto largo). Cuaderno y Códex se abren como libros con página que pasa.
+- **Carteles sobre el jardín:** cada cartel que se abre sobre el jardín (pregunta o apuesta, Cuaderno, tarjeta de mecánica, receta, caja de diálogo, avisos) se coloca solo donde menos tapa del jardín y nunca encima de lo que el paso pregunta o señala (el hilo de un conteo, el bucle del conflicto, lo que ilumina una pista) si hay otro sitio libre; para eso puede estrecharse junto a lo que pregunta. Además, el jugador puede arrastrar cualquier cartel por su marco (nunca por sus botones) con el ratón o el dedo, y con Alt + flechas el que tiene el foco: el cartel se queda dentro de la pantalla, mientras se arrastra el jardín no recibe el gesto, y los de su clase vuelven a abrirse donde lo dejó durante toda la sesión; un doble toque en el marco lo devuelve a su sitio. Una marca discreta en el marco dice que se puede mover.
 - **Jardín-hub:** una pantalla central que crece: cada capítulo terminado planta algo (un rosal, un estanque, un invernadero, banderines, robles).
 
 ### 4.2 Sonido
