@@ -180,7 +180,7 @@ export class PanelGrip {
 
   /** The panel goes: its mark, its listeners, and its place among the panels that can move. */
   destroy(): void {
-    this.release(null);
+    this.press = null;
     this.mark.destroy();
     this.scene.input.off('pointermove', this.onMove);
     this.scene.input.off('pointerup', this.onUp);
@@ -204,15 +204,14 @@ export class PanelGrip {
   }
 
   /**
-   * The press ends (null: the panel goes while held): a drag drops the panel there for its kind;
-   * a touch that makes a double touch with the one before sends it back.
+   * The press ends: a drag drops the panel there for its kind; a touch that makes a double touch
+   * with the one before sends it back.
    */
-  private release(pointer: Phaser.Input.Pointer | null): void {
+  private release(pointer: Phaser.Input.Pointer): void {
     const { press } = this;
-    if (press === null || (pointer !== null && pointer.id !== press.pointer)) return;
+    if (press === null || pointer.id !== press.pointer) return;
     this.press = null;
     this.panel.held?.(false);
-    if (pointer === null) return;
     if (press.dragging) {
       const { x, y } = this.panel.frame();
       rememberDrop(this.panel.kind, { x, y });
