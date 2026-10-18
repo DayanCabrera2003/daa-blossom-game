@@ -5,6 +5,7 @@ import type { GardenPicture } from '../picture/garden';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { everyFrame } from './everyFrame';
 import { PALETTE } from './palette';
+import { LOOK } from '../picture/look';
 
 /** The clouds of Ninja Adventure, tiled over the veil. */
 const CLOUDS: AssetKey = 'fx.fog';
@@ -14,8 +15,8 @@ const OPEN_MS = 600;
 /** Clearings are cut from textures made for this many radii, up to the full one. */
 const CLEARING_STEPS = 8;
 /** How fast the clouds drift, in logical pixels per millisecond, and how much they show. */
-const DRIFT = 0.004;
-const CLOUD_ALPHA = 0.16;
+const DRIFT = LOOK.fogDrift;
+const CLOUD_ALPHA = LOOK.fogCloudAlpha;
 
 /** The key of the clearing texture of step `step` (1 to `CLEARING_STEPS`). */
 const clearingKey = (step: number): string => `piece.fogClearing${step}`;

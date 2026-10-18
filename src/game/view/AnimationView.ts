@@ -17,6 +17,7 @@ import { paintFlower } from './paintFlower';
 import { SPROUT_RADIUS } from './paintSprout';
 import { PALETTE } from './palette';
 import { PIECE_TEXTURES } from './pieceTextures';
+import { LOOK_TONES } from '../picture/look';
 
 /** Over the garden and its pieces: the overlay, then the hopping lantern, then the bursts. */
 const OVERLAY_DEPTH = 60;
@@ -113,7 +114,8 @@ export class AnimationView {
       case 'conflict': {
         // Sun and moon by turns, on the vine and on both its sprouts: a question, not an error.
         const blink = conflictBlink(progress);
-        const colour = blink.tone === 'sun' ? PALETTE.sun : PALETTE.moon;
+        const colour =
+          PALETTE[blink.tone === 'sun' ? LOOK_TONES.conflictSun : LOOK_TONES.conflictMoon];
         const [u, v] = [p(step.u), p(step.v)];
         g.lineStyle(3, colour, blink.alpha).lineBetween(u.x, u.y, v.x, v.y);
         g.lineStyle(2, colour, blink.alpha)

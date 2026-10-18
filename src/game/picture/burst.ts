@@ -1,5 +1,6 @@
 import { createRng } from '@core/shared/rng';
 import type { Point } from '../input/target';
+import { LOOK } from './look';
 
 /**
  * The burst where a winning chain lands (GDD §4.1, key animation 1: "el último farol aparece con
@@ -9,7 +10,7 @@ import type { Point } from '../input/target';
  */
 
 /** How long the burst lasts, in milliseconds. */
-export const BURST_MS = 900;
+export const BURST_MS = LOOK.burstMs;
 /** The spark's strip: how many frames, and how long each one shows. */
 export const SPARK_FRAMES = 7;
 export const SPARK_FRAME_MS = 60;

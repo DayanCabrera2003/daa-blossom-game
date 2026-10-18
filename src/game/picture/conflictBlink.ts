@@ -1,3 +1,5 @@
+import { LOOK } from './look';
+
 /**
  * The conflict of sun and moon (GDD §4.1, key animation 3; level 4.2): the vine that joins two
  * suns of one tree, and the sprouts at its ends, blink between the sun's gold and the moon's blue,
@@ -6,7 +8,7 @@
  */
 
 /** How many times it turns from sun to moon. */
-export const CONFLICT_BLINKS = 3;
+export const CONFLICT_BLINKS = LOOK.conflictBlinks;
 
 /** What the conflict shows at a moment: whose colour, and how strongly. */
 export interface ConflictBlink {
@@ -18,5 +20,5 @@ export interface ConflictBlink {
 export function conflictBlink(progress: number): ConflictBlink {
   const p = Math.min(1, Math.max(0, progress));
   const half = Math.min(2 * CONFLICT_BLINKS - 1, Math.floor(p * 2 * CONFLICT_BLINKS));
-  return { tone: half % 2 === 0 ? 'sun' : 'moon', alpha: 1 - 0.6 * p };
+  return { tone: half % 2 === 0 ? 'sun' : 'moon', alpha: 1 - LOOK.conflictFade * p };
 }

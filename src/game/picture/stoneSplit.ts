@@ -1,6 +1,7 @@
 import { itemAt } from '@core/shared/itemAt';
 import { centroid } from '../input/flowerShape';
 import type { Point } from '../input/target';
+import { LOOK } from './look';
 
 /**
  * Lifting a stone and watching the garden split (GDD §4.1, key animation 4): the stone drops onto
@@ -12,8 +13,8 @@ import type { Point } from '../input/target';
 /** How high above its sprout the stone starts, in logical pixels. */
 export const STONE_DROP = 16;
 /** How long the drop takes, and how long the stone takes to settle after it hits. */
-export const STONE_FALL_MS = 70;
-export const STONE_SETTLE_MS = 110;
+export const STONE_FALL_MS = LOOK.stoneFallMs;
+export const STONE_SETTLE_MS = LOOK.stoneSettleMs;
 
 /** How much shorter the stone gets as it hits. */
 const SQUASH = 0.3;
