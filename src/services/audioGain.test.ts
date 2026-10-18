@@ -33,8 +33,11 @@ describe('how loud each audio channel plays', () => {
     expect(soundGain(0.8, 1)).toBe(0.8);
     expect(soundGain(0.8, 3)).toBe(0.8);
     expect(soundGain(0.8, -1)).toBe(0);
+    // A volume that is not a number plays nothing rather than reaching the audio API as NaN.
+    expect(soundGain(Number.NaN, 0.5)).toBe(0);
+    expect(soundGain(0.8, Number.NaN)).toBe(0);
     fc.assert(
-      fc.property(fc.double({ min: 0, max: 1 }), fc.double({ noNaN: true }), (gain, own) => {
+      fc.property(fc.double({ min: 0, max: 1 }), fc.double(), (gain, own) => {
         const played = soundGain(gain, own);
         expect(played).toBeGreaterThanOrEqual(0);
         expect(played).toBeLessThanOrEqual(gain);
