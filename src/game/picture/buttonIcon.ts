@@ -25,6 +25,9 @@ export const ROCK_ICON: ButtonIcon = { texture: 'icon.rock', scale: 0.5 };
 /** The hourglass of the pack, as it is, before the title of a race. */
 export const RACE_ICON: ButtonIcon = { texture: 'icon.hourglass', scale: 1 };
 
+/** The book of the pack at half its size (8 pixels), before the name of the Códex on its buttons. */
+export const BOOK_ICON: ButtonIcon = { texture: 'icon.book', scale: 0.5 };
+
 /** The tools whose button shows icons before its name, in order. */
 export const TOOL_ICONS: Readonly<Partial<Record<ToolId, readonly ButtonIcon[]>>> = {
   marks: [SUN_ICON],
