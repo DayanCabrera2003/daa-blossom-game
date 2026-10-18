@@ -3,8 +3,10 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import strings from '../src/content/es/strings.json';
 import { creditLines, OWN_PACK, type CreditLine } from '../src/game/assets/creditsModel';
-import { packCredit, packCredits } from '../src/game/assets/keys';
+import { assetEntry, packCredit, packCredits } from '../src/game/assets/keys';
 import { LIBRARY_CREDITS } from '../src/game/assets/libraryCredits';
+import { CREDITS_ROLL, rollLines, rollTravel } from '../src/game/picture/creditsRoll';
+import { CANVAS_WIDTH } from '../src/game/scale/integerZoom';
 import { createTranslator } from '../src/services/i18n';
 import { MATHEMATICS } from './support/vocabulary';
 
@@ -102,5 +104,39 @@ describe('the words of the credits screen', () => {
 
   it("signs with the author's byline: name, course and year", () => {
     expect(t('credits.byline')).toBe('Dayan — Diseño y Análisis de Algoritmos (DAA), 2026');
+  });
+});
+
+/**
+ * How long an Ogg Vorbis file plays, read from its bytes: the sample rate of its identification
+ * header and the granule position (the samples played) of its last page.
+ */
+function oggSeconds(bytes: Buffer): number {
+  const header = bytes.indexOf('\x01vorbis', 0, 'latin1');
+  const rate = bytes.readUInt32LE(header + 12);
+  const last = bytes.lastIndexOf('OggS', undefined, 'latin1');
+  return Number(bytes.readBigUInt64LE(last + 6)) / rate;
+}
+
+describe('the roll of the credits screen', () => {
+  const laid = rollLines(lines, CREDITS_ROLL.window.width);
+
+  it('fits every line of the real credits in its window, in the real font, on the canvas', () => {
+    const { x, width } = CREDITS_ROLL.window;
+    expect(x + width).toBeLessThanOrEqual(CANVAS_WIDTH);
+    const over = laid.filter((line) => line.x < 0 || line.x + line.width > width);
+    expect(over.map((line) => line.text)).toEqual([]);
+  });
+
+  it('is longer than its window, so it has somewhere to roll', () => {
+    expect(rollTravel(laid, CREDITS_ROLL.window.height)).toBeGreaterThan(0);
+  });
+
+  it('lasts what the music of the credits lasts, to the second', () => {
+    const path = fileURLToPath(
+      new URL(`../public/${assetEntry('music.credits').path}`, import.meta.url),
+    );
+    const seconds = oggSeconds(readFileSync(path));
+    expect(Math.abs(seconds * 1000 - CREDITS_ROLL.durationMs)).toBeLessThan(1000);
   });
 });
