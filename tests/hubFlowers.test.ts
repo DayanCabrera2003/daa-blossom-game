@@ -1,13 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import strings from '../src/content/es/strings.json';
-import { estimatedButtonWidth } from '../src/game/picture/bottomRows';
 import { boxesOverlap, type Rect } from '../src/game/picture/boxDistance';
-import { BOOK_ICON, iconRoom } from '../src/game/picture/buttonIcon';
-import { chapterTitle } from '../src/game/picture/chapterTitle';
-import { hubCounter } from '../src/game/picture/hubCounter';
-import { flowerBox, HUB_HEAD, signBox } from '../src/game/picture/hubGarden';
-import { HUB, layoutHub } from '../src/game/picture/hubLayout';
-import { hubTopLine } from '../src/game/picture/hubTopLine';
+import { HUB } from '../src/game/picture/hubLayout';
 import { BUTTON_HEIGHT } from '../src/game/picture/panelLayout';
 import { PIXEL_FONT } from '../src/game/picture/pixelFont';
 import {
@@ -17,78 +10,17 @@ import {
   secretFlowerPicture,
   type FlowerPiece,
 } from '../src/game/picture/secretFlower';
-import { labelSeal } from '../src/game/picture/signSeal';
-import { labelStars, STAR_SIZE } from '../src/game/picture/starIcon';
+import { STAR_SIZE } from '../src/game/picture/starIcon';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../src/game/scale/integerZoom';
 import { catalog } from '../src/levels/catalog';
 import { starsCeiling } from '../src/levels/starsCeiling';
-import { createTranslator } from '../src/services/i18n';
-import { catalogEntries, visibleLevels } from '../src/services/progress';
 import type { SecretFlowerState } from '../src/services/secretFlowers';
+import { entries, hubOf, t, text } from './support/hubBoxes';
 
 // The secret flowers grow beside the signposts of the hub as the scene lays it out with the real
 // catalog and the real words (plan 08, phase 5): each flower has its column and its signpost, draws
 // inside the column, and both keep clear of the top line, every title and every button, in both
 // modes and with every level at three stars (the widest buttons).
-
-const t = createTranslator(strings);
-const entries = catalogEntries(catalog());
-/** The width the pixel font gives a text. */
-const text = (words: string): number => estimatedButtonWidth(words) - 4;
-
-/** A chapter's flower column and signpost. */
-interface Place {
-  readonly cell: Rect;
-  readonly sign: Rect;
-}
-
-/** The hub's boxes and each chapter's flower column and signpost, as `HubScene` lays them out. */
-function hubOf(teacherMode: boolean): { boxes: Rect[]; signs: Map<string, Place> } {
-  const shown = visibleLevels(entries, teacherMode);
-  const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] ?? ''))];
-  const widths = chapters.map((chapter) =>
-    shown
-      .filter((level) => level.id.startsWith(`${chapter}.`))
-      .map(({ id }) => estimatedButtonWidth(`${id} ${' '.repeat(labelStars(3).spaces)}`)),
-  );
-  const titles = chapters.map((chapter) => {
-    const title = chapterTitle(chapter);
-    return text(t(title.key, title.params)) + HUB_HEAD;
-  });
-  const layout = layoutHub(widths, BUTTON_HEIGHT, titles);
-  const top = hubTopLine({
-    title: text(t('hub.title')),
-    badge: teacherMode ? text(t('teacher.badge')) : null,
-    counter: hubCounter(999, 99, 8).width,
-    gear: 13,
-    signs: [
-      estimatedButtonWidth(t('hub.codex') + ' '.repeat(labelSeal(t('codex.new')).spaces)) +
-        iconRoom([BOOK_ICON]),
-      estimatedButtonWidth(t('hub.notebook')),
-    ],
-    signHeight: BUTTON_HEIGHT,
-  });
-  const boxes: Rect[] = [top.title, top.counter, top.gear, ...top.signs];
-  if (top.badge !== null) boxes.push(top.badge);
-  const signs = new Map<string, Place>();
-  layout.chapters.forEach(({ titleY, buttons }, c) => {
-    const chapter = chapters[c] ?? '';
-    signs.set(chapter, {
-      cell: flowerBox(titleY, BUTTON_HEIGHT),
-      sign: signBox(titleY, BUTTON_HEIGHT),
-    });
-    boxes.push({
-      x: HUB.margin + HUB_HEAD,
-      y: titleY,
-      width: (titles[c] ?? 0) - HUB_HEAD,
-      height: BUTTON_HEIGHT - 2,
-    });
-    buttons.forEach(({ x, y }, b) =>
-      boxes.push({ x, y: y - 1, width: widths[c]?.[b] ?? 0, height: BUTTON_HEIGHT }),
-    );
-  });
-  return { boxes, signs };
-}
 
 const flowers = entries.filter((level) => level.secret !== undefined);
 
