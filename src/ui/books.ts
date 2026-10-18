@@ -1,3 +1,4 @@
+import './math/katex.css';
 import type { BooksModule } from './shell';
 
 /**
