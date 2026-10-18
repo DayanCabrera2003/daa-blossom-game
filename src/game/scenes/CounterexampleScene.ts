@@ -7,6 +7,7 @@ import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
+import { animationGarden } from '../picture/animationGarden';
 import { gardenPicture } from '../picture/garden';
 import { checkText, drawingPicture } from '../picture/mirrorDrawing';
 import { reasonText } from '../picture/reasonText';
@@ -234,7 +235,11 @@ export class CounterexampleScene extends Phaser.Scene {
         break;
       case 'animate': {
         const steps = planAnimation(effect.events);
-        this.views.animation.play(steps, this.controller.positions, this.time.now);
+        const garden = animationGarden(this.controller.history, {
+          positions: this.controller.positions,
+          path: [],
+        });
+        this.views.animation.play(steps, garden, this.time.now);
         this.sfx.schedule(planCues(steps));
         break;
       }

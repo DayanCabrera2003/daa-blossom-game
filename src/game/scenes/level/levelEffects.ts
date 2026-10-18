@@ -2,6 +2,7 @@ import type { Level } from '@levels/build';
 import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import { planAnimation } from '../../animation/plan';
+import { animationGarden } from '../../picture/animationGarden';
 import { raceBetReveal } from '../../picture/raceBetReveal';
 import { raceDurationAt } from '../../picture/racePanel';
 import { checkText } from '../../picture/mirrorDrawing';
@@ -89,7 +90,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       // Played where the layer entered draws the sprouts (5.2).
       stage.animation.play(
         planAnimation(effect.events),
-        layerOf(stage.controller()).positions,
+        animationGarden(stage.controller().session.history, layerOf(stage.controller())),
         stage.now(),
       );
       break;
