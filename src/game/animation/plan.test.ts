@@ -129,7 +129,7 @@ describe('the plan with less motion (plan 09, phase 6)', () => {
     const full = planAnimation(chain);
     const reduced = planAnimation(chain, true);
     const shape = (steps: readonly AnimationStep[]) =>
-      steps.map(({ duration: _, ...step }) => step);
+      steps.map((step) => ({ ...step, duration: 0 }));
     expect(full.filter((step) => step.kind === 'hop')).toHaveLength(5);
     expect(shape(reduced)).toEqual(shape(full));
     expect(totalDuration(reduced)).toBeLessThan(totalDuration(full));
