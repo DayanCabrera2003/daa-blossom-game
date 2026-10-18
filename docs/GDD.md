@@ -279,6 +279,8 @@ Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y p
 
 Se abre al terminar el capítulo 1 (un cartel en el hub), con las acciones que el jugador ya ha ganado; en modo profesor y desde el epílogo, siempre. Jugar en él nunca guarda progreso.
 
+Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredaderas, con los brotes a 18 px o más unos de otros y un farol por brote; sin niebla. Los jardines generados salen del núcleo, deterministas por semilla (hilera, corro, estrella, todos con todos, al azar, abejas y flores, flor de tallo largo, flores anidadas, hélice, muchas flores); si uno pasaría de los límites, se encoge hasta caber y lo dice.
+
 ### 5.8 Modo profesor
 
 Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, panel con la traza del algoritmo en notación matemática junto al jardín.
