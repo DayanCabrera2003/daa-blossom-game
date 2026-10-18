@@ -19,7 +19,7 @@ import './book.css';
  */
 
 /** Where the picture of the book's wood is, next to the page (public/assets). */
-const WOOD_PANEL = `${import.meta.env.BASE_URL}assets/images/ui/wood/panel.png`;
+export const WOOD_PANEL = `${import.meta.env.BASE_URL}assets/images/ui/wood/panel.png`;
 
 /** The words on each book's ribbon. */
 const RIBBON_LABELS: Readonly<Record<BookName, string>> = {
