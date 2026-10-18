@@ -9,6 +9,11 @@ import type { LevelData } from './schema';
  */
 export function starsCeiling(level: Pick<LevelData, 'water' | 'flow'>): number {
   const water = level.water === null ? 0 : 1;
-  const bet = level.flow.some((step) => step.step === 'bet' && !step.informal) ? 1 : 0;
+  const bet = hasFormalBet(level) ? 1 : 0;
   return 2 + water + bet;
+}
+
+/** Whether the script asks a formal bet, the one that earns a star when it is right. */
+export function hasFormalBet(level: Pick<LevelData, 'flow'>): boolean {
+  return level.flow.some((step) => step.step === 'bet' && !step.informal);
 }
