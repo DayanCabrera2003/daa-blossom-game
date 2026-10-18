@@ -15,8 +15,6 @@ export const LAYOUT = {
   toolbarY: CANVAS_HEIGHT - 27,
   bottomY: CANVAS_HEIGHT - 13,
   sunTrack: { x0: CANVAS_WIDTH - 150, x1: CANVAS_WIDTH - 10, y: 8 },
-  // The middle of a toast, with room for its wooden border above the toolbar.
-  toastY: CANVAS_HEIGHT - 41,
   /** The garden between the bars: what a question blocks and a bet's veil covers. */
   garden: { y: 24, height: CANVAS_HEIGHT - 27 - 2 - 24 },
 } as const;

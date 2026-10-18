@@ -5,6 +5,10 @@ import { catalog } from '../src/levels/catalog';
 import { isUiUnlocked } from '../src/levels/uiUnlocks';
 import { CHAR_ADVANCE, estimatedButtonWidth, hudRow } from '../src/game/picture/bottomRows';
 import { statusEnd, statusLine } from '../src/game/picture/statusLine';
+import { generateDrawer } from '../src/game/picture/generateDrawer';
+import { charsIn, LINE_HEIGHT, wrappedLines } from '../src/game/picture/textWrap';
+import { TOAST, toastBox } from '../src/game/picture/toastBox';
+import { GENERATORS } from '../src/levels/sandbox/generators';
 import { CANVAS_WIDTH } from '../src/game/scale/integerZoom';
 import { LAYOUT } from '../src/game/view/layout';
 import manifest from '../src/game/assets/manifest.json';
@@ -198,5 +202,73 @@ describe("the counterexample's bottom row", () => {
       t('hud.mirror', { yours: 99, mirror: 99 }),
     ]);
     expect(LAYOUT.margin + count + AIR).toBeLessThanOrEqual(Math.min(...lefts));
+  });
+});
+
+/** The top of the free mode's generate drawer, with the real words, the size at its widest. */
+const drawerTop = (): number =>
+  generateDrawer({
+    generators: GENERATORS.map((generator) => estimatedButtonWidth(t(generator.textKey))),
+    smaller: estimatedButtonWidth(t('sandbox.gen.smaller')),
+    size: widthOf(t('sandbox.gen.size', { size: 20 })),
+    larger: estimatedButtonWidth(t('sandbox.gen.larger')),
+    another: estimatedButtonWidth(t('sandbox.gen.another')),
+    done: estimatedButtonWidth(t('sandbox.gen.done')),
+  }).panel.y;
+
+describe('the toasts', () => {
+  /** A parameter filled the widest way: the longest action, or two letters for a name or count. */
+  const longestAction = Object.keys(strings)
+    .filter((key) => key.startsWith('action.'))
+    .map((key) => t(key))
+    .reduce((a, b) => (a.length >= b.length ? a : b), '');
+  const filled = (key: string): string => {
+    const params: Record<string, string> = {};
+    for (const [, name] of (strings as Record<string, string>)[key]?.matchAll(/\{(\w+)\}/g) ?? [])
+      params[name ?? ''] = name === 'action' ? longestAction : 'XX';
+    return t(key, params);
+  };
+  /** Everything a toast says: refusals, the mirror's check, the free mode's notices. */
+  const messages = Object.keys(strings)
+    .filter(
+      (key) =>
+        key.startsWith('reason.') ||
+        key.startsWith('sandbox.reason.') ||
+        key.startsWith('sandbox.opened.') ||
+        [
+          'mirror.notBetter',
+          'mirror.chain',
+          'mirror.again',
+          'sandbox.certify.notYet',
+          'sandbox.certify.notYetGardener',
+          'sandbox.certify.notBees',
+          'share.done',
+          'sandbox.gen.shrunk',
+          'sandbox.unplayable',
+        ].includes(key),
+    )
+    .map((key) => [key, filled(key)] as const);
+
+  it('there are messages of every kind to measure', () => {
+    expect(messages.length).toBeGreaterThan(40);
+  });
+
+  it.each(messages)('%s stays between the top bar and the toolbar', (_, message) => {
+    const lines = wrappedLines(message, charsIn(TOAST.wrap));
+    const box = toastBox(Math.min(TOAST.wrap, widthOf(message)), lines * LINE_HEIGHT);
+    expect(box.y).toBeGreaterThanOrEqual(LAYOUT.garden.y);
+    expect(box.y + box.height).toBeLessThan(LAYOUT.toolbarY - 1);
+  });
+
+  it.each(messages)('%s stays above the generate drawer, under the top bar', (_, message) => {
+    const lines = wrappedLines(message, charsIn(TOAST.wrap));
+    const top = drawerTop();
+    const box = toastBox(
+      Math.min(TOAST.wrap, widthOf(message)),
+      lines * LINE_HEIGHT,
+      top - TOAST.aboveDrawer,
+    );
+    expect(box.y).toBeGreaterThanOrEqual(LAYOUT.garden.y);
+    expect(box.y + box.height).toBeLessThan(top);
   });
 });
