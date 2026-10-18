@@ -1,16 +1,15 @@
 import { contract, openLayer } from '../blossom/contract';
 import { findOddCycle } from '../blossom/detect';
-import { baseVertex } from '../blossom/hierarchy';
-import type { Layer } from '../blossom/types';
-import { vineBetween } from '../blossom/vineBetween';
+import type { GardenNode, Layer } from '../blossom/types';
+import { vinesFrom } from '../blossom/vineBetween';
 import { neighbors } from '../graph/queries';
 import type { Graph, VertexId } from '../graph/types';
 import { exposedVertices } from '../matching/queries';
 import type { Matching } from '../matching/types';
 import { invariant } from '../shared/invariant';
 import { itemAt } from '../shared/itemAt';
-import { plantForest, type AlternatingForest } from '../search/forest';
-import { growStep } from '../search/growForest';
+import { plantGrowingForest, type AlternatingForest } from '../search/forest';
+import { chainThrough, growInto, readVine } from '../search/growForest';
 import { contractEvent } from '../trace/contractEvent';
 import { createRecorder, type TraceRecorder } from '../trace/recorder';
 import { foldForest } from './foldForest';
@@ -34,6 +33,11 @@ export type FlowerSearchOutcome =
  *
  * Each sprout is marked once: folding never unmarks anyone, it only merges marked nodes. Each fold
  * removes at least two nodes, so a search folds fewer than n/2 times and always terminates.
+ *
+ * An ordinary examination costs O(1) amortised, as in Proposition 11.2(2) of the Códex: the forest
+ * is local state of this run and grows in place, the climbs to a root are built only for a chain
+ * or a flower, the original vines leaving a sun are named once when it leaves the queue, and the
+ * base sprout of each node is found once and remembered.
  */
 export function searchWithFlowers(
   graph: Graph,
@@ -42,30 +46,42 @@ export function searchWithFlowers(
 ): FlowerSearchOutcome {
   let layer = openLayer(graph, matching);
   const roots = exposedVertices(matching);
-  let forest = plantForest(matching, roots);
+  let forest = plantGrowingForest(matching, roots);
   recorder.record({ type: 'searchStart', roots });
   for (const root of roots)
     recorder.record({ type: 'labelOuter', vertex: root, parent: null, root });
 
-  const sproutOf = (id: VertexId): VertexId => baseVertex(itemAt(layer.nodes, id));
+  // The base sprout of a node, remembered: a new flower's is its base child's, already known.
+  const bases = new WeakMap<GardenNode, VertexId>();
+  const baseOf = (node: GardenNode): VertexId => {
+    if (node.kind === 'sprout') return node.vertex;
+    const known = bases.get(node);
+    if (known !== undefined) return known;
+    const base = baseOf(itemAt(node.cycle, 0));
+    bases.set(node, base);
+    return base;
+  };
+  const sproutOf = (id: VertexId): VertexId => baseOf(itemAt(layer.nodes, id));
   let queue: VertexId[] = [...roots];
   let head = 0;
   while (head < queue.length) {
     const u = itemAt(queue, head++);
+    const vines = vinesFrom(layer, u);
     for (const x of neighbors(layer.graph, u)) {
-      const vine = vineBetween(layer, u, x);
+      const vine = vines.get(x);
+      invariant(vine !== undefined, `no vine joins nodes ${u} and ${x}`);
       recorder.record({ type: 'scanEdge', from: vine[0], to: vine[1] });
-      const step = growStep(layer.matching, forest, u, x);
+      const step = readVine(layer.matching, forest, u, x);
 
       if (step.kind === 'grow') {
-        forest = step.forest;
+        growInto(forest, u, step.inner, step.outer);
         const root = sproutOf(itemAt(forest.root, u));
         const moon = sproutOf(step.inner);
         recorder.record({ type: 'labelInner', vertex: moon, parent: vine[0], root });
         recorder.record({ type: 'labelOuter', vertex: sproutOf(step.outer), parent: moon, root });
         queue.push(step.outer);
       } else if (step.kind === 'chain') {
-        return { kind: 'augmentingPath', layer, path: step.path };
+        return { kind: 'augmentingPath', layer, path: chainThrough(forest, u, x) };
       } else if (step.kind === 'oddCycle') {
         recorder.record({ type: 'oddCycleFound', vine });
         const before = layer;
@@ -77,7 +93,7 @@ export function searchWithFlowers(
         forest = foldForest(forest, before, layer, folded.blossom);
         // Pending suns are renamed; those swallowed by the flower are replaced by the flower.
         const rename = (id: VertexId): VertexId =>
-          itemAt(layer.nodeOf, baseVertex(itemAt(before.nodes, id)));
+          itemAt(layer.nodeOf, baseOf(itemAt(before.nodes, id)));
         const pending = queue.slice(head).map(rename);
         queue = [...new Set(pending.filter((id) => id !== folded.blossom)), folded.blossom];
         head = 0;

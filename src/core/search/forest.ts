@@ -24,11 +24,27 @@ export interface AlternatingForest {
 }
 
 /**
+ * A forest its owner may still grow in place: the search keeps one as local state of a single run
+ * (`growInto`), so a new moon and sun cost O(1) instead of a copy of the arrays. Everyone else
+ * reads it as an `AlternatingForest`.
+ */
+export interface GrowingForest extends AlternatingForest {
+  readonly label: ForestLabel[];
+  readonly parent: (VertexId | typeof NO_VERTEX)[];
+  readonly root: (VertexId | typeof NO_VERTEX)[];
+}
+
+/**
  * Starts a forest: every root is a sun heading its own tree. The algorithm plants all sprouts in the
  * dark at once; the player in the fog (chapter 3) may start from just one. A lit root is a bug:
  * a chain can only start where there is no lantern.
  */
 export function plantForest(matching: Matching, roots: readonly VertexId[]): AlternatingForest {
+  return plantGrowingForest(matching, roots);
+}
+
+/** `plantForest` for a caller that will grow the forest in place (the search, `growInto`). */
+export function plantGrowingForest(matching: Matching, roots: readonly VertexId[]): GrowingForest {
   const n = matching.mate.length;
   const label = new Array<ForestLabel>(n).fill('none');
   const parent = new Array<VertexId>(n).fill(NO_VERTEX);
