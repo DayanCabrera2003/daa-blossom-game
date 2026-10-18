@@ -62,3 +62,9 @@ export function hudRow(widths: readonly number[]): number[] {
     return x;
   });
 }
+
+/**
+ * The left edge of the teacher's trace button (teacher mode only), `width` wide: at the right end
+ * of the tools' row, where no level's tools reach.
+ */
+export const traceButtonLeft = (width: number): number => CANVAS_WIDTH - BOTTOM_ROWS.margin - width;
