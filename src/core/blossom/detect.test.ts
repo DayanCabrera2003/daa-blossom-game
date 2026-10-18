@@ -8,6 +8,8 @@ import { plantForest, type AlternatingForest } from '../search/forest';
 import { bipartiteSearch } from '../search/bipartiteSearch';
 import { growStep } from '../search/growForest';
 import type { Matching } from '../matching/types';
+import { checkStem } from '../matching/paths';
+import { pathToRoot } from '../search/pathToRoot';
 import { findOddCycle } from './detect';
 import { checkBlossom } from './isBlossom';
 
@@ -109,6 +111,36 @@ describe('odd cycle detection', () => {
         const { forest, from, to } = result.error;
         const cycle = findOddCycle(forest, from, to);
         expect(checkBlossom(graph, matching, cycle)).toEqual({ ok: true, value: cycle });
+      }),
+    );
+  });
+  it('property (C6, Lemma 6.3): the loop has d(x) + d(y) − 2d(w) + 1 sprouts, odd, w a sun', () => {
+    fc.assert(
+      fc.property(graphWithMatchingArb(), ([graph, matching]) => {
+        const result = bipartiteSearch(graph, matching);
+        if (result.ok) return;
+        const { forest, from, to } = result.error;
+        const cycle = findOddCycle(forest, from, to);
+        const base = cycle[0] as number;
+        const depth = (v: number): number => pathToRoot(forest, v).length - 1;
+        expect(cycle.length).toBe(depth(from) + depth(to) - 2 * depth(base) + 1);
+        expect(cycle.length % 2).toBe(1);
+        expect(forest.label[base]).toBe('outer');
+      }),
+    );
+  });
+
+  it('property (C7, Lemma 7.5): the way up from the base is a stem that meets the loop only there', () => {
+    fc.assert(
+      fc.property(graphWithMatchingArb(), ([graph, matching]) => {
+        const result = bipartiteSearch(graph, matching);
+        if (result.ok) return;
+        const { forest, from, to } = result.error;
+        const cycle = findOddCycle(forest, from, to);
+        const base = cycle[0] as number;
+        const stem = pathToRoot(forest, base).reverse();
+        expect(checkStem(graph, matching, stem).ok).toBe(true);
+        expect(stem.filter((v) => cycle.includes(v))).toEqual([base]);
       }),
     );
   });
