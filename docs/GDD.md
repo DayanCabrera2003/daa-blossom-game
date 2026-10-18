@@ -277,6 +277,8 @@ Las entradas se desbloquean con el juego, pero en modo profesor están todas abi
 
 Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y puedes: jugarlo, pedirle al jardinero mecánico que lo resuelva con el sol como slider, ver el bosque, las flores y el certificado final. Exporta un código de jardín para compartir.
 
+Se abre al terminar el capítulo 1 (un cartel en el hub), con las acciones que el jugador ya ha ganado; en modo profesor y desde el epílogo, siempre. Jugar en él nunca guarda progreso.
+
 ### 5.8 Modo profesor
 
 Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, panel con la traza del algoritmo en notación matemática junto al jardín.
