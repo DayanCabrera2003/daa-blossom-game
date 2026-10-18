@@ -76,6 +76,13 @@ export const setVolume = (settings: Settings, channel: AudioChannel, value: numb
   [channel]: stepVolume(value),
 });
 
+/** The settings with the volume of `channel` one step (a tenth) down or up: an arrow on its slider. */
+export const nudgeVolume = (
+  settings: Settings,
+  channel: AudioChannel,
+  direction: -1 | 1,
+): Settings => setVolume(settings, channel, settings[channel] + direction / STEPS);
+
 /** The settings with mute switched over; the volumes stay as they were. */
 export const toggleMute = (settings: Settings): Settings => ({
   ...settings,

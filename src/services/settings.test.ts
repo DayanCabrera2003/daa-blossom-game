@@ -4,6 +4,7 @@ import {
   AUDIO_CHANNELS,
   defaultSettings,
   loadSettings,
+  nudgeVolume,
   setVolume,
   SETTINGS_KEY,
   stepVolume,
@@ -57,6 +58,14 @@ describe('the player settings', () => {
     const louder = setVolume(defaultSettings(), 'music', 3);
     expect(louder).toEqual({ ...defaultSettings(), music: 1 });
     expect(setVolume(defaultSettings(), 'sfx', -1).sfx).toBe(0);
+  });
+
+  it('an arrow moves a volume one tenth, and stops at silence and at full', () => {
+    const half = setVolume(defaultSettings(), 'voice', 0.5);
+    expect(nudgeVolume(half, 'voice', 1).voice).toBe(0.6);
+    expect(nudgeVolume(half, 'voice', -1)).toEqual({ ...half, voice: 0.4 });
+    expect(nudgeVolume(setVolume(half, 'sfx', 1), 'sfx', 1).sfx).toBe(1);
+    expect(nudgeVolume(setVolume(half, 'sfx', 0), 'sfx', -1).sfx).toBe(0);
   });
 
   it('mute switches on and off, keeping the volumes', () => {
