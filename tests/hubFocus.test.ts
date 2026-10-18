@@ -85,9 +85,15 @@ function hubSpots(save: SaveData, teacher: boolean): Spot[] {
   return spots;
 }
 
-/** Whether a pixel lies inside `box` deeper than its outermost pixels (where a label is). */
-const deepInside = (box: Rect, x: number, y: number): boolean =>
-  x > box.x && x < box.x + box.width - 1 && y > box.y && y < box.y + box.height - 1;
+/**
+ * Whether a side of a ring (a one-pixel rectangle) touches `box` deeper than its outermost pixels,
+ * where a label is.
+ */
+const ringCovers = (line: Rect, box: Rect): boolean =>
+  line.x + line.width - 1 > box.x &&
+  line.x < box.x + box.width - 1 &&
+  line.y + line.height - 1 > box.y &&
+  line.y < box.y + box.height - 1;
 
 describe.each(STATES)('the keyboard on the hub: $name', ({ save, teacher }) => {
   const spots = hubSpots(save, teacher);
@@ -130,18 +136,16 @@ describe.each(STATES)('the keyboard on the hub: $name', ({ save, teacher }) => {
   });
 
   it("the ring of each thing in focus covers no other thing's label", () => {
+    const covered: string[] = [];
     for (const spot of spots) {
       for (const line of focusRing(spot.box)) {
         for (const other of spots) {
-          if (other === spot) continue;
-          for (let x = line.x; x < line.x + line.width; x += 1) {
-            for (let y = line.y; y < line.y + line.height; y += 1) {
-              expect(deepInside(other.box, x, y), `${spot.id} over ${other.id}`).toBe(false);
-            }
-          }
+          if (other !== spot && ringCovers(line, other.box))
+            covered.push(`${spot.id} over ${other.id}`);
         }
       }
     }
+    expect(covered).toEqual([]);
   });
 });
 
