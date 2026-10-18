@@ -111,6 +111,11 @@ export interface BusEvents {
   readonly 'sandbox.imported': { readonly text: string };
   /** The game's answer to `sandbox.imported`: the sheet closes, or says kindly why not. */
   readonly 'sandbox.importAnswer': ImportAnswer;
+  /**
+   * Something a screen reader should say, whole (plan 09, phase 6): a line of dialogue with who says
+   * it, a notice, a question, whether an answer was the one. The page's live region writes it.
+   */
+  readonly 'a11y.say': { readonly text: string };
   /** The motion setting changed in the settings panel: the page's styles follow it. */
   readonly 'motion.changed': { readonly motion: MotionChoice };
 }
