@@ -1,6 +1,7 @@
 import { PICTURE_SIZES } from './pictureSizes';
-import { boxesNear, boxNearCircle, segmentsCross, type Box, type Point } from './plane';
+import { boxesNear, segmentsCross, type Box, type Point } from './plane';
 import type { LevelData } from './schema';
+import { boxNearSprout, type SproutAt } from './sproutExtent';
 
 /** Something in a level's layout that makes its garden hard to read. */
 export type LayoutProblem =
@@ -17,8 +18,8 @@ export type LayoutProblem =
     }
   | { readonly code: 'labelsDifferByCase'; readonly labels: readonly [string, string] };
 
-/** A sprout as the layout sees it: its name and where it sits. */
-interface Placed extends Point {
+/** A sprout as the layout sees it: its name, where it sits, and bee or flower in such gardens. */
+interface Placed extends SproutAt {
   readonly label: string;
 }
 
@@ -89,8 +90,8 @@ export function vineCrossings(level: Layout): LayoutProblem[] {
 }
 
 /**
- * The names drawn over something else, with the sizes the views draw them at: another sprout,
- * another name (each pair once) or the lantern any vine may carry, lit now or later.
+ * The names drawn over something else, with the sizes the views draw them at: another sprout (its
+ * body or the crown its species wears), another name (each pair once) or the lantern any vine may carry, lit now or later.
  */
 function crowdedLabels(level: Layout): LayoutProblem[] {
   const vines = placedVines(level);
@@ -99,7 +100,7 @@ function crowdedLabels(level: Layout): LayoutProblem[] {
     const others = level.sprouts.filter((other) => other !== sprout);
     return [
       ...others
-        .filter((other) => boxNearCircle(box, other, sproutRadius, clearance))
+        .filter((other) => boxNearSprout(box, other, clearance))
         .map((other): LayoutProblem => ({
           code: 'labelOnSprout',
           label: sprout.label,

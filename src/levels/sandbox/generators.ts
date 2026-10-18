@@ -8,7 +8,7 @@ import { invariant } from '@core/shared/invariant';
 import { itemAt } from '@core/shared/itemAt';
 import { createRng, type Rng } from '@core/shared/rng';
 import type { Design, DesignPair } from './design';
-import { layoutGarden, type LayoutShape } from './layout';
+import { layoutGarden, sideKind, type LayoutShape } from './layout';
 import { MAX_SPROUTS, MAX_VINES } from './limits';
 import { LETTERS } from './names';
 
@@ -162,7 +162,7 @@ function toDesign(grown: Grown, shape: Recipe['shape']): Design {
     sprouts: layoutGarden(graph, layout).map(({ x, y }, vertex) =>
       side === undefined
         ? { label: name(vertex), x, y }
-        : { label: name(vertex), x, y, kind: itemAt(side, vertex) === 0 ? 'bee' : 'flower' },
+        : { label: name(vertex), x, y, kind: sideKind(itemAt(side, vertex)) },
     ),
     vines: graph.edges.map(pair),
     lanterns:

@@ -1,14 +1,16 @@
 import type { Graph, VertexId } from '@core/graph/types';
 import { itemAt } from '@core/shared/itemAt';
+import type { SproutKind } from '../fields';
 import { labelBox, lanternBox } from '../layoutChecks';
 import { PICTURE_SIZES } from '../pictureSizes';
-import { boxesNear, boxNearCircle, segmentsCross, type Box, type Point } from '../plane';
+import { boxesNear, segmentsCross, type Box, type Point } from '../plane';
+import { boxNearSprout } from '../sproutExtent';
 
 /**
  * Makes a garden laid out without places readable (plan 08, section 1.3): a few rounds in which
  * every sprout caught in a clash moves to the spot of the garden that clashes least. A clash is
  * anything the layout checks of the catalog's levels would report about a name (drawn over a
- * sprout, another name or the lantern any vine may carry), or two sprouts closer than the spacing.
+ * sprout's body or crown, another name or the lantern any vine may carry), or two sprouts closer than the spacing.
  * A sprout only moves when that lowers its clashes, so the rounds always end; among the spots that
  * clash as little, it takes the one whose vines cross the fewest others and then the nearest, so a
  * shape that already reads well keeps its look. Pure and deterministic.
@@ -32,7 +34,7 @@ const ROUNDS = 40;
 const CLASH = 1000;
 const PER_PIXEL = 0.02;
 
-const { sproutRadius: radius, labelClearance: clearance } = PICTURE_SIZES;
+const { labelClearance: clearance } = PICTURE_SIZES;
 
 /** The spots of the field a sprout may move to, row by row. */
 const spotsOf = (field: Field): Point[] => {
@@ -54,6 +56,8 @@ class Tangle {
   constructor(
     private readonly graph: Graph,
     private readonly names: readonly string[],
+    /** Bee or flower for each sprout of such a garden; nothing for a plain one. */
+    private readonly kinds: readonly (SproutKind | undefined)[],
     start: readonly Point[],
     private readonly spacing: number,
   ) {
@@ -99,8 +103,8 @@ class Tangle {
       const other = this.at(u);
       const label = itemAt(this.labels, u);
       if (Math.hypot(other.x - spot.x, other.y - spot.y) < this.spacing) count++;
-      if (boxNearCircle(own, other, radius, clearance)) count++;
-      if (boxNearCircle(label, spot, radius, clearance)) count++;
+      if (boxNearSprout(own, { ...other, kind: this.kinds[u] }, clearance)) count++;
+      if (boxNearSprout(label, { ...spot, kind: this.kinds[v] }, clearance)) count++;
       if (boxesNear(own, label, clearance)) count++;
     }
     const mine = new Set(itemAt(this.vinesOf, v));
@@ -166,17 +170,19 @@ export interface Untangled {
 }
 
 /**
- * The garden of `graph`, named `names`, moved from `start` until nothing clashes (or nothing can
- * move for the better); a sprout that moves goes to a spot of `field`.
+ * The garden of `graph`, named `names` and of `kinds` (bee or flower, or nothing for a plain
+ * sprout), moved from `start` until nothing clashes (or nothing can move for the better); a sprout
+ * that moves goes to a spot of `field`.
  */
 export function untangle(
   graph: Graph,
   names: readonly string[],
+  kinds: readonly (SproutKind | undefined)[],
   start: readonly Point[],
   field: Field,
   spacing: number,
 ): Untangled {
-  const tangle = new Tangle(graph, names, start, spacing);
+  const tangle = new Tangle(graph, names, kinds, start, spacing);
   const spots = spotsOf(field);
   for (let round = 0; round < ROUNDS; round++) {
     let moved = false;

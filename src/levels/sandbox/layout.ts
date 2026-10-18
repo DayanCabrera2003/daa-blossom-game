@@ -1,7 +1,7 @@
 import type { Graph, VertexId } from '@core/graph/types';
 import { invariant } from '@core/shared/invariant';
 import { itemAt } from '@core/shared/itemAt';
-import { SPROUT_AREA } from '../fields';
+import { SPROUT_AREA, type SproutKind } from '../fields';
 import { MAX_SPROUTS, MIN_SPACING } from './limits';
 import { LETTERS } from './names';
 import { untangle, type Field } from './untangle';
@@ -31,6 +31,9 @@ export type LayoutShape =
   | { readonly kind: 'ring' }
   | { readonly kind: 'layers' }
   | { readonly kind: 'sides'; readonly side: readonly (0 | 1)[] };
+
+/** What a sprout on side 0 (a bee) or side 1 (a flower) of a garden of bees and flowers is. */
+export const sideKind = (side: 0 | 1): SproutKind => (side === 0 ? 'bee' : 'flower');
 
 /**
  * Where the sprouts of a laid-out garden go: the sprout area, less a margin at the sides for the
@@ -264,8 +267,10 @@ export function layoutGarden(graph: Graph, shape: LayoutShape): Spot[] {
           ? sides(graph, shape.side)
           : layers(graph);
   const names = LETTERS.slice(0, graph.n);
-  const shaped = untangle(graph, names, onPixels(start), FIELD, AIM);
+  // Bees and flowers wear other crowns than plain sprouts, so their names need other room.
+  const kinds = shape.kind === 'sides' ? shape.side.map(sideKind) : names.map(() => undefined);
+  const shaped = untangle(graph, names, kinds, onPixels(start), FIELD, AIM);
   if (shaped.clean) return [...shaped.spots];
-  const plain = untangle(graph, names, onPixels(grid(graph.n)), FIELD, AIM);
+  const plain = untangle(graph, names, kinds, onPixels(grid(graph.n)), FIELD, AIM);
   return [...(plain.clean ? plain : shaped).spots];
 }

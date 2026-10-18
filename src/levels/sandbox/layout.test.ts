@@ -20,9 +20,9 @@ import { MAX_VINES, MIN_SPACING } from './limits';
  * with no name drawn over a sprout, another name or a lantern: the checks of the catalog's levels,
  * with no exemption.
  */
-function expectReadable(spots: readonly Spot[], graph: Graph): void {
+function expectReadable(spots: readonly Spot[], graph: Graph, shape?: LayoutShape): void {
   expect(spots).toHaveLength(graph.n);
-  expect(readingProblems(graph, spots)).toEqual([]);
+  expect(readingProblems(graph, spots, shape)).toEqual([]);
   spots.forEach((spot, i) => {
     expect(Number.isInteger(spot.x) && Number.isInteger(spot.y)).toBe(true);
     expect(spot.x).toBeGreaterThanOrEqual(SPROUT_AREA.x0);
@@ -90,7 +90,7 @@ function depthsFromR(graph: Graph): number[] {
 
 describe('laying out a garden without places', () => {
   it.each(LARGEST)('keeps %s inside the garden and its sprouts apart', (_, graph, shape) => {
-    expectReadable(layoutGarden(graph, shape), graph);
+    expectReadable(layoutGarden(graph, shape), graph, shape);
   });
 
   it('lays out no sprout, or one, too', () => {
@@ -194,7 +194,7 @@ describe('laying out a garden without places', () => {
                     side: sides.kind === 'bipartite' ? sides.side : beesFirst(n >> 1, n),
                   }
                 : { kind };
-            expectReadable(layoutGarden(graph, shape), graph);
+            expectReadable(layoutGarden(graph, shape), graph, shape);
           },
         ),
         { numRuns: 150 },

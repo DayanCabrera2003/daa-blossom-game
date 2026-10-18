@@ -78,3 +78,14 @@ export function boxNearCircle(box: Box, centre: Point, radius: number, clearance
   const dy = Math.max(box.top - centre.y, 0, centre.y - box.bottom);
   return Math.hypot(dx, dy) < radius + clearance;
 }
+
+/**
+ * Whether a diamond (its corners `reach` from its middle, straight up, down and to each side)
+ * reaches into a box or into the `clearance` pixels around it. The nearest point of the box is the
+ * nearest along each axis, and a diamond's reach is the sum of the two distances.
+ */
+export function boxNearDiamond(box: Box, centre: Point, reach: number, clearance: number): boolean {
+  const dx = Math.max(box.left - centre.x, 0, centre.x - box.right);
+  const dy = Math.max(box.top - centre.y, 0, centre.y - box.bottom);
+  return dx + dy < reach + clearance;
+}

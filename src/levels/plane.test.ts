@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { boxesNear, boxNearCircle, segmentsCross, type Box } from './plane';
+import { boxesNear, boxNearCircle, boxNearDiamond, segmentsCross, type Box } from './plane';
 
 const p = (x: number, y: number) => ({ x, y });
 const box = (left: number, top: number, right: number, bottom: number): Box => ({
@@ -77,5 +77,19 @@ describe('boxNearCircle', () => {
     expect(boxNearCircle(box(0, 0, 10, 10), p(16, 5), 5, 1)).toBe(false);
     // The corner (10, 10) is 5√2 ≈ 7.07 away from (15, 15).
     expect(boxNearCircle(box(0, 0, 10, 10), p(15, 15), 6, 1)).toBe(false);
+  });
+});
+
+describe('boxNearDiamond', () => {
+  it('sees a corner of the diamond that reaches into the box or its clearance', () => {
+    expect(boxNearDiamond(box(0, 0, 10, 10), p(19, 5), 9.5, 0)).toBe(true);
+    expect(boxNearDiamond(box(0, 0, 10, 10), p(20, 5), 9.5, 1)).toBe(true);
+    expect(boxNearDiamond(box(0, 0, 10, 10), p(21, 5), 9.5, 1)).toBe(false);
+  });
+
+  it('leaves apart a box off the slanted side, where a circle would reach it', () => {
+    // The corner (10, 10) is 12 away from (16, 16) along the axes, but only 8.5 in a straight line.
+    expect(boxNearDiamond(box(0, 0, 10, 10), p(16, 16), 9.5, 1)).toBe(false);
+    expect(boxNearCircle(box(0, 0, 10, 10), p(16, 16), 9.5, 1)).toBe(true);
   });
 });

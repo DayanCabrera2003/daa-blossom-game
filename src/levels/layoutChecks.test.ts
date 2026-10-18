@@ -97,6 +97,40 @@ describe('checkLayout', () => {
     });
   });
 
+  it("finds a name drawn over the crown of the sprout below it: leaves, petals or a bee's wings", () => {
+    // The name of A ends at 68; each crown rises above its body, which alone would leave it clear.
+    const under = (kind: 'bee' | 'flower' | undefined, y: number) =>
+      checkLayout({
+        sprouts: [
+          at('A', 100, 50),
+          { ...at('B', 100, y), ...(kind === undefined ? {} : { kind }) },
+        ],
+        vines: [],
+        secret: undefined,
+      });
+    const hidden = { code: 'labelOnSprout', label: 'A', sprout: 'B' };
+    expect(under(undefined, 78)).toEqual([hidden]);
+    expect(under('flower', 78)).toEqual([hidden]);
+    expect(under('bee', 77)).toEqual([hidden]);
+    expect(under('flower', 80)).toEqual([]);
+    expect(under('bee', 78)).toEqual([]);
+  });
+
+  it("finds a name drawn over a body's outline, or a flower's side corner", () => {
+    // The name of A runs from x 97 to 103 and from y 61 to 68.
+    const beside = (kind: 'bee' | 'flower' | undefined, x: number) =>
+      checkLayout({
+        sprouts: [at('A', 100, 50), { ...at('B', x, 64), ...(kind === undefined ? {} : { kind }) }],
+        vines: [],
+        secret: undefined,
+      });
+    const hidden = { code: 'labelOnSprout', label: 'A', sprout: 'B' };
+    expect(beside(undefined, 111)).toEqual([hidden]);
+    expect(beside(undefined, 112)).toEqual([]);
+    expect(beside('flower', 113)).toEqual([hidden]);
+    expect(beside('flower', 114)).toEqual([]);
+  });
+
   it('finds two names written over each other, once', () => {
     const sprouts = [at('long', 100, 100), at('name', 118, 104)];
     expect(checkLayout({ sprouts, vines: [], secret: undefined })).toEqual([
