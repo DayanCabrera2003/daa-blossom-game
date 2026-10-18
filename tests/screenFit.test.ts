@@ -1,0 +1,202 @@
+import { describe, expect, it } from 'vitest';
+import strings from '../src/content/es/strings.json';
+import { MAX_SPROUTS } from '../src/levels/sandbox/limits';
+import { catalog } from '../src/levels/catalog';
+import { isUiUnlocked } from '../src/levels/uiUnlocks';
+import { CHAR_ADVANCE, estimatedButtonWidth, hudRow } from '../src/game/picture/bottomRows';
+import { statusEnd, statusLine } from '../src/game/picture/statusLine';
+import { CANVAS_WIDTH } from '../src/game/scale/integerZoom';
+import { LAYOUT } from '../src/game/view/layout';
+import manifest from '../src/game/assets/manifest.json';
+import { createTranslator } from '../src/services/i18n';
+
+// The bars and rows of the screens that place their texts and buttons from measured widths, not
+// from coordinates fitted to some words: with the real words of the game, in the pixel font,
+// nothing is drawn over anything else. Panels with a frame of their own are in panelFit.test.ts.
+
+const t = createTranslator(strings);
+const levels = catalog();
+
+/** The water drop of the pack before the water spent, drawn at its own size. */
+const WATER_DROP_WIDTH = manifest.assets['icon.water'].image.width;
+
+/** How wide a line of text is drawn in the monospaced pixel font. */
+const widthOf = (text: string): number => [...text].length * CHAR_ADVANCE;
+
+/** The least air between two texts on one line: the dark outline each wears, a pixel a side. */
+const AIR = 2;
+
+/** A span of a line, from `x0` to `x1`. */
+interface Span {
+  readonly x0: number;
+  readonly x1: number;
+}
+
+/** Whether two spans of a line keep at least `AIR` between them. */
+const apart = (a: Span, b: Span): boolean => a.x1 + AIR <= b.x0 || b.x1 + AIR <= a.x0;
+
+/** The widest of some texts. */
+const widest = (texts: readonly string[]): number => Math.max(0, ...texts.map(widthOf));
+
+/** What a level's HUD can show on its two text lines at worst, widest first. */
+interface HudWords {
+  readonly name: string;
+  readonly goals: readonly string[];
+  readonly sun: boolean;
+  /** The status line's left part, as its parts: lanterns, then water, then the layers. */
+  readonly lanterns: string;
+  readonly water: { readonly full: string; readonly short: string } | null;
+  readonly layer: string | null;
+  readonly prompts: readonly string[];
+  readonly councils: readonly string[];
+}
+
+/** The steps of a script that write what they wait for on the status line. */
+const PROMPT_STEPS = ['sun', 'explore', 'separate', 'draw'];
+
+/** The widest words the HUD can show for a garden of `n` sprouts as from level `at`. */
+function wordsFor(
+  name: string,
+  n: number,
+  at: string,
+  goals: readonly string[],
+  water: HudWords['water'],
+  prompts: readonly string[],
+  fog: boolean,
+): HudWords {
+  const most = Math.floor(n / 2);
+  const council = isUiUnlocked('council', at)
+    ? [
+        t('hud.council', { groups: n, stones: n, atLeast: n, dark: n }),
+        ...(fog ? [t('hud.councilHidden')] : []),
+      ]
+    : [];
+  return {
+    name,
+    goals: [...goals, t('hud.mirror', { yours: most, mirror: most })],
+    sun: isUiUnlocked('sun', at),
+    lanterns: t('hud.lanterns', { count: most }),
+    water,
+    // A flower nests in at least three sprouts, so a garden is at most n / 3 flowers deep.
+    layer: isUiUnlocked('layers', at) ? t('hud.layer', { depth: Math.floor(n / 3) }) : null,
+    prompts,
+    councils: council,
+  };
+}
+
+/** Every level of the catalog, and a free garden at the editor's limit with all the interface. */
+const huds: HudWords[] = [
+  ...levels.map(({ data }) => {
+    const n = data.sprouts.length;
+    const goals = data.goal.visible
+      ? [t('hud.goal', { count: data.goal.value })]
+      : [t('hud.goalHidden'), t('hud.bet', { count: n })];
+    // Without a budget the water spent is told alone; a drop per sprout and vine is far more
+    // than any search spends, two digits at most.
+    const water =
+      data.water !== null
+        ? {
+            full: t('hud.water', { used: data.water, budget: data.water }),
+            short: t('hud.waterShort', { used: data.water, budget: data.water }),
+          }
+        : data.fog
+          ? {
+              full: t('hud.waterNoBudget', { used: 99 }),
+              short: t('hud.waterNoBudgetShort', { used: 99 }),
+            }
+          : null;
+    const prompts = PROMPT_STEPS.filter((step) => data.flow.some((s) => s.step === step)).map(
+      (step) => t(`hud.prompt.${step}`),
+    );
+    return wordsFor(data.id, n, data.id, goals, water, prompts, data.fog);
+  }),
+  wordsFor(
+    'a free garden',
+    MAX_SPROUTS,
+    '7.5',
+    [t('hud.goal', { count: MAX_SPROUTS / 2 })],
+    null,
+    [],
+    false,
+  ),
+];
+
+describe("the HUD's two lines of text", () => {
+  it.each(huds.map((hud) => [hud.name, hud] as const))(
+    'the goal of %s ends before the sun on the top line',
+    (_, hud) => {
+      const end = LAYOUT.margin + widest(hud.goals);
+      // The sun's knob, at the left end of its track, reaches six pixels before it.
+      const sun = hud.sun ? LAYOUT.sunTrack.x0 - 6 : CANVAS_WIDTH - LAYOUT.margin;
+      expect(end + AIR).toBeLessThanOrEqual(sun);
+    },
+  );
+
+  it.each(huds.map((hud) => [hud.name, hud] as const))(
+    'the status line of %s: lanterns, water and layers, the prompt and the Council apart',
+    (_, hud) => {
+      // Each prompt with each count of the Council, or alone: the left part laid out before them
+      // as the HUD lays it out, then checked against both.
+      const prompts = hud.prompts.length === 0 ? [''] : hud.prompts;
+      const councils = hud.councils.length === 0 ? [''] : hud.councils;
+      for (const prompt of prompts) {
+        for (const council of councils) {
+          const p = widthOf(prompt);
+          const c = widthOf(council);
+          const lanterns = widthOf(hud.lanterns);
+          const water =
+            hud.water === null
+              ? null
+              : { full: widthOf(hud.water.full), short: widthOf(hud.water.short) };
+          const layer = hud.layer === null ? null : widthOf(hud.layer);
+          const at = statusLine(
+            { start: LAYOUT.margin, lanterns, drop: WATER_DROP_WIDTH, water, layer },
+            statusEnd(p, c),
+          );
+          const end =
+            at.layer !== null && layer !== null
+              ? at.layer + layer
+              : at.water !== null && water !== null
+                ? at.water + (at.short ? water.short : water.full)
+                : LAYOUT.margin + lanterns;
+          const left: Span = { x0: LAYOUT.margin, x1: end };
+          const right = CANVAS_WIDTH - LAYOUT.margin;
+          if (p > 0)
+            expect(apart(left, { x0: (CANVAS_WIDTH - p) / 2, x1: (CANVAS_WIDTH + p) / 2 })).toBe(
+              true,
+            );
+          if (c > 0) expect(apart(left, { x0: right - c, x1: right })).toBe(true);
+          expect(end).toBeLessThanOrEqual(right);
+        }
+      }
+      // The prompt in the middle and the Council at the right keep apart too.
+      for (const prompt of hud.prompts) {
+        const w = widthOf(prompt);
+        const centred: Span = { x0: (CANVAS_WIDTH - w) / 2, x1: (CANVAS_WIDTH + w) / 2 };
+        for (const council of hud.councils) {
+          const right = CANVAS_WIDTH - LAYOUT.margin;
+          expect(apart(centred, { x0: right - widthOf(council), x1: right })).toBe(true);
+        }
+      }
+    },
+  );
+});
+
+describe("the counterexample's bottom row", () => {
+  it('lays its buttons right to left and keeps them clear of the count of lanterns', () => {
+    const labels = [t('counterexample.back'), t('hud.redo'), t('hud.undo'), t('hud.checkMirror')];
+    const widths = labels.map((label) => estimatedButtonWidth(label));
+    const lefts = hudRow(widths);
+    // No button touches the next.
+    lefts.forEach((left, i) => {
+      const next = lefts[i + 1];
+      if (next !== undefined) expect(next + (widths[i + 1] ?? 0)).toBeLessThanOrEqual(left);
+    });
+    // The count at the left, the widest it can be with two digits, ends before the last button.
+    const count = widest([
+      t('hud.lanterns', { count: 99 }),
+      t('hud.mirror', { yours: 99, mirror: 99 }),
+    ]);
+    expect(LAYOUT.margin + count + AIR).toBeLessThanOrEqual(Math.min(...lefts));
+  });
+});

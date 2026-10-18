@@ -140,6 +140,8 @@ const UI = {
   'hud.lanterns': ['count'],
   'hud.water': ['used', 'budget'],
   'hud.waterNoBudget': ['used'],
+  'hud.waterShort': ['used', 'budget'],
+  'hud.waterNoBudgetShort': ['used'],
   'hud.done': [],
   'hud.undo': [],
   'hud.redo': [],

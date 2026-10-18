@@ -66,6 +66,8 @@
   "hud.lanterns": "Faroles: {count}",
   "hud.water": "Agua: {used}/{budget}",
   "hud.waterNoBudget": "Agua: {used}",
+  "hud.waterShort": "{used}/{budget}",
+  "hud.waterNoBudgetShort": "{used}",
   "hud.done": "Terminé",
   "hud.undo": "Deshacer",
   "hud.redo": "Rehacer",

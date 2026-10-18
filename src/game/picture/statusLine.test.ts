@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { STATUS_LINE, statusLine, type StatusParts } from './statusLine';
+import { STATUS_LINE, statusEnd, statusLine, type StatusParts } from './statusLine';
 
 const parts = (over: Partial<StatusParts> = {}): StatusParts => ({
   start: 4,
@@ -97,5 +97,12 @@ describe("the status line's left part", () => {
         },
       ),
     );
+  });
+
+  it('ends a little before the prompt in the middle and the Council at the right, or the margin', () => {
+    expect(statusEnd(0, 0)).toBe(476);
+    expect(statusEnd(100, 0)).toBe(190 - STATUS_LINE.air);
+    expect(statusEnd(0, 300)).toBe(176 - STATUS_LINE.air);
+    expect(statusEnd(100, 300)).toBe(176 - STATUS_LINE.air);
   });
 });

@@ -1,3 +1,4 @@
+import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { ICON_GAP } from './buttonIcon';
 import { PIXEL_FONT } from './pixelFont';
 
@@ -9,7 +10,23 @@ export const STATUS_LINE = {
   gap: 3 * PIXEL_FONT.advance,
   minGap: PIXEL_FONT.advance,
   iconGap: ICON_GAP,
+  /** Clear space at the canvas's edges, as the HUD's other lines keep. */
+  margin: 4,
+  /** The least air before the next text: the dark outline each wears, a pixel a side. */
+  air: 2,
 } as const;
+
+/**
+ * Where the left part of the status line must end: before the prompt centred on the line and the
+ * Council's count against its right margin, given their widths (0 when not shown).
+ */
+export function statusEnd(prompt: number, council: number): number {
+  const right = CANVAS_WIDTH - STATUS_LINE.margin;
+  const starts = [right + STATUS_LINE.air];
+  if (prompt > 0) starts.push(Math.floor((CANVAS_WIDTH - prompt) / 2));
+  if (council > 0) starts.push(right - council);
+  return Math.min(...starts) - STATUS_LINE.air;
+}
 
 /** What the left part of the status line holds, measured by the HUD. */
 export interface StatusParts {
