@@ -12,7 +12,6 @@ import { createTranslator } from '@services/i18n';
 import { createLines } from '@services/lines';
 import { playtestRecorder } from '@services/playtestRecorder';
 import { createSaveStore } from '@services/saveStore';
-import { createSandboxStore } from '@services/sandboxStore';
 import { loadSettings } from '@services/settings';
 import { requestedGarden } from '@services/startGarden';
 import { requestedCodex, requestedLevel } from '@services/startLevel';
@@ -66,7 +65,6 @@ provideContext(game, {
     levels.map((level) => level.data.id),
   ),
   startGarden: requestedGarden(window.location.search),
-  sandbox: createSandboxStore(storage),
   bus,
   saves,
   settings,

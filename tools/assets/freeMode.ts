@@ -10,8 +10,8 @@ export const FREE_MODE_FOLDERS: readonly string[] = [
 ];
 
 /**
- * The free mode's own modules that live in the game's pure folders (plan 08, phase 11), beside the
- * levels' pure logic: the editor's input, history, pictures and sounds. Only the free mode imports
+ * The free mode's own modules that live in the pure folders (plan 08, phase 11), beside the
+ * levels' pure logic: the editor's input, history, pictures and sounds, and its design's store. Only the free mode imports
  * them, so they load with it and never with the initial script.
  */
 export const FREE_MODE_MODULES: readonly string[] = [
@@ -26,6 +26,8 @@ export const FREE_MODE_MODULES: readonly string[] = [
   'src/game/picture/designToolbar.ts',
   'src/game/picture/editorCard.ts',
   'src/game/picture/generateDrawer.ts',
+  // The store of the last design: read and checked only when the free mode opens.
+  'src/services/sandboxStore.ts',
 ];
 
 /** Whether a source path, from the project root, belongs to the free mode. */

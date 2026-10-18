@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { EMPTY_DESIGN, editDesign, type Design, type DesignEdit } from '@levels/sandbox/design';
 import { openingDesign, type OpeningProblem } from '@levels/sandbox/opening';
 import { recordTutorialSeen } from '@services/save';
+import { createSandboxStore, type SandboxStore } from '@services/sandboxStore';
 import type { AssetKey } from '../../assets/keys';
 import { playUiSound } from '../../audio/uiSound';
 import {
@@ -53,6 +54,12 @@ import { SANDBOX_SCENE, type SandboxSceneData } from '../SandboxGate';
 import { DesignBar } from './DesignBar';
 import { GenerateMenu } from './GenerateMenu';
 
+/**
+ * The free mode's last design, opened the first time the editor is (with this chunk, so its reading
+ * and checking never weigh on the game's start) and kept for the rest of the game.
+ */
+let store: SandboxStore | null = null;
+
 /** How far above the generate menu's wood a notice is centred while the menu is open. */
 const NOTICE_ABOVE_MENU = 14;
 
@@ -94,11 +101,12 @@ export class SandboxScene extends Phaser.Scene {
   create(data: Partial<SandboxSceneData> = {}): void {
     fitCamera(this);
     this.context = contextOf(this);
-    const { t, music, sandbox, saves } = this.context;
+    const { t, music, saves, storage } = this.context;
+    store ??= createSandboxStore(storage);
     // The free mode plays the hub's track (plan 08, section 1.3).
     music.play(trackFor({ kind: 'hub' }));
     paintHubGround(this);
-    this.openGarden(data.garden ?? null, sandbox.get());
+    this.openGarden(data.garden ?? null, store.get());
     this.pointer = initialDesignPointer('sprout');
     this.choice = FIRST_CHOICE;
     this.grownInMenu = false;
@@ -148,7 +156,7 @@ export class SandboxScene extends Phaser.Scene {
 
   /** Keeps the design shown as the free mode's last design. */
   private keep(): void {
-    this.context.sandbox.set(this.design);
+    store?.set(this.design);
   }
 
   /** Listens to the pointer on the garden and to the keys. */

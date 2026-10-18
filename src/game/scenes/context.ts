@@ -6,7 +6,6 @@ import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import type { PlaytestRecorder } from '@services/playtestRecorder';
 import type { KeyValueStore } from '@services/save';
-import type { SandboxStore } from '@services/sandboxStore';
 import type { SaveStore } from '@services/saveStore';
 import type { Settings } from '@services/settings';
 import type { AudioBus } from '../audio/AudioBus';
@@ -28,8 +27,6 @@ export interface GameContext {
   readonly startLevel: string | null;
   /** A shared link's `?garden=` as given, to open the free mode with (it reads it), or null. */
   readonly startGarden: string | null;
-  /** The last garden designed in the free mode, kept apart from the progress. */
-  readonly sandbox: SandboxStore;
   /** The playtest log of this browser (GDD §10), and the wall clock that dates its entries. */
   readonly playtest: PlaytestRecorder;
   readonly clock: () => number;
