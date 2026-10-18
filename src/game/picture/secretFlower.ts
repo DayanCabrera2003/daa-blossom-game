@@ -148,19 +148,24 @@ export function secretFlowerPicture(
   }
 }
 
+/** The tip of a flower: the clear space round its words inside its dark patch, and its place. */
+export const FLOWER_TIP = {
+  pad: { x: 3, y: 1 },
+  /** From the top of the hub's garden bed to the top of the tip. */
+  gap: 1,
+} as const;
+
 /**
- * Where the tip of a flower `width` × `height` goes: just right of the box `sign` that takes its
- * touch (its column and signpost), over the chapter's title for as long as it is shown, centred on
- * its height; pulled back inside the canvas margins when it is long.
+ * Where the tip of a flower `width` × `height` goes: at the margin, along the top of the hub's
+ * garden bed, under the last chapter. Written beside its flower it covered the chapter's title and
+ * buttons (the review of plan 09, phase 4); the bed is the one strip of the hub where nothing is
+ * read or pressed (its pieces are scenery, the way to the epilogue sits at its bottom), so the tip
+ * there never hides a button, a title or a signpost, and it is always in the same place, under the
+ * column of the flowers, while the flower it tells of wears its ring. Kept on the canvas however
+ * long or tall it is.
  */
-export function flowerTipAt(sign: Rect, width: number, height: number): Point {
-  const x = Math.max(
-    HUB.margin,
-    Math.min(sign.x + sign.width + 2, CANVAS_WIDTH - HUB.margin - width),
-  );
-  const y = Math.max(
-    0,
-    Math.min(sign.y + Math.round((sign.height - height) / 2), CANVAS_HEIGHT - height),
-  );
+export function flowerTipAt(width: number, height: number): Point {
+  const x = Math.max(0, Math.min(HUB.margin, CANVAS_WIDTH - width));
+  const y = Math.max(0, Math.min(HUB.gardenTop + FLOWER_TIP.gap, CANVAS_HEIGHT - height));
   return { x, y };
 }

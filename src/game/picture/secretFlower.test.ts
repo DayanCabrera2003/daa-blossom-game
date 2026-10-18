@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SecretFlowerState } from '@services/secretFlowers';
-import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { frameRect } from '../assets/frames';
 import { assetEntry } from '../assets/keys';
 import type { Rect } from './boxDistance';
@@ -9,6 +9,7 @@ import { PIXEL_FONT } from './pixelFont';
 import {
   BLOOM_SIZE,
   BUD_CUT,
+  FLOWER_TIP,
   flowerTipAt,
   secretFlowerPicture,
   type FlowerPiece,
@@ -154,16 +155,26 @@ describe('the secret flower beside its signpost', () => {
 });
 
 describe('the tip of a secret flower', () => {
-  it('stands right of the signpost, centred on it', () => {
-    expect(flowerTipAt(SIGN, 100, 14)).toEqual({ x: SIGN.x + SIGN.width + 2, y: SIGN.y + 1 });
+  it('is written at the margin along the top of the garden bed, under every chapter', () => {
+    const at = flowerTipAt(100, 10);
+    expect(at).toEqual({ x: HUB.margin, y: HUB.gardenTop + FLOWER_TIP.gap });
   });
 
-  it('never leaves the canvas, however long it is', () => {
-    const at = flowerTipAt(SIGN, CANVAS_WIDTH, 14);
-    expect(at.x).toBe(HUB.margin);
-    const long = flowerTipAt(SIGN, 440, 14);
-    expect(long.x + 440).toBeLessThanOrEqual(CANVAS_WIDTH - HUB.margin);
-    const high = flowerTipAt({ ...SIGN, y: -10 }, 50, 14);
-    expect(high.y).toBeGreaterThanOrEqual(0);
+  it('is the same place whichever flower it tells of, so the eye knows where to look', () => {
+    expect(flowerTipAt(60, 10)).toEqual(flowerTipAt(300, 10));
+  });
+
+  it('never leaves the canvas, however long or tall it is', () => {
+    const wide = flowerTipAt(CANVAS_WIDTH, 10);
+    expect(wide.x).toBeGreaterThanOrEqual(0);
+    const tall = flowerTipAt(50, CANVAS_HEIGHT);
+    expect(tall.y).toBeGreaterThanOrEqual(0);
+    const low = flowerTipAt(50, 60);
+    expect(low.y + 60).toBeLessThanOrEqual(CANVAS_HEIGHT);
+  });
+
+  it('keeps its words a little in from the edges of its dark patch', () => {
+    expect(FLOWER_TIP.pad.x).toBeGreaterThan(0);
+    expect(FLOWER_TIP.pad.y).toBeGreaterThanOrEqual(0);
   });
 });

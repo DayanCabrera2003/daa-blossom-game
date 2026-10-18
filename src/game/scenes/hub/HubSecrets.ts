@@ -9,6 +9,7 @@ import type { TextRef } from '../../picture/hud';
 import { PIXEL_FONT } from '../../picture/pixelFont';
 import {
   BUD_CUT,
+  FLOWER_TIP,
   flowerTipAt,
   secretFlowerPicture,
   type FlowerPicture,
@@ -39,8 +40,6 @@ const FLOWER_DEPTH = 1;
 const RING_DEPTH = 2;
 /** Over the hub's buttons (100 to 102), under the settings panel (400). */
 const TIP_DEPTH = 150;
-/** Clear space around the tip's words, inside its dark patch. */
-const TIP_PAD = { x: 3, y: 1 };
 
 /** A flower on the hub: which level it is, its picture, and the box that takes its touch. */
 interface ShownFlower {
@@ -94,7 +93,7 @@ export function addHubSecrets(
     .text(0, 0, '', {
       ...textStyle(8, PALETTE.label),
       backgroundColor: css(PALETTE.ink),
-      padding: TIP_PAD,
+      padding: FLOWER_TIP.pad,
     })
     .setDepth(TIP_DEPTH)
     .setVisible(false);
@@ -122,7 +121,7 @@ export function addHubSecrets(
     const words = text ?? flower.picture.tip;
     if (words === null) return;
     tip.setText(t(words.key, words.params)).setVisible(true);
-    const at = flowerTipAt(hit, Math.ceil(tip.width), Math.ceil(tip.height));
+    const at = flowerTipAt(Math.ceil(tip.width), Math.ceil(tip.height));
     tip.setPosition(at.x, at.y);
   };
 
