@@ -147,6 +147,8 @@ const UI = {
   'codex.new': [],
   'codex.previous': [],
   'codex.next': [],
+  'codex.previousPage': [],
+  'codex.nextPage': [],
   'codex.close': [],
   'codex.keys': [],
   'diagram.dawn': [],

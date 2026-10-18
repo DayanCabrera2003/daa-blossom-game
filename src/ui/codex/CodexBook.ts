@@ -24,8 +24,8 @@ import './codex.css';
 
 /**
  * The Codex as a book (GDD §5.6; plan 07, phase 3): the index on the left (closed entries as closed
- * pages, the new ones sealed), the page on the right with the tabs open of its entry, and below the
- * ways to turn the pages. Pointer and keyboard both work: the arrows and PageUp/PageDown turn the
+ * pages, the new ones sealed), the page on the right with the tabs open of its entry, and above
+ * them the ways to turn the pages and to close the book. Pointer and keyboard both work: the arrows and PageUp/PageDown turn the
  * pages, Home and End go to the ends, 1 2 3 choose a tab, Escape closes. What is open, where the
  * book opens and where each key leads are decided in `ui/model/`; this module only builds the DOM
  * and marks each page read in the shared save as soon as it is shown.
@@ -86,9 +86,19 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   const page = book.ownerDocument;
   book.style.setProperty('--wood-panel', `url("${WOOD_PANEL}")`);
 
-  // The parts of the book, built once; `draw` fills them for the page shown. The head is one row:
-  // the book's name over the index, and over the page its heading with the way out beside it.
-  const title = make(page, 'h1', 'codex-title', t('codex.title'));
+  // The parts of the book, built once; `draw` fills them for the page shown. The head is the only
+  // row besides the page: over the index the book's name and the arrows that turn its pages, over
+  // the page its heading with the way out beside it. The help of the keys sits under the index.
+  const corner = make(page, 'div', 'codex-corner');
+  const previous = button(page, 'codex-button codex-turn', 'previous', () => turn(-1));
+  previous.textContent = t('codex.previous');
+  previous.setAttribute('aria-label', t('codex.previousPage'));
+  previous.title = t('codex.previousPage');
+  const next = button(page, 'codex-button codex-turn', 'next', () => turn(1));
+  next.textContent = t('codex.next');
+  next.setAttribute('aria-label', t('codex.nextPage'));
+  next.title = t('codex.nextPage');
+  corner.append(make(page, 'h1', 'codex-title', t('codex.title')), previous, next);
   const head = make(page, 'header', 'codex-head');
   const heading = make(page, 'h2', 'codex-heading');
   const gardenTitle = make(page, 'span', 'codex-garden-title');
@@ -100,7 +110,7 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   const index = make(page, 'nav', 'codex-index');
   index.setAttribute('aria-label', t('codex.contents'));
   const list = make(page, 'ol', 'codex-list');
-  index.append(list);
+  index.append(list, make(page, 'p', 'codex-keys', t('codex.keys')));
   const sheet = make(page, 'article', 'codex-page');
   const tabs = make(page, 'div', 'codex-tabs');
   tabs.setAttribute('role', 'tablist');
@@ -113,13 +123,7 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   const notice = make(page, 'p', 'codex-notice');
   notice.setAttribute('aria-live', 'polite');
   sheet.append(tabs, text, notice);
-  const foot = make(page, 'footer', 'codex-foot');
-  const previous = button(page, 'codex-button', 'previous', () => turn(-1));
-  previous.textContent = t('codex.previous');
-  const next = button(page, 'codex-button', 'next', () => turn(1));
-  next.textContent = t('codex.next');
-  foot.append(previous, make(page, 'span', 'codex-keys', t('codex.keys')), next);
-  book.append(title, head, index, sheet, foot);
+  book.append(corner, head, index, sheet);
 
   /** Fills the book for the page shown, keeping the keyboard focus on the same control. */
   const draw = (current: BookState): void => {

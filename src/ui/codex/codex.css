@@ -31,7 +31,7 @@
   height: min(100vh, calc(258 * var(--px)));
   display: grid;
   grid-template-columns: calc(176 * var(--px)) 1fr;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: calc(4 * var(--px));
   padding: calc(4 * var(--px));
   border-style: solid;
@@ -60,13 +60,20 @@
 }
 
 /*
- * The head, one row: the book's name over the index, and over the page the heading of the entry
- * shown with the way out beside it, always in the same corner.
+ * The head, the only row besides the page: over the index the book's name and the arrows that
+ * turn its pages, over the page the heading of the entry shown with the way out beside it, always
+ * in the same corner.
  */
-.codex-title {
+.codex-corner {
   grid-column: 1;
   grid-row: 1;
-  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: calc(2 * var(--px));
+}
+
+.codex-title {
+  flex: 1 1 auto;
   margin: 0;
   font-size: inherit;
   font-weight: normal;
@@ -84,6 +91,12 @@
 
 .codex-close {
   flex: none;
+}
+
+/* The arrows that turn the pages: one character each, named in full for a screen reader. */
+.codex-turn {
+  flex: none;
+  min-width: calc(14 * var(--px));
 }
 
 /*
@@ -125,16 +138,19 @@
 .codex-index {
   grid-column: 1;
   grid-row: 2;
-  overflow-x: hidden;
-  overflow-y: auto;
-  background: var(--paper-edge);
-  border: var(--px) solid var(--wood-edge);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
 }
 
 .codex-list {
   margin: 0;
   padding: 0;
   list-style: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--paper-edge);
+  border: var(--px) solid var(--wood-edge);
 }
 
 .codex-row {
@@ -298,28 +314,12 @@
   margin: 0;
 }
 
-/* The foot, one row: the pages back and forth, and how the keys work in one short line. */
-.codex-foot {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(4 * var(--px));
-}
-
+/* How the keys work, under the index, on the wood. */
 .codex-keys {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin: calc(2 * var(--px)) 0 0;
   color: var(--ink);
-  text-align: center;
-  /* Set apart by wide spaces, which the page must not fold into one, and never on two lines. */
-  white-space: pre;
-}
-
-.codex-foot .codex-button {
-  flex: none;
+  /* Set apart by wide spaces, which the page must not fold into one. */
+  white-space: pre-wrap;
 }
 
 /* A new page slides in, unless the player asked for less motion. */
