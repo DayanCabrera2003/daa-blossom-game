@@ -11,20 +11,34 @@
         src: url('/assets/fonts/monogram-extended.ttf') format('truetype');
         font-display: block;
       }
+      /* Under a finger, the page zooms on no double tap (a pinch still zooms), never bounces past
+         its ends, and a phone turned sideways never inflates the books' text. */
       html,
       body {
         margin: 0;
         background: #141b1b;
+        touch-action: manipulation;
+        overscroll-behavior: none;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
       }
       /* As tall as the window and a block of its own, so Phaser centres the canvas in it, also when
-         the canvas is a zoom smaller to leave room for the teacher's panel at its right. */
+         the canvas is a zoom smaller to leave room for the teacher's panel at its right. On a phone,
+         as tall as what its bars leave of the window. */
       body {
         min-height: 100vh;
+        min-height: 100dvh;
         display: flow-root;
       }
-      /* A block, so no text baseline makes the page taller than a canvas that fits the window. */
+      /* A block, so no text baseline makes the page taller than a canvas that fits the window. Every
+         touch on it is the game's: no scrolling, no zoom, no selection, no callout, no tap flash. */
       canvas {
         display: block;
+        touch-action: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
       }
     </style>
   </head>
