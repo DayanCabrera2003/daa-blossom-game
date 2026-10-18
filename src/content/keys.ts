@@ -12,6 +12,8 @@ import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { doublingTextKey } from '@levels/races';
 import { COSMETIC_IDS } from '@services/cosmetics';
 import { GENERATORS } from '@levels/sandbox/generators';
+import type { DesignRejection } from '@levels/sandbox/design';
+import { DESIGN_TOOLS } from '@game/input/designIntent';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
 
@@ -24,6 +26,18 @@ import { SPEAKERS } from '@game/systems/speaker';
  */
 
 type Params = readonly string[];
+
+/** Why the free mode's editor refuses an edit (`levels/sandbox/design.ts`), with the limit it names. */
+const DESIGN_REASONS = {
+  tooMany: ['max'],
+  tooManyVines: ['max'],
+  tooClose: [],
+  outside: [],
+  sproutBusy: [],
+  notAVine: [],
+  noSprout: [],
+  sameSprout: [],
+} satisfies Record<DesignRejection, Params>;
 
 /** Why an action was refused (`core/rules/reasons.ts`, and the game's own in `game/systems/refusal.ts`). */
 const REASONS = {
@@ -381,6 +395,28 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...Object.fromEntries(GENERATORS.map((generator) => [generator.textKey, []])),
   'sandbox.gen.another': [],
   'sandbox.gen.shrunk': ['size'],
+  // The free mode's editor: its tools and orders, what each tool asks of the hand (and the
+  // generate menu), the counts of its limits, why an edit is refused, the menu's size, what it
+  // says when the garden it was asked to open cannot be, and its mechanic card.
+  ...Object.fromEntries(DESIGN_TOOLS.map((tool) => [`sandbox.tool.${tool}`, []])),
+  'sandbox.tool.generate': [],
+  'sandbox.tool.clear': [],
+  'sandbox.play': [],
+  'sandbox.share': [],
+  ...Object.fromEntries(DESIGN_TOOLS.map((tool) => [`sandbox.prompt.${tool}`, []])),
+  'sandbox.prompt.generate': [],
+  'sandbox.count': ['sprouts', 'maxSprouts', 'vines', 'maxVines'],
+  ...Object.fromEntries(
+    Object.entries(DESIGN_REASONS).map(([code, params]) => [`sandbox.reason.${code}`, params]),
+  ),
+  'sandbox.gen.size': ['size'],
+  'sandbox.gen.smaller': [],
+  'sandbox.gen.larger': [],
+  'sandbox.gen.done': [],
+  'sandbox.opened.brokenCode': [],
+  'sandbox.opened.brokenStored': [],
+  'sandbox.card.title': [],
+  'sandbox.card.body': [],
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
   // The name of each speaker, on the tab of the dialogue box.
