@@ -135,7 +135,11 @@ export class LevelScene extends Phaser.Scene {
     this.views = buildLevelViews(this, t, {
       dispatch: (event) => this.dispatch(event),
       back: () => this.leave(),
-      backLabel: screen.backLabel,
+      hud: {
+        backLabel: screen.backLabel,
+        buttons: screen.hudButtons,
+        traceRow: screen.traceRow,
+      },
       help: () => this.cards.help(level, this.controller.session.flow.index, screen.interfaceAt),
       book: () => this.context.bus.emit('book.open', { book: 'codex' }),
       trace: () => this.context.bus.emit('teacher.toggle'),

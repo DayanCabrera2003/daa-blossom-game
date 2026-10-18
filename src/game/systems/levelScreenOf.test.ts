@@ -9,6 +9,7 @@ import { sandboxAccess, type SandboxAccess } from '@services/sandboxAccess';
 import { emptySave } from '@services/save';
 import { describe, expect, it } from 'vitest';
 import { act, openSession } from './levelSession';
+import { HUD_BUTTONS } from '../picture/bottomRows';
 import { levelScreen, trackFor } from './musicFor';
 import { levelScreenOf, openedLevel, openingLevelId } from './levelScreenOf';
 
@@ -65,6 +66,8 @@ describe('the screen of a level of the catalog', () => {
         ownGarden: false,
         showsStars: true,
         teacherJumps: true,
+        hudButtons: HUD_BUTTONS,
+        traceRow: 'tools',
       });
     }
   });
@@ -93,6 +96,15 @@ describe('the screen of a garden of the free mode', () => {
 
   it('shows no stars when won, since nothing is earned there', () => {
     expect(levelScreenOf(played, AT_1_8).showsStars).toBe(false);
+  });
+
+  it("has no hint button (it gives no hints) nor the mirror's check, and the trace beside the book", () => {
+    const screen = levelScreenOf(played, AT_1_8);
+    expect(screen.hudButtons).toEqual(
+      HUD_BUTTONS.filter((name) => name !== 'hint' && name !== 'checkMirror'),
+    );
+    // The tools' row ends with the free mode's orders instead.
+    expect(screen.traceRow).toBe('buttons');
   });
 
   it("takes no teacher's jumps to the levels around it: it is no level of the catalog", () => {

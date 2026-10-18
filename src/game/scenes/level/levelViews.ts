@@ -8,7 +8,7 @@ import { DialogueView } from '../../view/DialogueView';
 import { FlowerView } from '../../view/FlowerView';
 import { FogView } from '../../view/FogView';
 import { GardenView } from '../../view/GardenView';
-import { HudView } from '../../view/HudView';
+import { HudView, type HudLayout } from '../../view/HudView';
 import { MarksView } from '../../view/MarksView';
 import { MirrorView } from '../../view/MirrorView';
 import { NotebookView } from '../../view/NotebookView';
@@ -53,8 +53,8 @@ export interface LevelButtons {
   readonly dispatch: (event: UiEvent) => void;
   /** The back button: leaves for the hub, or in the free mode for the editor. */
   readonly back: () => void;
-  /** The text key of the back button ("Volver", or "Diseñar" in the free mode). */
-  readonly backLabel: string;
+  /** How the HUD is laid out: its back button's text, its buttons, where the trace sits. */
+  readonly hud: HudLayout;
   /** The "?" button: shows the level's mechanic cards again. */
   readonly help: () => void;
   /** The book button: opens the Códex. */
@@ -103,7 +103,7 @@ export const buildLevelViews = (
         checkMirror: () => dispatch({ kind: 'checkMirror' }),
         leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
       },
-      buttons.backLabel,
+      buttons.hud,
     ),
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),

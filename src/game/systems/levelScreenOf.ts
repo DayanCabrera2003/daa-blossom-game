@@ -1,5 +1,6 @@
 import type { Level } from '@levels/build';
 import type { SandboxAccess } from '@services/sandboxAccess';
+import { HUD_BUTTONS, type HudButton } from '../picture/bottomRows';
 import { chapterOfLevel } from '../picture/seasons';
 import { levelScreen, type MusicScreen } from './musicFor';
 
@@ -52,7 +53,20 @@ export interface LevelScreen {
    * garden of the free mode is no level of the catalog, so they do nothing there.
    */
   readonly teacherJumps: boolean;
+  /** The buttons of the HUD's bottom row, in `HUD_BUTTONS` order. */
+  readonly hudButtons: readonly HudButton[];
+  /**
+   * The row of the teacher's trace button: the end of the tools' row, or in the free mode, whose
+   * orders end that row, the bottom row beside the Códex.
+   */
+  readonly traceRow: 'tools' | 'buttons';
 }
+
+/**
+ * The bottom row of a garden of the free mode: no hint (it gives none) and no check of the mirror
+ * challenge (it has no script), which leaves room for its orders above.
+ */
+const FREE_BUTTONS = HUD_BUTTONS.filter((name) => name !== 'hint' && name !== 'checkMirror');
 
 /** The chapter of the hub's season, worn by the free mode. */
 const HUB_SEASON = '0';
@@ -74,6 +88,8 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
       ownGarden: false,
       showsStars: true,
       teacherJumps: true,
+      hudButtons: HUD_BUTTONS,
+      traceRow: 'tools',
     };
   }
   return {
@@ -87,6 +103,8 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
     ownGarden: true,
     showsStars: false,
     teacherJumps: false,
+    hudButtons: FREE_BUTTONS,
+    traceRow: 'buttons',
   };
 }
 
