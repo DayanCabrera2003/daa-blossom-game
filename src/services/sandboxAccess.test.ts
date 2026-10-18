@@ -51,7 +51,25 @@ describe('what the free mode offers for a progress', () => {
       gardener: true,
       scarecrows: true,
       stones: true,
+      interfaceAt: '7.4',
     });
+  });
+
+  it('shows the pieces of the interface of the most advanced level won', () => {
+    expect(sandboxAccess(CATALOG, saved(...upTo('4.5')), false).interfaceAt).toBe('4.5');
+    expect(sandboxAccess(CATALOG, saved(...upTo('1.9'), '1.10'), false).interfaceAt).toBe('1.10');
+  });
+
+  it('with nothing won, the interface of the first level; with no catalog, of none', () => {
+    expect(sandboxAccess(CATALOG, emptySave(), false).interfaceAt).toBe('0.1');
+    expect(sandboxAccess([], emptySave(), false).interfaceAt).toBe('0.0');
+  });
+
+  it('in teacher mode, the interface of the last level of all, drafts included', () => {
+    expect(sandboxAccess(CATALOG, emptySave(), true).interfaceAt).toBe('7.4');
+    expect(
+      sandboxAccess([{ id: '8.1', draft: true }, ...CATALOG], emptySave(), true).interfaceAt,
+    ).toBe('8.1');
   });
 
   it('plays with the actions of the most advanced level won', () => {

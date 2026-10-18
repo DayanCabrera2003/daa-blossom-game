@@ -20,6 +20,12 @@ export interface SandboxAccess {
   readonly scarecrows: boolean;
   /** Whether the certificate offers stones (after 7.4, where they certify a garden). */
   readonly stones: boolean;
+  /**
+   * The level whose pieces of the interface a garden shows (the sun, the layers, the Council's
+   * count; `levels/uiUnlocks.ts`): the one its actions come from, so the screen opens no more
+   * than the player has met.
+   */
+  readonly interfaceAt: string;
 }
 
 /** The chapter that opens the free mode once finished. */
@@ -33,6 +39,9 @@ const STONES_AT = '7.4';
 /** Every action of the game, in the order they are unlocked. */
 const ALL_ACTIONS = Object.keys(UNLOCKED_AT) as ActionType[];
 
+/** A level before every level, for a catalog with none: no piece of the interface is open at it. */
+const BEFORE_ALL = '0.0';
+
 /** The chapter of a level id: `1` for `1.10`. */
 const chapterOf = (id: string): string => id.split('.')[0] ?? id;
 
@@ -41,7 +50,8 @@ const chapterOf = (id: string): string => id.split('.')[0] ?? id;
  * neither drafts nor secret flowers: finishing chapter 1 means winning every one of them. A garden
  * is played with the actions of the most advanced level won (a secret flower counts as the level
  * it is, inside its chapter), or of the first level when nothing is won yet (a shared link opened
- * before playing). Teacher mode offers everything (GDD §5.8).
+ * before playing), and shows the interface of that same level. Teacher mode offers everything
+ * (GDD §5.8), with the interface of the last level of the catalog.
  */
 export function sandboxAccess(
   levels: readonly CatalogEntry[],
@@ -49,7 +59,18 @@ export function sandboxAccess(
   teacherMode: boolean,
 ): SandboxAccess {
   if (teacherMode) {
-    return { exists: true, actions: ALL_ACTIONS, gardener: true, scarecrows: true, stones: true };
+    const lastOfAll = levels
+      .map((level) => level.id)
+      .sort(compareLevelIds)
+      .at(-1);
+    return {
+      exists: true,
+      actions: ALL_ACTIONS,
+      gardener: true,
+      scarecrows: true,
+      stones: true,
+      interfaceAt: lastOfAll ?? BEFORE_ALL,
+    };
   }
   const proper = levels.filter((level) => !level.draft && level.secret === undefined);
   const opening = proper.filter((level) => chapterOf(level.id) === OPENING_CHAPTER);
@@ -69,5 +90,6 @@ export function sandboxAccess(
     gardener: past(GARDENER_AT),
     scarecrows: past(SCARECROWS_AT),
     stones: past(STONES_AT),
+    interfaceAt: furthest ?? BEFORE_ALL,
   };
 }
