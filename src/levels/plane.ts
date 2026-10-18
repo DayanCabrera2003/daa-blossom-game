@@ -1,7 +1,7 @@
 /**
  * The plane geometry of a level's layout, in canvas pixels: whether two vines cross, and whether a
- * box (a sprout's name) comes too close to another box or to a circle. `layoutChecks.ts` asks
- * these; they know nothing of levels.
+ * box (a sprout's name) comes too close to another box, a circle, a diamond or a segment.
+ * `layoutChecks.ts` asks these; they know nothing of levels.
  */
 
 /** A point on the canvas. */
@@ -88,4 +88,64 @@ export function boxNearDiamond(box: Box, centre: Point, reach: number, clearance
   const dx = Math.max(box.left - centre.x, 0, centre.x - box.right);
   const dy = Math.max(box.top - centre.y, 0, centre.y - box.bottom);
   return dx + dy < reach + clearance;
+}
+
+/** The straight-line distance from a point to a box, 0 when it lies inside. */
+function pointToBox(q: Point, box: Box): number {
+  const dx = Math.max(box.left - q.x, 0, q.x - box.right);
+  const dy = Math.max(box.top - q.y, 0, q.y - box.bottom);
+  return Math.hypot(dx, dy);
+}
+
+/** The straight-line distance from a point to the segment `a`–`b`. */
+function pointToSegment(q: Point, a: Point, b: Point): number {
+  const [dx, dy] = [b.x - a.x, b.y - a.y];
+  const length2 = dx * dx + dy * dy;
+  // The nearest point of the segment, as a fraction of the way from `a` to `b`, kept on it.
+  const t =
+    length2 === 0 ? 0 : Math.min(1, Math.max(0, ((q.x - a.x) * dx + (q.y - a.y) * dy) / length2));
+  return Math.hypot(a.x + t * dx - q.x, a.y + t * dy - q.y);
+}
+
+/**
+ * Whether the segment `a`–`b` meets the box, edges included: it is clipped to the box one axis at
+ * a time (Liang–Barsky), and meets it when a part of it is left.
+ */
+function segmentMeetsBox(a: Point, b: Point, box: Box): boolean {
+  let [enter, leave] = [0, 1];
+  const axes: [number, number, number, number][] = [
+    [a.x, b.x - a.x, box.left, box.right],
+    [a.y, b.y - a.y, box.top, box.bottom],
+  ];
+  for (const [start, delta, low, high] of axes) {
+    if (delta === 0) {
+      if (start < low || start > high) return false;
+      continue;
+    }
+    const [t0, t1] = [(low - start) / delta, (high - start) / delta];
+    enter = Math.max(enter, Math.min(t0, t1));
+    leave = Math.min(leave, Math.max(t0, t1));
+  }
+  return enter <= leave;
+}
+
+/**
+ * Whether the segment `a`–`b` (a vine, drawn as a stroke) comes within `reach` pixels of a box,
+ * in a straight line. Apart from a box it meets, its nearest point to the box is one of its ends
+ * or the foot of a corner of the box on it.
+ */
+export function segmentNearBox(a: Point, b: Point, box: Box, reach: number): boolean {
+  if (segmentMeetsBox(a, b, box)) return true;
+  const corners: Point[] = [
+    { x: box.left, y: box.top },
+    { x: box.right, y: box.top },
+    { x: box.right, y: box.bottom },
+    { x: box.left, y: box.bottom },
+  ];
+  const distance = Math.min(
+    pointToBox(a, box),
+    pointToBox(b, box),
+    ...corners.map((corner) => pointToSegment(corner, a, b)),
+  );
+  return distance < reach;
 }

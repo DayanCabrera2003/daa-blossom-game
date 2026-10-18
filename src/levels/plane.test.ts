@@ -1,6 +1,13 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { boxesNear, boxNearCircle, boxNearDiamond, segmentsCross, type Box } from './plane';
+import {
+  boxesNear,
+  boxNearCircle,
+  boxNearDiamond,
+  segmentNearBox,
+  segmentsCross,
+  type Box,
+} from './plane';
 
 const p = (x: number, y: number) => ({ x, y });
 const box = (left: number, top: number, right: number, bottom: number): Box => ({
@@ -91,5 +98,53 @@ describe('boxNearDiamond', () => {
     // The corner (10, 10) is 12 away from (16, 16) along the axes, but only 8.5 in a straight line.
     expect(boxNearDiamond(box(0, 0, 10, 10), p(16, 16), 9.5, 1)).toBe(false);
     expect(boxNearCircle(box(0, 0, 10, 10), p(16, 16), 9.5, 1)).toBe(true);
+  });
+});
+
+describe('segmentNearBox', () => {
+  it('sees a segment that runs through the box, even with both ends outside it', () => {
+    expect(segmentNearBox(p(-5, 5), p(15, 5), box(0, 0, 10, 10), 0)).toBe(true);
+    expect(segmentNearBox(p(5, -20), p(5, 30), box(0, 0, 10, 10), 0)).toBe(true);
+    expect(segmentNearBox(p(-5, 15), p(15, -5), box(0, 0, 10, 10), 0)).toBe(true);
+  });
+
+  it('sees a segment with an end inside the box', () => {
+    expect(segmentNearBox(p(5, 5), p(50, 50), box(0, 0, 10, 10), 0)).toBe(true);
+  });
+
+  it('sees a segment that passes closer than the reach, and leaves one at the reach', () => {
+    expect(segmentNearBox(p(-5, 11.5), p(15, 11.5), box(0, 0, 10, 10), 2)).toBe(true);
+    expect(segmentNearBox(p(-5, 12), p(15, 12), box(0, 0, 10, 10), 2)).toBe(false);
+  });
+
+  it('measures past a corner in a straight line, not along the axes', () => {
+    // The segment x + y = 23 passes 3/√2 ≈ 2.12 from the corner (10, 10).
+    expect(segmentNearBox(p(23, 0), p(0, 23), box(0, 0, 10, 10), 2)).toBe(false);
+    expect(segmentNearBox(p(23, 0), p(0, 23), box(0, 0, 10, 10), 2.2)).toBe(true);
+  });
+
+  it('measures from the end of a segment that stops short of the box', () => {
+    expect(segmentNearBox(p(30, 5), p(11, 5), box(0, 0, 10, 10), 2)).toBe(true);
+    expect(segmentNearBox(p(30, 5), p(12, 5), box(0, 0, 10, 10), 2)).toBe(false);
+  });
+
+  it('agrees with a fine walk along the segment', () => {
+    const coordinate = fc.integer({ min: -30, max: 40 });
+    fc.assert(
+      fc.property(coordinate, coordinate, coordinate, coordinate, (ax, ay, bx, by) => {
+        const target = box(0, 0, 10, 10);
+        // The distance from the box of points every 1/400 of the way, an upper bound close to it.
+        let walked = Infinity;
+        for (let i = 0; i <= 400; i++) {
+          const [x, y] = [ax + ((bx - ax) * i) / 400, ay + ((by - ay) * i) / 400];
+          const dx = Math.max(target.left - x, 0, x - target.right);
+          const dy = Math.max(target.top - y, 0, y - target.bottom);
+          walked = Math.min(walked, Math.hypot(dx, dy));
+        }
+        const step = Math.hypot(bx - ax, by - ay) / 400;
+        if (walked > 3 + step) expect(segmentNearBox(p(ax, ay), p(bx, by), target, 3)).toBe(false);
+        if (walked < 3) expect(segmentNearBox(p(ax, ay), p(bx, by), target, 3)).toBe(true);
+      }),
+    );
   });
 });
