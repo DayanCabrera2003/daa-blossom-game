@@ -62,8 +62,8 @@
 }
 
 /*
- * The head, the only row besides the page: over the index the book's name and the arrows that
- * turn its pages, over the page the heading of the page shown with the way out beside it, always
+ * The head, the only row besides the page: over the index the ribbons of the two books and the
+ * arrows that turn the pages, over the page the heading of the page shown with the way out beside it, always
  * in the same corner.
  */
 .book-corner {
@@ -74,12 +74,33 @@
   gap: calc(2 * var(--px));
 }
 
-.book-title {
-  flex: 1 1 auto;
-  margin: 0;
-  font-size: inherit;
-  font-weight: normal;
-  color: var(--ink);
+/* The ribbons of the two books: the open one on paper, the other one to follow. */
+.book-ribbon {
+  flex: none;
+  padding: 0 calc(3 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--button);
+}
+
+.book-ribbon:hover:not(:disabled) {
+  background: var(--button-active);
+}
+
+.book-ribbon[aria-current='true'] {
+  background: var(--paper);
+  cursor: default;
+}
+
+.book-ribbon:disabled {
+  background: var(--button-off);
+  color: var(--paper);
+  cursor: default;
+}
+
+.book-turns {
+  display: flex;
+  gap: calc(2 * var(--px));
+  margin-left: auto;
 }
 
 .book-head {

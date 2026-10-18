@@ -49,7 +49,9 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   const parts = openBookFrame(
     frame,
     {
+      name: 'codex',
       title: t('codex.title'),
+      codexOpen: true,
       className: 'codex-book',
       keys: t('codex.keys'),
       onTurn: (step) => turn(step),

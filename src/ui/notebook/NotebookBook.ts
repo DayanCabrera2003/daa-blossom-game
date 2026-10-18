@@ -27,7 +27,8 @@ const TURN_ON: BookCommand = { kind: 'turn', step: 1 };
 /** Opens the notebook in the shell's layer, at the statement written last. */
 export function showNotebook(frame: OverlayFrame, t: Translate, line: LineText): void {
   const save = frame.saves.get();
-  const pages = notebookPages(notebookSources(catalog()), save.notebook, frame.codexOpen(save));
+  const open = frame.codexOpen(save);
+  const pages = notebookPages(notebookSources(catalog()), save.notebook, open);
   const titles = codexEntries();
   let shown = openNotebook(pages.length);
 
@@ -43,7 +44,9 @@ export function showNotebook(frame: OverlayFrame, t: Translate, line: LineText):
   const parts = openBookFrame(
     frame,
     {
+      name: 'notebook',
       title: t('notebook.book.title'),
+      codexOpen: open.size > 0,
       className: 'notebook-book',
       keys: t('notebook.book.keys'),
       onTurn: (step) => move({ kind: 'turn', step }),

@@ -1,4 +1,6 @@
+import type { BookName } from '@services/busEvents';
 import type { Translate } from '@services/i18n';
+import { bookRibbons } from '@ui/model/bookRibbons';
 import { bookCommand, type BookCommand } from '@ui/model/codexKeys';
 import { openOverlay } from '../overlay';
 import type { OverlayFrame } from '../shell';
@@ -7,8 +9,9 @@ import './book.css';
 
 /**
  * The layout every book shares (plan 07, phases 3 and 6), laid out as `ui/model/bookLayout.ts`
- * measures it: the head is the only row besides the page, with over the index the book's name and
- * the arrows that turn its pages and over the page its heading (a main title, and a second one
+ * measures it: the head is the only row besides the page, with over the index the two ribbons of
+ * the books (the Codex and the Cuaderno, the open one marked) and the arrows that turn its pages,
+ * and over the page its heading (a main title, and a second one
  * that gives way first) with the way out beside it; under the head, the index on the left with
  * the help of the keys under it, and the page on the right, its tabs over its text on paper. The
  * frame also takes the book's keys, leaving alone those meant for a field of the page; what each
@@ -18,10 +21,20 @@ import './book.css';
 /** Where the picture of the book's wood is, next to the page (public/assets). */
 const WOOD_PANEL = `${import.meta.env.BASE_URL}assets/images/ui/wood/panel.png`;
 
+/** The words on each book's ribbon. */
+const RIBBON_LABELS: Readonly<Record<BookName, string>> = {
+  codex: 'codex.title',
+  notebook: 'notebook.book.title',
+};
+
 /** What a book asks of its frame. */
 export interface BookFrameOptions {
-  /** The book's name, over its index and for a screen reader. */
+  /** Which book it is: its ribbon is the one marked. */
+  readonly name: BookName;
+  /** The book's name, for a screen reader. */
   readonly title: string;
+  /** Whether the Codex has some page open, so its ribbon can be followed. */
+  readonly codexOpen: boolean;
   /** The class of the book's element, for its own stylesheet. */
   readonly className: string;
   /** The help of the keys, under the index. */
@@ -71,7 +84,19 @@ export function openBookFrame(
   next.textContent = t('book.next');
   next.setAttribute('aria-label', t('book.nextPage'));
   next.title = t('book.nextPage');
-  corner.append(make(page, 'h1', 'book-title', options.title), previous, next);
+  const ribbons = bookRibbons(options.name, options.codexOpen).map((ribbon) => {
+    const made = button(page, 'book-ribbon', `ribbon-${ribbon.book}`, () => {
+      if (!ribbon.current) frame.bus.emit('book.open', { book: ribbon.book });
+    });
+    made.textContent = t(RIBBON_LABELS[ribbon.book]);
+    made.disabled = !ribbon.enabled;
+    if (ribbon.current) made.setAttribute('aria-current', 'true');
+    return made;
+  });
+  // The ribbons first, then the arrows at the far end of the corner.
+  const turns = make(page, 'span', 'book-turns');
+  turns.append(previous, next);
+  corner.append(...ribbons, turns);
 
   const head = make(page, 'header', 'book-head');
   const heading = make(page, 'h2', 'book-heading');

@@ -5,8 +5,8 @@ import { WOOD_PANEL } from '@game/picture/wood';
 import { PALETTE } from '@game/view/palette';
 
 /**
- * The words the books write straight on their wood (src/ui/book/book.css): the book's name, the
- * titles of the page shown, the notices and the help of the keys. They take the ink the game
+ * The words the books write straight on their wood (src/ui/book/book.css): the titles of the page
+ * shown, the notices and the help of the keys. They take the ink the game
  * writes on its wooden panel, the colour `tests/wood.test.ts` holds to the contrast WCAG asks of
  * body text on the very pixels of the panel, never a light colour that melts into the orange.
  */
@@ -31,13 +31,7 @@ function token(name: string): number {
 }
 
 /** The pieces of text written on the wood, not on the paper of the page or on a button. */
-const ON_WOOD = [
-  '.book-title',
-  '.book-main-title',
-  '.book-sub-title',
-  '.book-notice',
-  '.book-keys',
-];
+const ON_WOOD = ['.book-main-title', '.book-sub-title', '.book-notice', '.book-keys'];
 
 describe('the words of the books written on their wood', () => {
   it('the ink of the book is the ink of the wooden panel', () => {
