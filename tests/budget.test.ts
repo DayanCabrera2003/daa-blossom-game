@@ -78,7 +78,7 @@ describe('budgetReport', () => {
     });
     expect(report.find((row) => row.part === 'codex')?.bytes).toBe(9000);
     expect(report.find((row) => row.part === 'initial')?.bytes).toBe(1848);
-    expect(BUDGET.sandbox).toBe(120e3);
+    expect(BUDGET.sandbox).toBe(60e3);
   });
 
   it('flags every part over its limit, and only those', () => {

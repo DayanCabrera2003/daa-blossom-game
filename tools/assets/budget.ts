@@ -28,12 +28,11 @@ export const BUDGET: Readonly<Record<BudgetPart, number>> = {
   // fourteen entries weighed 873 KB: about an eighth to spare, no more.
   codex: 1 * MB,
   // The free mode, loaded on demand when it opens, apart from the books (the author's decision in
-  // plan 08, phase 9). Measured then: its pure modules (the design, its limits, layout, import,
-  // level file and generators) weigh 9.7 KB, plus the 1.5 KB garden code it shares with the books.
-  // The plan estimates the whole free mode (scene, editor, generate menu, share sheet) at 50 to
-  // 80 KB; the limit takes the top of that estimate and the measured part, with about a third to
-  // spare, until phase 15 settles it on what is built.
-  sandbox: 120 * KB,
+  // plan 08, phase 9): the editor's scene with its menu and pure modules, the share sheet and its
+  // stylesheet, and what it shares with the books (the overlay frame, the garden code). Settled at
+  // the close of plan 08, when it all weighed 50 KB (35 the editor, 5 the sheet, 10 shared): a
+  // fifth to spare for the polish pass, no more.
+  sandbox: 60 * KB,
 };
 
 /** The asset kinds weighed under each part of the budget that the manifest alone decides. */
