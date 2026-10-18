@@ -367,6 +367,8 @@ Si el último estado de `runRecipe` no conserva el bosque de la búsqueda final 
 
 **Tests clave:** en jardines al azar (fast-check, ≤ 16 brotes), tras `solve` los faroles son el óptimo de `maximumSize` y el sol recorre cada paso del autómata; el certificado de piedras cumple `checkTutteBerge` y el de espantapájaros `checkVertexCover` con tantos como faroles; en un jardín con bucle impar no se ofrecen espantapájaros; `certify` antes de `solve` en un jardín sin búsqueda devuelve "aún no"; el autómata usa plegar aunque el jugador no lo tenga, y el jugador sigue sin tenerlo después.
 
+**Decisiones del autor sobre las preguntas de F13.** (1) Se acepta "Certificado" siempre activo, con el aviso que explica cómo llegar a él. (2) Se acepta por ahora que la fila de abajo del modo libre se pise 2 px solo con la fuente de reserva, más ancha (nunca con la fuente pixel del juego); queda anotado para la fase de pulido.
+
 ---
 
 ## Fase 14 — Compartir: código, enlace y JSON
