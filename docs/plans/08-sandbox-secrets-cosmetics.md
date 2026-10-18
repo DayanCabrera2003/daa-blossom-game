@@ -347,6 +347,8 @@ Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en
 
 **Tests clave:** el descriptor de un nivel del catálogo es el de hoy (música del capítulo, guarda, registra) y el del modo libre usa la del hub y no guarda; jugar un diseño con las acciones de 1.8 rechaza plegar con el motivo de siempre ("aún no sabes hacerlo"); ganar en el modo libre no cambia `florecer.save`; el panel del profesor escribe la traza de un jardín libre con sus nombres.
 
+**Decisiones del autor sobre las preguntas de F12.** (1) Desde 1.8 el objetivo del modo libre va oculto tras "Terminé", también ahí: es la regla del juego y se mantiene. (2) El panel de victoria de un jardín libre **no** enseña estrellas (ahí no se gana nada): en su lugar, una línea propia del modo libre (en `strings.json`, sin el vocabulario prohibido). (3) Que una tarjeta de mecánica cerrada en un jardín libre cuente como vista está bien y se mantiene. (4) Mientras se juega un jardín del modo libre, AvPág y RePág (los saltos de nivel del profesor) no hacen nada.
+
 ---
 
 ## Fase 13 — El jardinero mecánico y el certificado a demanda
