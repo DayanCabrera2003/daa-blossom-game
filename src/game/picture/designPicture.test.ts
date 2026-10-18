@@ -1,9 +1,10 @@
 import { itemAt } from '@core/shared/itemAt';
-import { EMPTY_DESIGN, type Design } from '@levels/sandbox/design';
+import { EMPTY_DESIGN, editDesign, type Design } from '@levels/sandbox/design';
 import { describe, expect, it } from 'vitest';
 import {
   designMove,
   designPress,
+  designRelease,
   initialDesignPointer,
   type DesignPointer,
 } from '../input/designIntent';
@@ -120,5 +121,13 @@ describe('the picture of a design', () => {
     );
     expect(picture.chain).toBeNull();
     expect(picture.sprouts.map((s) => s.x)).toEqual([100, 160, 100]);
+  });
+
+  it('let go too close, the sprout is refused with the reason and drawn back at its place', () => {
+    const held = dragging('move', { x: 100, y: 160 }, { x: 150, y: 110 });
+    const { pointer, edit } = designRelease(held, GARDEN, { x: 150, y: 110 });
+    if (edit === null) throw new Error('the drag should ask for a move');
+    expect(editDesign(GARDEN, edit)).toEqual({ ok: false, error: 'tooClose' });
+    expect(itemAt(designPicture(GARDEN, pointer).sprouts, 2)).toMatchObject({ x: 100, y: 160 });
   });
 });

@@ -1,4 +1,5 @@
 import { EMPTY_DESIGN, type Design } from '@levels/sandbox/design';
+import { generate } from '@levels/sandbox/generators';
 import { describe, expect, it } from 'vitest';
 import { amendDesign, recordDesign } from './designHistory';
 import { canRedo, canUndo, current, redo, startHistory, undo } from './history';
@@ -35,5 +36,12 @@ describe('the history of the designs of the editor', () => {
     expect(current(amended)).toEqual(one(90));
     expect(canRedo(amended)).toBe(false);
     expect(canUndo(amended)).toBe(false);
+  });
+
+  it('undo after generating goes back to the design from before', () => {
+    const own = recordDesign(startHistory(EMPTY_DESIGN), one(50));
+    const grown = recordDesign(own, generate('cycle', 5, 1).design);
+    const larger = amendDesign(grown, generate('cycle', 6, 1).design);
+    expect(current(undo(larger))).toEqual(one(50));
   });
 });
