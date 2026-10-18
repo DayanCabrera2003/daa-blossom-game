@@ -1,6 +1,7 @@
 import { itemAt } from '@core/shared/itemAt';
 import { createRng } from '@core/shared/rng';
 import type { AssetKey } from '../assets/keys';
+import { MIX } from '../audio/mix';
 import type { Speaker, SpokenLine } from './speaker';
 import { PACES, revealTimes } from './typewriter';
 
@@ -34,36 +35,12 @@ export interface Voice {
 }
 
 /**
- * The babble of each speaker (plan 06, section 1.9; GDD §3.2 and §4.2). The pack's syllables are
- * high, so every male voice plays them slower: the mentor warm and mid-low, the gnome high and
- * rushed, the oaks a chorus of three very low voices, each a little later than the one below. Each
- * oak keeps a narrow band around its own pitch (0.42, 0.47 and 0.53), so the line id can still vary
- * it slightly. The gardener (the player) and the notebook do not babble.
+ * The babble of each speaker (plan 06, section 1.9; GDD §3.2 and §4.2): the mentor warm and
+ * mid-low, the gnome high and rushed, the oaks a chorus of three very low voices; the gardener and
+ * the notebook do not babble. A table of the mix (`audio/mix.ts`, plan 09, phase 8), where the
+ * author tunes it by ear.
  */
-export const VOICES: Readonly<Record<Speaker, Voice | null>> = {
-  sauce: {
-    keys: ['voice.6', 'voice.10', 'voice.3'],
-    every: 3,
-    layers: [{ rate: [0.6, 0.68], delay: 0, volume: 1 }],
-  },
-  bruto: {
-    keys: ['voice.1', 'voice.2', 'voice.4'],
-    every: 3,
-    layers: [{ rate: [1.15, 1.35], delay: 0, volume: 1 }],
-  },
-  oaks: {
-    keys: ['voice.7', 'voice.6'],
-    every: 4,
-    // Three voices at once would be loud: each sounds softer than a single speaker.
-    layers: [
-      { rate: [0.41, 0.43], delay: 0, volume: 0.6 },
-      { rate: [0.46, 0.48], delay: 35, volume: 0.6 },
-      { rate: [0.52, 0.54], delay: 70, volume: 0.6 },
-    ],
-  },
-  gardener: null,
-  notebook: null,
-};
+export const VOICES: Readonly<Record<Speaker, Voice | null>> = MIX.voices;
 
 /** A letter of any alphabet: the only characters that babble (no spaces, marks or digits). */
 const LETTER = /^\p{L}$/u;
