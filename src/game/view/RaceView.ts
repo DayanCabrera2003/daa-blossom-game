@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
+import { ICON_GAP, RACE_ICON } from '../picture/buttonIcon';
 import type { CostChart } from '../picture/costChart';
 import type { CounterPicture } from '../picture/raceClock';
 import { raceCounterText } from '../picture/raceCounterText';
@@ -47,11 +48,12 @@ const BRUTO = PALETTE.moon;
 const LEGEND_DOT_ROOM = 7;
 
 /**
- * The races (GDD 6.4, 6.5, plan 05 phase 4): over the garden, the garden of the race
- * zoomed out with its sprouts tiny on a ring, a counter for each runner under it, and in the lower
- * right the chart of the races seen so far, the automaton's dots joined in a gentle curve and
- * Bruto's leaving through the top, or asleep. The counters run every frame; the rest is rebuilt
- * only when the picture's race or chart changes. It paints the picture, nothing more.
+ * The races (GDD 6.4, 6.5, plan 05 phase 4): over the garden, under the hourglass of the pack and
+ * the race's title, the garden of the race zoomed out with its sprouts tiny on a ring, a counter
+ * for each runner under it, and in the lower right the chart of the races seen so far, the
+ * automaton's dots joined in a gentle curve and Bruto's leaving through the top, or asleep. The
+ * counters run every frame; the rest is rebuilt only when the picture's race or chart changes. It
+ * paints the picture, nothing more.
  */
 export class RaceView {
   private parts: { destroy(): void }[] = [];
@@ -89,7 +91,18 @@ export class RaceView {
       .setDepth(PANEL_DEPTH)
       .setInteractive();
     this.parts.push(panel);
-    this.text(PAD + 4, TOP + 4, this.t('race.title', { count: picture.size }), PALETTE.label);
+    // The hourglass of the races, then the title after it.
+    let titleX = PAD + 4;
+    if (this.scene.textures.exists(RACE_ICON.texture)) {
+      const icon = this.scene.add
+        .image(titleX, TOP + 1, RACE_ICON.texture)
+        .setOrigin(0, 0)
+        .setScale(RACE_ICON.scale)
+        .setDepth(PANEL_DEPTH + 2);
+      this.parts.push(icon);
+      titleX += icon.displayWidth + ICON_GAP;
+    }
+    this.text(titleX, TOP + 4, this.t('race.title', { count: picture.size }), PALETTE.label);
     this.drawMiniature(picture);
     const { miniature } = RACE_LAYOUT;
     const below = miniature.y + miniature.height + 4;
