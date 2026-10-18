@@ -3,6 +3,7 @@ import type { TraceEvent } from '@core/trace/events';
 import type { CodexTab } from '@levels/codex';
 import type { ImportRejection } from '@levels/sandbox/importText';
 import type { LevelData } from '@levels/schema';
+import type { LazyPart } from './chunkFailure';
 import type { MotionChoice } from './motion';
 
 /** The two books of the game: the Códex (GDD §5.6) and the Cuaderno (GDD §5.5). */
@@ -123,4 +124,10 @@ export interface BusEvents {
   readonly 'loading.drawn': undefined;
   /** The motion setting changed in the settings panel: the page's styles follow it. */
   readonly 'motion.changed': { readonly motion: MotionChoice };
+  /**
+   * A part of the game that loads on demand did not open (plan 09, phase 10), with what went wrong:
+   * the page tells the player kindly, offline or with a newer version to reload, instead of only
+   * the console.
+   */
+  readonly 'load.failed': { readonly part: LazyPart; readonly error: unknown };
 }
