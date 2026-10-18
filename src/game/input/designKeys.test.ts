@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { designKey, type DesignKeyContext } from './designKeys';
+import { keyBindings } from './keyBindings';
 
 const CALM: DesignKeyContext = { cardOpen: false, menuOpen: false, selecting: false };
 const press = (key: string, mods: { ctrl?: boolean; shift?: boolean } = {}) => ({
@@ -44,14 +45,31 @@ describe('the keys of the free mode editor', () => {
     expect(designKey(escape, CALM)).toEqual({ kind: 'leave' });
   });
 
-  it('while the card is open only it listens (Enter closes it too); the menu takes no edits', () => {
+  it('while the card is open only it listens; the menu takes no edits', () => {
     const card = { ...CALM, cardOpen: true };
-    expect(designKey(press('Enter'), card)).toEqual({ kind: 'closeCard' });
+    expect(designKey(press('Escape'), card)).toEqual({ kind: 'closeCard' });
     expect(designKey(press('1'), card)).toBeNull();
     expect(designKey(press('z', { ctrl: true }), card)).toBeNull();
     const menu = { ...CALM, menuOpen: true };
     expect(designKey(press('1'), menu)).toBeNull();
     expect(designKey(press('z', { ctrl: true }), menu)).toBeNull();
     expect(designKey(press('Enter'), CALM)).toBeNull();
+  });
+
+  it('leaves Enter to the focus, which presses what it is on or else closes the card', () => {
+    for (const context of [CALM, { ...CALM, cardOpen: true }, { ...CALM, menuOpen: true }]) {
+      expect(designKey(press('Enter'), context)).toBeNull();
+    }
+  });
+
+  it('answers every key the table gives the editor, but those of the focus', () => {
+    const own = ['tool', 'undo', 'redo', 'generate', 'escape'];
+    for (const { chord, action } of keyBindings('editor')) {
+      const asked = designKey(
+        { key: chord.key, ctrl: chord.ctrl === true, shift: chord.shift === true },
+        CALM,
+      );
+      expect(asked === null, `${chord.key} ${action}`).toBe(!own.includes(action));
+    }
   });
 });

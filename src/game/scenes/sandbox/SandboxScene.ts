@@ -60,6 +60,7 @@ import { contextOf, type GameContext } from '../context';
 import { SANDBOX_SCENE, type SandboxSceneData } from '../SandboxGate';
 import { DesignBar } from './DesignBar';
 import { GenerateMenu } from './GenerateMenu';
+import { FocusController } from '../focus/FocusController';
 
 /**
  * The free mode's last design, opened the first time the editor is (with this chunk, so its reading
@@ -212,6 +213,12 @@ export class SandboxScene extends Phaser.Scene {
     };
     this.input.on('pointerup', release);
     this.input.on('pointerupoutside', release);
+    // The keyboard's focus walks the bar, the menu and the card; Enter with nothing in focus
+    // closes the card, as "Entendido" does.
+    new FocusController(this, {
+      screen: () => 'editor',
+      fallback: () => this.tutorial.dismiss(),
+    });
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
       const command = designKey(
         { key: event.key, ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey },
