@@ -39,11 +39,14 @@ The game's art, music and sounds come from CC0 packs (listed with their authors 
 npm run assets        # extract the chosen files into public/assets/ and regenerate src/game/assets/manifest.json and glyphs.json
 npm run assets:check  # check, without writing, that the committed files are exactly what the zips give
 npm run sounds        # synthesize the lantern chimes and the fold chords alone, without the zips
+npm run budget        # after a build: weigh the JavaScript and the assets against their budget
 ```
 
 The chimes, the sparkle and the fold chords are not taken from a pack: they are synthesized from the parameters in `tools/synth/sounds.ts`, credited as original work, and listed in the same manifest. `npm run assets` makes them too, so both commands agree.
 
 To use another file of a pack, add it to `tools/assets/selection.ts` (at the end of its group), run `npm run assets`, and credit it in `CREDITS.md`.
+
+The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600 KB, the font 100 KB, effects, syllables and jingles 1.5 MB, the first load (JavaScript plus the `boot` group, with the hub's music) 5 MB, and all the music 20 MB, each track loaded with its own chapter. `tests/assetBudget.test.ts` holds the assets to it; `npm run budget`, run by CI after the build, adds the JavaScript.
 
 ## License
 
