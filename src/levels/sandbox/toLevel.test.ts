@@ -123,12 +123,21 @@ describe('a design as a level file', () => {
 });
 
 describe('a design to play', () => {
-  it('allows exactly the actions given, and hides the goal behind "Terminé"', () => {
+  it('allows the actions given, and hides the goal behind "Terminé"', () => {
     const allowed = actionsUnlockedBy('4.5');
     const level = unwrap(toPlayable(PATH, allowed));
-    expect([...level.start.allowed].sort()).toEqual([...allowed].sort());
+    const fogless = allowed.filter((action) => action !== 'inspect');
+    expect([...level.start.allowed].sort()).toEqual([...fogless].sort());
     expect(level.data.goal).toEqual({ visible: false });
     expect(level.data.victory).toEqual({ type: 'maximum' });
+  });
+
+  it('never allows inspecting: a garden of the free mode has no fog to lift', () => {
+    for (const allowed of [ALL, actionsUnlockedBy('3.1'), actionsUnlockedBy('1.7')]) {
+      const level = unwrap(toPlayable(PATH, allowed));
+      expect(level.data.fog).toBe(false);
+      expect(level.start.allowed.has('inspect')).toBe(false);
+    }
   });
 
   it('shows the optimum as its goal before "Terminé" is learnt', () => {

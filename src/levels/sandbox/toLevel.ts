@@ -77,17 +77,26 @@ export function toLevelFile(design: Design): LevelFile {
 }
 
 /**
- * A design ready to play with the actions the player has: those `allowed`, the rest forbidden.
- * With "Terminé" learnt (1.8) the goal is hidden as in the exported file; before, the garden shows
- * its optimum and is won by lighting that many lanterns. It loads as any level does, so a broken
- * or empty design comes back as the loader's reason.
+ * The actions a garden without fog never takes: inspecting only lifts fog (the rules refuse it
+ * elsewhere), so the free mode leaves its tool off the toolbar.
+ */
+const FOG_ACTIONS: readonly ActionType[] = ['inspect'];
+
+/**
+ * A design ready to play with the actions the player has: those `allowed`, the rest forbidden, and
+ * never inspecting, since the free mode has no fog. With "Terminé" learnt (1.8) the goal is hidden
+ * as in the exported file; before, the garden shows its optimum and is won by lighting that many
+ * lanterns. It loads as any level does, so a broken or empty design comes back as the loader's
+ * reason.
  */
 export function toPlayable(
   design: Design,
   allowed: readonly ActionType[],
 ): Result<Level, LoadError> {
   const file = toLevelFile(design);
-  const forbid = ALL_ACTIONS.filter((action) => !allowed.includes(action));
+  const forbid = ALL_ACTIONS.filter(
+    (action) => !allowed.includes(action) || FOG_ACTIONS.includes(action),
+  );
   if (allowed.includes('declareDone')) return loadLevel({ ...file, forbid });
   const garden = buildGarden({
     names: design.sprouts.map((sprout) => sprout.label),
