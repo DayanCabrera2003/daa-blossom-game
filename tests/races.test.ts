@@ -114,3 +114,27 @@ describe('6.5, race II: 16, 32 and 64 sprouts, with doubling bets', () => {
     expect(chart.bruto.map((dot) => dot.mark)).toEqual(['shown', 'above', 'asleep', 'asleep']);
   });
 });
+
+describe('the races quoted in Codex C11', () => {
+  it('are the races of 6.4 and 6.5 as the chart draws them, number for number', () => {
+    const rows = [...racesBySize(levelOf('6.4')), ...racesBySize(levelOf('6.5'))].map(
+      ([n, race]) => [
+        n,
+        race.edges,
+        race.lanterns,
+        runOf(race, 'automaton').steps,
+        runOf(race, 'bruto').asleep ? 'asleep' : runOf(race, 'bruto').steps,
+      ],
+    );
+    // C11 writes this table; a change of generator or of counting must rewrite it there too.
+    expect(rows).toEqual([
+      [6, 6, 2, 38, 37],
+      [8, 12, 4, 41, 224],
+      [10, 30, 5, 81, 5141],
+      [8, 12, 4, 41, 224],
+      [16, 50, 8, 183, 549765],
+      [32, 237, 16, 690, 'asleep'],
+      [64, 1032, 32, 2585, 'asleep'],
+    ]);
+  });
+});
