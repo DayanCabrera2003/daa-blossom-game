@@ -7,7 +7,8 @@ import { stepText } from '@ui/model/eventText';
 import { fitGarden, miniGarden } from '@ui/model/miniGarden';
 import { itemAt } from '@core/shared/itemAt';
 import { LOOK_ONLY, drawGarden, gardenSvg } from './GardenSvg';
-import { diagramButton, part } from './parts';
+import { part } from './parts';
+import { stepControls } from './stepControls';
 
 /**
  * A replayed day, in the intuition tab of an entry (plan 07, phase 4): the garden at one step of
@@ -40,20 +41,7 @@ export function replayDiagram(
   const figure = part(page, 'figure', `dg dg-${spec.kind}`);
   if (spec.title !== undefined) figure.append(part(page, 'figcaption', 'dg-title', t(spec.title)));
   const svg = gardenSvg(page, t('diagram.garden'));
-  // The sun and its steps on one row right under the garden, where the day is and the way back
-  // to dawn on the next.
-  const bar = part(page, 'div', 'dg-bar dg-bar-sun');
-  const back = diagramButton(page, t('diagram.stepBack'), () => show(shown - 1));
-  const sun = part(page, 'input', 'dg-sun-slider');
-  Object.assign(sun, { type: 'range', min: '0', max: String(last), step: '1' });
-  sun.setAttribute('aria-label', t('diagram.sun'));
-  sun.addEventListener('input', () => show(Number(sun.value)));
-  const forward = diagramButton(page, t('diagram.stepForward'), () => show(shown + 1));
-  const reset = diagramButton(page, t('diagram.reset'), () => show(0));
-  const counter = part(page, 'span', 'dg-count');
-  bar.append(back, sun, forward);
-  const where = part(page, 'div', 'dg-bar');
-  where.append(counter, reset);
+  const controls = stepControls(page, t, 0, last, (k) => show(k));
   const told = part(page, 'p', 'dg-step');
   told.setAttribute('aria-live', 'polite');
   const help = part(
@@ -64,7 +52,7 @@ export function replayDiagram(
       .map((key) => t(key))
       .join(' '),
   );
-  figure.append(svg, bar, where, ...extras.parts, told, help);
+  figure.append(svg, ...controls.rows, ...extras.parts, told, help);
   hole.replaceChildren(figure);
 
   /** Shows step `k` of the day (kept between dawn and dusk). */
@@ -72,12 +60,8 @@ export function replayDiagram(
     shown = Math.min(last, Math.max(0, k));
     const step = itemAt(steps, shown);
     drawGarden(svg, miniGarden(garden, layout, step.moment), { ...LOOK_ONLY, t });
-    sun.value = String(shown);
-    counter.textContent = t('diagram.step', { step: shown, count: last });
+    controls.show(shown, t('diagram.step', { step: shown, count: last }));
     told.textContent = stepText(step.events, garden.names, t);
-    back.disabled = shown === 0;
-    forward.disabled = shown === last;
-    reset.disabled = shown === 0;
     extras.onShow(shown);
   };
   show(0);
