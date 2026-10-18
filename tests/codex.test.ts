@@ -90,6 +90,7 @@ const RIGOR_READY: readonly CodexEntryId[] = [
   'C9',
   'C10',
   'C11',
+  'C12',
 ];
 
 /** The only entries where a result may be stated without proof, out of the scope of the book. */
@@ -117,6 +118,7 @@ const AWAITING_BOOKS: readonly CodexEntryId[] = [
   'C9',
   'C10',
   'C11',
+  'C12',
 ];
 
 /** The boxes ticked in the rigor comment of a formal tab, or null when it has none. */
