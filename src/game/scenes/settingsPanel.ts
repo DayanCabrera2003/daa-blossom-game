@@ -3,6 +3,7 @@ import { download } from '@services/download';
 import { exportLog } from '@services/exportLog';
 import {
   nudgeVolume,
+  setMotion,
   setVolume,
   toggleMute,
   writeSettings,
@@ -50,6 +51,11 @@ export function addSettings(scene: Phaser.Scene, at: Point, screen: KeyScreen): 
     },
     nudge: (channel, direction) => change(nudgeVolume(context.settings, channel, direction)),
     mute: () => change(toggleMute(context.settings)),
+    // The game reads the setting as it moves; the page's styles hear of it on the bus.
+    motion: (motion) => {
+      change(setMotion(context.settings, motion));
+      context.bus.emit('motion.changed', { motion });
+    },
     // Playtesters send this file back; nothing leaves the browser otherwise (GDD §10).
     exportLog: () => download(exportLog(context.playtest.current(), context.clock())),
     // The credits open over this scene, which sleeps with its panel open until they end.

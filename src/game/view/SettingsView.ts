@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
+import { MOTION_CHOICES, type MotionChoice } from '@services/motion';
 import { AUDIO_CHANNELS, type AudioChannel, type Settings } from '@services/settings';
 import { playUiSound } from '../audio/uiSound';
 import { assetEntry } from '../assets/keys';
@@ -12,7 +13,12 @@ import {
   volumePercent,
   type SliderTrack,
 } from '../picture/volumeSlider';
-import { SETTINGS_PANEL, settingsCorner, settingsRows } from '../picture/settingsPanelLayout';
+import {
+  motionChoicesAt,
+  SETTINGS_PANEL,
+  settingsCorner,
+  settingsRows,
+} from '../picture/settingsPanelLayout';
 import { checkbox, GRABBER, SLIDER_FILL, sliderLook } from '../picture/woodControls';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -28,6 +34,8 @@ export interface SettingsActions {
   /** A side arrow on a slider in focus: its volume a step down (-1) or up (1). */
   readonly nudge: (channel: AudioChannel, direction: -1 | 1) => void;
   readonly mute: () => void;
+  /** Sets how much the game moves: like the system, less, or all of it. */
+  readonly motion: (choice: MotionChoice) => void;
   /** Downloads the playtest log, for playtesters to send back (GDD §10). */
   readonly exportLog: () => void;
   /** Opens the credits screen over the scene. */
@@ -68,8 +76,9 @@ interface Slider {
 /**
  * The settings panel, in the wooden frame of the other panels and written in its ink: a slider for
  * the music, one for the effects and one for the voices, each with its percentage, the mute box,
- * the button that exports the playtest log, "Créditos", "Teclas" and "Cerrar". A dim layer over the whole screen takes
- * every touch meant for what is below while the panel is open. The panel only draws and reports:
+ * the motion setting's three buttons, the button that exports the playtest log, "Créditos",
+ * "Teclas" and "Cerrar". A dim layer over the whole screen takes every touch meant for what is
+ * below while the panel is open. The panel only draws and reports:
  * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene. The
  * keyboard's focus reaches each slider (the side arrows move it a step) and the mute box.
  */
@@ -77,6 +86,8 @@ export class SettingsView {
   private parts: { destroy(): void }[] = [];
   private sliders: Slider[] = [];
   private box: Phaser.GameObjects.Image | null = null;
+  /** The motion setting's buttons, one per position, in `MOTION_CHOICES` order. */
+  private choices: Button[] = [];
   /** The settings shown, so a slider lit or dimmed by the pointer is drawn again as they are. */
   private shown: Settings | null = null;
 
@@ -124,6 +135,7 @@ export class SettingsView {
       this.addSlider(channel, x, y + itemAt(rows.sliders, i)),
     );
     this.addMute(x + PAD, y + rows.mute);
+    this.addMotion(x, y + rows.motion, y + rows.motionChoices);
     const exportLog = new Button(scene, 0, 0, t('settings.exportLog'), () =>
       this.actions.exportLog(),
     ).setDepth(PANEL_DEPTH + 4);
@@ -149,6 +161,7 @@ export class SettingsView {
       this.drawSlider(itemAt(this.sliders, i), settings[channel]),
     );
     this.box?.setTexture(checkbox(settings.muted));
+    MOTION_CHOICES.forEach((choice, i) => this.choices[i]?.setActive(choice === settings.motion));
   }
 
   /** Takes the panel and its blocker away, sounding its wood if it was open. */
@@ -162,6 +175,7 @@ export class SettingsView {
     for (const part of this.parts) part.destroy();
     this.parts = [];
     this.sliders = [];
+    this.choices = [];
     this.box = null;
     this.shown = null;
   }
@@ -247,6 +261,25 @@ export class SettingsView {
       adjust: (direction) => this.actions.nudge(channel, direction),
     });
     return { knob, fill, value, track, middle, hovered: false };
+  }
+
+  /**
+   * The motion setting (plan 09, phase 6): its name, and under it a button for each position, the
+   * one in force sunken as a tool in hand; each is a button, so the keyboard reaches it too.
+   */
+  private addMotion(x: number, nameTop: number, choicesTop: number): void {
+    const { scene, t } = this;
+    const name = scene.add
+      .text(x + PAD, nameTop, t('settings.motion'), textStyle(8, INK))
+      .setDepth(PANEL_DEPTH + 1);
+    this.choices = MOTION_CHOICES.map((choice) =>
+      new Button(scene, 0, 0, t(`settings.motion.${choice}`), () =>
+        this.actions.motion(choice),
+      ).setDepth(PANEL_DEPTH + 4),
+    );
+    const lefts = motionChoicesAt(this.choices.map((button) => button.width));
+    this.choices.forEach((button, i) => button.moveTo(x + itemAt(lefts, i), choicesTop));
+    this.parts.push(name, ...this.choices);
   }
 
   /**
