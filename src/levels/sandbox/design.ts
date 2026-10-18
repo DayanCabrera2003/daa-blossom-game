@@ -40,16 +40,11 @@ export type DesignEdit =
   | { readonly type: 'toggleLantern'; readonly u: string; readonly v: string }
   | { readonly type: 'clear' };
 
+/** A limit of the free mode that a design breaks. */
+export type LimitBreach = 'tooMany' | 'tooClose' | 'outside' | 'tooManyVines';
+
 /** Why an edit is refused; the editor says each one kindly. */
-export type DesignRejection =
-  | 'tooMany'
-  | 'tooClose'
-  | 'outside'
-  | 'tooManyVines'
-  | 'sproutBusy'
-  | 'notAVine'
-  | 'noSprout'
-  | 'sameSprout';
+export type DesignRejection = LimitBreach | 'sproutBusy' | 'notAVine' | 'noSprout' | 'sameSprout';
 
 /** Whether a pair joins the two sprouts `u` and `v`, in either order. */
 const joins = (pair: DesignPair, u: string, v: string): boolean =>
@@ -76,7 +71,7 @@ const sproutNamed = (design: Design, label: string): DesignSprout | undefined =>
  * vines, every sprout inside the garden, and no two of them closer than 18 px. An imported design
  * is held to them as an edited one is.
  */
-export function limitBreach(design: Design): DesignRejection | null {
+export function limitBreach(design: Design): LimitBreach | null {
   const { sprouts } = design;
   if (sprouts.length > MAX_SPROUTS) return 'tooMany';
   if (design.vines.length > MAX_VINES) return 'tooManyVines';
