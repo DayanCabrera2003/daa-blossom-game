@@ -58,6 +58,7 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
     const action = escapeAction({
       settingsOpen: target.settingsOpen(),
       insideLayer: target.insideLayer(),
+      canLeave: true,
     });
     if (action === 'closeSettings') target.closeSettings();
     else if (action === 'leaveLayer') dispatch({ kind: 'leaveLayer' });
