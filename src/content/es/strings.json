@@ -132,7 +132,7 @@
   "book.previousPage": "Página anterior",
   "book.nextPage": "Página siguiente",
   "book.close": "Cerrar",
-  "codex.keys": "Esc cierra   ← → página   1 2 3 pestaña",
+  "codex.keys": "Esc cierra   ← → página\n1 2 3 cambian de pestaña",
   "codex.tab.intuition": "Intuición",
   "codex.tab.formal": "Formal",
   "codex.tab.bridge": "Puente",
