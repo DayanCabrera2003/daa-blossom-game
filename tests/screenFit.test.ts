@@ -9,6 +9,10 @@ import { generateDrawer } from '../src/game/picture/generateDrawer';
 import { charsIn, LINE_HEIGHT, wrappedLines } from '../src/game/picture/textWrap';
 import { TOAST, toastBox } from '../src/game/picture/toastBox';
 import { GENERATORS } from '../src/levels/sandbox/generators';
+import { racesOf } from '../src/levels/races';
+import { costChart } from '../src/game/picture/costChart';
+import { PIXEL_FONT } from '../src/game/picture/pixelFont';
+import { RACE_CHART, RACE_LAYOUT } from '../src/game/view/RaceView';
 import { CANVAS_WIDTH } from '../src/game/scale/integerZoom';
 import { LAYOUT } from '../src/game/view/layout';
 import manifest from '../src/game/assets/manifest.json';
@@ -270,5 +274,74 @@ describe('the toasts', () => {
     );
     expect(box.y).toBeGreaterThanOrEqual(LAYOUT.garden.y);
     expect(box.y + box.height).toBeLessThan(top);
+  });
+});
+
+describe("the race chart's words", () => {
+  const { at } = RACE_CHART;
+  const { width, height } = RACE_LAYOUT.chart;
+  /** The panel's right edge, inside its border. */
+  const panelRight = CANVAS_WIDTH - 4 - 1;
+  /**
+   * The rows a line of text written at `y` inks, outline included: from a pixel over its tallest
+   * letters (a capital, a digit, b, d, t) to a pixel under its baseline, or under its tails.
+   */
+  const rows = (y: number, text: string): Span => ({
+    x0: y + PIXEL_FONT.ascent - PIXEL_FONT.capHeight - 1,
+    x1: y + PIXEL_FONT.ascent + (/[gjpqy,;]/.test(text) ? PIXEL_FONT.descent : 0) + 1,
+  });
+  /** Whether two spans overlap at all (touching ends do not). */
+  const overlap = (a: Span, b: Span): boolean => a.x0 < b.x1 && b.x0 < a.x1;
+
+  it("the automaton's name ends before Bruto's dot, and Bruto's on the panel", () => {
+    const [automaton, bruto] = RACE_CHART.legendX(width);
+    const automatonEnd =
+      at.x + automaton + RACE_CHART.legendDotRoom + widthOf(t('race.legend.automaton'));
+    // Bruto's dot is drawn two pixels round a point two pixels after where his legend starts.
+    expect(automatonEnd).toBeLessThanOrEqual(at.x + bruto);
+    const brutoEnd = at.x + bruto + RACE_CHART.legendDotRoom + widthOf(t('race.legend.bruto'));
+    expect(brutoEnd).toBeLessThanOrEqual(panelRight);
+  });
+
+  const charts = levels.flatMap((level) => {
+    const races = racesOf(level.flow).map(({ result }) => result);
+    return races.length === 0
+      ? []
+      : [[level.data.id, costChart(races, races.length, { width, height })] as const];
+  });
+
+  it('there are races to measure', () => {
+    expect(charts.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it.each(charts)('in %s, the sizes stand apart under the axis, clear of its name', (_, chart) => {
+    const sizeY = at.y + height + RACE_CHART.size.dy;
+    const sizes = chart.sizes.map(({ n, x }) => {
+      const x0 = at.x + x + RACE_CHART.size.dx;
+      return { x0, x1: x0 + widthOf(String(n)), text: String(n) };
+    });
+    sizes.forEach((size, i) => {
+      const next = sizes[i + 1];
+      if (next !== undefined) expect(apart(size, next)).toBe(true);
+      expect(size.x1).toBeLessThanOrEqual(panelRight);
+    });
+    // The axis's name under the sizes: where they share columns, they share no row.
+    const name = t('race.axis.sprouts');
+    const nameX = at.x + width - RACE_CHART.sprouts.fromRight;
+    const nameY = at.y + height + RACE_CHART.sprouts.dy;
+    expect(nameX + widthOf(name)).toBeLessThanOrEqual(panelRight);
+    for (const size of sizes) {
+      if (!overlap(size, { x0: nameX, x1: nameX + widthOf(name) })) continue;
+      expect(overlap(rows(sizeY, size.text), rows(nameY, name))).toBe(false);
+    }
+    // The sizes' row starts under the axis line.
+    expect(rows(sizeY, '0').x0).toBeGreaterThan(at.y + height);
+  });
+
+  it("the name of the steps keeps clear of the legend's row over it", () => {
+    const stepsY = at.y + RACE_CHART.steps.dy;
+    const legendY = at.y + RACE_CHART.legendDy;
+    const steps = t('race.axis.steps');
+    expect(overlap(rows(stepsY, steps), rows(legendY, t('race.legend.automaton')))).toBe(false);
   });
 });

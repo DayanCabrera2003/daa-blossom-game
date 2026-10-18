@@ -63,7 +63,7 @@ export const RACE_CHART = {
   steps: { dx: 3, dy: -11 },
   /** The sprouts' axis name ends this far short of the axis's right end. */
   sprouts: { fromRight: 30, dy: 10 },
-  size: { dx: -4, dy: 2 },
+  size: { dx: -4, dy: 1 },
   asleep: { dx: -6, dy: -10 },
 } as const;
 
