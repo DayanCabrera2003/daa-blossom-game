@@ -1,5 +1,4 @@
-import type { Graph } from '@core/graph/types';
-import type { Matching } from '@core/matching/types';
+import type { GardenState } from '@core/rules/state';
 import type { TraceEvent } from '@core/trace/events';
 import type { CodexTab } from '@levels/codex';
 
@@ -20,14 +19,19 @@ export interface BookRequest {
 export type BusSound = 'bookOpen' | 'bookFlip' | 'bookClose' | 'click';
 
 /**
- * What the teacher's trace panel needs from the level being played (GDD §5.8): the whole garden,
- * the names of its sprouts, the lanterns lit now and the events of the player's day so far.
+ * What the teacher's trace panel needs from the level being played (GDD §5.8): which level (its
+ * whole garden, the names and places of its sprouts are the catalog's), every garden of the
+ * player's day so far with the events that made each, and the one the sun shows now. The panel
+ * writes the day from it, and runs Edmonds from the lanterns of the garden shown.
  */
 export interface TeacherFeed {
-  readonly graph: Graph;
-  readonly names: readonly string[];
-  readonly matching: Matching;
-  readonly events: readonly TraceEvent[];
+  readonly level: string;
+  /** The gardens of the day, dawn first: the history the sun walks. */
+  readonly day: readonly GardenState[];
+  /** Beside each garden of the day, the events the rules answered to its move (none at dawn). */
+  readonly events: readonly (readonly TraceEvent[])[];
+  /** The garden the sun shows now, an index into `day`. */
+  readonly cursor: number;
 }
 
 /** What the game announces it can do, so the overlays only offer what exists. */
@@ -50,8 +54,12 @@ export interface BusEvents {
   readonly sound: BusSound;
   /** Show the epilogue "Más allá del jardín" (GDD §7). */
   readonly 'epilogue.open': undefined;
-  /** In teacher mode, the level's state after each move, for the trace panel. */
+  /** In teacher mode, the level's day after each move and each move of the sun, for the panel. */
   readonly 'teacher.feed': TeacherFeed;
+  /** In teacher mode, the level was left: the panel has no garden to write until the next feed. */
+  readonly 'teacher.leave': undefined;
+  /** In teacher mode, open or fold the trace panel (the HUD's trace button, the T key). */
+  readonly 'teacher.toggle': undefined;
   /** What the game can do (today, whether the free mode exists). */
   readonly capabilities: Capabilities;
   /**
