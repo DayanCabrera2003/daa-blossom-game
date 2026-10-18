@@ -1,7 +1,7 @@
 # Plan 07 — El Códex, el Cuaderno, el epílogo y el modo profesor
 
 > Alcance: el Códex como libro (GDD §5.6, §8; GDD §11 punto 7): 14 entradas C1–C14 en Markdown con KaTeX, tres pestañas (Intuición con un diagrama interactivo, Formal con definiciones, enunciados y demostraciones completas, Puente con la traducción y la nota histórica), desbloqueo con el juego y todas abiertas en modo profesor; el Cuaderno como libro, con cada enunciado escrito enlazado a la entrada que lo traduce (GDD §5.5); el epílogo "Más allá del jardín"; y el modo profesor completo (GDD §5.8; parte del punto 10): Códex abierto, saltos directos a cualquier nivel y el panel con la traza del algoritmo en notación matemática junto al jardín.
-> Fuera de alcance: el modo libre (Plan 08: aquí solo queda su botón preparado y oculto), las flores secretas, el Paseo guiado (video), una traducción al inglés (se deja la estructura por idioma, sin textos), el texto de cierre personal del autor (queda un id marcado como pendiente).
+> Fuera de alcance: el modo libre (Plan 08: aquí solo queda su botón preparado y oculto), las flores secretas, el Paseo guiado (video), una traducción al inglés (se deja la estructura por idioma, sin textos).
 > Referencias: `docs/GDD.md` (§2 principio 2, §3.3 glosario, §4.1 UI, §5.5, §5.6, §5.8, §7 epílogo, §8 entradas, §10 prueba de rigor, §11), `docs/plans/06-art-and-audio.md`, las reglas del proyecto (arquitectura, reglas de dependencia, "Contenido y voz").
 
 ---
@@ -19,7 +19,7 @@
 - **Rigor verificable.** Cada demostración se escribe contra un texto de referencia citado (sección 1), sigue la lista de rigor de su fase y nombra el test del núcleo que la "atestigua" empíricamente (p. ej. el lema de Berge contra `core/bruteforce` en grafos aleatorios). La prueba de rigor del GDD §10 (un compañero coteja línea a línea) cierra el plan (fase 15).
 - **Las fases se ejecutan de una en una**, en el orden de la sección "Orden y dependencias". Nunca dos fases a la vez.
 
-Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typecheck, coverage ≥ 95 %, check-levels, build), más `npm run budget` tras el build en las fases que cambian lo que se empaqueta (2, 3, 4, 5, 13). Ninguna fase abre un navegador: las comprobaciones visuales quedan en la lista del autor de cada hito.
+Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typecheck, coverage ≥ 95 %, check-levels, build), más `npm run budget` tras el build en las fases que cambian lo que se empaqueta (2, 3, 4, 5, 13). Ninguna fase abre un navegador: al cerrar cada hito, la sesión principal revisa en pantalla (un único navegador headless, cerrado al terminar) que libros, diagramas, epílogo y panel se vean bien y se entiendan.
 
 ---
 
@@ -287,9 +287,9 @@ Anidadas por inducción; la receta con su tabla tarjeta ↔ línea y el lema de 
 | `game/scenes/HubScene.ts`, `game/picture/hubLayout.ts` | Tras 7.5, un cartel "Más allá del jardín" reabre el epílogo |
 | `content/es/strings.json`, `content/keys.ts` | `epilogue.title`, `epilogue.kidneys`, `epilogue.molecules`, `epilogue.pairs`, `epilogue.readCodex`, `epilogue.sandbox`, `epilogue.back`, y `epilogue.author.closing` |
 
-**El texto de cierre del autor no se inventa.** `epilogue.author.closing` lleva exactamente `«Texto del autor pendiente»`, y `tests/authorPending.test.ts` lista los ids que aún lo llevan (hoy uno) sin fallar; la lista del autor del hito G3 exige vaciarla antes del merge a `main`. Los usos reales van en palabras del jardín ("los dobles enlaces de una molécula se reparten como faroles: cada brote con uno"); su versión matemática vive en C14.
+**El texto de cierre** (`epilogue.author.closing`) lo redacta esta fase, por encargo del autor: breve, cálido y sobrio, en primera persona del autor, sin datos biográficos inventados; agradece al jugador, recuerda que lo que encendió en el jardín es una demostración de verdad y lo invita al Códex y a seguir jugando. Los usos reales van en palabras del jardín ("los dobles enlaces de una molécula se reparten como faroles: cada brote con uno"); su versión matemática vive en C14.
 
-**Tests clave:** sin `capabilities.sandbox`, el epílogo no ofrece el modo libre; con él, sí; ganar 7.5 abre el epílogo y C14 está abierta; ningún texto del epílogo usa el vocabulario matemático; el id del autor existe y es el único pendiente.
+**Tests clave:** sin `capabilities.sandbox`, el epílogo no ofrece el modo libre; con él, sí; ganar 7.5 abre el epílogo y C14 está abierta; ningún texto del epílogo usa el vocabulario matemático; el texto de cierre existe, no está vacío y no usa el vocabulario matemático.
 
 ---
 
@@ -333,7 +333,7 @@ Lo que ya existe y no se rehace: el modo profesor ya abre todos los niveles en e
 | `tools/assets/budget.ts` | Límites definitivos con lo medido |
 | `README.md` | El Códex, el Cuaderno, el epílogo y `?teacher&level=…&codex=…` |
 
-Lista del autor (hitos): leer cada entrada en el navegador a ×2 y ×3 (pestañas, fórmulas, diagramas tocables, paso de página); jugar de 0.1 a 1.8 y ver aparecer C1 sin título formal y luego completa; abrir el Cuaderno tras 2.4 y saltar a C3; ganar 7.5 y ver el epílogo sin botón de modo libre; abrir `?teacher&level=4.6` y recorrer el panel.
+Revisión en pantalla de la sesión principal (hitos): leer cada entrada en el navegador a ×2 y ×3 (pestañas, fórmulas, diagramas tocables, paso de página); jugar de 0.1 a 1.8 y ver aparecer C1 sin título formal y luego completa; abrir el Cuaderno tras 2.4 y saltar a C3; ganar 7.5 y ver el epílogo sin botón de modo libre; abrir `?teacher&level=4.6` y recorrer el panel.
 
 ---
 
@@ -345,7 +345,7 @@ F0 → F1 → F2 → F3 → F4 → F5 → F6 → F7 → F8 → F9 → F10 → F1
 
 Una fase a la vez, siempre. F1 necesita el bus y el store de F0; F3 necesita F1 (qué está abierto) y F2 (Markdown y KaTeX); F4–F5 rellenan los huecos de diagrama que deja F3; F6 enlaza con el libro de F3; F7–F10 necesitan los tests de estructura de F3 y los diagramas de F4–F5; F11 necesita C14 (F10); F12 usa `ui/model` y KaTeX; F13 usa F12 y el jardín pequeño de F4; F14 cierra.
 
-**Hito G1 (F0–F6):** los libros funcionan con esqueletos. **Hito G2 (F7–F10):** el Códex escrito y revisado por el autor. **Hito G3 (F11–F14):** epílogo, modo profesor y prueba de rigor. Tras la verificación del autor (su lista, el texto de cierre escrito y la revisión del compañero): merge `develop → main` y tag `v0.7.0-codex`.
+**Hito G1 (F0–F6):** los libros funcionan con esqueletos. **Hito G2 (F7–F10):** el Códex escrito y con cada demostración revisada línea a línea por la sesión principal contra las referencias. **Hito G3 (F11–F14):** epílogo, modo profesor y prueba de rigor. Tras la revisión en pantalla y la de rigor: merge `develop → main` y tag `v0.7.0-codex`.
 
 ---
 
@@ -371,14 +371,13 @@ Una fase a la vez, siempre. F1 necesita el bus y el store de F0; F3 necesita F1 
 | Riesgo | Mitigación |
 |---|---|
 | KaTeX dispara el presupuesto inicial (hoy quedan ~150 KB) | Trozo diferido obligatorio; el presupuesto distingue inicial y diferido y lo comprueba en cada fase que empaqueta |
-| Un error en una demostración | Lista de rigor de 8 casillas, referencia citada por sección, testigo del núcleo, revisión del autor por hito y la del compañero (F14) |
+| Un error en una demostración | Lista de rigor de 8 casillas, referencia citada por sección, testigo del núcleo, revisión línea a línea por hito en la sesión principal (F14 deja además la hoja para un compañero, opcional) |
 | El vocabulario matemático se cuela en la Intuición o en el epílogo | Test por pestaña con el mismo patrón que `strings.json` y `lines.json` |
 | Los diagramas acaban reimplementando reglas | Todo toque pasa por `applyAction`; los tests comparan con el núcleo; ESLint impide a `ui/` importar `game/` |
 | Libro abierto y juego recibiendo toques o teclas a la vez | `overlay.changed` apaga la entrada de Phaser; foco atrapado en el libro; Esc lo cierra |
 | El zoom entero y el DOM no casan | Variable `--zoom` desde `main.ts`; tamaños de fuente y bordes en múltiplos de ella |
 | Las fuentes de KaTeX no son CC0 | Son SIL OFL 1.1 de una dependencia del stack, no arte: se acreditan en `CREDITS.md` (ver preguntas) |
 | Un `.md` largo pasa de 1000 líneas | Test de longitud; una entrada que crezca se parte en anexos `C11a.md` antes de llegar |
-| El texto de cierre queda sin escribir | Marcador único y testeado; el merge a `main` lo exige |
 
 ## Preguntas abiertas (con el valor por defecto recomendado)
 
@@ -390,7 +389,7 @@ Una fase a la vez, siempre. F1 necesita el bus y el store de F0; F3 necesita F1 
 6. **¿Diagrama de C2 sobre 1.3 (brigada) en vez de 1.2?** Por defecto 1.3; anotado para el GDD.
 7. **¿Qué traza muestra el panel del profesor?** Por defecto las dos: "tu día" y "Edmonds desde aquí" (desde los faroles actuales), con el certificado final; en niebla, todo a la vista.
 8. **¿Dónde va el panel?** Por defecto a la derecha, sobre el lienzo, plegable y cerrado al empezar.
-9. **¿El texto de cierre del autor?** Por defecto un marcador único `«Texto del autor pendiente»` que no rompe CI y bloquea el merge a `main` por la lista del autor.
-10. **¿Quién redacta la Formal?** Por defecto las fases 7–10 la redactan según la sección 1.3, y el autor la revisa en el hito G2 antes de seguir; el compañero de §10 la coteja en F14.
+9. **¿El texto de cierre del autor?** Decidido por el autor: lo redacta la fase 11, sin marcador pendiente.
+10. **¿Quién redacta la Formal?** Decidido por el autor: las fases 7–10 la redactan según la sección 1.3 y la sesión principal revisa cada demostración línea a línea al cerrar cada fase; la hoja de F14 queda para un compañero si se quiere.
 11. **¿Versiones?** Por defecto katex 0.19.0 y marked 18.0.14, exactas; se revisan con `npm view` al ejecutar F2 (con al menos dos semanas desde su publicación).
 12. **¿El Cuaderno distingue las dos preguntas de 6.6 en el guardado?** Por defecto no: el nivel anotado muestra sus dos enunciados (las dos se contestan antes de ganar).
