@@ -30,8 +30,20 @@ export interface Place {
   readonly sign: Rect;
 }
 
+/** What can be pressed on the hub, as `HubScene` lays it out: the gear, the signs, each level. */
+export interface HubPressables {
+  readonly gear: Rect;
+  /** The signs of the top line, right to left from the gear: the Códex, the Cuaderno, the free mode. */
+  readonly topSigns: readonly Rect[];
+  readonly levels: readonly { readonly id: string; readonly box: Rect }[];
+}
+
 /** The hub's boxes and each chapter's flower column and signpost, as `HubScene` lays them out. */
-export function hubOf(teacherMode: boolean): { boxes: Rect[]; signs: Map<string, Place> } {
+export function hubOf(teacherMode: boolean): {
+  boxes: Rect[];
+  signs: Map<string, Place>;
+  pressables: HubPressables;
+} {
   const shown = visibleLevels(entries, teacherMode);
   const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] ?? ''))];
   const widths = chapters.map((chapter) =>
@@ -61,6 +73,7 @@ export function hubOf(teacherMode: boolean): { boxes: Rect[]; signs: Map<string,
   const boxes: Rect[] = [top.title, top.counter, top.gear, ...top.signs];
   if (top.badge !== null) boxes.push(top.badge);
   const signs = new Map<string, Place>();
+  const levels: { id: string; box: Rect }[] = [];
   layout.chapters.forEach(({ titleY, buttons }, c) => {
     const chapter = chapters[c] ?? '';
     signs.set(chapter, {
@@ -73,9 +86,12 @@ export function hubOf(teacherMode: boolean): { boxes: Rect[]; signs: Map<string,
       width: (titles[c] ?? 0) - HUB_HEAD,
       height: BUTTON_HEIGHT - 2,
     });
-    buttons.forEach(({ x, y }, b) =>
-      boxes.push({ x, y: y - 1, width: widths[c]?.[b] ?? 0, height: BUTTON_HEIGHT }),
-    );
+    const ids = shown.filter((level) => level.id.startsWith(`${chapter}.`)).map(({ id }) => id);
+    buttons.forEach(({ x, y }, b) => {
+      const box = { x, y: y - 1, width: widths[c]?.[b] ?? 0, height: BUTTON_HEIGHT };
+      boxes.push(box);
+      levels.push({ id: ids[b] ?? '', box });
+    });
   });
-  return { boxes, signs };
+  return { boxes, signs, pressables: { gear: top.gear, topSigns: top.signs, levels } };
 }
