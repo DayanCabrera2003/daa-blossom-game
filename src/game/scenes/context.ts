@@ -1,5 +1,7 @@
 import type Phaser from 'phaser';
 import type { Level } from '@levels/build';
+import type { Bus } from '@services/bus';
+import type { BusEvents } from '@services/busEvents';
 import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import type { PlaytestRecorder } from '@services/playtestRecorder';
@@ -26,6 +28,8 @@ export interface GameContext {
   /** The playtest log of this browser (GDD §10), and the wall clock that dates its entries. */
   readonly playtest: PlaytestRecorder;
   readonly clock: () => number;
+  /** The typed bus shared with the DOM overlays (books, epilogue, teacher panel). */
+  readonly bus: Bus<BusEvents>;
   /** The player's progress, read and changed only through this store, which writes it at once. */
   readonly saves: SaveStore;
   /** The player's volumes and mute, read at start-up and changed in the settings panel. */
