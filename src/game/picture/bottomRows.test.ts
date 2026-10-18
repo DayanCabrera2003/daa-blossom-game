@@ -27,7 +27,7 @@ const allTools = Object.keys(TOOL_ACTIONS) as ToolId[];
 
 /** The width of a tool's button: its name and, for some, the icon before it. */
 const toolWidth = (tool: ToolId, advance?: number): number =>
-  estimatedButtonWidth(label(`tool.${tool}`), advance) + iconRoom(TOOL_ICONS[tool] ?? null);
+  estimatedButtonWidth(label(`tool.${tool}`), advance) + iconRoom(TOOL_ICONS[tool] ?? []);
 
 /** Panels as [left, right] from their left edges and widths. */
 const spans = (lefts: readonly number[], widths: readonly number[]): [number, number][] =>

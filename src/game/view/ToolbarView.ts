@@ -9,7 +9,7 @@ import { LAYOUT } from './layout';
 
 /**
  * The tools unlocked so far, in their own row above the buttons, on wooden buttons (the marks with
- * the sun of the pack); the one in hand is sunken.
+ * the sun of the pack, the stones with its rock); the one in hand is sunken.
  */
 export class ToolbarView {
   private buttons: { tool: ToolId; button: Button }[] = [];
@@ -33,7 +33,7 @@ export class ToolbarView {
           LAYOUT.toolbarY,
           this.t(`tool.${tool}`),
           () => this.choose(tool),
-          TOOL_ICONS[tool] ?? null,
+          TOOL_ICONS[tool] ?? [],
         ),
       }));
       const lefts = toolbarRow(this.buttons.map(({ button }) => button.width));

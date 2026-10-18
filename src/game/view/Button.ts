@@ -7,14 +7,14 @@ import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 
 /**
- * A small button of the HUD and the panels: a label, maybe after an icon, on a wooden button of the
+ * A small button of the HUD and the panels: a label, maybe after icons, on a wooden button of the
  * pack (`picture/wood.ts`), at rest, in hand or switched off, its letters in the colour that reads
  * on each look. A press clicks, unless the button is switched off.
  */
 export class Button {
   private readonly wood: WoodFrame;
   private readonly text: Phaser.GameObjects.Text;
-  private readonly icon: Phaser.GameObjects.Image | null;
+  private readonly icons: Phaser.GameObjects.Image[];
   private enabled = true;
   private active = false;
 
@@ -24,14 +24,16 @@ export class Button {
     y: number,
     label: string,
     onPress: () => void,
-    icon: ButtonIcon | null = null,
+    icons: readonly ButtonIcon[] = [],
   ) {
-    this.icon =
-      icon !== null && scene.textures.exists(icon.texture)
-        ? scene.add.image(0, 0, icon.texture).setOrigin(0, 0).setScale(icon.scale).setDepth(101)
-        : null;
+    // An icon whose picture is not loaded is left out.
+    this.icons = icons
+      .filter((icon) => scene.textures.exists(icon.texture))
+      .map((icon) =>
+        scene.add.image(0, 0, icon.texture).setOrigin(0, 0).setScale(icon.scale).setDepth(101),
+      );
     this.text = scene.add.text(0, 0, label, textStyle()).setOrigin(0, 0).setDepth(101);
-    const iconRoom = this.icon === null ? 0 : this.icon.displayWidth + ICON_GAP;
+    const iconRoom = this.icons.reduce((room, icon) => room + icon.displayWidth + ICON_GAP, 0);
     this.wood = new WoodFrame(
       scene,
       WOOD_BUTTON.idle,
@@ -68,11 +70,11 @@ export class Button {
   moveTo(x: number, y: number): this {
     const { width, height } = this.wood.bounds;
     this.wood.setRect({ x, y: y - 1, width, height });
-    // The icon is centred on the button's height, the label after it.
+    // Each icon is centred on the button's height, the label after them.
     let left = x + 2;
-    if (this.icon !== null) {
-      this.icon.setPosition(left, Math.round(y - 1 + (height - this.icon.displayHeight) / 2));
-      left += this.icon.displayWidth + ICON_GAP;
+    for (const icon of this.icons) {
+      icon.setPosition(left, Math.round(y - 1 + (height - icon.displayHeight) / 2));
+      left += icon.displayWidth + ICON_GAP;
     }
     this.text.setPosition(left, y);
     return this;
@@ -81,7 +83,7 @@ export class Button {
   /** Puts the button above other layers (panels drawn on top of the HUD). */
   setDepth(depth: number): this {
     this.wood.setDepth(depth);
-    this.icon?.setDepth(depth + 1);
+    for (const icon of this.icons) icon.setDepth(depth + 1);
     this.text.setDepth(depth + 1);
     return this;
   }
@@ -100,14 +102,14 @@ export class Button {
 
   setVisible(visible: boolean): this {
     this.wood.setVisible(visible);
-    this.icon?.setVisible(visible);
+    for (const icon of this.icons) icon.setVisible(visible);
     this.text.setVisible(visible);
     return this;
   }
 
   destroy(): void {
     this.wood.destroy();
-    this.icon?.destroy();
+    for (const icon of this.icons) icon.destroy();
     this.text.destroy();
   }
 
@@ -122,7 +124,7 @@ export class Button {
     const piece = WOOD_BUTTON[this.state];
     this.wood.setPiece(piece);
     this.text.setColor(css(PALETTE[piece.text]));
-    this.icon?.setAlpha(this.enabled ? 1 : 0.5);
+    for (const icon of this.icons) icon.setAlpha(this.enabled ? 1 : 0.5);
     return this;
   }
 }
