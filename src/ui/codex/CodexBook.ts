@@ -15,10 +15,12 @@ import {
   type BookState,
 } from '@ui/model/codexBook';
 import { codexIndex } from '@ui/model/codexIndex';
+import { glossaryTable } from '@ui/model/glossary';
 import { focusAgain, focusedKey, openBookFrame, setHeading, turnIn } from '../book/bookFrame';
 import { button, dot, make, seal } from '../book/bookParts';
 import type { OverlayFrame } from '../shell';
 import { codexEntries } from './entries';
+import { codexGlossary } from './glossary';
 import { renderTab, scrollToResult } from './EntryPage';
 import './codex.css';
 
@@ -38,6 +40,7 @@ import './codex.css';
  */
 export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translate): void {
   const entries = codexEntries();
+  const glossary = codexGlossary();
   const save = frame.saves.get();
   const open: OpenTabs = frame.codexOpen(save);
   const first = openBook(open, unreadPages(open, save), request.entry, request.tab);
@@ -117,6 +120,7 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
     renderTab(
       text,
       shown?.tabs[tab] ?? '',
+      glossaryTable(glossary, open, (id) => entries.get(id)?.gardenTitle ?? id),
       (target, result) => {
         const place = followLink(open, current, target, result);
         if (place === null) {

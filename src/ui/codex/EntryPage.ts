@@ -8,21 +8,28 @@ import { resultTitle } from '@ui/model/codexStructure';
  * KaTeX (`ui/math/markdown.ts`). A link to another entry (`#C8`, `#C8-T8.1`) is handed to the book,
  * which turns to it if it is open or says it is still closed; a link outside the book opens in a
  * new window, so the game stays where it was. Each hole a diagram block leaves is filled with its
- * small garden (`ui/diagram/`); the holes of the tables of the glossary stay empty until their
- * phase fills them (plan 07, phase 10).
+ * small garden (`ui/diagram/`), and each hole of a `glossary` block with the table of the glossary
+ * as the book has it open (`ui/model/glossary.ts`), whose rows link to their entries like any link.
  */
 
 /** What the page does with a link to an entry or one of its results. */
 export type FollowLink = (entry: string, result: string | null) => void;
 
-/** Fills `page` with the HTML of `markdown`, wiring its links and drawing its diagrams. */
+/**
+ * Fills `page` with the HTML of `markdown`, the glossary's holes with the Markdown table
+ * `glossary`, wiring its links and drawing its diagrams.
+ */
 export function renderTab(
   page: HTMLElement,
   markdown: string,
+  glossary: string,
   follow: FollowLink,
   t: Translate,
 ): void {
   page.innerHTML = markdownToHtml(markdown);
+  for (const hole of page.querySelectorAll<HTMLElement>('.codex-glossary')) {
+    hole.innerHTML = markdownToHtml(glossary);
+  }
   for (const link of page.querySelectorAll<HTMLAnchorElement>('a[href]')) {
     const entry = link.dataset['codexEntry'];
     if (entry === undefined) {
