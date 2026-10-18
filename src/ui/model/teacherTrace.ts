@@ -88,6 +88,13 @@ export function teacherTrace(
   };
 }
 
+/**
+ * The lines of the run of Edmonds the panel lists: all of them, or, with `scans` off, all but the
+ * vines examined (`scanEdge`, the lines that count the cost), each line keeping its step.
+ */
+export const edmondsRows = (trace: TeacherTrace, scans: boolean): readonly NotationLine[] =>
+  scans ? trace.edmonds : trace.edmonds.filter((line) => line.type !== 'scanEdge');
+
 /** A garden of the rules as a small garden draws it. */
 const momentOf = (state: GardenState): MiniMoment => ({
   snapshot: snapshotOf(state),

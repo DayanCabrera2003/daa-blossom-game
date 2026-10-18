@@ -4,6 +4,7 @@ import {
   FOLDED_PANEL,
   isShown,
   panelKey,
+  rowOf,
   withFeed,
   withoutFeed,
   toggled,
@@ -44,14 +45,37 @@ describe('walking a trace of the panel', () => {
     expect(walkTo(2, 3)).toBe(2);
   });
 
+  /** Every step from 0 to `last`: a list with no row hidden. */
+  const all = (last: number): number[] => Array.from({ length: last + 1 }, (_, k) => k);
+
   it('the arrows walk one step, Home and End go to the ends, Escape folds', () => {
-    expect(panelKey('ArrowDown', 4, 10)).toEqual({ kind: 'step', step: 5 });
-    expect(panelKey('ArrowRight', 4, 10)).toEqual({ kind: 'step', step: 5 });
-    expect(panelKey('ArrowUp', 4, 10)).toEqual({ kind: 'step', step: 3 });
-    expect(panelKey('ArrowLeft', 0, 10)).toEqual({ kind: 'step', step: 0 });
-    expect(panelKey('Home', 4, 10)).toEqual({ kind: 'step', step: 0 });
-    expect(panelKey('End', 4, 10)).toEqual({ kind: 'step', step: 10 });
-    expect(panelKey('Escape', 4, 10)).toEqual({ kind: 'fold' });
-    expect(panelKey('t', 4, 10)).toBeNull();
+    expect(panelKey('ArrowDown', 4, all(10))).toEqual({ kind: 'step', step: 5 });
+    expect(panelKey('ArrowRight', 4, all(10))).toEqual({ kind: 'step', step: 5 });
+    expect(panelKey('ArrowUp', 4, all(10))).toEqual({ kind: 'step', step: 3 });
+    expect(panelKey('ArrowLeft', 0, all(10))).toEqual({ kind: 'step', step: 0 });
+    expect(panelKey('ArrowDown', 10, all(10))).toEqual({ kind: 'step', step: 10 });
+    expect(panelKey('Home', 4, all(10))).toEqual({ kind: 'step', step: 0 });
+    expect(panelKey('End', 4, all(10))).toEqual({ kind: 'step', step: 10 });
+    expect(panelKey('Escape', 4, all(10))).toEqual({ kind: 'fold' });
+    expect(panelKey('t', 4, all(10))).toBeNull();
+  });
+
+  it('with rows hidden, the arrows walk from row to row, skipping the hidden steps', () => {
+    const rows = [0, 1, 4, 7, 9];
+    expect(panelKey('ArrowDown', 1, rows)).toEqual({ kind: 'step', step: 4 });
+    expect(panelKey('ArrowUp', 7, rows)).toEqual({ kind: 'step', step: 4 });
+    // From a hidden step (the run's sun left there), to the rows round it.
+    expect(panelKey('ArrowDown', 5, rows)).toEqual({ kind: 'step', step: 7 });
+    expect(panelKey('ArrowUp', 5, rows)).toEqual({ kind: 'step', step: 4 });
+    expect(panelKey('End', 2, rows)).toEqual({ kind: 'step', step: 9 });
+    expect(panelKey('Home', 2, rows)).toEqual({ kind: 'step', step: 0 });
+  });
+
+  it('marks a hidden step on the last row before it', () => {
+    const rows = [0, 1, 4, 7, 9];
+    expect(rowOf(rows, 4)).toBe(4);
+    expect(rowOf(rows, 5)).toBe(4);
+    expect(rowOf(rows, 12)).toBe(9);
+    expect(rowOf(rows, 0)).toBe(0);
   });
 });

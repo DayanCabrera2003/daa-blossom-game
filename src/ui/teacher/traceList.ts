@@ -1,4 +1,4 @@
-import { panelKey } from '@ui/model/teacherPanel';
+import { panelKey, rowOf } from '@ui/model/teacherPanel';
 import { renderMath } from '../math/renderMath';
 import { part } from '../diagram/parts';
 
@@ -7,7 +7,9 @@ import { part } from '../diagram/parts';
  * its lines of TeX rendered by KaTeX, the first row (step 0) a plain sentence for the garden the
  * trace starts from. It is one stop of the keyboard: the arrows walk its steps, Home and End go to
  * its ends, Escape folds the panel; a press on a row chooses it. Which step is the sun's and which
- * one is chosen is marked on the rows; the panel decides both.
+ * one is chosen is marked on the rows; the panel decides both. A list may leave steps out (the
+ * vines examined of a run, hidden on request): each row keeps its step, the keys skip the missing
+ * ones, and a step without a row is marked on the row before it.
  */
 
 /** A row of a trace: its step and its lines of TeX. */
@@ -54,9 +56,10 @@ export function traceList(
   list.tabIndex = 0;
   list.setAttribute('role', 'listbox');
   list.setAttribute('aria-label', label);
-  const last = rows.length;
+  const all = [{ step: 0, lines: [] as readonly string[] }, ...rows];
+  const steps = all.map(({ step }) => step);
   let chosen = 0;
-  const items = [{ step: 0, lines: [] as readonly string[] }, ...rows].map(({ step, lines }) => {
+  const items = all.map(({ step, lines }) => {
     const item = part(page, 'li', 'teacher-row');
     item.setAttribute('role', 'option');
     item.append(part(page, 'span', 'teacher-step', String(step)));
@@ -69,7 +72,7 @@ export function traceList(
   });
   list.append(...items);
   list.addEventListener('keydown', (event) => {
-    const action = panelKey(event.key, chosen, last);
+    const action = panelKey(event.key, chosen, steps);
     if (action === null) return;
     // The garden behind takes no key meant for the panel (Escape would leave the level).
     event.preventDefault();
@@ -81,14 +84,17 @@ export function traceList(
     element: list,
     mark(step, sun) {
       chosen = step ?? sun ?? 0;
+      const chosenRow = step === null ? null : rowOf(steps, step);
+      const sunRow = sun === undefined ? null : rowOf(steps, sun);
       items.forEach((item, k) => {
-        item.classList.toggle('is-chosen', k === step);
-        item.classList.toggle('is-sun', k === sun);
-        item.setAttribute('aria-selected', String(k === step));
-        if (k === sun) item.setAttribute('aria-current', 'step');
+        const row = steps[k];
+        item.classList.toggle('is-chosen', row === chosenRow);
+        item.classList.toggle('is-sun', row === sunRow);
+        item.setAttribute('aria-selected', String(row === chosenRow));
+        if (row === sunRow) item.setAttribute('aria-current', 'step');
         else item.removeAttribute('aria-current');
       });
-      const shown = items[step ?? sun ?? 0];
+      const shown = items[steps.indexOf(rowOf(steps, chosen))];
       shown?.scrollIntoView({ block: 'nearest' });
     },
   };

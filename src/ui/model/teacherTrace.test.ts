@@ -10,7 +10,7 @@ import { catalog } from '@levels/catalog';
 import type { TeacherFeed } from '@services/busEvents';
 import { describe, expect, it } from 'vitest';
 import { snapshotOf } from './gardenSnapshot';
-import { dayMoment, edmondsMoment, teacherTrace } from './teacherTrace';
+import { dayMoment, edmondsMoment, edmondsRows, teacherTrace } from './teacherTrace';
 
 const levelById = (id: string): Level => {
   const level = catalog().find((each) => each.data.id === id);
@@ -75,5 +75,23 @@ describe("the model of the teacher's panel", () => {
       expect(trace.certificate).toHaveLength(4);
       expect(trace.certificate[3]).toContain(`\\nu(G)=${trace.size}`);
     }
+  });
+});
+
+describe('the lines of Edmonds the panel lists', () => {
+  const level = levelById('4.6');
+  const trace = teacherTrace(playedFeed(level, 0), namesOf(level), notation);
+
+  it('lists every line, the vines examined (the cost) included, by default', () => {
+    const rows = edmondsRows(trace, true);
+    expect(rows.map((row) => row.step)).toEqual(trace.edmonds.map((line) => line.step));
+    expect(rows.some((row) => row.type === 'scanEdge')).toBe(true);
+  });
+
+  it('hides the vines examined on request, each other line keeping its step', () => {
+    const rows = edmondsRows(trace, false);
+    expect(rows.some((row) => row.type === 'scanEdge')).toBe(false);
+    expect(rows).toEqual(trace.edmonds.filter((line) => line.type !== 'scanEdge'));
+    expect(rows.length).toBeLessThan(trace.edmonds.length);
   });
 });
