@@ -420,6 +420,15 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   'sandbox.opened.brokenStored': [],
   'sandbox.card.title': [],
   'sandbox.card.body': [],
+  'sandbox.solve': [],
+  'sandbox.certify': [],
+  'sandbox.solve.done': ['count'],
+  'sandbox.certify.stones': ['groups', 'stones', 'dark'],
+  'sandbox.certify.stonesFull': [],
+  'sandbox.certify.scarecrows': ['count'],
+  'sandbox.certify.notYet': [],
+  'sandbox.certify.notYetGardener': [],
+  'sandbox.certify.notBees': [],
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
   // The name of each speaker, on the tab of the dialogue box.

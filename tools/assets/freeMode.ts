@@ -1,4 +1,4 @@
-// The folders and modules of the free mode (plan 08, phases 8 to 11): its code loads with import() only when
+// The folders and modules of the free mode (plan 08, phases 8 to 13): its code loads with import() only when
 // it opens, through the thin gate scene `src/game/scenes/SandboxGate.ts`, which stays outside
 // them. The initial script must never reach them (tests/initialScript.test.ts), and the budget
 // weighs what their dynamic imports load in a part of its own, apart from the books.
@@ -10,8 +10,9 @@ export const FREE_MODE_FOLDERS: readonly string[] = [
 ];
 
 /**
- * The free mode's own modules that live in the pure folders (plan 08, phase 11), beside the
- * levels' pure logic: the editor's input, history, pictures and sounds, and its design's store. Only the free mode imports
+ * The free mode's own modules that live in the pure folders (plan 08, phases 11 and 13), beside the
+ * levels' pure logic: the editor's input, history, pictures and sounds, its design's store, and the
+ * orders on a garden being played. Only the free mode imports
  * them, so they load with it and never with the initial script.
  */
 export const FREE_MODE_MODULES: readonly string[] = [
@@ -26,6 +27,12 @@ export const FREE_MODE_MODULES: readonly string[] = [
   'src/game/picture/designToolbar.ts',
   'src/game/picture/editorCard.ts',
   'src/game/picture/generateDrawer.ts',
+  // The orders on a garden being played (phase 13): the gardener, the certificate and their words.
+  'src/game/systems/appendDay.ts',
+  'src/game/systems/lentDay.ts',
+  'src/game/systems/sandboxCertificate.ts',
+  'src/game/systems/sandboxOrders.ts',
+  'src/game/systems/sandboxSolve.ts',
   // The store of the last design: read and checked only when the free mode opens.
   'src/services/sandboxStore.ts',
 ];
