@@ -10,6 +10,8 @@ import {
   PANEL,
   QUESTION_PANEL,
 } from '../picture/panelLayout';
+import { notebookSpots } from '../picture/panelSpots';
+import type { Point } from '../input/target';
 import { WOOD_BUTTON, WOOD_PANEL } from '../picture/wood';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LAYOUT } from './layout';
@@ -19,6 +21,9 @@ import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 import { optionForKey } from '../input/optionKeys';
 import { addFocusable, coverWith } from './focusables';
+import { PanelGrip } from './PanelGrip';
+import { placePanel } from './panelPlacer';
+import { shiftParts } from './shiftParts';
 
 /** What the notebook page shows, already translated. */
 export interface ShownNotebook {
@@ -46,7 +51,8 @@ const FLIPS: readonly AssetKey[] = ['sfx.bookFlip1', 'sfx.bookFlip2', 'sfx.bookF
  * statement and one wooden row per ending, each long enough to wrap, so it is not a row of buttons
  * like a question but a list to read. A dim layer over the garden takes the touches meant for it.
  * Choosing an ending gives its value to the scene, which tells the script; a false one then opens
- * its counterexample. The keyboard's focus reaches each row, and a digit chooses its ending.
+ * its counterexample. The keyboard's focus reaches each row, and a digit chooses its ending. The
+ * page opens clear of the garden and is dragged by its frame (the post-release fix of plan 09).
  */
 export class NotebookView {
   private parts: { destroy(): void }[] = [];
@@ -54,6 +60,11 @@ export class NotebookView {
   private choices: { readonly label: string; readonly choose: () => void }[] = [];
   /** How many pages have turned, for the next page turn's sound. */
   private flips = 0;
+  /** The page open and where its answer goes, to open it again where it places itself. */
+  private asked: {
+    readonly notebook: ShownNotebook;
+    readonly onAnswer: (value: number) => void;
+  } | null = null;
 
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -73,6 +84,7 @@ export class NotebookView {
     const inner = innerWidth(width);
     const left = x + PANEL.pad;
     const ink = PALETTE[WOOD_PANEL.text];
+    this.asked = { notebook, onAnswer };
     const blocker = coverWith(
       scene.add
         .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
@@ -85,14 +97,14 @@ export class NotebookView {
     // The top row: the book and the notebook's name on the left, what to do on the right.
     const top = y + PANEL.pad;
     const middle = top + NOTEBOOK_HEADER / 2;
-    if (scene.textures.exists(BOOK)) {
-      this.parts.push(
-        scene.add
-          .image(left, top, BOOK)
-          .setOrigin(0, 0)
-          .setDepth(PAGE_DEPTH + 1),
-      );
-    }
+    const book = scene.textures.exists(BOOK)
+      ? [
+          scene.add
+            .image(left, top, BOOK)
+            .setOrigin(0, 0)
+            .setDepth(PAGE_DEPTH + 1),
+        ]
+      : [];
     const title = scene.add
       .text(left + NOTEBOOK_ICON, middle, notebook.title, textStyle(8, ink))
       .setOrigin(0, 0.5)
@@ -104,7 +116,7 @@ export class NotebookView {
     const prompt = scene.add
       .text(left, 0, notebook.prompt, { ...textStyle(8, ink), wordWrap: { width: inner } })
       .setDepth(PAGE_DEPTH + 1);
-    this.parts.push(title, footer, prompt);
+    this.parts.push(...book, title, footer, prompt);
 
     // One row per ending, laid out once their texts are measured: the whole row takes the touch.
     const texts = notebook.options.map((option) =>
@@ -120,7 +132,7 @@ export class NotebookView {
       texts.map((text) => text.height + 4),
     );
     prompt.setY(layout.promptY);
-    notebook.options.forEach((option, i) =>
+    const rows = notebook.options.map((option, i) =>
       this.addRow(option, itemAt(texts, i), itemAt(layout.rows, i), onAnswer),
     );
     const page = new WoodFrame(
@@ -129,8 +141,33 @@ export class NotebookView {
       { x, y, width, height: layout.height },
       PAGE_DEPTH,
     );
-    page.zone.setInteractive();
-    this.parts.push(page);
+    // Laid out where it always opened, then moved where the player left it or where it hides
+    // least of the garden (`view/panelPlacer.ts`).
+    const moving = [...book, title, footer, prompt, ...texts, ...rows, page];
+    const moveTo = (at: Point): void =>
+      shiftParts(moving, at.x - page.bounds.x, at.y - page.bounds.y);
+    moveTo(placePanel(scene, 'notebook', notebookSpots(layout.height)));
+    const grip = new PanelGrip(
+      scene,
+      {
+        kind: 'notebook',
+        frame: () => page.bounds,
+        handles: () => rows.map((row) => row.bounds),
+        moveTo,
+        reset: () => this.reopen(),
+      },
+      PAGE_DEPTH + 1,
+    );
+    page.zone
+      .setInteractive()
+      .on('pointerdown', (pointer: Phaser.Input.Pointer) => grip.grab(pointer));
+    this.parts.push(page, grip);
+  }
+
+  /** Opens the same page again, silently, where it places itself (the player sent it back). */
+  private reopen(): void {
+    const { asked } = this;
+    if (asked !== null) this.show(asked.notebook, asked.onAnswer);
   }
 
   /**
@@ -151,6 +188,7 @@ export class NotebookView {
   close(): void {
     if (this.open) playUiSound(this.scene, 'sfx.bookClose');
     this.clear();
+    this.asked = null;
   }
 
   /** The row of one ending at `rowY`, under its text, turning the page when touched. */
@@ -159,7 +197,7 @@ export class NotebookView {
     text: Phaser.GameObjects.Text,
     rowY: number,
     onAnswer: (value: number) => void,
-  ): void {
+  ): WoodFrame {
     const { scene } = this;
     text.setY(rowY + 2);
     const row = new WoodFrame(
@@ -193,6 +231,7 @@ export class NotebookView {
     });
     this.choices.push({ label: option.label, choose });
     this.parts.push(row, text);
+    return row;
   }
 
   private clear(): void {

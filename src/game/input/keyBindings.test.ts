@@ -7,6 +7,7 @@ import {
   KEY_SCREENS,
   keyAction,
   keyBindings,
+  pressOf,
   type KeyPress,
 } from './keyBindings';
 
@@ -103,5 +104,38 @@ describe('the card of the keys', () => {
     expect(helpLines('hub', false)).toContain('flowers');
     expect(helpLines('level', false)).toContain('answer');
     expect(helpLines('hub', false)).not.toContain('answer');
+  });
+});
+
+describe('a key event of the browser', () => {
+  it('reads its key and modifiers, Cmd as Ctrl', () => {
+    const event = { key: 'z', ctrlKey: false, metaKey: true, shiftKey: true, altKey: false };
+    expect(pressOf(event)).toEqual({ key: 'z', ctrl: true, shift: true, alt: false });
+    expect(pressOf({ ...event, altKey: true }).alt).toBe(true);
+  });
+});
+
+describe('moving a panel with the keys', () => {
+  const alt = (key: string): KeyPress => ({ key, ctrl: false, shift: false, alt: true });
+
+  it('Alt and an arrow move the panel in focus wherever panels open over a garden', () => {
+    for (const screen of ['level', 'counterexample', 'editor'] as const) {
+      expect(keyAction(screen, alt('ArrowUp'))).toBe('panelUp');
+      expect(keyAction(screen, alt('ArrowDown'))).toBe('panelDown');
+      expect(keyAction(screen, alt('ArrowLeft'))).toBe('panelLeft');
+      expect(keyAction(screen, alt('ArrowRight'))).toBe('panelRight');
+      // The arrows alone still move the focus.
+      expect(keyAction(screen, press('ArrowUp'))).toBe('focusUp');
+    }
+    expect(keyAction('hub', alt('ArrowUp'))).toBeNull();
+  });
+
+  it('names the chord with its Alt', () => {
+    expect(chordName({ key: 'ArrowUp', alt: true })).toBe('Alt+ArrowUp');
+  });
+
+  it('the card of the keys tells it where it works', () => {
+    expect(helpLines('level', false)).toContain('panels');
+    expect(helpLines('hub', false)).not.toContain('panels');
   });
 });

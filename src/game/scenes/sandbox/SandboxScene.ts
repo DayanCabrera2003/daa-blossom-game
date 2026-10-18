@@ -20,6 +20,7 @@ import {
   type DesignTool,
 } from '../../input/designIntent';
 import { designKey, type DesignCommand } from '../../input/designKeys';
+import { pressOf } from '../../input/keyBindings';
 import type { Point } from '../../input/target';
 import { DESIGN_HEADER, designHeader } from '../../picture/designHeader';
 import { designPicture } from '../../picture/designPicture';
@@ -235,14 +236,11 @@ export class SandboxScene extends Phaser.Scene {
       fallback: () => this.tutorial.dismiss(),
     });
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
-      const command = designKey(
-        { key: event.key, ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey },
-        {
-          cardOpen: this.cardOpen,
-          menuOpen: this.menu.open,
-          selecting: this.pointer.selected !== null,
-        },
-      );
+      const command = designKey(pressOf(event), {
+        cardOpen: this.cardOpen,
+        menuOpen: this.menu.open,
+        selecting: this.pointer.selected !== null,
+      });
       if (command !== null) this.command(command);
     });
   }

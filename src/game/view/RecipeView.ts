@@ -15,6 +15,11 @@ import { Button } from './Button';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { addFocusable, coverWith } from './focusables';
+import { PanelGrip } from './PanelGrip';
+import { placePanel } from './panelPlacer';
+import { shiftParts, type PanelPart } from './shiftParts';
+import type { Point } from '../input/target';
+import type { Rect } from '../picture/boxDistance';
 
 /** Depths of the panel's parts, over its wood (`picture/recipeLayout.ts`). */
 const PANEL_DEPTH = RECIPE_LAYOUT.depth;
@@ -36,9 +41,15 @@ export interface RecipeActions {
  * The cases are a set, and the panel says so: they are listed in the order they were placed, and
  * there is nothing to reorder. What a check finds is a toast, not a row of the panel. It paints
  * what `picture/recipeLayout.ts` says, nothing more, and rebuilds itself only when that changes.
+ * It can be dragged by its frame, and stays where the player left it (the post-release fix of
+ * plan 09).
  */
 export class RecipeView {
-  private parts: { destroy(): void }[] = [];
+  private parts: ({ destroy(): void } & PanelPart)[] = [];
+  /** The grip that drags the panel by its frame, while it is open. */
+  private grip: PanelGrip | null = null;
+  /** The boxes of the panel's cards and buttons now, which a drag never starts on. */
+  private handles: (() => Rect)[] = [];
   /** The panel painted now, as a key, so an unchanged panel is not built again. */
   private shown = 'null';
   /** The page each column shows. */
@@ -47,6 +58,8 @@ export class RecipeView {
   private picture: RecipePanelPicture | null = null;
   /** The card touched last, whose new page the next picture turns to. */
   private follow: RecipeCardId | null = null;
+  /** How far the player dragged the panel from where it is laid out. */
+  private offset: Point = { x: 0, y: 0 };
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -81,19 +94,24 @@ export class RecipeView {
     this.render(picture);
   }
 
-  /** Builds the panel where its layout says. */
+  /**
+   * Builds the panel where its layout says, then moves it where the player left a recipe panel:
+   * it spans the garden, so it has no other spot to place itself in.
+   */
   private build(layout: RecipeLayout): void {
     const { panel } = layout;
-    this.parts.push(
-      coverWith(
-        this.scene.add
-          .rectangle(panel.x, panel.y, panel.width, panel.height, PALETTE.panel, 0.97)
-          .setOrigin(0, 0)
-          .setStrokeStyle(1, PALETTE.panelEdge)
-          .setDepth(PANEL_DEPTH)
-          .setInteractive(),
-      ),
+    const spot = placePanel(this.scene, 'recipe', [panel]);
+    this.offset = { x: spot.x - panel.x, y: spot.y - panel.y };
+    const back = coverWith(
+      this.scene.add
+        .rectangle(panel.x, panel.y, panel.width, panel.height, PALETTE.panel, 0.97)
+        .setOrigin(0, 0)
+        .setStrokeStyle(1, PALETTE.panelEdge)
+        .setDepth(PANEL_DEPTH)
+        .setInteractive(),
     );
+    this.parts.push(back);
+    this.handles = [];
     for (const side of ['left', 'right'] as const) {
       const column = layout[side];
       for (const box of column.texts) {
@@ -109,6 +127,28 @@ export class RecipeView {
       }
     }
     this.button(layout.check, () => this.actions.check());
+    const moving = [...this.parts];
+    const frame = (): Rect => ({ x: back.x, y: back.y, width: back.width, height: back.height });
+    shiftParts(moving, this.offset.x, this.offset.y);
+    const grip = new PanelGrip(
+      this.scene,
+      {
+        kind: 'recipe',
+        frame,
+        handles: () => this.handles.map((handle) => handle()),
+        moveTo: (at) => {
+          shiftParts(moving, at.x - back.x, at.y - back.y);
+          this.offset = { x: back.x - panel.x, y: back.y - panel.y };
+        },
+        reset: () => {
+          shiftParts(moving, panel.x - back.x, panel.y - back.y);
+          this.offset = { x: 0, y: 0 };
+        },
+      },
+      PANEL_DEPTH + 1,
+    );
+    back.on('pointerdown', (pointer: Phaser.Input.Pointer) => grip.grab(pointer));
+    this.grip = grip;
   }
 
   /** A button of the panel where its layout puts it. */
@@ -117,6 +157,7 @@ export class RecipeView {
     button.setDepth(PANEL_DEPTH + 2);
     button.moveTo(place.at.x, place.at.y);
     this.parts.push(button);
+    this.handles.push(() => button.bounds);
     return button;
   }
 
@@ -163,6 +204,7 @@ export class RecipeView {
         },
       );
     this.parts.push(row);
+    this.handles.push(() => ({ x: row.x, y: row.y, width: row.width, height: row.height }));
     addFocusable(this.scene, {
       box: () => ({ x: row.x, y: row.y, width: row.width, height: row.height }),
       depth: () => row.depth,
@@ -175,5 +217,7 @@ export class RecipeView {
   private close(): void {
     for (const part of this.parts) part.destroy();
     this.parts = [];
+    this.grip?.destroy();
+    this.grip = null;
   }
 }

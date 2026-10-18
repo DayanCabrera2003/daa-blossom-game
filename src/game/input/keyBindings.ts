@@ -26,6 +26,7 @@ export interface KeyChord {
   readonly key: string;
   readonly ctrl?: true;
   readonly shift?: true;
+  readonly alt?: true;
 }
 
 /** A key pressed, as a scene reads it from the browser's event (Cmd counts as Ctrl on a Mac). */
@@ -33,7 +34,23 @@ export interface KeyPress {
   readonly key: string;
   readonly ctrl: boolean;
   readonly shift: boolean;
+  /** Whether Alt was held; a press that does not say counts as without it. */
+  readonly alt?: boolean;
 }
+
+/** What a key event of the browser says: its key and which modifiers were held. */
+export type KeyEventLike = Pick<
+  KeyboardEvent,
+  'key' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'altKey'
+>;
+
+/** A key event of the browser as the table reads it: Cmd counts as Ctrl, as on a Mac it is. */
+export const pressOf = (event: KeyEventLike): KeyPress => ({
+  key: event.key,
+  ctrl: event.ctrlKey || event.metaKey,
+  shift: event.shiftKey,
+  alt: event.altKey,
+});
 
 /** What a key asks for. */
 export type KeyAction =
@@ -59,13 +76,18 @@ export type KeyAction =
   | 'rollUp'
   | 'rollDown'
   | 'pageUp'
-  | 'pageDown';
+  | 'pageDown'
+  | 'panelUp'
+  | 'panelDown'
+  | 'panelLeft'
+  | 'panelRight';
 
 /** The lines of the card of the keys, each a text `keys.<line>` of `strings.json`. */
 export const KEY_HELP = [
   'focus',
   'slider',
   'press',
+  'panels',
   'answer',
   'undo',
   'flowers',
@@ -94,7 +116,12 @@ const bind = (
   key: string,
   action: KeyAction,
   help: KeyHelp,
-  mods: { readonly ctrl?: true; readonly shift?: true; readonly teacher?: true } = {},
+  mods: {
+    readonly ctrl?: true;
+    readonly shift?: true;
+    readonly alt?: true;
+    readonly teacher?: true;
+  } = {},
 ): KeyBinding => {
   const { teacher, ...chord } = mods;
   return { chord: { key, ...chord }, action, help, ...(teacher === undefined ? {} : { teacher }) };
@@ -114,6 +141,17 @@ const ARROWS = [
   bind('ArrowDown', 'focusDown', 'focus'),
   bind('ArrowLeft', 'focusLeft', 'slider'),
   bind('ArrowRight', 'focusRight', 'slider'),
+];
+
+/**
+ * Alt and an arrow move the panel in focus over the garden (or the one on top) a few pixels that
+ * way, as a drag of its frame would; the garden itself stays played with the pointer or a touch.
+ */
+const PANELS = [
+  bind('ArrowUp', 'panelUp', 'panels', { alt: true }),
+  bind('ArrowDown', 'panelDown', 'panels', { alt: true }),
+  bind('ArrowLeft', 'panelLeft', 'panels', { alt: true }),
+  bind('ArrowRight', 'panelRight', 'panels', { alt: true }),
 ];
 
 /** Escape closes the innermost thing open, or leaves the screen (`input/escape.ts`). */
@@ -146,6 +184,7 @@ const TABLE: Readonly<Record<KeyScreen, readonly KeyBinding[]>> = {
   level: [
     ...FOCUS,
     ...ARROWS,
+    ...PANELS,
     ESCAPE,
     MUTE,
     ...HISTORY,
@@ -154,10 +193,11 @@ const TABLE: Readonly<Record<KeyScreen, readonly KeyBinding[]>> = {
     bind('PageUp', 'teacherPrevious', 'teacher', { teacher: true }),
     bind('PageDown', 'teacherNext', 'teacher', { teacher: true }),
   ],
-  counterexample: [...FOCUS, ...ARROWS, ESCAPE, ...HISTORY],
+  counterexample: [...FOCUS, ...ARROWS, ...PANELS, ESCAPE, ...HISTORY],
   editor: [
     ...FOCUS,
     ...ARROWS,
+    ...PANELS,
     ESCAPE,
     ...HISTORY,
     ...digits(1, 5, 'tool', 'tools'),
@@ -201,7 +241,9 @@ export const BROWSER_KEYS: readonly KeyChord[] = [
 /** A chord's name, the same for a letter in either case: "Ctrl+Shift+Z", "Tab", "M". */
 export function chordName(chord: KeyChord): string {
   const key = chord.key.length === 1 ? chord.key.toUpperCase() : chord.key;
-  return `${chord.ctrl === true ? 'Ctrl+' : ''}${chord.shift === true ? 'Shift+' : ''}${key}`;
+  const ctrl = chord.ctrl === true ? 'Ctrl+' : '';
+  const alt = chord.alt === true ? 'Alt+' : '';
+  return `${ctrl}${alt}${chord.shift === true ? 'Shift+' : ''}${key}`;
 }
 
 /** The keys of `screen`. */
@@ -213,6 +255,7 @@ export function keyAction(screen: KeyScreen, press: KeyPress): KeyAction | null 
     key: press.key,
     ...(press.ctrl ? { ctrl: true } : {}),
     ...(press.shift ? { shift: true } : {}),
+    ...(press.alt === true ? { alt: true } : {}),
   });
   return TABLE[screen].find(({ chord }) => chordName(chord) === name)?.action ?? null;
 }

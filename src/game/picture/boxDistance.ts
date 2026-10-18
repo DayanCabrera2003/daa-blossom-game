@@ -33,11 +33,11 @@ function pointToSegment(point: Point, a: Point, b: Point): number {
 }
 
 /**
- * Whether the segment `a`–`b` touches `box`, by clipping it to the box's four sides in turn
- * (Liang–Barsky): what is left of the segment's parameter range after each side is the part on its
- * inner side, and the segment touches the box when something is left.
+ * The part of the segment `a`–`b` that lies on `box`, as the range of its parameter (0 at `a`, 1 at
+ * `b`), or null when it misses the box: the segment is clipped to the box's four sides in turn
+ * (Liang–Barsky), and what is left of the range after each side is the part on its inner side.
  */
-function crosses(box: Rect, a: Point, b: Point): boolean {
+export function clipSegment(box: Rect, a: Point, b: Point): readonly [number, number] | null {
   const [dx, dy] = [b.x - a.x, b.y - a.y];
   let [low, high] = [0, 1];
   // Each side as p·t ≤ q: left, right, top, bottom.
@@ -49,15 +49,15 @@ function crosses(box: Rect, a: Point, b: Point): boolean {
   ];
   for (const [p, q] of sides) {
     if (p === 0) {
-      if (q < 0) return false;
+      if (q < 0) return null;
       continue;
     }
     const t = q / p;
     if (p < 0) low = Math.max(low, t);
     else high = Math.min(high, t);
-    if (low > high) return false;
+    if (low > high) return null;
   }
-  return true;
+  return [low, high];
 }
 
 /**
@@ -65,7 +65,7 @@ function crosses(box: Rect, a: Point, b: Point): boolean {
  * ends to the box and of the box's corners to it, where the nearest two points must lie.
  */
 export function distanceToSegment(box: Rect, a: Point, b: Point): number {
-  if (crosses(box, a, b)) return 0;
+  if (clipSegment(box, a, b) !== null) return 0;
   const corners: Point[] = [
     { x: box.x, y: box.y },
     { x: box.x + box.width, y: box.y },

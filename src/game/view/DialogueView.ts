@@ -13,6 +13,11 @@ import { PALETTE } from './palette';
 import { PortraitView } from './PortraitView';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { panelOpen, PanelGrip } from './PanelGrip';
+import { placePanel } from './panelPlacer';
+import type { Point } from '../input/target';
+import { GRIP_MARK } from '../picture/gripMark';
+import { dialogueSpots } from '../picture/panelSpots';
 
 /** The box's depth (`picture/dialogueBox.ts`). */
 const DEPTH = DIALOGUE_DEPTH;
@@ -40,6 +45,10 @@ interface Typing {
  * rows before it is typed, so a word never jumps to the next row halfway through. A screen reader
  * is told each line once, whole, with who says it, as it starts (`sayAloud`), never letter by
  * letter.
+ *
+ * Each run of lines opens the box where it hides less of the garden, at the bottom or under the top
+ * bar, unless the player dropped it elsewhere: a press on its tab or its top border drags it (the
+ * post-release fix of plan 09).
  */
 export class DialogueView {
   private readonly wood: WoodFrame;
@@ -55,6 +64,12 @@ export class DialogueView {
   /** Called once when the box closes after the lines it was given with. */
   private onClosed: (() => void) | null = null;
   private shown = false;
+  /** How far the box sits from where it always sat: placed clear of the garden, or dragged. */
+  private offset: Point = { x: 0, y: 0 };
+  /** The grip that drags the box by its tab and top border, while it is open. */
+  private grip: PanelGrip | null = null;
+  /** Whether the line on the page sits beside a portrait or across the page. */
+  private page: 'plain' | 'portrayed' = 'portrayed';
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -69,8 +84,15 @@ export class DialogueView {
       .setInteractive()
       .on(
         'pointerdown',
-        (_: Phaser.Input.Pointer, __: number, ___: number, event: Phaser.Types.Input.EventData) => {
+        (
+          pointer: Phaser.Input.Pointer,
+          __: number,
+          ___: number,
+          event: Phaser.Types.Input.EventData,
+        ) => {
           event.stopPropagation();
+          // A press on the tab or the top border drags the box; anywhere else moves it on.
+          if (this.grip?.grab(pointer) === true) return;
           this.touch();
         },
       );
@@ -141,16 +163,73 @@ export class DialogueView {
       closed?.();
       return;
     }
+    if (!this.shown) this.place();
     this.setVisible(true);
     this.show(next);
+  }
+
+  /**
+   * The box opens for a run of lines: where the player last dropped it, or else at the bottom of
+   * the garden or under the top bar, whichever hides less of it; beside a question, a notebook or a
+   * card it keeps to the bottom, which their rooms leave free. Its grip comes with it.
+   */
+  private place(): void {
+    const { scene } = this;
+    const spots = dialogueSpots();
+    const beside = panelOpen(scene, ['question', 'notebook', 'card']);
+    this.moveTo(placePanel(scene, 'dialogue', beside ? spots.slice(0, 1) : spots));
+    const home = this.layouts.portrayed;
+    this.grip = new PanelGrip(
+      scene,
+      {
+        kind: 'dialogue',
+        frame: () => this.wood.bounds,
+        grips: () => {
+          const { x, y, width } = this.wood.bounds;
+          return [
+            {
+              x: home.tab.x + this.offset.x,
+              y: home.tab.y + this.offset.y,
+              width: home.tab.width,
+              height: home.tab.height,
+            },
+            { x, y, width, height: WOOD_DIALOGUE.slices.top },
+          ];
+        },
+        moveTo: (at) => this.moveTo(at),
+        reset: () => this.moveTo(placePanel(scene, 'dialogue', spots)),
+        markAt: () => {
+          const { x, y, width } = this.wood.bounds;
+          return { x: Math.round(x + width / 2), y: y + home.tab.height + GRIP_MARK.inset };
+        },
+      },
+      DEPTH + 1,
+    );
+  }
+
+  /** Moves the whole box so that its top-left corner is at `at`. */
+  private moveTo(at: Point): void {
+    const { box, tab, hint, portrait } = this.layouts.portrayed;
+    const { text } = this.layouts[this.page];
+    this.offset = { x: at.x - box.x, y: at.y - box.y };
+    const { x: dx, y: dy } = this.offset;
+    this.wood.setRect({ ...box, x: box.x + dx, y: box.y + dy });
+    this.name.setPosition(tab.x + tab.width / 2 + dx, tab.y + dy);
+    this.text.setPosition(text.x + dx, text.y + dy);
+    this.hint.setPosition(hint.x + dx, hint.y + dy);
+    this.portrait.moveTo({ x: (portrait?.x ?? box.x) + dx, y: (portrait?.y ?? box.y) + dy });
+    this.grip?.paintMark();
   }
 
   /** Writes a line beside its speaker's portrait, or across the page for one who has none. */
   private show(line: SpokenLine): void {
     const portrait = portraitOf(line.speaker);
-    const { text } = this.layouts[portrait === null ? 'plain' : 'portrayed'];
+    this.page = portrait === null ? 'plain' : 'portrayed';
+    const { text } = this.layouts[this.page];
     this.name.setText(this.t(`speaker.${line.speaker}`));
-    this.text.setPosition(text.x, text.y).setWordWrapWidth(text.width);
+    this.text
+      .setPosition(text.x + this.offset.x, text.y + this.offset.y)
+      .setWordWrapWidth(text.width);
     // Typed already broken into rows: a prefix of these rows wraps exactly as the whole line does.
     const rows = this.text.getWrappedText(line.text).join('\n');
     const voiced = this.voice({ ...line, text: rows });
@@ -195,6 +274,10 @@ export class DialogueView {
     this.name.setVisible(visible);
     this.text.setVisible(visible);
     this.hint.setVisible(visible);
-    if (!visible) this.portrait.clear();
+    if (!visible) {
+      this.portrait.clear();
+      this.grip?.destroy();
+      this.grip = null;
+    }
   }
 }

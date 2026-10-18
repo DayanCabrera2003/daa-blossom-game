@@ -5,7 +5,7 @@ import { counterexampleAt } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
-import { historyKey, keyAction } from '../input/keyBindings';
+import { historyKey, keyAction, pressOf } from '../input/keyBindings';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { animationGarden } from '../picture/animationGarden';
@@ -46,6 +46,9 @@ import { textStyle } from '../view/textStyle';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
 import { keepGardenClear } from '../view/touchZone';
+import { setPanelAvoidance } from '../view/panelPlacer';
+import { gardenShapes } from '../picture/gardenShapes';
+import { NOTHING_TO_AVOID, type Avoidance } from '../picture/panelAvoidance';
 import { FocusController } from './focus/FocusController';
 import { contextOf, type GameContext } from './context';
 
@@ -76,6 +79,8 @@ export class CounterexampleScene extends Phaser.Scene {
   private labels: readonly string[] = [];
   /** Which sprouts are bees or flowers; empty in a garden that has none. */
   private kinds: readonly (SproutKind | undefined)[] = [];
+  /** What the garden painted last shows, for the panels to keep clear of. */
+  private avoid: Avoidance = NOTHING_TO_AVOID;
   private views!: {
     fog: FogView;
     flowers: FlowerView;
@@ -120,6 +125,9 @@ export class CounterexampleScene extends Phaser.Scene {
     this.levelId = data.levelId;
     this.labels = counterexample.data.sprouts.map((sprout) => sprout.label);
     this.kinds = counterexample.data.sprouts.map((sprout) => sprout.kind);
+    // The toasts and the dialogue box open clear of the garden as it was last painted.
+    this.avoid = NOTHING_TO_AVOID;
+    setPanelAvoidance(this, () => this.avoid);
 
     // The false statement stays on top, so the player knows what the garden answers.
     const said = `${line(asked.prompt)} ${line(statement.line)}`;
@@ -211,7 +219,7 @@ export class CounterexampleScene extends Phaser.Scene {
       fallback: () => this.views.dialogue.touch(),
     });
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
-      const press = { key: event.key, ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey };
+      const press = pressOf(event);
       const history = historyKey(press);
       if (history !== null) this.dispatch({ kind: history });
       else if (keyAction('counterexample', press) === 'escape') this.leave(back);
@@ -300,6 +308,7 @@ export class CounterexampleScene extends Phaser.Scene {
         ? null
         : drawingPicture(state.matching, challenge, controller.positions, this.labels);
     this.views.mirror.render(drawing, this.time.now);
+    this.avoid = { shapes: gardenShapes(picture, drawing), referred: [] };
     this.views.lanterns.setText(
       challenge === null
         ? t('hud.lanterns', { count: size(state.matching) })

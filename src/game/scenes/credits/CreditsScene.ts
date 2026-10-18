@@ -14,7 +14,7 @@ import {
   scrolled,
   timeAt,
 } from '../../picture/creditsRoll';
-import { keyAction } from '../../input/keyBindings';
+import { keyAction, pressOf } from '../../input/keyBindings';
 import { LINE_HEIGHT } from '../../picture/textWrap';
 import { WOOD_PANEL } from '../../picture/wood';
 import { CANVAS_WIDTH } from '../../scale/integerZoom';
@@ -132,11 +132,7 @@ export class CreditsScene extends Phaser.Scene {
     // Tab reaches "Volver"; Enter or Space press it in focus, or else turn the page.
     new FocusController(this, { screen: () => 'credits', fallback: () => this.forward() });
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
-      const action = keyAction('credits', {
-        key: event.key,
-        ctrl: event.ctrlKey || event.metaKey,
-        shift: event.shiftKey,
-      });
+      const action = keyAction('credits', pressOf(event));
       if (action === 'escape') this.leave();
       else if (action === 'rollDown') this.moveTo(scrolled(this.offset(), STEP, this.travel));
       else if (action === 'rollUp') this.moveTo(scrolled(this.offset(), -STEP, this.travel));

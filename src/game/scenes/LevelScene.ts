@@ -32,7 +32,9 @@ import { sayAloud } from './sayAloud';
 import type { StarResult } from '../systems/stars';
 import { levelStepCard, startCards } from '../systems/tutorials';
 import { SfxPlayer } from '../audio/SfxPlayer';
+import { panelAvoidance } from '../picture/panelAvoidance';
 import { fitCamera } from '../view/fitCamera';
+import { setPanelAvoidance } from '../view/panelPlacer';
 import { LAYOUT } from '../view/layout';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
@@ -134,6 +136,9 @@ export class LevelScene extends Phaser.Scene {
     this.controller = opened.controller;
     this.log([{ kind: 'levelStart', at: this.context.clock(), level: level.data.id }]);
     const { t } = this.context;
+    // Every panel over the garden opens clear of what the step on screen points at.
+    const kinds = level.data.sprouts.map((sprout) => sprout.kind);
+    setPanelAvoidance(this, () => panelAvoidance(this.controller, kinds));
     this.sfx = new SfxPlayer(this, this.context.audio);
     this.views = buildLevelViews(this, t, {
       dispatch: (event) => this.dispatch(event),
@@ -152,7 +157,7 @@ export class LevelScene extends Phaser.Scene {
       this.views,
       {
         labels: this.labels,
-        kinds: level.data.sprouts.map((sprout) => sprout.kind),
+        kinds,
         season: screen.season,
         interfaceAt: screen.interfaceAt,
       },

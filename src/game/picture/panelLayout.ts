@@ -64,9 +64,25 @@ export interface QuestionLayout {
   readonly height: number;
 }
 
-/** The question panel for a prompt `promptHeight` tall and options of `widths`. */
-export function questionLayout(promptHeight: number, widths: readonly number[]): QuestionLayout {
-  const { x, y, width } = QUESTION_PANEL;
+/** Where a panel's top-left corner sits and how wide it is. */
+export interface PanelSpot {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+}
+
+/**
+ * The question panel for a prompt `promptHeight` tall and options of `widths`, at `spot` (where
+ * it opens by default, unless it is placed elsewhere to keep the garden in sight), with a footer
+ * `footerHeight` tall: a line, or more in a narrow panel where it wraps.
+ */
+export function questionLayout(
+  promptHeight: number,
+  widths: readonly number[],
+  spot: PanelSpot = QUESTION_PANEL,
+  footerHeight: number = LINE_HEIGHT,
+): QuestionLayout {
+  const { x, y, width } = spot;
   const left = x + PANEL.pad;
   const prompt = { x: left, y: y + PANEL.pad };
   const top = prompt.y + promptHeight + PANEL.gap;
@@ -76,7 +92,7 @@ export function questionLayout(promptHeight: number, widths: readonly number[]):
     prompt,
     buttons: flow.positions,
     footer,
-    height: footer.y + LINE_HEIGHT + PANEL.pad - y,
+    height: footer.y + footerHeight + PANEL.pad - y,
   };
 }
 
@@ -96,12 +112,12 @@ export const NOTEBOOK_HEADER = 16;
 /** The room the book takes before the notebook's name: the icon and a gap. */
 export const NOTEBOOK_ICON = 16 + 2;
 
-/** The notebook page for a statement `promptHeight` tall and rows of `rowHeights`. */
+/** The notebook page for a statement `promptHeight` tall and rows of `rowHeights`, from `y` down. */
 export function notebookLayout(
   promptHeight: number,
   rowHeights: readonly number[],
+  y: number = QUESTION_PANEL.y,
 ): NotebookLayout {
-  const { y } = QUESTION_PANEL;
   const promptY = y + PANEL.pad + NOTEBOOK_HEADER + PANEL.gap;
   let rowY = promptY + promptHeight + PANEL.gap;
   const rows = rowHeights.map((height) => {
@@ -121,9 +137,15 @@ export interface TutorialLayout {
   readonly height: number;
 }
 
-/** The window of a card whose body is `bodyHeight` tall and whose demo is `demoHeight` tall. */
-export function tutorialLayout(bodyHeight: number, demoHeight: number): TutorialLayout {
-  const { y } = TUTORIAL_PANEL;
+/**
+ * The window of a card whose body is `bodyHeight` tall and whose demo is `demoHeight` tall, from
+ * `y` down.
+ */
+export function tutorialLayout(
+  bodyHeight: number,
+  demoHeight: number,
+  y: number = TUTORIAL_PANEL.y,
+): TutorialLayout {
   // The card's title, a line, on top of the window.
   const bodyY = y + PANEL.pad + LINE_HEIGHT + PANEL.gap;
   const demoY = bodyY + bodyHeight + PANEL.gap;

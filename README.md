@@ -20,6 +20,8 @@ Every night the sprouts of a garden want a lantern, and a lantern is for two nei
 
 The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the sun to watch the day again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit, and each level has three hints.
 
+Every panel over the garden (a question, the notebook, a card, the recipe, the dialogue box, a message) opens where it hides least of the garden, never over what it asks about, and can be **dragged by its frame** wherever the player likes; it opens there again for the rest of the session, and a double touch on its frame sends it back.
+
 Menus, panels, questions and dialogue also work with the **keyboard** (the garden itself does not). The settings' gear shows the same table as a card (*Teclas*).
 
 | Key | Where | What it does |
@@ -32,6 +34,7 @@ Menus, panels, questions and dialogue also work with the **keyboard** (the garde
 | `M` | hub, levels, settings | mute or unmute |
 | `F` / `Shift+F` | hub | from one secret flower to the next |
 | `0`–`9` | levels | choose an answer of a question |
+| `Alt+ArrowUp` / `Alt+ArrowDown` / `Alt+ArrowLeft` / `Alt+ArrowRight` | levels, free mode | move the panel open (a question, a card, the dialogue box…) |
 | `Ctrl+Z` | levels, free mode | undo |
 | `Ctrl+Y` / `Ctrl+Shift+Z` | levels, free mode | redo |
 | `1`–`5` | free mode's editor | choose a tool |

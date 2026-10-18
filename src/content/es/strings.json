@@ -503,6 +503,7 @@
   "keys.focus": "Tab, Mayús+Tab y flechas: de un botón a otro",
   "keys.slider": "Flechas a los lados: mueven el sol o el volumen",
   "keys.press": "Intro o Espacio: pulsa, o sigue el diálogo",
+  "keys.panels": "Alt+flechas: mueven el cartel abierto",
   "keys.answer": "1 a 9, o 0: eligen una respuesta",
   "keys.undo": "Ctrl+Z deshace; Ctrl+Y o Ctrl+Mayús+Z rehacen",
   "keys.flowers": "F y Mayús+F: de una flor secreta a otra",
