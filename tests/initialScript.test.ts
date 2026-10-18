@@ -83,6 +83,12 @@ describe('the initial script', () => {
     expect(early).toEqual([]);
   });
 
+  it("plays a free garden in the level scene without the free mode's code: the editor builds it", () => {
+    expect(modules.has('src/game/scenes/LevelScene.ts')).toBe(true);
+    expect(modules.has('src/game/systems/levelScreenOf.ts')).toBe(true);
+    expect(modules.has('src/levels/sandbox/toLevel.ts')).toBe(false);
+  });
+
   it("counts the free mode's scenes as the free mode's, out of the initial script", () => {
     expect(isFreeMode('src/game/scenes/sandbox/SandboxScene.ts')).toBe(true);
     expect(isFreeMode('src/levels/sandbox/design.ts')).toBe(true);
