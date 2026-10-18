@@ -19,8 +19,9 @@ import { parseDiagramSpec, type DiagramSpec } from '@ui/model/diagramSpec';
 import { TEXT_PARAMS } from '@content/keys';
 import { cardDemos } from '@levels/cards/catalog';
 import { mathSpans } from '@ui/model/mathSpans';
+import { glossaryTable, parseGlossary, type Glossary } from '@ui/model/glossary';
 import { describe, expect, it } from 'vitest';
-import { codexSources, openCodex } from '@services/codexProgress';
+import { GLOSSARY_ENTRIES, codexSources, openCodex } from '@services/codexProgress';
 import { emptySave, recordCompletion } from '@services/save';
 import { MATHEMATICS } from './support/vocabulary';
 
@@ -160,8 +161,12 @@ function rigorProblems(entry: CodexEntryId, formal: string): string[] {
 }
 
 describe('the files of the Codex (content/es/codex)', () => {
-  it('are exactly C01.md to C14.md, each marked with its own entry', () => {
-    expect(readdirSync(FOLDER).sort()).toEqual(CODEX_ENTRIES.map(fileOf).sort());
+  it('are exactly C01.md to C14.md, each marked with its own entry, and the glossary', () => {
+    const files = readdirSync(FOLDER);
+    expect(files.filter((file) => file.endsWith('.md')).sort()).toEqual(
+      CODEX_ENTRIES.map(fileOf).sort(),
+    );
+    expect(files.filter((file) => !file.endsWith('.md'))).toEqual(['glossary.json']);
     expect(entries.map((entry) => entry.id)).toEqual(CODEX_ENTRIES);
   });
 
@@ -405,6 +410,52 @@ describe('the structure of rigor of the formal tabs', () => {
     expect(
       rigorProblems('C11', '**Observación 11.1 (x).** (sin demostración: fuera de alcance)'),
     ).toEqual([]);
+  });
+});
+
+/** The glossary of C13 as written; a file that does not parse fails every test that reads it. */
+const glossary: Glossary = (() => {
+  const parsed = parseGlossary(JSON.parse(readFileSync(join(FOLDER, 'glossary.json'), 'utf8')));
+  if (!parsed.ok) throw new Error(`glossary: ${parsed.error.join('; ')}`);
+  return parsed.value;
+})();
+
+/** Every entry open, all three tabs: the glossary whole. */
+const allOpen = new Map(CODEX_ENTRIES.map((entry) => [entry, new Set(CODEX_TABS)]));
+
+/** The words of the garden column of GDD §3.3, quotes and escapes aside. */
+function designGlossary(): string[] {
+  const design = readFileSync(join(import.meta.dirname, '..', 'docs', 'GDD.md'), 'utf8');
+  const section = design.split('### 3.3')[1]?.split('\n---')[0] ?? '';
+  return section
+    .split('\n')
+    .filter((line) => line.startsWith('| ') && !line.startsWith('| En el jardín'))
+    .map((line) => wordsOf(line.split('|')[1] ?? ''));
+}
+
+/** A garden word without its quotes or escapes, to compare the glossary with the design. */
+const wordsOf = (text: string): string => text.replace(/[«»"\\]/g, '').trim();
+
+describe('the glossary of C13 (plan 07, phase 10)', () => {
+  it('holds every row of GDD §3.3, in its order', () => {
+    expect(glossary.rows.map((row) => wordsOf(row.garden))).toEqual(designGlossary());
+  });
+
+  it('each row names an entry with rows, every one of them has rows, in the order of the book', () => {
+    const entries = glossary.rows.map((row) => row.entry);
+    expect([...new Set(entries)]).toEqual(GLOSSARY_ENTRIES);
+  });
+
+  it('the garden column never names the mathematics', () => {
+    const offending = glossary.rows.filter((row) => MATHEMATICS.test(row.garden));
+    expect(offending).toEqual([]);
+  });
+
+  it('the whole table renders strictly, and each row links to its entry', () => {
+    const table = glossaryTable(glossary, allOpen, (entry) => entry);
+    expect(() => markdownToHtml(table, 'strict')).not.toThrow();
+    const links = codexStructure(table).links;
+    expect(links.map((link) => link.entry)).toEqual(glossary.rows.map((row) => row.entry));
   });
 });
 
