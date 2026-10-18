@@ -3,6 +3,7 @@ import lines from '@content/es/lines.json';
 import strings from '@content/es/strings.json';
 import { catalog } from '@levels/catalog';
 import { CARD_IDS } from '@levels/cards/schema';
+import { speakerOf, type Speaker } from '@game/systems/speaker';
 import { referencedLines } from '@levels/lines';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -89,6 +90,26 @@ describe('dialogue lines (content/es/lines.json)', () => {
   it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
     const offending = Object.entries(lineTable).filter(([, text]) => MATHEMATICS.test(text));
     expect(offending).toEqual([]);
+  });
+
+  it('no level lets a character speak before the chapter that introduces him', () => {
+    /** The chapter of a level id, such as 4 for `4.13`. */
+    const chapterOf = (id: string): number => Number(id.split('.')[0]);
+    // A character is introduced by the first level of the main path that gives him a line: a
+    // secret flower is optional and may be played before later chapters, so it introduces no one.
+    const introduced = new Map<Speaker, number>();
+    for (const level of catalog().filter((candidate) => candidate.data.secret === undefined)) {
+      for (const speaker of referencedLines(level.data).map(speakerOf)) {
+        const chapter = chapterOf(level.data.id);
+        introduced.set(speaker, Math.min(chapter, introduced.get(speaker) ?? chapter));
+      }
+    }
+    const early = catalog().flatMap((level) =>
+      referencedLines(level.data).filter(
+        (id) => (introduced.get(speakerOf(id)) ?? Infinity) > chapterOf(level.data.id),
+      ),
+    );
+    expect(early).toEqual([]);
   });
 });
 

@@ -57,9 +57,9 @@
     { "line": "ch4.13.sauce.05" }
   ],
   "flow": [
-    { "step": "say", "lines": ["ch4.13.sauce.00", "ch4.13.bruto.01", "ch4.13.sauce.02"] },
+    { "step": "say", "lines": ["ch4.13.sauce.00", "ch4.13.sauce.01", "ch4.13.sauce.02"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch4.13.sauce.06", "ch4.13.bruto.07"] }
+    { "step": "say", "lines": ["ch4.13.sauce.06", "ch4.13.sauce.07"] }
   ],
   "solution": [
     { "type": "markRoot", "vertex": "R" },
