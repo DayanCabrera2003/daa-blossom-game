@@ -13,6 +13,7 @@ import {
   recipeLevel,
 } from '../../../tests/support/fixtureLevels';
 import { size } from '@core/matching/queries';
+import { COUNCIL, councilLevel, tangleLevel } from '../../../tests/support/secretScripts';
 import { garden } from './levelSession';
 import { playWalkthrough } from './walkthrough';
 
@@ -302,5 +303,26 @@ describe('playing the reference walkthrough of a level without a scene', () => {
 
   it('every level of the catalog plays through', () => {
     for (const level of catalog()) expect(playWalkthrough(level).problem).toBeNull();
+  });
+
+  it('the winning threads are answered on the panel of numbers, before the tangle splits (2.5)', () => {
+    const { effects, problem } = playWalkthrough(tangleLevel());
+    expect(problem).toBeNull();
+    expect(effects).toContainEqual({ kind: 'answered', step: 1, value: 2, correct: true });
+  });
+
+  it('the council is shown two different certificates, and a repeated one is told (7.6)', () => {
+    const { effects, problem } = playWalkthrough(councilLevel());
+    expect(problem).toBeNull();
+    expect(effects).toContainEqual({ kind: 'certifyAgain', step: 1 });
+    expect(effects).not.toContainEqual({ kind: 'sameStones' });
+    // Presenting no stones twice leaves the council waiting.
+    const [joinAB, joinRC, done, lift] = COUNCIL.solution;
+    const drop = { type: 'dropStone', vertex: 'C' };
+    const loaded = loadLevel({ ...COUNCIL, solution: [joinAB, joinRC, done, lift, drop, done] });
+    if (!loaded.ok) throw new Error('fixture does not load');
+    const repeated = playWalkthrough(loaded.value);
+    expect(repeated.effects).toContainEqual({ kind: 'sameStones' });
+    expect(repeated.problem).toEqual({ code: 'unfinished', step: 1 });
   });
 });
