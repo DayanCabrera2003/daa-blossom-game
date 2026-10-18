@@ -74,6 +74,14 @@ describe('brute-force maximum matching (Bruto)', () => {
     );
   });
 
+  it('property (Códex C1, Prop. 1.4): no garden lights more than half its sprouts', () => {
+    fc.assert(
+      fc.property(graphArb({ maxN: 9 }), (graph) => {
+        expect(2 * sizeOf(graph)).toBeLessThanOrEqual(graph.n);
+      }),
+    );
+  });
+
   it('property: the search is deterministic, including its step count', () => {
     fc.assert(
       fc.property(graphArb({ maxN: 9 }), (graph) => {
