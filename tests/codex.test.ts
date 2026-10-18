@@ -10,7 +10,11 @@ import { parseCodexEntry, type CodexEntry } from '@ui/model/codexEntry';
 import { codexIndex } from '@ui/model/codexIndex';
 import { codexStructure, resultId, type CodexStructure } from '@ui/model/codexStructure';
 import { diagramGarden, type DiagramSources } from '@ui/model/diagramGarden';
+import { chartRaces } from '@ui/model/chartPicture';
+import { flowerOf } from '@ui/model/cutPlay';
 import { replaySteps } from '@ui/model/diagramReplay';
+import { reflectionOf } from '@ui/model/pondPicture';
+import { recipeDay } from '@ui/model/recipePicture';
 import { parseDiagramSpec, type DiagramSpec } from '@ui/model/diagramSpec';
 import { TEXT_PARAMS } from '@content/keys';
 import { cardDemos } from '@levels/cards/catalog';
@@ -47,6 +51,10 @@ const entries: CodexEntry[] = CODEX_ENTRIES.map((entry) => {
 const structures = new Map<string, CodexStructure>(
   entries.map((entry) => [entry.id, codexStructure(entry.tabs.formal)]),
 );
+
+/** Whether a day was played, from dawn through at least two steps. */
+const lastsADay = (day: { ok: boolean; value?: readonly unknown[] }): boolean =>
+  day.ok && (day.value?.length ?? 0) > 2;
 
 /** Every diagram block of every tab, with its entry, read as a diagram (or failing the test). */
 const diagrams: [CodexEntryId, DiagramSpec][] = entries.flatMap((entry) =>
@@ -168,7 +176,7 @@ describe('what the Codex points at', () => {
   });
 });
 
-describe('the diagrams of the Codex (plan 07, phase 4)', () => {
+describe('the diagrams of the Codex (plan 07, phases 4 and 5)', () => {
   const levels = catalog();
   const cards = cardDemos();
   const sources: DiagramSources = {
@@ -179,13 +187,24 @@ describe('the diagrams of the Codex (plan 07, phase 4)', () => {
   it('every block builds its garden, and every replayed day plays to its end', () => {
     expect(diagrams.length).toBeGreaterThan(0);
     for (const [entry, spec] of diagrams) {
-      if (spec.kind === 'chart') continue;
+      if (spec.kind === 'chart') {
+        const raced = levels.filter((level) => spec.races.includes(level.data.id));
+        expect({ entry, races: chartRaces(raced).length > 1 }).toEqual({ entry, races: true });
+        continue;
+      }
       const garden = diagramGarden(spec, sources);
       expect({ entry, ok: garden.ok }).toEqual({ entry, ok: true });
-      if (!garden.ok || spec.kind !== 'replay') continue;
-      const steps = replaySteps(garden.value, spec.trace);
-      expect({ entry, ok: steps.ok }).toEqual({ entry, ok: true });
-      if (steps.ok) expect(steps.value.length).toBeGreaterThan(2);
+      if (!garden.ok) continue;
+      // What each kind needs of its garden besides the garden itself.
+      const needs: Record<string, () => boolean> = {
+        replay: () => spec.kind === 'replay' && lastsADay(replaySteps(garden.value, spec.trace)),
+        recipe: () => lastsADay(recipeDay(garden.value)),
+        pond: () => reflectionOf(garden.value).ok,
+        cut: () => flowerOf(garden.value).ok,
+      };
+      const need = needs[spec.kind];
+      if (need !== undefined)
+        expect({ entry, kind: spec.kind, ok: need() }).toMatchObject({ ok: true });
     }
   });
 
@@ -199,11 +218,18 @@ describe('the diagrams of the Codex (plan 07, phase 4)', () => {
     expect(drawn).toEqual([
       { entry: 'C1', kind: 'play', garden: '1.1', day: 'join split' },
       { entry: 'C2', kind: 'play', garden: '1.3', day: 'chain' },
+      { entry: 'C3', kind: 'pond', garden: '2.1', day: '' },
       { entry: 'C4', kind: 'replay', garden: '3.4', day: 'solution' },
+      { entry: 'C5', kind: 'cover', garden: '3.8', day: '' },
       { entry: 'C6', kind: 'replay', garden: '4.1', day: 'autoSearch' },
       { entry: 'C6', kind: 'replay', garden: '4.2', day: 'autoSearch' },
       { entry: 'C7', kind: 'replay', garden: '4.6', day: 'solution' },
+      { entry: 'C8', kind: 'cut', garden: '4.11', day: '' },
       { entry: 'C9', kind: 'replay', garden: '5.1', day: 'edmonds' },
+      { entry: 'C10', kind: 'recipe', garden: '6.2', day: '' },
+      { entry: 'C11', kind: 'chart', garden: '6.4 6.5', day: '' },
+      { entry: 'C12', kind: 'stones', garden: '7.3', day: '' },
+      { entry: 'C12', kind: 'stones', garden: '7.4', day: '' },
       { entry: 'C14', kind: 'play', garden: 'AQaMSgA', day: 'join split' },
     ]);
   });
