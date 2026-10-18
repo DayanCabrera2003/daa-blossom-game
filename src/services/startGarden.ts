@@ -1,12 +1,12 @@
-import { decodeGarden } from '@core/codes/gardenCode';
-
 /**
  * The garden to open the free mode with straight away, from a shared link `?garden=<code>` (plan
- * 08, section 1.3): the code when it is a garden code, or null. Unlike `?level=`, it works for
- * players too, since it is how a garden is shared. A broken code is ignored and the game starts as
- * usual; the free mode itself holds the garden to its limits when it opens it.
+ * 08, section 1.3): the code as the address gives it (trimmed), or null when there is none. Unlike
+ * `?level=`, it works for players too, since it is how a garden is shared. It is only looked for,
+ * never decoded here: the garden-code decoder belongs to the free mode's own chunk, which reads the
+ * code once it has loaded and tells the player kindly if it is broken. That keeps the decoder out
+ * of the initial script.
  */
 export function requestedGarden(search: string): string | null {
-  const code = new URLSearchParams(search).get('garden');
-  return code !== null && decodeGarden(code).ok ? code : null;
+  const code = new URLSearchParams(search).get('garden')?.trim() ?? '';
+  return code === '' ? null : code;
 }

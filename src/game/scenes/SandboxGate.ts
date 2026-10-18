@@ -10,7 +10,7 @@ export const SANDBOX_SCENE = 'sandbox';
 
 /** What the free mode opens with. */
 export interface SandboxSceneData {
-  /** A garden code to open (a shared link's), or null for the last design kept. */
+  /** A shared link's garden code, not yet read (it may be broken), or null for the last design kept. */
   readonly garden: string | null;
 }
 

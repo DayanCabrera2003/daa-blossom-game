@@ -26,7 +26,7 @@ export interface GameContext {
   readonly teacherMode: boolean;
   /** A level to open straight away (teacher mode, `?level=`), or null to start at the hub. */
   readonly startLevel: string | null;
-  /** A garden code to open the free mode with straight away (a shared link's `?garden=`), or null. */
+  /** A shared link's `?garden=` as given, to open the free mode with (it reads it), or null. */
   readonly startGarden: string | null;
   /** The last garden designed in the free mode, kept apart from the progress. */
   readonly sandbox: SandboxStore;

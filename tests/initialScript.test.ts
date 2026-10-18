@@ -73,6 +73,11 @@ describe('the initial script', () => {
     expect(modules.has('src/game/scenes/sandbox/SandboxScene.ts')).toBe(false);
   });
 
+  it("leaves the garden-code decoder to the free mode: a shared link's code is only passed on", () => {
+    expect(modules.has('src/services/startGarden.ts')).toBe(true);
+    expect(modules.has('src/core/codes/gardenCode.ts')).toBe(false);
+  });
+
   it('never holds a module of the free mode: it loads when the free mode opens', () => {
     const early = [...modules].filter(isFreeMode);
     expect(early).toEqual([]);
