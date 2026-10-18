@@ -16,6 +16,12 @@
         margin: 0;
         background: #141b1b;
       }
+      /* As tall as the window and a block of its own, so Phaser centres the canvas in it, also when
+         the canvas is a zoom smaller to leave room for the teacher's panel at its right. */
+      body {
+        min-height: 100vh;
+        display: flow-root;
+      }
       /* A block, so no text baseline makes the page taller than a canvas that fits the window. */
       canvas {
         display: block;
