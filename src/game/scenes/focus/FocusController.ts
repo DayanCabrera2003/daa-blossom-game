@@ -11,6 +11,8 @@ import { keyAction, pressOf, type KeyAction, type KeyScreen } from '../../input/
 import { FOCUS_RING, focusRing } from '../../picture/focusRing';
 import { everyFrame } from '../../view/everyFrame';
 import { focusablesOf, type Focusable } from '../../view/focusables';
+import type { NudgeDirection } from '../../input/panelDrag';
+import { nudgePanel } from '../../view/PanelGrip';
 import { PALETTE } from '../../view/palette';
 
 /** Over everything the scene draws: the settings panel's buttons sit at 414. */
@@ -24,6 +26,14 @@ const MOVES: Partial<Record<KeyAction, FocusMove>> = {
   focusDown: 'down',
   focusLeft: 'left',
   focusRight: 'right',
+};
+
+/** The ways Alt and an arrow move a panel, by the action of their key. */
+const NUDGES: Partial<Record<KeyAction, NudgeDirection>> = {
+  panelUp: 'up',
+  panelDown: 'down',
+  panelLeft: 'left',
+  panelRight: 'right',
 };
 
 /** What the scene tells its focus controller. */
@@ -41,7 +51,8 @@ export interface FocusOptions {
  * (the same function), and the side arrows move a slider in focus. A panel opening above takes the
  * focus; closing it gives the focus back. The ring (`picture/focusRing.ts`) only shows after a key
  * of the focus: a press or a move of the pointer takes it away, so it never gets in the way of the
- * mouse or a finger. Which key does what is the one table's (`input/keyBindings.ts`).
+ * mouse or a finger. Alt and an arrow move the panel that holds the focus (`view/PanelGrip.ts`).
+ * Which key does what is the one table's (`input/keyBindings.ts`).
  */
 export class FocusController {
   private state: FocusState<Focusable> = { current: null, top: -1, saved: [] };
@@ -85,6 +96,14 @@ export class FocusController {
       const { current } = this.state;
       if (current !== null) current.press();
       else this.options.fallback?.();
+      return;
+    }
+    const nudge = action === null ? undefined : NUDGES[action];
+    if (nudge !== undefined) {
+      // Alt and an arrow move the panel holding the focus (or the one on top), and never take the
+      // browser back a page.
+      event.preventDefault();
+      nudgePanel(this.scene, nudge, this.state.current?.box() ?? null);
       return;
     }
     const move = action === null ? undefined : MOVES[action];
