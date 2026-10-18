@@ -4,6 +4,7 @@ import { graphWithMatchingArb } from '../../../tests/support/arbitraries';
 import { pathGraph } from '../generators/families';
 import { createGraph } from '../graph/createGraph';
 import { createMatching } from '../matching/createMatching';
+import { checkAugmentingPath } from '../matching/paths';
 import type { Action } from '../rules/actions';
 import { applyAction } from '../rules/applyAction';
 import { createGardenState, type GardenState } from '../rules/state';
@@ -74,6 +75,13 @@ describe('autoSearch: the light searching by itself with the player rules', () =
     const searched = play(festival, actions);
     expect(statusOf(searched)).toBe('exhausted');
     expect(searched.chainSeen).toBeNull();
+  });
+
+  it('lies on the garden of 4.1 (C6, Proposition 6.4): R a b d c e is a chain it never saw', () => {
+    // R a b d c e = 0 1 2 4 3 5, round the loop the other way.
+    expect(
+      checkAugmentingPath(festival.layer.graph, festival.layer.matching, [0, 1, 2, 4, 3, 5]).ok,
+    ).toBe(true);
   });
 
   it('stops at the look that finds a chain, which the rules accept and show', () => {
