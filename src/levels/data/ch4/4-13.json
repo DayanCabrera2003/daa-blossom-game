@@ -1,0 +1,81 @@
+{
+  "id": "4.13",
+  "secret": { "stars": 19 },
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 135 },
+    { "label": "a", "x": 100, "y": 100 },
+    { "label": "b", "x": 165, "y": 100 },
+    { "label": "c", "x": 225, "y": 55 },
+    { "label": "d", "x": 285, "y": 55 },
+    { "label": "e", "x": 350, "y": 35 },
+    { "label": "f", "x": 350, "y": 85 },
+    { "label": "g", "x": 225, "y": 140 },
+    { "label": "h", "x": 285, "y": 140 },
+    { "label": "i", "x": 345, "y": 180 },
+    { "label": "j", "x": 345, "y": 130 },
+    { "label": "k", "x": 95, "y": 190 },
+    { "label": "l", "x": 160, "y": 205 },
+    { "label": "m", "x": 225, "y": 185 },
+    { "label": "n", "x": 235, "y": 224 },
+    { "label": "T", "x": 425, "y": 195 }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "e"],
+    ["e", "f"],
+    ["f", "d"],
+    ["b", "g"],
+    ["g", "h"],
+    ["h", "i"],
+    ["i", "j"],
+    ["j", "h"],
+    ["i", "T"],
+    ["R", "k"],
+    ["k", "l"],
+    ["l", "m"],
+    ["m", "n"],
+    ["n", "l"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["e", "f"],
+    ["g", "h"],
+    ["i", "j"],
+    ["k", "l"],
+    ["m", "n"]
+  ],
+  "goal": { "visible": false },
+  "roots": ["R"],
+  "victory": { "type": "maximum" },
+  "hints": [
+    { "line": "ch4.13.sauce.03" },
+    { "line": "ch4.13.sauce.04", "highlight": ["h", "i", "j"] },
+    { "line": "ch4.13.sauce.05" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch4.13.sauce.00", "ch4.13.bruto.01", "ch4.13.sauce.02"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch4.13.sauce.06", "ch4.13.bruto.07"] }
+  ],
+  "solution": [
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "markMoon", "from": "R", "to": "k" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "markMoon", "from": "b", "to": "g" },
+    { "type": "markMoon", "from": "d", "to": "e" },
+    { "type": "markMoon", "from": "h", "to": "i" },
+    { "type": "markMoon", "from": "l", "to": "m" },
+    { "type": "foldAt", "from": "n", "to": "l" },
+    { "type": "foldAt", "from": "f", "to": "d" },
+    { "type": "foldAt", "from": "j", "to": "h" },
+    { "type": "markMoon", "from": "i", "to": "T" },
+    { "type": "unfold", "blossom": 2 },
+    { "type": "chain", "path": ["R", "a", "b", "g", "h", "j", "i", "T"] },
+    { "type": "declareDone" }
+  ]
+}

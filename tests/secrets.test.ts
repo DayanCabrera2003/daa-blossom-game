@@ -20,7 +20,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 /** The secret flowers of these tests, by id. */
-const FLOWERS = ['1.10', '3.10'] as const;
+const FLOWERS = ['1.10', '3.10', '4.13'] as const;
 
 /** Closest two sprouts of a secret flower may sit, in pixels: twice a sprout's radius and air. */
 const MIN_SPACING = 18;
@@ -162,5 +162,53 @@ describe('3.10: those the light does not reach', () => {
       'z',
       'v',
     ]);
+  });
+});
+
+describe('4.13: the order does not matter', () => {
+  const level = () => levelOf('4.13');
+  const sprout = (name: string) => sproutOf(level(), name);
+  const folds = () => level().solution.filter((move) => move.type === 'foldAt');
+  /** The walkthrough's moves before its first fold: the marks of the search from R. */
+  const marks = () => {
+    const moves = level().solution;
+    return moves.slice(
+      0,
+      moves.findIndex((move) => move.type === 'foldAt'),
+    );
+  };
+  /** Every order of a list. */
+  const orders = <T>(items: readonly T[]): T[][] =>
+    items.length <= 1
+      ? [[...items]]
+      : items.flatMap((item, i) =>
+          orders([...items.slice(0, i), ...items.slice(i + 1)]).map((rest) => [item, ...rest]),
+        );
+
+  it('the walkthrough folds the flower under R first and the one T hangs from last', () => {
+    expect(folds().map((move) => (move.type === 'foldAt' ? move.to : -1))).toEqual(
+      ['l', 'd', 'h'].map(sprout),
+    );
+    expect(neighbors(level().graph, sprout('T'))).toEqual([sprout('i')]);
+  });
+
+  it('in every order of folding the three flowers, the same chain reaches T', () => {
+    const reference = play(level().start, level().solution);
+    for (const order of orders(folds())) {
+      const folded = play(level().start, [
+        ...marks(),
+        ...order,
+        { type: 'markMoon', from: sprout('i'), to: sprout('T') },
+      ]);
+      const flower = itemAt(folded.layer.nodes, itemAt(folded.layer.nodeOf, sprout('i')));
+      if (flower.kind !== 'blossom') throw new Error('i is not inside a folded flower');
+      const chain = ['R', 'a', 'b', 'g', 'h', 'j', 'i', 'T'].map(sprout);
+      const end = play(folded, [
+        { type: 'unfold', blossom: flower.id },
+        { type: 'chain', path: chain },
+      ]);
+      expect(size(end.matching)).toBe(8);
+      expect(end.matching).toEqual(reference.matching);
+    }
   });
 });
