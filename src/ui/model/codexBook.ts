@@ -105,3 +105,19 @@ export function moveTo(state: BookState, place: BookPlace): BookState {
   sealed.delete(pageOf(state.place.entry, state.place.tab));
   return { place, sealed };
 }
+
+/**
+ * Where a link of the book leads (`#C8`, or `#C8-T8.1` to a result): to that entry, in the tab
+ * shown when it is open there (the formal tab, where results live, for a link to a result), or
+ * nowhere when the entry is still closed, so the book can say so.
+ */
+export function followLink(
+  open: OpenTabs,
+  state: BookState,
+  entry: string,
+  result: string | null,
+): BookPlace | null {
+  const target = entriesOf(open).find((candidate) => candidate === entry);
+  if (target === undefined) return null;
+  return keepTab(open, target, result === null ? state.place.tab : 'formal');
+}

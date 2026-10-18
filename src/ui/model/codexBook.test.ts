@@ -5,6 +5,7 @@ import {
   canTurn,
   chooseTab,
   endPage,
+  followLink,
   moveTo,
   openBook,
   turnPage,
@@ -106,6 +107,26 @@ describe('turning the pages of the Codex', () => {
       entry: 'C2',
       tab: 'intuition',
     });
+  });
+
+  it('follows a link to an open entry, to its formal tab for a result', () => {
+    expect(followLink(book, at('C1', 'bridge'), 'C13', null)).toEqual({
+      entry: 'C13',
+      tab: 'bridge',
+    });
+    expect(followLink(book, at('C1', 'bridge'), 'C13', 'T13.2')).toEqual({
+      entry: 'C13',
+      tab: 'formal',
+    });
+    expect(followLink(book, at('C1', 'formal'), 'C2', 'D2.1')).toEqual({
+      entry: 'C2',
+      tab: 'intuition',
+    });
+  });
+
+  it('a link to a closed entry leads nowhere', () => {
+    expect(followLink(book, at('C1', 'formal'), 'C8', null)).toBeNull();
+    expect(followLink(book, at('C1', 'formal'), 'C99', 'T1.1')).toBeNull();
   });
 
   it('chooses only a tab that is open', () => {
