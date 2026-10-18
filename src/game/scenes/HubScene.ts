@@ -10,12 +10,13 @@ import type { Rect } from '../picture/boxDistance';
 import { BOOK_ICON } from '../picture/buttonIcon';
 import { chapterTitle } from '../picture/chapterTitle';
 import { finishedChapters, HUB_SIGN, HUB_TINT, hubGarden, signBox } from '../picture/hubGarden';
-import { HUB, layoutHub } from '../picture/hubLayout';
+import { epilogueSignAt, HUB, layoutHub } from '../picture/hubLayout';
 import { PIXEL_FONT } from '../picture/pixelFont';
 import { labelSeal, SEAL_PAD } from '../picture/signSeal';
 import { cutOf, seasonOf } from '../picture/seasons';
 import { labelStars, STAR_SIZE } from '../picture/starIcon';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { epilogueReached } from '../systems/epilogue';
 import { trackFor } from '../systems/musicFor';
 import { BackdropView } from '../view/BackdropView';
 import { Button } from '../view/Button';
@@ -204,6 +205,15 @@ export class HubScene extends Phaser.Scene {
         width: notebook.width,
         height: notebook.height,
       });
+    }
+
+    // Once the last garden is won (and in teacher mode), a sign grows in the garden's bed and opens
+    // the epilogue again, over the hub.
+    if (epilogueReached(save, teacherMode)) {
+      const sign = new Button(this, 0, 0, t('epilogue.title'), () => bus.emit('epilogue.open'));
+      const at = epilogueSignAt(sign.width, sign.height);
+      sign.moveTo(at.x, at.y);
+      taken.push({ x: at.x, y: at.y - 1, width: sign.width, height: sign.height });
     }
 
     addSettings(this, gear);
