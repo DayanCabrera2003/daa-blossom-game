@@ -24,16 +24,25 @@ export class PortraitView {
   /** What is drawn inside the frame, which hops. */
   private inside: Phaser.GameObjects.Container | null = null;
   private hops = false;
+  /** The portrait shown, to draw it again where its box moves. */
+  private shown: Portrait | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly at: Point,
+    private at: Point,
     private readonly depth: number,
   ) {}
+
+  /** Moves the frame's top-left corner to `at` (the dialogue box dragged), drawing it again there. */
+  moveTo(at: Point): void {
+    this.at = at;
+    this.show(this.shown);
+  }
 
   /** Shows `portrait` in its frame, or nothing for a speaker with none. */
   show(portrait: Portrait | null): void {
     this.clear();
+    this.shown = portrait;
     if (portrait === null) return;
     const { scene, at, depth } = this;
     if (scene.textures.exists(PORTRAIT_BOX.texture)) {
@@ -98,5 +107,6 @@ export class PortraitView {
     for (const part of this.parts) part.destroy();
     this.parts = [];
     this.inside = null;
+    this.shown = null;
   }
 }
