@@ -80,4 +80,26 @@ describe('credits', () => {
     const section = credits.split(/^## /m).find((part) => part.startsWith(name));
     expect(section).toContain(entry.source);
   });
+
+  it('credits no file the game does not ship, each under the pack it comes from', () => {
+    // Every `source` → `file` line of a pack's section is one entry of the manifest, from that
+    // pack: nothing credited is left over once a file leaves the selection.
+    const shipped = new Set(
+      ASSET_KEYS.map((key) => {
+        const entry = assetEntry(key);
+        return `${packCredit(entry.pack).name}: ${entry.source} → ${entry.path}`;
+      }),
+    );
+    const credited = credits
+      .split(/^## /m)
+      .slice(1)
+      .flatMap((section) => {
+        const name = section.slice(0, section.indexOf('\n'));
+        return [...section.matchAll(/^- `([^`]+)` → `([^`]+)`$/gm)].map(
+          ([, source, file]) => `${name}: ${source} → assets/${file}`,
+        );
+      });
+    expect(credited.filter((line) => !shipped.has(line))).toEqual([]);
+    expect(credited).toHaveLength(ASSET_KEYS.length);
+  });
 });
