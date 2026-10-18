@@ -28,6 +28,12 @@ Add `?teacher` to the address to open every chapter and every page of the Códex
 - `?teacher&codex=C8&tab=formal` opens the Códex at an entry, and optionally at one of its tabs (`intuition`, `formal`, `bridge`).
 - `?teacher&level=1.10` opens a secret flower (`2.5`, `3.10`, `4.13`, `5.6`, `6.7`, `7.6` the others).
 
+## Browsers
+
+Play it at <https://dayancabrera2003.github.io/daa-blossom-game/>. The game is built for (and promises) Chrome and Edge 111+, Firefox 114+, and Safari 16.4+ on macOS, iPhone and iPad (`tools/page/browsers.ts`, the `build.target` of `vite.config.ts`). It is played in Chromium while it is made; Firefox and Safari are checked by hand before a release. Safari before 18.4 plays the AAC copies of the Ogg sounds.
+
+If the browser will not store (a private window, storage blocked or full), the game says so once and goes on: the progress lasts while the tab stays open. If a part that loads on demand cannot load (the books, the share sheet, the credits, the free mode), the page says whether the connection is down or a newer version was published, and offers to reload; the game itself goes on.
+
 ## Documentation
 
 - [Game design document](docs/GDD.md) (Spanish)

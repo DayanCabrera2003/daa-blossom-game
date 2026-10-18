@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import config from '../vite.config';
 import { BROWSER_TARGETS, PROMISED_BROWSERS } from '../tools/page/browsers';
@@ -31,5 +32,22 @@ describe('the browsers the game is built for', () => {
     expect(BROWSER_TARGETS.slice(1)).toEqual(
       PROMISED_BROWSERS.map(({ engine, version }) => `${engine}${version}`),
     );
+  });
+});
+
+describe('the README', () => {
+  it('names each promised browser and its version', () => {
+    const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
+    const names = {
+      chrome: 'Chrome',
+      edge: 'Edge',
+      firefox: 'Firefox',
+      safari: 'Safari',
+      ios: 'iPhone',
+    };
+    for (const { engine, version } of PROMISED_BROWSERS) {
+      expect(readme).toContain(names[engine]);
+      expect(readme).toContain(`${version}+`);
+    }
   });
 });
