@@ -94,8 +94,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .book.epilogue {
-    animation: none;
-  }
+/* Less motion, as the game's setting says (it starts by following the system's preference). */
+:root[data-motion='reduced'] .book.epilogue {
+  animation: none;
 }

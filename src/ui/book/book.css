@@ -282,8 +282,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .book-turned {
-    animation: none;
-  }
+/* Less motion, as the game's setting says (it starts by following the system's preference). */
+:root[data-motion='reduced'] .book-turned {
+  animation: none;
 }

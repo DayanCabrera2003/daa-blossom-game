@@ -28,6 +28,7 @@ import { openSandbox } from './game/scenes/SandboxGate';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './game/scale/integerZoom';
 import { panelRoom, panelUnit } from './game/scale/panelRoom';
 import { renderZoom, setRenderZoom } from './game/view/renderZoom';
+import { mountMotionMark } from './ui/a11y/motionMark';
 import { mountShell } from './ui/shell';
 import { mountTeacherShell } from './ui/teacherShell';
 
@@ -90,6 +91,14 @@ bus.emit('capabilities', { sandbox: true, credits: true });
 bus.on('sandbox.open', () => openSandbox(game));
 // The credits' thin gate is registered too: the settings panel and the epilogue open them.
 bus.on('credits.open', () => openCredits(game));
+// The page says how much it moves, for the books' and the epilogue's styles: the game's motion
+// setting, which starts by following the system's preference.
+mountMotionMark({
+  bus,
+  root: document.documentElement,
+  choice: settings.motion,
+  system: window.matchMedia('(prefers-reduced-motion: reduce)'),
+});
 // In teacher mode, the trace panel beside the garden, folded until asked for.
 if (teacherMode) mountTeacherShell({ bus, host: document.body });
 bus.on('overlay.changed', ({ open }) => {

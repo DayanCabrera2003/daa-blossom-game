@@ -3,6 +3,7 @@ import type { TraceEvent } from '@core/trace/events';
 import type { CodexTab } from '@levels/codex';
 import type { ImportRejection } from '@levels/sandbox/importText';
 import type { LevelData } from '@levels/schema';
+import type { MotionChoice } from './motion';
 
 /** The two books of the game: the Códex (GDD §5.6) and the Cuaderno (GDD §5.5). */
 export type BookName = 'codex' | 'notebook';
@@ -110,4 +111,6 @@ export interface BusEvents {
   readonly 'sandbox.imported': { readonly text: string };
   /** The game's answer to `sandbox.imported`: the sheet closes, or says kindly why not. */
   readonly 'sandbox.importAnswer': ImportAnswer;
+  /** The motion setting changed in the settings panel: the page's styles follow it. */
+  readonly 'motion.changed': { readonly motion: MotionChoice };
 }
