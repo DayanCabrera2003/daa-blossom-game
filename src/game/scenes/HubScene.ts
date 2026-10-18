@@ -51,7 +51,8 @@ export class HubScene extends Phaser.Scene {
 
   create(): void {
     fitCamera(this);
-    const { catalog, t, save, teacherMode, playtest, clock, music } = contextOf(this);
+    const { catalog, t, saves, teacherMode, playtest, clock, music } = contextOf(this);
+    const save = saves.get();
     // The hub's own track; coming back from a level crossfades to it.
     music.play(trackFor({ kind: 'hub' }));
     const backdrop = new BackdropView(this);

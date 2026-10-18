@@ -3,7 +3,7 @@ import type { Level } from '@levels/build';
 import { cardDemos } from '@levels/cards/catalog';
 import type { CardDemo } from '@levels/cards/demo';
 import type { CardId } from '@levels/cards/schema';
-import { recordTutorialSeen, writeSave } from '@services/save';
+import { recordTutorialSeen } from '@services/save';
 import { helpCards, offerCards } from '../../systems/tutorials';
 import type { ShownCard } from '../../view/TutorialView';
 import type { GameContext } from '../context';
@@ -26,7 +26,7 @@ export class LevelCards {
     private readonly presenter: Presenter,
   ) {
     demos ??= cardDemos();
-    this.offered = new Set(context.save.tutorialsSeen);
+    this.offered = new Set(context.saves.get().tutorialsSeen);
   }
 
   /** The cards seen or already waiting, to tell which cards a step still brings. */
@@ -60,7 +60,6 @@ export class LevelCards {
 
   /** A closed card is seen for good: saved at once, so it never shows by itself again. */
   closed(card: CardId): void {
-    this.context.save = recordTutorialSeen(this.context.save, card);
-    writeSave(this.context.storage, this.context.save);
+    this.context.saves.update((save) => recordTutorialSeen(save, card));
   }
 }

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
 import { unlockedLevels, visibleLevels } from '@services/progress';
-import { recordCompletion, recordNotebook, writeSave } from '@services/save';
+import { recordCompletion, recordNotebook } from '@services/save';
 import type { AssetKey } from '../assets/keys';
 import { levelKeys, loadRequests } from '../assets/loadPlan';
 import {
@@ -141,7 +141,7 @@ export class LevelScene extends Phaser.Scene {
         counterexample: (question, option) => this.openCounterexample(question, option),
         card: (card) => {
           // A tool shown for the first time rings the unlock.
-          const jingle = cardJingle(card, new Set(this.context.save.tutorialsSeen));
+          const jingle = cardJingle(card, new Set(this.context.saves.get().tutorialsSeen));
           if (jingle !== null) this.context.music.jingle(jingle);
           return this.cards.shown(card);
         },
@@ -243,8 +243,7 @@ export class LevelScene extends Phaser.Scene {
 
   /** Writes the level's statement in the player's notebook, saved at once, and says so. */
   private writeNotebook(): void {
-    this.context.save = recordNotebook(this.context.save, this.level.data.id);
-    writeSave(this.context.storage, this.context.save);
+    this.context.saves.update((save) => recordNotebook(save, this.level.data.id));
     this.views.toast.show(this.context.t('notebook.written'));
   }
 
@@ -272,15 +271,14 @@ export class LevelScene extends Phaser.Scene {
    */
   private win(stars: StarResult): void {
     const id = this.level.data.id;
-    const { catalog, teacherMode } = this.context;
+    const { catalog, teacherMode, saves } = this.context;
     const shown = visibleLevels(
       catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
       teacherMode,
     );
-    const before = unlockedLevels(shown, this.context.save, teacherMode);
-    this.context.save = recordCompletion(this.context.save, id, stars.total);
-    writeSave(this.context.storage, this.context.save);
-    this.winJingle = victoryJingle(before, unlockedLevels(shown, this.context.save, teacherMode));
+    const before = unlockedLevels(shown, saves.get(), teacherMode);
+    saves.update((save) => recordCompletion(save, id, stars.total));
+    this.winJingle = victoryJingle(before, unlockedLevels(shown, saves.get(), teacherMode));
     this.presenter.present({ kind: 'victory', stars });
   }
 

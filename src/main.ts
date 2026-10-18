@@ -7,7 +7,7 @@ import { browserStorage } from '@services/browserStorage';
 import { createTranslator } from '@services/i18n';
 import { createLines } from '@services/lines';
 import { playtestRecorder } from '@services/playtestRecorder';
-import { loadSave } from '@services/save';
+import { createSaveStore } from '@services/saveStore';
 import { loadSettings } from '@services/settings';
 import { requestedLevel } from '@services/startLevel';
 import { isTeacherMode } from '@services/teacherMode';
@@ -43,7 +43,7 @@ provideContext(game, {
     window.location.search,
     levels.map((level) => level.data.id),
   ),
-  save: loadSave(storage),
+  saves: createSaveStore(storage),
   settings,
   audio,
   music: new MusicPlayer(game, audio),
