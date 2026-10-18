@@ -3,8 +3,8 @@ import type { Rect } from '../picture/boxDistance';
 import { firefliesAt } from '../picture/fireflies';
 import type { CosmeticHomes } from '../picture/hubCosmeticHomes';
 import { critterPose, type CritterId } from '../picture/hubCritters';
-import { lanternFlicker } from '../picture/lanternFlicker';
 import { seedlingFrame } from '../picture/seedlings';
+import { signpostGlow } from '../picture/signpostGlow';
 import { everyFrame } from './everyFrame';
 import { PALETTE } from './palette';
 
@@ -24,9 +24,9 @@ const FIREFLY_DEPTH = -4;
 /**
  * The cosmetics of the hub (plan 08, phase 7) in the homes `picture/hubCosmeticHomes.ts` found for
  * them: the animals and the plants of the seeds from their sheets, the fireflies as points of
- * light, and a lantern's flickering glow lit under each chapter's signpost. They take no touch.
- * Each instant's pose comes from the pure pictures; with `moving` false (the player asked the
- * system for less motion) everything is drawn once, at rest.
+ * light, and a lantern's small flickering glow lit under each chapter's signpost. They take no
+ * touch. Each instant's pose comes from the pure pictures; with `moving` false (the player asked
+ * the system for less motion) everything is drawn once, at rest.
  */
 export class HubCrittersView {
   private readonly critters: {
@@ -80,11 +80,10 @@ export class HubCrittersView {
     const glow = this.glow.clear();
     if (!this.homes.lanterns) return;
     this.signs.forEach((sign, i) => {
-      const { halo } = lanternFlicker(now, i);
-      const x = sign.x + sign.width / 2;
-      const y = sign.y + sign.height / 2;
-      glow.fillStyle(PALETTE.litGlow, halo.outer.alpha).fillCircle(x, y, halo.outer.radius);
-      glow.fillStyle(PALETTE.lit, halo.inner.alpha).fillCircle(x, y, halo.inner.radius);
+      // Small and faint, inside the signpost's own box: never over the flower nor the title.
+      const { x, y, inner, outer } = signpostGlow(sign, now, i);
+      glow.fillStyle(PALETTE.litGlow, outer.alpha).fillCircle(x, y, outer.radius);
+      glow.fillStyle(PALETTE.lit, inner.alpha).fillCircle(x, y, inner.radius);
     });
   }
 }
