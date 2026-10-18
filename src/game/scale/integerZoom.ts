@@ -32,3 +32,10 @@ export function integerZoom(windowWidth: number, windowHeight: number, density =
  * books size their pixel by it (`--zoom`). Fractional in CSS pixels, whole in device pixels.
  */
 export const cssPixel = (zoom: number, density = 1): number => zoom / usable(density);
+
+/**
+ * The smallest logical pixel the game is played at, in CSS pixels: the game at ×1 on a desktop
+ * screen, its 8-pixel letters 8 CSS pixels tall. Smaller (a phone held upright, a canvas squeezed
+ * beside the teacher's panel) the letters fall under what can be read.
+ */
+export const MIN_CSS_PIXEL = 1;

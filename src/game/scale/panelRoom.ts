@@ -1,26 +1,38 @@
-import { CANVAS_WIDTH, integerZoom } from './integerZoom';
+import { CANVAS_WIDTH, cssPixel, integerZoom, MIN_CSS_PIXEL } from './integerZoom';
 
 /**
  * How the window is shared between the canvas and the teacher's trace panel at its right (GDD
  * §5.8; plan 07, phase 13), so the open panel never covers a sprout of the garden: the canvas keeps
  * the largest whole zoom that still leaves the panel its narrowest width, and the panel takes the
  * room left beside it, up to its widest. Folded, the canvas has the whole window again. Widths are
- * in CSS pixels.
+ * in CSS pixels; the zoom is in device pixels (`integerZoom`, plan 09, phase 7). A window too small
+ * for both (a phone, a narrow window) does not offer the panel: the canvas keeps the whole window,
+ * since beside the panel it would be smaller than the game at ×1.
  */
 export const PANEL_WIDTH = { min: 320, max: 560 } as const;
 
-/** The canvas's whole zoom and the panel's width (0 when folded). */
+/**
+ * The canvas's whole zoom (device pixels per logical pixel), the panel's width in CSS pixels (0 when
+ * folded or not offered), and whether an open panel fits beside the canvas (true when folded).
+ */
 export interface PanelRoom {
   readonly zoom: number;
   readonly panel: number;
+  readonly fits: boolean;
 }
 
-/** The room for a window of `width` × `height`, with the panel `open` or folded. */
-export function panelRoom(width: number, height: number, open: boolean): PanelRoom {
-  if (!open) return { zoom: integerZoom(width, height), panel: 0 };
-  const zoom = integerZoom(width - PANEL_WIDTH.min, height);
-  const left = width - zoom * CANVAS_WIDTH;
-  return { zoom, panel: Math.max(PANEL_WIDTH.min, Math.min(PANEL_WIDTH.max, left)) };
+/**
+ * The room for a window of `width` × `height` CSS pixels at `density` device pixels per CSS pixel,
+ * with the panel `open` or folded.
+ */
+export function panelRoom(width: number, height: number, open: boolean, density = 1): PanelRoom {
+  const folded = { zoom: integerZoom(width, height, density), panel: 0, fits: !open };
+  if (!open) return folded;
+  const zoom = integerZoom(width - PANEL_WIDTH.min, height, density);
+  const canvas = cssPixel(zoom, density);
+  const left = width - canvas * CANVAS_WIDTH;
+  if (canvas < MIN_CSS_PIXEL || left < PANEL_WIDTH.min) return folded;
+  return { zoom, panel: Math.max(PANEL_WIDTH.min, Math.min(PANEL_WIDTH.max, left)), fits: true };
 }
 
 /**
