@@ -28,7 +28,8 @@
     "format": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\"",
     "budget": "tsx tools/check-budget.ts",
-    "save": "tsx tools/make-save.ts"
+    "save": "tsx tools/make-save.ts",
+    "lines": "tsx tools/line-sheet.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
