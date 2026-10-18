@@ -13,6 +13,7 @@ import { doublingTextKey } from '@levels/races';
 import { COSMETIC_IDS } from '@services/cosmetics';
 import { GENERATORS } from '@levels/sandbox/generators';
 import type { DesignRejection } from '@levels/sandbox/design';
+import type { ImportRejection } from '@levels/sandbox/importText';
 import { DESIGN_TOOLS } from '@game/input/designIntent';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
@@ -39,6 +40,18 @@ const DESIGN_REASONS = {
   noSprout: [],
   sameSprout: [],
 } satisfies Record<DesignRejection, Params>;
+
+/** Why a text opened in the share sheet is no garden (`levels/sandbox/importText.ts`). */
+const IMPORT_REASONS = {
+  tooLong: [],
+  badJson: [],
+  badLevel: [],
+  badCode: [],
+  tooMany: ['max'],
+  tooManyVines: ['max'],
+  tooClose: [],
+  outside: [],
+} satisfies Record<ImportRejection, Params>;
 
 /** Why an action was refused (`core/rules/reasons.ts`, and the game's own in `game/systems/refusal.ts`). */
 const REASONS = {
@@ -430,6 +443,30 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   'sandbox.certify.notYet': [],
   'sandbox.certify.notYetGardener': [],
   'sandbox.certify.notBees': [],
+  // The free mode's share sheet (plan 08, phase 14).
+  'share.title': [],
+  'share.code': [],
+  'share.codeHint': [],
+  'share.link': [],
+  'share.linkHint': [],
+  'share.copy': [],
+  'share.copied': [],
+  'share.copyFailed': [],
+  'share.download': [],
+  'share.downloadHint': [],
+  'share.empty': [],
+  'share.import': [],
+  'share.paste': [],
+  'share.open': [],
+  'share.file': [],
+  'share.pasteEmpty': [],
+  'share.fileUnread': [],
+  'share.close': [],
+  'share.keys': [],
+  'share.done': [],
+  ...Object.fromEntries(
+    Object.entries(IMPORT_REASONS).map(([code, params]) => [`share.reason.${code}`, params]),
+  ),
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
   // The name of each speaker, on the tab of the dialogue box.

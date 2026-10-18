@@ -35,6 +35,8 @@ export const FREE_MODE_MODULES: readonly string[] = [
   'src/game/systems/sandboxSolve.ts',
   // The store of the last design: read and checked only when the free mode opens.
   'src/services/sandboxStore.ts',
+  // What the share sheet shows (phase 14), decided for its DOM in the sheet's own chunk.
+  'src/ui/model/shareSheet.ts',
 ];
 
 /** Whether a source path, from the project root, belongs to the free mode. */
