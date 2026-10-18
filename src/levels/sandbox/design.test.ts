@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { SPROUT_AREA } from '../fields';
 import { EMPTY_DESIGN, editDesign, limitBreach, type Design, type DesignEdit } from './design';
 import { MAX_SPROUTS, MAX_VINES, MIN_SPACING } from './limits';
+import { anyEdit } from '../../../tests/support/designs';
 
 /** The design an edit gives, failing the test if it is refused. */
 function edited(design: Design, ...edits: DesignEdit[]): Design {
@@ -195,32 +196,6 @@ describe('the limits a design breaks', () => {
     expect(limitBreach({ sprouts: [at('A', 100)], vines, lanterns: [] })).toBe('tooManyVines');
   });
 });
-
-/** An edit of any kind, on the letters a design may hold and anywhere around the garden. */
-const anyEdit: fc.Arbitrary<DesignEdit> = (() => {
-  const letter = fc.constantFrom(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  const x = fc.integer({ min: 0, max: 480 });
-  const y = fc.integer({ min: 0, max: 270 });
-  return fc.oneof(
-    { arbitrary: fc.record({ type: fc.constant('addSprout' as const), x, y }), weight: 6 },
-    {
-      arbitrary: fc.record({ type: fc.constant('moveSprout' as const), label: letter, x, y }),
-      weight: 2,
-    },
-    {
-      arbitrary: fc.record({ type: fc.constant('removeSprout' as const), label: letter }),
-      weight: 1,
-    },
-    {
-      arbitrary: fc.record({ type: fc.constant('toggleVine' as const), u: letter, v: letter }),
-      weight: 8,
-    },
-    {
-      arbitrary: fc.record({ type: fc.constant('toggleLantern' as const), u: letter, v: letter }),
-      weight: 4,
-    },
-  );
-})();
 
 describe('the reducer, property', () => {
   it('never leaves the limits nor puts two lanterns on a sprout, whatever is asked', () => {
