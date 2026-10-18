@@ -24,5 +24,8 @@ jobs:
       - run: npm run coverage
       - run: npm run check-levels
       - run: npm run build
+      # The built game as Pages serves it: relative paths, every asset, its 404 page and the words
+      # without script (plan 09, phase 10); skipped by the coverage run above, which has no build.
+      - run: npx vitest run tests/dist.test.ts tests/pageHead.test.ts
       # The built JavaScript and the assets within their budget (plan 06, phase 11).
       - run: npm run budget
