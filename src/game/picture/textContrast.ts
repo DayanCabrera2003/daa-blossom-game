@@ -258,25 +258,18 @@ export const TEXTS: readonly TextOnSurface[] = [
   onPanel('view/KeysCard.ts', 'keys'),
   onPanel('view/ToastView.ts', 'notice'),
   onPanel('scenes/credits/CreditsScene.ts', 'roll'),
-  // A card's demo, on its dark window, its buttons drawn in wood colours.
-  {
-    file: 'view/CardDemoView.ts',
-    what: 'label on the window',
-    text: 'label',
-    surface: fill('background', 1),
-    outlined: false,
-  },
+  // A card's demo: its choices and its button drawn in the colours of wood, in ink.
   {
     file: 'view/CardDemoView.ts',
     what: 'label on a choice',
-    text: 'label',
+    text: 'ink',
     surface: fill('button', 1),
     outlined: false,
   },
   {
     file: 'view/CardDemoView.ts',
     what: 'label on the choice picked',
-    text: 'label',
+    text: 'ink',
     surface: fill('buttonActive', 1),
     outlined: false,
   },
@@ -333,14 +326,14 @@ export const TEXTS: readonly TextOnSurface[] = [
   {
     file: 'view/RecipeView.ts',
     what: 'a card',
-    text: 'label',
+    text: 'ink',
     surface: fill('button', 1),
     outlined: false,
   },
   {
     file: 'view/RecipeView.ts',
     what: 'a card placed',
-    text: 'label',
+    text: 'ink',
     surface: fill('buttonActive', 1),
     outlined: false,
   },

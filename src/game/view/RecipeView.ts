@@ -127,7 +127,8 @@ export class RecipeView {
     y: number,
     width: number,
   ): number {
-    const text = this.text(x + 3, y + 1, this.t(cardTextKey(card)), width - 6, PALETTE.label);
+    // Dark letters on the light wood of a card, as on a button at rest (`picture/textContrast.ts`).
+    const text = this.text(x + 3, y + 1, this.t(cardTextKey(card)), width - 6, PALETTE.ink);
     const row = this.scene.add
       .rectangle(x, y, width, text.height + 2, placed ? PALETTE.buttonActive : PALETTE.button)
       .setOrigin(0, 0)
