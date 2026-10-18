@@ -217,7 +217,11 @@ export class LevelScene extends Phaser.Scene {
       insideLayer: () => this.controller.layers.length > 0,
       settingsOpen: settings.open,
       closeSettings: settings.close,
+      cardOpen: () => this.presenter.cardOpen,
+      closeCard: () => this.presenter.closeCard(),
+      answerKey: (key) => this.presenter.optionKey(key),
       dialogueOpen: () => this.views.dialogue.open,
+      advanceDialogue: () => this.views.dialogue.touch(),
       drawing: () => this.controller.pointer.chain !== null,
     });
     this.teacher = new TeacherBridge(this.context.bus, teacherMode, screen.ownGarden);

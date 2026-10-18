@@ -136,6 +136,22 @@ export class Presenter {
       : { step: racing.step, elapsed: this.scene.time.now - racing.startedAt };
   }
 
+  /** Whether a mechanic card is on screen. */
+  get cardOpen(): boolean {
+    return this.views.tutorial.open;
+  }
+
+  /** Dismisses the mechanic card on screen, as its button does (Escape). */
+  closeCard(): void {
+    this.views.tutorial.dismiss();
+  }
+
+  /** A digit: presses the option it names on the question or notebook page open, if any. */
+  optionKey(key: string): void {
+    if (this.views.question.open) this.views.question.pressKey(key);
+    else if (this.views.notebook.open) this.views.notebook.pressKey(key);
+  }
+
   /** Queues an item to show on its own; it starts at once if nothing else is showing. */
   present(item: Presentation): void {
     this.start(present(this.stage, [item]));
