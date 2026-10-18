@@ -244,6 +244,20 @@ Las pistas se ofrecen tras 90 segundos sin progreso o tras tres intentos fallido
 
 Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas, dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y las flores secretas. Nunca bloquean el avance.
 
+Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se pierden: no hay tienda ni nada que gastar. Al llegar, un aviso en el hub los anuncia una sola vez. En modo profesor se ven todos.
+
+| ★ | Cosmético |
+|---|---|
+| 15 | Una mariposa naranja que revolotea por el hub |
+| 30 | Una rana (en el estanque, si está plantado) |
+| 50 | Un gato que dormita y a ratos pasea |
+| 70 | Una mariposa azul |
+| 90 | Dos gallinas que picotean |
+| 110 | Luciérnagas sobre el jardín |
+| 130 | Un farolillo encendido en cada poste de capítulo |
+
+Todos salen de Ninja Adventure o se dibujan por código, viven por debajo de carteles y botones y nunca ocupan el lecho donde crecen las piezas de los capítulos.
+
 ### 5.5 El Cuaderno del Jardinero
 
 Tras dominar una idea, el mentor pide "escríbelo". El jugador elige entre 3–4 enunciados. Los falsos son plausibles y **se refutan con un mini-jardín contraejemplo que el jugador puede tocar**. Al elegir el correcto, se guarda en el Cuaderno con las palabras del jardín; el Códex lo traduce después.
