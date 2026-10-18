@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CANVAS_WIDTH, cssPixel, integerZoom, MIN_CSS_PIXEL } from './integerZoom';
-import { PANEL_LINE, PANEL_WIDTH, panelRoom, panelUnit } from './panelRoom';
+import { PANEL_LINE, PANEL_WIDTH, panelPixel, panelRoom, panelUnit } from './panelRoom';
 
 describe('room for the teacher panel beside the canvas', () => {
   it('folded, the canvas keeps the whole window', () => {
@@ -104,6 +104,27 @@ describe("the teacher panel's pixel", () => {
         expect(unit).toBeGreaterThanOrEqual(1);
         expect(unit).toBeLessThanOrEqual(zoom);
         if (unit > 1) expect(lineOf(panel, unit)).toBeGreaterThanOrEqual(PANEL_LINE);
+      }
+    }
+  });
+});
+
+describe("the teacher panel's pixel in CSS pixels", () => {
+  it('is the device pixels of its unit over the density, so its letters stay on whole pixels', () => {
+    // 844 × 390 at density 3: the canvas at ×3 (one CSS pixel), the panel 364 CSS pixels wide.
+    const room = panelRoom(844, 390, true, 3);
+    expect(panelPixel(room, 3)).toBe(1);
+    expect(panelPixel(panelRoom(1920, 1080, true), 1)).toBe(3);
+  });
+
+  it('is never more than the canvas pixel, and a line holds its letters', () => {
+    for (const density of [1, 2, 2.625, 3]) {
+      for (let width = 600; width <= 3840; width += 61) {
+        const room = panelRoom(width, Math.round(width * 0.5), true, density);
+        if (!room.fits) continue;
+        const unit = panelPixel(room, density);
+        expect(unit).toBeLessThanOrEqual(room.zoom / density);
+        expect(unit * density).toBeCloseTo(Math.round(unit * density), 9);
       }
     }
   });

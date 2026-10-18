@@ -3,7 +3,8 @@ export const CANVAS_WIDTH = 480;
 export const CANVAS_HEIGHT = 270;
 
 /** A density the browser can really give (finite, above zero), or 1. */
-const usable = (density: number): number => (Number.isFinite(density) && density > 0 ? density : 1);
+export const usableDensity = (density: number): number =>
+  Number.isFinite(density) && density > 0 ? density : 1;
 
 /** How far short of a whole device pixel a window side may come out and still span it. */
 const SLACK = 1e-6;
@@ -19,7 +20,7 @@ const SLACK = 1e-6;
  * A window too small for ×1 still gets ×1 and scrolls, rather than a blurry fractional scale.
  */
 export function integerZoom(windowWidth: number, windowHeight: number, density = 1): number {
-  const scale = usable(density);
+  const scale = usableDensity(density);
   const width = Math.floor(windowWidth * scale + SLACK);
   const height = Math.floor(windowHeight * scale + SLACK);
   const fit = Math.floor(Math.min(width / CANVAS_WIDTH, height / CANVAS_HEIGHT));
@@ -31,7 +32,7 @@ export function integerZoom(windowWidth: number, windowHeight: number, density =
  * `density` device pixels per CSS pixel: the canvas is shown that many times its 480 × 270, and the
  * books size their pixel by it (`--zoom`). Fractional in CSS pixels, whole in device pixels.
  */
-export const cssPixel = (zoom: number, density = 1): number => zoom / usable(density);
+export const cssPixel = (zoom: number, density = 1): number => zoom / usableDensity(density);
 
 /**
  * The smallest logical pixel the game is played at, in CSS pixels: the game at ×1 on a desktop

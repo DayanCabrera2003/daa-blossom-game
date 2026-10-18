@@ -1,4 +1,4 @@
-import { CANVAS_WIDTH, cssPixel, integerZoom, MIN_CSS_PIXEL } from './integerZoom';
+import { CANVAS_WIDTH, cssPixel, integerZoom, MIN_CSS_PIXEL, usableDensity } from './integerZoom';
 
 /**
  * How the window is shared between the canvas and the teacher's trace panel at its right (GDD
@@ -55,3 +55,11 @@ export function panelUnit(zoom: number, panel: number): number {
   while (unit > 1 && (panel - PANEL_EDGES * unit) / (ADVANCE * unit) < PANEL_LINE) unit -= 1;
   return Math.max(1, unit);
 }
+
+/**
+ * The panel's pixel in CSS pixels (`--teacher-unit`) for `room` at `density`: its unit in device
+ * pixels (`panelUnit`, from the canvas's zoom and the panel's width in device pixels) over the
+ * density, so the panel's letters, like the canvas's, stand on whole device pixels.
+ */
+export const panelPixel = (room: PanelRoom, density = 1): number =>
+  panelUnit(room.zoom, room.panel * usableDensity(density)) / usableDensity(density);
