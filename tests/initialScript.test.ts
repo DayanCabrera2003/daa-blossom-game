@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { isFreeMode } from '../tools/assets/freeMode';
 
 // What the initial script holds, read from the sources (plan 08, phase 8): the modules the entry
 // reaches through static imports, as the bundler follows them; `import()` starts a deferred chunk
@@ -21,9 +22,6 @@ const ALIASES: Readonly<Record<string, string>> = {
   '@services': 'src/services',
   '@content': 'src/content',
 };
-
-/** The folders of the free mode that load only once it opens. */
-const FREE_MODE = ['src/levels/sandbox/'];
 
 /** Static `import … from` and `export … from` of a source, and its bare `import '…'`. */
 const STATIC_IMPORT = /^\s*(?:import|export)\s+(?!type\s)(?:[^'";]*?\s+from\s+)?['"]([^'"]+)['"]/gm;
@@ -73,9 +71,7 @@ describe('the initial script', () => {
   });
 
   it('never holds a module of the free mode: it loads when the free mode opens', () => {
-    const early = [...modules].filter((path) =>
-      FREE_MODE.some((folder) => path.startsWith(folder)),
-    );
+    const early = [...modules].filter(isFreeMode);
     expect(early).toEqual([]);
   });
 });
