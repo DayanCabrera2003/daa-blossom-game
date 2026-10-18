@@ -5,6 +5,8 @@ import { hubCosmeticHomes, type CosmeticHomes } from '../src/game/picture/hubCos
 import { hubGarden } from '../src/game/picture/hubGarden';
 import { epilogueSignAt } from '../src/game/picture/hubLayout';
 import { BUTTON_HEIGHT } from '../src/game/picture/panelLayout';
+import { FLICKER_FRAME_MS } from '../src/game/picture/lanternFlicker';
+import { glowBox, signpostGlow } from '../src/game/picture/signpostGlow';
 import { openCosmetics } from '../src/services/cosmetics';
 import { hubOf, t } from './support/hubBoxes';
 
@@ -12,7 +14,8 @@ import { hubOf, t } from './support/hubBoxes';
 // catalog and words (plan 08, phase 7): with every cosmetic and seven seeds, in both modes, with
 // and without the sign of the epilogue, and for every set of chapters finished (which plants the
 // pond, and so moves the frog), no home covers the top line, a signpost, a flower's column, a
-// title or a button, nor another home, and every cosmetic finds room.
+// title or a button, nor another home, and every cosmetic finds room. The lanterns' glow stays
+// on each signpost, off the flower's column beside it and the title after it.
 
 /** Every cosmetic, as 134 stars and seven seeds bring them. */
 const ALL = openCosmetics({ stars: 134, seeds: 7 }, false);
@@ -97,6 +100,28 @@ describe('the cosmetics in the hub as it is laid out', () => {
           expect(frog).toEqual({ x: pond.x + 16, y: pond.y + 16, width: 16, height: 16 });
         }
       }
+    },
+  );
+});
+
+describe('the lanterns on the signposts as the hub is laid out', () => {
+  it.each([false, true])(
+    'light only their own signpost, never a flower, a title or a button (teacher: %s)',
+    (teacherMode) => {
+      const { boxes, signs } = hubOf(teacherMode);
+      const cells = [...signs.values()].map(({ cell }) => cell);
+      [...signs.values()].forEach(({ sign }, index) => {
+        for (const frame of [0, 1, 2]) {
+          const box = glowBox(signpostGlow(sign, frame * FLICKER_FRAME_MS, index));
+          expect(box.x).toBeGreaterThanOrEqual(sign.x);
+          expect(box.y).toBeGreaterThanOrEqual(sign.y);
+          expect(box.x + box.width).toBeLessThanOrEqual(sign.x + sign.width);
+          expect(box.y + box.height).toBeLessThanOrEqual(sign.y + sign.height);
+          for (const other of [...boxes, ...cells]) {
+            expect(boxesOverlap(box, other, 0)).toBe(false);
+          }
+        }
+      });
     },
   );
 });
