@@ -96,7 +96,9 @@ describe('the level catalog', () => {
   });
 
   it('holds the written chapter 6 whole, with no draft among its levels', () => {
-    const recipes = catalog().filter((level) => level.data.id.startsWith('6.'));
+    const recipes = catalog().filter(
+      (level) => level.data.id.startsWith('6.') && level.data.secret === undefined,
+    );
     expect(recipes.map((level) => level.data.id)).toEqual([
       '6.1',
       '6.2',
@@ -109,7 +111,9 @@ describe('the level catalog', () => {
   });
 
   it('holds the written chapter 7 whole, with no draft among its levels', () => {
-    const council = catalog().filter((level) => level.data.id.startsWith('7.'));
+    const council = catalog().filter(
+      (level) => level.data.id.startsWith('7.') && level.data.secret === undefined,
+    );
     expect(council.map((level) => level.data.id)).toEqual(['7.1', '7.2', '7.3', '7.4', '7.5']);
     expect(council.filter((level) => level.data.draft)).toEqual([]);
   });
