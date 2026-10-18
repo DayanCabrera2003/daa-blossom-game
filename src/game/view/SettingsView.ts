@@ -12,6 +12,7 @@ import {
   volumePercent,
   type SliderTrack,
 } from '../picture/volumeSlider';
+import { SETTINGS_PANEL, settingsCorner, settingsRows } from '../picture/settingsPanelLayout';
 import { checkbox, GRABBER, SLIDER_FILL, sliderLook } from '../picture/woodControls';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -23,15 +24,15 @@ import { WoodFrame } from './WoodFrame';
 export interface SettingsActions {
   readonly volume: (channel: AudioChannel, value: number) => void;
   readonly mute: () => void;
+  /** Downloads the playtest log, for playtesters to send back (GDD §10). */
+  readonly exportLog: () => void;
 }
 
-/** The panel's size and the rows on it, in canvas pixels; it is centred on the canvas. */
-const WIDTH = 200;
-const HEIGHT = 116;
-const PAD = 8;
-const ROW = 16;
-/** Where each slider's track runs, from the panel's left edge. */
-const TRACK = { from: 64, to: 150 };
+/** The panel's size and the rows on it, in canvas pixels (`picture/settingsPanelLayout.ts`). */
+const WIDTH = SETTINGS_PANEL.width;
+const PAD = SETTINGS_PANEL.pad;
+const ROW = SETTINGS_PANEL.row;
+const TRACK = SETTINGS_PANEL.track;
 /** Depths: the blocker over everything else, then the panel and what is on it. */
 const BLOCKER_DEPTH = 400;
 const PANEL_DEPTH = 410;
@@ -56,7 +57,7 @@ interface Slider {
 
 /**
  * The settings panel: a slider for the music, one for the effects and one for the voices, each
- * with its percentage, the mute box, and "Cerrar". A dim layer over the whole screen takes every
+ * with its percentage, the mute box, the button that exports the playtest log, and "Cerrar". A dim layer over the whole screen takes every
  * touch meant for what is below while the panel is open. The panel only draws and reports: what
  * a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene.
  */
@@ -84,32 +85,36 @@ export class SettingsView {
     this.clear();
     const { scene, t } = this;
     if (!reopening) playUiSound(scene, 'sfx.panelOpen');
-    const x = (CANVAS_WIDTH - WIDTH) / 2;
-    const y = (CANVAS_HEIGHT - HEIGHT) / 2;
+    const close = new Button(scene, 0, 0, t('settings.close'), () => this.close()).setDepth(
+      PANEL_DEPTH + 4,
+    );
+    const rows = settingsRows(close.height);
+    const { x, y } = settingsCorner(rows.height);
     const blocker = scene.add
       .rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, PALETTE.fog, 0.5)
       .setOrigin(0, 0)
       .setDepth(BLOCKER_DEPTH)
       .setInteractive();
     const panel = scene.add
-      .rectangle(x, y, WIDTH, HEIGHT, PALETTE.panel, 0.98)
+      .rectangle(x, y, WIDTH, rows.height, PALETTE.panel, 0.98)
       .setOrigin(0, 0)
       .setStrokeStyle(1, PALETTE.panelEdge)
       .setDepth(PANEL_DEPTH)
       .setInteractive();
     const title = scene.add
-      .text(x + PAD, y + PAD - 2, t('settings.title'), textStyle(10, PALETTE.lit))
+      .text(x + PAD, y + rows.title, t('settings.title'), textStyle(10, PALETTE.lit))
       .setDepth(PANEL_DEPTH + 1);
     this.parts.push(blocker, panel, title);
     this.sliders = AUDIO_CHANNELS.map((channel, i) =>
-      this.addSlider(channel, x, y + PAD + 18 + i * ROW),
+      this.addSlider(channel, x, y + itemAt(rows.sliders, i)),
     );
-    this.addMute(x + PAD, y + PAD + 18 + AUDIO_CHANNELS.length * ROW);
-    const close = new Button(scene, 0, 0, t('settings.close'), () => this.close()).setDepth(
-      PANEL_DEPTH + 4,
-    );
-    close.moveTo(x + (WIDTH - close.width) / 2, y + HEIGHT - PAD - close.height + 2);
-    this.parts.push(close);
+    this.addMute(x + PAD, y + rows.mute);
+    const exportLog = new Button(scene, 0, 0, t('settings.exportLog'), () =>
+      this.actions.exportLog(),
+    ).setDepth(PANEL_DEPTH + 4);
+    exportLog.moveTo(x + Math.round((WIDTH - exportLog.width) / 2), y + rows.exportLog);
+    close.moveTo(x + Math.round((WIDTH - close.width) / 2), y + rows.close);
+    this.parts.push(exportLog, close);
     this.render(settings);
   }
 

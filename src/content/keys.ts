@@ -309,12 +309,12 @@ const UI = {
   'hub.title': [],
   'hub.chapter': ['number'],
   'hub.locked': [],
-  'hub.exportLog': [],
   'tutorial.ok': [],
   'settings.title': [],
   'settings.volume': ['percent'],
   'settings.mute': [],
   'settings.close': [],
+  'settings.exportLog': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>

@@ -12,6 +12,7 @@ import {
   TUTORIAL_PANEL,
   tutorialLayout,
 } from '../src/game/picture/panelLayout';
+import { SETTINGS_PANEL } from '../src/game/picture/settingsPanelLayout';
 import { charsIn, LINE_HEIGHT, textHeight, wrappedLines } from '../src/game/picture/textWrap';
 import { questionAt, type Question, type QuestionOption } from '../src/game/systems/question';
 import { DEMO_SIZE } from '../src/game/view/CardDemoView';
@@ -102,6 +103,18 @@ describe('the panels fit their texts', () => {
       expect(LAYOUT.topY + wrappedLines(said, chars) * LINE_HEIGHT).toBeLessThanOrEqual(
         LAYOUT.garden.y + 1,
       );
+    }
+  });
+
+  it('the settings panel fits its buttons and the labels of its rows', () => {
+    const inner = innerWidth(SETTINGS_PANEL.width);
+    for (const label of [t('settings.exportLog'), t('settings.close'), t('settings.mute')]) {
+      expect(estimatedButtonWidth(label)).toBeLessThanOrEqual(inner);
+    }
+    // Each channel's name ends before its slider's track starts.
+    for (const channel of ['music', 'sfx', 'voice']) {
+      const name = SETTINGS_PANEL.pad + estimatedButtonWidth(t(`settings.${channel}`));
+      expect(name).toBeLessThanOrEqual(SETTINGS_PANEL.track.from);
     }
   });
 

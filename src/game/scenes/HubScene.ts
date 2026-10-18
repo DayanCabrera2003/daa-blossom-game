@@ -1,8 +1,6 @@
 import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import { codexSources, hasNewPages, openCodex } from '@services/codexProgress';
-import { download } from '@services/download';
-import { exportLog } from '@services/exportLog';
 import type { SaveData } from '@services/save';
 import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
 import { groundOf, seedOf } from '../picture/backdrop';
@@ -61,7 +59,7 @@ export class HubScene extends Phaser.Scene {
 
   create(data: HubSceneData = {}): void {
     fitCamera(this);
-    const { catalog, t, saves, teacherMode, playtest, clock, music, bus } = contextOf(this);
+    const { catalog, t, saves, teacherMode, music, bus } = contextOf(this);
     const save = saves.get();
     // The hub's own track; coming back from a level crossfades to it.
     music.play(trackFor({ kind: 'hub' }));
@@ -133,15 +131,8 @@ export class HubScene extends Phaser.Scene {
     // The settings, at the top right across from the title.
     const gear = { x: CANVAS_WIDTH - HUB.margin - GEAR_SIZE, y: 4 };
 
-    // Playtesters send this file back; nothing leaves the browser otherwise (GDD §10). On the top
-    // line, just before the settings, so the bottom of the hub is free for its garden.
-    const exportButton = new Button(this, 0, 0, t('hub.exportLog'), () =>
-      download(exportLog(playtest.current(), clock())),
-    );
-    const { width, height: tall } = exportButton;
-    const exportX = gear.x - HUB.gap - width;
-    exportButton.moveTo(exportX, HUB.exportY);
-    taken.push({ x: exportX, y: HUB.exportY - 1, width, height: tall });
+    // The signs of the top line stand before the settings, right to left.
+    const exportX = gear.x;
 
     // The Cuaderno, before the Códex, once a statement is written (and in teacher mode, to look at
     // the book): it opens as a book over the hub, with a ribbon to the Códex.

@@ -1,4 +1,6 @@
 import type Phaser from 'phaser';
+import { download } from '@services/download';
+import { exportLog } from '@services/exportLog';
 import { setVolume, toggleMute, writeSettings, type Settings } from '@services/settings';
 import type { Point } from '../input/target';
 import { addGearButton } from '../view/GearButton';
@@ -16,8 +18,8 @@ export interface SettingsPanel {
 /**
  * Gives a scene its settings: the gear button at `at`, which opens the settings panel, and the `M`
  * key, which mutes or unmutes at any time. Every change is kept in the shared context, saved at
- * once, handed to the audio bus and shown on the panel if it is open. The panel is returned, so the
- * scene's Escape can close it.
+ * once, handed to the audio bus and shown on the panel if it is open; the panel also downloads the
+ * playtest log. The panel is returned, so the scene's Escape can close it.
  */
 export function addSettings(scene: Phaser.Scene, at: Point): SettingsPanel {
   const context = contextOf(scene);
@@ -34,6 +36,8 @@ export function addSettings(scene: Phaser.Scene, at: Point): SettingsPanel {
       if (next[channel] !== context.settings[channel]) change(next);
     },
     mute: () => change(toggleMute(context.settings)),
+    // Playtesters send this file back; nothing leaves the browser otherwise (GDD §10).
+    exportLog: () => download(exportLog(context.playtest.current(), context.clock())),
   });
   addGearButton(scene, at, () => view.show(context.settings));
   scene.input.keyboard?.on('keydown-M', () => change(toggleMute(context.settings)));
