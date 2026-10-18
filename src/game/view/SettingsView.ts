@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
 import { AUDIO_CHANNELS, type AudioChannel, type Settings } from '@services/settings';
+import { playUiSound } from '../audio/uiSound';
 import { knobAt, volumeAt, volumePercent, type SliderTrack } from '../picture/volumeSlider';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -54,10 +55,12 @@ export class SettingsView {
     return this.parts.length > 0;
   }
 
-  /** Opens the panel showing `settings`. */
+  /** Opens the panel showing `settings`, sounding its wood unless it was already open. */
   show(settings: Settings): void {
-    this.close();
+    const reopening = this.open;
+    this.clear();
     const { scene, t } = this;
+    if (!reopening) playUiSound(scene, 'sfx.panelOpen');
     const x = (CANVAS_WIDTH - WIDTH) / 2;
     const y = (CANVAS_HEIGHT - HEIGHT) / 2;
     const blocker = scene.add
@@ -100,8 +103,14 @@ export class SettingsView {
     this.tick?.setVisible(settings.muted);
   }
 
-  /** Takes the panel and its blocker away. */
+  /** Takes the panel and its blocker away, sounding its wood if it was open. */
   close(): void {
+    if (this.open) playUiSound(this.scene, 'sfx.panelClose');
+    this.clear();
+  }
+
+  /** Takes the panel and its blocker away, silently. */
+  private clear(): void {
     for (const part of this.parts) part.destroy();
     this.parts = [];
     this.sliders = [];

@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { playUiSound } from '../audio/uiSound';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
 import { itemAt } from '@core/shared/itemAt';
@@ -44,10 +45,15 @@ export class QuestionView {
     return this.parts.length > 0;
   }
 
-  /** Opens the panel; `onAnswer` gets the value of the option the player touches. */
+  /**
+   * Opens the panel; `onAnswer` gets the value of the option the player touches. A panel opening
+   * sounds its wood (plan 06, section 1.8); one already open just shows the new question.
+   */
   show(question: ShownQuestion, onAnswer: (value: number) => void): void {
-    this.close();
+    const reopening = this.open;
+    this.clear();
     const { scene } = this;
+    if (!reopening) playUiSound(scene, 'sfx.panelOpen');
     const { x, y, width } = QUESTION_PANEL;
     const blocker = scene.add
       .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
@@ -94,8 +100,14 @@ export class QuestionView {
     this.buttons.get(value)?.setActive(true);
   }
 
-  /** Takes the panel and its blocker away. */
+  /** Takes the panel and its blocker away, sounding its wood if it was open. */
   close(): void {
+    if (this.open) playUiSound(this.scene, 'sfx.panelClose');
+    this.clear();
+  }
+
+  /** Takes the panel and its blocker away, silently. */
+  private clear(): void {
     for (const part of this.parts) part.destroy();
     this.parts = [];
     this.buttons.clear();

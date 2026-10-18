@@ -44,7 +44,7 @@ export class TutorialView {
 
   /** Opens the window; `onClose` runs once the player presses "Entendido". */
   show(card: ShownCard, onClose: () => void): void {
-    this.close();
+    this.clear();
     const { scene } = this;
     playUiSound(scene, 'sfx.card');
     const { x, y, width } = TUTORIAL_PANEL;
@@ -100,8 +100,14 @@ export class TutorialView {
     this.timer = scene.time.addEvent({ delay: TICK_MS, loop: true, callback: paint });
   }
 
-  /** Takes the window, its demo and its blocker away. */
+  /** Takes the window, its demo and its blocker away, sounding the panel closing if it was open. */
   close(): void {
+    if (this.parts.length > 0) playUiSound(this.scene, 'sfx.panelClose');
+    this.clear();
+  }
+
+  /** Takes the window, its demo and its blocker away, silently. */
+  private clear(): void {
     this.timer?.remove();
     this.timer = null;
     for (const part of this.parts) part.destroy();
