@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
+import { BROWSER_TARGETS } from './tools/page/browsers';
 
 /** Resolves a project-relative folder to an absolute path for aliasing. */
 const dir = (path: string): string => fileURLToPath(new URL(path, import.meta.url));
@@ -18,6 +19,10 @@ export default defineConfig({
   // Relative base so the build works under the GitHub Pages sub-path.
   base: './',
   resolve: { alias: aliases },
-  // dist/.vite/manifest.json tells the budget which chunks load at start and which on demand.
-  build: { manifest: true },
+  build: {
+    // dist/.vite/manifest.json tells the budget which chunks load at start and which on demand.
+    manifest: true,
+    // The browsers the game promises, written out (tools/page/browsers.ts).
+    target: [...BROWSER_TARGETS],
+  },
 });
