@@ -1,89 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { estimatedButtonWidth } from '../src/game/picture/bottomRows';
 import type { Rect } from '../src/game/picture/boxDistance';
 import { focusRing } from '../src/game/picture/focusRing';
-import { epilogueSignAt } from '../src/game/picture/hubLayout';
-import { BUTTON_HEIGHT } from '../src/game/picture/panelLayout';
-import { secretFlowerPicture } from '../src/game/picture/secretFlower';
-import { epilogueReached } from '../src/game/systems/epilogue';
-import {
-  firstSpot,
-  moveFocus,
-  reachable,
-  readingOrder,
-  type FocusSpot,
-} from '../src/game/input/focusOrder';
-import { catalog } from '../src/levels/catalog';
-import { codexSources, openCodex } from '../src/services/codexProgress';
-import { unlockedLevels, visibleLevels } from '../src/services/progress';
-import { sandboxAccess } from '../src/services/sandboxAccess';
-import { emptySave, recordCompletion, recordNotebook, type SaveData } from '../src/services/save';
-import { secretFlowers } from '../src/services/secretFlowers';
-import { entries, hubOf, t } from './support/hubBoxes';
-
+import { firstSpot, moveFocus, reachable, readingOrder } from '../src/game/input/focusOrder';
+import { hubSpots, playable, STATES, wonUpTo } from './support/hubSpots';
 // The keyboard on the hub (plan 09, phase 4), with the real catalog and the real words, as
 // `HubScene` lays it out: on a fresh hub, halfway and with everything won, and in teacher mode, Tab
 // visits every pressable thing (the signs, the gear, the flowers, the open levels, the epilogue's
 // sign) once and comes back to where it started, chapter after chapter, and the focus ring of each
 // stays on the canvas without covering another thing's label.
-
-/** The levels a player sees, in catalog order. */
-const playable = visibleLevels(entries, false);
-
-/** A save with the first `count` levels a player sees won with three stars, and their statements. */
-function wonUpTo(count: number): SaveData {
-  return playable
-    .slice(0, count)
-    .reduce((save, { id }) => recordNotebook(recordCompletion(save, id, 3), id), emptySave());
-}
-
-/** The hub's states the test walks: their name, the save and the mode. */
-const STATES: readonly { name: string; save: SaveData; teacher: boolean }[] = [
-  { name: 'a fresh hub', save: emptySave(), teacher: false },
-  { name: 'halfway', save: wonUpTo(Math.floor(playable.length / 2)), teacher: false },
-  { name: 'everything won', save: wonUpTo(playable.length), teacher: false },
-  { name: 'teacher mode', save: emptySave(), teacher: true },
-];
-
-/** A pressable thing of the hub: what it is, for the messages, its box and depth. */
-type Spot = FocusSpot<string>;
-
-/** What the keyboard can reach on the hub in `save`, as the scene puts it in its focus. */
-function hubSpots(save: SaveData, teacher: boolean): Spot[] {
-  const { pressables, signs } = hubOf(teacher);
-  const shown = visibleLevels(entries, teacher);
-  const open = unlockedLevels(shown, save, teacher);
-  const spots: Spot[] = [{ id: 'gear', box: pressables.gear, depth: 100 }];
-  // The signs that are there, right to left from the gear.
-  const topSigns = [
-    openCodex(codexSources(catalog()), save, teacher).size > 0 ? 'codex' : null,
-    save.notebook.length > 0 || teacher ? 'notebook' : null,
-    sandboxAccess(entries, save, teacher).exists ? 'sandbox' : null,
-  ].filter((sign) => sign !== null);
-  topSigns.forEach((sign, i) => {
-    const box = pressables.topSigns[i];
-    if (box !== undefined) spots.push({ id: sign, box, depth: 100 });
-  });
-  for (const { id, box } of pressables.levels) {
-    if (open.has(id)) spots.push({ id, box, depth: 100 });
-  }
-  for (const flower of secretFlowers(entries, save, teacher)) {
-    const place = signs.get(flower.chapter);
-    if (place === undefined) continue;
-    const { hit } = secretFlowerPicture(flower.state, place.cell, place.sign);
-    if (hit !== null) spots.push({ id: `flower ${flower.id}`, box: hit, depth: 2 });
-  }
-  if (epilogueReached(save, teacher)) {
-    const width = estimatedButtonWidth(t('epilogue.title'));
-    const at = epilogueSignAt(width, BUTTON_HEIGHT);
-    spots.push({
-      id: 'epilogue',
-      box: { x: at.x, y: at.y - 1, width, height: BUTTON_HEIGHT },
-      depth: 100,
-    });
-  }
-  return spots;
-}
 
 /**
  * Whether a side of a ring (a one-pixel rectangle) touches `box` deeper than its outermost pixels,
