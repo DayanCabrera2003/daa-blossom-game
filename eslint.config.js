@@ -192,6 +192,7 @@ export default tseslint.config(
                 'teacher',
                 'epilogue',
                 'diagram',
+                'book',
                 'books',
               ].flatMap((name) => [`./${name}`, `./${name}/**`, `@ui/${name}`, `@ui/${name}/**`]),
               message: 'the shell loads the books with import() the first time one opens.',

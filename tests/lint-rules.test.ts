@@ -220,7 +220,7 @@ describe('pure overlay models', () => {
 
 describe('the light overlay shell', () => {
   // The shell is in the initial script; the books load with import() the first time they open.
-  const HEAVY = ['codex', 'math', 'notebook', 'teacher', 'epilogue', 'diagram'];
+  const HEAVY = ['codex', 'math', 'notebook', 'teacher', 'epilogue', 'diagram', 'book'];
 
   it.each(HEAVY)('src/ui/shell.ts may not import ui/%s statically', async (folder) => {
     for (const from of [`./${folder}/Book`, `@ui/${folder}/Book`, `@ui/${folder}`]) {
