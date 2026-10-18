@@ -8,13 +8,14 @@ import {
   type CodexUnlock,
   type OpenTabs,
 } from '@levels/codex';
-import type { SaveData } from './save';
+import { pageOf, type CodexPage } from './codexPage';
+import { recordGlossaryRows, recordPageRead, type SaveData } from './save';
 
 /**
  * Which pages of the Codex the player can read (GDD §7), derived like the open levels
  * (`progress.ts`): from the completed levels and what each one opens. Nothing of it is saved, so an
- * old save opens exactly what it won and never drifts from the level files; only the entries
- * already read are kept, for the "new" seal.
+ * old save opens exactly what it won and never drifts from the level files; only the pages
+ * already read (and the glossary rows already seen) are kept, for the "new" seal.
  */
 
 /** What the progress reads of a level: its id and the Codex pages it opens when won. */
@@ -51,9 +52,41 @@ const listed = (
   tabs: ReadonlySet<CodexTab> | undefined,
 ): [CodexEntryId, ReadonlySet<CodexTab>][] => (tabs === undefined ? [] : [[entry, tabs]]);
 
-/** The open entries the player has not read yet, in the order of the book. */
-export function newEntries(open: OpenTabs, save: SaveData): CodexEntryId[] {
-  return [...open.keys()].filter((entry) => !save.codexRead.includes(entry));
+/**
+ * The entries with rows in the glossary of C13 (plan 07, §1.3): the glossary shows the rows of the
+ * open ones, and is whole once C12 is open.
+ */
+export const GLOSSARY_ENTRIES: readonly CodexEntryId[] = CODEX_ENTRIES.slice(0, 12);
+
+/** The page of C13 that shows the rows of the glossary. */
+const GLOSSARY_PAGE: CodexPage = 'C13:bridge';
+
+/** The entries whose rows the glossary shows now: those open among `GLOSSARY_ENTRIES`. */
+const glossaryRows = (open: OpenTabs): CodexEntryId[] =>
+  GLOSSARY_ENTRIES.filter((entry) => open.has(entry));
+
+/**
+ * The open pages the player has not read yet, in the order of the book: those never read, and the
+ * page of the glossary when it shows rows of an entry not seen there yet.
+ */
+export function unreadPages(open: OpenTabs, save: SaveData): Set<CodexPage> {
+  const rowsUnseen = glossaryRows(open).some((entry) => !save.glossaryRead.includes(entry));
+  return new Set(
+    [...open].flatMap(([entry, tabs]) =>
+      CODEX_TABS.filter((tab) => tabs.has(tab))
+        .map((tab) => pageOf(entry, tab))
+        .filter((page) => !save.codexRead.includes(page) || (page === GLOSSARY_PAGE && rowsUnseen)),
+    ),
+  );
+}
+
+/**
+ * The progress after the player views `page` with the pages `open`: the page is read and, on the
+ * glossary's page, so are the rows it shows.
+ */
+export function markRead(save: SaveData, page: CodexPage, open: OpenTabs): SaveData {
+  const read = recordPageRead(save, page);
+  return page === GLOSSARY_PAGE ? recordGlossaryRows(read, glossaryRows(open)) : read;
 }
 
 /** Whether `after` shows a tab that `before` did not: a win that opened pages of the Codex. */

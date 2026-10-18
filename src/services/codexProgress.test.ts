@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { catalog } from '@levels/catalog';
 import { CODEX_ENTRIES, CODEX_TABS, type OpenTabs } from '@levels/codex';
-import { codexSources, newEntries, openCodex, pagesOpened } from './codexProgress';
-import { emptySave, recordCodexRead, recordCompletion, type SaveData } from './save';
+import {
+  codexSources,
+  GLOSSARY_ENTRIES,
+  markRead,
+  openCodex,
+  pagesOpened,
+  unreadPages,
+} from './codexProgress';
+import { emptySave, recordCompletion, recordPageRead, type SaveData } from './save';
 
 /** The real catalog, as the progress reads it. */
 const levels = codexSources(catalog());
@@ -46,16 +53,49 @@ describe('what the Codex shows open', () => {
 });
 
 describe('the new pages', () => {
-  it('an open entry is new until the player reads it', () => {
+  it('every open tab is new until the player reads it, page by page', () => {
     const save = completed('0.5', '1.8');
     const open = openCodex(levels, save, false);
-    expect(newEntries(open, save)).toEqual(['C1', 'C2', 'C13']);
-    expect(newEntries(open, recordCodexRead(save, 'C2'))).toEqual(['C1', 'C13']);
+    expect([...unreadPages(open, save)]).toHaveLength(9);
+    const read = recordPageRead(save, 'C2:formal');
+    expect(unreadPages(open, read).has('C2:formal')).toBe(false);
+    expect(unreadPages(open, read).has('C2:intuition')).toBe(true);
   });
 
-  it('an entry read in teacher mode and then closed again is not new, nor listed', () => {
-    const save = recordCodexRead(emptySave(), 'C8');
-    expect(newEntries(openCodex(levels, save, false), save)).toEqual([]);
+  it('a tab that opens after its entry was read is new: the formal of C1 at 1.8', () => {
+    const early = completed('0.5');
+    const read = markRead(early, 'C1:intuition', openCodex(levels, early, false));
+    expect([...unreadPages(openCodex(levels, read, false), read)]).toEqual([]);
+    const later = recordCompletion(read, '1.8', 1);
+    const unread = unreadPages(openCodex(levels, later, false), later);
+    expect(unread.has('C1:intuition')).toBe(false);
+    expect(unread.has('C1:formal')).toBe(true);
+    expect(unread.has('C1:bridge')).toBe(true);
+  });
+
+  it('a page read in teacher mode and then closed again is not new, nor listed', () => {
+    const save = recordPageRead(emptySave(), 'C8:formal');
+    expect([...unreadPages(openCodex(levels, save, false), save)]).toEqual([]);
+  });
+
+  it('the glossary is new again when an entry with rows opens after it was read', () => {
+    const save = completed('0.5', '1.8');
+    const open = openCodex(levels, save, false);
+    const read = CODEX_TABS.reduce((saved, tab) => markRead(saved, `C13:${tab}`, open), save);
+    expect(read.glossaryRead).toEqual(['C1', 'C2']);
+    expect(unreadPages(open, read).has('C13:bridge')).toBe(false);
+    // Winning 2.4 opens C3, whose rows join the glossary: only its bridge, where they show, is new.
+    const later = recordCompletion(read, '2.4', 1);
+    const unread = unreadPages(openCodex(levels, later, false), later);
+    expect(unread.has('C13:bridge')).toBe(true);
+    expect(unread.has('C13:formal')).toBe(false);
+    expect(unread.has('C3:intuition')).toBe(true);
+  });
+
+  it('reading another page records no glossary rows, and the rows come from C1 to C12', () => {
+    const save = completed('0.5', '1.8');
+    expect(markRead(save, 'C13:formal', openCodex(levels, save, false)).glossaryRead).toEqual([]);
+    expect(GLOSSARY_ENTRIES).toEqual(CODEX_ENTRIES.slice(0, 12));
   });
 
   it('a win opens pages when it opens a tab not open before', () => {

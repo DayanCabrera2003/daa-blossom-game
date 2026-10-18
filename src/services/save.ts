@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { codexEntry, type CodexEntryId } from '@levels/codex';
+import { codexPage, type CodexPage } from './codexPage';
 
 /** The part of `localStorage` the save needs, so tests (and a refusing browser) can stand in. */
 export interface KeyValueStore {
@@ -23,16 +24,22 @@ const saveSchema = z.strictObject({
   /** The mechanic cards the player has closed (GDD §5.11), each shown once, in the order seen. */
   tutorialsSeen: z.array(z.string()),
   /**
-   * The Codex entries the player has opened in the book, in the order read, so the others wear the
-   * "new" seal. Which entries are open is never saved: it follows from the completed levels.
+   * The Codex pages (each tab of an entry, `C1:formal`) the player has read in the book, in the
+   * order read, so the others wear the "new" seal. Which pages are open is never saved: it follows
+   * from the completed levels.
    */
-  codexRead: z.array(codexEntry),
+  codexRead: z.array(codexPage),
+  /**
+   * The entries whose rows of the glossary (C13) the player has seen there, in the order seen: the
+   * glossary grows as entries open, and its new rows make it new again.
+   */
+  glossaryRead: z.array(codexEntry),
 });
 
 /**
  * The saves of older versions, each turned into the current one without losing progress. Version
- * 1 had no notebook, version 2 no mechanic cards and version 3 no pages read: what is missing
- * comes back empty.
+ * 1 had no notebook, version 2 no mechanic cards and version 3 no pages read nor glossary rows
+ * seen: what is missing comes back empty.
  */
 const olderSaves = z
   .union([
@@ -50,12 +57,13 @@ const olderSaves = z
     levels: save.levels,
     notebook: 'notebook' in save ? save.notebook : [],
     tutorialsSeen: 'tutorialsSeen' in save ? save.tutorialsSeen : [],
-    codexRead: [] as CodexEntryId[],
+    codexRead: [] as CodexPage[],
+    glossaryRead: [] as CodexEntryId[],
   }));
 
 /**
  * Progress of a player: each completed level with its best number of stars, the notebook, the
- * mechanic cards already seen and the Codex entries already read.
+ * mechanic cards already seen, and the Codex pages and glossary rows already read.
  */
 export type SaveData = z.infer<typeof saveSchema>;
 
@@ -66,6 +74,7 @@ export const emptySave = (): SaveData => ({
   notebook: [],
   tutorialsSeen: [],
   codexRead: [],
+  glossaryRead: [],
 });
 
 /**
@@ -113,7 +122,16 @@ export function recordTutorialSeen(save: SaveData, card: string): SaveData {
     : { ...save, tutorialsSeen: [...save.tutorialsSeen, card] };
 }
 
-/** The progress after opening a Codex entry in the book; each entry is recorded once. */
-export function recordCodexRead(save: SaveData, entry: CodexEntryId): SaveData {
-  return save.codexRead.includes(entry) ? save : { ...save, codexRead: [...save.codexRead, entry] };
+/** The progress after reading a page of the Codex in the book; each page is recorded once. */
+export function recordPageRead(save: SaveData, page: CodexPage): SaveData {
+  return save.codexRead.includes(page) ? save : { ...save, codexRead: [...save.codexRead, page] };
+}
+
+/**
+ * The progress after seeing in the glossary the rows of `entries`; each entry is recorded once, and
+ * seeing only rows already seen changes nothing.
+ */
+export function recordGlossaryRows(save: SaveData, entries: readonly CodexEntryId[]): SaveData {
+  const fresh = [...new Set(entries)].filter((entry) => !save.glossaryRead.includes(entry));
+  return fresh.length === 0 ? save : { ...save, glossaryRead: [...save.glossaryRead, ...fresh] };
 }
