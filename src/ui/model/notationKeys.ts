@@ -36,8 +36,8 @@ export const EVENT_NOTATION = {
 /** The templates of the certificate that closes a run of Edmonds (Theorem 12.3, $U=I$). */
 export const CERTIFICATE_NOTATION = {
   'certificate.stones': ['set'],
-  'certificate.count': ['n', 'stones', 'odd'],
-  'certificate.bound': ['n', 'stones', 'odd', 'bound'],
+  'certificate.count': ['n', 'stones', 'groups'],
+  'certificate.bound': ['n', 'stones', 'groups', 'bound'],
   'certificate.tight': ['size', 'bound'],
 } as const satisfies Readonly<Record<string, Gaps>>;
 

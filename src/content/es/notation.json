@@ -22,7 +22,7 @@
   "stoneDropped": "U\\leftarrow U\\setminus\\{{v}\\}",
   "declareDone": "\\text{se afirma }\\lvert M\\rvert=\\nu(G)",
   "certificate.stones": "U=I={set}",
-  "certificate.count": "\\lvert V\\rvert={n},\\ \\lvert U\\rvert={stones},\\ \\operatorname{odd}(G-U)={odd}",
-  "certificate.bound": "\\tfrac12\\bigl(\\lvert V\\rvert+\\lvert U\\rvert-\\operatorname{odd}(G-U)\\bigr)=\\tfrac12({n}+{stones}-{odd})={bound}",
+  "certificate.count": "\\lvert V\\rvert={n},\\ \\lvert U\\rvert={stones},\\ \\operatorname{odd}(G-U)={groups}",
+  "certificate.bound": "\\tfrac12\\bigl(\\lvert V\\rvert+\\lvert U\\rvert-\\operatorname{odd}(G-U)\\bigr)=\\tfrac12({n}+{stones}-{groups})={bound}",
   "certificate.tight": "\\lvert M\\rvert={size}={bound}\\ \\Rightarrow\\ \\nu(G)={size}"
 }
