@@ -1,6 +1,6 @@
 import type { OpenTabs } from '@levels/codex';
 import type { Bus } from '@services/bus';
-import type { BookRequest, BusEvents } from '@services/busEvents';
+import type { BookRequest, BusEvents, Capabilities } from '@services/busEvents';
 import type { SaveData } from '@services/save';
 import type { SaveStore } from '@services/saveStore';
 
@@ -21,6 +21,11 @@ export interface OverlayFrame {
   readonly bus: Bus<BusEvents>;
   readonly saves: SaveStore;
   readonly codexOpen: CodexOpen;
+  /**
+   * What the game last announced it can do (`capabilities` on the bus), so a page only offers what
+   * exists; until the game speaks, nothing optional (no free mode).
+   */
+  capabilities(): Capabilities;
   /** Hides the layer and gives the input back to the game; closing twice does nothing more. */
   close(): void;
 }
@@ -68,6 +73,9 @@ export function mountShell({
 
   let books: Promise<BooksModule> | null = null;
   let open = false;
+  // Listened to from the start, so an announcement made before any book opens is not lost.
+  let capable: Capabilities = { sandbox: false };
+  bus.on('capabilities', (announced) => (capable = announced));
 
   const close = (): void => {
     if (!open) return;
@@ -76,7 +84,14 @@ export function mountShell({
     layer.replaceChildren();
     bus.emit('overlay.changed', { open: false });
   };
-  const frame: OverlayFrame = { layer, bus, saves, codexOpen, close };
+  const frame: OverlayFrame = {
+    layer,
+    bus,
+    saves,
+    codexOpen,
+    capabilities: () => capable,
+    close,
+  };
 
   const show = (request: OverlayRequest): void => {
     if (!open) {

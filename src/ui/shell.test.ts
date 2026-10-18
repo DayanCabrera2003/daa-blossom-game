@@ -160,6 +160,15 @@ describe('overlay shell', () => {
     expect([...(frames[0]?.codexOpen(emptySave()).keys() ?? [])]).toEqual(['C1']);
   });
 
+  it('tells the books what the game last announced it can do, nothing before it speaks', async () => {
+    const { bus, frames } = setUp();
+    bus.emit('epilogue.open');
+    await settle();
+    expect(frames[0]?.capabilities()).toEqual({ sandbox: false });
+    bus.emit('capabilities', { sandbox: true });
+    expect(frames[0]?.capabilities()).toEqual({ sandbox: true });
+  });
+
   it(
     'the books not written yet close at once, so the game never stays without input',
     async () => {
