@@ -62,6 +62,8 @@ export interface BusEvents {
   readonly 'teacher.toggle': undefined;
   /** The trace panel opened or folded: the canvas makes room for it beside the garden, or takes it back. */
   readonly 'teacher.panel': { readonly open: boolean };
+  /** A row of the panel's "Your day" was chosen: the game's sun moves to that step of the day. */
+  readonly 'teacher.sun': { readonly step: number };
   /** What the game can do (today, whether the free mode exists). */
   readonly capabilities: Capabilities;
   /**

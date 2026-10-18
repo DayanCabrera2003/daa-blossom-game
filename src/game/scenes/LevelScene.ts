@@ -192,6 +192,11 @@ export class LevelScene extends Phaser.Scene {
       level.data.id,
       (levelId) => this.scene.start('level', { levelId }),
     );
+    this.teacher.followPanel(
+      this,
+      () => this.controller.session.history.states.length,
+      (event) => this.dispatch(event),
+    );
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teacher.leave());
     this.views.hud.showTrace(this.context.teacherMode);
     this.ready = true;

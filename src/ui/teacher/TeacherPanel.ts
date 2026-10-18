@@ -21,7 +21,8 @@ import './teacher.css';
  * window in the room the canvas leaves it (`game/scale/panelRoom.ts`), so it never covers a sprout.
  * From the top: the badge of teacher mode with the way to fold it (T, Escape or its button); the
  * small garden of the step chosen; "Your day", a row per move written in the notation of the
- * Codex, with the step the sun shows marked and followed as the sun moves; "Edmonds from here",
+ * Codex, with the step the sun shows marked and followed as the sun moves, and a press on a row
+ * moving the game's sun to it (`teacher.sun`); "Edmonds from here",
  * the core's run from the lanterns of that step, walked with its own sun, a press on a row or the
  * arrows; and the certificate that closes it. What it shows is decided in `ui/model/teacherTrace`
  * and `ui/model/teacherPanel`; this module only builds the DOM.
@@ -109,8 +110,18 @@ export function mountTeacherPanel(
     sun?.show(run, t('teacher.shown.edmonds', { step: run, count: trace.trace.length }));
   };
 
+  /** Chooses step `step` of the day, and asks the game's sun to show it too. */
+  const chooseDay = (step: number): void => {
+    choose({ list: 'day', step });
+    if (fed !== null && step !== fed.cursor) bus.emit('teacher.sun', { step });
+  };
+
   /** Writes the two traces of a new feed; the small garden follows the sun. */
   const write = (feed: TeacherFeed): void => {
+    // A list walked with the keys keeps the keyboard once it is written anew.
+    const focused = page.activeElement;
+    const refocus =
+      focused === dayList?.element ? 'day' : focused === edmondsList?.element ? 'edmonds' : null;
     if (garden === null || fed?.level !== feed.level) {
       garden = gardenOf(feed.level);
       layout = garden === null ? null : fitGarden(garden.positions);
@@ -118,14 +129,7 @@ export function mountTeacherPanel(
     fed = feed;
     if (garden === null) return;
     trace = teacherTrace(feed, garden.names, notation);
-    dayList = traceList(
-      page,
-      t('teacher.day'),
-      t('teacher.dawn'),
-      trace.day,
-      (step) => choose({ list: 'day', step }),
-      fold,
-    );
+    dayList = traceList(page, t('teacher.day'), t('teacher.dawn'), trace.day, chooseDay, fold);
     daySection.replaceChildren(
       part(page, 'h3', 'teacher-heading', t('teacher.day')),
       part(page, 'p', 'teacher-help', t('teacher.dayHelp')),
@@ -159,6 +163,8 @@ export function mountTeacherPanel(
       proof,
     );
     choose({ list: 'day', step: feed.cursor });
+    if (refocus === 'day') dayList.element.focus();
+    if (refocus === 'edmonds') edmondsList.element.focus();
   };
 
   return {
