@@ -14,14 +14,6 @@ import { levelScreen, trackFor } from '../src/game/systems/musicFor';
 const AWAITING: Readonly<Partial<Record<AssetKey, string>>> = {
   // The credits screen, still to be built (plan 06, section 1.7).
   'music.credits': 'the music of the credits screen',
-  // The cosmetics of the hub, won with stars and seeds (plan 08, phase 7).
-  'critter.butterfly': 'the orange butterfly of the hub',
-  'critter.butterflyBlue': 'the blue butterfly of the hub',
-  'critter.frog': 'the frog of the hub',
-  'critter.cat': 'the cat of the hub',
-  'critter.chickenWhite': 'the white hen of the hub',
-  'critter.chickenBrown': 'the brown hen of the hub',
-  'deco.plant': 'the plant each seed sows in the hub',
 };
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));

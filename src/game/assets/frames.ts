@@ -69,6 +69,28 @@ export const FRAMES = {
 
   // 1.6 Round buttons of the Kenney UI pack, where Ninja Adventure has no piece.
   roundButtons: { sheet: 'kenney.ui', col: 0, row: 1, cols: 3, rows: 1 },
+
+  // Plan 08, section 1.2: the cosmetics of the hub. A butterfly's sheet has a column for each
+  // direction it faces (down, up, left, right) and a row for each of the four frames of its
+  // wingbeat; an animal's, the animal still and then moving; the plant's, the four frames of its
+  // sway.
+  butterflyDown: { sheet: 'critter.butterfly', col: 0, row: 0, cols: 1, rows: 4 },
+  butterflyUp: { sheet: 'critter.butterfly', col: 1, row: 0, cols: 1, rows: 4 },
+  butterflyLeft: { sheet: 'critter.butterfly', col: 2, row: 0, cols: 1, rows: 4 },
+  butterflyRight: { sheet: 'critter.butterfly', col: 3, row: 0, cols: 1, rows: 4 },
+  butterflyBlueDown: { sheet: 'critter.butterflyBlue', col: 0, row: 0, cols: 1, rows: 4 },
+  butterflyBlueUp: { sheet: 'critter.butterflyBlue', col: 1, row: 0, cols: 1, rows: 4 },
+  butterflyBlueLeft: { sheet: 'critter.butterflyBlue', col: 2, row: 0, cols: 1, rows: 4 },
+  butterflyBlueRight: { sheet: 'critter.butterflyBlue', col: 3, row: 0, cols: 1, rows: 4 },
+  frogStill: cell('critter.frog', 0, 0),
+  frogHop: cell('critter.frog', 1, 0),
+  catStill: cell('critter.cat', 0, 0),
+  catWalk: cell('critter.cat', 1, 0),
+  chickenWhiteStill: cell('critter.chickenWhite', 0, 0),
+  chickenWhiteWalk: cell('critter.chickenWhite', 1, 0),
+  chickenBrownStill: cell('critter.chickenBrown', 0, 0),
+  chickenBrownWalk: cell('critter.chickenBrown', 1, 0),
+  plantSway: { sheet: 'deco.plant', col: 0, row: 0, cols: 4, rows: 1 },
 } as const satisfies Record<string, NamedFrame>;
 
 export type FrameName = keyof typeof FRAMES;
