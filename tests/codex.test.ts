@@ -78,7 +78,18 @@ const textsOf = (entry: CodexEntry): string[] => [
  * The entries whose texts are written (phases 7–10), so their proofs are held to the structure of
  * rigor. It grows entry by entry, and goes away when it holds all fourteen.
  */
-const RIGOR_READY: readonly CodexEntryId[] = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9'];
+const RIGOR_READY: readonly CodexEntryId[] = [
+  'C1',
+  'C2',
+  'C3',
+  'C4',
+  'C5',
+  'C6',
+  'C7',
+  'C8',
+  'C9',
+  'C10',
+];
 
 /** The only entries where a result may be stated without proof, out of the scope of the book. */
 const OUT_OF_SCOPE_ALLOWED: readonly CodexEntryId[] = ['C11', 'C14'];
@@ -103,6 +114,7 @@ const AWAITING_BOOKS: readonly CodexEntryId[] = [
   'C7',
   'C8',
   'C9',
+  'C10',
 ];
 
 /** The boxes ticked in the rigor comment of a formal tab, or null when it has none. */
