@@ -10,6 +10,11 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 `npm run assets:check` proves the committed copies match the zips. Each line below is
 `file inside the pack` → `file under public/assets/`.
 
+Every Ogg Vorbis sound also ships as an AAC copy in `.m4a`, next to it under the same name, for
+Safari before 18.4, which cannot play the Ogg container: `npm run assets:fallbacks` converts the
+extracted file with the system's ffmpeg (7.1.5, its own AAC encoder, 64 kb/s per channel). Each
+copy is the same CC0 work in another format, credited with its original below.
+
 ## Ninja Adventure Asset Pack
 
 - Author: Pixel-boy and AAA
