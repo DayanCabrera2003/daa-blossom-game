@@ -3,8 +3,8 @@
 // whether the GDD quotes the whole line word for word or a plan wrote it, each with a box to tick; and
 // after them the texts of the page and its notices, which no GDD sentence gives. Pure: it takes the
 // texts and returns the Markdown; `line-sheet.ts` writes it to docs/review/lineas.md.
-import { compareLevelIds } from '@levels/catalog';
 import { speakerOf } from '@game/systems/speaker';
+import { compareLineIds, placeOf } from './lineOrder';
 
 /** What the sheet is made from. */
 export interface LineSheetSources {
@@ -22,9 +22,6 @@ export interface LineSheetSources {
  */
 export const PAGE_TEXT_PREFIXES = ['notice.', 'page.'] as const;
 
-/** A dialogue line id: chapter and level, then the speaker and the number of the line. */
-const LINE_ID = /^ch(\d+\.\d+)\.[a-z]+\.(\d+)$/;
-
 /**
  * Text as compared with the GDD: without Markdown's emphasis, with every quotation mark written
  * as a straight one (the GDD quotes with `"`, the game's lines with « » inside a line) and with
@@ -41,12 +38,6 @@ const plain = (text: string): string =>
 const row = (id: string, who: string, fromGdd: boolean, text: string): string =>
   `- [ ] \`${id}\` · **${who}** · ${fromGdd ? 'GDD' : 'plan'}: ${text}`;
 
-/** The level and the number of a line id; lines of an unknown shape go last, by id. */
-function placeOf(id: string): { level: string; number: number } {
-  const match = LINE_ID.exec(id);
-  return { level: match?.[1] ?? '?', number: Number(match?.[2] ?? 0) };
-}
-
 /** The review sheet, in Markdown. */
 export function lineSheet({ lines, strings, gdd }: LineSheetSources): string {
   const book = plain(gdd);
@@ -56,10 +47,7 @@ export function lineSheet({ lines, strings, gdd }: LineSheetSources): string {
   const fromGdd = (text: string): boolean => book.includes(`"${plain(text)}"`);
   const nameOf = (id: string): string => strings[`speaker.${speakerOf(id)}`] ?? speakerOf(id);
 
-  const ids = Object.keys(lines).sort((a, b) => {
-    const [one, other] = [placeOf(a), placeOf(b)];
-    return compareLevelIds(one.level, other.level) || one.number - other.number || (a < b ? -1 : 1);
-  });
+  const ids = Object.keys(lines).sort(compareLineIds);
   const total = ids.length;
   const given = ids.filter((id) => fromGdd(lines[id] ?? '')).length;
 
