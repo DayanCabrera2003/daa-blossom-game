@@ -2,6 +2,7 @@ import type { Graph, VertexId } from '@core/graph/types';
 import { invariant } from '@core/shared/invariant';
 import { itemAt } from '@core/shared/itemAt';
 import { SPROUT_AREA, type SproutKind } from '../fields';
+import { EDITOR_AREA } from './editorArea';
 import { MAX_SPROUTS, MIN_SPACING } from './limits';
 import { LETTERS } from './names';
 import { untangle, type Field } from './untangle';
@@ -36,15 +37,14 @@ export type LayoutShape =
 export const sideKind = (side: 0 | 1): SproutKind => (side === 0 ? 'bee' : 'flower');
 
 /**
- * Where the sprouts of a laid-out garden go: the sprout area, less a margin at the sides for the
- * names, two pixels at the top (under the editor's header) and four at the bottom, so the name of
- * the lowest sprout ends above the editor's rows of buttons.
+ * Where the sprouts of a laid-out garden go: the editor's free area (`editorArea.ts`, under its
+ * header and over its buttons), less a margin at the sides for the names.
  */
 const FIELD: Field = {
   left: SPROUT_AREA.x0 + 12,
   right: SPROUT_AREA.x1 - 12,
-  top: SPROUT_AREA.y0 + 2,
-  bottom: SPROUT_AREA.y1 - 4,
+  top: EDITOR_AREA.y0,
+  bottom: EDITOR_AREA.y1,
 };
 const MIDDLE_Y = (FIELD.top + FIELD.bottom) / 2;
 const CENTRE_X = (FIELD.left + FIELD.right) / 2;
@@ -66,13 +66,23 @@ const STAGGER = 12;
 
 /**
  * The step between two sprouts of a column of flowers, staggered, and of a column of bees or
- * flowers, which is not: under it a name would be drawn over the sprout below.
+ * flowers, which is not: under it a name would be drawn over the crown of the sprout below (a
+ * name ends 20 px under its sprout, and the tallest crown rises 11 px over the next one).
  */
 const STAGGERED_STEP = 16;
-const STRAIGHT_STEP = 27;
+const STRAIGHT_STEP = 32;
 
-/** How far the columns of each side of a garden of bees and flowers stand from its middle. */
-const SIDE_COLUMNS = [80, 140, 200] as const;
+/**
+ * How far the nearest and the farthest columns of each side of a garden of bees and flowers stand
+ * from its middle, and the widest step between two columns of a side.
+ */
+const SIDE_NEAR = 80;
+const SIDE_FAR = 220;
+const SIDE_STEP = 60;
+
+/** How far column `c` of `count` stands from the middle: outwards, evenly, within the garden. */
+const sideColumn = (c: number, count: number): number =>
+  SIDE_NEAR + c * (count === 1 ? 0 : Math.min(SIDE_STEP, (SIDE_FAR - SIDE_NEAR) / (count - 1)));
 
 /** How much the arcs of a ring bow out from their ends. */
 const BOW = 40;
@@ -227,7 +237,7 @@ const sides = (graph: Graph, side: readonly (0 | 1)[]): Spot[] => {
     );
     // Each side's columns grow outwards from the middle of the garden.
     columns.forEach((column, c) => {
-      const away = itemAt(SIDE_COLUMNS, c);
+      const away = sideColumn(c, count);
       standColumn(spots, column, s === 0 ? CENTRE_X - away : CENTRE_X + away, MIDDLE_Y, 0);
     });
   });

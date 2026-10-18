@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { SPROUT_AREA } from '../fields';
 import { checkLayout } from '../layoutChecks';
 import { EMPTY_DESIGN, editDesign, limitBreach, type Design, type DesignEdit } from './design';
+import { EDITOR_AREA } from './editorArea';
 import { MAX_SPROUTS, MAX_VINES, MIN_SPACING } from './limits';
 import { anyEdit } from '../../../tests/support/designs';
 
@@ -53,6 +54,25 @@ describe('editing a design', () => {
       error: 'tooClose',
     });
     expect(editDesign(THREE, { type: 'addSprout', x: 100, y: 140 }).ok).toBe(true);
+  });
+
+  it("refuses a sprout or a move under the editor's header or over its buttons", () => {
+    const outside = { ok: false, error: 'outside' };
+    expect(editDesign(EMPTY_DESIGN, { type: 'addSprout', x: 100, y: EDITOR_AREA.y0 - 1 })).toEqual(
+      outside,
+    );
+    expect(editDesign(EMPTY_DESIGN, { type: 'addSprout', x: 100, y: EDITOR_AREA.y1 + 1 })).toEqual(
+      outside,
+    );
+    expect(
+      editDesign(THREE, { type: 'moveSprout', label: 'C', x: 180, y: EDITOR_AREA.y0 - 1 }),
+    ).toEqual(outside);
+    expect(editDesign(EMPTY_DESIGN, { type: 'addSprout', x: 100, y: EDITOR_AREA.y0 }).ok).toBe(
+      true,
+    );
+    expect(editDesign(EMPTY_DESIGN, { type: 'addSprout', x: 100, y: EDITOR_AREA.y1 }).ok).toBe(
+      true,
+    );
   });
 
   it('refuses a sprout, a move or a vine that would draw something over a name', () => {
@@ -237,6 +257,10 @@ describe('the reducer, property', () => {
           if (outcome.ok) design = outcome.value;
           expect(limitBreach(design)).toBeNull();
           expect(checkLayout(design)).toEqual([]);
+          for (const { x, y } of design.sprouts) {
+            expect(x >= EDITOR_AREA.x0 && x <= EDITOR_AREA.x1).toBe(true);
+            expect(y >= EDITOR_AREA.y0 && y <= EDITOR_AREA.y1).toBe(true);
+          }
           const lit = design.lanterns.flat();
           expect(new Set(lit).size).toBe(lit.length);
           const vines = new Set(design.vines.map((vine) => [...vine].sort().join()));

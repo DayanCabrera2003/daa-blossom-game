@@ -1,6 +1,7 @@
 import { err, ok, type Result } from '@core/shared/result';
 import { SPROUT_AREA, type SproutKind } from '../fields';
 import { checkLayout, type LayoutProblem } from '../layoutChecks';
+import { EDITOR_AREA } from './editorArea';
 import { MAX_SPROUTS, MAX_VINES, MIN_SPACING } from './limits';
 import { nextName } from './names';
 
@@ -53,9 +54,16 @@ export type DesignRejection =
 const joins = (pair: DesignPair, u: string, v: string): boolean =>
   (pair[0] === u && pair[1] === v) || (pair[0] === v && pair[1] === u);
 
-/** Whether a point is inside the area where sprouts may sit. */
-const inside = (x: number, y: number): boolean =>
-  x >= SPROUT_AREA.x0 && x <= SPROUT_AREA.x1 && y >= SPROUT_AREA.y0 && y <= SPROUT_AREA.y1;
+/** A rectangle of the canvas, on whole pixels. */
+type Area = { readonly x0: number; readonly x1: number; readonly y0: number; readonly y1: number };
+
+/**
+ * Whether a point is inside `area`: by default a level's sprout area, where a garden read from a
+ * file may sit; the editor's free area (under its header, over its buttons) for a sprout placed by
+ * hand.
+ */
+const inside = (x: number, y: number, area: Area = SPROUT_AREA): boolean =>
+  x >= area.x0 && x <= area.x1 && y >= area.y0 && y <= area.y1;
 
 /** Whether a point is closer than the least spacing to one of `sprouts`. */
 const crowded = (sprouts: readonly DesignSprout[], x: number, y: number): boolean =>
@@ -114,7 +122,7 @@ function addSprout(design: Design, at: { x: number; y: number }): Result<Design,
   const [x, y] = [Math.round(at.x), Math.round(at.y)];
   const label = nextName(design.sprouts.map((sprout) => sprout.label));
   if (design.sprouts.length >= MAX_SPROUTS || label === null) return err('tooMany');
-  if (!inside(x, y)) return err('outside');
+  if (!inside(x, y, EDITOR_AREA)) return err('outside');
   if (crowded(design.sprouts, x, y)) return err('tooClose');
   // A sprout added by hand is neither bee nor flower, so the garden stops being one of them.
   const kinded = design.sprouts.some((sprout) => sprout.kind !== undefined);
@@ -130,7 +138,7 @@ function moveSprout(
   const sprout = sproutNamed(design, edit.label);
   if (sprout === undefined) return err('noSprout');
   const [x, y] = [Math.round(edit.x), Math.round(edit.y)];
-  if (!inside(x, y)) return err('outside');
+  if (!inside(x, y, EDITOR_AREA)) return err('outside');
   const others = design.sprouts.filter((other) => other !== sprout);
   if (crowded(others, x, y)) return err('tooClose');
   return keepingNames(design, {

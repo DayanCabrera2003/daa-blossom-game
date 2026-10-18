@@ -5,7 +5,7 @@ import {
   type Design,
   type DesignEdit,
 } from '../../src/levels/sandbox/design';
-import { SPROUT_AREA } from '../../src/levels/fields';
+import { EDITOR_AREA } from '../../src/levels/sandbox/editorArea';
 import { LETTERS } from '../../src/levels/sandbox/names';
 
 // Arbitrary edits and designs of the free mode (plan 08, phase 8), for its property tests.
@@ -45,13 +45,13 @@ export const applyEdits = (edits: readonly DesignEdit[], from: Design = EMPTY_DE
 
 /**
  * A design of at least one and at most `maxSprouts` sprouts, grown with the editor's own edits:
- * sprouts inside the garden, then vines and lanterns among them.
+ * sprouts inside the editor's free area, then vines and lanterns among them.
  */
 export const designArb = ({ maxSprouts = 24 } = {}): fc.Arbitrary<Design> => {
   const letter = fc.constantFrom(...LETTERS.slice(0, maxSprouts));
   const spot = fc.record({
-    x: fc.integer({ min: SPROUT_AREA.x0, max: SPROUT_AREA.x1 }),
-    y: fc.integer({ min: SPROUT_AREA.y0, max: SPROUT_AREA.y1 }),
+    x: fc.integer({ min: EDITOR_AREA.x0, max: EDITOR_AREA.x1 }),
+    y: fc.integer({ min: EDITOR_AREA.y0, max: EDITOR_AREA.y1 }),
   });
   return fc
     .tuple(

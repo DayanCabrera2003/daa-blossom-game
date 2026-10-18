@@ -12,11 +12,13 @@ import { describe, expect, it } from 'vitest';
 import { crossingCount, readingProblems } from '../../../tests/support/gardenReading';
 import { LAYOUT_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { SPROUT_AREA } from '../fields';
+import { EDITOR_AREA } from './editorArea';
 import { layoutGarden, type LayoutShape, type Spot } from './layout';
 import { MAX_VINES, MIN_SPACING } from './limits';
 
 /**
- * Whether a layout of `graph` puts every sprout on a whole pixel inside the garden, 18 px apart,
+ * Whether a layout of `graph` puts every sprout on a whole pixel inside the editor's free area
+ * (under its header, over its buttons), 18 px apart,
  * with no name drawn over a sprout, another name or a lantern: the checks of the catalog's levels,
  * with no exemption.
  */
@@ -25,10 +27,10 @@ function expectReadable(spots: readonly Spot[], graph: Graph, shape?: LayoutShap
   expect(readingProblems(graph, spots, shape)).toEqual([]);
   spots.forEach((spot, i) => {
     expect(Number.isInteger(spot.x) && Number.isInteger(spot.y)).toBe(true);
-    expect(spot.x).toBeGreaterThanOrEqual(SPROUT_AREA.x0);
-    expect(spot.x).toBeLessThanOrEqual(SPROUT_AREA.x1);
-    expect(spot.y).toBeGreaterThanOrEqual(SPROUT_AREA.y0);
-    expect(spot.y).toBeLessThanOrEqual(SPROUT_AREA.y1);
+    expect(spot.x).toBeGreaterThanOrEqual(EDITOR_AREA.x0);
+    expect(spot.x).toBeLessThanOrEqual(EDITOR_AREA.x1);
+    expect(spot.y).toBeGreaterThanOrEqual(EDITOR_AREA.y0);
+    expect(spot.y).toBeLessThanOrEqual(EDITOR_AREA.y1);
     for (const other of spots.slice(i + 1)) {
       expect(Math.hypot(spot.x - other.x, spot.y - other.y)).toBeGreaterThanOrEqual(MIN_SPACING);
     }
