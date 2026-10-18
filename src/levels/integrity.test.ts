@@ -312,4 +312,55 @@ describe('level integrity', () => {
       { code: 'sameKindVine', u: 'C', v: 'D', kind: 'flower' },
     ]);
   });
+
+  it('every name stays readable: clear of the lanterns and sprouts around it, unlike the others', () => {
+    const crowded = {
+      ...trap,
+      sprouts: trap.sprouts.map((sprout) =>
+        sprout.label === 'D' ? { ...sprout, x: 280, y: 160 } : sprout,
+      ),
+    };
+    expect(problemsOf(crowded)).toContainEqual({
+      code: 'labelOnLantern',
+      label: 'C',
+      vine: ['C', 'D'],
+    });
+    const rename = (label: string) => (label === 'D' ? 'a' : label);
+    const twins = {
+      ...trap,
+      sprouts: trap.sprouts.map((sprout) => ({ ...sprout, label: rename(sprout.label) })),
+      vines: trap.vines.map((vine) => vine.map(rename)),
+      solution: [
+        { type: 'join', u: 'A', v: 'B' },
+        { type: 'join', u: 'C', v: 'a' },
+      ],
+    };
+    expect(problemsOf(twins)).toEqual([{ code: 'labelsDifferByCase', labels: ['A', 'a'] }]);
+  });
+
+  it('only a secret flower must keep its vines from crossing', () => {
+    const at: Record<string, [number, number]> = {
+      A: [200, 100],
+      B: [200, 170],
+      C: [160, 135],
+      D: [240, 135],
+    };
+    const crossed = {
+      ...trap,
+      sprouts: trap.sprouts.map((sprout) => {
+        const [x, y] = at[sprout.label] ?? [0, 0];
+        return { ...sprout, x, y };
+      }),
+    };
+    expect(problemsOf(crossed)).toEqual([]);
+    expect(problemsOf({ ...crossed, secret: { stars: 2 } })).toEqual([
+      {
+        code: 'vinesCross',
+        vines: [
+          ['A', 'B'],
+          ['C', 'D'],
+        ],
+      },
+    ]);
+  });
 });

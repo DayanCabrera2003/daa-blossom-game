@@ -5,6 +5,7 @@
 import { playWalkthrough } from '@game/systems/walkthrough';
 import { checkCodex } from '@levels/codexChecks';
 import { checkIntegrity } from '@levels/integrity';
+import { vineCrossings } from '@levels/layoutChecks';
 import { loadLevel } from '@levels/loader';
 import type { LevelData } from '@levels/schema';
 import { checkSecrets } from '@levels/secretChecks';
@@ -62,6 +63,19 @@ if (codexProblems.length === 0) {
 } else {
   console.log('\nThe catalog opens the Codex wrongly:');
   for (const problem of codexProblems) console.log(`        - ${problem}`);
+}
+
+// Crossing vines are an error only in a secret flower; elsewhere a design may need them, so they
+// are reported for the author to judge.
+const crossed = loaded
+  .filter((level) => level.secret === undefined)
+  .map((level) => ({ id: level.id, count: vineCrossings(level).length }))
+  .filter(({ count }) => count > 0);
+if (crossed.length === 0) {
+  console.log('No vines cross in the levels of the main path.');
+} else {
+  console.log('\nVines cross in these levels of the main path (not an error):');
+  for (const { id, count } of crossed) console.log(`        - ${id}: ${count}`);
 }
 
 // A secret flower is sound only next to its chapter, so its checks also read the whole catalog.

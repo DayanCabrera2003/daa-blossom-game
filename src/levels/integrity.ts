@@ -9,6 +9,7 @@ import { checkFlow, type FlowProblem } from './flowChecks';
 import { checkFlower, type FlowerProblem } from './flowerChecks';
 import { isFlowInput } from './flowInput';
 import { sameKindVines, type KindClash } from './kinds';
+import { checkLayout, type LayoutProblem } from './layoutChecks';
 import { referencedLines } from './lines';
 import { checkNotebook, type NotebookProblem } from './notebookChecks';
 import { gardenAtPlay } from './playStart';
@@ -31,6 +32,7 @@ export type IntegrityProblem =
   | ({ readonly code: 'sameKindVine' } & KindClash)
   | FlowProblem
   | FlowerProblem
+  | LayoutProblem
   | NotebookProblem;
 
 /**
@@ -94,6 +96,10 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
   }
 
   problems.push(...checkFlow(level), ...checkFlower(level), ...checkNotebook(level));
+
+  // A garden laid out by hand must read well: no name hidden or confused with another, and no
+  // crossing vines in a secret flower, a puzzle of looking.
+  problems.push(...checkLayout(data));
 
   for (const line of referencedLines(data)) {
     if (!line.startsWith(`ch${data.id}.`)) problems.push({ code: 'foreignLine', line });

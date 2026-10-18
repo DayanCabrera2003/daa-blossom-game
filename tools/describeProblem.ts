@@ -102,6 +102,16 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `${statementAt(problem)}: its lanterns already hold the most, so no better reflection can be drawn`;
     case 'counterexampleSameKindVine':
       return `${statementAt(problem)}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
+    case 'vinesCross':
+      return `the vines ${problem.vines[0].join('–')} and ${problem.vines[1].join('–')} cross`;
+    case 'labelOnSprout':
+      return `the name of ${problem.label} is drawn over the sprout ${problem.sprout}`;
+    case 'labelOnLabel':
+      return `the names of ${problem.labels[0]} and ${problem.labels[1]} are drawn over each other`;
+    case 'labelOnLantern':
+      return `the name of ${problem.label} is drawn over the lantern of the vine ${problem.vine.join('–')}`;
+    case 'labelsDifferByCase':
+      return `the names ${problem.labels[0]} and ${problem.labels[1]} differ only by case, which the pixel font shows as size alone`;
   }
 }
 

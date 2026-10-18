@@ -84,6 +84,18 @@ describe('readable level problems', () => {
     expect(describeProblem({ code: 'waterAndBet' })).toBe(
       'the level has both a water budget and a formal bet, but it can give only one extra star',
     );
+    expect(describeProblem({ code: 'labelOnLantern', label: 'e', vine: ['e', 'f'] })).toBe(
+      'the name of e is drawn over the lantern of the vine e–f',
+    );
+    expect(
+      describeProblem({
+        code: 'vinesCross',
+        vines: [
+          ['a', 'b'],
+          ['c', 'd'],
+        ],
+      }),
+    ).toBe('the vines a–b and c–d cross');
   });
 
   it('every kind of problem has a message', () => {
@@ -127,6 +139,9 @@ describe('readable level problems', () => {
       { code: 'noChainToDraw', step: 1 },
       { code: 'flowerAfterPlay', step: 1 },
       { code: 'recallAhead', step: 0, level: '4.4' },
+      { code: 'labelOnSprout', label: 'a', sprout: 'b' },
+      { code: 'labelOnLabel', labels: ['a', 'b'] },
+      { code: 'labelsDifferByCase', labels: ['c', 'C'] },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });
