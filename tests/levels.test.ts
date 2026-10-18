@@ -1,5 +1,5 @@
 import { checkCodex } from '@levels/codexChecks';
-import { checkIntegrity } from '@levels/integrity';
+import { checkCatalogLevel } from '@levels/integrity';
 import { loadLevel } from '@levels/loader';
 import { checkSecrets } from '@levels/secretChecks';
 import { describe, expect, it } from 'vitest';
@@ -78,7 +78,7 @@ describe('level integrity (every level file)', () => {
       const level = loadLevel(json);
       if (!level.ok) throw new Error(`${path} does not load: ${JSON.stringify(level.error)}`);
       expect(path).toBe(expectedPath(level.value.data.id));
-      expect(checkIntegrity(level.value)).toEqual([]);
+      expect(checkCatalogLevel(level.value)).toEqual([]);
     });
   });
 });

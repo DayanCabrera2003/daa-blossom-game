@@ -1,4 +1,4 @@
-import { checkIntegrity } from '@levels/integrity';
+import { checkCatalogLevel } from '@levels/integrity';
 import { describe, expect, it } from 'vitest';
 import {
   automatonLevel,
@@ -38,6 +38,6 @@ describe('the fixture levels for tests', () => {
   it.each(FIXTURES)('%s loads and is as sound as a level file', (id, build) => {
     const level = build();
     expect(level.data.id).toBe(id);
-    expect(checkIntegrity(level)).toEqual([]);
+    expect(checkCatalogLevel(level)).toEqual([]);
   });
 });
