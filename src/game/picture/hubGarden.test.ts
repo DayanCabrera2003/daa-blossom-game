@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { boxesOverlap, type Rect } from './boxDistance';
+import { hubCounter } from './hubCounter';
 import { HUB, layoutHub } from './hubLayout';
+import { hubTopLine } from './hubTopLine';
 import { PIXEL_FONT } from './pixelFont';
 import {
   finishedChapters,
@@ -34,8 +36,7 @@ const NAMES = [
 
 /**
  * The boxes of the hub as the scene lays it out, every level with no stars yet or with three (the
- * widest buttons): the heading, the export button and the gear on the top line, then each
- * chapter's sign, title and buttons.
+ * widest buttons): the top line, then each chapter's sign, title and buttons.
  */
 function hubBoxes(stars: boolean): Rect[] {
   const titleWidths = NAMES.map((name) => text(name.length) + HUB_SIGN.width + HUB_SIGN.gap);
@@ -44,15 +45,22 @@ function hubBoxes(stars: boolean): Rect[] {
     Array.from({ length: count }, () => text((stars ? 8 : 5) + (c === 4 ? 1 : 0)) + 4),
   );
   const layout = layoutHub(widths, HEIGHT, titleWidths);
+  // The top line at its fullest: the teacher badge, a three-digit counter, the Códex with its
+  // seal, the Cuaderno and the free mode's sign.
+  const top = hubTopLine({
+    title: text(8),
+    badge: text(13),
+    counter: hubCounter(134, 7, 8).width,
+    gear: 13,
+    signs: [text(12) + 14, text(8) + 4, text(10) + 4],
+    signHeight: HEIGHT,
+  });
   return [
-    { x: HUB.margin, y: 6, width: text(8), height: 12 },
-    {
-      x: CANVAS_WIDTH - HUB.margin - 13 - HUB.gap - 168,
-      y: HUB.topLineY - 1,
-      width: 168,
-      height: HEIGHT,
-    },
-    { x: CANVAS_WIDTH - HUB.margin - 13, y: 4, width: 13, height: 13 },
+    top.title,
+    ...(top.badge === null ? [] : [top.badge]),
+    top.counter,
+    top.gear,
+    ...top.signs,
     ...layout.chapters.flatMap(({ titleY, buttons }, c) => [
       signBox(titleY, HEIGHT),
       { x: HUB.margin, y: titleY, width: titleWidths[c] ?? 0, height: HEIGHT },
