@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import { FRAMES, frameIndex, type FrameName } from '../assets/frames';
 import type { AssetKey } from '../assets/keys';
 import type { GardenPicture, SproutPicture } from '../picture/garden';
+import { STONE_FALL_MS, STONE_SETTLE_MS, stoneFall } from '../picture/stoneSplit';
 import { SPROUT_RADIUS } from './paintSprout';
 import { PALETTE } from './palette';
 
@@ -30,6 +31,11 @@ class PiecePool {
     private readonly frame: FrameName,
   ) {}
 
+  /** The image showing the piece at the `index`th spot of the last render, if there is one. */
+  imageAt(index: number): Phaser.GameObjects.Image | undefined {
+    return this.images[index];
+  }
+
   /** Shows the piece at each of `spots`, its feet at the bottom of the spot's cell. */
   render(spots: readonly { x: number; y: number }[]): void {
     const { sheet } = FRAMES[this.frame];
@@ -48,7 +54,8 @@ class PiecePool {
 
 /**
  * What sits on sprouts (plan 06, section 1.4): a lifted sprout turns into the small grey rock of
- * `TilesetNature`, set down with a puff of the pack's dust; a scarecrow, the post of
+ * `TilesetNature`, which drops onto it, squashes as it hits with a puff of the pack's dust and
+ * settles (`picture/stoneSplit.ts`, GDD §4.1 key animation 4); a scarecrow, the post of
  * `TilesetElement` with a straw hat and arms drawn on it, stands guard beside its sprout; and,
  * with stones lifted, the outline of each odd group the garden falls into (GDD §4.1, key
  * animation 4). Without the sheets loaded, a grey square and a cross stand in for them.
@@ -88,21 +95,46 @@ export class ObjectsView {
     const textured = (frame: FrameName): boolean => this.scene.textures.exists(FRAMES[frame].sheet);
     if (!textured('stoneSmall')) for (const s of stones) this.plainStone(g, s);
     for (const s of scarecrows) this.scarecrow(g, s, textured('scarecrowPost'));
-    this.dust(stones);
+    this.setDown(stones);
   }
 
-  /** A puff of dust on every stone set down since the last picture. */
-  private dust(stones: readonly SproutPicture[]): void {
+  /** Drops every stone set down since the last picture, with a puff of dust as it hits. */
+  private setDown(stones: readonly SproutPicture[]): void {
     const now = new Set(stones.map((s) => s.vertex));
     const before = this.lifted;
     this.lifted = now;
-    if (before === null || !this.scene.anims.exists(DUST_ANIMATION)) return;
-    for (const s of stones) {
-      if (before.has(s.vertex)) continue;
-      const puff = this.scene.add.sprite(s.x, s.y + 2, DUST).setDepth(OBJECT_DEPTH + 2);
-      puff.once('animationcomplete', () => puff.destroy());
-      puff.play(DUST_ANIMATION);
-    }
+    if (before === null) return;
+    stones.forEach((s, i) => {
+      if (before.has(s.vertex)) return;
+      const image = this.stones.imageAt(i);
+      if (image !== undefined) this.drop(image, s);
+      this.scene.time.delayedCall(STONE_FALL_MS, () => this.dust(s));
+    });
+  }
+
+  /** The stone's image falling onto `s` and settling, its bottom kept on the ground. */
+  private drop(image: Phaser.GameObjects.Image, s: SproutPicture): void {
+    const rest = { x: Math.round(s.x), y: Math.round(s.y) };
+    this.scene.tweens.addCounter({
+      from: 0,
+      to: STONE_FALL_MS + STONE_SETTLE_MS,
+      duration: STONE_FALL_MS + STONE_SETTLE_MS,
+      onUpdate: (tween) => {
+        const pose = stoneFall(tween.getValue() ?? 0);
+        if (pose === null) return;
+        const lower = ((1 - pose.scaleY) * image.height) / 2;
+        image.setPosition(rest.x, rest.y - pose.height + lower).setScale(pose.scaleX, pose.scaleY);
+      },
+      onComplete: () => image.setPosition(rest.x, rest.y).setScale(1),
+    });
+  }
+
+  /** A puff of the pack's dust at the foot of `s`. */
+  private dust(s: SproutPicture): void {
+    if (!this.scene.anims.exists(DUST_ANIMATION)) return;
+    const puff = this.scene.add.sprite(s.x, s.y + 2, DUST).setDepth(OBJECT_DEPTH + 2);
+    puff.once('animationcomplete', () => puff.destroy());
+    puff.play(DUST_ANIMATION);
   }
 
   /** A grey square, for when the rock's sheet is not loaded. */
