@@ -8,6 +8,7 @@ import type { Graph } from '../graph/types';
 import { createMatching } from '../matching/createMatching';
 import { size } from '../matching/queries';
 import { unwrap } from '../shared/result';
+import { oddComponents } from './oddComponents';
 import { checkTutteBerge, tutteBergeBound } from './tutteBerge';
 
 const optimum = (graph: Graph): number => {
@@ -92,6 +93,24 @@ describe('Tutte–Berge certificate (stones)', () => {
           expect(tutteBergeBound(graph, stones)).toBeGreaterThanOrEqual(optimum(graph));
         },
       ),
+    );
+  });
+
+  it('property (C12, Theorem 12.3 and Corollary 12.4): the best stones give ν, and Tutte holds', () => {
+    /** Every set of stones of a garden, as arrays of sprouts. */
+    const everyStoneSet = (n: number): number[][] =>
+      Array.from({ length: 2 ** n }, (_, bits) =>
+        [...Array(n).keys()].filter((v) => (bits >> v) % 2 === 1),
+      );
+    fc.assert(
+      fc.property(graphArb({ maxN: 8 }), (graph) => {
+        const sets = everyStoneSet(graph.n);
+        const best = Math.min(...sets.map((stones) => tutteBergeBound(graph, stones)));
+        expect(best).toBe(optimum(graph));
+        const perfect = 2 * optimum(graph) === graph.n;
+        const tutte = sets.every((stones) => oddComponents(graph, stones).length <= stones.length);
+        expect(tutte).toBe(perfect);
+      }),
     );
   });
 });
