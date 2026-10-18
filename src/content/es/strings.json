@@ -341,6 +341,7 @@
   "sandbox.reason.tooMany": "Ya no caben más brotes: {max} como mucho.",
   "sandbox.reason.tooManyVines": "Ya no caben más enredaderas: {max} como mucho.",
   "sandbox.reason.tooClose": "Demasiado cerca de otro brote: déjale algo de aire.",
+  "sandbox.reason.coversName": "Así quedaría tapado el nombre de un brote: prueba en otro sitio o aparta un brote.",
   "sandbox.reason.outside": "Ahí no: los brotes crecen dentro del jardín.",
   "sandbox.reason.sproutBusy": "Ese brote ya tiene un farol: uno por brote.",
   "sandbox.reason.notAVine": "Un farol se cuelga de una enredadera.",

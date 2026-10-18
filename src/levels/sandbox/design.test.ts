@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { SPROUT_AREA } from '../fields';
+import { checkLayout } from '../layoutChecks';
 import { EMPTY_DESIGN, editDesign, limitBreach, type Design, type DesignEdit } from './design';
 import { MAX_SPROUTS, MAX_VINES, MIN_SPACING } from './limits';
 import { anyEdit } from '../../../tests/support/designs';
@@ -47,11 +48,40 @@ describe('editing a design', () => {
       ok: false,
       error: 'outside',
     });
-    expect(editDesign(THREE, { type: 'addSprout', x: 100, y: 117 })).toEqual({
+    expect(editDesign(THREE, { type: 'addSprout', x: 117, y: 100 })).toEqual({
       ok: false,
       error: 'tooClose',
     });
-    expect(editDesign(THREE, { type: 'addSprout', x: 100, y: 118 }).ok).toBe(true);
+    expect(editDesign(THREE, { type: 'addSprout', x: 100, y: 140 }).ok).toBe(true);
+  });
+
+  it('refuses a sprout, a move or a vine that would draw something over a name', () => {
+    const coversName = { ok: false, error: 'coversName' };
+    // Right under A, the new sprout would sit on A's name.
+    expect(editDesign(THREE, { type: 'addSprout', x: 100, y: 124 })).toEqual(coversName);
+    expect(editDesign(THREE, { type: 'moveSprout', label: 'C', x: 100, y: 124 })).toEqual(
+      coversName,
+    );
+    // A vine from A to a sprout 40 px below hangs its lantern on A's name.
+    const below = edited(THREE, { type: 'addSprout', x: 100, y: 140 });
+    expect(editDesign(below, { type: 'toggleVine', u: 'A', v: 'D' })).toEqual(coversName);
+    // Taking a vine away never covers anything.
+    expect(editDesign(THREE, { type: 'toggleVine', u: 'A', v: 'B' }).ok).toBe(true);
+  });
+
+  it('lets a design that came with a covered name be edited, and the name be cleared', () => {
+    const crowded: Design = {
+      sprouts: [
+        { label: 'A', x: 100, y: 100 },
+        { label: 'B', x: 100, y: 122 },
+      ],
+      vines: [],
+      lanterns: [],
+    };
+    expect(checkLayout(crowded)).not.toEqual([]);
+    expect(editDesign(crowded, { type: 'addSprout', x: 300, y: 100 }).ok).toBe(true);
+    const cleared = edited(crowded, { type: 'moveSprout', label: 'B', x: 160, y: 100 });
+    expect(checkLayout(cleared)).toEqual([]);
   });
 
   it('refuses a sprout past the 24th', () => {
@@ -198,7 +228,7 @@ describe('the limits a design breaks', () => {
 });
 
 describe('the reducer, property', () => {
-  it('never leaves the limits nor puts two lanterns on a sprout, whatever is asked', () => {
+  it('never leaves the limits, covers a name nor puts two lanterns on a sprout', () => {
     fc.assert(
       fc.property(fc.array(anyEdit, { maxLength: 120 }), (edits) => {
         let design = EMPTY_DESIGN;
@@ -206,6 +236,7 @@ describe('the reducer, property', () => {
           const outcome = editDesign(design, edit);
           if (outcome.ok) design = outcome.value;
           expect(limitBreach(design)).toBeNull();
+          expect(checkLayout(design)).toEqual([]);
           const lit = design.lanterns.flat();
           expect(new Set(lit).size).toBe(lit.length);
           const vines = new Set(design.vines.map((vine) => [...vine].sort().join()));

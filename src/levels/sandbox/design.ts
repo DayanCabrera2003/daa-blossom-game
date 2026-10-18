@@ -1,5 +1,6 @@
 import { err, ok, type Result } from '@core/shared/result';
 import { SPROUT_AREA, type SproutKind } from '../fields';
+import { checkLayout, type LayoutProblem } from '../layoutChecks';
 import { MAX_SPROUTS, MAX_VINES, MIN_SPACING } from './limits';
 import { nextName } from './names';
 
@@ -7,7 +8,8 @@ import { nextName } from './names';
  * A garden of the free mode as the player designs it (plan 08, phase 8), and the pure reducer of
  * its edits. A design is written like the garden of a level file (sprouts by name, with where they
  * sit; vines and lanterns between names), so turning it into a level is a copy. Every edit returns
- * the new design or why it is refused, and no edit ever takes a design out of its limits.
+ * the new design or why it is refused, and no edit ever takes a design out of its limits nor draws
+ * anything over a sprout's name, so a designed garden always reads as well as one of the catalog.
  */
 
 /** A sprout of a design: its name, where it sits, and bee or flower in such a garden only. */
@@ -44,7 +46,8 @@ export type DesignEdit =
 export type LimitBreach = 'tooMany' | 'tooClose' | 'outside' | 'tooManyVines';
 
 /** Why an edit is refused; the editor says each one kindly. */
-export type DesignRejection = LimitBreach | 'sproutBusy' | 'notAVine' | 'noSprout' | 'sameSprout';
+export type DesignRejection =
+  LimitBreach | 'coversName' | 'sproutBusy' | 'notAVine' | 'noSprout' | 'sameSprout';
 
 /** Whether a pair joins the two sprouts `u` and `v`, in either order. */
 const joins = (pair: DesignPair, u: string, v: string): boolean =>
@@ -65,6 +68,32 @@ const plain = (sprouts: readonly DesignSprout[]): DesignSprout[] =>
 /** The sprout named `label`, if the design has it. */
 const sproutNamed = (design: Design, label: string): DesignSprout | undefined =>
   design.sprouts.find((sprout) => sprout.label === label);
+
+/** The layout problems that hide a name: a sprout, another name or a lantern drawn over it. */
+const HIDING: ReadonlySet<LayoutProblem['code']> = new Set([
+  'labelOnSprout',
+  'labelOnLabel',
+  'labelOnLantern',
+]);
+
+/** The names a design hides, each as a key, with the checks of the catalog's levels. */
+const hiddenNames = (design: Design): Set<string> =>
+  new Set(
+    checkLayout(design)
+      .filter((problem) => HIDING.has(problem.code))
+      .map((problem) => JSON.stringify(problem)),
+  );
+
+/**
+ * The edited design, unless it hides a name the design before it kept clear (where a sprout would
+ * sit, its name, or the lantern a new vine may carry). A design that came in with a hidden name,
+ * from a file, can still be edited, and moving the sprout that hides it clears it.
+ */
+function keepingNames(before: Design, after: Design): Result<Design, DesignRejection> {
+  const already = hiddenNames(before);
+  const fresh = [...hiddenNames(after)].some((name) => !already.has(name));
+  return fresh ? err('coversName') : ok(after);
+}
 
 /**
  * The first limit a design breaks, or null when it keeps them all: no more than 24 sprouts and 40
@@ -90,7 +119,7 @@ function addSprout(design: Design, at: { x: number; y: number }): Result<Design,
   // A sprout added by hand is neither bee nor flower, so the garden stops being one of them.
   const kinded = design.sprouts.some((sprout) => sprout.kind !== undefined);
   const sprouts = kinded ? plain(design.sprouts) : design.sprouts;
-  return ok({ ...design, sprouts: [...sprouts, { label, x, y }] });
+  return keepingNames(design, { ...design, sprouts: [...sprouts, { label, x, y }] });
 }
 
 /** Moves a sprout, rounded to a pixel, as long as it stays inside and apart from the others. */
@@ -104,7 +133,7 @@ function moveSprout(
   if (!inside(x, y)) return err('outside');
   const others = design.sprouts.filter((other) => other !== sprout);
   if (crowded(others, x, y)) return err('tooClose');
-  return ok({
+  return keepingNames(design, {
     ...design,
     sprouts: design.sprouts.map((other) => (other === sprout ? { ...sprout, x, y } : other)),
   });
@@ -137,7 +166,7 @@ function toggleVine(design: Design, u: string, v: string): Result<Design, Design
   // A vine between two bees, or two flowers, makes the garden one like any other.
   const clash = a.kind !== undefined && a.kind === b.kind;
   const sprouts = clash ? plain(design.sprouts) : design.sprouts;
-  return ok({ ...design, sprouts, vines: [...design.vines, [u, v]] });
+  return keepingNames(design, { ...design, sprouts, vines: [...design.vines, [u, v]] });
 }
 
 /** Lights a vine, or puts its lantern out; a sprout never holds two lanterns. */

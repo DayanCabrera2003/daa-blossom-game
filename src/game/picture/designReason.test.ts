@@ -13,6 +13,7 @@ const REJECTIONS: readonly DesignRejection[] = [
   'tooMany',
   'tooManyVines',
   'tooClose',
+  'coversName',
   'outside',
   'sproutBusy',
   'notAVine',

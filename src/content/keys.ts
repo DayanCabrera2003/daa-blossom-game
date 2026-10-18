@@ -32,6 +32,7 @@ const DESIGN_REASONS = {
   tooMany: ['max'],
   tooManyVines: ['max'],
   tooClose: [],
+  coversName: [],
   outside: [],
   sproutBusy: [],
   notAVine: [],
