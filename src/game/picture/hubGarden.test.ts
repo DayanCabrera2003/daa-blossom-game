@@ -48,7 +48,7 @@ function hubBoxes(stars: boolean): Rect[] {
     { x: HUB.margin, y: 6, width: text(8), height: 12 },
     {
       x: CANVAS_WIDTH - HUB.margin - 13 - HUB.gap - 168,
-      y: HUB.exportY - 1,
+      y: HUB.topLineY - 1,
       width: 168,
       height: HEIGHT,
     },

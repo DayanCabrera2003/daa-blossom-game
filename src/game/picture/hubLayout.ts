@@ -19,10 +19,10 @@ export const HUB = {
   /** Between two buttons side by side, between two lines of buttons, and between chapters. */
   gap: 4,
   /**
-   * The top of the "Exportar registro de prueba" button, on the top line between the hub's title
-   * and the settings, so the bottom of the canvas is free for the hub's garden.
+   * The top of the labels of the signs on the hub's top line (the Códex, the Cuaderno), between
+   * the hub's title and the settings, so the bottom of the canvas is free for the hub's garden.
    */
-  exportY: 5,
+  topLineY: 5,
   /** Where the bed of the hub's garden starts, along the bottom: the chapters end above it. */
   gardenTop: CANVAS_HEIGHT - 48,
 } as const;

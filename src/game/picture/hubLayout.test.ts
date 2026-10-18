@@ -81,8 +81,8 @@ describe('the hub layout', () => {
     const signed = TITLES.map((title) => title + HUB_SIGN.width + HUB_SIGN.gap);
     const { bottom } = layoutHub(widths, HEIGHT, signed);
     expect(bottom + HUB.gap).toBeLessThanOrEqual(HUB.gardenTop);
-    // The export button moved up to the top line, out of the way of the chapters.
-    expect(HUB.exportY + HEIGHT).toBeLessThanOrEqual(HUB.top);
+    // The signs of the top line stay out of the way of the chapters.
+    expect(HUB.topLineY + HEIGHT).toBeLessThanOrEqual(HUB.top);
     const { buttons, heads } = boxes(widths, TITLES);
     for (const head of heads) for (const button of buttons) expect(apart(head, button)).toBe(true);
   });

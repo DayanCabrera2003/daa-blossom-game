@@ -147,7 +147,7 @@ export class HubScene extends Phaser.Scene {
     const placeNotebook = (right: number): void => {
       if (notebook === null) return;
       notebookX = right - HUB.gap - notebook.width;
-      notebook.moveTo(notebookX, HUB.exportY);
+      notebook.moveTo(notebookX, HUB.topLineY);
     };
     placeNotebook(exportX);
 
@@ -169,7 +169,7 @@ export class HubScene extends Phaser.Scene {
       const word = t('codex.new');
       const room = labelSeal(word);
       const seal = this.add
-        .text(0, HUB.exportY, word, {
+        .text(0, HUB.topLineY, word, {
           ...textStyle(8, PALETTE.ink),
           backgroundColor: css(PALETTE.lit),
           padding: { x: SEAL_PAD },
@@ -179,7 +179,7 @@ export class HubScene extends Phaser.Scene {
         const fresh = hasNewPages(codexOpen, now);
         codex.setLabel(fresh ? t('hub.codex') + ' '.repeat(room.spaces) : t('hub.codex'));
         const codexX = exportX - HUB.gap - codex.width;
-        codex.moveTo(codexX, HUB.exportY);
+        codex.moveTo(codexX, HUB.topLineY);
         // The blank cells end where the label does, 2 px inside the sign's right edge.
         seal.setX(codexX + codex.width - 2 - room.spaces * PIXEL_FONT.advance + room.offset);
         seal.setVisible(fresh);
@@ -188,7 +188,7 @@ export class HubScene extends Phaser.Scene {
       showSeal(save);
       // Pages only get read while the hub is up, so the sign is now at its widest.
       const codexX = exportX - HUB.gap - codex.width;
-      taken.push({ x: codexX, y: HUB.exportY - 1, width: codex.width, height: codex.height });
+      taken.push({ x: codexX, y: HUB.topLineY - 1, width: codex.width, height: codex.height });
       const unsubscribe = saves.subscribe(showSeal);
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribe);
     }
@@ -196,7 +196,7 @@ export class HubScene extends Phaser.Scene {
     if (notebook !== null) {
       taken.push({
         x: notebookX,
-        y: HUB.exportY - 1,
+        y: HUB.topLineY - 1,
         width: notebook.width,
         height: notebook.height,
       });
