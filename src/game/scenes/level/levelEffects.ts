@@ -184,7 +184,12 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       });
       break;
     }
+    case 'sameStones':
+      // The council already knows these stones (7.6): the step waits for others.
+      stage.toast.show(t('council.sameStones'));
+      break;
     case 'play':
+    case 'certifyAgain':
     case 'sproutTapped':
       // Nothing to draw: the garden simply takes moves, or the touched sprout is painted.
       break;

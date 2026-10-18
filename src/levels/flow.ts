@@ -48,6 +48,11 @@ export const MAX_BRUTO_BUDGET = 2_000_000;
 const flowStep = z.discriminatedUnion('step', [
   /** Play with the level's rules until its victory holds. */
   z.strictObject({ step: z.literal('play'), reactions: z.array(reaction).default([]) }),
+  /**
+   * After a play step won with a Tutte–Berge certificate (7.6): the garden goes on taking moves, and
+   * the step is over once the victory holds again with stones different from all those presented.
+   */
+  z.strictObject({ step: z.literal('certifyAgain') }),
   /** The mentor says these lines; done at once. */
   z.strictObject({ step: z.literal('say'), lines: z.array(lineId).min(1) }),
   /** A question; with `retry`, a wrong answer asks again. Integrity checks one option is right. */

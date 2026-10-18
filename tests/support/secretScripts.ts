@@ -3,9 +3,10 @@ import { loadLevel } from '@levels/loader';
 
 /**
  * Synthetic levels for the script steps the secret flowers bring (plan 08, phase 1): the tangle of
- * 2.5, where the player counts the threads the reflection wins before it is separated. They are the
- * gardens the plan designs, kept here so the tests keep their data when the real level files are
- * written. Each one is loaded through the real loader, so it is validated exactly like a level file.
+ * 2.5, where the player counts the threads the reflection wins before it is separated, and the
+ * council of 7.6, which asks for a second, different certificate. They are the gardens the plan
+ * designs, kept here so the tests keep their data when the real level files are written. Each one
+ * is loaded through the real loader, so it is validated exactly like a level file.
  */
 
 /** Loads a fixture; a fixture that does not load is a broken test, so it stops loudly. */
@@ -86,5 +87,49 @@ export const TANGLE = {
   ],
 };
 
+/**
+ * The council of 7.6: a row `a–b–c` and, apart, the triangles `p–q–r` and `s–t–o` joined by the
+ * bridge `r–C–s`, with `p=q` and `s=t` lit. The most is 4 lanterns, two sprouts left in the dark;
+ * the stones that prove it are ∅, {b}, {C} and {b, C}. The walkthrough lights `a=b` and `r=C`,
+ * presents no stones, then {C}.
+ */
+export const COUNCIL = {
+  id: '7.6',
+  secret: { stars: 8 },
+  sprouts: [
+    ...row(['a', 'b', 'c'], 40, 60),
+    { label: 'p', x: 60, y: 150 },
+    { label: 'q', x: 120, y: 210 },
+    { label: 'r', x: 140, y: 130 },
+    { label: 'C', x: 220, y: 130 },
+    { label: 's', x: 300, y: 130 },
+    { label: 't', x: 320, y: 210 },
+    { label: 'o', x: 380, y: 150 },
+  ],
+  vines: [
+    ...chainOf(['a', 'b', 'c']),
+    ...chainOf(['p', 'q', 'r', 'p']),
+    ...chainOf(['r', 'C', 's']),
+    ...chainOf(['s', 't', 'o', 's']),
+  ],
+  lanterns: [
+    ['p', 'q'],
+    ['s', 't'],
+  ],
+  goal: { visible: false },
+  victory: { type: 'tutteBergeCertificate' },
+  flow: [{ step: 'play' }, { step: 'certifyAgain' }],
+  solution: [
+    { type: 'join', u: 'a', v: 'b' },
+    { type: 'join', u: 'r', v: 'C' },
+    { type: 'declareDone' },
+    { type: 'liftStone', vertex: 'C' },
+    { type: 'declareDone' },
+  ],
+};
+
 /** The level built from `TANGLE`. */
 export const tangleLevel = (): Level => load(TANGLE);
+
+/** The level built from `COUNCIL`. */
+export const councilLevel = (): Level => load(COUNCIL);
