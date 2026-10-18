@@ -28,7 +28,7 @@ import { raceCues } from '../systems/raceCues';
 import { replayCues } from '../systems/replayCues';
 import { effectCues } from '../systems/soundCues';
 import type { StarResult } from '../systems/stars';
-import { startCards, stepCard } from '../systems/tutorials';
+import { levelStepCard, startCards } from '../systems/tutorials';
 import { SfxPlayer } from '../audio/SfxPlayer';
 import { fitCamera } from '../view/fitCamera';
 import { LAYOUT } from '../view/layout';
@@ -290,7 +290,7 @@ export class LevelScene extends Phaser.Scene {
 
   private show(effect: Effect): void {
     // A step that brings a new gesture shows its card first, before whatever it opens.
-    const card = stepCard(effect.kind, this.cards.seen);
+    const card = levelStepCard(this.level, effect.kind, this.cards.seen);
     if (card !== null) this.cards.offer([card]);
     showEffect(effect, this.stage);
     this.sfx.schedule(effectCues(effect));

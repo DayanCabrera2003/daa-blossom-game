@@ -83,12 +83,23 @@ export function levelCards(level: Level, interfaceAt: string = level.data.id): C
   return inOrder([...tools, ...undo, ...sun, ...layers]);
 }
 
-/** The cards a level shows as it starts: what it has open that the player has not seen. */
+/**
+ * Whether a level teaches with mechanic cards: every one but a secret flower, a garden found after
+ * its chapter that has nothing new to teach (plan 08, section 1.1), even to a profile that skipped
+ * there in teacher mode. Its "?" still opens the cards of what it has open (`helpCards`).
+ */
+const teaches = (level: Level): boolean => level.data.secret === undefined;
+
+/**
+ * The cards a level shows as it starts: what it has open that the player has not seen; none in a
+ * secret flower.
+ */
 export const startCards = (
   level: Level,
   seen: ReadonlySet<string>,
   interfaceAt: string = level.data.id,
-): CardId[] => levelCards(level, interfaceAt).filter((card) => !seen.has(card));
+): CardId[] =>
+  teaches(level) ? levelCards(level, interfaceAt).filter((card) => !seen.has(card)) : [];
 
 /**
  * The card shown as a step opens, unless seen. `kind` is the step, or the kind of any effect the
@@ -98,6 +109,13 @@ export function stepCard(kind: string, seen: ReadonlySet<string>): CardId | null
   const card = (STEP_CARD as Readonly<Record<string, CardId | undefined>>)[kind];
   return card === undefined || seen.has(card) ? null : card;
 }
+
+/** The card shown in `level` as a step opens, as `stepCard` says; none in a secret flower. */
+export const levelStepCard = (
+  level: Level,
+  kind: string,
+  seen: ReadonlySet<string>,
+): CardId | null => (teaches(level) ? stepCard(kind, seen) : null);
 
 /**
  * Picks the cards to queue among `candidates`: those neither seen nor already offered, each once,
