@@ -45,6 +45,11 @@ export class MusicPlayer {
     });
   }
 
+  /** The track the screen wants now, playing or about to; null for silence. */
+  get track(): AssetKey | null {
+    return this.current;
+  }
+
   /** Plays `key` in a loop, crossfading from whatever played; the same track again goes on as is. */
   play(key: AssetKey | null): void {
     if (key === this.current) return;
