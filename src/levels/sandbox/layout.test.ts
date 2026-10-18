@@ -4,7 +4,9 @@ import { randomBipartiteGraph } from '@core/generators/bipartite';
 import { completeGraph, cycleGraph, pathGraph, starGraph } from '@core/generators/families';
 import { helix, longStemFlower, manyFlowers, nestedFlowers } from '@core/generators/hardCases';
 import { randomGraph } from '@core/generators/random';
+import { createGraph } from '@core/graph/createGraph';
 import { createRng } from '@core/shared/rng';
+import { unwrap } from '@core/shared/result';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { crossingCount, readingProblems } from '../../../tests/support/gardenReading';
@@ -32,6 +34,10 @@ function expectReadable(spots: readonly Spot[], graph: Graph): void {
     }
   });
 }
+
+/** The garden of `n` sprouts joined by `edges`. */
+const graphOf = (n: number, edges: readonly (readonly [number, number])[]): Graph =>
+  unwrap(createGraph(n, edges));
 
 /** The two sides of a garden of bees and flowers grown with `a` bees first. */
 const beesFirst = (a: number, n: number): (0 | 1)[] =>
@@ -138,6 +144,17 @@ describe('laying out a garden without places', () => {
     });
     const xs = (s: 0 | 1): number[] => spots.filter((_, v) => side[v] === s).map(({ x }) => x);
     expect(Math.max(...xs(0))).toBeLessThan(Math.min(...xs(1)));
+  });
+
+  it('orders bees and flowers so that pairs that can stand level do, with no vine crossing', () => {
+    // Five bees each joined to one flower, the flowers in another order: they can all stand level.
+    const pairs = [3, 0, 4, 1, 2];
+    const graph = graphOf(
+      10,
+      pairs.map((flower, bee) => [bee, 5 + flower]),
+    );
+    const spots = layoutGarden(graph, { kind: 'sides', side: beesFirst(5, 10) });
+    expect(crossingCount(graph, spots)).toBe(0);
   });
 
   it('lays flowers out by their distance from R, from left to right', () => {

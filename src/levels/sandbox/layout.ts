@@ -180,17 +180,54 @@ const layers = (graph: Graph): Spot[] => {
   return spots;
 };
 
-/** The bees (side 0) in columns on the left, the flowers (side 1) in columns on the right. */
-const sides = (side: readonly (0 | 1)[]): Spot[] => {
+/** How many times each side of a garden of bees and flowers is sorted by its neighbours. */
+const SWEEPS = 8;
+
+/**
+ * The bees (side 0) and the flowers (side 1), each side in the order that crosses fewer vines:
+ * a few sweeps in which every sprout of one side takes the mean place of its neighbours on the
+ * other (the barycentre rule), ties and sprouts without a neighbour keeping their place.
+ */
+const sideOrder = (graph: Graph, side: readonly (0 | 1)[]): VertexId[][] => {
+  const order = ([0, 1] as const).map((s) => side.flatMap((t, v) => (t === s ? [v] : [])));
+  const place = new Array<number>(graph.n).fill(0);
+  const settle = (s: 0 | 1): void => itemAt(order, s).forEach((v, k) => (place[v] = k));
+  settle(0);
+  settle(1);
+  for (let sweep = 0; sweep < SWEEPS; sweep++) {
+    const s = sweep % 2 === 0 ? 1 : 0;
+    const mean = (v: VertexId): number => {
+      const near = itemAt(graph.adjacency, v);
+      return near.length === 0
+        ? itemAt(place, v)
+        : near.reduce((sum, u) => sum + itemAt(place, u), 0) / near.length;
+    };
+    order[s] = [...itemAt(order, s)].sort(
+      (u, v) => mean(u) - mean(v) || itemAt(place, u) - itemAt(place, v),
+    );
+    settle(s);
+  }
+  return order;
+};
+
+/**
+ * The bees in columns on the left, the flowers in columns on the right, each side in the order of
+ * `sideOrder` from top to bottom: with more than one column, a side deals its sprouts to them by
+ * turns, so going down the garden follows that order.
+ */
+const sides = (graph: Graph, side: readonly (0 | 1)[]): Spot[] => {
   const spots: Spot[] = new Array<Spot>(side.length);
-  for (const s of [0, 1] as const) {
-    const members = side.flatMap((t, v) => (t === s ? [v] : []));
+  sideOrder(graph, side).forEach((members, s) => {
+    const count = Math.ceil(members.length / holds(STRAIGHT_STEP));
+    const columns = Array.from({ length: count }, (_, c) =>
+      members.filter((_, k) => k % count === c),
+    );
     // Each side's columns grow outwards from the middle of the garden.
-    chunks(members, Math.ceil(members.length / holds(STRAIGHT_STEP))).forEach((column, c) => {
+    columns.forEach((column, c) => {
       const away = itemAt(SIDE_COLUMNS, c);
       standColumn(spots, column, s === 0 ? CENTRE_X - away : CENTRE_X + away, MIDDLE_Y, 0);
     });
-  }
+  });
   return spots;
 };
 
@@ -224,7 +261,7 @@ export function layoutGarden(graph: Graph, shape: LayoutShape): Spot[] {
       : shape.kind === 'ring'
         ? ring(graph.n)
         : shape.kind === 'sides'
-          ? sides(shape.side)
+          ? sides(graph, shape.side)
           : layers(graph);
   const names = LETTERS.slice(0, graph.n);
   const shaped = untangle(graph, names, onPixels(start), FIELD, AIM);
