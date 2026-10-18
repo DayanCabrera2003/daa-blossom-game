@@ -83,3 +83,15 @@ export function chainOf(
 ): Action | null {
   return moves.has('chain') && touched.length >= 2 ? { type: 'chain', path: touched } : null;
 }
+
+/** The name a target carries in the picture: `s3` for sprout 3, `v1-2` for the vine 1–2. */
+export const targetName = (target: DiagramTarget): string =>
+  target.kind === 'sprout' ? `s${target.vertex}` : `v${target.u}-${target.v}`;
+
+/** The target a picture's name stands for, or null for a name that is no target. */
+export function targetOf(name: string): DiagramTarget | null {
+  const sprout = /^s(\d+)$/.exec(name);
+  if (sprout !== null) return { kind: 'sprout', vertex: Number(sprout[1]) };
+  const vine = /^v(\d+)-(\d+)$/.exec(name);
+  return vine === null ? null : { kind: 'vine', u: Number(vine[1]), v: Number(vine[2]) };
+}

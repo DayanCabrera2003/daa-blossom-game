@@ -3,7 +3,7 @@ import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import { catalog } from '@levels/catalog';
 import type { DiagramMove } from './diagramSpec';
-import { chainOf, touchDiagram, type DiagramTarget } from './diagramTouch';
+import { chainOf, targetName, targetOf, touchDiagram, type DiagramTarget } from './diagramTouch';
 
 const startOf = (id: string): GardenState => {
   const level = catalog().find((one) => one.data.id === id);
@@ -98,5 +98,20 @@ describe('touchDiagram, drawing a chain', () => {
     });
     expect(chainOf([0], chains)).toBeNull();
     expect(chainOf([0, 1], lanterns)).toBeNull();
+  });
+});
+
+describe('targetOf and targetName', () => {
+  it('name a sprout and a vine so the picture can carry them, and read them back', () => {
+    expect(targetName({ kind: 'sprout', vertex: 3 })).toBe('s3');
+    expect(targetName({ kind: 'vine', u: 1, v: 2 })).toBe('v1-2');
+    expect(targetOf('s3')).toEqual({ kind: 'sprout', vertex: 3 });
+    expect(targetOf('v1-2')).toEqual({ kind: 'vine', u: 1, v: 2 });
+  });
+
+  it('read nothing from a name that is neither', () => {
+    expect(targetOf('x')).toBeNull();
+    expect(targetOf('s')).toBeNull();
+    expect(targetOf('v1')).toBeNull();
   });
 });
