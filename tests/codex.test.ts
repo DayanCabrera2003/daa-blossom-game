@@ -9,6 +9,11 @@ import { markdownToHtml } from '@ui/math/markdown';
 import { parseCodexEntry, type CodexEntry } from '@ui/model/codexEntry';
 import { codexIndex } from '@ui/model/codexIndex';
 import { codexStructure, resultId, type CodexStructure } from '@ui/model/codexStructure';
+import { diagramGarden, type DiagramSources } from '@ui/model/diagramGarden';
+import { replaySteps } from '@ui/model/diagramReplay';
+import { parseDiagramSpec, type DiagramSpec } from '@ui/model/diagramSpec';
+import { TEXT_PARAMS } from '@content/keys';
+import { cardDemos } from '@levels/cards/catalog';
 import { mathSpans } from '@ui/model/mathSpans';
 import { describe, expect, it } from 'vitest';
 import { codexSources, openCodex } from '@services/codexProgress';
@@ -41,6 +46,17 @@ const entries: CodexEntry[] = CODEX_ENTRIES.map((entry) => {
 /** The structure of each entry's formal tab. */
 const structures = new Map<string, CodexStructure>(
   entries.map((entry) => [entry.id, codexStructure(entry.tabs.formal)]),
+);
+
+/** Every diagram block of every tab, with its entry, read as a diagram (or failing the test). */
+const diagrams: [CodexEntryId, DiagramSpec][] = entries.flatMap((entry) =>
+  CODEX_TABS.flatMap((tab) => codexStructure(entry.tabs[tab]).diagrams).map(
+    (block): [CodexEntryId, DiagramSpec] => {
+      const spec = parseDiagramSpec(block);
+      if (!spec.ok) throw new Error(`${entry.id}: ${spec.error.join('; ')}`);
+      return [entry.id, spec.value];
+    },
+  ),
 );
 
 /** Every text of an entry: its titles and its three tabs. */
@@ -135,14 +151,66 @@ describe('what the Codex points at', () => {
     }
   });
 
-  it('every diagram block is JSON, and the level, card or garden code it names exists', () => {
+  it('every diagram block is a diagram, and the level, card or garden code it names exists', () => {
     const levels = new Set(catalog().map((level) => level.data.id));
+    for (const [, spec] of diagrams) {
+      if (spec.level !== undefined) expect(levels.has(spec.level)).toBe(true);
+      if (spec.card !== undefined) expect(CARD_IDS).toContain(spec.card);
+      if (spec.code !== undefined) expect(decodeGarden(spec.code).ok).toBe(true);
+      for (const key of [spec.title, spec.help]) {
+        if (key !== undefined) expect(TEXT_PARAMS).toHaveProperty([key]);
+      }
+    }
+  });
+});
+
+describe('the diagrams of the Codex (plan 07, phase 4)', () => {
+  const levels = catalog();
+  const cards = cardDemos();
+  const sources: DiagramSources = {
+    level: (id) => levels.find((level) => level.data.id === id),
+    card: (id) => cards.get(id),
+  };
+
+  it('every block builds its garden, and every replayed day plays to its end', () => {
+    expect(diagrams.length).toBeGreaterThan(0);
+    for (const [entry, spec] of diagrams) {
+      const garden = diagramGarden(spec, sources);
+      expect({ entry, ok: garden.ok }).toEqual({ entry, ok: true });
+      if (!garden.ok || spec.kind !== 'replay') continue;
+      const steps = replaySteps(garden.value, spec.trace);
+      expect({ entry, ok: steps.ok }).toEqual({ entry, ok: true });
+      if (steps.ok) expect(steps.value.length).toBeGreaterThan(2);
+    }
+  });
+
+  it('draws in the intuition of each entry the garden the plan gives it', () => {
+    const drawn = diagrams.map(([entry, spec]) => ({
+      entry,
+      kind: spec.kind,
+      garden: spec.level ?? spec.card ?? spec.code,
+      day: spec.kind === 'replay' ? spec.trace : spec.moves.join(' '),
+    }));
+    expect(drawn).toEqual([
+      { entry: 'C1', kind: 'play', garden: '1.1', day: 'join split' },
+      { entry: 'C2', kind: 'play', garden: '1.3', day: 'chain' },
+      { entry: 'C4', kind: 'replay', garden: '3.4', day: 'solution' },
+      { entry: 'C6', kind: 'replay', garden: '4.1', day: 'autoSearch' },
+      { entry: 'C6', kind: 'replay', garden: '4.2', day: 'autoSearch' },
+      { entry: 'C7', kind: 'replay', garden: '4.6', day: 'solution' },
+      { entry: 'C9', kind: 'replay', garden: '5.1', day: 'edmonds' },
+      { entry: 'C14', kind: 'play', garden: 'AQaMSgA', day: 'join split' },
+    ]);
+  });
+
+  it('keeps every diagram in the intuition tab, where the garden speaks', () => {
     for (const entry of entries) {
-      for (const text of CODEX_TABS.flatMap((tab) => codexStructure(entry.tabs[tab]).diagrams)) {
-        const spec = JSON.parse(text) as { level?: string; card?: string; code?: string };
-        if (spec.level !== undefined) expect(levels.has(spec.level)).toBe(true);
-        if (spec.card !== undefined) expect(CARD_IDS).toContain(spec.card);
-        if (spec.code !== undefined) expect(decodeGarden(spec.code).ok).toBe(true);
+      for (const tab of ['formal', 'bridge'] as const) {
+        expect({
+          entry: entry.id,
+          tab,
+          diagrams: codexStructure(entry.tabs[tab]).diagrams,
+        }).toEqual({ entry: entry.id, tab, diagrams: [] });
       }
     }
   });
