@@ -81,6 +81,13 @@ export function unreadPages(open: OpenTabs, save: SaveData): Set<CodexPage> {
 }
 
 /**
+ * Whether the book has news: some open tab still unread (the glossary's page included when it shows
+ * rows not seen there yet). The Codex sign of the hub wears the "new" seal while it does.
+ */
+export const hasNewPages = (open: OpenTabs, save: SaveData): boolean =>
+  unreadPages(open, save).size > 0;
+
+/**
  * The progress after the player views `page` with the pages `open`: the page is read and, on the
  * glossary's page, so are the rows it shows.
  */

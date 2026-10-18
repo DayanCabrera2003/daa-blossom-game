@@ -4,6 +4,7 @@ import { CODEX_ENTRIES, CODEX_TABS, type OpenTabs } from '@levels/codex';
 import {
   codexSources,
   GLOSSARY_ENTRIES,
+  hasNewPages,
   markRead,
   openCodex,
   pagesOpened,
@@ -104,5 +105,18 @@ describe('the new pages', () => {
     expect(pagesOpened(openCodex(levels, emptySave(), false), before)).toBe(true);
     expect(pagesOpened(before, openCodex(levels, completed('0.5', '1.1'), false))).toBe(false);
     expect(pagesOpened(before, before)).toBe(false);
+  });
+
+  it('the book has news while some open tab is unread, the glossary rows too', () => {
+    expect(hasNewPages(openCodex(levels, emptySave(), false), emptySave())).toBe(false);
+    const save = completed('0.5');
+    const open = openCodex(levels, save, false);
+    expect(hasNewPages(open, save)).toBe(true);
+    const read = markRead(save, 'C1:intuition', open);
+    expect(hasNewPages(open, read)).toBe(false);
+    // Winning 1.8 opens more tabs: news again until each is read.
+    const later = recordCompletion(read, '1.8', 1);
+    expect(hasNewPages(openCodex(levels, later, false), later)).toBe(true);
+    expect(hasNewPages(openCodex(levels, emptySave(), true), emptySave())).toBe(true);
   });
 });
