@@ -9,11 +9,11 @@ import type { MiniSprout } from './miniGarden';
  */
 
 /** The keys of the help line of a diagram: the block's own, or one per thing it lets the reader do. */
-export function helpKeys(
-  spec: { readonly kind: DiagramSpec['kind']; readonly help?: string } & {
-    readonly moves?: readonly DiagramMove[];
-  },
-): string[] {
+export function helpKeys(spec: {
+  readonly kind: DiagramSpec['kind'];
+  readonly help?: string | undefined;
+  readonly moves?: readonly DiagramMove[] | undefined;
+}): string[] {
   if (spec.help !== undefined) return [spec.help];
   if (spec.kind === 'replay') return ['diagram.help.replay'];
   const moves = new Set(spec.moves);
