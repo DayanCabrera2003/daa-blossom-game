@@ -16,6 +16,7 @@ import { SETTINGS_PANEL, settingsCorner, settingsRows } from '../picture/setting
 import { checkbox, GRABBER, SLIDER_FILL, sliderLook } from '../picture/woodControls';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
+import { addFocusable } from './focusables';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
@@ -24,6 +25,8 @@ import { coverWith } from './focusables';
 /** What the panel's controls ask for; the scene changes the settings and calls `render`. */
 export interface SettingsActions {
   readonly volume: (channel: AudioChannel, value: number) => void;
+  /** A side arrow on a slider in focus: its volume a step down (-1) or up (1). */
+  readonly nudge: (channel: AudioChannel, direction: -1 | 1) => void;
   readonly mute: () => void;
   /** Downloads the playtest log, for playtesters to send back (GDD §10). */
   readonly exportLog: () => void;
@@ -65,7 +68,8 @@ interface Slider {
  * the music, one for the effects and one for the voices, each with its percentage, the mute box,
  * the button that exports the playtest log, "Créditos" and "Cerrar". A dim layer over the whole screen takes
  * every touch meant for what is below while the panel is open. The panel only draws and reports:
- * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene.
+ * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene. The
+ * keyboard's focus reaches each slider (the side arrows move it a step) and the mute box.
  */
 export class SettingsView {
   private parts: { destroy(): void }[] = [];
@@ -225,6 +229,17 @@ export class SettingsView {
       .text(track.x1 + SETTINGS_PANEL.valueGap, y, '', textStyle(8, INK))
       .setDepth(PANEL_DEPTH + 1);
     this.parts.push(label, line, fill, hit, knob, value);
+    addFocusable(scene, {
+      box: () => {
+        const { x: left, y: top, width, height } = hit.getBounds();
+        return { x: left, y: top, width, height };
+      },
+      depth: () => hit.depth,
+      live: () => hit.active,
+      // Enter on a slider has nothing to press: the arrows move it.
+      press: () => undefined,
+      adjust: (direction) => this.actions.nudge(channel, direction),
+    });
     return { knob, fill, value, track, middle, hovered: false };
   }
 
@@ -248,5 +263,11 @@ export class SettingsView {
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.actions.mute());
     this.parts.push(this.box, label, hit);
+    addFocusable(scene, {
+      box: () => ({ x: hit.x, y: hit.y, width: hit.width, height: hit.height }),
+      depth: () => hit.depth,
+      live: () => hit.active,
+      press: () => this.actions.mute(),
+    });
   }
 }

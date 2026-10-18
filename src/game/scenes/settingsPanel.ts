@@ -1,7 +1,13 @@
 import type Phaser from 'phaser';
 import { download } from '@services/download';
 import { exportLog } from '@services/exportLog';
-import { setVolume, toggleMute, writeSettings, type Settings } from '@services/settings';
+import {
+  nudgeVolume,
+  setVolume,
+  toggleMute,
+  writeSettings,
+  type Settings,
+} from '@services/settings';
 import type { Point } from '../input/target';
 import { addGearButton } from '../view/GearButton';
 import { SettingsView } from '../view/SettingsView';
@@ -35,6 +41,7 @@ export function addSettings(scene: Phaser.Scene, at: Point): SettingsPanel {
       // A drag reports every pixel; only a new step is worth saving.
       if (next[channel] !== context.settings[channel]) change(next);
     },
+    nudge: (channel, direction) => change(nudgeVolume(context.settings, channel, direction)),
     mute: () => change(toggleMute(context.settings)),
     // Playtesters send this file back; nothing leaves the browser otherwise (GDD §10).
     exportLog: () => download(exportLog(context.playtest.current(), context.clock())),
