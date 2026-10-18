@@ -42,7 +42,10 @@ describe('the level catalog', () => {
   });
 
   it('holds the written chapters 0 to 5 whole, with no draft among them', () => {
-    const early = catalog().filter((level) => compareLevelIds(level.data.id, '6.0') < 0);
+    // The secret flowers that close some chapters are optional, and checked on their own.
+    const early = catalog().filter(
+      (level) => compareLevelIds(level.data.id, '6.0') < 0 && level.data.secret === undefined,
+    );
     expect(early.map((level) => level.data.id)).toEqual([
       '0.1',
       '0.2',
