@@ -153,15 +153,20 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
         return choose;
       }),
     );
-    renderTab(text, shown?.tabs[tab] ?? '', (target, result) => {
-      const place = followLink(open, current, target, result);
-      if (place === null) {
-        notice.textContent = t('codex.closedLink');
-        return;
-      }
-      goTo(place);
-      if (result !== null) scrollToResult(text, result);
-    });
+    renderTab(
+      text,
+      shown?.tabs[tab] ?? '',
+      (target, result) => {
+        const place = followLink(open, current, target, result);
+        if (place === null) {
+          notice.textContent = t('codex.closedLink');
+          return;
+        }
+        goTo(place);
+        if (result !== null) scrollToResult(text, result);
+      },
+      t,
+    );
     // The new page slides in; the class is set anew so the animation plays again.
     text.classList.remove('codex-turned');
     void text.offsetWidth;
