@@ -1,3 +1,4 @@
+import { chainLandings } from '../animation/landings';
 import { planAnimation, type AnimationStep } from '../animation/plan';
 import type { AssetKey } from '../assets/keys';
 import { chimeKey } from './chimeScale';
@@ -58,12 +59,12 @@ export function planCues(steps: readonly AnimationStep[]): SoundCue[] {
     cues.push({ key: stepSound(step, run), at });
     const lantern = step.kind === 'hop' || step.kind === 'light';
     run = lantern && steps[i + 1]?.kind === step.kind ? run + 1 : 0;
-    // The chain has landed: its last hop is over and no other follows.
-    if (step.kind === 'hop' && run === 0) cues.push({ key: 'sfx.sparkle', at: at + step.duration });
     if (step.kind === 'reveal') cues.push({ key: 'sfx.waterDrop', at: at + step.duration / 2 });
     at += step.duration;
   });
-  return cues;
+  // Each chain sparkles where it lands, as the view shows its new lantern.
+  for (const landing of chainLandings(steps)) cues.push({ key: 'sfx.sparkle', at: landing.at });
+  return cues.sort((a, b) => a.at - b.at);
 }
 
 /** The single sound of a refusal: the soft "back", never a buzzer. */
