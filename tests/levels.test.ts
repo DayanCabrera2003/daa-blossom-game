@@ -1,3 +1,4 @@
+import { checkCodex } from '@levels/codexChecks';
 import { checkIntegrity } from '@levels/integrity';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
@@ -48,6 +49,19 @@ describe('level integrity (every level file)', () => {
         ],
       });
     }
+  });
+
+  it('the catalog opens the whole Codex, and every notebook link points forward', () => {
+    const levels = files.map(({ path, json }) => {
+      const level = loadLevel(json);
+      if (!level.ok) throw new Error(`${path} does not load: ${JSON.stringify(level.error)}`);
+      return level.value.data;
+    });
+    expect(checkCodex(levels)).toEqual([]);
+    const opens = (id: string) => levels.find((level) => level.id === id)?.unlocks.codex;
+    expect(opens('0.5')).toEqual([{ entry: 'C1', tabs: ['intuition'] }]);
+    expect(opens('1.8')).toEqual(['C1', 'C2', 'C13']);
+    expect(opens('7.5')).toEqual(['C14']);
   });
 
   describe.each(files)('$path', ({ path, json }) => {
