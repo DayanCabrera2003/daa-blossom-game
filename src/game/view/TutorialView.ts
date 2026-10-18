@@ -7,12 +7,17 @@ import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
 import { CardDemoView, DEMO_SIZE } from './CardDemoView';
 import { innerWidth, PANEL, TUTORIAL_PANEL, tutorialLayout } from '../picture/panelLayout';
+import { cardSpots } from '../picture/panelSpots';
+import type { Point } from '../input/target';
 import { WOOD_PANEL } from '../picture/wood';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 import { coverWith } from './focusables';
+import { PanelGrip } from './PanelGrip';
+import { placePanel } from './panelPlacer';
+import { shiftParts } from './shiftParts';
 
 /** A mechanic card as the window shows it: its texts, already translated, and what it loops. */
 export interface ShownCard {
@@ -31,7 +36,8 @@ const PANEL_DEPTH = 260;
  * The wooden window of a mechanic card (GDD §5.11; laid out by `picture/panelLayout.ts`): a title,
  * two or three lines about the gesture, the card's tiny garden doing the gesture by itself in a
  * loop, and "Entendido", which closes it. A dim layer over the garden takes every touch meant for
- * it while the window is open.
+ * it while the window is open. The window opens clear of the garden and is dragged by its frame
+ * (the post-release fix of plan 09).
  */
 export class TutorialView {
   private parts: { destroy(): void }[] = [];
@@ -54,11 +60,15 @@ export class TutorialView {
     this.dismissal?.();
   }
 
-  /** Opens the window; `onClose` runs once the player presses "Entendido". */
-  show(card: ShownCard, onClose: () => void): void {
+  /**
+   * Opens the window; `onClose` runs once the player presses "Entendido". It opens where the
+   * player last dropped a card, or else where it hides least of the garden; `quiet` opens it again
+   * without its sound (the player sent it back to its place).
+   */
+  show(card: ShownCard, onClose: () => void, quiet = false): void {
     this.clear();
     const { scene } = this;
-    playUiSound(scene, 'sfx.card');
+    if (!quiet) playUiSound(scene, 'sfx.card');
     const { x, y, width } = TUTORIAL_PANEL;
     const left = x + PANEL.pad;
     const ink = PALETTE[WOOD_PANEL.text];
@@ -101,9 +111,6 @@ export class TutorialView {
       { x, y, width, height: layout.height },
       PANEL_DEPTH,
     );
-    panel.zone.setInteractive();
-    this.parts.push(blocker, title, body, demo, button, panel);
-
     // The demo loops for as long as the window is open, repainted only when its frame changes.
     const opened = scene.time.now;
     let shown = -1;
@@ -113,7 +120,30 @@ export class TutorialView {
       shown = frame;
       demo.render(card.loop.pictureAt(frame));
     };
-    paint();
+    // Laid out where it always opened, then moved where the player left it or where it hides
+    // least of the garden (`view/panelPlacer.ts`); a move paints the demo again where it went.
+    const moving = [title, body, demo, button, panel];
+    const moveTo = (at: Point): void => {
+      shiftParts(moving, at.x - panel.bounds.x, at.y - panel.bounds.y);
+      shown = -1;
+      paint();
+    };
+    moveTo(placePanel(scene, 'card', cardSpots(layout.height)));
+    const grip = new PanelGrip(
+      scene,
+      {
+        kind: 'card',
+        frame: () => panel.bounds,
+        handles: () => [button.bounds],
+        moveTo,
+        reset: () => this.show(card, onClose, true),
+      },
+      PANEL_DEPTH + 1,
+    );
+    panel.zone
+      .setInteractive()
+      .on('pointerdown', (pointer: Phaser.Input.Pointer) => grip.grab(pointer));
+    this.parts.push(blocker, title, body, demo, button, panel, grip);
     this.timer = scene.time.addEvent({ delay: TICK_MS, loop: true, callback: paint });
   }
 

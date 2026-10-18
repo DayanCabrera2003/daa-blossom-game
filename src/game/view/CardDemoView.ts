@@ -57,11 +57,16 @@ export class CardDemoView {
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly origin: Point,
+    private origin: Point,
     private readonly depth: number,
     private readonly t: Translate,
   ) {
     this.graphics = scene.add.graphics().setDepth(depth);
+  }
+
+  /** Moves the demo by (dx, dy) with its card's window; the next render paints it there. */
+  shift(dx: number, dy: number): void {
+    this.origin = { x: this.origin.x + dx, y: this.origin.y + dy };
   }
 
   render(picture: CardDemoPicture): void {
