@@ -19,7 +19,7 @@
 - **Sin dependencias nuevas.** Copiar al portapapeles, descargar y leer un archivo son APIs del navegador; el código de jardín ya existe.
 - **Las fases se ejecutan de una en una**, en el orden de "Orden y dependencias".
 
-Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typecheck, coverage ≥ 95 %, check-levels, build), más `npm run budget` tras el build en las fases que cambian lo que se empaqueta (2, 3, 6, 7, 11, 14, 15) y `npm run assets:check` en local en la fase 6. **Ninguna fase abre un navegador**: al cerrar cada hito, la sesión principal revisa en pantalla (un único navegador headless, cerrado al terminar) que el hub, las flores, el editor y el modo libre se vean bien y se entiendan.
+Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typecheck, coverage ≥ 95 %, check-levels, build), más `npm run budget` tras el build en las fases que cambian lo que se empaqueta (2, 3, 6, 7, 9, 10, 11, 12, 13, 14, 15) y `npm run assets:check` en local en la fase 6. **Ninguna fase abre un navegador**: al cerrar cada hito, la sesión principal revisa en pantalla (un único navegador headless, cerrado al terminar) que el hub, las flores, el editor y el modo libre se vean bien y se entiendan.
 
 ---
 
@@ -281,7 +281,12 @@ Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en
 | `levels/sandbox/generators.ts` | Pura: la tabla de 1.3 (id, clave de texto, rango de tamaño, función del núcleo, si trae faroles, si es de abejas y flores) y `generate(id, size, seed)` → diseño (con `layout` y `names`; abejas y flores con `kinds`), bajando el tamaño si pasaría de 40 enredaderas |
 | `content/es/strings.json`, `content/keys.ts` | `sandbox.gen.path` "Hilera", `.cycle` "Corro", `.star` "Estrella", `.complete` "Todos con todos", `.random` "Al azar", `.beesFlowers` "Abejas y flores", `.longStem` "Flor de tallo largo", `.nested` "Flores anidadas", `.helix` "Hélice", `.manyFlowers` "Muchas flores", `sandbox.gen.another` "Otro al azar", `sandbox.gen.shrunk` |
 
-**Tests clave:** cada generador en cada tamaño de su rango da un diseño dentro de límites que `toLevel` acepta; la misma semilla da el mismo jardín; "Flores anidadas 4" tiene el óptimo de `nestedFlowers(4)`; ningún nombre de generador usa el vocabulario matemático.
+| `tools/assets/freeMode.ts` | Las carpetas del modo libre (hoy `src/levels/sandbox/`): las que el script inicial nunca alcanza (`tests/initialScript.test.ts`) y las que dan nombre al trozo diferido del modo libre (el presupuesto); una sola lista para los dos |
+| `tools/assets/buildChunks.ts`, `tools/assets/budget.ts`, `tools/check-budget.ts` | El trozo diferido del modo libre se pesa en su **propia parte**, `sandbox`, aparte de la de los libros (`codex`): lo que cargan los `import()` de un módulo de esas carpetas, menos lo que ya trae el script inicial; con un límite justificado por lo medido |
+
+**Tests clave:** cada generador en cada tamaño de su rango da un diseño dentro de límites que `toLevel` acepta; la misma semilla da el mismo jardín; "Flores anidadas 4" tiene el óptimo de `nestedFlowers(4)`; ningún nombre de generador usa el vocabulario matemático; con un manifiesto sintético, los libros y el modo libre se pesan cada uno en su parte, y lo que comparten cuenta en las dos (es lo que descarga quien abre cualquiera de ellos).
+
+**Decisiones del autor para F9 en adelante.** (1) El trozo diferido del modo libre tiene su **propia parte del presupuesto**, separada de la de los libros, con un límite que se justifica con lo medido; `npm run budget` la informa y los tests comprueban el reparto. (2) El script inicial registra el modo libre solo con un **cabo fino**: una escena de entrada que, al abrirse, carga con `import()` el código real del modo libre. Así el juego anuncia `capabilities.sandbox` desde el principio sin que el modo libre pese en el script inicial, y `tests/initialScript.test.ts` lo sigue vigilando.
 
 ---
 
@@ -292,11 +297,13 @@ Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en
 | `services/sandboxAccess.ts` | Pura: qué ofrece el modo libre según el progreso: si existe (capítulo 1 terminado, o profesor), las acciones (las del nivel más avanzado ganado, o todas), y si hay jardinero mecánico (6.2), espantapájaros (3.8) y piedras (7.4) |
 | `services/sandboxStore.ts` | Pura salvo el almacén: el último diseño en `florecer.sandbox`, validado con zod al leer; roto o ausente → diseño vacío; nunca toca `florecer.save` |
 | `services/startGarden.ts` | Pura: `?garden=<código>` → código válido o nada (como `requestedLevel`) |
-| `game/scenes/context.ts`, `main.ts` | El contexto lleva el almacén y el jardín pedido; tras `mountShell`, `bus.emit('capabilities', { sandbox: true })`; `sandbox.open` arranca `SandboxScene` desde la escena activa |
+| `game/scenes/context.ts`, `main.ts` | El contexto lleva el almacén y el jardín pedido; tras `mountShell`, `bus.emit('capabilities', { sandbox: true })`; `sandbox.open` arranca la escena de entrada del modo libre desde la escena activa |
+| `game/scenes/SandboxGate.ts`, `game/config.ts` | El **cabo fino**, lo único del modo libre en el script inicial: una escena registrada que, al arrancar, carga con `import()` la escena real (`game/scenes/sandbox/SandboxScene.ts`, que llega en F11), la añade con `scene.add` y le pasa sus datos (el diseño pedido, la escena de vuelta); mientras carga, nada más que el fondo del hub. No importa nada de `levels/sandbox/` ni de `game/scenes/sandbox/`, ni siquiera tipos que no sean `import type` |
+| `tools/assets/freeMode.ts` | `src/game/scenes/sandbox/` se añade a las carpetas del modo libre: el script inicial no la alcanza y el presupuesto la pesa en la parte `sandbox` |
 | `game/scenes/hub/HubTopLine.ts`, `game/picture/hubTopLine.ts` | El cartel "Modo libre" cuando `sandboxAccess` dice que existe |
 | `game/scenes/BootScene.ts` / `PreloadScene.ts` | Con `?garden=`, empieza en el modo libre con ese jardín |
 
-**Tests clave:** sin el capítulo 1 terminado no hay modo libre y en modo profesor sí; con 4.5 como lo más avanzado no hay piedras ni jardinero, sí plegar y desplegar; un almacén con basura da diseño vacío; `?garden=` con un código roto se ignora; `ui/shell.test.ts` recibe `capabilities` después de montarse y el epílogo ofrece entonces el botón.
+**Tests clave:** sin el capítulo 1 terminado no hay modo libre y en modo profesor sí; con 4.5 como lo más avanzado no hay piedras ni jardinero, sí plegar y desplegar; un almacén con basura da diseño vacío; `?garden=` con un código roto se ignora; `ui/shell.test.ts` recibe `capabilities` después de montarse y el epílogo ofrece entonces el botón; `tests/initialScript.test.ts` alcanza `SandboxGate.ts` desde `src/main.ts` y ningún módulo de las carpetas del modo libre.
 
 ---
 
@@ -308,12 +315,13 @@ Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en
 | `game/systems/designHistory.ts` | Pura: deshacer y rehacer de diseños (o la generalización de `history.ts`, si su tipo lo permite, en un `refactor:` aparte) |
 | `game/picture/designPicture.ts` | Pura: del diseño, la imagen que ya saben pintar `GardenView` y `MarksView` (brotes, enredaderas, faroles, abejas y flores), más la selección y el aviso de "demasiado cerca" |
 | `game/picture/designToolbar.ts` | Pura: los botones de herramientas y órdenes, y cuáles están activos |
-| `game/scenes/SandboxScene.ts` | Monta el fondo del hub, la vista del jardín, la barra y el menú de generar; manda cada gesto al reductor y repinta; "Jugar", "Compartir" y "Volver al hub" |
-| `game/view/GenerateMenu.ts` | Panel de madera con los generadores, el tamaño (− / +) y "Otro al azar" |
-| `game/config.ts` | Registra `SandboxScene` |
+| `game/scenes/sandbox/SandboxScene.ts` | Monta el fondo del hub, la vista del jardín, la barra y el menú de generar; manda cada gesto al reductor y repinta; "Jugar", "Compartir" y "Volver al hub". Vive en el trozo diferido: solo la alcanza el `import()` del cabo de F10 |
+| `game/scenes/sandbox/GenerateMenu.ts` | Panel de madera con los generadores, el tamaño (− / +) y "Otro al azar" (junto a la escena, en el trozo diferido) |
+| `game/config.ts` | Nada nuevo: sigue registrando solo el cabo `SandboxGate` de F10, que añade la escena real al cargarla |
+| `tests/initialScript.test.ts` | Además de las carpetas, los módulos puros del editor (`designIntent`, `designHistory`, `designPicture`, `designToolbar`) quedan fuera del script inicial |
 | `content/es/strings.json`, `content/keys.ts` | `sandbox.title`, `sandbox.tool.sprout|vine|lantern|move|remove|generate|clear`, `sandbox.play`, `sandbox.share`, `sandbox.back`, y un texto por motivo de rechazo del reductor |
 
-**Tests clave:** un toque en la hierba con la herramienta Brote añade uno donde se tocó (redondeado a píxel); dos toques en brotes con Enredadera la crean y otros dos la quitan; un toque en la hierba con Enredadera no hace nada; arrastrar mueve y soltar demasiado cerca devuelve el brote a su sitio con el motivo; deshacer tras generar vuelve al diseño anterior; cada motivo de rechazo tiene texto y ninguno usa el vocabulario matemático.
+**Tests clave:** un toque en la hierba con la herramienta Brote añade uno donde se tocó (redondeado a píxel); dos toques en brotes con Enredadera la crean y otros dos la quitan; un toque en la hierba con Enredadera no hace nada; arrastrar mueve y soltar demasiado cerca devuelve el brote a su sitio con el motivo; deshacer tras generar vuelve al diseño anterior; cada motivo de rechazo tiene texto y ninguno usa el vocabulario matemático; `npm run budget` pesa la escena en la parte `sandbox` y el script inicial no crece más que el cabo.
 
 ---
 
@@ -368,7 +376,7 @@ Si el último estado de `runRecipe` no conserva el bosque de la búsqueda final 
 
 | Archivo | Responsabilidad |
 |---|---|
-| `tools/assets/budget.ts` | Límites revisados con lo medido (abajo) |
+| `tools/assets/budget.ts` | Límites revisados con lo medido (abajo), también el de la parte `sandbox` |
 | `README.md` | El modo libre (cuándo aparece, `?garden=`), las flores secretas y los cosméticos |
 | `docs/plans/08-sandbox-secrets-cosmetics.md` | Las decisiones tomadas en ejecución, si alguna cambió |
 
@@ -376,13 +384,14 @@ Si el último estado de `runRecipe` no conserva el bosque de la búsqueda final 
 
 | Qué | Dónde | Estimado |
 |---|---|---|
-| `SandboxScene`, editor, generadores, `levels/sandbox/`, hub y cosméticos | Script inicial (la escena tiene que estar registrada para anunciar `capabilities`) | 50–80 KB |
+| El cabo `SandboxGate` (registrado para anunciar `capabilities`), hub y cosméticos | Script inicial | 1–2 KB el cabo |
+| `SandboxScene`, editor, menú de generar, `levels/sandbox/` | Trozo diferido propio, parte `sandbox` del presupuesto (decisión del autor en F9; límite fijado por lo medido allí) | 50–80 KB |
 | Las siete flores secretas (JSON en el catálogo) | Script inicial | ~15 KB |
 | Hoja de compartir (DOM) | Trozo diferido propio, contado en la parte diferida | ~6 KB |
 | Animales y plantas | Imágenes, grupo `boot` | ~16 KB |
 | Música | Ninguna nueva: las flores usan la de su capítulo, el modo libre la del hub | 0 |
 
-Si el inicial se acercara a 1,8 MB, lo primero que pasa a `import()` es el menú de generar con `levels/sandbox/generators.ts`.
+Todo el modo libre ya va tras `import()`: en el inicial solo queda el cabo. Si la parte `sandbox` se acercara a su límite, se revisa con lo medido en F15, como se cerró la de los libros en el Plan 07.
 
 ---
 
