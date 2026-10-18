@@ -1,10 +1,5 @@
 import type { Graph } from '@core/graph/types';
-import {
-  checkLayout,
-  labelsOnVines,
-  vineCrossings,
-  type LayoutProblem,
-} from '../../src/levels/layoutChecks';
+import { checkLayout, vineCrossings, type LayoutProblem } from '../../src/levels/layoutChecks';
 import { sideKind, type LayoutShape, type Spot } from '../../src/levels/sandbox/layout';
 import { LETTERS } from '../../src/levels/sandbox/names';
 
@@ -35,10 +30,7 @@ export const readingProblems = (
   graph: Graph,
   spots: readonly Spot[],
   shape?: LayoutShape,
-): LayoutProblem[] => {
-  const garden = placed(graph, spots, shape);
-  return [...checkLayout(garden), ...labelsOnVines(garden)];
-};
+): LayoutProblem[] => checkLayout(placed(graph, spots, shape));
 
 /** How many pairs of vines cross. */
 export const crossingCount = (graph: Graph, spots: readonly Spot[]): number =>

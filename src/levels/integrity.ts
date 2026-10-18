@@ -9,7 +9,7 @@ import { checkFlow, type FlowProblem } from './flowChecks';
 import { checkFlower, type FlowerProblem } from './flowerChecks';
 import { isFlowInput } from './flowInput';
 import { sameKindVines, type KindClash } from './kinds';
-import { checkLayout, labelsOnVines, type LayoutProblem } from './layoutChecks';
+import { checkLayout, type LayoutProblem } from './layoutChecks';
 import { referencedLines } from './lines';
 import { checkNotebook, type NotebookProblem } from './notebookChecks';
 import { gardenAtPlay } from './playStart';
@@ -97,8 +97,8 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
 
   problems.push(...checkFlow(level), ...checkFlower(level), ...checkNotebook(level));
 
-  // A garden laid out by hand must read well: no name hidden or confused with another, and no
-  // crossing vines in a secret flower, a puzzle of looking.
+  // A garden laid out by hand must read well: no name hidden (by a sprout, a name, a lantern or a
+  // vine) or confused with another, and no crossing vines in a secret flower, a puzzle of looking.
   problems.push(...checkLayout(data));
 
   for (const line of referencedLines(data)) {
@@ -110,14 +110,4 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     }
   }
   return problems;
-}
-
-/**
- * The checks of a level of the catalog, laid out by hand: those of every level and, on top of
- * them, no name drawn through or against a vine. The free mode's gardens are held to
- * `checkIntegrity` alone until its editor and generators keep their names off the vines too (plan
- * 09, phase 1).
- */
-export function checkCatalogLevel(level: Level): IntegrityProblem[] {
-  return [...checkIntegrity(level), ...labelsOnVines(level.data)];
 }

@@ -85,6 +85,25 @@ describe('editing a design', () => {
     // A vine from A to a sprout 40 px below hangs its lantern on A's name.
     const below = edited(THREE, { type: 'addSprout', x: 100, y: 140 });
     expect(editDesign(below, { type: 'toggleVine', u: 'A', v: 'D' })).toEqual(coversName);
+    // A long vine B–C level with A's name runs through it, its lantern far from every name.
+    const apart = edited(
+      EMPTY_DESIGN,
+      { type: 'addSprout', x: 100, y: 100 },
+      { type: 'addSprout', x: 60, y: 112 },
+      { type: 'addSprout', x: 260, y: 112 },
+    );
+    expect(editDesign(apart, { type: 'toggleVine', u: 'B', v: 'C' })).toEqual(coversName);
+    // A moved so that its name falls on the vine B–C below it.
+    const under = edited(
+      EMPTY_DESIGN,
+      { type: 'addSprout', x: 100, y: 100 },
+      { type: 'addSprout', x: 60, y: 150 },
+      { type: 'addSprout', x: 260, y: 150 },
+      { type: 'toggleVine', u: 'B', v: 'C' },
+    );
+    expect(editDesign(under, { type: 'moveSprout', label: 'A', x: 100, y: 138 })).toEqual(
+      coversName,
+    );
     // Taking a vine away never covers anything.
     expect(editDesign(THREE, { type: 'toggleVine', u: 'A', v: 'B' }).ok).toBe(true);
   });

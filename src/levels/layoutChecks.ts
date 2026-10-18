@@ -137,8 +137,7 @@ export function vineOverLabel(a: Point, b: Point, box: Box): boolean {
 /**
  * The names a vine is drawn through or against, lit as it may be later (its widest solid stroke),
  * each name with each vine once. A vine of the name's own sprout leaves from right above it and
- * is never counted: the name is read as part of its sprout. Only the catalog's levels are held to
- * it for now (`checkCatalogLevel`); `checkLayout` is what the free mode's gardens keep too.
+ * is never counted: the name is read as part of its sprout (its view outlines it, plan 09).
  */
 export function labelsOnVines(level: Layout): LayoutProblem[] {
   const vines = placedVines(level);
@@ -163,9 +162,10 @@ function caseTwins(level: Layout): LayoutProblem[] {
 }
 
 /**
- * The layout problems of a level, laid out by hand: every name must be readable on its own and
- * unlike the others, and a secret flower, being a puzzle of looking, has no crossing vines. Other
- * levels may keep crossings their design needs; `vineCrossings` reports them.
+ * The layout problems of a level, laid out by hand or by the free mode: every name must be readable
+ * on its own (no sprout, name, lantern or vine of other sprouts drawn over it) and unlike the
+ * others, and a secret flower, being a puzzle of looking, has no crossing vines. Other levels may
+ * keep crossings their design needs; `vineCrossings` reports them.
  */
 export function checkLayout(
   level: Layout & { readonly secret?: LevelData['secret'] },
@@ -173,6 +173,7 @@ export function checkLayout(
   return [
     ...(level.secret === undefined ? [] : vineCrossings(level)),
     ...crowdedLabels(level),
+    ...labelsOnVines(level),
     ...caseTwins(level),
   ];
 }

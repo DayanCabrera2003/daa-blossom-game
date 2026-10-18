@@ -66,6 +66,14 @@ describe('checkLayout', () => {
     expect(checkLayout(plain)).toEqual([]);
   });
 
+  it('finds a name a vine of other sprouts runs through, as the free mode keeps them too', () => {
+    // B–C runs level at y 64, through the name of A (61 to 68); its lantern hangs far to the right.
+    const sprouts = [at('A', 100, 50), at('B', 40, 64), at('C', 200, 64)];
+    expect(checkLayout({ sprouts, vines: [['B', 'C']], secret: undefined })).toEqual([
+      { code: 'labelOnVine', label: 'A', vine: ['B', 'C'] },
+    ]);
+  });
+
   it('finds a name drawn over the lantern of a short vine down from its sprout', () => {
     // The lantern hangs at (350, 60); the name of e is written from 43 to 53, one pixel too close.
     const sprouts = [at('e', 350, 35), at('f', 350, 85)];

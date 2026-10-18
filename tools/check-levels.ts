@@ -4,7 +4,7 @@
 // secret flower has a problem.
 import { playWalkthrough } from '@game/systems/walkthrough';
 import { checkCodex } from '@levels/codexChecks';
-import { checkCatalogLevel } from '@levels/integrity';
+import { checkIntegrity } from '@levels/integrity';
 import { vineCrossings } from '@levels/layoutChecks';
 import { loadLevel } from '@levels/loader';
 import type { LevelData } from '@levels/schema';
@@ -36,7 +36,7 @@ for (const { path, json } of files) {
     if (twin !== undefined) problems.push(`level ${id} is also defined in ${twin}`);
     seen.set(id, path);
     loaded.push(level.value.data);
-    const integrity = checkCatalogLevel(level.value);
+    const integrity = checkIntegrity(level.value);
     problems.push(...integrity.map(describeProblem));
     // A sound level must also be finished through the interface, script included.
     if (integrity.length === 0) {
