@@ -23,7 +23,9 @@ const EVERY_SIZE: readonly [GeneratorId, number][] = GENERATORS.flatMap(({ id, m
   Array.from({ length: max - min + 1 }, (_, i): [GeneratorId, number] => [id, min + i]),
 );
 
-describe('the generators of the free mode', () => {
+// Every case here grows or lays out gardens of up to 24 sprouts, which under coverage on a CI runner
+// can pass vitest's default 5 s even outside the properties.
+describe('the generators of the free mode', { timeout: LAYOUT_PROPERTY_TIMEOUT }, () => {
   it('are the ten of the plan, in its order, each named by its text', () => {
     expect(GENERATOR_IDS).toEqual([
       'path',

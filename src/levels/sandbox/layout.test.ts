@@ -90,7 +90,9 @@ function depthsFromR(graph: Graph): number[] {
   return depth;
 }
 
-describe('laying out a garden without places', () => {
+// Every case here grows or lays out gardens of up to 24 sprouts, which under coverage on a CI runner
+// can pass vitest's default 5 s even outside the properties.
+describe('laying out a garden without places', { timeout: LAYOUT_PROPERTY_TIMEOUT }, () => {
   it.each(LARGEST)('keeps %s inside the garden and its sprouts apart', (_, graph, shape) => {
     expectReadable(layoutGarden(graph, shape), graph, shape);
   });
