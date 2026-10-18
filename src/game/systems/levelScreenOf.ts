@@ -47,6 +47,11 @@ export interface LevelScreen {
    * panel says a line of its own instead.
    */
   readonly showsStars: boolean;
+  /**
+   * Whether PageUp and PageDown jump to the level before or after in the catalog (teacher mode); a
+   * garden of the free mode is no level of the catalog, so they do nothing there.
+   */
+  readonly teacherJumps: boolean;
 }
 
 /** The chapter of the hub's season, worn by the free mode. */
@@ -68,6 +73,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
       interfaceAt: level.data.id,
       ownGarden: false,
       showsStars: true,
+      teacherJumps: true,
     };
   }
   return {
@@ -80,6 +86,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
     interfaceAt: sandbox.interfaceAt,
     ownGarden: true,
     showsStars: false,
+    teacherJumps: false,
   };
 }
 

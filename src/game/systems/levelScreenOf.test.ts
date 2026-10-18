@@ -64,6 +64,7 @@ describe('the screen of a level of the catalog', () => {
         interfaceAt: id,
         ownGarden: false,
         showsStars: true,
+        teacherJumps: true,
       });
     }
   });
@@ -92,6 +93,10 @@ describe('the screen of a garden of the free mode', () => {
 
   it('shows no stars when won, since nothing is earned there', () => {
     expect(levelScreenOf(played, AT_1_8).showsStars).toBe(false);
+  });
+
+  it("takes no teacher's jumps to the levels around it: it is no level of the catalog", () => {
+    expect(levelScreenOf(played, AT_1_8).teacherJumps).toBe(false);
   });
 
   it('with the actions of 1.8 refuses folding, for the reason any level gives', () => {

@@ -6,13 +6,20 @@ import type { LevelSession } from '../../systems/levelSession';
 import { teacherFeed } from '../../systems/teacherFeed';
 import { teacherSun, type SunSeek } from '../../systems/teacherSun';
 
+/** Where PageUp and PageDown lead: the level before or after `levelId` among `levelIds`. */
+export interface LevelJumps {
+  readonly levelIds: readonly string[];
+  readonly levelId: string;
+  readonly jump: (levelId: string) => void;
+}
+
 /**
  * The level screen's side of teacher mode (GDD §5.8; plan 07, phase 13). After every event it
  * feeds the trace panel the day as it is, once per change (the logic is instant; the panel
  * catches up); when the level is left it says so. A row of the panel's day moves the game's sun to
  * it, so both always show the same garden. Its keys: T opens or folds the panel, PageUp and
- * PageDown jump to the level before or after in the catalog, drafts included. For a player it
- * does nothing at all.
+ * PageDown jump to the level before or after in the catalog, drafts included (never from a garden
+ * of the free mode). For a player it does nothing at all.
  */
 export class TeacherBridge {
   /** The day last fed, so a repaint that changed nothing is not fed again. */
@@ -51,19 +58,17 @@ export class TeacherBridge {
   }
 
   /**
-   * Listens, in teacher mode, to T (the panel) and to PageUp and PageDown, which ask `jump` for the
-   * level before or after `levelId` among `levelIds`.
+   * Listens, in teacher mode, to T (the panel) and, unless `jumps` is null (a garden of the free
+   * mode, which is no level of the catalog), to PageUp and PageDown, which ask `jump` for the level
+   * before or after `levelId` among `levelIds`.
    */
-  bindKeys(
-    scene: Phaser.Scene,
-    levelIds: readonly string[],
-    levelId: string,
-    jump: (levelId: string) => void,
-  ): void {
+  bindKeys(scene: Phaser.Scene, jumps: LevelJumps | null): void {
     if (!this.teacherMode) return;
     const keys = scene.input.keyboard;
-    const { previous, next } = neighbourLevels(levelIds, levelId);
     keys?.on('keydown-T', () => this.bus.emit('teacher.toggle'));
+    if (jumps === null) return;
+    const { levelIds, levelId, jump } = jumps;
+    const { previous, next } = neighbourLevels(levelIds, levelId);
     keys?.on('keydown-PAGE_UP', () => {
       if (previous !== null) jump(previous);
     });

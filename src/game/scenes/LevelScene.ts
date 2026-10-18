@@ -214,11 +214,16 @@ export class LevelScene extends Phaser.Scene {
       drawing: () => this.controller.pointer.chain !== null,
     });
     this.teacher = new TeacherBridge(this.context.bus, teacherMode, screen.ownGarden);
+    // PageUp and PageDown move between levels of the catalog, never from a garden of the free mode.
     this.teacher.bindKeys(
       this,
-      catalog.map((candidate) => candidate.data.id),
-      level.data.id,
-      (levelId) => this.scene.start('level', { levelId }),
+      screen.teacherJumps
+        ? {
+            levelIds: catalog.map((candidate) => candidate.data.id),
+            levelId: level.data.id,
+            jump: (levelId) => this.scene.start('level', { levelId }),
+          }
+        : null,
     );
     this.teacher.followPanel(
       this,
