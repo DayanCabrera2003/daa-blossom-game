@@ -328,6 +328,7 @@
   "sandbox.tool.clear": "Vaciar",
   "sandbox.play": "Jugar",
   "sandbox.design": "Diseñar",
+  "sandbox.unplayable": "Este jardín aún no se puede jugar: cambia algo y vuelve a probar.",
   "sandbox.share": "Compartir",
   "sandbox.count": "Brotes {sprouts}/{maxSprouts}   Enredaderas {vines}/{maxVines}",
   "sandbox.prompt.sprout": "Toca la hierba para plantar un brote; arrastra uno para moverlo",

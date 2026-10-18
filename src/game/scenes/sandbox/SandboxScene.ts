@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { EMPTY_DESIGN, editDesign, type Design, type DesignEdit } from '@levels/sandbox/design';
 import { openingDesign, type OpeningProblem } from '@levels/sandbox/opening';
+import { toPlayable } from '@levels/sandbox/toLevel';
+import { catalogEntries } from '@services/progress';
+import { sandboxAccess } from '@services/sandboxAccess';
 import { recordTutorialSeen } from '@services/save';
 import { createSandboxStore, type SandboxStore } from '@services/sandboxStore';
 import type { AssetKey } from '../../assets/keys';
@@ -41,6 +44,7 @@ import {
   undo,
   type History,
 } from '../../systems/history';
+import type { LevelSceneData } from '../../systems/levelScreenOf';
 import { trackFor } from '../../systems/musicFor';
 import { fitCamera } from '../../view/fitCamera';
 import { GardenView } from '../../view/GardenView';
@@ -60,6 +64,12 @@ import { GenerateMenu } from './GenerateMenu';
  */
 let store: SandboxStore | null = null;
 
+/**
+ * The editor's history as it was when its design went to be played: coming back from the garden
+ * (`returning`), the editor goes on from it, design, undo and redo as they were.
+ */
+let played: History<Design> | null = null;
+
 /** How far above the generate menu's wood a notice is centred while the menu is open. */
 const NOTICE_ABOVE_MENU = 14;
 
@@ -72,7 +82,9 @@ const NOTICE_ABOVE_MENU = 14;
  * design's reducer, which answers with the new design or why not (said kindly), and the screen is
  * repainted from the pure pictures. Every change is kept at once in the free mode's own store, and
  * undo and redo walk the history of designs. The first time, a mechanic card shows the gestures.
- * Playing and sharing the garden come with phases 12 and 14; their buttons wait, switched off.
+ * "Jugar" builds the design as a level here, in this chunk, with the actions the player has met,
+ * and hands it to the level scene, which plays it and comes back with "Diseñar" (plan 08, phase
+ * 12). Sharing the garden comes with phase 14; its button waits, switched off.
  */
 export class SandboxScene extends Phaser.Scene {
   private context!: GameContext;
@@ -106,7 +118,14 @@ export class SandboxScene extends Phaser.Scene {
     // The free mode plays the hub's track (plan 08, section 1.3).
     music.play(trackFor({ kind: 'hub' }));
     paintHubGround(this);
-    this.openGarden(data.garden ?? null, store.get());
+    if (data.returning === true && played !== null) {
+      // Back from playing the design: on where the editor was, nothing to tell.
+      this.history = played;
+      this.pendingNotice = null;
+    } else {
+      this.openGarden(data.garden ?? null, store.get());
+    }
+    played = null;
     this.pointer = initialDesignPointer('sprout');
     this.choice = FIRST_CHOICE;
     this.grownInMenu = false;
@@ -237,8 +256,9 @@ export class SandboxScene extends Phaser.Scene {
       case 'back':
         return this.leave();
       case 'play':
+        return this.play();
       case 'share':
-        // Phases 12 and 14: the buttons stay switched off until then.
+        // Phase 14: the button stays switched off until then.
         return;
       default:
         return this.take(button);
@@ -340,6 +360,24 @@ export class SandboxScene extends Phaser.Scene {
     if (key !== null) playUiSound(this, key);
   }
 
+  /**
+   * Plays the design: built as a level with the actions the player has met (all in teacher mode;
+   * `services/sandboxAccess.ts`) and handed to the level scene, the editor's history kept to come
+   * back to. A design that does not make a level stays here, said kindly.
+   */
+  private play(): void {
+    const { catalog, saves, teacherMode, t } = this.context;
+    const access = sandboxAccess(catalogEntries(catalog), saves.get(), teacherMode);
+    const playable = toPlayable(this.design, access.actions);
+    if (!playable.ok) {
+      this.notify(t('sandbox.unplayable'));
+      return;
+    }
+    played = this.history;
+    const data: LevelSceneData = { sandbox: { level: playable.value } };
+    this.scene.start('level', data);
+  }
+
   private leave(): void {
     this.scene.start('hub');
   }
@@ -358,7 +396,7 @@ export class SandboxScene extends Phaser.Scene {
         design,
         canUndo: canUndo(this.history),
         canRedo: canRedo(this.history),
-        canPlay: false,
+        canPlay: true,
         canShare: false,
       }),
     );

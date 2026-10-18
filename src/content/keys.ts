@@ -403,6 +403,7 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   'sandbox.tool.clear': [],
   'sandbox.play': [],
   'sandbox.design': [],
+  'sandbox.unplayable': [],
   'sandbox.share': [],
   ...Object.fromEntries(DESIGN_TOOLS.map((tool) => [`sandbox.prompt.${tool}`, []])),
   'sandbox.prompt.generate': [],

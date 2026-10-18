@@ -69,7 +69,7 @@ export interface DesignBarInput {
   readonly design: Design;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
-  /** Whether the free mode can play a garden yet, and share one (they come in phases 12 and 14). */
+  /** Whether the free mode can play a garden, and share one yet (sharing comes in phase 14). */
   readonly canPlay: boolean;
   readonly canShare: boolean;
 }
