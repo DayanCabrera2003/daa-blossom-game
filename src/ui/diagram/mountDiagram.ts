@@ -4,7 +4,9 @@ import type { Translate } from '@services/i18n';
 import { diagramGarden, type DiagramSources } from '@ui/model/diagramGarden';
 import { replaySteps } from '@ui/model/diagramReplay';
 import { parseDiagramSpec } from '@ui/model/diagramSpec';
+import { reflectionOf } from '@ui/model/pondPicture';
 import { playDiagram } from './PlayDiagram';
+import { pondDiagram } from './PondDiagram';
 import { replayDiagram } from './ReplayDiagram';
 import './diagram.css';
 
@@ -49,6 +51,12 @@ export function mountDiagram(hole: HTMLElement, t: Translate): void {
       const steps = replaySteps(garden.value, block.trace);
       if (!steps.ok) return report(steps.error);
       replayDiagram(hole, garden.value, block, steps.value, t);
+      return;
+    }
+    case 'pond': {
+      const mirror = reflectionOf(garden.value);
+      if (!mirror.ok) return report(mirror.error);
+      pondDiagram(hole, garden.value, mirror.value, block, t);
       return;
     }
     default:

@@ -365,6 +365,11 @@
   background: var(--dg-button-active);
 }
 
+/* The view shown, among buttons that choose one, is the pressed one. */
+.dg-button[aria-pressed='true'] {
+  background: var(--dg-label);
+}
+
 .dg-button:disabled {
   background: var(--dg-button-off);
   cursor: default;
