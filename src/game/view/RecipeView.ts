@@ -8,7 +8,7 @@ import { Button } from './Button';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
-import { coverWith } from './focusables';
+import { addFocusable, coverWith } from './focusables';
 
 /** Space between rows, and around the panel's contents, in canvas pixels. */
 const GAP = 1;
@@ -142,6 +142,12 @@ export class RecipeView {
         },
       );
     this.parts.push(row);
+    addFocusable(this.scene, {
+      box: () => ({ x: row.x, y: row.y, width: row.width, height: row.height }),
+      depth: () => row.depth,
+      live: () => row.active,
+      press: () => this.actions.card(card),
+    });
     return row.height;
   }
 
