@@ -13,6 +13,7 @@ import {
   scrolled,
   timeAt,
 } from '../../picture/creditsRoll';
+import { keyAction } from '../../input/keyBindings';
 import { LINE_HEIGHT } from '../../picture/textWrap';
 import { WOOD_PANEL } from '../../picture/wood';
 import { CANVAS_WIDTH } from '../../scale/integerZoom';
@@ -22,6 +23,7 @@ import { PALETTE } from '../../view/palette';
 import { textStyle } from '../../view/textStyle';
 import { WoodFrame } from '../../view/WoodFrame';
 import { contextOf } from '../context';
+import { FocusController } from '../focus/FocusController';
 import { CREDITS_SCENE, paintDawnGround, wakeOpened, type CreditsSceneData } from '../CreditsGate';
 import { queueLoads } from '../queueLoads';
 
@@ -132,14 +134,20 @@ export class CreditsScene extends Phaser.Scene {
 
   /** The keys, the touches and the wheel of the credits. */
   private listen(): void {
-    const keys = this.input.keyboard;
-    keys?.on('keydown-ESC', () => this.leave());
-    keys?.on('keydown-ENTER', () => this.forward());
-    keys?.on('keydown-SPACE', () => this.forward());
-    keys?.on('keydown-DOWN', () => this.moveTo(scrolled(this.offset(), STEP, this.travel)));
-    keys?.on('keydown-UP', () => this.moveTo(scrolled(this.offset(), -STEP, this.travel)));
-    keys?.on('keydown-PAGE_DOWN', () => this.moveTo(pageAfter(this.offset(), this.pages)));
-    keys?.on('keydown-PAGE_UP', () => this.moveTo(pageBefore(this.offset(), this.pages)));
+    // Tab reaches "Volver"; Enter or Space press it in focus, or else turn the page.
+    new FocusController(this, { screen: () => 'credits', fallback: () => this.forward() });
+    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
+      const action = keyAction('credits', {
+        key: event.key,
+        ctrl: event.ctrlKey || event.metaKey,
+        shift: event.shiftKey,
+      });
+      if (action === 'escape') this.leave();
+      else if (action === 'rollDown') this.moveTo(scrolled(this.offset(), STEP, this.travel));
+      else if (action === 'rollUp') this.moveTo(scrolled(this.offset(), -STEP, this.travel));
+      else if (action === 'pageDown') this.moveTo(pageAfter(this.offset(), this.pages));
+      else if (action === 'pageUp') this.moveTo(pageBefore(this.offset(), this.pages));
+    });
     this.input.on('pointerdown', () => this.forward());
     this.input.on('wheel', (_: unknown, __: unknown, ___: number, dy: number) =>
       this.moveTo(scrolled(this.offset(), Math.sign(dy) * STEP, this.travel)),
