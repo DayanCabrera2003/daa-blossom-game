@@ -1,7 +1,8 @@
 // Entry point and composition root: builds what every scene shares, the bus and the save store the
 // game shares with the DOM overlays, then starts the game at the largest whole zoom in device
-// pixels that fits the window, keeping it so on resize and on a change of density, making room
-// beside the canvas for the teacher's panel, and asking to turn a phone held upright.
+// pixels that fits the window, laying the page out again on every change of the window (resize, a
+// phone turned, the visual viewport, a change of density), making room beside the canvas for the
+// teacher's panel, and asking to turn a phone held upright.
 import strings from '@content/es/strings.json';
 import lines from '@content/es/lines.json';
 import { catalog } from '@levels/catalog';
@@ -26,9 +27,10 @@ import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
 import { openCredits } from './game/scenes/CreditsGate';
 import { openSandbox } from './game/scenes/SandboxGate';
-import { CANVAS_HEIGHT, CANVAS_WIDTH, cssPixel, usableDensity } from './game/scale/integerZoom';
-import { asksToTurn } from './game/scale/orientation';
-import { panelPixel, panelRoom, type PanelRoom } from './game/scale/panelRoom';
+import { CANVAS_HEIGHT, CANVAS_WIDTH, usableDensity } from './game/scale/integerZoom';
+import { onceAFrame } from './game/scale/onceAFrame';
+import { screenLayout, type ScreenLayout } from './game/scale/screenLayout';
+import { viewportSize } from './game/scale/viewport';
 import { renderZoom, setRenderZoom } from './game/view/renderZoom';
 import { mountLiveRegion } from './ui/a11y/liveRegion';
 import { mountMotionMark } from './ui/a11y/motionMark';
@@ -44,17 +46,29 @@ playtest.record([{ kind: 'sessionStart', at: clock() }]);
 let panelOpen = false;
 /** The screen's device pixels per CSS pixel, now (it changes with the browser's zoom or screen). */
 const density = (): number => usableDensity(window.devicePixelRatio);
-/** The canvas's zoom and the panel's width for the window as it is now. */
-const roomForWindow = () => panelRoom(window.innerWidth, window.innerHeight, panelOpen, density());
+/**
+ * The page's layout for the window as it is now, measured from the page's own box: on a phone the
+ * window (`innerWidth`) grows to hold a canvas still at the zoom of the other orientation.
+ */
+const layoutNow = (): ScreenLayout => {
+  const root = document.documentElement;
+  const size = viewportSize({
+    clientWidth: root.clientWidth,
+    clientHeight: root.clientHeight,
+    innerWidth: window.innerWidth,
+    innerHeight: window.innerHeight,
+  });
+  return screenLayout(size, density(), panelOpen);
+};
 /**
  * The whole zoom in device pixels, and the canvas's pixel in CSS pixels as the CSS variable
  * `--zoom`, so the books size their pixels like the canvas.
  */
-const applyZoom = (zoom: number): void => {
-  setRenderZoom(zoom);
-  document.documentElement.style.setProperty('--zoom', String(cssPixel(zoom, density())));
+const applyZoom = (layout: ScreenLayout): void => {
+  setRenderZoom(layout.zoom);
+  document.documentElement.style.setProperty('--zoom', String(layout.pixel));
 };
-applyZoom(roomForWindow().zoom);
+applyZoom(layoutNow());
 // Text is laid out when a scene starts, so the pixel font must be ready first. A failed load leaves
 // the monospace fallback of the text styles, never a game that does not start.
 await document.fonts.load(`${PIXEL_FONT.nativeSize}px ${PIXEL_FONT.family}`).catch(() => []);
@@ -131,17 +145,15 @@ bus.on('overlay.changed', ({ open }) => {
 const soundOf = bookSounds();
 bus.on('sound', (sound) => void audio.play('sfx', soundOf(sound)));
 /**
- * Lays out the page round the canvas for the window as it is now: the teacher's panel's room (out
- * of sight where it does not fit) and the notice to turn a phone held upright. Returns the room.
+ * Lays out the page round the canvas for `layout`: the teacher's panel's room (out of sight where
+ * it does not fit) and the notice to turn a phone held upright.
  */
-const layoutPage = (): PanelRoom => {
-  const room = roomForWindow();
-  teacherShell?.fit(room.fits);
-  document.documentElement.style.setProperty('--teacher-width', `${room.panel}px`);
-  document.documentElement.style.setProperty('--teacher-unit', String(panelPixel(room, density())));
-  document.body.style.marginRight = `${room.panel}px`;
-  turnNotice.show(asksToTurn(window.innerWidth, window.innerHeight, density()));
-  return room;
+const layoutPage = (layout: ScreenLayout): void => {
+  teacherShell?.fit(layout.fits);
+  document.documentElement.style.setProperty('--teacher-width', `${layout.panel}px`);
+  document.documentElement.style.setProperty('--teacher-unit', String(layout.panelPixel));
+  document.body.style.marginRight = `${layout.panel}px`;
+  turnNotice.show(layout.turn);
 };
 /** The density the canvas was last shown at. */
 let shownDensity = density();
@@ -152,18 +164,27 @@ let shownDensity = density();
  * that zoom while its lines stay long enough (`layoutPage`).
  */
 const relayout = (): void => {
-  const { zoom } = layoutPage();
-  if (zoom === renderZoom() && density() === shownDensity) {
+  const layout = layoutNow();
+  layoutPage(layout);
+  if (layout.zoom === renderZoom() && density() === shownDensity) {
     game.scale.refresh();
     return;
   }
-  applyZoom(zoom);
+  applyZoom(layout);
   shownDensity = density();
-  game.scale.resize(CANVAS_WIDTH * zoom, CANVAS_HEIGHT * zoom);
+  game.scale.resize(CANVAS_WIDTH * layout.zoom, CANVAS_HEIGHT * layout.zoom);
   // Shown at its size over the density, in CSS pixels; this also writes the canvas's style size.
   game.scale.setZoom(1 / shownDensity);
 };
-window.addEventListener('resize', relayout);
+/**
+ * Every change of the window lays the page out again, once, on the next frame, when the sizes have
+ * settled: a resize, a phone turned (some browsers report it before resizing) and the visual
+ * viewport's resize (a phone's bars, a keyboard).
+ */
+const relayoutSoon = onceAFrame((run) => window.requestAnimationFrame(run), relayout);
+window.addEventListener('resize', relayoutSoon);
+window.addEventListener('orientationchange', relayoutSoon);
+window.visualViewport?.addEventListener('resize', relayoutSoon);
 /**
  * Watches the density the page is shown at (the browser's zoom, a window dragged to another
  * screen), which changes without always resizing the window, and lays the canvas out again.
@@ -172,7 +193,7 @@ const watchDensity = (): void => {
   window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addEventListener(
     'change',
     () => {
-      relayout();
+      relayoutSoon();
       watchDensity();
     },
     { once: true },
@@ -180,7 +201,9 @@ const watchDensity = (): void => {
 };
 watchDensity();
 // The page opens laid out (the canvas already is, at its zoom): a phone held upright gets the notice.
-layoutPage();
+// Should the window have changed while the game booted, the next frame lays it out again.
+layoutPage(layoutNow());
+relayoutSoon();
 bus.on('teacher.panel', ({ open }) => {
   panelOpen = open;
   relayout();
