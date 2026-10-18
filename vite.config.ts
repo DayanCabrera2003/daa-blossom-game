@@ -18,4 +18,6 @@ export default defineConfig({
   // Relative base so the build works under the GitHub Pages sub-path.
   base: './',
   resolve: { alias: aliases },
+  // dist/.vite/manifest.json tells the budget which chunks load at start and which on demand.
+  build: { manifest: true },
 });
