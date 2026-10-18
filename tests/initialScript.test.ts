@@ -74,4 +74,11 @@ describe('the initial script', () => {
     const early = [...modules].filter(isFreeMode);
     expect(early).toEqual([]);
   });
+
+  it("counts the free mode's scenes as the free mode's, out of the initial script", () => {
+    expect(isFreeMode('src/game/scenes/sandbox/SandboxScene.ts')).toBe(true);
+    expect(isFreeMode('src/levels/sandbox/design.ts')).toBe(true);
+    // The thin gate that loads them stays in the initial script.
+    expect(isFreeMode('src/game/scenes/SandboxGate.ts')).toBe(false);
+  });
 });
