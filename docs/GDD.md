@@ -250,7 +250,7 @@ Tras dominar una idea, el mentor pide "escríbelo". El jugador elige entre 3–4
 
 ### 5.6 El Códex
 
-Libro accesible desde el menú y el hub. Cada entrada tiene tres pestañas:
+Libro accesible desde el botón de libro del HUD (en cuanto alguna página está abierta) y desde el hub. Cada entrada tiene tres pestañas:
 - **Intuición:** la explicación con las palabras del jardín y un diagrama interactivo (el mismo motor del juego, en pequeño).
 - **Formal:** definiciones, enunciados y demostraciones con notación matemática (KaTeX), escritas en el nivel de un buen curso de DAA.
 - **Puente:** la tabla de traducción de ese concepto y una nota histórica.
