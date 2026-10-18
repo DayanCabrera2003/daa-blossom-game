@@ -4,6 +4,7 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { contrast } from './contrast';
 import { FOCUS_RING, focusRing, ringContrast } from './focusRing';
 import { PALETTE } from '../view/palette';
+import { PIXEL_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 
 /** The pixels some one-pixel lines cover, as "x,y". */
 const pixelsOf = (lines: readonly { x: number; y: number; width: number; height: number }[]) => {
@@ -70,34 +71,38 @@ describe('the ring round the thing in focus', () => {
     );
   });
 
-  it('stays on the canvas and off the box, wherever the box is', () => {
-    const box = fc
-      .record({
-        x: fc.integer({ min: 0, max: CANVAS_WIDTH - 1 }),
-        y: fc.integer({ min: 0, max: CANVAS_HEIGHT - 1 }),
-        width: fc.integer({ min: 1, max: 80 }),
-        height: fc.integer({ min: 1, max: 30 }),
-      })
-      .filter((one) => one.x + one.width <= CANVAS_WIDTH && one.y + one.height <= CANVAS_HEIGHT);
-    fc.assert(
-      fc.property(box, (one) => {
-        const ring = focusRing(one);
-        const lines = [...ring.light, ...ring.dark];
-        for (const line of lines) {
-          expect(line.x).toBeGreaterThanOrEqual(0);
-          expect(line.y).toBeGreaterThanOrEqual(0);
-          expect(line.x + line.width).toBeLessThanOrEqual(CANVAS_WIDTH);
-          expect(line.y + line.height).toBeLessThanOrEqual(CANVAS_HEIGHT);
-        }
-        // Inside the box only its outermost pixels may be touched, where the canvas ends: a
-        // button's label starts two pixels in, so no letter is ever covered.
-        for (const pixel of pixelsOf(lines)) {
-          const [x = 0, y = 0] = pixel.split(',').map(Number);
-          const deep =
-            x > one.x && x < one.x + one.width - 1 && y > one.y && y < one.y + one.height - 1;
-          expect(deep).toBe(false);
-        }
-      }),
-    );
-  });
+  it(
+    'stays on the canvas and off the box, wherever the box is',
+    () => {
+      const box = fc
+        .record({
+          x: fc.integer({ min: 0, max: CANVAS_WIDTH - 1 }),
+          y: fc.integer({ min: 0, max: CANVAS_HEIGHT - 1 }),
+          width: fc.integer({ min: 1, max: 80 }),
+          height: fc.integer({ min: 1, max: 30 }),
+        })
+        .filter((one) => one.x + one.width <= CANVAS_WIDTH && one.y + one.height <= CANVAS_HEIGHT);
+      fc.assert(
+        fc.property(box, (one) => {
+          const ring = focusRing(one);
+          const lines = [...ring.light, ...ring.dark];
+          for (const line of lines) {
+            expect(line.x).toBeGreaterThanOrEqual(0);
+            expect(line.y).toBeGreaterThanOrEqual(0);
+            expect(line.x + line.width).toBeLessThanOrEqual(CANVAS_WIDTH);
+            expect(line.y + line.height).toBeLessThanOrEqual(CANVAS_HEIGHT);
+          }
+          // Inside the box only its outermost pixels may be touched, where the canvas ends: a
+          // button's label starts two pixels in, so no letter is ever covered.
+          for (const pixel of pixelsOf(lines)) {
+            const [x = 0, y = 0] = pixel.split(',').map(Number);
+            const deep =
+              x > one.x && x < one.x + one.width - 1 && y > one.y && y < one.y + one.height - 1;
+            expect(deep).toBe(false);
+          }
+        }),
+      );
+    },
+    PIXEL_PROPERTY_TIMEOUT,
+  );
 });

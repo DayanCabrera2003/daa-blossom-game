@@ -18,3 +18,9 @@ export const BOOKS_IMPORT_TIMEOUT = 15_000;
  * when exploring with thousands of cases, pass vitest's default of 5 s per test.
  */
 export const LAYOUT_PROPERTY_TIMEOUT = 60_000;
+
+/**
+ * Time allowed to properties that walk every pixel of the boxes they draw round (the focus ring):
+ * quick case by case, but thousands of them when exploring pass vitest's default of 5 s per test.
+ */
+export const PIXEL_PROPERTY_TIMEOUT = 30_000;
