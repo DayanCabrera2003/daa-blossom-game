@@ -155,7 +155,7 @@ export const stepNow = (session: LevelSession): LevelStep | null => currentStep(
  * Whether garden moves are taken now: while playing, while the council asks for another
  * certificate, or once the script is over.
  */
-const takesMoves = (session: LevelSession): boolean => {
+export const takesMoves = (session: LevelSession): boolean => {
   const step = stepNow(session);
   return step === null || step.step === 'play' || step.step === 'certifyAgain';
 };
