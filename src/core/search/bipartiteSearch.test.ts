@@ -148,4 +148,18 @@ describe('bipartite search', () => {
       }),
     );
   });
+
+  it('property (Códex C4, Prop. 4.4): each vine is looked along at most once from each end', () => {
+    fc.assert(
+      fc.property(graphWithMatchingArb(), ([graph, matching]) => {
+        const recorder = createRecorder();
+        bipartiteSearch(graph, matching, recorder);
+        const looks = recorder.events.flatMap((event) =>
+          event.type === 'scanEdge' ? [`${event.from}>${event.to}`] : [],
+        );
+        expect(new Set(looks).size).toBe(looks.length);
+        expect(looks.length).toBeLessThanOrEqual(2 * graph.edges.length);
+      }),
+    );
+  });
 });
