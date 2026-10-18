@@ -311,7 +311,8 @@ export function act(
   );
   if (judged.kind === 'none') return { session: moved, outcome, effects: reacted.effects };
   if (judged.kind === 'repeated') {
-    return { session: moved, outcome, effects: [...reacted.effects, { kind: 'sameStones' }] };
+    const sameStones = { kind: 'sameStones', line: judged.line } as const;
+    return { session: moved, outcome, effects: [...reacted.effects, sameStones] };
   }
   const { certificates } = judged;
   const advanced = advance({ ...moved, certificates }, { type: 'won' }, now);

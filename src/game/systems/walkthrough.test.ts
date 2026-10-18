@@ -315,14 +315,14 @@ describe('playing the reference walkthrough of a level without a scene', () => {
     const { effects, problem } = playWalkthrough(councilLevel());
     expect(problem).toBeNull();
     expect(effects).toContainEqual({ kind: 'certifyAgain', step: 1 });
-    expect(effects).not.toContainEqual({ kind: 'sameStones' });
+    expect(effects.map((effect) => effect.kind)).not.toContain('sameStones');
     // Presenting no stones twice leaves the council waiting.
     const [joinAB, joinRC, done, lift] = COUNCIL.solution;
     const drop = { type: 'dropStone', vertex: 'C' };
     const loaded = loadLevel({ ...COUNCIL, solution: [joinAB, joinRC, done, lift, drop, done] });
     if (!loaded.ok) throw new Error('fixture does not load');
     const repeated = playWalkthrough(loaded.value);
-    expect(repeated.effects).toContainEqual({ kind: 'sameStones' });
+    expect(repeated.effects).toContainEqual({ kind: 'sameStones', line: 'ch7.6.oaks.02' });
     expect(repeated.problem).toEqual({ code: 'unfinished', step: 1 });
   });
 });

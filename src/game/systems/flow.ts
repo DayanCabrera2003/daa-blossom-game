@@ -73,8 +73,11 @@ export type FlowEffect =
   | { readonly kind: 'play' }
   /** The council asks for another certificate (7.6): the garden goes on taking moves. */
   | { readonly kind: 'certifyAgain'; readonly step: number }
-  /** A certificate presented again with stones already shown: the council says it knows them. */
-  | { readonly kind: 'sameStones' }
+  /**
+   * A certificate presented again with stones already shown: the council says it knows them, with
+   * the dialogue line `line` of the step.
+   */
+  | { readonly kind: 'sameStones'; readonly line: string }
   | { readonly kind: 'say'; readonly lines: readonly string[] }
   | {
       readonly kind: 'ask';

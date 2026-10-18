@@ -37,7 +37,10 @@ describe('the certificates presented to the council', () => {
   });
 
   it('asked for another, only stones different from all those presented win', () => {
-    expect(judgeVictory(again, [[]], noStones, victory)).toEqual({ kind: 'repeated' });
+    expect(judgeVictory(again, [[]], noStones, victory)).toEqual({
+      kind: 'repeated',
+      line: 'ch7.6.oaks.02',
+    });
     expect(judgeVictory(again, [[]], bridge, victory)).toEqual({
       kind: 'won',
       certificates: [[], [C]],
@@ -48,7 +51,10 @@ describe('the certificates presented to the council', () => {
       { type: 'liftStone', vertex: b },
       { type: 'declareDone' },
     ]);
-    expect(judgeVictory(again, [[b, C]], both, victory)).toEqual({ kind: 'repeated' });
+    expect(judgeVictory(again, [[b, C]], both, victory)).toEqual({
+      kind: 'repeated',
+      line: 'ch7.6.oaks.02',
+    });
   });
 
   it('nothing is judged outside these two steps, nor without a victory', () => {

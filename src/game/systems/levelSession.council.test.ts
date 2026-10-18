@@ -37,7 +37,7 @@ describe('a level session asks the council for another certificate', () => {
     again = act(again, { type: 'dropStone', vertex: C }, 0).session;
     const repeated = act(again, { type: 'declareDone' }, 0);
     expect(repeated.outcome.ok).toBe(true);
-    expect(repeated.effects).toEqual([{ kind: 'sameStones' }]);
+    expect(repeated.effects).toEqual([{ kind: 'sameStones', line: 'ch7.6.oaks.02' }]);
     expect(stepNow(repeated.session)?.step).toBe('certifyAgain');
     expect(repeated.session.won).toBeNull();
   });

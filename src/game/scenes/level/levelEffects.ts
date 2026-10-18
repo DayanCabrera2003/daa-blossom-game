@@ -185,8 +185,9 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       break;
     }
     case 'sameStones':
-      // The council already knows these stones (7.6): the step waits for others.
-      stage.toast.show(t('council.sameStones'));
+      // The council already knows these stones and says so in its own voice (7.6); the step
+      // waits for others.
+      stage.presenter.present({ kind: 'lines', lines: [spokenLine(effect.line, line)] });
       break;
     case 'play':
     case 'certifyAgain':

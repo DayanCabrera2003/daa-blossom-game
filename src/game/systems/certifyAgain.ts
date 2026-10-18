@@ -16,8 +16,8 @@ export type VictoryTurn =
   | { readonly kind: 'none' }
   /** The step is won; `certificates` adds the stones of this one. */
   | { readonly kind: 'won'; readonly certificates: readonly (readonly VertexId[])[] }
-  /** The victory holds, but with stones already presented: the council says so. */
-  | { readonly kind: 'repeated' };
+  /** The victory holds, but with stones already presented: the council says so, with `line`. */
+  | { readonly kind: 'repeated'; readonly line: string };
 
 /** Judges the garden `after` a move in the step `step` of the script. */
 export function judgeVictory(
@@ -29,7 +29,7 @@ export function judgeVictory(
   if (step?.step !== 'play' && step?.step !== 'certifyAgain') return { kind: 'none' };
   if (victory === undefined || !isVictory(after, victory)) return { kind: 'none' };
   if (step.step === 'certifyAgain' && isPresented(certificates, after.stones)) {
-    return { kind: 'repeated' };
+    return { kind: 'repeated', line: step.repeated };
   }
   return { kind: 'won', certificates: [...certificates, stoneSet(after.stones)] };
 }
