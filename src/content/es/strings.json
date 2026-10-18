@@ -513,5 +513,6 @@
   "a11y.question": "{prompt} {options}",
   "a11y.option": "{number}: {option}.",
   "a11y.answerRight": "Respuesta acertada.",
-  "a11y.answerWrong": "No era esa respuesta."
+  "a11y.answerWrong": "No era esa respuesta.",
+  "notice.turnPhone": "Gira el teléfono para jugar"
 }

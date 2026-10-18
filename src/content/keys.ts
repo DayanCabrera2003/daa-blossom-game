@@ -379,6 +379,8 @@ const UI = {
   'keys.title': [],
   'keys.pointer': [],
   'keys.close': [],
+  // Over the game on a phone held upright, until it is turned (plan 09, phase 7).
+  'notice.turnPhone': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>
