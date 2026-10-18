@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BLOOM } from '../../tests/support/fixtureLevels';
-import { checkIntegrity } from './integrity';
+import { checkCatalogLevel, checkIntegrity } from './integrity';
 import { loadLevel } from './loader';
 
 /** Level 1.1, "La trampa": a–b–c–d, two lanterns possible, solved with two joins. */
@@ -362,5 +362,30 @@ describe('level integrity', () => {
         ],
       },
     ]);
+  });
+});
+
+describe('the checks of a level of the catalog', () => {
+  // D moved down and to the left: the vine C–D now runs through the name of B.
+  const crossed = {
+    ...trap,
+    sprouts: trap.sprouts.map((sprout) =>
+      sprout.label === 'D' ? { ...sprout, x: 40, y: 180 } : sprout,
+    ),
+  };
+  const level = (json: unknown) => {
+    const loaded = loadLevel(json);
+    if (!loaded.ok) throw new Error(`level does not load: ${JSON.stringify(loaded.error)}`);
+    return loaded.value;
+  };
+
+  it('are those of every level, and nothing more for a sound one', () => {
+    expect(checkCatalogLevel(level(trap))).toEqual([]);
+  });
+
+  it('also keep every name off the vines, which the free mode does not ask yet', () => {
+    const onVine = { code: 'labelOnVine', label: 'B', vine: ['C', 'D'] };
+    expect(checkCatalogLevel(level(crossed))).toEqual([onVine]);
+    expect(checkIntegrity(level(crossed))).toEqual([]);
   });
 });

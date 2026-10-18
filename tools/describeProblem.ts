@@ -110,6 +110,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `the names of ${problem.labels[0]} and ${problem.labels[1]} are drawn over each other`;
     case 'labelOnLantern':
       return `the name of ${problem.label} is drawn over the lantern of the vine ${problem.vine.join('–')}`;
+    case 'labelOnVine':
+      return `the name of ${problem.label} is drawn over the vine ${problem.vine.join('–')}`;
     case 'labelsDifferByCase':
       return `the names ${problem.labels[0]} and ${problem.labels[1]} differ only by case, which the pixel font shows as size alone`;
   }

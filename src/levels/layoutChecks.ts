@@ -1,5 +1,5 @@
 import { PICTURE_SIZES } from './pictureSizes';
-import { boxesNear, segmentsCross, type Box, type Point } from './plane';
+import { boxesNear, segmentNearBox, segmentsCross, type Box, type Point } from './plane';
 import type { LevelData } from './schema';
 import { boxNearSprout, type SproutAt } from './sproutExtent';
 
@@ -13,6 +13,11 @@ export type LayoutProblem =
   | { readonly code: 'labelOnLabel'; readonly labels: readonly [string, string] }
   | {
       readonly code: 'labelOnLantern';
+      readonly label: string;
+      readonly vine: readonly [string, string];
+    }
+  | {
+      readonly code: 'labelOnVine';
       readonly label: string;
       readonly vine: readonly [string, string];
     }
@@ -35,6 +40,7 @@ const {
   glyph,
   tailedLetters,
   lantern,
+  vineStroke,
   labelClearance: clearance,
 } = PICTURE_SIZES;
 
@@ -117,6 +123,24 @@ function crowdedLabels(level: Layout): LayoutProblem[] {
         .filter(({ a, b }) => boxesNear(box, lanternBox(a, b), clearance))
         .map(({ vine }): LayoutProblem => ({ code: 'labelOnLantern', label: sprout.label, vine })),
     ];
+  });
+}
+
+/**
+ * The names a vine is drawn through or against, lit as it may be later (its widest solid stroke),
+ * each name with each vine once. A vine of the name's own sprout leaves from right above it and
+ * is never counted: the name is read as part of its sprout. Only the catalog's levels are held to
+ * it for now (`checkCatalogLevel`); `checkLayout` is what the free mode's gardens keep too.
+ */
+export function labelsOnVines(level: Layout): LayoutProblem[] {
+  const vines = placedVines(level);
+  const reach = vineStroke / 2 + clearance;
+  return level.sprouts.flatMap((sprout) => {
+    const box = labelBox(sprout);
+    return vines
+      .filter(({ vine }) => !vine.includes(sprout.label))
+      .filter(({ a, b }) => segmentNearBox(a, b, box, reach))
+      .map(({ vine }): LayoutProblem => ({ code: 'labelOnVine', label: sprout.label, vine }));
   });
 }
 
