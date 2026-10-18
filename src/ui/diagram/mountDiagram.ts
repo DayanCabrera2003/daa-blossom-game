@@ -5,7 +5,9 @@ import { diagramGarden, type DiagramSources } from '@ui/model/diagramGarden';
 import { replaySteps } from '@ui/model/diagramReplay';
 import { parseDiagramSpec } from '@ui/model/diagramSpec';
 import { reflectionOf } from '@ui/model/pondPicture';
+import { flowerOf } from '@ui/model/cutPlay';
 import { coverDiagram } from './CoverDiagram';
+import { cutDiagram } from './CutDiagram';
 import { playDiagram } from './PlayDiagram';
 import { pondDiagram } from './PondDiagram';
 import { replayDiagram } from './ReplayDiagram';
@@ -63,6 +65,12 @@ export function mountDiagram(hole: HTMLElement, t: Translate): void {
     case 'cover':
       coverDiagram(hole, garden.value, block, t);
       return;
+    case 'cut': {
+      const flower = flowerOf(garden.value);
+      if (!flower.ok) return report(flower.error);
+      cutDiagram(hole, garden.value, flower.value, block, t);
+      return;
+    }
     default:
       report(`no ${block.kind} diagram is drawn yet`);
   }

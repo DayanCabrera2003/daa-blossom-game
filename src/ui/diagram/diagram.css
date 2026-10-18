@@ -59,14 +59,11 @@
  */
 .dg-svg {
   display: block;
-  width: min(
-    100%,
-    calc(var(--diagram-width) * var(--px)),
-    max(
-      calc(96 * var(--px)),
-      calc((100cqh - var(--controls-room)) * var(--diagram-width) / var(--diagram-height))
-    )
+  --fit-by-height: max(
+    calc(96 * var(--px)),
+    calc((100cqh - var(--controls-room)) * var(--diagram-width) / var(--diagram-height))
   );
+  width: min(100%, calc(var(--diagram-width) * var(--px)), var(--fit-by-height));
   height: auto;
   aspect-ratio: var(--diagram-width) / var(--diagram-height);
   border: var(--px) solid var(--dg-panel-edge);
@@ -343,6 +340,27 @@
 .dg-mark-base {
   stroke: var(--dg-highlight);
   stroke-dasharray: 2 2;
+}
+
+/* Two gardens side by side (the open and the folded garden of C8), each half the page at most. */
+.dg-pair {
+  display: flex;
+  justify-content: center;
+  gap: calc(2 * var(--px));
+  width: 100%;
+}
+
+.dg-pair > .dg-svg {
+  width: min(
+    calc(50% - var(--px)),
+    calc(var(--diagram-width) * var(--px)),
+    var(--fit-by-height)
+  );
+}
+
+/* The name of a garden of a pair, in its top-left corner. */
+.dg-caption {
+  fill: var(--dg-label);
 }
 
 /* The controls under the garden: the book's own wooden buttons. */
