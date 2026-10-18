@@ -92,6 +92,13 @@ describe('the hub that grows (plan 06, section 1.5)', () => {
     expect(finishedChapters([{ id: '8.1', draft: true }], () => true)).toEqual(new Set());
   });
 
+  it('never waits for the secret flower of a chapter, nor counts a chapter of one alone', () => {
+    const levels = [{ id: '1.1' }, { id: '1.2' }, { id: '1.3', secret: { stars: 3 } }];
+    const done = new Set(['1.1', '1.2']);
+    expect(finishedChapters(levels, (id) => done.has(id))).toEqual(new Set(['1']));
+    expect(finishedChapters([{ id: '8.1', secret: { stars: 1 } }], () => true)).toEqual(new Set());
+  });
+
   it('has a piece for each chapter: the orchard plots first and the oaks last', () => {
     expect(HUB_PIECES).toHaveLength(8);
     expect(HUB_PIECES[0]).toBe(SOIL_PATCH);

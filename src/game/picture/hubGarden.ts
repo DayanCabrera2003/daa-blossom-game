@@ -67,15 +67,21 @@ export function signBox(titleY: number, lineHeight: number): Rect {
 }
 
 /**
- * The chapters whose every level (drafts aside) is done; a chapter of drafts only never is.
+ * The chapters whose every level (drafts and the secret flower aside) is done; a chapter of drafts
+ * or secret flowers only never is. The secret flower is optional, so finishing the chapter never
+ * waits for it (GDD §5.10).
  */
 export function finishedChapters(
-  levels: readonly { readonly id: string; readonly draft?: boolean }[],
+  levels: readonly {
+    readonly id: string;
+    readonly draft?: boolean;
+    readonly secret?: { readonly stars: number } | undefined;
+  }[],
   done: (id: string) => boolean,
 ): Set<string> {
   const byChapter = new Map<string, boolean>();
-  for (const { id, draft } of levels) {
-    if (draft === true) continue;
+  for (const { id, draft, secret } of levels) {
+    if (draft === true || secret !== undefined) continue;
     const chapter = chapterOfLevel(id);
     byChapter.set(chapter, (byChapter.get(chapter) ?? true) && done(id));
   }
