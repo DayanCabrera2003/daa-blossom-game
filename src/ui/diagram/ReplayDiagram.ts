@@ -35,7 +35,9 @@ export function replayDiagram(
   const figure = part(page, 'figure', 'dg dg-replay');
   if (spec.title !== undefined) figure.append(part(page, 'figcaption', 'dg-title', t(spec.title)));
   const svg = gardenSvg(page, t('diagram.garden'));
-  const bar = part(page, 'div', 'dg-bar');
+  // The sun and its steps on one row right under the garden, where the day is and the way back
+  // to dawn on the next.
+  const bar = part(page, 'div', 'dg-bar dg-bar-sun');
   const back = diagramButton(page, t('diagram.stepBack'), () => show(shown - 1));
   const sun = part(page, 'input', 'dg-sun-slider');
   Object.assign(sun, { type: 'range', min: '0', max: String(last), step: '1' });
@@ -44,7 +46,9 @@ export function replayDiagram(
   const forward = diagramButton(page, t('diagram.stepForward'), () => show(shown + 1));
   const reset = diagramButton(page, t('diagram.reset'), () => show(0));
   const counter = part(page, 'span', 'dg-count');
-  bar.append(back, sun, forward, counter, reset);
+  bar.append(back, sun, forward);
+  const where = part(page, 'div', 'dg-bar');
+  where.append(counter, reset);
   const told = part(page, 'p', 'dg-step');
   told.setAttribute('aria-live', 'polite');
   const help = part(
@@ -55,7 +59,7 @@ export function replayDiagram(
       .map((key) => t(key))
       .join(' '),
   );
-  figure.append(svg, bar, told, help);
+  figure.append(svg, bar, where, told, help);
   hole.replaceChildren(figure);
 
   /** Shows step `k` of the day (kept between dawn and dusk). */

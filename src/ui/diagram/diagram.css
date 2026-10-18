@@ -3,7 +3,8 @@
  * colours are the game's own, copied as tokens named after the colour of src/game/view/palette.ts
  * they copy (tests/diagramPalette.test.ts holds them to it). The garden is one logical pixel per
  * unit of its picture at most, `--px` being the game's zoom, so its sprouts and names are as big
- * as the game's; on a narrow page it shrinks with the page.
+ * as the game's; on a narrow page it shrinks with the page, and on a short one it shrinks until
+ * the garden and the controls under it fit together in the height of the page shown.
  */
 
 .codex-diagram {
@@ -30,6 +31,8 @@
 }
 
 .dg {
+  /* The room kept under the garden for its controls: two rows of buttons, and the gaps. */
+  --controls-room: calc(36 * var(--px));
   margin: 0;
   display: grid;
   justify-items: center;
@@ -40,11 +43,28 @@
   justify-self: start;
 }
 
-/* The garden: as wide as its picture in logical pixels, never wider than the page. */
+/* A title above the garden takes a line more of the page's height. */
+.dg:has(> .dg-title) {
+  --controls-room: calc(51 * var(--px));
+}
+
+/*
+ * The garden: as wide as its picture in logical pixels, never wider than the page, and never so
+ * tall that its controls fall below the page shown (`100cqh` is the height of the text of the tab,
+ * codex.css), though never smaller than a small garden can be read at. It keeps its shape.
+ */
 .dg-svg {
   display: block;
-  width: min(100%, calc(var(--diagram-width) * var(--px)));
+  width: min(
+    100%,
+    calc(var(--diagram-width) * var(--px)),
+    max(
+      calc(96 * var(--px)),
+      calc((100cqh - var(--controls-room)) * var(--diagram-width) / var(--diagram-height))
+    )
+  );
   height: auto;
+  aspect-ratio: var(--diagram-width) / var(--diagram-height);
   border: var(--px) solid var(--dg-panel-edge);
   background: var(--dg-background);
   /* The pixel font at its native size: one unit of the picture is one logical pixel. */
@@ -249,9 +269,17 @@
   cursor: default;
 }
 
+/* The sun takes the width its two step buttons leave on their row. */
 .dg-sun-slider {
-  width: calc(120 * var(--px));
+  flex: 1 1 calc(60 * var(--px));
+  min-width: 0;
+  max-width: calc(160 * var(--px));
   accent-color: var(--dg-lit);
+}
+
+.dg-bar-sun {
+  flex-wrap: nowrap;
+  justify-self: stretch;
 }
 
 .dg-help,

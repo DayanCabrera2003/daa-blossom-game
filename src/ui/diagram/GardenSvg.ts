@@ -280,6 +280,7 @@ export function drawGarden(
   const { width, height } = picture;
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
   svg.style.setProperty('--diagram-width', String(width));
+  svg.style.setProperty('--diagram-height', String(height));
   const names = picture.sprouts.map((sprout) => sprout.label);
   svg.replaceChildren(
     shape(page, 'rect', { class: 'dg-ground', width, height }),
