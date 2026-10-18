@@ -26,6 +26,8 @@ export interface SettingsActions {
   readonly mute: () => void;
   /** Downloads the playtest log, for playtesters to send back (GDD §10). */
   readonly exportLog: () => void;
+  /** Opens the credits screen over the scene. */
+  readonly credits: () => void;
 }
 
 /** The panel's size and the rows on it, in canvas pixels (`picture/settingsPanelLayout.ts`). */
@@ -60,7 +62,7 @@ interface Slider {
 /**
  * The settings panel, in the wooden frame of the other panels and written in its ink: a slider for
  * the music, one for the effects and one for the voices, each with its percentage, the mute box,
- * the button that exports the playtest log, and "Cerrar". A dim layer over the whole screen takes
+ * the button that exports the playtest log, "Créditos" and "Cerrar". A dim layer over the whole screen takes
  * every touch meant for what is below while the panel is open. The panel only draws and reports:
  * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene.
  */
@@ -116,9 +118,13 @@ export class SettingsView {
     const exportLog = new Button(scene, 0, 0, t('settings.exportLog'), () =>
       this.actions.exportLog(),
     ).setDepth(PANEL_DEPTH + 4);
+    const credits = new Button(scene, 0, 0, t('settings.credits'), () =>
+      this.actions.credits(),
+    ).setDepth(PANEL_DEPTH + 4);
     exportLog.moveTo(x + Math.round((WIDTH - exportLog.width) / 2), y + rows.exportLog);
+    credits.moveTo(x + Math.round((WIDTH - credits.width) / 2), y + rows.credits);
     close.moveTo(x + Math.round((WIDTH - close.width) / 2), y + rows.close);
-    this.parts.push(exportLog, close);
+    this.parts.push(exportLog, credits, close);
     this.render(settings);
   }
 

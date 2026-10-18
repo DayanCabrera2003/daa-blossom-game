@@ -362,6 +362,7 @@ const UI = {
   'settings.mute': [],
   'settings.close': [],
   'settings.exportLog': [],
+  'settings.credits': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>

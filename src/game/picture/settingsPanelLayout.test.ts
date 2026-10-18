@@ -18,12 +18,14 @@ describe('the rows of the settings panel', () => {
     expect(itemAt(rows.sliders, 0) - rows.title).toBeGreaterThanOrEqual(LINE_HEIGHT);
   });
 
-  it('stacks the mute box, the export button and "Cerrar" without touching', () => {
+  it('stacks the mute box, the export button, "Créditos" and "Cerrar" without touching', () => {
     const last = itemAt(rows.sliders, rows.sliders.length - 1);
     expect(rows.mute - last).toBe(SETTINGS_PANEL.row);
     // The mute line ends before the export button's wood starts, a pixel above its label.
     expect(rows.mute + LINE_HEIGHT).toBeLessThanOrEqual(rows.exportLog - 1);
-    expect(rows.exportLog - 1 + BUTTON_HEIGHT).toBeLessThan(rows.close - 1);
+    expect(rows.exportLog - 1 + BUTTON_HEIGHT).toBeLessThan(rows.credits - 1);
+    expect(rows.credits - 1 + BUTTON_HEIGHT).toBeLessThan(rows.close - 1);
+    expect(rows.credits - rows.exportLog).toBe(rows.close - rows.credits);
     expect(rows.close - 1 + BUTTON_HEIGHT + SETTINGS_PANEL.pad - 1).toBe(rows.height);
   });
 

@@ -118,7 +118,12 @@ describe('the panels fit their texts', () => {
 
   it('the settings panel fits its buttons and the labels of its rows', () => {
     const inner = innerWidth(SETTINGS_PANEL.width);
-    for (const label of [t('settings.exportLog'), t('settings.close'), t('settings.mute')]) {
+    for (const label of [
+      t('settings.exportLog'),
+      t('settings.credits'),
+      t('settings.close'),
+      t('settings.mute'),
+    ]) {
       expect(estimatedButtonWidth(label)).toBeLessThanOrEqual(inner);
     }
     // Each channel's name ends before its slider's track starts.
