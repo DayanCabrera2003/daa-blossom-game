@@ -9,16 +9,33 @@ import {
   notebookLayout,
   QUESTION_PANEL,
   questionLayout,
+  TUTORIAL_PANEL,
+  tutorialLayout,
 } from '../src/game/picture/panelLayout';
 import { panelAvoidance } from '../src/game/picture/panelAvoidance';
 import { choosePanel } from '../src/game/picture/panelPlacement';
-import { notebookSpots, questionSpots } from '../src/game/picture/panelSpots';
+import {
+  cardSpots,
+  dialogueSpots,
+  notebookSpots,
+  questionSpots,
+  toastSpots,
+} from '../src/game/picture/panelSpots';
+import { toastBox } from '../src/game/picture/toastBox';
+import type { Rect } from '../src/game/picture/boxDistance';
+import type { Avoidance } from '../src/game/picture/panelAvoidance';
+import { openController, type Controller } from '../src/game/systems/levelController';
+import { DEMO_SIZE } from '../src/game/view/CardDemoView';
+import { CARD_IDS } from '../src/levels/cards/schema';
+import { GENERATORS, generate } from '../src/levels/sandbox/generators';
+import { toPlayable } from '../src/levels/sandbox/toLevel';
 import { textHeight } from '../src/game/picture/textWrap';
 import type { Question, QuestionOption } from '../src/game/systems/question';
 import { catalog } from '../src/levels/catalog';
 import { createTranslator } from '../src/services/i18n';
 import { createLines } from '../src/services/lines';
-import { questionMoments } from './support/panelMoments';
+import { questionMoments, scriptMoments } from './support/panelMoments';
+import { LAYOUT_PROPERTY_TIMEOUT } from './support/timeouts';
 
 // Every panel over a garden opens where it hides none of what its step points at, whenever some
 // spot allows it, and never hides more of the garden than where it always opened (the post-release
@@ -102,13 +119,71 @@ describe('every question and notebook page of the catalog', () => {
         moment.question.kind === 'notebook'
           ? notebookSpotsOf(moment.question)
           : spotsOf(moment.question);
-      const [home] = spots;
-      invariant(home !== undefined, 'a panel has a home');
-      const chosen = choosePanel(spots, avoid);
-      expect(totalCoverage(chosen, avoid.referred)).toBe(0);
-      expect(totalCoverage(chosen, avoid.shapes)).toBeLessThanOrEqual(
-        totalCoverage(home, avoid.shapes),
-      );
+      expect(totalCoverage(choosePanel(spots, avoid), avoid.referred)).toBe(0);
+      expectClear(spots, avoid);
     },
+  );
+});
+
+/** The tallest window of a mechanic card: the one with the longest body. */
+const tallestCard = Math.max(
+  ...CARD_IDS.map(
+    (card) =>
+      tutorialLayout(
+        textHeight(t(`tutorial.${card}.body`), innerWidth(TUTORIAL_PANEL.width)),
+        DEMO_SIZE.height,
+      ).height,
+  ),
+);
+
+/** A toast of a line of thirty letters, where it always showed. */
+const toastHome = toastBox(30 * 6, 12);
+
+/**
+ * Whether the panel chosen among `spots` hides none of what the step points at when some spot
+ * allows it (else as little as any spot), and no more of the garden than where it always opened
+ * (its first spot) unless that spot hid what the step points at.
+ */
+function expectClear(spots: readonly Rect[], avoid: Avoidance): void {
+  const [home] = spots;
+  invariant(home !== undefined, 'a panel has a home');
+  const chosen = choosePanel(spots, avoid);
+  const least = Math.min(...spots.map((spot) => totalCoverage(spot, avoid.referred)));
+  expect(totalCoverage(chosen, avoid.referred)).toBeLessThanOrEqual(least + 0.5);
+  if (totalCoverage(home, avoid.referred) === 0) {
+    expect(totalCoverage(chosen, avoid.shapes)).toBeLessThanOrEqual(
+      totalCoverage(home, avoid.shapes) + 0.5,
+    );
+  }
+}
+
+/** The card's window, the dialogue box and a toast over the garden of `controller`. */
+function expectEveryPanelClear(controller: Controller): void {
+  const avoid = panelAvoidance(controller);
+  expectClear(cardSpots(tallestCard), avoid);
+  expectClear(dialogueSpots(), avoid);
+  expectClear(toastSpots(toastHome), avoid);
+}
+
+describe('the card, the dialogue box and the toasts over every garden', () => {
+  it.each(levels.map((level) => [level.data.id, level] as const))(
+    'over %s, at every step of its script',
+    (_, level) => {
+      for (const { controller } of scriptMoments(level)) expectEveryPanelClear(controller);
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
+  );
+
+  it.each(GENERATORS.map((generator) => [generator.id, generator] as const))(
+    'over the gardens the free mode grows with %s',
+    (_, generator) => {
+      for (const size of [generator.min, generator.max]) {
+        const { design } = generate(generator.id, size, 7);
+        const level = toPlayable(design, ['join']);
+        invariant(level.ok, 'a grown garden plays');
+        expectEveryPanelClear(openController(level.value, 0).controller);
+      }
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
   );
 });

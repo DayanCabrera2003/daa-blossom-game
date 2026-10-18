@@ -4,20 +4,25 @@ import { garden } from '@game/systems/levelSession';
 import { questionAt, type Question } from '@game/systems/question';
 import { playWalkthrough } from '@game/systems/walkthrough';
 
-/** A question of a level's script on screen, with the controller as the scene holds it then. */
-export interface QuestionMoment {
+/** A step of a level's script on screen, with the controller as the scene holds it then. */
+export interface ScriptMoment {
   readonly step: number;
-  readonly question: Question;
   readonly controller: Controller;
 }
 
+/** A question of a level's script on screen, with the controller as the scene holds it then. */
+export interface QuestionMoment extends ScriptMoment {
+  readonly question: Question;
+}
+
 /**
- * Every question a level's walkthrough meets, once each, with the garden as it is when its panel
- * opens: the walkthrough is played a prefix at a time, and each prefix ends where the script waits
- * (a question waits for its answer). A script step asked again after a wrong answer is kept once.
+ * Every step of a level's script its walkthrough waits at, once each, with the garden as it is
+ * then: the walkthrough is played a prefix at a time, and each prefix ends where the script waits
+ * (a question for its answer, a play step for the next move). A step met again (a play step after
+ * each move, a question asked again after a wrong answer) is kept the first time.
  */
-export function questionMoments(level: Level): QuestionMoment[] {
-  const moments: QuestionMoment[] = [];
+export function scriptMoments(level: Level): ScriptMoment[] {
+  const moments: ScriptMoment[] = [];
   const seen = new Set<number>();
   for (let played = 0; played <= level.walkthrough.length; played += 1) {
     const { controller } = playWalkthrough({
@@ -25,10 +30,16 @@ export function questionMoments(level: Level): QuestionMoment[] {
       walkthrough: level.walkthrough.slice(0, played),
     });
     const step = controller.session.flow.index;
-    const question = questionAt(level, step, garden(controller.session));
-    if (question === null || seen.has(step)) continue;
+    if (seen.has(step)) continue;
     seen.add(step);
-    moments.push({ step, question, controller });
+    moments.push({ step, controller });
   }
   return moments;
 }
+
+/** Every question a level's walkthrough meets, once each, with the garden as it is then. */
+export const questionMoments = (level: Level): QuestionMoment[] =>
+  scriptMoments(level).flatMap(({ step, controller }) => {
+    const question = questionAt(level, step, garden(controller.session));
+    return question === null ? [] : [{ step, question, controller }];
+  });
