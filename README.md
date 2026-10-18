@@ -6,7 +6,14 @@ Built as a creative project for the course *Diseño y Análisis de Algoritmos* (
 
 ## Status
 
-Chapters 0–7 are playable: their greybox levels now wear the art and sound of the CC0 packs ([`docs/plans/06-art-and-audio.md`](docs/plans/06-art-and-audio.md)), on top of the tested algorithmic core. The Códex, the extra modes and the final polish are still to come.
+Chapters 0–7 are playable with the art and sound of the CC0 packs ([`docs/plans/06-art-and-audio.md`](docs/plans/06-art-and-audio.md)), on top of the tested algorithmic core. The books are in ([`docs/plans/07-codex-epilogue-teacher.md`](docs/plans/07-codex-epilogue-teacher.md)): the **Códex**, fourteen entries opened by playing, each with the garden's intuition and a touchable diagram, the formal definitions, statements and proofs, and the bridge between the two; the **Cuaderno**, where every statement the player writes down links to the entry that translates it; and the epilogue, *Más allá del jardín*. The free mode, the secret flowers, the guided walk and the final polish are still to come.
+
+### Teacher mode
+
+Add `?teacher` to the address to open every chapter and every page of the Códex. In a level, `T` (or the trace button) opens a panel beside the garden with the trace in the Códex's notation: the player's day, a run of Edmonds from the lanterns the sun shows, and its Tutte–Berge certificate. `PageUp` and `PageDown` jump to the level before or after.
+
+- `?teacher&level=4.6` starts straight in a level.
+- `?teacher&codex=C8&tab=formal` opens the Códex at an entry, and optionally at one of its tabs (`intuition`, `formal`, `bridge`).
 
 ## Documentation
 
@@ -46,7 +53,7 @@ The chimes, the sparkle, the fold chords and the crickets of the prologue are no
 
 To use another file of a pack, add it to `tools/assets/selection.ts` (at the end of its group), run `npm run assets`, and credit it in `CREDITS.md`.
 
-The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600 KB, the font 100 KB, effects, syllables and jingles 1.5 MB, the first load (JavaScript plus the `boot` group, with the hub's music) 5 MB, and all the music 20 MB, each track loaded with its own chapter. `tests/assetBudget.test.ts` holds the assets to it; `npm run budget`, run by CI after the build, adds the JavaScript.
+The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600 KB, the font 100 KB, effects, syllables and jingles 1.5 MB, the first load (JavaScript plus the `boot` group, with the hub's music) 5 MB, all the music 20 MB, each track loaded with its own chapter, and the books (KaTeX, marked, the Códex, the Cuaderno and the teacher's panel, loaded the first time one opens) 1 MB. `tests/assetBudget.test.ts` holds the assets to it; `npm run budget`, run by CI after the build, adds the JavaScript.
 
 ## License
 
