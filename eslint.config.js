@@ -15,18 +15,19 @@ const MATH_LIBRARIES = {
 };
 
 /**
- * Builds a no-restricted-imports rule that forbids the given layers, Phaser (unless `phaser` is
- * false) and the math libraries (unless `math` is false).
+ * The import patterns that forbid the given layers, Phaser (unless `phaser` is false) and the math
+ * libraries (unless `math` is false).
  */
-const forbidLayers = (layers, message, { phaser = true, math = true } = {}) => [
+const layerPatterns = (layers, message, { phaser = true, math = true } = {}) => [
+  ...(phaser ? [{ group: ['phaser', 'phaser/**'], message }] : []),
+  ...(math ? [MATH_LIBRARIES] : []),
+  ...layers.map((name) => ({ group: layer(name), message })),
+];
+
+/** Builds a no-restricted-imports rule from `layerPatterns`. */
+const forbidLayers = (layers, message, options) => [
   'error',
-  {
-    patterns: [
-      ...(phaser ? [{ group: ['phaser', 'phaser/**'], message }] : []),
-      ...(math ? [MATH_LIBRARIES] : []),
-      ...layers.map((name) => ({ group: layer(name), message })),
-    ],
-  },
+  { patterns: layerPatterns(layers, message, options) },
 ];
 
 export default tseslint.config(
@@ -171,6 +172,33 @@ export default tseslint.config(
         'ui/ must not import game/; use the event bus.',
         { math: false },
       ),
+    },
+  },
+  {
+    // The shell is part of the initial script: it reaches the heavy books only through import(),
+    // so KaTeX, marked and the entries stay in the deferred chunk. ESLint only sees static imports.
+    files: ['src/ui/shell.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            ...layerPatterns(['game'], 'ui/ must not import game/; use the event bus.'),
+            {
+              group: [
+                'codex',
+                'math',
+                'notebook',
+                'teacher',
+                'epilogue',
+                'diagram',
+                'books',
+              ].flatMap((name) => [`./${name}`, `./${name}/**`, `@ui/${name}`, `@ui/${name}/**`]),
+              message: 'the shell loads the books with import() the first time one opens.',
+            },
+          ],
+        },
+      ],
     },
   },
   // Must be last: turns off stylistic rules that Prettier owns.

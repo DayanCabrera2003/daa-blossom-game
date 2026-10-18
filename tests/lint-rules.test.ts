@@ -218,6 +218,42 @@ describe('pure overlay models', () => {
   });
 });
 
+describe('the light overlay shell', () => {
+  // The shell is in the initial script; the books load with import() the first time they open.
+  const HEAVY = ['codex', 'math', 'notebook', 'teacher', 'epilogue', 'diagram'];
+
+  it.each(HEAVY)('src/ui/shell.ts may not import ui/%s statically', async (folder) => {
+    for (const from of [`./${folder}/Book`, `@ui/${folder}/Book`, `@ui/${folder}`]) {
+      expect(
+        await firedRules('src/ui/shell.ts', `import { x } from '${from}';\nexport { x };`),
+      ).toContain('no-restricted-imports');
+    }
+  });
+
+  it('src/ui/shell.ts may not import the books entry statically', async () => {
+    expect(
+      await firedRules('src/ui/shell.ts', "import { x } from './books';\nexport { x };"),
+    ).toContain('no-restricted-imports');
+  });
+
+  it('src/ui/shell.ts may load the books with import()', async () => {
+    const code = "export const load = () => import('./codex/CodexBook');";
+    expect(await firedRules('src/ui/shell.ts', code)).not.toContain('no-restricted-imports');
+  });
+
+  it('src/ui/shell.ts still may not import game', async () => {
+    expect(
+      await firedRules('src/ui/shell.ts', "import { x } from '@game/scene';\nexport { x };"),
+    ).toContain('no-restricted-imports');
+  });
+
+  it('other ui files may import the books statically', async () => {
+    expect(
+      await firedRules('src/ui/books.ts', "import { x } from './codex/CodexBook';\nexport { x };"),
+    ).not.toContain('no-restricted-imports');
+  });
+});
+
 describe('one responsibility per file', () => {
   const lines = (count: number): string =>
     Array.from({ length: count }, (_, i) => `export const v${i} = ${i};`).join('\n');
