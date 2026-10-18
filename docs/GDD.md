@@ -429,7 +429,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Enseña:** la incomodidad. El jugador llega a 4, no encuentra cadena, pulsa "Terminé". Sauce: "¿Cómo lo sabes?" Opciones: "Lo probé todo" / "No encuentro más cadenas" / "No lo sé". Cualquiera lleva al mismo sitio: "Ven al estanque".
 - **Por qué aquí:** toda la teoría del juego responde a esta pregunta. Hay que dejar que el jugador se la haga solo.
 - **Victoria:** 4 faroles + pulsar "Terminé".
-- **Desbloquea:** Códex **C1** completo y **C2 La cadena**. Hub: el prado florece.
+- **Desbloquea:** Códex **C1** completo, **C2 La cadena** y **C13 Glosario** (solo con las filas de las entradas ya abiertas; crece con ellas). Hub: el prado florece.
 
 #### 1.9 Maestría del Prado
 - **Jardín:** 14 brotes con faroles iniciales mal puestos, tres cadenas necesarias, una de ellas de longitud 7 con dos callejones.
@@ -799,7 +799,7 @@ Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Fo
 - **C10 La receta (algoritmo de Edmonds).** Pseudocódigo completo, correspondencia tarjeta ↔ línea. Corrección: cuando la búsqueda termina sin camino aumentante en el grafo contraído, por C8 no lo hay en G, y por C3 M es máximo. Terminación: a lo sumo n/2 aumentos; cada búsqueda etiqueta cada vértice una vez y cada contracción reduce el número de vértices.
 - **C11 El costo.** Por búsqueda: O(m) etiquetados, hasta n/2 contracciones de costo O(n) cada una con la implementación sencilla ⇒ O(n²) o O(n·m) por fase según implementación; n/2 fases ⇒ O(n³) (O(n²·m) en la versión más ingenua). Comparación con la búsqueda exhaustiva: número de emparejamientos crece exponencialmente. Gráfica de 6.5 con los datos reales del jugador. Nota: Micali–Vazirani O(√n · m) existe, y por qué no se aborda.
 - **C12 Las piedras (Tutte–Berge, 1958).** def(G) = |V| − 2ν(G). Para todo U ⊆ V: def(G) ≥ odd(G − U) − |U| (cada componente impar deja un vértice sin cubrir dentro o cubierto por U). Igualdad para algún U: el conjunto de vértices interiores del bosque final; las componentes de G − U son los exteriores (vértices o blossoms, impares) y los no alcanzados (perfectamente emparejados). Demuestra la optimalidad y da la fórmula ν(G) = min_U (|V| + |U| − odd(G − U)) / 2. Caso bipartito: se recupera König. Diagrama: 7.4.
-- **C13 Glosario jardín ↔ matemáticas.** La tabla de 3.3 completa.
+- **C13 Glosario jardín ↔ matemáticas.** La tabla de 3.3 completa. Se abre en 1.8 mostrando solo las filas de las entradas ya abiertas, y crece con ellas hasta quedar completa tras 7.4.
 - **C14 Más allá del jardín.** Intercambio de riñones (Roth, Sönmez, Ünver; Nobel 2012 a Roth y Shapley), estructuras de Kekulé, asignaciones. Bibliografía.
 
 ---
