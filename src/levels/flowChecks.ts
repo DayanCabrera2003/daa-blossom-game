@@ -210,6 +210,8 @@ export function checkFlow(level: Level): FlowProblem[] {
           problems.push({ code: 'mirrorMissing', step });
           break;
         }
+        // The winning threads are counted on the whole tangle: no sprout to look for.
+        if (flowStep.of === 'winningThreads') break;
         if (!inTangle(garden.matching, mirror, flowStep.piece)) {
           const sprout = nameOf(level.labels, flowStep.piece);
           problems.push({ code: 'pieceOutsideTangle', step, sprout });

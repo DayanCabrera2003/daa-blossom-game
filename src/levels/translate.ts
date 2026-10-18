@@ -79,7 +79,8 @@ export function toActions(
 export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, LabelError> {
   switch (step.step) {
     case 'count': {
-      if (step.of === 'loop') return ok(step);
+      // Only a count of lanterns on a piece names a sprout.
+      if (step.of === 'loop' || step.of === 'winningThreads') return ok(step);
       const piece = named(labels, step.piece);
       return piece.ok ? ok({ ...step, piece: piece.value }) : piece;
     }

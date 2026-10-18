@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AUTOMATON, BLOOM } from '../../tests/support/fixtureLevels';
+import { TANGLE } from '../../tests/support/secretScripts';
 import { checkFlow } from './flowChecks';
 import { loadLevel } from './loader';
 
@@ -170,6 +171,16 @@ describe('the checks of a level script', () => {
       { code: 'mirrorMissing', step: 1 },
       { code: 'mirrorMissing', step: 2 },
     ]);
+  });
+
+  it('the winning threads are counted on the tangle, so they need a reflection (2.5)', () => {
+    expect(flowProblemsOf(TANGLE)).toEqual([]);
+    expect(flowProblemsOf({ ...TANGLE, mirror: undefined, flow: TANGLE.flow.slice(0, 2) })).toEqual(
+      [
+        { code: 'mirrorMissing', step: 0 },
+        { code: 'mirrorMissing', step: 1 },
+      ],
+    );
   });
 
   it('a count asks about a sprout inside some thread or loop of the tangle', () => {

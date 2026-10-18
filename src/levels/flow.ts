@@ -85,8 +85,9 @@ const flowStep = z.discriminatedUnion('step', [
   /**
    * A number the core knows, asked with the numbers 0 to `range`; the player always may try again.
    * Either how many lanterns, the player's or the reflection's (`of`), the piece of the tangle
-   * through the sprout `piece` holds (chapter 2), or how many sprouts the loop closed by the
-   * conflict of the player's search holds (`of: 'loop'`, 4.2).
+   * through the sprout `piece` holds (chapter 2), how many threads of the tangle the reflection
+   * wins (`of: 'winningThreads'`, 2.5: asked before the tangle is separated), or how many sprouts
+   * the loop closed by the conflict of the player's search holds (`of: 'loop'`, 4.2).
    */
   z.discriminatedUnion('of', [
     z.strictObject({
@@ -97,6 +98,12 @@ const flowStep = z.discriminatedUnion('step', [
       range,
     }),
     z.strictObject({ step: z.literal('count'), prompt: lineId, of: z.literal('loop'), range }),
+    z.strictObject({
+      step: z.literal('count'),
+      prompt: lineId,
+      of: z.literal('winningThreads'),
+      range,
+    }),
   ]),
   /**
    * The player points at the vine where the light went wrong: the conflict of their search (4.2),

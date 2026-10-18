@@ -48,11 +48,20 @@ export const rightLoopCount = (state: GardenState): number =>
 export const rightVine = (state: GardenState, u: VertexId, v: VertexId): boolean =>
   isConflictVine(state.layer, state.search, u, v);
 
+/**
+ * The right count of the winning threads (2.5): how many pieces of the tangle `yours ⊕ mirror` give
+ * the reflection more lanterns than you. A loop always holds as many of each side, so they are all
+ * threads; the core's decomposition measures what each one is worth.
+ */
+export const rightWinningThreads = (yours: Matching, mirror: Matching): number =>
+  pondPieces(yours, mirror).filter((piece) => piece.gain > 0).length;
+
 /** The right number of a `count` step, judged on the garden `state` as it is now. */
 export function countAnswer(level: Level, state: GardenState, step: CountStep): number {
   if (step.of === 'loop') return rightLoopCount(state);
-  // Level integrity gives every count of lanterns a reflection to count on.
-  invariant(level.mirror !== null, 'a count of lanterns needs the reflection of its level');
+  // Level integrity gives every count on the tangle a reflection to count on.
+  invariant(level.mirror !== null, 'a count on the tangle needs the reflection of its level');
+  if (step.of === 'winningThreads') return rightWinningThreads(state.matching, level.mirror);
   return rightCount(state.matching, level.mirror, step);
 }
 

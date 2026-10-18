@@ -18,6 +18,7 @@ import {
   type LevelSession,
 } from './levelSession';
 import { MISSES_BEFORE_SPARED } from './mirrorChallenge';
+import { tangleLevel } from '../../../tests/support/secretScripts';
 
 /**
  * Two rows A–B–C–D and E–F–G–H with the middle vine of each lit: yours holds 2 lanterns and up to
@@ -200,5 +201,17 @@ describe('a level session runs the mirror challenge', () => {
     expect(checkDrawnMirror(done, 0)).toEqual({ session: done, check: null, effects: [] });
     // Answers do not reach the challenge either.
     expect(respond(done, { type: 'tap' }, 0).effects).toEqual([]);
+  });
+
+  it('the winning threads are counted on the tangle before it is separated: 2, not 9 − 8', () => {
+    const session = startSession(tangleLevel(), 0);
+    expect(stepNow(session)?.step).toBe('count');
+    // The temptation: the reflection holds one lantern more, so "one thread". Asked again.
+    const tempted = respond(session, { type: 'answer', option: 1 }, 0);
+    expect(tempted.effects).toContainEqual({ kind: 'answered', step: 1, value: 1, correct: false });
+    expect(stepNow(tempted.session)?.step).toBe('count');
+    const right = respond(tempted.session, { type: 'answer', option: 2 }, 0);
+    expect(right.effects).toContainEqual({ kind: 'answered', step: 1, value: 2, correct: true });
+    expect(stepNow(right.session)?.step).toBe('separate');
   });
 });
