@@ -43,8 +43,17 @@ describe('the asset manifest', () => {
     expect(parseManifest(valid())).toEqual(valid());
   });
 
-  it('knows the seven kinds of asset and the load groups of the plan', () => {
-    expect(ASSET_KINDS).toEqual(['image', 'sheet', 'font', 'music', 'sfx', 'voice', 'jingle']);
+  it('knows the eight kinds of asset and the load groups of the plan', () => {
+    expect(ASSET_KINDS).toEqual([
+      'image',
+      'sheet',
+      'font',
+      'music',
+      'sfx',
+      'voice',
+      'jingle',
+      'icon',
+    ]);
     expect(LOAD_GROUPS).toEqual([
       'boot',
       'hub',

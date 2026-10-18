@@ -1225,6 +1225,15 @@
         "height": 16
       }
     },
+    "icon.favicon": {
+      "path": "assets/images/favicon.png",
+      "kind": "icon",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Items/Resource/Grass.png",
+      "bytes": 284,
+      "sha256": "1f507bb591e0b2fb4eea40ca7a39c99929ab446e15ab9373dd4e8d89418b9a75"
+    },
     "sfx.chime1": {
       "path": "assets/audio/sfx/chime-01.wav",
       "kind": "sfx",

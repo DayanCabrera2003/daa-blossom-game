@@ -560,6 +560,14 @@ const HUB_CRITTERS: readonly SelectedFile[] = [
   ),
 ];
 
+/**
+ * The page's own icon (plan 09, phase 9): a loose 16 × 16 picture of the pack, a sprout of grass,
+ * linked by `index.html` as its favicon and never loaded by the game.
+ */
+const PAGE: readonly SelectedFile[] = [
+  pick('icon.favicon', 'icon', ninja('Items/Resource/Grass.png'), 'images/favicon.png'),
+];
+
 /** Everything `npm run assets` extracts, in the order the manifest lists it. */
 export const SELECTION: Selection = {
   packs: PACKS,
@@ -575,6 +583,7 @@ export const SELECTION: Selection = {
     ...SFX,
     ...VOICE,
     ...HUB_CRITTERS,
+    ...PAGE,
   ],
   // The chimes, the sparkle and the fold chords, synthesized by the project (`npm run sounds`).
   own: OWN_WORK,

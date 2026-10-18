@@ -2,10 +2,19 @@ import { z } from 'zod';
 
 /**
  * What an extracted file is, which says how the game loads it: a plain image, a sheet cut into
- * frames of a fixed size, the font, a looping music track, a sound effect, a babble syllable or a
- * jingle.
+ * frames of a fixed size, the font, a looping music track, a sound effect, a babble syllable, a
+ * jingle, or the page's own icon (its favicon, which the page links and the game never loads).
  */
-export const ASSET_KINDS = ['image', 'sheet', 'font', 'music', 'sfx', 'voice', 'jingle'] as const;
+export const ASSET_KINDS = [
+  'image',
+  'sheet',
+  'font',
+  'music',
+  'sfx',
+  'voice',
+  'jingle',
+  'icon',
+] as const;
 export type AssetKind = (typeof ASSET_KINDS)[number];
 
 /**

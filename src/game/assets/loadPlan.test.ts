@@ -141,6 +141,10 @@ describe('loadRequests', () => {
     expect(loadRequests(['font.monogram'])).toEqual([]);
   });
 
+  it('leaves the page its own icon, which the game never draws', () => {
+    expect(loadRequests(['icon.favicon'])).toEqual([]);
+  });
+
   it('loads a Kenney sheet as a plain image under its raw key, to be recoloured', () => {
     expect(loadRequests(['kenney.town'])).toEqual([
       { loader: 'image', key: rawKeyOf('kenney.town'), path: 'assets/images/kenney/tiny-town.png' },
@@ -148,9 +152,9 @@ describe('loadRequests', () => {
     expect(rawKeyOf('kenney.town')).not.toBe('kenney.town');
   });
 
-  it('asks for every boot key but the font, each under one key', () => {
+  it('asks for every boot key but the font and the page icon, each under one key', () => {
     const requests = loadRequests(BOOT_KEYS);
-    expect(requests).toHaveLength(BOOT_KEYS.length - 1);
+    expect(requests).toHaveLength(BOOT_KEYS.length - 2);
     expect(new Set(requests.map((request) => request.key)).size).toBe(requests.length);
   });
 });

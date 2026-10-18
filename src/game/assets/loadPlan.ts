@@ -91,7 +91,10 @@ function isRecoloured(key: AssetKey): boolean {
   return picture && packCredit(entry.pack).author === 'Kenney';
 }
 
-/** How the loader fetches one asset, or null for the font, which the page loads with CSS. */
+/**
+ * How the loader fetches one asset, or null for what the page takes itself: the font, which it
+ * loads with CSS, and its icon.
+ */
 function requestOf(key: AssetKey): LoadRequest | null {
   const { kind, path, frame } = assetEntry(key);
   if (isRecoloured(key)) return { loader: 'image', key: rawKeyOf(key), path };
@@ -108,6 +111,7 @@ function requestOf(key: AssetKey): LoadRequest | null {
         frameHeight: frame.height,
       };
     case 'font':
+    case 'icon':
       return null;
     case 'music':
     case 'sfx':

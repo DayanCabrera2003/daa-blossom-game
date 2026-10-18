@@ -39,7 +39,7 @@ export const BUDGET: Readonly<Record<BudgetPart, number>> = {
 
 /** The asset kinds weighed under each part of the budget that the manifest alone decides. */
 const PARTS_BY_KIND: Readonly<Record<'images' | 'fonts' | 'sounds' | 'music', AssetKind[]>> = {
-  images: ['image', 'sheet'],
+  images: ['image', 'sheet', 'icon'],
   fonts: ['font'],
   sounds: ['sfx', 'voice', 'jingle'],
   music: ['music'],

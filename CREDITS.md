@@ -21,7 +21,7 @@ copy is the same CC0 work in another format, credited with its original below.
 - Version: not stated by the pack
 - License: CC0-1.0
 - Source: https://pixel-boy.itch.io/ninja-adventure-asset-pack
-- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, the music of the hub and of chapters 1 to 7, two jingles, a few effects, the babble syllables, and the butterflies, frog, cat, hens and seedling plants of the hub.
+- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, the music of the hub and of chapters 1 to 7, two jingles, a few effects, the babble syllables, the butterflies, frog, cat, hens and seedling plants of the hub, and the page's icon (a sprout of grass).
 
 - `Palette.png` → `images/palette.png`
 - `Backgrounds/Tilesets/TilesetFloor.png` → `images/tiles/floor.png`
@@ -94,6 +94,7 @@ copy is the same CC0 work in another format, credited with its original below.
 - `Actor/Animal/Chicken/SpriteSheetWhite.png` → `images/hub/chicken-white.png`
 - `Actor/Animal/Chicken/SpriteSheetBrown.png` → `images/hub/chicken-brown.png`
 - `Backgrounds/Animated/Plant/SpriteSheet16x16.png` → `images/hub/plant.png`
+- `Items/Resource/Grass.png` → `images/favicon.png`
 
 ## monogram
 

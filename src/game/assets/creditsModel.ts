@@ -29,6 +29,8 @@ const SECTION_OF_KIND: Readonly<Record<AssetKind, CreditSection>> = {
   sfx: 'sound',
   voice: 'sound',
   font: 'font',
+  // The page's icon is a picture of a pack like any other.
+  icon: 'art',
 };
 
 /** One credited third party: its name, its authors and its license, as its credits give them. */
