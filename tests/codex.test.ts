@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { decodeGarden } from '@core/codes/gardenCode';
 import { catalog } from '@levels/catalog';
@@ -82,6 +82,35 @@ const RIGOR_READY: readonly CodexEntryId[] = [];
 
 /** The only entries where a result may be stated without proof, out of the scope of the book. */
 const OUT_OF_SCOPE_ALLOWED: readonly CodexEntryId[] = ['C11', 'C14'];
+
+/**
+ * The eight boxes of the checklist of rigor (plan 07, phases 7–10), ticked in a comment
+ * `<!-- rigor: 1 2 3 4 5 6 7 8 -->` at the foot of each written formal tab.
+ */
+const RIGOR_BOXES = [1, 2, 3, 4, 5, 6, 7, 8] as const;
+
+/**
+ * The entries written but not yet compared line by line with the printed references (box 5): that
+ * check is made by hand, against the editions cited, when the milestone of the texts is reviewed.
+ */
+const AWAITING_BOOKS: readonly CodexEntryId[] = [];
+
+/** The boxes ticked in the rigor comment of a formal tab, or null when it has none. */
+function rigorBoxes(formal: string): number[] | null {
+  const comment = /<!--\s*rigor:([\d\s]*)-->/.exec(formal);
+  return comment === null ? null : (comment[1] ?? '').trim().split(/\s+/).map(Number);
+}
+
+/** The boxes a written entry must tick: all eight, or all but 5 while it awaits the books. */
+const boxesDue = (entry: CodexEntryId): number[] =>
+  RIGOR_BOXES.filter((box) => box !== 5 || !AWAITING_BOOKS.includes(entry));
+
+/** The files of the repository a text names in code spans (`src/core/…/x.test.ts`). */
+const namedFiles = (text: string): string[] =>
+  [...text.matchAll(/`((?:src|tests)\/[\w./-]+\.ts)`/g)].map((match) => match[1] as string);
+
+/** Words that wave a step through instead of justifying it. */
+const HAND_WAVING = /obviamente|es f[áa]cil ver|claramente|trivialmente|es evidente/i;
 
 /** The kinds of result that need a proof. */
 const PROVED = new Set(['Lema', 'Proposición', 'Teorema', 'Corolario']);
@@ -283,6 +312,48 @@ describe('the structure of rigor of the formal tabs', () => {
         problems: [],
       });
     }
+  });
+
+  it('the entries already written tick their checklist of rigor in a comment', () => {
+    for (const entry of entries.filter((written) => RIGOR_READY.includes(written.id))) {
+      expect({ entry: entry.id, boxes: rigorBoxes(entry.tabs.formal) }).toEqual({
+        entry: entry.id,
+        boxes: boxesDue(entry.id),
+      });
+    }
+  });
+
+  it('the entries already written name their witnesses in the core, and every one exists', () => {
+    const root = join(import.meta.dirname, '..');
+    for (const entry of entries.filter((written) => RIGOR_READY.includes(written.id))) {
+      const files = namedFiles(entry.tabs.formal);
+      expect({ entry: entry.id, witness: files.some((file) => file.endsWith('.test.ts')) }).toEqual(
+        { entry: entry.id, witness: true },
+      );
+      const missing = files.filter((file) => !existsSync(join(root, file)));
+      expect({ entry: entry.id, missing }).toEqual({ entry: entry.id, missing: [] });
+    }
+  });
+
+  it('the entries already written never wave a step through', () => {
+    const waving = entries.filter(
+      (entry) => RIGOR_READY.includes(entry.id) && HAND_WAVING.test(entry.tabs.formal),
+    );
+    expect(waving.map((entry) => entry.id)).toEqual([]);
+  });
+
+  it('the helpers of the checklist read the comment, the witnesses and the waving', () => {
+    expect(rigorBoxes('Texto.\n\n<!-- rigor: 1 2 3 -->')).toEqual([1, 2, 3]);
+    expect(rigorBoxes('Sin casillas.')).toBeNull();
+    expect(boxesDue('C1')).toEqual(
+      AWAITING_BOOKS.includes('C1') ? [1, 2, 3, 4, 6, 7, 8] : [...RIGOR_BOXES],
+    );
+    expect(namedFiles('Testigo: `src/core/a.test.ts` y `tests/support/b.ts`; no `x`.')).toEqual([
+      'src/core/a.test.ts',
+      'tests/support/b.ts',
+    ]);
+    expect(HAND_WAVING.test('Es fácil ver que sí.')).toBe(true);
+    expect(HAND_WAVING.test('Por el Lema 2.3, sí.')).toBe(false);
   });
 
   it('the check of rigor catches a missing or open proof, a gap in the numbers and scope', () => {
