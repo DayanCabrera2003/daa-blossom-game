@@ -33,6 +33,8 @@ const WIDTH = SETTINGS_PANEL.width;
 const PAD = SETTINGS_PANEL.pad;
 const ROW = SETTINGS_PANEL.row;
 const TRACK = SETTINGS_PANEL.track;
+/** The colour the panel's text is written in, the one that reads on its wood. */
+const INK = PALETTE[SETTINGS_PANEL.frame.text];
 /** Depths: the blocker over everything else, then the panel and what is on it. */
 const BLOCKER_DEPTH = 400;
 const PANEL_DEPTH = 410;
@@ -56,10 +58,11 @@ interface Slider {
 }
 
 /**
- * The settings panel: a slider for the music, one for the effects and one for the voices, each
- * with its percentage, the mute box, the button that exports the playtest log, and "Cerrar". A dim layer over the whole screen takes every
- * touch meant for what is below while the panel is open. The panel only draws and reports: what
- * a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene.
+ * The settings panel, in the wooden frame of the other panels and written in its ink: a slider for
+ * the music, one for the effects and one for the voices, each with its percentage, the mute box,
+ * the button that exports the playtest log, and "Cerrar". A dim layer over the whole screen takes
+ * every touch meant for what is below while the panel is open. The panel only draws and reports:
+ * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene.
  */
 export class SettingsView {
   private parts: { destroy(): void }[] = [];
@@ -95,14 +98,15 @@ export class SettingsView {
       .setOrigin(0, 0)
       .setDepth(BLOCKER_DEPTH)
       .setInteractive();
-    const panel = scene.add
-      .rectangle(x, y, WIDTH, rows.height, PALETTE.panel, 0.98)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(PANEL_DEPTH)
-      .setInteractive();
+    const panel = new WoodFrame(
+      scene,
+      SETTINGS_PANEL.frame,
+      { x, y, width: WIDTH, height: rows.height },
+      PANEL_DEPTH,
+    );
+    panel.zone.setInteractive();
     const title = scene.add
-      .text(x + PAD, y + rows.title, t('settings.title'), textStyle(10, PALETTE.lit))
+      .text(x + PAD, y + rows.title, t('settings.title'), textStyle(10, INK))
       .setDepth(PANEL_DEPTH + 1);
     this.parts.push(blocker, panel, title);
     this.sliders = AUDIO_CHANNELS.map((channel, i) =>
@@ -171,7 +175,7 @@ export class SettingsView {
     const track = { x0: x + TRACK.from, x1: x + TRACK.to };
     const middle = y + 4;
     const label = scene.add
-      .text(x + PAD, y, this.t(`settings.${channel}`), textStyle(8))
+      .text(x + PAD, y, this.t(`settings.${channel}`), textStyle(8, INK))
       .setDepth(PANEL_DEPTH + 1);
     const line = scene.add
       .rectangle(track.x0, middle, track.x1 - track.x0, 1, PALETTE.panelEdge)
@@ -208,7 +212,9 @@ export class SettingsView {
       )
       .on('pointerover', () => this.hover(channel, true))
       .on('pointerout', () => this.hover(channel, false));
-    const value = scene.add.text(track.x1 + 10, y, '', textStyle(8)).setDepth(PANEL_DEPTH + 1);
+    const value = scene.add
+      .text(track.x1 + SETTINGS_PANEL.valueGap, y, '', textStyle(8, INK))
+      .setDepth(PANEL_DEPTH + 1);
     this.parts.push(label, line, fill, hit, knob, value);
     return { knob, fill, value, track, middle, hovered: false };
   }
@@ -224,7 +230,7 @@ export class SettingsView {
       .setOrigin(0, 0)
       .setDepth(PANEL_DEPTH + 1);
     const label = scene.add
-      .text(x + 17, y, this.t('settings.mute'), textStyle(8))
+      .text(x + 17, y, this.t('settings.mute'), textStyle(8, INK))
       .setDepth(PANEL_DEPTH + 1);
     const hit = scene.add
       .zone(x - 2, y - 1, label.x + label.width - x + 4, 11)
