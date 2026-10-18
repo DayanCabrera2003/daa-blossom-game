@@ -12,3 +12,9 @@ export const MAX_VINES = 40;
 
 /** The least distance between two sprouts, in pixels: twice a sprout's radius, and some air. */
 export const MIN_SPACING = 18;
+
+/**
+ * The longest text read as a garden, in characters (a code or a level file pasted, or a file
+ * chosen); a longer one is refused before it is parsed, or before a file is even read.
+ */
+export const MAX_IMPORT_LENGTH = 64 * 1024;

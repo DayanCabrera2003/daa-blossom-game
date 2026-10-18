@@ -12,8 +12,8 @@ import { buildGarden } from '../garden';
 import { checkLayout } from '../layoutChecks';
 import { SPROUT_AREA } from '../fields';
 import type { Design } from './design';
-import { MAX_IMPORT_LENGTH, importText } from './importText';
-import { MIN_SPACING } from './limits';
+import { importText } from './importText';
+import { MAX_IMPORT_LENGTH, MIN_SPACING } from './limits';
 import { toLevelFile } from './toLevel';
 
 /** The garden code of a design: its garden and its lanterns, without places nor names. */

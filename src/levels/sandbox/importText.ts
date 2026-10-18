@@ -10,7 +10,7 @@ import {
   type LimitBreach,
 } from './design';
 import { layoutGarden } from './layout';
-import { MAX_SPROUTS, MAX_VINES } from './limits';
+import { MAX_IMPORT_LENGTH, MAX_SPROUTS, MAX_VINES } from './limits';
 import { LETTERS } from './names';
 
 /**
@@ -20,9 +20,6 @@ import { LETTERS } from './names';
  * names, so its sprouts are laid out anew and named A, B, C… Either way the garden must keep the
  * limits of the free mode. Nothing in the text is ever run: it is only parsed and checked.
  */
-
-/** The longest text read, in characters; a longer one is refused before it is parsed. */
-export const MAX_IMPORT_LENGTH = 64 * 1024;
 
 /** Why a text is not a garden the free mode can take; the share sheet says each one kindly. */
 export type ImportRejection = 'tooLong' | 'badJson' | 'badLevel' | 'badCode' | LimitBreach;
