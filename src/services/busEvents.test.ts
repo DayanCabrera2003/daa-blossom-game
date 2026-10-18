@@ -25,5 +25,6 @@ describe('the events between the game and the overlays', () => {
     expectTypeOf<BusEvents['teacher.feed']['cursor']>().toEqualTypeOf<number>();
     expectTypeOf<BusEvents['teacher.leave']>().toEqualTypeOf<undefined>();
     expectTypeOf<BusEvents['teacher.toggle']>().toEqualTypeOf<undefined>();
+    expectTypeOf<BusEvents['teacher.panel']>().toEqualTypeOf<{ readonly open: boolean }>();
   });
 });

@@ -60,6 +60,8 @@ export interface BusEvents {
   readonly 'teacher.leave': undefined;
   /** In teacher mode, open or fold the trace panel (the HUD's trace button, the T key). */
   readonly 'teacher.toggle': undefined;
+  /** The trace panel opened or folded: the canvas makes room for it beside the garden, or takes it back. */
+  readonly 'teacher.panel': { readonly open: boolean };
   /** What the game can do (today, whether the free mode exists). */
   readonly capabilities: Capabilities;
   /**
