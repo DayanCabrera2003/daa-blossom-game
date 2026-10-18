@@ -91,6 +91,15 @@ describe('the panels fit their texts', () => {
     expect(DEMO_SIZE.width).toBeLessThanOrEqual(width);
   });
 
+  it("the free mode editor's card fits its window, above the toolbar", () => {
+    const width = innerWidth(TUTORIAL_PANEL.width);
+    expect(wrappedLines(t('sandbox.card.title'), charsIn(width))).toBe(1);
+    // GDD §5.11: two or three lines about the gesture.
+    expect(wrappedLines(t('sandbox.card.body'), charsIn(width))).toBeLessThanOrEqual(3);
+    const layout = tutorialLayout(textHeight(t('sandbox.card.body'), width), DEMO_SIZE.height);
+    expect(TUTORIAL_PANEL.y + layout.height).toBeLessThanOrEqual(LAYOUT.toolbarY - 1);
+  });
+
   it('the statement a counterexample answers stays in the two lines of the top bar', () => {
     const statements = levels.flatMap((level) =>
       (level.data.notebook ?? []).flatMap((asked) =>
