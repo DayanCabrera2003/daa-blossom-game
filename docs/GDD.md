@@ -781,7 +781,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 - **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa).
 - **Salvaje:** cuatro flores anidadas.
 - **Invierno:** un jardín donde Bruto gana (muy pequeño) y la pregunta "¿cuándo compensa pensar?".
-- **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín.
+- **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín. Tras el primer certificado, un paso nuevo del guion ("otro certificado") solo termina con piedras distintas de las ya presentadas; repetir uno se contesta con amabilidad.
 
 ---
 
