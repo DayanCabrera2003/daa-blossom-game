@@ -1,6 +1,6 @@
 // The review sheet of the Spanish lines (plan 09, phase 11; appendix A, question 12): every
 // dialogue line of the game, level by level in the order of the script, with who says it and
-// whether the GDD gives the sentence word for word or a plan wrote it, each with a box to tick; and
+// whether the GDD quotes the whole line word for word or a plan wrote it, each with a box to tick; and
 // after them the texts of the page and its notices, which no GDD sentence gives. Pure: it takes the
 // texts and returns the Markdown; `line-sheet.ts` writes it to docs/review/lineas.md.
 import { compareLevelIds } from '@levels/catalog';
@@ -25,8 +25,17 @@ export const PAGE_TEXT_PREFIXES = ['notice.', 'page.'] as const;
 /** A dialogue line id: chapter and level, then the speaker and the number of the line. */
 const LINE_ID = /^ch(\d+\.\d+)\.[a-z]+\.(\d+)$/;
 
-/** Text as compared with the GDD: without Markdown's emphasis and with single spaces. */
-const plain = (text: string): string => text.replace(/[*`]/g, '').replace(/\s+/g, ' ').trim();
+/**
+ * Text as compared with the GDD: without Markdown's emphasis, with every quotation mark written
+ * as a straight one (the GDD quotes with `"`, the game's lines with « » inside a line) and with
+ * single spaces.
+ */
+const plain = (text: string): string =>
+  text
+    .replace(/[*`]/g, '')
+    .replace(/[«»“”„]/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 /** One row of the sheet: a box, the id, who says it, where the sentence comes from, the text. */
 const row = (id: string, who: string, fromGdd: boolean, text: string): string =>
@@ -41,7 +50,10 @@ function placeOf(id: string): { level: string; number: number } {
 /** The review sheet, in Markdown. */
 export function lineSheet({ lines, strings, gdd }: LineSheetSources): string {
   const book = plain(gdd);
-  const fromGdd = (text: string): boolean => book.includes(plain(text));
+  // A sentence comes from the GDD only when the GDD quotes the whole line, from its opening mark
+  // to its closing one: a short line that is only a phrase inside a longer quote ("Uno." in "Ni
+  // dos ni medio. Uno.") or loose words of the prose do not count.
+  const fromGdd = (text: string): boolean => book.includes(`"${plain(text)}"`);
   const nameOf = (id: string): string => strings[`speaker.${speakerOf(id)}`] ?? speakerOf(id);
 
   const ids = Object.keys(lines).sort((a, b) => {
@@ -56,7 +68,7 @@ export function lineSheet({ lines, strings, gdd }: LineSheetSources): string {
     '',
     '> Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).',
     '',
-    `Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: la frase está tal cual en el GDD; **plan**: la escribió un plan (no está tal cual en el GDD). De ${total} líneas, ${given} están tal cual en el GDD y ${total - given} las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a \`lines.json\` en su propio commit.`,
+    `Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De ${total} líneas, ${given} están tal cual en el GDD y ${total - given} las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a \`lines.json\` en su propio commit.`,
   ];
   let chapter = '';
   let level = '';

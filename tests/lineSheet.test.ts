@@ -38,10 +38,28 @@ describe('the review sheet of the Spanish lines', () => {
   it('names who says each line and tells a sentence of the GDD from one a plan wrote', () => {
     const row = rows.find((candidate) => idOf(candidate) === 'ch6.3.bruto.09');
     expect(row).toContain(`**${strings['speaker.bruto']}**`);
-    const fromGdd = Object.entries(lines).find(([, text]) => gdd.includes(text));
+    const fromGdd = Object.entries(lines).find(([, text]) => gdd.includes(`"${text}"`));
     expect(fromGdd).toBeDefined();
     expect(rows.find((candidate) => idOf(candidate) === fromGdd?.[0])).toContain('· GDD:');
     expect(rows.some((candidate) => candidate.includes('· plan:'))).toBe(true);
+  });
+
+  it('marks a line "GDD" only when the GDD quotes the whole line, not a phrase inside a quote', () => {
+    const marks = (text: string, book: string): string =>
+      lineSheet({ lines: { 'ch0.1.sauce.00': text }, strings: {}, gdd: book })
+        .split('\n')
+        .find((candidate) => candidate.startsWith('- [ ] ')) ?? '';
+    const book = 'Sauce: "Cada cadena, un farol. Ni dos ni medio. Uno." Y el modo libre.';
+    // A short phrase inside a longer quote, or loose words of the prose, are not the line.
+    expect(marks('Uno.', book)).toContain('· plan:');
+    expect(marks('el modo libre', book)).toContain('· plan:');
+    expect(marks('Ni dos ni medio.', book)).toContain('· plan:');
+    // The whole quote is, whatever its quotation marks and spacing.
+    expect(marks('Cada cadena, un farol. Ni dos ni medio. Uno.', book)).toContain('· GDD:');
+    expect(marks('Pulsa «Terminé».', 'Sauce:  “Pulsa "Terminé".”')).toContain('· GDD:');
+    expect(marks('Toca a uno  y luego\nal otro.', '(1) "Toca a uno y luego al otro."')).toContain(
+      '· GDD:',
+    );
   });
 
   it('lists the texts of the page and its notices for the author to review', () => {

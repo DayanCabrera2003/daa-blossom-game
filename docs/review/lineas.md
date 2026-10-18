@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: la frase está tal cual en el GDD; **plan**: la escribió un plan (no está tal cual en el GDD). De 455 líneas, 58 están tal cual en el GDD y 397 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 455 líneas, 55 están tal cual en el GDD y 400 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -101,7 +101,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch2.1.sauce.00` · **Sauce** · GDD: El agua dice que se puede mejor. No te fíes del agua: mírala.
 - [ ] `ch2.1.sauce.01` · **Sauce** · plan: Ámbar, tus faroles. Plateados, los del agua. Toca un brote y mira cuántos hilos le salen.
 - [ ] `ch2.1.sauce.02` · **Sauce** · GDD: ¿Cuántos hilos puede tener un brote como máximo?
-- [ ] `ch2.1.gardener.03` · **Tú** · GDD: Uno.
+- [ ] `ch2.1.gardener.03` · **Tú** · plan: Uno.
 - [ ] `ch2.1.gardener.04` · **Tú** · plan: Dos.
 - [ ] `ch2.1.gardener.05` · **Tú** · plan: Tres.
 - [ ] `ch2.1.gardener.06` · **Tú** · plan: Cuatro.
@@ -523,7 +523,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.5.bruto.01` · **Bruto** · plan: ¡Cuanto más grande, mejor! ¡Más combinaciones que probar!
 - [ ] `ch6.5.sauce.02` · **Sauce** · plan: Primero, uno de 8 brotes, para tener con qué comparar.
 - [ ] `ch6.5.sauce.03` · **Sauce** · plan: Si el jardín se duplica, de 8 a 16 brotes, ¿cuántos pasos más dará tu receta?
-- [ ] `ch6.5.sauce.04` · **Sauce** · GDD: ¿Y Bruto?
+- [ ] `ch6.5.sauce.04` · **Sauce** · plan: ¿Y Bruto?
 - [ ] `ch6.5.bruto.05` · **Bruto** · plan: ¡Terminé! Me costó, pero terminé.
 - [ ] `ch6.5.sauce.06` · **Sauce** · plan: Se duplica otra vez, de 16 a 32 brotes. ¿Cuántos pasos más dará tu receta?
 - [ ] `ch6.5.bruto.07` · **Bruto** · plan: Zzz…
@@ -597,7 +597,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.2.sauce.06` · **Sauce** · plan: Tres espantapájaros solo dirían que caben tres como mucho. Eso no explica por qué no.
 - [ ] `ch7.2.sauce.07` · **Sauce** · plan: Mira la cuenta de arriba: un grupo impar, ninguna piedra, así que al menos uno a oscuras. Y hay uno. Preséntala con «Terminé».
 - [ ] `ch7.2.sauce.08` · **Sauce** · plan: La cuenta ya cuadra. Solo falta presentarla: pulsa «Terminé».
-- [ ] `ch7.2.oaks.09` · **Los Robles** · GDD: Demostrado.
+- [ ] `ch7.2.oaks.09` · **Los Robles** · plan: Demostrado.
 - [ ] `ch7.2.sauce.10` · **Sauce** · plan: Aquí no hizo falta levantar nada. Otras veces hay que levantar algún brote para que el jardín se parta en grupos: esas son las piedras.
 
 ### 7.3
@@ -668,7 +668,7 @@ Los escribió el plan 09 (fases 7 y 10): el aviso de girar el teléfono, los avi
 - [ ] `notice.part.books` · **Página** · plan: el libro
 - [ ] `notice.part.share` · **Página** · plan: la hoja para compartir
 - [ ] `notice.part.credits` · **Página** · plan: los créditos
-- [ ] `notice.part.sandbox` · **Página** · GDD: el modo libre
+- [ ] `notice.part.sandbox` · **Página** · plan: el modo libre
 - [ ] `page.description` · **Página** · plan: Un juego de puzles tranquilo en un jardín de pixel art: enciende faroles entre brotes y descubre, paso a paso, cómo se encuentra el mayor número de parejas.
 - [ ] `page.noscript` · **Página** · plan: Florecer necesita JavaScript para crecer. Actívalo en tu navegador y recarga la página.
 - [ ] `page.notFound.title` · **Página** · plan: Este sendero no lleva a ningún jardín
