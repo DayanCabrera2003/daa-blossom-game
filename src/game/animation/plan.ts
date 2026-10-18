@@ -24,6 +24,21 @@ export const DURATIONS = {
   stone: 640,
 } as const;
 
+/** How long a kind of step lasts. */
+type Durations = { readonly [kind in keyof typeof DURATIONS]: number };
+
+/**
+ * The same, with less motion (plan 09, phase 6): a hop is a short fade from one sprout to the next
+ * and a fold a short fade of the petals, with nothing flying; every other step keeps its time, so
+ * what it tells (which lantern, which flower) is seen just as long.
+ */
+export const REDUCED_DURATIONS: Durations = {
+  ...DURATIONS,
+  hop: 120,
+  fold: 240,
+  unfold: 240,
+};
+
 /** One thing the view animates; the garden it ends on is already known (logic is instant). */
 export type AnimationStep =
   | {
@@ -63,19 +78,22 @@ export type AnimationStep =
       readonly duration: number;
     };
 
-/** The steps of one event; bookkeeping events (search start, scans, endings) show nothing. */
-function stepsOf(event: TraceEvent): AnimationStep[] {
+/**
+ * The steps of one event, each lasting what `durations` says; bookkeeping events (search start,
+ * scans, endings) show nothing.
+ */
+function stepsOf(event: TraceEvent, durations: Durations): AnimationStep[] {
   switch (event.type) {
     case 'augment':
       return event.path.slice(1).map((to, i) => ({
         kind: 'hop',
         from: itemAt(event.path, i),
         to,
-        duration: DURATIONS.hop,
+        duration: durations.hop,
       }));
     case 'light':
     case 'putOut':
-      return [{ kind: event.type, u: event.u, v: event.v, duration: DURATIONS[event.type] }];
+      return [{ kind: event.type, u: event.u, v: event.v, duration: durations[event.type] }];
     case 'labelOuter':
     case 'labelInner':
       return [
@@ -83,23 +101,23 @@ function stepsOf(event: TraceEvent): AnimationStep[] {
           kind: 'mark',
           vertex: event.vertex,
           mark: event.type === 'labelOuter' ? 'sun' : 'moon',
-          duration: DURATIONS.mark,
+          duration: durations.mark,
         },
       ];
     case 'oddCycleFound':
       return [
-        { kind: 'conflict', u: event.vine[0], v: event.vine[1], duration: DURATIONS.conflict },
+        { kind: 'conflict', u: event.vine[0], v: event.vine[1], duration: durations.conflict },
       ];
     case 'contract':
-      return [{ kind: 'fold', blossom: event.blossom, duration: DURATIONS.fold }];
+      return [{ kind: 'fold', blossom: event.blossom, duration: durations.fold }];
     case 'expand':
-      return [{ kind: 'unfold', blossom: event.blossom, duration: DURATIONS.unfold }];
+      return [{ kind: 'unfold', blossom: event.blossom, duration: durations.unfold }];
     case 'inspect':
-      return [{ kind: 'reveal', vertex: event.vertex, duration: DURATIONS.reveal }];
+      return [{ kind: 'reveal', vertex: event.vertex, duration: durations.reveal }];
     case 'chainFound':
-      return [{ kind: 'chain', path: event.path, duration: DURATIONS.chain }];
+      return [{ kind: 'chain', path: event.path, duration: durations.chain }];
     case 'searchCleared':
-      return [{ kind: 'clear', duration: DURATIONS.clear }];
+      return [{ kind: 'clear', duration: durations.clear }];
     case 'scarecrow':
       return [
         {
@@ -107,7 +125,7 @@ function stepsOf(event: TraceEvent): AnimationStep[] {
           vertex: event.vertex,
           object: 'scarecrow',
           placed: event.placed,
-          duration: DURATIONS.place,
+          duration: durations.place,
         },
       ];
     case 'stone':
@@ -117,7 +135,7 @@ function stepsOf(event: TraceEvent): AnimationStep[] {
           vertex: event.vertex,
           object: 'stone',
           placed: event.lifted,
-          duration: DURATIONS.stone,
+          duration: durations.stone,
         },
       ];
     default:
@@ -128,9 +146,11 @@ function stepsOf(event: TraceEvent): AnimationStep[] {
 /**
  * Turns the events of a move into animation steps, played one after another. The rules have
  * already produced the final garden; the view only catches up with it (the logic is instant).
+ * With `reduced` motion the steps are the same, in the same order, some of them shorter.
  */
-export function planAnimation(events: readonly TraceEvent[]): AnimationStep[] {
-  return events.flatMap(stepsOf);
+export function planAnimation(events: readonly TraceEvent[], reduced = false): AnimationStep[] {
+  const durations = reduced ? REDUCED_DURATIONS : DURATIONS;
+  return events.flatMap((event) => stepsOf(event, durations));
 }
 
 /** How long a plan lasts. */

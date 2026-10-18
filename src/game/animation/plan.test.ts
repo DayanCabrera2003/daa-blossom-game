@@ -4,7 +4,14 @@ import { BURST_MS } from '../picture/burst';
 import { CONFLICT_BLINKS } from '../picture/conflictBlink';
 import { FOLD_FRAMES } from '../picture/foldFrames';
 import { STONE_FALL_MS, STONE_SETTLE_MS } from '../picture/stoneSplit';
-import { DURATIONS, planAnimation, stepAt, totalDuration } from './plan';
+import {
+  DURATIONS,
+  planAnimation,
+  REDUCED_DURATIONS,
+  stepAt,
+  totalDuration,
+  type AnimationStep,
+} from './plan';
 
 describe('animation plan of a move', () => {
   it('a chain makes the lantern hop vine by vine, in order (GDD §4.1, key animation 1)', () => {
@@ -108,5 +115,36 @@ describe('how long the key animations last (GDD §4.1)', () => {
 
   it('lets a stone fall and settle, with time left for the garden to part', () => {
     expect(DURATIONS.stone).toBeGreaterThan(2 * (STONE_FALL_MS + STONE_SETTLE_MS));
+  });
+});
+
+describe('the plan with less motion (plan 09, phase 6)', () => {
+  const chain: TraceEvent[] = [
+    { type: 'augment', path: [0, 1, 2, 3, 4, 5] },
+    { type: 'contract', blossom: 0, base: 2, cycle: [] },
+    { type: 'expand', blossom: 0 },
+  ];
+
+  it('a chain of five hops has the same steps in the same order, and lasts less', () => {
+    const full = planAnimation(chain);
+    const reduced = planAnimation(chain, true);
+    const shape = (steps: readonly AnimationStep[]) =>
+      steps.map(({ duration: _, ...step }) => step);
+    expect(full.filter((step) => step.kind === 'hop')).toHaveLength(5);
+    expect(shape(reduced)).toEqual(shape(full));
+    expect(totalDuration(reduced)).toBeLessThan(totalDuration(full));
+  });
+
+  it('only the hops and the folds are shorter; every other step keeps its time', () => {
+    for (const kind of Object.keys(DURATIONS) as (keyof typeof DURATIONS)[]) {
+      const shorter = ['hop', 'fold', 'unfold'].includes(kind);
+      if (shorter) expect(REDUCED_DURATIONS[kind]).toBeLessThan(DURATIONS[kind]);
+      else expect(REDUCED_DURATIONS[kind]).toBe(DURATIONS[kind]);
+      expect(REDUCED_DURATIONS[kind]).toBeGreaterThan(0);
+    }
+  });
+
+  it('without the flag the plan moves fully, as it always did', () => {
+    expect(planAnimation(chain, false)).toEqual(planAnimation(chain));
   });
 });
