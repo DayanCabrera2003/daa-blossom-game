@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { Level } from '@levels/build';
 import { codexSources, openCodex, pagesOpened } from '@services/codexProgress';
 import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
-import { recordCompletion, recordNotebook } from '@services/save';
+import { recordBetsWon, recordCompletion, recordNotebook } from '@services/save';
 import type { AssetKey } from '../assets/keys';
 import { levelKeys, loadRequests } from '../assets/loadPlan';
 import {
@@ -13,6 +13,7 @@ import {
   type UiEvent,
 } from '../systems/levelController';
 import { afterVictory } from '../systems/afterVictory';
+import { betsWon } from '../systems/betsWon';
 import { cardJingle, levelScreen, trackFor, victoryJingle } from '../systems/musicFor';
 import { playtestEntries } from '../systems/playtestEntries';
 import { raceCues } from '../systems/raceCues';
@@ -299,9 +300,9 @@ export class LevelScene extends Phaser.Scene {
   }
 
   /**
-   * Records the win at once; the victory panel waits its turn behind any lines or replay, and so
-   * do its jingle, chosen now from the levels the win opens, and the notice of the Codex pages it
-   * opens.
+   * Records the win and the bets it won at once; the victory panel waits its turn behind any lines
+   * or replay, and so do its jingle, chosen now from the levels the win opens, and the notice of
+   * the Codex pages it opens.
    */
   private win(stars: StarResult): void {
     const id = this.level.data.id;
@@ -310,7 +311,9 @@ export class LevelScene extends Phaser.Scene {
     const before = unlockedLevels(shown, saves.get(), teacherMode);
     const pages = codexSources(catalog);
     const pagesBefore = openCodex(pages, saves.get(), teacherMode);
-    saves.update((save) => recordCompletion(save, id, stars.total));
+    // The bets won give their seeds once, however often the level is won.
+    const bets = betsWon(this.controller.session);
+    saves.update((save) => recordBetsWon(recordCompletion(save, id, stars.total), bets));
     this.winJingle = victoryJingle(before, unlockedLevels(shown, saves.get(), teacherMode));
     this.codexNotice = pagesOpened(pagesBefore, openCodex(pages, saves.get(), teacherMode));
     // The first win that opens a page also brings the book's button.
