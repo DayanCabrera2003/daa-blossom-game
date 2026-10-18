@@ -5,6 +5,7 @@ import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
 import { OutlinedText } from '../view/OutlinedText';
+import { hubKeys } from '../assets/loadPlan';
 import { chapterTitle } from '../picture/chapterTitle';
 import {
   finishedChapters,
@@ -33,6 +34,7 @@ import { bindHubKeys } from './hub/hubKeys';
 import { addHubSecrets, type FlowerPlace } from './hub/HubSecrets';
 import { addHubTopLine } from './hub/HubTopLine';
 import { addSettings } from './settingsPanel';
+import { loadBehind } from './loadBehind';
 
 /** Above the buttons' labels, which sit at depth 101. */
 const STAR_DEPTH = 102;
@@ -68,8 +70,13 @@ export class HubScene extends Phaser.Scene {
     fitCamera(this);
     const { catalog, t, saves, teacherMode, music, bus } = contextOf(this);
     const save = saves.get();
-    // The hub's own track; coming back from a level crossfades to it.
+    // The hub's own track; coming back from a level crossfades to it. It is not in the first load:
+    // the hub shows at once and its music loads behind it, rising with its fade when it arrives.
     music.play(trackFor({ kind: 'hub' }));
+    loadBehind(
+      this,
+      hubKeys((key) => this.cache.audio.exists(key)),
+    );
     const backdrop = new BackdropView(this);
     // The title, the counter of stars and seeds, and the signs of the books, along the top.
     const topLine = addHubTopLine(this);

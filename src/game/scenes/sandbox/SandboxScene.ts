@@ -8,6 +8,7 @@ import { sandboxAccess } from '@services/sandboxAccess';
 import { recordTutorialSeen } from '@services/save';
 import { createSandboxStore, type SandboxStore } from '@services/sandboxStore';
 import type { AssetKey } from '../../assets/keys';
+import { hubKeys } from '../../assets/loadPlan';
 import { playUiSound } from '../../audio/uiSound';
 import {
   chooseDesignTool,
@@ -63,6 +64,7 @@ import { DesignBar } from './DesignBar';
 import { GenerateMenu } from './GenerateMenu';
 import { FocusController } from '../focus/FocusController';
 import { sayAloud } from '../sayAloud';
+import { loadBehind } from '../loadBehind';
 import { OutlinedText } from '../../view/OutlinedText';
 
 /**
@@ -124,8 +126,13 @@ export class SandboxScene extends Phaser.Scene {
     this.context = contextOf(this);
     const { t, music, saves, storage } = this.context;
     store ??= createSandboxStore(storage);
-    // The free mode plays the hub's track (plan 08, section 1.3).
+    // The free mode plays the hub's track (plan 08, section 1.3), loaded behind it when a shared
+    // link opens the free mode before the hub ever showed.
     music.play(trackFor({ kind: 'hub' }));
+    loadBehind(
+      this,
+      hubKeys((key) => this.cache.audio.exists(key)),
+    );
     paintHubGround(this);
     if (data.returning === true && played !== null) {
       // Back from playing the design: on where the editor was, nothing to tell.

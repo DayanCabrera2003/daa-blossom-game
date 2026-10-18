@@ -9,12 +9,13 @@ export const ASSET_KINDS = ['image', 'sheet', 'font', 'music', 'sfx', 'voice', '
 export type AssetKind = (typeof ASSET_KINDS)[number];
 
 /**
- * When a file is loaded: `boot` before the hub (art, effects, syllables, jingles and the hub's
- * music), a chapter group when entering one of its levels (its music), and `credits` for the
- * credits screen.
+ * When a file is loaded: `boot` before the hub (art, effects, syllables and jingles), `hub` behind
+ * the hub once it shows (its music, plan 09, phase 9), a chapter group when entering one of its
+ * levels (its music), and `credits` for the credits screen.
  */
 export const LOAD_GROUPS = [
   'boot',
+  'hub',
   'ch0',
   'ch1',
   'ch2',

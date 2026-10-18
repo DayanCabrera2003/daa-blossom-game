@@ -373,10 +373,13 @@ const UI: readonly SelectedFile[] = [
 
 /**
  * Music, one track per screen (section 1.7). Keys and file names name the screen, not the track,
- * so swapping a track after listening only changes its entry here. Only the hub's goes in `boot`.
+ * so swapping a track after listening only changes its entry here. None goes in `boot`: the hub's
+ * loads behind the hub once it shows (plan 09, phase 9), each chapter's with its first level.
  */
 const MUSIC: readonly SelectedFile[] = [
-  pick('music.hub', 'music', ninja('Audio/Musics/4 - Village.ogg'), 'audio/music/hub.ogg'),
+  pick('music.hub', 'music', ninja('Audio/Musics/4 - Village.ogg'), 'audio/music/hub.ogg', {
+    group: 'hub',
+  }),
   pick('music.ch1', 'music', ninja('Audio/Musics/31 - Sunny.ogg'), 'audio/music/ch1.ogg', {
     group: 'ch1',
   }),

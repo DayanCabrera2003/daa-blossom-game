@@ -20,7 +20,8 @@ export const BUDGET: Readonly<Record<BudgetPart, number>> = {
   fonts: 100 * KB,
   // Effects, babble syllables and jingles.
   sounds: 1.5 * MB,
-  // The initial script plus the boot group, the hub's music among it; never the deferred books.
+  // The initial script plus the boot group; never the deferred books, nor the hub's music, which
+  // loads behind the hub (plan 09, phase 9).
   initial: 5 * MB,
   // Every track, though each is loaded with its own chapter.
   music: 20 * MB,

@@ -731,7 +731,7 @@
     "music.hub": {
       "path": "assets/audio/music/hub.ogg",
       "kind": "music",
-      "group": "boot",
+      "group": "hub",
       "pack": "ninja",
       "source": "Audio/Musics/4 - Village.ogg",
       "bytes": 1049153,

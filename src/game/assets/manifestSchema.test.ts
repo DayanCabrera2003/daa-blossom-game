@@ -47,6 +47,7 @@ describe('the asset manifest', () => {
     expect(ASSET_KINDS).toEqual(['image', 'sheet', 'font', 'music', 'sfx', 'voice', 'jingle']);
     expect(LOAD_GROUPS).toEqual([
       'boot',
+      'hub',
       'ch0',
       'ch1',
       'ch2',

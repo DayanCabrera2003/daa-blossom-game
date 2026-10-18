@@ -5,9 +5,10 @@ import { LOAD_GROUPS, type LoadGroup } from './manifestSchema';
 
 /**
  * What each scene loads, decided from the manifest alone (plan 06, phase 2): the preload scene
- * loads the `boot` group (the art, the effects, the babble syllables, the jingles and the hub's
- * music) before the hub, and a level loads the music of its chapter when it is not loaded yet. The
- * scenes only hand these answers to Phaser's loader.
+ * loads the `boot` group (the art, the effects, the babble syllables and the jingles) before the
+ * hub; the hub, once it shows, loads its music behind it (plan 09, phase 9); and a level loads the
+ * music of its chapter when it is not loaded yet. The scenes only hand these answers to Phaser's
+ * loader.
  */
 
 /** The keys of one load group, in manifest order. */
@@ -17,6 +18,20 @@ export function groupKeys(group: LoadGroup): AssetKey[] {
 
 /** Everything the preload scene loads before the first screen. */
 export const BOOT_KEYS: readonly AssetKey[] = groupKeys('boot');
+
+/** The keys of `group` that `loaded` says are not there yet, in manifest order. */
+export function missingKeys(group: LoadGroup, loaded: (key: AssetKey) => boolean): AssetKey[] {
+  return groupKeys(group).filter((key) => !loaded(key));
+}
+
+/**
+ * What a screen that plays the hub's track (the hub, the free mode) loads behind itself once it
+ * shows: the `hub` group (its music), unless it is loaded already. The screen works without it;
+ * the music starts with its fade when it arrives.
+ */
+export function hubKeys(loaded: (key: AssetKey) => boolean): AssetKey[] {
+  return missingKeys('hub', loaded);
+}
 
 /**
  * The load group of a level's chapter, from its id (`4.10` is chapter 4, so `ch4`); null when the
@@ -35,8 +50,7 @@ export function chapterGroup(levelId: string): LoadGroup | null {
  */
 export function levelKeys(levelId: string, loaded: (key: AssetKey) => boolean): AssetKey[] {
   const group = chapterGroup(levelId);
-  if (group === null) return [];
-  return groupKeys(group).filter((key) => !loaded(key));
+  return group === null ? [] : missingKeys(group, loaded);
 }
 
 /**
