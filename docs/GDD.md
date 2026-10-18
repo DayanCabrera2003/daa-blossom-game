@@ -227,6 +227,8 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | **Tarjetas de receta** | Ordenas bloques de pseudocódigo. | 6.1 |
 | **Piedras** | Levantas brotes; el jardín se parte en grupos y se muestra la cuenta. | 7.2 |
 
+**Regla de cadena de cada nivel.** Por defecto, cualquier cadena legal vale. Algunos jardines la aprietan, y lo dice su archivo de nivel: en los de flor del Festival (desde 4.5) y del Jardín Salvaje, **los faroles solo cambian por donde llegó tu luz**: una cadena se aplica solo si es justo la que alcanzaron tus marcas (en cualquier sentido), y las de ganancia 0 no valen. **Juntar es una cadena de una enredadera** (dos brotes a oscuras: un camino aumentante de longitud 1) y obedece la misma regla. En 4.10 la flor está **cerrada**: una jugada que mueve faroles por un pétalo tiene que salir de su base o acabar en ella. Una acción que el nivel cierra se rechaza con «hoy no se puede», distinto de una que todavía no se sabe. **En la niebla**, una cadena (y una unión, pasar el farol o girar el tallo) solo pasa por enredaderas visibles, con un extremo inspeccionado: el arrastre no palpa lo que la niebla tapa.
+
 ### 5.2 Objetivo visible y objetivo oculto
 
 - Capítulos 0–1: el nivel muestra "este jardín puede encender N faroles". El jugador sabe cuándo terminó.
