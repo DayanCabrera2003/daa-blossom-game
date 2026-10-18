@@ -1,9 +1,9 @@
 /**
  * The measures of a book over the canvas (plan 07, phases 3 and 6), in logical pixels: the same
  * numbers the books' stylesheet lays them out with, times `--px` (tests/bookGeometry.test.ts holds
- * the two together). The head takes one row (the book's name over the index; the heading of the
- * page and the way out beside it), the foot one more, and the page between them is the tabs and
- * the text. Knowing them, the room a page leaves to its text is decided here, without the DOM, and
+ * the two together). The head is the book's only row besides the page: over the index the book's
+ * name and the arrows that turn its pages, over the page its heading and the way out; the help of
+ * the keys sits under the index. The page is the tabs and the text. Knowing them, the room a page leaves to its text is decided here, without the DOM, and
  * so is how far down the page a diagram starts.
  */
 
@@ -21,7 +21,7 @@ export const BOOK = {
   border: { top: 6, right: 5, bottom: 5, left: 6 },
   /** Inside the frame, round the parts of the book. */
   padding: 4,
-  /** Between the head, the index, the page and the foot. */
+  /** Between the head and what is under it, and between the index and the page. */
   gap: 4,
   /** The index, on the left. */
   indexWidth: 176,
@@ -29,7 +29,7 @@ export const BOOK = {
   line: 13,
   /** The advance of one character of the pixel font (monospaced). */
   glyph: 6,
-  /** A row of wooden buttons: a line and the border above and below it (the head, the foot). */
+  /** A row of wooden buttons: a line and the border above and below it (the head). */
   buttonRow: 15,
   /** The row of the tabs: a line and the border on top (they sit on the page, open below). */
   tabRow: 14,
@@ -56,7 +56,7 @@ export function pageArea(view: Size): Size {
   const frameY = border.top + border.bottom + 2 * padding;
   return {
     width: book.width - frameX - indexWidth - gap - 2 * (text.border + text.padX),
-    height: book.height - frameY - 2 * buttonRow - 2 * gap - tabRow - 2 * (text.border + text.padY),
+    height: book.height - frameY - buttonRow - gap - tabRow - 2 * (text.border + text.padY),
   };
 }
 

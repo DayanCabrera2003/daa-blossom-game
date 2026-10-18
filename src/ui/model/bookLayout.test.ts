@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { BOOK, introHeight, linesOf, pageArea } from './bookLayout';
 
 describe('the room a page of a book leaves for its text', () => {
-  it('at the logical 480 x 270 of the canvas, the page keeps 251 x 179 logical pixels', () => {
-    // The head (the book's name, the heading and Cerrar on one row), the tabs, and the foot on one
-    // line: what is left is the text of the page.
-    expect(pageArea({ width: 480, height: 270 })).toEqual({ width: 251, height: 179 });
+  it('at the logical 480 x 270 of the canvas, the page keeps 251 x 198 logical pixels', () => {
+    // The head is the only row besides the page (the book's name and its turns, the heading and
+    // Cerrar), and the tabs sit on the page: what is left is the text of the page.
+    expect(pageArea({ width: 480, height: 270 })).toEqual({ width: 251, height: 198 });
   });
 
   it('a window smaller than the book shrinks the page by as much', () => {
-    expect(pageArea({ width: 440, height: 240 })).toEqual({ width: 227, height: 161 });
+    expect(pageArea({ width: 440, height: 240 })).toEqual({ width: 227, height: 180 });
   });
 
   it('leaves more than two thirds of the height of the book to its text: the head never eats the page', () => {
