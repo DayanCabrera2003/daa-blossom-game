@@ -43,7 +43,7 @@ function setUp(load?: () => Promise<TeacherModule>) {
   const timers: (() => void)[] = [];
   let loads = 0;
   bus.on('teacher.panel', ({ open }) => room.push(open));
-  mountTeacherShell({
+  const shell = mountTeacherShell({
     bus,
     host: host as unknown as HTMLElement,
     load:
@@ -58,6 +58,7 @@ function setUp(load?: () => Promise<TeacherModule>) {
   });
   return {
     bus,
+    shell,
     layer: host.children[0],
     shown,
     room,
@@ -137,5 +138,25 @@ describe("the light shell of the teacher's panel", () => {
     } finally {
       console.error = original;
     }
+  });
+
+  it('opened where it does not fit beside the canvas, it stays out of sight until it does', async () => {
+    const { bus, layer, room, shell } = setUp();
+    bus.emit('teacher.feed', feedOf('4.6'));
+    bus.emit('teacher.toggle');
+    // The game measured the window and found no room for it (a phone): it is not shown.
+    shell.fit(false);
+    expect(layer?.hidden).toBe(true);
+    expect(room).toEqual([true]);
+    bus.emit('teacher.feed', feedOf('4.7'));
+    expect(layer?.hidden).toBe(true);
+    // The window grew (the phone turned, a wider window): it shows where it was left.
+    shell.fit(true);
+    expect(layer?.hidden).toBe(false);
+    await settle();
+    // Folded, it stays folded whatever the room.
+    bus.emit('teacher.toggle');
+    shell.fit(true);
+    expect(layer?.hidden).toBe(true);
   });
 });
