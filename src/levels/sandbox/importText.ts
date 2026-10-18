@@ -9,6 +9,7 @@ import {
   type DesignSprout,
   type LimitBreach,
 } from './design';
+import { fitIntoEditor } from './fitIntoEditor';
 import { layoutGarden } from './layout';
 import { MAX_IMPORT_LENGTH, MAX_SPROUTS, MAX_VINES } from './limits';
 import { LETTERS } from './names';
@@ -30,18 +31,22 @@ const withinLimits = (design: Design): Result<Design, ImportRejection> => {
   return breach === null ? ok(design) : err(breach);
 };
 
-/** The garden of a parsed level file: its sprouts with their places, vines and lanterns. */
+/**
+ * The garden of a parsed level file: its sprouts with their places, vines and lanterns, moved up or
+ * down into the editor's free area if it fits there (`fitIntoEditor.ts`).
+ */
 function fromLevelJson(json: unknown): Result<Design, ImportRejection> {
   const loaded = loadLevel(json);
   if (!loaded.ok) return err('badLevel');
   const { sprouts, vines, lanterns } = loaded.value.data;
-  return withinLimits({
+  const placed = withinLimits({
     sprouts: sprouts.map(({ label, x, y, kind }): DesignSprout =>
       kind === undefined ? { label, x, y } : { label, x, y, kind },
     ),
     vines: vines.map(([u, v]): DesignPair => [u, v]),
     lanterns: lanterns.map(([u, v]): DesignPair => [u, v]),
   });
+  return placed.ok ? ok(fitIntoEditor(placed.value)) : placed;
 }
 
 /** The garden of a garden code, laid out by distance from its first sprout and named in order. */

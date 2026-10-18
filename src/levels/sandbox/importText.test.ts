@@ -12,6 +12,7 @@ import { buildGarden } from '../garden';
 import { checkLayout } from '../layoutChecks';
 import { SPROUT_AREA } from '../fields';
 import type { Design } from './design';
+import { EDITOR_AREA } from './editorArea';
 import { importText } from './importText';
 import { MAX_IMPORT_LENGTH, MIN_SPACING } from './limits';
 import { toLevelFile } from './toLevel';
@@ -57,6 +58,18 @@ describe('importing a text into the free mode', () => {
       })),
     };
     expect(importText(JSON.stringify(toLevelFile(sides)))).toEqual({ ok: true, value: sides });
+  });
+
+  it("moves a level file's garden under the editor's header down into its free area", () => {
+    const high: Design = {
+      ...SMALL,
+      sprouts: SMALL.sprouts.map((sprout, i) => ({ ...sprout, y: 30 + 20 * i })),
+    };
+    const imported = unwrap(importText(JSON.stringify(toLevelFile(high))));
+    const ys = imported.sprouts.map((sprout) => sprout.y);
+    expect(ys).toEqual([EDITOR_AREA.y0, EDITOR_AREA.y0 + 20, EDITOR_AREA.y0 + 40]);
+    expect(imported.sprouts.map((sprout) => sprout.x)).toEqual(SMALL.sprouts.map((s) => s.x));
+    expect(imported.vines).toEqual(high.vines);
   });
 
   it('reads a garden code, laid out and named A, B, C…', () => {
