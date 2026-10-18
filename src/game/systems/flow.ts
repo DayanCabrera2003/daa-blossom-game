@@ -23,7 +23,10 @@ export interface FlowAnswer {
 
 /** What the engine is told; each step listens to one kind and ignores the rest. */
 export type FlowSignal =
-  /** The core says the victory of the level holds (ends `play`). */
+  /**
+   * The core says the victory of the level holds (ends `play`), or holds with new stones (ends
+   * `certifyAgain`).
+   */
   | { readonly type: 'won' }
   /**
    * An option of an `ask` or `notebook`, a number in a `count`, or an answer of a doubling bet (its
@@ -68,6 +71,13 @@ export type FlowSignal =
 export type FlowEffect =
   /** The play step begins: the garden takes moves. */
   | { readonly kind: 'play' }
+  /** The council asks for another certificate (7.6): the garden goes on taking moves. */
+  | { readonly kind: 'certifyAgain'; readonly step: number }
+  /**
+   * A certificate presented again with stones already shown: the council says it knows them, with
+   * the dialogue line `line` of the step.
+   */
+  | { readonly kind: 'sameStones'; readonly line: string }
   | { readonly kind: 'say'; readonly lines: readonly string[] }
   | {
       readonly kind: 'ask';
@@ -228,6 +238,8 @@ function opening(step: LevelStep, index: number): FlowEffect {
   switch (step.step) {
     case 'play':
       return { kind: 'play' };
+    case 'certifyAgain':
+      return { kind: 'certifyAgain', step: index };
     case 'say':
       return { kind: 'say', lines: step.lines };
     case 'ask':
@@ -354,6 +366,9 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
         bet === null ? [] : [{ kind: 'reveal', bet: bet.value, right: bet.right }];
       return enter(flow, flow.index + 1, reveal);
     }
+    case 'certifyAgain':
+      // The session tells a new certificate from one already presented; only a new one wins.
+      return signal.type === 'won' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'sun':
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'autoSearch':

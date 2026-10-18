@@ -68,3 +68,28 @@ export function hudRow(widths: readonly number[]): number[] {
  * of the tools' row, where no level's tools reach.
  */
 export const traceButtonLeft = (width: number): number => CANVAS_WIDTH - BOTTOM_ROWS.margin - width;
+
+/** The left edge of a button set a gap after another that ends at `right`. */
+export const besideLeft = (right: number): number => right + BOTTOM_ROWS.gap;
+
+/**
+ * The left edge of the Códex button on the bottom row: beside the settings' gear, `gearSize` wide,
+ * which sits at the margin.
+ */
+export const bookButtonLeft = (gearSize: number): number =>
+  besideLeft(BOTTOM_ROWS.margin + gearSize);
+
+/**
+ * The left edge of each of the free mode's orders (the mechanical gardener, the certificate), given
+ * their widths in order: at the right end of the tools' row, the last ending at the margin. In the
+ * free mode the teacher's trace button leaves that end for them and goes beside the Códex.
+ */
+export function ordersRow(widths: readonly number[]): number[] {
+  const total = widths.reduce((sum, width) => sum + width, 0);
+  let x = CANVAS_WIDTH - BOTTOM_ROWS.margin - total - BOTTOM_ROWS.gap * (widths.length - 1);
+  return widths.map((width) => {
+    const left = x;
+    x += width + BOTTOM_ROWS.gap;
+    return left;
+  });
+}

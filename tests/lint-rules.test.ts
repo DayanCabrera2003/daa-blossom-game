@@ -221,8 +221,8 @@ describe('pure overlay models', () => {
 
 describe('the light overlay shells', () => {
   // The shells are in the initial script; the books, and the teacher's panel with them, load with
-  // import() the first time they open.
-  const HEAVY = ['codex', 'math', 'notebook', 'teacher', 'epilogue', 'diagram', 'book'];
+  // import() the first time they open, and so does the free mode's share sheet (`ui/sandbox`).
+  const HEAVY = ['codex', 'math', 'notebook', 'teacher', 'epilogue', 'diagram', 'book', 'sandbox'];
   const SHELLS = ['src/ui/shell.ts', 'src/ui/teacherShell.ts'];
 
   describe.each(SHELLS)('%s', (shell) => {

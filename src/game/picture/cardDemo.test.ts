@@ -2,7 +2,7 @@ import { itemAt } from '@core/shared/itemAt';
 import { cardDemos } from '@levels/cards/catalog';
 import type { CardId } from '@levels/cards/schema';
 import { describe, expect, it } from 'vitest';
-import { cardDemoPicture } from './cardDemo';
+import { cardDemoPicture, demoLoop } from './cardDemo';
 
 const demos = cardDemos();
 const picture = (id: CardId, frame: number) => {
@@ -93,5 +93,15 @@ describe('the picture of a mechanic card demo', () => {
     expect(Math.hypot(b.x - c.x, b.y - c.y)).toBeGreaterThan(
       Math.hypot(trueB.x - trueC.x, trueB.y - trueC.y),
     );
+  });
+});
+
+describe('the loop of a mechanic card', () => {
+  it("plays a demo's frames, each one as its picture", () => {
+    const demo = demos.get('lanterns');
+    if (demo === undefined) throw new Error('no card lanterns');
+    const loop = demoLoop(demo);
+    expect(loop.frames).toBe(demo.frames.length);
+    expect(loop.pictureAt(1)).toEqual(cardDemoPicture(demo, 1));
   });
 });

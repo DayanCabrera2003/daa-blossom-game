@@ -8,6 +8,7 @@ import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
 import type { CountStep } from '@levels/flow';
 import { raceBetVerdict } from '@levels/races';
+import { winningThreads } from '@levels/winningThreads';
 import { lanternsOn, pieceOf, pondPieces } from './pond';
 
 /**
@@ -48,11 +49,19 @@ export const rightLoopCount = (state: GardenState): number =>
 export const rightVine = (state: GardenState, u: VertexId, v: VertexId): boolean =>
   isConflictVine(state.layer, state.search, u, v);
 
+/**
+ * The right count of the winning threads (2.5): how many threads of the tangle `yours ⊕ mirror`
+ * give the reflection more lanterns than you.
+ */
+export const rightWinningThreads = (yours: Matching, mirror: Matching): number =>
+  winningThreads(yours, mirror);
+
 /** The right number of a `count` step, judged on the garden `state` as it is now. */
 export function countAnswer(level: Level, state: GardenState, step: CountStep): number {
   if (step.of === 'loop') return rightLoopCount(state);
-  // Level integrity gives every count of lanterns a reflection to count on.
-  invariant(level.mirror !== null, 'a count of lanterns needs the reflection of its level');
+  // Level integrity gives every count on the tangle a reflection to count on.
+  invariant(level.mirror !== null, 'a count on the tangle needs the reflection of its level');
+  if (step.of === 'winningThreads') return rightWinningThreads(state.matching, level.mirror);
   return rightCount(state.matching, level.mirror, step);
 }
 

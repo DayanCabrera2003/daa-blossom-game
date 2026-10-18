@@ -10,6 +10,11 @@ import { cardTextKey, failureTextKey, RECALL_KEY } from '@levels/recipeCards';
 import { RUNNERS } from '@core/cost/benchmark';
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { doublingTextKey } from '@levels/races';
+import { COSMETIC_IDS } from '@services/cosmetics';
+import { GENERATORS } from '@levels/sandbox/generators';
+import type { DesignRejection } from '@levels/sandbox/design';
+import type { ImportRejection } from '@levels/sandbox/importText';
+import { DESIGN_TOOLS } from '@game/input/designIntent';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
 
@@ -22,6 +27,31 @@ import { SPEAKERS } from '@game/systems/speaker';
  */
 
 type Params = readonly string[];
+
+/** Why the free mode's editor refuses an edit (`levels/sandbox/design.ts`), with the limit it names. */
+const DESIGN_REASONS = {
+  tooMany: ['max'],
+  tooManyVines: ['max'],
+  tooClose: [],
+  coversName: [],
+  outside: [],
+  sproutBusy: [],
+  notAVine: [],
+  noSprout: [],
+  sameSprout: [],
+} satisfies Record<DesignRejection, Params>;
+
+/** Why a text opened in the share sheet is no garden (`levels/sandbox/importText.ts`). */
+const IMPORT_REASONS = {
+  tooLong: [],
+  badJson: [],
+  badLevel: [],
+  badCode: [],
+  tooMany: ['max'],
+  tooManyVines: ['max'],
+  tooClose: [],
+  outside: [],
+} satisfies Record<ImportRejection, Params>;
 
 /** Why an action was refused (`core/rules/reasons.ts`, and the game's own in `game/systems/refusal.ts`). */
 const REASONS = {
@@ -272,6 +302,7 @@ const UI = {
   'diagram.event.declareDone': [],
   'hub.codex': [],
   'hub.notebook': [],
+  'hub.sandbox': [],
   'hud.book': [],
   'counterexample.back': [],
   'pond.strands': ['count'],
@@ -306,15 +337,20 @@ const UI = {
   'victory.stars': ['count'],
   'victory.next': [],
   'victory.hub': [],
+  'victory.free': [],
   'hub.title': [],
   'hub.chapter': ['number'],
   'hub.locked': [],
-  'hub.exportLog': [],
+  'hub.secret.bud': ['need', 'have'],
+  'hub.secret.budTip': ['missing'],
+  'hub.secret.openTip': [],
+  'hub.secret.wonTip': ['stars'],
   'tutorial.ok': [],
   'settings.title': [],
   'settings.volume': ['percent'],
   'settings.mute': [],
   'settings.close': [],
+  'settings.exportLog': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>
@@ -364,6 +400,73 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
   // The name of each tab of a Codex entry, on its tab in the book.
   ...Object.fromEntries(CODEX_TABS.map((tab) => [`codex.tab.${tab}`, []])),
+  // The notice of each cosmetic of the hub, shown once when it first comes.
+  ...Object.fromEntries(COSMETIC_IDS.map((id) => [`cosmetic.${id}`, []])),
+  // The free mode's title, and its way back to the hub.
+  'sandbox.title': [],
+  'sandbox.back': [],
+  // The name of each generator of the free mode, in its generate menu, with "another at random"
+  // and the notice of a garden grown smaller than asked so its vines fit.
+  ...Object.fromEntries(GENERATORS.map((generator) => [generator.textKey, []])),
+  'sandbox.gen.another': [],
+  'sandbox.gen.shrunk': ['size'],
+  // The free mode's editor: its tools and orders, what each tool asks of the hand (and the
+  // generate menu), the counts of its limits, why an edit is refused, the menu's size, what it
+  // says when the garden it was asked to open cannot be, and its mechanic card.
+  ...Object.fromEntries(DESIGN_TOOLS.map((tool) => [`sandbox.tool.${tool}`, []])),
+  'sandbox.tool.generate': [],
+  'sandbox.tool.clear': [],
+  'sandbox.play': [],
+  'sandbox.design': [],
+  'sandbox.unplayable': [],
+  'sandbox.share': [],
+  ...Object.fromEntries(DESIGN_TOOLS.map((tool) => [`sandbox.prompt.${tool}`, []])),
+  'sandbox.prompt.generate': [],
+  'sandbox.count': ['sprouts', 'maxSprouts', 'vines', 'maxVines'],
+  ...Object.fromEntries(
+    Object.entries(DESIGN_REASONS).map(([code, params]) => [`sandbox.reason.${code}`, params]),
+  ),
+  'sandbox.gen.size': ['size'],
+  'sandbox.gen.smaller': [],
+  'sandbox.gen.larger': [],
+  'sandbox.gen.done': [],
+  'sandbox.opened.brokenCode': [],
+  'sandbox.opened.brokenStored': [],
+  'sandbox.card.title': [],
+  'sandbox.card.body': [],
+  'sandbox.solve': [],
+  'sandbox.certify': [],
+  'sandbox.solve.done': ['count'],
+  'sandbox.certify.stones': ['groups', 'stones', 'dark'],
+  'sandbox.certify.stonesFull': [],
+  'sandbox.certify.scarecrows': ['count'],
+  'sandbox.certify.notYet': [],
+  'sandbox.certify.notYetGardener': [],
+  'sandbox.certify.notBees': [],
+  // The free mode's share sheet (plan 08, phase 14).
+  'share.title': [],
+  'share.code': [],
+  'share.codeHint': [],
+  'share.link': [],
+  'share.linkHint': [],
+  'share.copy': [],
+  'share.copied': [],
+  'share.copyFailed': [],
+  'share.download': [],
+  'share.downloadHint': [],
+  'share.empty': [],
+  'share.import': [],
+  'share.paste': [],
+  'share.open': [],
+  'share.file': [],
+  'share.pasteEmpty': [],
+  'share.fileUnread': [],
+  'share.close': [],
+  'share.keys': [],
+  'share.done': [],
+  ...Object.fromEntries(
+    Object.entries(IMPORT_REASONS).map(([code, params]) => [`share.reason.${code}`, params]),
+  ),
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
   // The name of each speaker, on the tab of the dialogue box.

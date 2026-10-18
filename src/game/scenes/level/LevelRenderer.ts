@@ -20,11 +20,18 @@ import type { LevelViews } from './levelViews';
 /** How often the HUD is refreshed while nothing happens, so a hint shows up when it is due. */
 const HUD_REFRESH_MS = 500;
 
-/** The level in the player's words: names of the sprouts, and which are bees or flowers. */
+/**
+ * The level in the player's words: names of the sprouts, and which are bees or flowers; and how its
+ * screen looks (`systems/levelScreenOf.ts`): its season, and the level whose interface it shows.
+ */
 export interface LevelLook {
   readonly labels: readonly string[];
   /** Which sprouts are bees or flowers; empty in a garden that has none. */
   readonly kinds: readonly (SproutKind | undefined)[];
+  /** The chapter whose season the backdrop wears. */
+  readonly season: string;
+  /** The level whose pieces of the interface the HUD shows (the sun, the layers, the Council). */
+  readonly interfaceAt: string;
 }
 
 /** What the renderer reads every time it paints: the controller now and the replayed sun. */
@@ -59,7 +66,7 @@ export class LevelRenderer {
   ) {
     // The backdrop of the level is painted once: it depends on the level alone.
     const { level } = source.controller().session;
-    const backdrop = backdropPicture(siteOf(level));
+    const backdrop = backdropPicture(siteOf(level), look.season);
     views.backdrop.paint(backdrop);
     views.backdrop.setDrift(backdrop.season.drift, seedOf(level.data.id));
     this.seasonTint = backdrop.season.tint;
@@ -156,7 +163,8 @@ export class LevelRenderer {
   private renderHud(now: number): void {
     const controller = this.source.controller();
     const { session, pointer } = controller;
-    const hud = hudPicture(session, pointer, now, layerOf(controller).path.length);
+    const depth = layerOf(controller).path.length;
+    const hud = hudPicture(session, pointer, now, depth, this.look.interfaceAt);
     this.views.hud.render(hud);
     this.views.toolbar.render(hud.tools, hud.tool);
     const replayed = this.source.replaySun();

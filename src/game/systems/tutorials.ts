@@ -69,9 +69,13 @@ const inOrder = (cards: Iterable<CardId>): CardId[] => {
   return CARD_IDS.filter((card) => set.has(card));
 };
 
-/** The cards of what a level has open from its start: its tools, undo, the sun, the layers. */
-export function levelCards(level: Level): CardId[] {
-  const id = level.data.id;
+/**
+ * The cards of what a level has open from its start: its tools, undo, the sun, the layers. Undo,
+ * the sun and the layers are there as from level `interfaceAt`: the level itself, but for a garden
+ * of the free mode, which shows the interface the player has met.
+ */
+export function levelCards(level: Level, interfaceAt: string = level.data.id): CardId[] {
+  const id = interfaceAt;
   const tools = [...level.start.allowed].map((action) => ACTION_CARD[action]);
   const undo: CardId[] = compareLevelIds(id, UNDO_CARD_FROM) >= 0 ? ['undo'] : [];
   const sun: CardId[] = isUiUnlocked('sun', id) ? ['sun'] : [];
@@ -80,8 +84,11 @@ export function levelCards(level: Level): CardId[] {
 }
 
 /** The cards a level shows as it starts: what it has open that the player has not seen. */
-export const startCards = (level: Level, seen: ReadonlySet<string>): CardId[] =>
-  levelCards(level).filter((card) => !seen.has(card));
+export const startCards = (
+  level: Level,
+  seen: ReadonlySet<string>,
+  interfaceAt: string = level.data.id,
+): CardId[] => levelCards(level, interfaceAt).filter((card) => !seen.has(card));
 
 /**
  * The card shown as a step opens, unless seen. `kind` is the step, or the kind of any effect the
@@ -106,9 +113,14 @@ export function offerCards(
 
 /**
  * The cards the "?" button opens again: what the level has open from its start, and the cards of
- * the script steps reached so far (up to `reached`, the index of the current step).
+ * the script steps reached so far (up to `reached`, the index of the current step); undo, the sun
+ * and the layers as from level `interfaceAt`, as `levelCards` says.
  */
-export function helpCards(level: Level, reached: number): CardId[] {
+export function helpCards(
+  level: Level,
+  reached: number,
+  interfaceAt: string = level.data.id,
+): CardId[] {
   const steps = level.flow.slice(0, reached + 1).map((step) => stepCard(step.step, new Set()));
-  return inOrder([...levelCards(level), ...steps.filter((card) => card !== null)]);
+  return inOrder([...levelCards(level, interfaceAt), ...steps.filter((card) => card !== null)]);
 }

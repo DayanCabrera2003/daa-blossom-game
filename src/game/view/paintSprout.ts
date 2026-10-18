@@ -5,6 +5,22 @@ import { PALETTE } from './palette';
 /** Radius of a sprout's body (GDD §4.1: 16 × 16 sprouts; 14 px with its 1 px outline round it). */
 export const SPROUT_RADIUS = 7;
 
+/** How much wider than its body a sprout's dark outline is painted, on every side. */
+export const OUTLINE = 1;
+
+/**
+ * How far a flower's diamond reaches from its middle to a corner, `grow` pixels larger than a body
+ * of `radius`: a diamond's slanted sides need one and a half times the grow to show the same
+ * outline as a circle's.
+ */
+export const diamondReach = (radius: number, grow: number): number => radius + 1 + 1.5 * grow;
+
+/**
+ * A bee's wings: two ellipses this wide and tall, their middles `inset` pixels in from either side
+ * of the body and from its top.
+ */
+export const BEE_WINGS = { width: 7, height: 6, inset: 1 } as const;
+
 /** Below this radius (the tiny gardens of the cards) a face is only two eyes. */
 const FULL_FACE_RADIUS = 6;
 
@@ -32,8 +48,7 @@ const diamond = (x: number, y: number, reach: number): Phaser.Types.Math.Vector2
  */
 function fillBody(g: Phaser.GameObjects.Graphics, paint: SproutPaint, grow: number): void {
   const { x, y, radius, look } = paint;
-  // A diamond's slanted sides need one and a half times the grow to show the same outline.
-  if (look.species === 'flower') g.fillPoints(diamond(x, y, radius + 1 + 1.5 * grow), true);
+  if (look.species === 'flower') g.fillPoints(diamond(x, y, diamondReach(radius, grow)), true);
   else g.fillCircle(x, y, radius + grow);
 }
 
@@ -82,10 +97,11 @@ function paintFace(g: Phaser.GameObjects.Graphics, paint: SproutPaint, alpha: nu
 /** A bee's two wings, behind its body on either side of its back (plan 06, section 1.4). */
 function paintWings(g: Phaser.GameObjects.Graphics, paint: SproutPaint, alpha: number): void {
   const { x, y, radius } = paint;
+  const { width, height, inset } = BEE_WINGS;
   for (const side of [-1, 1]) {
-    const wx = x + side * (radius - 1);
-    const wy = y - radius + 1;
-    g.fillStyle(PALETTE.background, alpha).fillEllipse(wx, wy, 7, 6);
+    const wx = x + side * (radius - inset);
+    const wy = y - radius + inset;
+    g.fillStyle(PALETTE.background, alpha).fillEllipse(wx, wy, width, height);
     g.fillStyle(PALETTE.label, 0.85 * alpha).fillEllipse(wx, wy, 5, 4);
   }
 }
@@ -109,7 +125,7 @@ export function paintSprout(g: Phaser.GameObjects.Graphics, paint: SproutPaint):
   const { x, y, radius, lit, look } = paint;
   const bee = look.species === 'bee' && radius >= FULL_FACE_RADIUS;
   if (bee) paintWings(g, paint, alpha);
-  fillBody(g.fillStyle(PALETTE.background, alpha), paint, 1);
+  fillBody(g.fillStyle(PALETTE.background, alpha), paint, OUTLINE);
   fillBody(g.fillStyle(lit ? PALETTE.lit : PALETTE.dark, alpha), paint, 0);
   // A glint on the upper left, the light the sprite styles of the pack all share.
   g.fillStyle(lit ? PALETTE.litGlow : PALETTE.moon, 0.7 * alpha);

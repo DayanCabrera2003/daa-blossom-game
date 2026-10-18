@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { unlockedLevels, visibleLevels } from './progress';
+import { festivalLevel, secretFlowerLevel } from '../../tests/support/fixtureLevels';
+import { catalogEntries, unlockedLevels, visibleLevels } from './progress';
 import { emptySave, recordCompletion } from './save';
 
 /** A catalog entry that is not a draft. */
@@ -64,6 +65,43 @@ describe('which levels are open', () => {
     expect(unlockedLevels(withDrafts, emptySave(), true)).toEqual(
       new Set(['0.1', '0.2', '4.1', '4.2']),
     );
+  });
+});
+
+/** The synthetic catalog of plan 08: two levels of chapter 1, its secret flower, then chapter 2. */
+const withSecret = [
+  level('1.1'),
+  level('1.2'),
+  { id: '1.3', draft: false, secret: { stars: 3 } },
+  level('2.1'),
+];
+
+describe('the secret flowers in the progress', () => {
+  it('winning the last level of a chapter opens the next chapter, never its secret flower', () => {
+    const save = recordCompletion(recordCompletion(emptySave(), '1.1', 1), '1.2', 1);
+    expect(unlockedLevels(withSecret, save, false)).toEqual(new Set(['1.1', '1.2', '2.1']));
+  });
+
+  it('a won secret flower opens nothing after it', () => {
+    const save = recordCompletion(emptySave(), '1.3', 2);
+    expect(unlockedLevels(withSecret, save, false)).toEqual(new Set(['1.1']));
+  });
+
+  it('a secret flower is never a button, not even in teacher mode: it opens from its flower', () => {
+    for (const teacherMode of [false, true]) {
+      const shown = visibleLevels(withSecret, teacherMode).map((entry) => entry.id);
+      expect(shown).toEqual(['1.1', '1.2', '2.1']);
+      expect(unlockedLevels(withSecret, emptySave(), teacherMode).has('1.3')).toBe(false);
+    }
+  });
+});
+
+describe('the catalog as the progress reads it', () => {
+  it('each level by its id, whether it is a draft, and the stars that open a secret flower', () => {
+    expect(catalogEntries([festivalLevel(), secretFlowerLevel()])).toEqual([
+      { id: '4.1', draft: false },
+      { id: '4.13', draft: false, secret: { stars: 19 } },
+    ]);
   });
 });
 

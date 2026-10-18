@@ -1,13 +1,21 @@
 import type { OpenTabs } from '@levels/codex';
 import type { Bus } from '@services/bus';
-import type { BookRequest, BusEvents, Capabilities } from '@services/busEvents';
+import type { BookRequest, BusEvents, Capabilities, ShareRequest } from '@services/busEvents';
 import type { SaveData } from '@services/save';
 import type { SaveStore } from '@services/saveStore';
 import { afterClose, afterShow } from '@ui/model/overlayStack';
 
-/** What the layer is asked to show: a book (Códex or Cuaderno), or the epilogue. */
+/**
+ * What the layer is asked to show: a book (Códex or Cuaderno), the epilogue, or the free mode's
+ * share sheet with the garden it shares.
+ */
 export type OverlayRequest =
-  { readonly kind: 'book'; readonly book: BookRequest } | { readonly kind: 'epilogue' };
+  | { readonly kind: 'book'; readonly book: BookRequest }
+  | { readonly kind: 'epilogue' }
+  | { readonly kind: 'share'; readonly share: ShareRequest };
+
+/** What the books chunk shows: anything but the share sheet. */
+export type BookOverlay = Exclude<OverlayRequest, { readonly kind: 'share' }>;
 
 /**
  * What the Codex has open for a progress: the pages its completed levels opened, or all of them in
@@ -37,7 +45,16 @@ export interface OverlayFrame {
  */
 export interface BooksModule {
   /** Shows `request` in `frame.layer`, whether or not something is already open there. */
-  show(request: OverlayRequest, frame: OverlayFrame): void;
+  show(request: BookOverlay, frame: OverlayFrame): void;
+}
+
+/**
+ * The free mode's share sheet (plan 08, phase 14), in a chunk of its own: light, and only wanted
+ * by whoever shares a garden, so it never waits on the books. Its type lives here, like theirs.
+ */
+export interface ShareModule {
+  /** Shows the sheet for the garden of `request` in `frame.layer`. */
+  showShare(request: ShareRequest, frame: OverlayFrame): void;
 }
 
 /** What `mountShell` needs; `load` stands in for the chunk in tests. */
@@ -49,12 +66,14 @@ export interface ShellOptions {
   readonly host: HTMLElement;
   /** Loads the books chunk; by default with import(), so the books stay out of the initial script. */
   readonly load?: () => Promise<BooksModule>;
+  /** Loads the share sheet's chunk; by default with import(), like the books. */
+  readonly loadShare?: () => Promise<ShareModule>;
 }
 
 /**
- * Mounts the light shell of the DOM overlays: an empty layer over the canvas, hidden until a book or
- * the epilogue is asked for on the bus. The first request loads the books chunk; the layer shows at
- * once and `overlay.changed` tells the game to stop taking input until the books close it. A chunk
+ * Mounts the light shell of the DOM overlays: an empty layer over the canvas, hidden until a book,
+ * the epilogue or the share sheet is asked for on the bus. The first request loads the books chunk
+ * (or, for the share sheet, its own); the layer shows at once and `overlay.changed` tells the game to stop taking input until the books close it. A chunk
  * that fails to load (offline), or a book that fails to show, closes the layer again; the chunk is
  * asked for anew on the next request. Closing a book opened from the epilogue shows the epilogue
  * again, without giving the input back in between.
@@ -65,6 +84,7 @@ export function mountShell({
   codexOpen,
   host,
   load = () => import('./books'),
+  loadShare = () => import('./sandbox/ShareSheet'),
 }: ShellOptions): void {
   const layer = host.ownerDocument.createElement('div');
   layer.className = 'overlay-layer';
@@ -74,6 +94,7 @@ export function mountShell({
   host.appendChild(layer);
 
   let books: Promise<BooksModule> | null = null;
+  let sheet: Promise<ShareModule> | null = null;
   // What the layer shows, from the bottom up (`ui/model/overlayStack.ts`); only the top is drawn.
   let stack: readonly OverlayRequest[] = [];
   // Listened to from the start, so an announcement made before any book opens is not lost.
@@ -109,16 +130,31 @@ export function mountShell({
     close,
   };
 
-  /** Draws `request` in the layer, loading the books chunk the first time. */
+  /** A book, or the sheet, that failed: report it, forget its chunk and give the input back. */
+  const failed = (error: unknown): void => {
+    // A broken book never breaks the garden.
+    console.error(error);
+    hide();
+  };
+
+  /** Draws `request` in the layer, loading its chunk the first time. */
   const draw = (request: OverlayRequest): void => {
+    if (request.kind === 'share') {
+      sheet ??= loadShare();
+      sheet
+        .then((module) => module.showShare(request.share, frame))
+        .catch((error: unknown) => {
+          sheet = null;
+          failed(error);
+        });
+      return;
+    }
     books ??= load();
     books
       .then((module) => module.show(request, frame))
       .catch((error: unknown) => {
-        // A broken book never breaks the garden: report it and give the input back.
         books = null;
-        console.error(error);
-        hide();
+        failed(error);
       });
   };
 
@@ -133,4 +169,5 @@ export function mountShell({
 
   bus.on('book.open', (book) => show({ kind: 'book', book }));
   bus.on('epilogue.open', () => show({ kind: 'epilogue' }));
+  bus.on('sandbox.share', (share) => show({ kind: 'share', share }));
 }

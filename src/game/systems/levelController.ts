@@ -1,5 +1,6 @@
 import type { Edge, VertexId } from '@core/graph/types';
 import type { RecipeVerdict } from '@core/recipe/check';
+import type { Speaker } from './speaker';
 import type { RecipeCardId } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import type { GardenState } from '@core/rules/state';
@@ -53,6 +54,39 @@ import type { Refusal } from './refusal';
 import type { StarResult } from './stars';
 import { stepAtFraction } from './sun';
 
+/** An interface text said after an order: its key, its parameters and who says it. */
+export interface OrderWords {
+  readonly key: string;
+  readonly params: Readonly<Record<string, number>>;
+  readonly speaker?: Speaker;
+}
+
+/**
+ * What one of the free mode's orders answers: refused, with the words of a toast that says why; or
+ * done, with the session after it, the day it played (dawn first) to show step by step within
+ * `within` milliseconds (null: at the usual pace), and the lines said once it is shown.
+ */
+export type OrderAnswer =
+  | { readonly kind: 'refused'; readonly toast: OrderWords }
+  | {
+      readonly kind: 'done';
+      readonly session: LevelSession;
+      readonly day: readonly GardenState[];
+      readonly within: number | null;
+      readonly lines: readonly OrderWords[];
+    };
+
+/**
+ * The free mode's own orders on its garden (plan 08, phase 13): the mechanical gardener solving
+ * it, and its certificate on demand; null when the player has not met them. Their code lives in
+ * the free mode's chunk, which hands them in with its garden, so a level of the catalog never
+ * loads it. Each answers null while the script holds the garden.
+ */
+export interface FreeOrders {
+  readonly solve: ((session: LevelSession) => OrderAnswer | null) | null;
+  readonly certify: ((session: LevelSession) => OrderAnswer | null) | null;
+}
+
 /** Everything a level screen remembers: the session, the pointer, what glows, where sprouts sit. */
 export interface Controller {
   readonly session: LevelSession;
@@ -65,6 +99,8 @@ export interface Controller {
   readonly positions: readonly Point[];
   /** The flowers entered with the layers (5.2), outermost first; empty outside. */
   readonly layers: LayerPath;
+  /** The free mode's orders, for a garden of the free mode; null for a level of the catalog. */
+  readonly orders: FreeOrders | null;
 }
 
 /** What the player did on the level screen, as the scene reports it. */
@@ -94,7 +130,9 @@ export type UiEvent =
   | { readonly kind: 'raced' }
   /** The recipe (6.1): a card touched, into the recipe or back to the table, and "Comprobar". */
   | { readonly kind: 'recipeCard'; readonly card: RecipeCardId }
-  | { readonly kind: 'checkRecipe' };
+  | { readonly kind: 'checkRecipe' }
+  /** The free mode's orders: the mechanical gardener solves the garden, or its certificate. */
+  | { readonly kind: 'solve' | 'certify' };
 
 /**
  * What the scene has to show after an event: the answers to moves and hints, and the effects of the
@@ -118,6 +156,15 @@ export type Effect =
   | { readonly kind: 'flowerDrawn'; readonly attempt: FlowerAttempt }
   /** The recipe was checked: what the core found, right or its first failing card. */
   | { readonly kind: 'recipeChecked'; readonly verdict: RecipeVerdict }
+  /** An order of the free mode done: its day to show step by step, then what is said of it. */
+  | {
+      readonly kind: 'ordered';
+      readonly day: readonly GardenState[];
+      readonly within: number | null;
+      readonly lines: readonly OrderWords[];
+    }
+  /** An order of the free mode refused, and why. */
+  | { readonly kind: 'orderRefused'; readonly text: OrderWords }
   | { readonly kind: 'won'; readonly stars: StarResult };
 
 /** The controller after an event, and what the scene has to show for it. */
@@ -132,8 +179,11 @@ function shown(session: LevelSession, effects: readonly FlowEffect[]): Effect[] 
   });
 }
 
-/** A level screen as the level starts, holding the first tool it unlocks, and what its script opens with. */
-export function openController(level: Level, now: number): Step {
+/**
+ * A level screen as the level starts, holding the first tool it unlocks, and what its script opens
+ * with; a garden of the free mode brings its `orders`.
+ */
+export function openController(level: Level, now: number, orders: FreeOrders | null = null): Step {
   const [first = 'lanterns'] = availableTools(level.start.allowed);
   const { session, effects } = openSession(level, now);
   return {
@@ -144,6 +194,7 @@ export function openController(level: Level, now: number): Step {
       vineGlow: null,
       positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
       layers: OUTSIDE,
+      orders,
     },
     effects: shown(session, effects),
   };
@@ -237,6 +288,24 @@ function checkRecipe(controller: Controller, now: number): Step {
   return {
     controller: next,
     effects: [{ kind: 'recipeChecked', verdict }, ...shown(session, effects)],
+  };
+}
+
+/**
+ * One of the free mode's orders, when the garden has it: done, its session is taken and its day and
+ * words are shown (what a hint made glow goes out, as after a move); refused, it is told why.
+ */
+function order(controller: Controller, kind: 'solve' | 'certify'): Step {
+  const run = controller.orders?.[kind] ?? null;
+  const answer = run === null ? null : run(controller.session);
+  if (answer === null) return { controller, effects: [] };
+  if (answer.kind === 'refused') {
+    return { controller, effects: [{ kind: 'orderRefused', text: answer.toast }] };
+  }
+  const { session, day, within, lines } = answer;
+  return {
+    controller: { ...controller, session, highlight: [] },
+    effects: [{ kind: 'ordered', day, within, lines }],
   };
 }
 
@@ -396,6 +465,9 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       return checkRecipe(controller, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
+    case 'solve':
+    case 'certify':
+      return order(controller, event.kind);
     case 'hint': {
       const opened = askHint(controller.session, now);
       if (opened === null) return same({});

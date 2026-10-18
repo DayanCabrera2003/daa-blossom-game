@@ -76,7 +76,7 @@ Como en §3 de `B.md`: `npm run dev` o el juego publicado. El juego publicado se
 
 - Pantalla completa; no hay audio en greybox.
 - La plantilla de §7 impresa, un reloj a mano y algo para anotar la explicación de 7.4 palabra por palabra (o, con su permiso, grabar solo el audio de ese momento; la grabación se borra al pasar las notas).
-- Comprobar que "Exportar registro de prueba" descarga un archivo.
+- Comprobar que "Exportar registro de prueba" (en el panel de ajustes) descarga un archivo.
 
 ---
 
@@ -142,7 +142,7 @@ El criterio de §1 pide los puntos 1 y 2. Los puntos 3 y 4 se anotan para leer l
 
 ## 5. Al terminar
 
-1. **Exportar el registro** desde el hub ("Exportar registro de prueba"). Renombrar con persona y sesión (`P1-S3-florecer-playtest-<fecha>.json`). Contiene también las sesiones anteriores.
+1. **Exportar el registro** desde el hub: engranaje de ajustes → "Exportar registro de prueba". Renombrar con persona y sesión (`P1-S3-florecer-playtest-<fecha>.json`). Contiene también las sesiones anteriores.
 2. **Preguntas de cierre** (abiertas, en este orden):
    - ¿Qué fue lo más confuso? ¿En qué momento?
    - ¿Para qué sirven las capas?

@@ -140,9 +140,15 @@ function placeOrnaments(season: Season, site: BackdropSite, rng: Rng): PlacedOrn
   return placed;
 }
 
-/** The backdrop of a level: the same for the same level, every time. */
-export function backdropPicture(site: BackdropSite): BackdropPicture {
-  const season = seasonOf(chapterOfLevel(site.id));
+/**
+ * The backdrop of a level: the same for the same level, every time. It wears the season of
+ * `chapter`, its own chapter's unless told otherwise (a garden of the free mode wears the hub's).
+ */
+export function backdropPicture(
+  site: BackdropSite,
+  chapter: string = chapterOfLevel(site.id),
+): BackdropPicture {
+  const season = seasonOf(chapter);
   const rng = createRng(seedOf(site.id));
   const tiles = groundTiles(season, rng);
   return { season, tiles, ornaments: placeOrnaments(season, site, rng) };

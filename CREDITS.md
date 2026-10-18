@@ -16,7 +16,7 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - Version: not stated by the pack
 - License: CC0-1.0
 - Source: https://pixel-boy.itch.io/ninja-adventure-asset-pack
-- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, the music of the hub and of chapters 1 to 7, two jingles, a few effects and the babble syllables.
+- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, the music of the hub and of chapters 1 to 7, two jingles, a few effects, the babble syllables, and the butterflies, frog, cat, hens and seedling plants of the hub.
 
 - `Palette.png` → `images/palette.png`
 - `Backgrounds/Tilesets/TilesetFloor.png` → `images/tiles/floor.png`
@@ -81,6 +81,13 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - `Audio/Sounds/Voice/Voice6.wav` → `audio/voice/voice6.wav`
 - `Audio/Sounds/Voice/Voice7.wav` → `audio/voice/voice7.wav`
 - `Audio/Sounds/Voice/Voice10.wav` → `audio/voice/voice10.wav`
+- `Actor/Monster/Butterfly/SpriteSheet.png` → `images/hub/butterfly.png`
+- `Actor/Monster/ButterflyBlue/SpriteSheet.png` → `images/hub/butterfly-blue.png`
+- `Actor/Animal/Frog/SpriteSheet.png` → `images/hub/frog.png`
+- `Actor/Animal/Cat/SpriteSheet.png` → `images/hub/cat.png`
+- `Actor/Animal/Chicken/SpriteSheetWhite.png` → `images/hub/chicken-white.png`
+- `Actor/Animal/Chicken/SpriteSheetBrown.png` → `images/hub/chicken-brown.png`
+- `Backgrounds/Animated/Plant/SpriteSheet16x16.png` → `images/hub/plant.png`
 
 ## monogram
 

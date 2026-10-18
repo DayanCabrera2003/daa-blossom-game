@@ -3,6 +3,7 @@ import {
   describeCodexProblem,
   describeLoadError,
   describeProblem,
+  describeSecretProblem,
   describeWalkthroughProblem,
 } from '../tools/describeProblem';
 
@@ -80,6 +81,21 @@ describe('readable level problems', () => {
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
     );
+    expect(describeProblem({ code: 'waterAndBet' })).toBe(
+      'the level has both a water budget and a formal bet, but it can give only one extra star',
+    );
+    expect(describeProblem({ code: 'labelOnLantern', label: 'e', vine: ['e', 'f'] })).toBe(
+      'the name of e is drawn over the lantern of the vine e–f',
+    );
+    expect(
+      describeProblem({
+        code: 'vinesCross',
+        vines: [
+          ['a', 'b'],
+          ['c', 'd'],
+        ],
+      }),
+    ).toBe('the vines a–b and c–d cross');
   });
 
   it('every kind of problem has a message', () => {
@@ -96,6 +112,12 @@ describe('readable level problems', () => {
       { code: 'notebookMissing', step: 3 },
       { code: 'mirrorMissing', step: 0 },
       { code: 'pieceOutsideTangle', step: 4, sprout: 'G' },
+      { code: 'threadsBeforeMirror', step: 1 },
+      { code: 'threadsAfterSeparate', step: 3 },
+      { code: 'threadsOutOfRange', step: 1, range: 1, answer: 2 },
+      { code: 'certifyAgainWithoutCertificate', step: 1 },
+      { code: 'certifyAgainBeforePlay', step: 0 },
+      { code: 'sameCertificate', step: 1 },
       { code: 'drawUnbeatable', step: 5 },
       { code: 'noConflict', step: 1 },
       { code: 'counterexampleLocked', question: 0, option: 1, action: 'fold' },
@@ -117,6 +139,9 @@ describe('readable level problems', () => {
       { code: 'noChainToDraw', step: 1 },
       { code: 'flowerAfterPlay', step: 1 },
       { code: 'recallAhead', step: 0, level: '4.4' },
+      { code: 'labelOnSprout', label: 'a', sprout: 'b' },
+      { code: 'labelOnLabel', labels: ['a', 'b'] },
+      { code: 'labelsDifferByCase', labels: ['c', 'C'] },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });
@@ -163,5 +188,32 @@ describe('readable level problems', () => {
         opensAt: '1.8',
       }),
     ).toBe('level 2.4: notebook question 1 links to C2, already open since 1.8');
+  });
+
+  it('explains what is wrong with a secret flower', () => {
+    expect(describeSecretProblem({ code: 'secretNotLast', level: '1.5', before: '1.9' })).toBe(
+      'secret flower 1.5 comes before 1.9 of its chapter; it must close the chapter',
+    );
+    expect(
+      describeSecretProblem({ code: 'secretTwice', chapter: '1', levels: ['1.10', '1.11'] }),
+    ).toBe('chapter 1 has more than one secret flower: 1.10, 1.11');
+    expect(describeSecretProblem({ code: 'secretUnlocks', level: '1.10' })).toBe(
+      'secret flower 1.10 unlocks something; it must open nothing',
+    );
+    expect(describeSecretProblem({ code: 'secretNotebook', level: '1.10' })).toBe(
+      'secret flower 1.10 asks a notebook question',
+    );
+    expect(describeSecretProblem({ code: 'secretDraft', level: '1.10' })).toBe(
+      'secret flower 1.10 is a draft',
+    );
+    expect(
+      describeSecretProblem({
+        code: 'secretStarsOutOfRange',
+        level: '1.10',
+        stars: 20,
+        least: 10,
+        most: 19,
+      }),
+    ).toBe('secret flower 1.10 asks for 20 stars; its chapter allows 10 to 19');
   });
 });

@@ -17,7 +17,13 @@ export interface Overlay {
 }
 
 /** What can take the keyboard focus inside the book, in the order Tab visits it. */
-const FOCUSABLE = 'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = [
+  'button:not([disabled])',
+  'a[href]',
+  'input:not([disabled]):not([hidden])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
 
 /**
  * Opens a book's frame in the shell's layer, replacing whatever was shown there, labelled `label`

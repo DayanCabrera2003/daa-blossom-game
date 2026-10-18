@@ -11,10 +11,19 @@ export interface KeyValueStore {
 /** Where progress is kept in the browser. */
 export const SAVE_KEY = 'florecer.save';
 
-const SAVE_VERSION = 4 as const;
+const SAVE_VERSION = 5 as const;
 
 /** Each completed level with its best number of stars; the same in every version. */
 const levels = z.record(z.string(), z.strictObject({ stars: z.number().int().min(0).max(3) }));
+
+/** A bet of a script, named by its level and the index of its step: `1.6#3`. */
+const betId = z.string().regex(/^\d+\.\d+#\d+$/, 'expected a bet like 1.6#3');
+
+/** The Codex pages read and the glossary rows seen; the same since version 4. */
+const codexProgress = {
+  codexRead: z.array(codexPage),
+  glossaryRead: z.array(codexEntry),
+};
 
 const saveSchema = z.strictObject({
   version: z.literal(SAVE_VERSION),
@@ -26,20 +35,27 @@ const saveSchema = z.strictObject({
   /**
    * The Codex pages (each tab of an entry, `C1:formal`) the player has read in the book, in the
    * order read, so the others wear the "new" seal. Which pages are open is never saved: it follows
-   * from the completed levels.
+   * from the completed levels. Next, the entries whose rows of the glossary (C13) the player has
+   * seen there, in the order seen: the glossary grows as entries open, and its new rows make it new
+   * again.
    */
-  codexRead: z.array(codexPage),
+  ...codexProgress,
   /**
-   * The entries whose rows of the glossary (C13) the player has seen there, in the order seen: the
-   * glossary grows as entries open, and its new rows make it new again.
+   * The bets won (GDD §5.1), each once, in the order won: a formal bet or a doubling bet answered
+   * right gives a seed. Unlike stars, they cannot be told from the completed levels.
    */
-  glossaryRead: z.array(codexEntry),
+  betsWon: z.array(betId),
+  /**
+   * The cosmetics of the hub already announced, in the order announced. Which ones are there is
+   * never saved: it follows from the stars and seeds.
+   */
+  cosmeticsSeen: z.array(z.string()),
 });
 
 /**
  * The saves of older versions, each turned into the current one without losing progress. Version
- * 1 had no notebook, version 2 no mechanic cards and version 3 no pages read nor glossary rows
- * seen: what is missing comes back empty.
+ * 1 had no notebook, version 2 no mechanic cards, version 3 no pages read nor glossary rows seen,
+ * and version 4 no bets won nor cosmetics announced: what is missing comes back empty.
  */
 const olderSaves = z
   .union([
@@ -51,19 +67,29 @@ const olderSaves = z
       notebook: z.array(z.string()),
       tutorialsSeen: z.array(z.string()),
     }),
+    z.strictObject({
+      version: z.literal(4),
+      levels,
+      notebook: z.array(z.string()),
+      tutorialsSeen: z.array(z.string()),
+      ...codexProgress,
+    }),
   ])
   .transform((save) => ({
     version: SAVE_VERSION,
     levels: save.levels,
     notebook: 'notebook' in save ? save.notebook : [],
     tutorialsSeen: 'tutorialsSeen' in save ? save.tutorialsSeen : [],
-    codexRead: [] as CodexPage[],
-    glossaryRead: [] as CodexEntryId[],
+    codexRead: 'codexRead' in save ? save.codexRead : ([] as CodexPage[]),
+    glossaryRead: 'glossaryRead' in save ? save.glossaryRead : ([] as CodexEntryId[]),
+    betsWon: [] as string[],
+    cosmeticsSeen: [] as string[],
   }));
 
 /**
  * Progress of a player: each completed level with its best number of stars, the notebook, the
- * mechanic cards already seen, and the Codex pages and glossary rows already read.
+ * mechanic cards already seen, the Codex pages and glossary rows already read, the bets won and the
+ * cosmetics of the hub already announced.
  */
 export type SaveData = z.infer<typeof saveSchema>;
 
@@ -75,6 +101,8 @@ export const emptySave = (): SaveData => ({
   tutorialsSeen: [],
   codexRead: [],
   glossaryRead: [],
+  betsWon: [],
+  cosmeticsSeen: [],
 });
 
 /**
@@ -134,4 +162,23 @@ export function recordPageRead(save: SaveData, page: CodexPage): SaveData {
 export function recordGlossaryRows(save: SaveData, entries: readonly CodexEntryId[]): SaveData {
   const fresh = [...new Set(entries)].filter((entry) => !save.glossaryRead.includes(entry));
   return fresh.length === 0 ? save : { ...save, glossaryRead: [...save.glossaryRead, ...fresh] };
+}
+
+/** The items of `items` not yet in `kept`, each once, in the order given. */
+const fresh = (kept: readonly string[], items: readonly string[]): string[] =>
+  [...new Set(items)].filter((item) => !kept.includes(item));
+
+/**
+ * The progress after winning the bets `bets` (`1.6#3`); each bet gives its seed once, and winning
+ * only bets already won changes nothing.
+ */
+export function recordBetsWon(save: SaveData, bets: readonly string[]): SaveData {
+  const won = fresh(save.betsWon, bets);
+  return won.length === 0 ? save : { ...save, betsWon: [...save.betsWon, ...won] };
+}
+
+/** The progress after announcing the cosmetics `ids`; each is announced once. */
+export function recordCosmeticsSeen(save: SaveData, ids: readonly string[]): SaveData {
+  const seen = fresh(save.cosmeticsSeen, ids);
+  return seen.length === 0 ? save : { ...save, cosmeticsSeen: [...save.cosmeticsSeen, ...seen] };
 }

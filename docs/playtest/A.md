@@ -85,7 +85,7 @@ Se recomienda el build de producción o Pages: es lo que verá un jugador real.
 
 - Pantalla completa, sonido indiferente (no hay audio en greybox).
 - Una copia impresa de la plantilla de §7 y un reloj a mano para anotar momentos.
-- Probar en ese mismo equipo que el botón "Exportar registro de prueba" descarga un archivo.
+- Probar en ese mismo equipo que el botón "Exportar registro de prueba" del panel de ajustes descarga un archivo.
 
 ---
 
@@ -122,7 +122,7 @@ Anotar la hora junto a cada nota para cruzarla después con el registro.
 
 ## 5. Al terminar
 
-1. **Exportar el registro.** Volver al hub y pulsar **"Exportar registro de prueba"**. Se descarga `florecer-playtest-<fecha>.json`. Renombrarlo con el identificador de la persona (p. ej. `P1-florecer-playtest-<fecha>.json`) y guardarlo junto a la plantilla rellena. Nada sale del navegador por otra vía.
+1. **Exportar el registro.** Volver al hub, abrir los ajustes (el engranaje, arriba a la derecha) y pulsar **"Exportar registro de prueba"**. Se descarga `florecer-playtest-<fecha>.json`. Renombrarlo con el identificador de la persona (p. ej. `P1-florecer-playtest-<fecha>.json`) y guardarlo junto a la plantilla rellena. Nada sale del navegador por otra vía.
 2. **La pregunta de la cadena.** Si la persona llegó al final del capítulo 1, preguntar sin más contexto:
 
    > "Describe con tus palabras qué es una cadena."

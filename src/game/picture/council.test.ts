@@ -60,4 +60,11 @@ describe("the Council's count on the top bar", () => {
       params: { groups: 3, stones: 1, atLeast: 2, dark: 2 },
     });
   });
+
+  it('follows the level it is told: a pentagon shown as 7.1 has no count, and as 7.2 has one', () => {
+    const level = pentagonLevel();
+    expect(councilCount(level, level.start, '7.1')).toBeNull();
+    const closed = closedFlowerLevel();
+    expect(councilCount(closed, closed.start, '7.2')).not.toBeNull();
+  });
 });

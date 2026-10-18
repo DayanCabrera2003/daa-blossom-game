@@ -6,9 +6,9 @@
  * that book's place; the epilogue, when asked for, always starts afresh on its own.
  */
 
-/** Anything the layer can show: a book, or the epilogue. */
+/** Anything the layer can show: a book, the epilogue, or the free mode's share sheet. */
 export interface Shown {
-  readonly kind: 'book' | 'epilogue';
+  readonly kind: 'book' | 'epilogue' | 'share';
 }
 
 /** The stack after `request` is shown over `stack`. */

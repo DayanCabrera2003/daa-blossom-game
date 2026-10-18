@@ -48,6 +48,12 @@ export const MAX_BRUTO_BUDGET = 2_000_000;
 const flowStep = z.discriminatedUnion('step', [
   /** Play with the level's rules until its victory holds. */
   z.strictObject({ step: z.literal('play'), reactions: z.array(reaction).default([]) }),
+  /**
+   * After a play step won with a Tutte–Berge certificate (7.6): the garden goes on taking moves, and
+   * the step is over once the victory holds again with stones different from all those presented.
+   * `repeated` is the line the council says to a certificate whose stones it already knows.
+   */
+  z.strictObject({ step: z.literal('certifyAgain'), repeated: lineId }),
   /** The mentor says these lines; done at once. */
   z.strictObject({ step: z.literal('say'), lines: z.array(lineId).min(1) }),
   /** A question; with `retry`, a wrong answer asks again. Integrity checks one option is right. */
@@ -85,8 +91,9 @@ const flowStep = z.discriminatedUnion('step', [
   /**
    * A number the core knows, asked with the numbers 0 to `range`; the player always may try again.
    * Either how many lanterns, the player's or the reflection's (`of`), the piece of the tangle
-   * through the sprout `piece` holds (chapter 2), or how many sprouts the loop closed by the
-   * conflict of the player's search holds (`of: 'loop'`, 4.2).
+   * through the sprout `piece` holds (chapter 2), how many threads of the tangle the reflection
+   * wins (`of: 'winningThreads'`, 2.5: asked before the tangle is separated), or how many sprouts
+   * the loop closed by the conflict of the player's search holds (`of: 'loop'`, 4.2).
    */
   z.discriminatedUnion('of', [
     z.strictObject({
@@ -97,6 +104,12 @@ const flowStep = z.discriminatedUnion('step', [
       range,
     }),
     z.strictObject({ step: z.literal('count'), prompt: lineId, of: z.literal('loop'), range }),
+    z.strictObject({
+      step: z.literal('count'),
+      prompt: lineId,
+      of: z.literal('winningThreads'),
+      range,
+    }),
   ]),
   /**
    * The player points at the vine where the light went wrong: the conflict of their search (4.2),

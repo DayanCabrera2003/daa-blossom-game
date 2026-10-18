@@ -5,16 +5,56 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { availableTools, TOOL_ACTIONS, type ToolId } from '../input/tools';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { UNLOCKED_AT } from '@core/rules/permissions';
+import type { ActionType } from '@core/rules/actions';
+import { unwrap } from '@core/shared/result';
+import type { Design } from '@levels/sandbox/design';
+import { toPlayable } from '@levels/sandbox/toLevel';
+import type { SandboxAccess } from '@services/sandboxAccess';
+import { levelScreenOf } from '../systems/levelScreenOf';
+import { GEAR_SIZE } from '../view/GearButton';
 import {
+  besideLeft,
+  bookButtonLeft,
   BOTTOM_ROWS,
   CHAR_ADVANCE,
   estimatedButtonWidth,
   HUD_BUTTONS,
   hudRow,
+  ordersRow,
   toolbarRow,
   traceButtonLeft,
 } from './bottomRows';
-import { iconRoom, TOOL_ICONS } from './buttonIcon';
+import { BOOK_ICON, iconRoom, TOOL_ICONS } from './buttonIcon';
+import { orderButtons } from './orderButtons';
+
+/** Every action of the game. */
+const ALL_ACTIONS = Object.keys(UNLOCKED_AT) as ActionType[];
+
+/** The free mode in teacher mode: every action and both orders. */
+const TEACHER: SandboxAccess = {
+  exists: true,
+  actions: ALL_ACTIONS,
+  gardener: true,
+  scarecrows: true,
+  stones: true,
+  interfaceAt: '8.1',
+};
+
+/** A pair of sprouts: a garden of the free mode to lay the screen out for. */
+const PAIR: Design = {
+  sprouts: [
+    { label: 'A', x: 100, y: 100 },
+    { label: 'B', x: 200, y: 100 },
+  ],
+  vines: [['A', 'B']],
+  lanterns: [],
+};
+
+/** The labels of the free mode's orders, all of them, in the order they sit. */
+const ORDER_KEYS = orderButtons({ solve: () => null, certify: () => null }).map(
+  ({ label: key }) => key,
+);
 
 const text = strings as Readonly<Record<string, string>>;
 
@@ -81,6 +121,40 @@ describe('the two bottom rows of the level HUD', () => {
     expect(HUD_BUTTONS).toHaveLength(8);
     const widths = HUD_BUTTONS.map((name) => estimatedButtonWidth(label(`hud.${name}`)));
     expect(fitsOnCanvas(hudRow(widths), widths)).toBe(true);
+  });
+
+  it('a garden of the free mode fits: its buttons, the Códex and the trace below, its tools and orders above', () => {
+    const screen = levelScreenOf(unwrap(toPlayable(PAIR, ALL_ACTIONS)), TEACHER);
+    const names = screen.hudButtons.map((name) =>
+      name === 'back' ? screen.backLabel : `hud.${name}`,
+    );
+    // Below: the gear, the Códex and the trace from the left; the buttons from the right.
+    const width = (key: string, advance?: number): number =>
+      estimatedButtonWidth(label(key), advance);
+    const book = width('hud.book') + iconRoom([BOOK_ICON]);
+    const bookLeft = bookButtonLeft(GEAR_SIZE);
+    const trace = width('hud.trace');
+    const buttons = names.map((key) => width(key));
+    const lefts = [BOTTOM_ROWS.margin, bookLeft, besideLeft(bookLeft + book), ...hudRow(buttons)];
+    expect(fitsOnCanvas(lefts, [GEAR_SIZE, book, trace, ...buttons])).toBe(true);
+    // In the wider fallback face the buttons alone still fit, as in any level.
+    const wide = names.map((key) => width(key, CHAR_ADVANCE + 1));
+    expect(fitsOnCanvas(hudRow(wide), wide)).toBe(true);
+    // Above: every tool the free mode may give (no inspecting: it has no fog), then its orders.
+    const level = unwrap(toPlayable(PAIR, ALL_ACTIONS));
+    const tools = availableTools(level.start.allowed, true);
+    expect(tools).not.toContain('inspect');
+    const widths = tools.map((tool) => toolWidth(tool));
+    const orders = ORDER_KEYS.map((key) => estimatedButtonWidth(label(key)));
+    expect(
+      fitsOnCanvas([...toolbarRow(widths), ...ordersRow(orders)], [...widths, ...orders]),
+    ).toBe(true);
+  });
+
+  it("the free mode's orders end the tools' row at the margin, in their order", () => {
+    const right = CANVAS_WIDTH - BOTTOM_ROWS.margin;
+    expect(ordersRow([10, 20])).toEqual([right - 30 - BOTTOM_ROWS.gap, right - 20]);
+    expect(besideLeft(50)).toBe(50 + BOTTOM_ROWS.gap);
   });
 
   it('both rows still fit if the fallback face is a pixel wider per letter', () => {

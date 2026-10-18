@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   emptySave,
   loadSave,
+  recordBetsWon,
+  recordCosmeticsSeen,
   recordGlossaryRows,
   recordPageRead,
   recordCompletion,
@@ -32,12 +34,14 @@ describe('saved progress', () => {
 
   it('a new player has written nothing in the notebook, seen no mechanic card, read no page', () => {
     expect(emptySave()).toEqual({
-      version: 4,
+      version: 5,
       levels: {},
       notebook: [],
       tutorialsSeen: [],
       codexRead: [],
       glossaryRead: [],
+      betsWon: [],
+      cosmeticsSeen: [],
     });
   });
 
@@ -67,12 +71,14 @@ describe('saved progress', () => {
     const v3 =
       '{"version":3,"levels":{"2.4":{"stars":3}},"notebook":["1.5","2.4"],"tutorialsSeen":["sun"]}';
     expect(loadSave(memoryStore({ [SAVE_KEY]: v3 }))).toEqual({
-      version: 4,
+      version: 5,
       levels: { '2.4': { stars: 3 } },
       notebook: ['1.5', '2.4'],
       tutorialsSeen: ['sun'],
       codexRead: [],
       glossaryRead: [],
+      betsWon: [],
+      cosmeticsSeen: [],
     });
   });
 
@@ -89,6 +95,61 @@ describe('saved progress', () => {
     });
   });
 
+  it('a save of version 4 keeps its progress, notebook, cards and pages read, with no seed', () => {
+    const v4 = JSON.stringify({
+      version: 4,
+      levels: { '1.6': { stars: 3 } },
+      notebook: ['1.5'],
+      tutorialsSeen: ['sun'],
+      codexRead: ['C1:formal'],
+      glossaryRead: ['C1'],
+    });
+    expect(loadSave(memoryStore({ [SAVE_KEY]: v4 }))).toEqual({
+      version: 5,
+      levels: { '1.6': { stars: 3 } },
+      notebook: ['1.5'],
+      tutorialsSeen: ['sun'],
+      codexRead: ['C1:formal'],
+      glossaryRead: ['C1'],
+      betsWon: [],
+      cosmeticsSeen: [],
+    });
+  });
+
+  it('records each bet won once, by level and step, in the order won', () => {
+    const won = recordBetsWon(recordBetsWon(emptySave(), ['1.6#3']), ['6.5#2', '1.6#3', '6.5#2']);
+    expect(won.betsWon).toEqual(['1.6#3', '6.5#2']);
+    expect(recordBetsWon(won, ['6.5#2'])).toBe(won);
+  });
+
+  it('records each cosmetic announced once, in the order announced', () => {
+    const seen = recordCosmeticsSeen(recordCosmeticsSeen(emptySave(), ['butterfly']), [
+      'frog',
+      'butterfly',
+    ]);
+    expect(seen.cosmeticsSeen).toEqual(['butterfly', 'frog']);
+    expect(recordCosmeticsSeen(seen, ['frog'])).toBe(seen);
+  });
+
+  it('seeds and cosmetics come back from the store', () => {
+    const store = memoryStore();
+    const save = recordCosmeticsSeen(recordBetsWon(emptySave(), ['1.6#3']), ['butterfly']);
+    writeSave(store, save);
+    expect(loadSave(store)).toEqual(save);
+  });
+
+  it('a bet won that names no level and step is damage, like any other', () => {
+    const save = (bets: string): string =>
+      `{"version":5,"levels":{},"notebook":[],"tutorialsSeen":[],"codexRead":[],"glossaryRead":[],"betsWon":${bets},"cosmeticsSeen":[]}`;
+    for (const bad of ['["1.6"]', '["#3"]', '[3]']) {
+      expect(loadSave(memoryStore({ [SAVE_KEY]: save(bad) }))).toEqual(emptySave());
+    }
+    expect(loadSave(memoryStore({ [SAVE_KEY]: save('["1.6#3"]') }))).toEqual({
+      ...emptySave(),
+      betsWon: ['1.6#3'],
+    });
+  });
+
   it('records each mechanic card once, in the order seen', () => {
     const seen = recordTutorialSeen(
       recordTutorialSeen(recordTutorialSeen(emptySave(), 'lanterns'), 'sun'),
@@ -100,12 +161,14 @@ describe('saved progress', () => {
   it('a save of version 2 keeps all its progress and notebook, with no card seen', () => {
     const v2 = '{"version":2,"levels":{"1.5":{"stars":2}},"notebook":["1.5"]}';
     expect(loadSave(memoryStore({ [SAVE_KEY]: v2 }))).toEqual({
-      version: 4,
+      version: 5,
       levels: { '1.5': { stars: 2 } },
       notebook: ['1.5'],
       tutorialsSeen: [],
       codexRead: [],
       glossaryRead: [],
+      betsWon: [],
+      cosmeticsSeen: [],
     });
   });
 
@@ -117,12 +180,14 @@ describe('saved progress', () => {
   it('a save of version 1 keeps all its progress, with an empty notebook', () => {
     const v1 = '{"version":1,"levels":{"0.1":{"stars":3},"1.2":{"stars":1}}}';
     expect(loadSave(memoryStore({ [SAVE_KEY]: v1 }))).toEqual({
-      version: 4,
+      version: 5,
       levels: { '0.1': { stars: 3 }, '1.2': { stars: 1 } },
       notebook: [],
       tutorialsSeen: [],
       codexRead: [],
       glossaryRead: [],
+      betsWon: [],
+      cosmeticsSeen: [],
     });
   });
 

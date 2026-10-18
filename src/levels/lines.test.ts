@@ -171,6 +171,17 @@ describe('referencedLines', () => {
     ]);
   });
 
+  it('lists what the council says to stones it already knows, when it asks for others (7.6)', () => {
+    const council = levelSchema.parse({
+      ...talkative,
+      notebook: undefined,
+      hints: [],
+      victory: { type: 'tutteBergeCertificate' },
+      flow: [{ step: 'play' }, { step: 'certifyAgain', repeated: 'ch4.7.oaks.00' }],
+    });
+    expect(referencedLines(council)).toEqual(['ch4.7.oaks.00']);
+  });
+
   it('is empty for a level that says nothing', () => {
     const silent = {
       ...talkative,

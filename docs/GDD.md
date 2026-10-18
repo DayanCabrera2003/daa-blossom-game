@@ -215,7 +215,7 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | **Pasar el farol** | Un brote solitario toca a un vecino con farol: el vecino se lo da y su antigua pareja queda solitaria. Se puede encadenar a mano. | 1.1 (emerge de las reglas) |
 | **Cadena** | Arrastras desde un brote solitario a lo largo de enredaderas; el juego solo permite alternar (apagada, farol, apagada…). Al soltar en un brote solitario, todos los faroles se deslizan y se enciende uno nuevo (+1). Si sueltas en un brote con farol, se aplica igual pero con ganancia 0 (el juego lo marca en gris). | 1.3 |
 | **El sol (tiempo)** | Slider en la barra superior: rebobina y reproduce los movimientos propios o los del jardinero mecánico. | 0.5 |
-| **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da semillas (cosmético). | 1.6 |
+| **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da una semilla, la primera vez (también cada apuesta de las carreras de 6.5; la pregunta informal de 0.4, no). Cada semilla planta una planta en el hub. | 1.6 |
 | **Inspeccionar** | En niebla, revela las enredaderas de un brote. Cuesta una gota de agua. | 3.1 |
 | **Marcas sol / luna** | Colocas la marca sobre un brote; el juego solo acepta marcas coherentes con las reglas. | 3.1 |
 | **Espantapájaros** | Colocas uno sobre un brote; cubre todas sus enredaderas. | 3.7 |
@@ -244,6 +244,22 @@ Las pistas se ofrecen tras 90 segundos sin progreso o tras tres intentos fallido
 
 Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas, dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y las flores secretas. Nunca bloquean el avance.
 
+Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se pierden: no hay tienda ni nada que gastar. Al llegar, un aviso en el hub los anuncia una sola vez. En modo profesor se ven todos.
+
+| ★ | Cosmético |
+|---|---|
+| 15 | Una mariposa naranja que revolotea por el hub |
+| 30 | Una rana (en el estanque, si está plantado) |
+| 50 | Un gato que dormita y a ratos pasea |
+| 70 | Una mariposa azul |
+| 90 | Dos gallinas que picotean |
+| 110 | Luciérnagas sobre el jardín |
+| 130 | El brillo de un farol encendido en cada poste de capítulo |
+
+Todos salen de Ninja Adventure o se dibujan por código. Cada uno vive y se mueve en un hueco propio del hub, libre de todo lo que se lee o se pulsa (carteles, títulos, botones, flores secretas) y de los demás, así que nunca tapan nada ni se mueven cuando llega otro; si el sistema pide menos movimiento, se quedan quietos.
+
+Junto al título del hub, un contador con las estrellas totales y las semillas. Para dejarle sitio (y al cartel del modo libre), el botón "Exportar registro de prueba" pasa de la línea superior del hub al panel de ajustes.
+
 ### 5.5 El Cuaderno del Jardinero
 
 Tras dominar una idea, el mentor pide "escríbelo". El jugador elige entre 3–4 enunciados. Los falsos son plausibles y **se refutan con un mini-jardín contraejemplo que el jugador puede tocar**. Al elegir el correcto, se guarda en el Cuaderno con las palabras del jardín; el Códex lo traduce después.
@@ -261,6 +277,14 @@ Las entradas se desbloquean con el juego, pero en modo profesor están todas abi
 
 Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y puedes: jugarlo, pedirle al jardinero mecánico que lo resuelva con el sol como slider, ver el bosque, las flores y el certificado final. Exporta un código de jardín para compartir.
 
+Se abre al terminar el capítulo 1 (un cartel en el hub), con las acciones que el jugador ya ha ganado; en modo profesor y desde el epílogo, siempre. Jugar en él nunca guarda progreso.
+
+Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredaderas, con los brotes a 18 px o más unos de otros y un farol por brote; sin niebla. El editor rechaza con un aviso amable lo que taparía el nombre de un brote, y los jardines generados o abiertos de un código se disponen de modo que todos los nombres se lean. Los jardines generados salen del núcleo, deterministas por semilla (hilera, corro, estrella, todos con todos, al azar, abejas y flores, flor de tallo largo, flores anidadas, hélice, muchas flores); si uno pasaría de los límites, se encoge hasta caber y lo dice.
+
+El jardinero mecánico aparece tras 6.2 y usa todas sus herramientas aunque el jugador aún no las tenga (no se las da). El certificado a demanda sale del bosque de la última búsqueda sin cadena: piedras en las lunas (tras 7.4) y, si el jardín es de abejas y flores, espantapájaros (tras 3.8). No hay carrera contra Bruto en el modo libre. Que el jardinero lo resuelva no gana el jardín: «Terminé» sigue siendo del jugador, y ganar un jardín libre no da estrellas (el panel de victoria dice una línea propia).
+
+Compartir da el código de jardín corto (brotes, enredaderas y faroles, sin posiciones: al importarlo se dispone solo), un enlace `?garden=<código>` que abre el modo libre con ese jardín, y el mismo JSON de los niveles (con posiciones y nombres, válido para el catálogo una vez se le da su id). Importar acepta un código o un JSON, pegado o desde un archivo, y lo valida todo antes de usarlo.
+
 ### 5.8 Modo profesor
 
 Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, panel con la traza del algoritmo en notación matemática junto al jardín.
@@ -271,7 +295,9 @@ Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y e
 
 ### 5.10 Flores secretas
 
-Puzles opcionales difíciles escondidos en el hub (uno o dos por capítulo). No enseñan nada nuevo, exigen combinar. Ejemplos en 7.9.
+Puzles opcionales difíciles escondidos en el hub: una por capítulo, del Prado al Consejo (siete; el Huerto no tiene). No enseñan nada nuevo, exigen combinar, y solo usan las acciones de su capítulo. Ejemplos en 7.9.
+
+Cada una florece junto al poste del cartel de su capítulo, en un hueco reservado a su lado que nunca tapa un botón. No aparece hasta terminar el capítulo; entonces es un capullo que se abre con estrellas de ese capítulo: las de completarlo todo más la mitad (redondeada hacia arriba) de sus estrellas extra posibles. Tocar el capullo dice cuántas faltan. Nada depende de ellas: no cuentan para terminar el capítulo ni abren otro nivel, y al ganarlas se vuelve al hub. En modo profesor están todas abiertas.
 
 
 ### 5.11 Tarjetas de mecánica
@@ -774,12 +800,12 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 ### 7.9 Flores secretas (opcionales)
 
 - **Prado:** una cadena de longitud 11 escondida entre 12 callejones.
-- **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de superponer.
+- **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de separar la maraña (la maraña ya es la superposición; la tentación es restar los faroles).
 - **Invernadero:** certificar con espantapájaros un jardín donde la búsqueda no llega a todos los brotes (obliga a añadir los no visitados de un lado; enlaza con C5).
 - **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa).
 - **Salvaje:** cuatro flores anidadas.
 - **Invierno:** un jardín donde Bruto gana (muy pequeño) y la pregunta "¿cuándo compensa pensar?".
-- **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín.
+- **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín. Tras el primer certificado, un paso nuevo del guion ("otro certificado") solo termina con piedras distintas de las ya presentadas; repetir uno se contesta con amabilidad.
 
 ---
 

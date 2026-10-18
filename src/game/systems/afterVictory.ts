@@ -15,7 +15,8 @@ export interface VictoryWays {
 
 /**
  * The ways on from winning `levelId`, given the levels the player can see in order (outside teacher
- * mode, without drafts). A level not among them has no next garden.
+ * mode, without drafts; never the secret flowers). A level not among them, as a secret flower, has
+ * no next garden and leads back to the hub.
  */
 export function afterVictory(
   levelId: string,

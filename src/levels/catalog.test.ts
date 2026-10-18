@@ -42,7 +42,10 @@ describe('the level catalog', () => {
   });
 
   it('holds the written chapters 0 to 5 whole, with no draft among them', () => {
-    const early = catalog().filter((level) => compareLevelIds(level.data.id, '6.0') < 0);
+    // The secret flowers that close some chapters are optional, and checked on their own.
+    const early = catalog().filter(
+      (level) => compareLevelIds(level.data.id, '6.0') < 0 && level.data.secret === undefined,
+    );
     expect(early.map((level) => level.data.id)).toEqual([
       '0.1',
       '0.2',
@@ -93,7 +96,9 @@ describe('the level catalog', () => {
   });
 
   it('holds the written chapter 6 whole, with no draft among its levels', () => {
-    const recipes = catalog().filter((level) => level.data.id.startsWith('6.'));
+    const recipes = catalog().filter(
+      (level) => level.data.id.startsWith('6.') && level.data.secret === undefined,
+    );
     expect(recipes.map((level) => level.data.id)).toEqual([
       '6.1',
       '6.2',
@@ -106,7 +111,9 @@ describe('the level catalog', () => {
   });
 
   it('holds the written chapter 7 whole, with no draft among its levels', () => {
-    const council = catalog().filter((level) => level.data.id.startsWith('7.'));
+    const council = catalog().filter(
+      (level) => level.data.id.startsWith('7.') && level.data.secret === undefined,
+    );
     expect(council.map((level) => level.data.id)).toEqual(['7.1', '7.2', '7.3', '7.4', '7.5']);
     expect(council.filter((level) => level.data.draft)).toEqual([]);
   });

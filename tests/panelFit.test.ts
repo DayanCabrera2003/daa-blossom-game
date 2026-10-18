@@ -12,11 +12,13 @@ import {
   TUTORIAL_PANEL,
   tutorialLayout,
 } from '../src/game/picture/panelLayout';
+import { SETTINGS_PANEL } from '../src/game/picture/settingsPanelLayout';
 import { charsIn, LINE_HEIGHT, textHeight, wrappedLines } from '../src/game/picture/textWrap';
 import { questionAt, type Question, type QuestionOption } from '../src/game/systems/question';
 import { DEMO_SIZE } from '../src/game/view/CardDemoView';
 import { LAYOUT } from '../src/game/view/layout';
 import { RACE_COUNTERS } from '../src/game/view/RaceView';
+import { VICTORY_PANEL } from '../src/game/view/VictoryPanel';
 import { CARD_IDS } from '../src/levels/cards/schema';
 import { catalog } from '../src/levels/catalog';
 import { createTranslator } from '../src/services/i18n';
@@ -90,6 +92,15 @@ describe('the panels fit their texts', () => {
     expect(DEMO_SIZE.width).toBeLessThanOrEqual(width);
   });
 
+  it("the free mode editor's card fits its window, above the toolbar", () => {
+    const width = innerWidth(TUTORIAL_PANEL.width);
+    expect(wrappedLines(t('sandbox.card.title'), charsIn(width))).toBe(1);
+    // GDD §5.11: two or three lines about the gesture.
+    expect(wrappedLines(t('sandbox.card.body'), charsIn(width))).toBeLessThanOrEqual(3);
+    const layout = tutorialLayout(textHeight(t('sandbox.card.body'), width), DEMO_SIZE.height);
+    expect(TUTORIAL_PANEL.y + layout.height).toBeLessThanOrEqual(LAYOUT.toolbarY - 1);
+  });
+
   it('the statement a counterexample answers stays in the two lines of the top bar', () => {
     const statements = levels.flatMap((level) =>
       (level.data.notebook ?? []).flatMap((asked) =>
@@ -103,6 +114,24 @@ describe('the panels fit their texts', () => {
         LAYOUT.garden.y + 1,
       );
     }
+  });
+
+  it('the settings panel fits its buttons and the labels of its rows', () => {
+    const inner = innerWidth(SETTINGS_PANEL.width);
+    for (const label of [t('settings.exportLog'), t('settings.close'), t('settings.mute')]) {
+      expect(estimatedButtonWidth(label)).toBeLessThanOrEqual(inner);
+    }
+    // Each channel's name ends before its slider's track starts.
+    for (const channel of ['music', 'sfx', 'voice']) {
+      const name = SETTINGS_PANEL.pad + estimatedButtonWidth(t(`settings.${channel}`));
+      expect(name).toBeLessThanOrEqual(SETTINGS_PANEL.track.from);
+    }
+  });
+
+  it('the victory panel of a free garden says its line on one row, in place of the stars', () => {
+    expect(charsIn(VICTORY_PANEL.width - 2 * VICTORY_PANEL.pad)).toBeGreaterThanOrEqual(
+      [...t('victory.free')].length,
+    );
   });
 
   it("a race's counters stay clear of its chart, whatever they say", () => {

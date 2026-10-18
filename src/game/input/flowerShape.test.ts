@@ -44,6 +44,17 @@ describe('flower outlines', () => {
     for (const point of candidates) expect(insidePolygon(point, square)).toBe(true);
   });
 
+  it('keeps far petals in a line inside the octagon, whose sides come closer than its corners', () => {
+    // Found by exploring: an octagon with its corners on the circle cut off the farthest petal.
+    const petals = [
+      { x: 0, y: 0 },
+      { x: 135, y: 253 },
+      { x: 135, y: 253 },
+    ];
+    const outline = flowerOutline(petals, 6);
+    for (const petal of petals) expect(insidePolygon(petal, outline)).toBe(true);
+  });
+
   it('property: every petal is inside its flower outline', () => {
     const point = fc.record({
       x: fc.integer({ min: 0, max: 479 }),

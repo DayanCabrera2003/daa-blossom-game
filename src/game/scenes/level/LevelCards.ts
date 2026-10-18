@@ -4,6 +4,7 @@ import { cardDemos } from '@levels/cards/catalog';
 import type { CardDemo } from '@levels/cards/demo';
 import type { CardId } from '@levels/cards/schema';
 import { recordTutorialSeen } from '@services/save';
+import { demoLoop } from '../../picture/cardDemo';
 import { helpCards, offerCards } from '../../systems/tutorials';
 import type { ShownCard } from '../../view/TutorialView';
 import type { GameContext } from '../context';
@@ -43,19 +44,26 @@ export class LevelCards {
 
   /**
    * "?": the cards of what `level` has open at step `step`, again, one after another; seen or not,
-   * and not queued a second time while they are still showing.
+   * and not queued a second time while they are still showing. Undo, the sun and the layers as
+   * from level `interfaceAt`, the one whose interface the screen shows.
    */
-  help(level: Level, step: number): void {
+  help(level: Level, step: number, interfaceAt: string): void {
     if (this.presenter.cardsQueued) return;
-    for (const card of helpCards(level, step)) this.presenter.present({ kind: 'tutorial', card });
+    for (const card of helpCards(level, step, interfaceAt)) {
+      this.presenter.present({ kind: 'tutorial', card });
+    }
   }
 
-  /** A mechanic card in the player's words, with its demo. */
+  /** A mechanic card in the player's words, looping its demo. */
   shown(card: CardId): ShownCard {
     const demo = demos?.get(card);
     invariant(demo !== undefined, `the cards file has a demo for ${card}`);
     const { t } = this.context;
-    return { title: t(`tutorial.${card}.title`), body: t(`tutorial.${card}.body`), demo };
+    return {
+      title: t(`tutorial.${card}.title`),
+      body: t(`tutorial.${card}.body`),
+      loop: demoLoop(demo),
+    };
   }
 
   /** A closed card is seen for good: saved at once, so it never shows by itself again. */

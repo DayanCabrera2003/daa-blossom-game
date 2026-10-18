@@ -4,7 +4,8 @@ import { catalog } from '@levels/catalog';
 import type { Bus } from '@services/bus';
 import type { BusEvents, TeacherFeed } from '@services/busEvents';
 import type { Translate } from '@services/i18n';
-import { diagramGarden, type DiagramGarden } from '@ui/model/diagramGarden';
+import type { DiagramGarden } from '@ui/model/diagramGarden';
+import { feedGarden } from '@ui/model/feedGarden';
 import { fitGarden, miniGarden, type MiniLayout, type MiniMoment } from '@ui/model/miniGarden';
 import { walkTo, type PanelState } from '@ui/model/teacherPanel';
 import {
@@ -41,14 +42,13 @@ type Chosen = { readonly list: 'day' | 'edmonds'; readonly step: number };
 /** The levels of the catalog by id, gathered the first time the panel opens. */
 let levels: ReadonlyMap<string, Level> | null = null;
 
-/** The garden of the level `id`, with its names and places; null for an unknown level. */
-function gardenOf(id: string): DiagramGarden | null {
+/**
+ * The garden of a feed, with its names and places: its level's in the catalog, or the free mode's
+ * own sprouts it brings; null for an unknown level that brings none.
+ */
+function gardenOf(feed: TeacherFeed): DiagramGarden | null {
   levels ??= new Map(catalog().map((level) => [level.data.id, level]));
-  const found = diagramGarden(
-    { level: id },
-    { level: (level) => levels?.get(level), card: () => undefined },
-  );
-  return found.ok ? found.value : null;
+  return feedGarden(feed, (id) => levels?.get(id));
 }
 
 /** Builds the panel in `layer`; it draws nothing until it is shown a feed. */
@@ -166,8 +166,9 @@ export function mountTeacherPanel(
     // A list walked with the keys keeps the keyboard once it is written anew (`writeEdmonds`
     // keeps its own).
     const dayFocused = page.activeElement === dayList?.element;
-    if (garden === null || fed?.level !== feed.level) {
-      garden = gardenOf(feed.level);
+    // A new level, or another garden of the free mode (the same id, sprouts of its own).
+    if (garden === null || fed?.level !== feed.level || fed.sprouts !== feed.sprouts) {
+      garden = gardenOf(feed);
       layout = garden === null ? null : fitGarden(garden.positions);
     }
     fed = feed;

@@ -11,6 +11,18 @@ export interface Crown {
 }
 
 /**
+ * Where each crown's sprite hangs on a sprout: the point of its frame (`originY`, from 0 at the top
+ * to 1 at the bottom, always centred across) placed `sink` pixels below the top of the body. The
+ * layout checks of the levels measure a crown with these (`tests/pictureSizes.test.ts`).
+ */
+export const CROWN_ANCHORS = {
+  // The stem's foot (row 12 of the 16 × 16 tile) sinks 5 pixels into the top of the body.
+  sproutLeaves: { originY: 13 / 16, sink: 5 },
+  // The petals sit on the diamond's top corner.
+  flowerHead: { originY: 0.75, sink: 0 },
+} as const;
+
+/**
  * The sprites on top of the sprouts' bodies (plan 06, section 1.4): the two-leaf sprout of
  * `TilesetFloorDetail` on a sprout, its stem sunk into the top of the body, and the petals of the
  * first frame of the animated flower on a chapter 3 flower. A bee has wings, drawn with its body,
@@ -56,14 +68,9 @@ export class SproutCrowns {
       this.into?.add(image);
       this.images.push(image);
     }
+    const { originY, sink } = CROWN_ANCHORS[name];
     image.setTexture(sheet, frameIndex(name)).setVisible(true);
-    if (name === 'sproutLeaves') {
-      // The stem's foot (row 12 of the 16 × 16 tile) sinks 5 pixels into the top of the body.
-      image.setOrigin(0.5, 13 / 16).setPosition(crown.x, crown.y - crown.radius + 5);
-    } else {
-      // The petals sit on the diamond's top corner.
-      image.setOrigin(0.5, 0.75).setPosition(crown.x, crown.y - crown.radius);
-    }
+    image.setOrigin(0.5, originY).setPosition(crown.x, crown.y - crown.radius + sink);
     return image;
   }
 

@@ -1,39 +1,42 @@
 import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
-import { codexSources, hasNewPages, openCodex } from '@services/codexProgress';
-import { download } from '@services/download';
-import { exportLog } from '@services/exportLog';
-import type { SaveData } from '@services/save';
-import { unlockedLevels, visibleLevels } from '@services/progress';
+import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
+import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
-import { BOOK_ICON } from '../picture/buttonIcon';
 import { chapterTitle } from '../picture/chapterTitle';
-import { finishedChapters, HUB_SIGN, HUB_TINT, hubGarden, signBox } from '../picture/hubGarden';
+import {
+  finishedChapters,
+  flowerBox,
+  HUB_HEAD,
+  HUB_TINT,
+  hubGarden,
+  signBox,
+} from '../picture/hubGarden';
 import { epilogueSignAt, HUB, layoutHub } from '../picture/hubLayout';
 import { PIXEL_FONT } from '../picture/pixelFont';
-import { labelSeal, SEAL_PAD } from '../picture/signSeal';
 import { cutOf, seasonOf } from '../picture/seasons';
-import { labelStars, STAR_SIZE } from '../picture/starIcon';
-import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { levelButtonLabel } from '../picture/levelButtonLabel';
+import { STAR_SIZE } from '../picture/starIcon';
 import { epilogueReached } from '../systems/epilogue';
 import { trackFor } from '../systems/musicFor';
 import { BackdropView } from '../view/BackdropView';
 import { Button } from '../view/Button';
 import { fitCamera } from '../view/fitCamera';
-import { GEAR_SIZE } from '../view/GearButton';
-import { css, PALETTE } from '../view/palette';
 import { cutFrame } from '../view/sheetCuts';
 import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
+import { addHubCosmetics } from './hub/HubCosmetics';
+import { addHubSecrets, type FlowerPlace } from './hub/HubSecrets';
+import { addHubTopLine } from './hub/HubTopLine';
 import { addSettings } from './settingsPanel';
 
 /** Above the buttons' labels, which sit at depth 101. */
 const STAR_DEPTH = 102;
 
-/** Where a chapter title starts: after the signpost it hangs from. */
-const TITLE_X = HUB.margin + HUB_SIGN.width + HUB_SIGN.gap;
+/** Where a chapter title starts: after its flower's column and the signpost it hangs from. */
+const TITLE_X = HUB.margin + HUB_HEAD;
 
 /** The box a text or a button covers, to keep the hub's garden off it. */
 const boxOf = (thing: { x: number; y: number; width: number; height: number }): Rect => ({
@@ -61,18 +64,17 @@ export class HubScene extends Phaser.Scene {
 
   create(data: HubSceneData = {}): void {
     fitCamera(this);
-    const { catalog, t, saves, teacherMode, playtest, clock, music, bus } = contextOf(this);
+    const { catalog, t, saves, teacherMode, music, bus } = contextOf(this);
     const save = saves.get();
     // The hub's own track; coming back from a level crossfades to it.
     music.play(trackFor({ kind: 'hub' }));
     const backdrop = new BackdropView(this);
-    const heading = this.add.text(HUB.margin, 6, t('hub.title'), textStyle(12, PALETTE.lit));
+    // The title, the counter of stars and seeds, and the signs of the books, along the top.
+    const topLine = addHubTopLine(this);
 
-    // Drafts (test levels of chapters not yet written) are shown in teacher mode only.
-    const shown = visibleLevels(
-      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
-      teacherMode,
-    );
+    // Drafts (test levels of chapters not yet written) are shown in teacher mode only; secret
+    // flowers are never buttons.
+    const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const open = unlockedLevels(shown, save, teacherMode);
     const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] as string))];
 
@@ -82,9 +84,8 @@ export class HubScene extends Phaser.Scene {
         .filter((level) => level.id.startsWith(`${chapter}.`))
         .map(({ id }) => {
           // The pixel font has no star: the label leaves blank cells where its stars are drawn.
-          const room = labelStars(open.has(id) ? (save.levels[id]?.stars ?? 0) : 0);
-          const label = open.has(id) ? `${id} ${' '.repeat(room.spaces)}` : `${id} ·`;
-          const button = new Button(this, 0, 0, label, () =>
+          const { text, room } = levelButtonLabel(id, open.has(id), save.levels[id]?.stars ?? 0);
+          const button = new Button(this, 0, 0, text, () =>
             this.scene.start('level', { levelId: id }),
           );
           return { button: button.setEnabled(open.has(id)), room };
@@ -95,30 +96,29 @@ export class HubScene extends Phaser.Scene {
       return this.add.text(TITLE_X, 0, t(title.key, title.params), textStyle(8));
     });
     const height = rows[0]?.[0]?.button.height ?? 0;
-    // Each title is laid out with its signpost before it.
+    // Each title is laid out with its flower's column and its signpost before it.
     const layout = layoutHub(
       rows.map((row) => row.map(({ button }) => button.width)),
       height,
       titles.map((title) => title.width + TITLE_X - HUB.margin),
     );
     // What the hub's garden must leave uncovered: every sign, title and button.
-    const taken: Rect[] = [boxOf(heading)];
-    // In teacher mode the hub says so, after its title: every level, page and sign is open.
-    if (teacherMode) {
-      const badgeX = heading.x + heading.width + HUB.margin * 2;
-      const badge = this.add.text(badgeX, 9, t('teacher.badge'), textStyle(8, PALETTE.sun));
-      taken.push(boxOf(badge));
-    }
+    const taken: Rect[] = [...topLine.taken];
+    // Each chapter's flower column and signpost: its secret flower grows beside the signpost.
+    const signs = new Map<string, FlowerPlace>();
     const signpost = cutOf('signpost');
     const signFrame = cutFrame(this.textures, signpost);
     layout.chapters.forEach((placement, c) => {
       // On the line of its first buttons' labels, hanging from its signpost.
       const title = itemAt(titles, c).setY(placement.titleY);
       const sign = signBox(placement.titleY, height);
+      const cell = flowerBox(placement.titleY, height);
+      signs.set(itemAt(chapters, c), { cell, sign });
       if (signFrame !== null) {
         this.add.image(sign.x, sign.y, signpost.sheet, signFrame).setOrigin(0, 0);
       }
-      taken.push(sign, boxOf(title));
+      // The column of the secret flower is kept clear too, flower or not.
+      taken.push(cell, sign, boxOf(title));
       placement.buttons.forEach((at, b) => {
         const { button, room } = itemAt(itemAt(rows, c), b);
         button.moveTo(at.x, at.y);
@@ -132,87 +132,6 @@ export class HubScene extends Phaser.Scene {
       });
     });
 
-    // The settings, at the top right across from the title.
-    const gear = { x: CANVAS_WIDTH - HUB.margin - GEAR_SIZE, y: 4 };
-
-    // Playtesters send this file back; nothing leaves the browser otherwise (GDD §10). On the top
-    // line, just before the settings, so the bottom of the hub is free for its garden.
-    const exportButton = new Button(this, 0, 0, t('hub.exportLog'), () =>
-      download(exportLog(playtest.current(), clock())),
-    );
-    const { width, height: tall } = exportButton;
-    const exportX = gear.x - HUB.gap - width;
-    exportButton.moveTo(exportX, HUB.exportY);
-    taken.push({ x: exportX, y: HUB.exportY - 1, width, height: tall });
-
-    // The Cuaderno, before the Códex, once a statement is written (and in teacher mode, to look at
-    // the book): it opens as a book over the hub, with a ribbon to the Códex.
-    const notebook =
-      save.notebook.length > 0 || teacherMode
-        ? new Button(this, 0, 0, t('hub.notebook'), () =>
-            bus.emit('book.open', { book: 'notebook' }),
-          )
-        : null;
-    // Puts the Cuaderno just before `right`, where the sign to its right starts.
-    let notebookX = exportX;
-    const placeNotebook = (right: number): void => {
-      if (notebook === null) return;
-      notebookX = right - HUB.gap - notebook.width;
-      notebook.moveTo(notebookX, HUB.exportY);
-    };
-    placeNotebook(exportX);
-
-    // The Códex, before the export on the top line, once some page of it is open: the hub grows
-    // with the game, and in teacher mode the whole book is open from the start.
-    const codexOpen = openCodex(codexSources(catalog), save, teacherMode);
-    if (codexOpen.size > 0) {
-      const codex = new Button(
-        this,
-        0,
-        0,
-        t('hub.codex'),
-        () => bus.emit('book.open', { book: 'codex' }),
-        [BOOK_ICON],
-      );
-      // The book's "new" seal, written inside its sign after the word while some open page is
-      // still unread, so it reads as part of the Códex and of no other sign. Reading the book over
-      // the hub updates the save: the seal and its room go, and the Cuaderno follows the sign.
-      const word = t('codex.new');
-      const room = labelSeal(word);
-      const seal = this.add
-        .text(0, HUB.exportY, word, {
-          ...textStyle(8, PALETTE.ink),
-          backgroundColor: css(PALETTE.lit),
-          padding: { x: SEAL_PAD },
-        })
-        .setDepth(STAR_DEPTH);
-      const showSeal = (now: SaveData): void => {
-        const fresh = hasNewPages(codexOpen, now);
-        codex.setLabel(fresh ? t('hub.codex') + ' '.repeat(room.spaces) : t('hub.codex'));
-        const codexX = exportX - HUB.gap - codex.width;
-        codex.moveTo(codexX, HUB.exportY);
-        // The blank cells end where the label does, 2 px inside the sign's right edge.
-        seal.setX(codexX + codex.width - 2 - room.spaces * PIXEL_FONT.advance + room.offset);
-        seal.setVisible(fresh);
-        placeNotebook(codexX);
-      };
-      showSeal(save);
-      // Pages only get read while the hub is up, so the sign is now at its widest.
-      const codexX = exportX - HUB.gap - codex.width;
-      taken.push({ x: codexX, y: HUB.exportY - 1, width: codex.width, height: codex.height });
-      const unsubscribe = saves.subscribe(showSeal);
-      this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribe);
-    }
-    // The Cuaderno where it stands now, at its leftmost.
-    if (notebook !== null) {
-      taken.push({
-        x: notebookX,
-        y: HUB.exportY - 1,
-        width: notebook.width,
-        height: notebook.height,
-      });
-    }
-
     // Once the last garden is won (and in teacher mode), a sign grows in the garden's bed and opens
     // the epilogue again, over the hub.
     if (epilogueReached(save, teacherMode)) {
@@ -222,19 +141,30 @@ export class HubScene extends Phaser.Scene {
       taken.push({ x: at.x, y: at.y - 1, width: sign.width, height: sign.height });
     }
 
-    addSettings(this, gear);
-    taken.push({ ...gear, width: GEAR_SIZE, height: GEAR_SIZE });
+    // The settings, at the top right across from the title.
+    const settings = addSettings(this, topLine.gear);
+
+    // The secret flowers, beside the signposts of their chapters: never buttons, found by looking.
+    addHubSecrets(this, secretFlowers(catalogEntries(catalog), save, teacherMode), signs, {
+      blocked: settings.open,
+    });
 
     // The garden grows on the orchard's grass, a piece for each chapter finished.
     const finished = finishedChapters(
-      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
+      catalogEntries(catalog),
       (id) => save.levels[id] !== undefined,
     );
-    backdrop.paint({
-      tiles: groundOf(seasonOf('0'), seedOf('hub')),
-      ornaments: hubGarden(finished, taken),
-    });
+    const garden = hubGarden(finished, taken);
+    backdrop.paint({ tiles: groundOf(seasonOf('0'), seedOf('hub')), ornaments: garden });
     backdrop.tint(HUB_TINT);
+
+    // The little lives the stars and seeds bring, in the bed of the garden and by the signposts.
+    const pond = garden.find((piece) => piece.chapter === '2');
+    addHubCosmetics(this, {
+      taken,
+      pond: pond === undefined ? null : boxOf({ ...pond, ...pond.ornament }),
+      signs: [...signs.values()].map((place) => place.sign),
+    });
     // After the last garden the epilogue opens over the hub, now laid out behind it. Phaser keeps
     // a scene's data when it is started again without any, so the request is spent here: coming
     // back to the hub later never opens the epilogue again by itself.

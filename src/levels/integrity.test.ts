@@ -193,6 +193,24 @@ describe('level integrity', () => {
     expect(problemsOf(thirsty)).toContainEqual({ code: 'solutionOverWater', used: 2, budget: 1 });
   });
 
+  it('a level offers a water budget or a formal bet, never both: the save keeps three stars', () => {
+    const betting = {
+      ...trap,
+      flow: [{ step: 'bet', prompt: 'ch1.1.sauce.00', range: 3 }, { step: 'play' }],
+      solution: [{ type: 'bet', value: 2 }, ...trap.solution],
+    };
+    const both = { ...betting, water: 4 };
+    expect(problemsOf(betting)).toEqual([]);
+    expect(problemsOf({ ...trap, water: 4 })).toEqual([]);
+    expect(problemsOf(both)).toContainEqual({ code: 'waterAndBet' });
+    // An informal bet earns no star, so it may sit next to a water budget.
+    const informal = {
+      ...both,
+      flow: [{ step: 'bet', prompt: 'ch1.1.sauce.00', range: 3, informal: true }, { step: 'play' }],
+    };
+    expect(problemsOf(informal)).not.toContainEqual({ code: 'waterAndBet' });
+  });
+
   it('dialogue lines belong to their own level', () => {
     const foreign = { ...trap, hints: [{ line: 'ch2.4.sauce.01', highlight: [] }] };
     expect(problemsOf(foreign)).toContainEqual({ code: 'foreignLine', line: 'ch2.4.sauce.01' });
@@ -292,6 +310,57 @@ describe('level integrity', () => {
     expect(problemsOf(kinded(['bee', 'bee', 'flower', 'flower']))).toEqual([
       { code: 'sameKindVine', u: 'A', v: 'B', kind: 'bee' },
       { code: 'sameKindVine', u: 'C', v: 'D', kind: 'flower' },
+    ]);
+  });
+
+  it('every name stays readable: clear of the lanterns and sprouts around it, unlike the others', () => {
+    const crowded = {
+      ...trap,
+      sprouts: trap.sprouts.map((sprout) =>
+        sprout.label === 'D' ? { ...sprout, x: 280, y: 160 } : sprout,
+      ),
+    };
+    expect(problemsOf(crowded)).toContainEqual({
+      code: 'labelOnLantern',
+      label: 'C',
+      vine: ['C', 'D'],
+    });
+    const rename = (label: string) => (label === 'D' ? 'a' : label);
+    const twins = {
+      ...trap,
+      sprouts: trap.sprouts.map((sprout) => ({ ...sprout, label: rename(sprout.label) })),
+      vines: trap.vines.map((vine) => vine.map(rename)),
+      solution: [
+        { type: 'join', u: 'A', v: 'B' },
+        { type: 'join', u: 'C', v: 'a' },
+      ],
+    };
+    expect(problemsOf(twins)).toEqual([{ code: 'labelsDifferByCase', labels: ['A', 'a'] }]);
+  });
+
+  it('only a secret flower must keep its vines from crossing', () => {
+    const at: Record<string, [number, number]> = {
+      A: [200, 100],
+      B: [200, 170],
+      C: [160, 135],
+      D: [240, 135],
+    };
+    const crossed = {
+      ...trap,
+      sprouts: trap.sprouts.map((sprout) => {
+        const [x, y] = at[sprout.label] ?? [0, 0];
+        return { ...sprout, x, y };
+      }),
+    };
+    expect(problemsOf(crossed)).toEqual([]);
+    expect(problemsOf({ ...crossed, secret: { stars: 2 } })).toEqual([
+      {
+        code: 'vinesCross',
+        vines: [
+          ['A', 'B'],
+          ['C', 'D'],
+        ],
+      },
     ]);
   });
 });

@@ -14,7 +14,7 @@
     { "label": "U", "x": 300, "y": 135 },
     { "label": "p", "x": 355, "y": 85 },
     { "label": "q", "x": 355, "y": 185 },
-    { "label": "r", "x": 420, "y": 185 },
+    { "label": "o", "x": 420, "y": 185 },
     { "label": "s", "x": 420, "y": 85 },
     { "label": "V", "x": 465, "y": 135 }
   ],
@@ -34,17 +34,17 @@
     ["U", "p"],
     ["p", "q"],
     ["q", "U"],
-    ["q", "r"],
-    ["r", "s"],
+    ["q", "o"],
+    ["o", "s"],
     ["s", "p"],
-    ["r", "V"]
+    ["o", "V"]
   ],
   "lanterns": [
     ["a", "b"],
     ["c", "d"],
     ["g", "h"],
     ["p", "q"],
-    ["r", "s"]
+    ["o", "s"]
   ],
   "goal": { "visible": false },
   "victory": { "type": "maximum" },
@@ -73,11 +73,11 @@
     { "type": "markMoon", "from": "U", "to": "p" },
     { "type": "foldAt", "from": "U", "to": "q" },
     { "type": "markMoon", "from": "p", "to": "s" },
-    { "type": "foldAt", "from": "q", "to": "r" },
-    { "type": "markMoon", "from": "r", "to": "V" },
+    { "type": "foldAt", "from": "q", "to": "o" },
+    { "type": "markMoon", "from": "o", "to": "V" },
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
-    { "type": "chain", "path": ["U", "q", "p", "s", "r", "V"] },
+    { "type": "chain", "path": ["U", "q", "p", "s", "o", "V"] },
     { "type": "markRoot", "vertex": "x" },
     { "type": "markMoon", "from": "x", "to": "a" },
     { "type": "markMoon", "from": "x", "to": "g" },

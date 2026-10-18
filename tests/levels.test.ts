@@ -1,6 +1,7 @@
 import { checkCodex } from '@levels/codexChecks';
 import { checkIntegrity } from '@levels/integrity';
 import { loadLevel } from '@levels/loader';
+import { checkSecrets } from '@levels/secretChecks';
 import { describe, expect, it } from 'vitest';
 import { expectedPath, readLevelFiles } from '../tools/levelFiles';
 
@@ -62,6 +63,14 @@ describe('level integrity (every level file)', () => {
     expect(opens('0.5')).toEqual([{ entry: 'C1', tabs: ['intuition'] }]);
     expect(opens('1.8')).toEqual(['C1', 'C2', 'C13']);
     expect(opens('7.5')).toEqual(['C14']);
+  });
+
+  it('every secret flower closes its chapter, opens nothing and asks for a fair share of stars', () => {
+    const levels = files.flatMap(({ json }) => {
+      const level = loadLevel(json);
+      return level.ok ? [level.value.data] : [];
+    });
+    expect(checkSecrets(levels)).toEqual([]);
   });
 
   describe.each(files)('$path', ({ path, json }) => {

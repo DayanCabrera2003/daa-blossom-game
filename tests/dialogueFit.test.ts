@@ -39,15 +39,25 @@ function mentorTexts(): string[] {
     t('bet.revealRight', { count: 99 }),
     t('bet.revealWrong', { bet: 99, count: 99 }),
     ...reveals,
+    // The free mode's mentor after the gardener and on the scarecrows (24 sprouts at most).
+    t('sandbox.solve.done', { count: 99 }),
+    t('sandbox.certify.scarecrows', { count: 99 }),
   ];
 }
+
+/** The interface texts the Council says in the box: its count of a free garden's stones. */
+const councilTexts = (): string[] => [
+  t('sandbox.certify.stones', { groups: 99, stones: 99, dark: 99 }),
+  t('sandbox.certify.stonesFull'),
+];
 
 /** Every text each speaker says in the box. */
 function saidBy(speaker: Speaker): string[] {
   const written = Object.entries(lines)
     .filter(([id]) => speakerOf(id) === speaker)
     .map(([, line]) => line);
-  return speaker === 'sauce' ? [...written, ...mentorTexts()] : written;
+  if (speaker === 'sauce') return [...written, ...mentorTexts()];
+  return speaker === 'oaks' ? [...written, ...councilTexts()] : written;
 }
 
 /** The rows the longest text of `speaker` takes in the box. */

@@ -8,7 +8,7 @@ import { DialogueView } from '../../view/DialogueView';
 import { FlowerView } from '../../view/FlowerView';
 import { FogView } from '../../view/FogView';
 import { GardenView } from '../../view/GardenView';
-import { HudView } from '../../view/HudView';
+import { HudView, type HudLayout } from '../../view/HudView';
 import { MarksView } from '../../view/MarksView';
 import { MirrorView } from '../../view/MirrorView';
 import { NotebookView } from '../../view/NotebookView';
@@ -51,8 +51,10 @@ export interface LevelViews {
 export interface LevelButtons {
   /** An event for the level controller (buttons, tools, the sun slider). */
   readonly dispatch: (event: UiEvent) => void;
-  /** The back button: leaves for the hub. */
+  /** The back button: leaves for the hub, or in the free mode for the editor. */
   readonly back: () => void;
+  /** How the HUD is laid out: its back button's text, its buttons, where the trace sits. */
+  readonly hud: HudLayout;
   /** The "?" button: shows the level's mechanic cards again. */
   readonly help: () => void;
   /** The book button: opens the Códex. */
@@ -86,18 +88,23 @@ export const buildLevelViews = (
     }),
     race: new RaceView(scene, t),
     animation: new AnimationView(scene),
-    hud: new HudView(scene, t, {
-      done: () => dispatch({ kind: 'done' }),
-      undo: () => dispatch({ kind: 'undo' }),
-      redo: () => dispatch({ kind: 'redo' }),
-      hint: () => dispatch({ kind: 'hint' }),
-      back: buttons.back,
-      help: buttons.help,
-      book: buttons.book,
-      trace: buttons.trace,
-      checkMirror: () => dispatch({ kind: 'checkMirror' }),
-      leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
-    }),
+    hud: new HudView(
+      scene,
+      t,
+      {
+        done: () => dispatch({ kind: 'done' }),
+        undo: () => dispatch({ kind: 'undo' }),
+        redo: () => dispatch({ kind: 'redo' }),
+        hint: () => dispatch({ kind: 'hint' }),
+        back: buttons.back,
+        help: buttons.help,
+        book: buttons.book,
+        trace: buttons.trace,
+        checkMirror: () => dispatch({ kind: 'checkMirror' }),
+        leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
+      },
+      buttons.hud,
+    ),
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),
     toast: new ToastView(scene),

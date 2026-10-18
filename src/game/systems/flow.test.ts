@@ -168,6 +168,21 @@ describe('the script engine', () => {
     expect(unbet.effects.map((effect) => effect.kind)).toEqual(['bet']);
   });
 
+  it('another certificate waits until the session says the victory holds again (7.6)', () => {
+    const started = start([
+      play,
+      { step: 'certifyAgain', repeated: 'ch7.6.oaks.02' },
+      say('ch7.6.oaks.01'),
+    ]);
+    const won = advanceFlow(started.flow, { type: 'won' });
+    expect(won.effects).toEqual([{ kind: 'certifyAgain', step: 1 }]);
+    expect(advanceFlow(won.flow, { type: 'tap' }).flow).toBe(won.flow);
+    expect(advanceFlow(won.flow, { type: 'won' }).effects).toEqual([
+      { kind: 'say', lines: ['ch7.6.oaks.01'] },
+      { kind: 'finished' },
+    ]);
+  });
+
   it('the sun step ends when the sun moves', () => {
     const { flow, effects } = start([{ step: 'sun' }]);
     expect(effects).toEqual([{ kind: 'sun' }]);

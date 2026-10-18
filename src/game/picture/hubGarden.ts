@@ -20,12 +20,22 @@ import {
  * The hub that grows (plan 06, section 1.5): on the ground of the orchard, each finished chapter
  * plants its piece: 0 its plots and sunflowers, 1 a cherry tree and flowers, 2 the pond, 3 a glass
  * greenhouse, 4 the banners, 5 the autumn tree, 6 the snowy cabin, 7 the oaks. Each chapter's title
- * hangs from a signpost. Pure: the scene measures its signs, titles and buttons, and this says where
+ * hangs from a signpost, with the chapter's secret flower beside it. Pure: the scene measures its signs, titles and buttons, and this says where
  * the pieces go so that none of them covers what the player reads or presses.
  */
 
 /** The signpost before each chapter title, and the room it leaves before the title. */
 export const HUB_SIGN = { width: 16, gap: 2 } as const;
+
+/**
+ * The column at the margin, before each signpost, where the chapter's secret flower grows (plan
+ * 08, section 1.1), as wide as a sprout of the garden, and the room it leaves before the signpost.
+ * It is kept in every layout, flower or not, so nothing moves when a flower comes up.
+ */
+export const HUB_FLOWER = { width: 16, gap: 2 } as const;
+
+/** From the margin to a chapter's title: the flower's column, the signpost, and their gaps. */
+export const HUB_HEAD = HUB_FLOWER.width + HUB_FLOWER.gap + HUB_SIGN.width + HUB_SIGN.gap;
 
 /** The hub under the orchard's own warm light (it has no sun to follow). */
 export const HUB_TINT = seasonOf('0').tint;
@@ -56,26 +66,37 @@ export interface HubPlanting {
   readonly y: number;
 }
 
-/** Where a chapter's signpost stands: at the margin, centred on the line of its title. */
+/** Where a chapter's signpost stands: after its flower's column, centred on the line of its title. */
 export function signBox(titleY: number, lineHeight: number): Rect {
   return {
-    x: HUB.margin,
+    x: HUB.margin + HUB_FLOWER.width + HUB_FLOWER.gap,
     y: titleY + Math.round((lineHeight - HUB_SIGN.width) / 2),
     width: HUB_SIGN.width,
     height: HUB_SIGN.width,
   };
 }
 
+/** Where a chapter's secret flower grows: at the margin, beside its signpost and as tall. */
+export function flowerBox(titleY: number, lineHeight: number): Rect {
+  return { ...signBox(titleY, lineHeight), x: HUB.margin, width: HUB_FLOWER.width };
+}
+
 /**
- * The chapters whose every level (drafts aside) is done; a chapter of drafts only never is.
+ * The chapters whose every level (drafts and the secret flower aside) is done; a chapter of drafts
+ * or secret flowers only never is. The secret flower is optional, so finishing the chapter never
+ * waits for it (GDD §5.10).
  */
 export function finishedChapters(
-  levels: readonly { readonly id: string; readonly draft?: boolean }[],
+  levels: readonly {
+    readonly id: string;
+    readonly draft?: boolean;
+    readonly secret?: { readonly stars: number } | undefined;
+  }[],
   done: (id: string) => boolean,
 ): Set<string> {
   const byChapter = new Map<string, boolean>();
-  for (const { id, draft } of levels) {
-    if (draft === true) continue;
+  for (const { id, draft, secret } of levels) {
+    if (draft === true || secret !== undefined) continue;
     const chapter = chapterOfLevel(id);
     byChapter.set(chapter, (byChapter.get(chapter) ?? true) && done(id));
   }

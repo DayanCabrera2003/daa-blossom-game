@@ -8,7 +8,15 @@ import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import { betrayalLevel, racesLevel } from '../../../tests/support/fixtureLevels';
-import { countAnswer, rightBet, rightCount, rightLoopCount, rightRaceBet } from './answerKey';
+import { tangleLevel } from '../../../tests/support/secretScripts';
+import {
+  countAnswer,
+  rightBet,
+  rightCount,
+  rightLoopCount,
+  rightRaceBet,
+  rightWinningThreads,
+} from './answerKey';
 
 // A path a–b–c–d plus a lone pair e–f: sprouts 0…5.
 const graph = createGraph(6, [
@@ -55,6 +63,19 @@ describe('the answers the core gives to the questions of a script', () => {
     expect(rightCount(yours, mirror, { piece: 3, of: 'yours' })).toBe(1);
     expect(rightCount(yours, mirror, { piece: 0, of: 'mirror' })).toBe(2);
     expect(rightCount(yours, mirror, { piece: 4, of: 'mirror' })).toBe(0);
+  });
+
+  it('the winning threads are the threads on which the reflection holds more lanterns (2.5)', () => {
+    const level = tangleLevel();
+    const [, count] = level.flow;
+    if (count?.step !== 'count' || level.mirror === null) throw new Error('fixture script');
+    // Threads I and II are won by the reflection, III by you, and the loop is a draw.
+    expect(countAnswer(level, level.start, count)).toBe(2);
+    expect(rightWinningThreads(level.start.matching, level.mirror)).toBe(2);
+    // Turned the other way round, only thread III is won.
+    expect(rightWinningThreads(level.mirror, level.start.matching)).toBe(1);
+    // A garden against itself has no tangle, so nothing is won.
+    expect(rightWinningThreads(level.mirror, level.mirror)).toBe(0);
   });
 
   it('a count of the loop is the sprouts of the loop the search closed; 0 with no conflict', () => {

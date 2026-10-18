@@ -40,8 +40,11 @@ export function flowerOutline(petals: readonly Point[], padding: number): Point[
   const hull = convexHull(petals);
   const centre = centroid(petals);
   if (hull.length < 3) {
-    const radius =
+    // The sides of an octagon come in to cos(π/8) of its corners' radius: widen it so the circle
+    // through the farthest petal (plus the padding) lies inside it.
+    const reach =
       Math.max(0, ...petals.map((p) => Math.hypot(p.x - centre.x, p.y - centre.y))) + padding;
+    const radius = reach / Math.cos(Math.PI / 8);
     return Array.from({ length: 8 }, (_, k) => ({
       x: centre.x + radius * Math.cos((k * Math.PI) / 4),
       y: centre.y + radius * Math.sin((k * Math.PI) / 4),

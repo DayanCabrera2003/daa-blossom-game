@@ -1,0 +1,81 @@
+{
+  "id": "1.10",
+  "secret": { "stars": 14 },
+  "sprouts": [
+    { "label": "R", "x": 190, "y": 70 },
+    { "label": "A", "x": 100, "y": 75 },
+    { "label": "B", "x": 45, "y": 140 },
+    { "label": "C", "x": 80, "y": 210 },
+    { "label": "D", "x": 230, "y": 215 },
+    { "label": "E", "x": 380, "y": 215 },
+    { "label": "F", "x": 445, "y": 145 },
+    { "label": "G", "x": 400, "y": 95 },
+    { "label": "H", "x": 310, "y": 75 },
+    { "label": "I", "x": 290, "y": 115 },
+    { "label": "J", "x": 240, "y": 140 },
+    { "label": "T", "x": 365, "y": 125 },
+    { "label": "K", "x": 400, "y": 35 },
+    { "label": "L", "x": 460, "y": 35 },
+    { "label": "M", "x": 170, "y": 128 },
+    { "label": "N", "x": 135, "y": 102 },
+    { "label": "O", "x": 160, "y": 170 },
+    { "label": "P", "x": 120, "y": 185 },
+    { "label": "U", "x": 320, "y": 165 },
+    { "label": "V", "x": 360, "y": 178 }
+  ],
+  "vines": [
+    ["R", "A"],
+    ["A", "B"],
+    ["B", "C"],
+    ["C", "D"],
+    ["D", "E"],
+    ["E", "F"],
+    ["F", "G"],
+    ["G", "H"],
+    ["H", "I"],
+    ["I", "J"],
+    ["J", "T"],
+    ["K", "L"],
+    ["M", "N"],
+    ["O", "P"],
+    ["U", "V"],
+    ["R", "K"],
+    ["R", "M"],
+    ["B", "M"],
+    ["B", "O"],
+    ["D", "O"],
+    ["D", "U"],
+    ["F", "U"],
+    ["F", "K"],
+    ["H", "K"],
+    ["H", "M"],
+    ["J", "O"],
+    ["J", "U"]
+  ],
+  "lanterns": [
+    ["A", "B"],
+    ["C", "D"],
+    ["E", "F"],
+    ["G", "H"],
+    ["I", "J"],
+    ["K", "L"],
+    ["M", "N"],
+    ["O", "P"],
+    ["U", "V"]
+  ],
+  "goal": { "visible": true, "value": 10 },
+  "victory": { "type": "matchingSize", "value": 10 },
+  "hints": [
+    { "line": "ch1.10.sauce.02" },
+    { "line": "ch1.10.sauce.03", "highlight": ["T"] },
+    { "line": "ch1.10.sauce.04" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch1.10.sauce.00"] },
+    { "step": "play", "reactions": [{ "on": "gainZeroChain", "say": ["ch1.10.sauce.01"] }] },
+    { "step": "say", "lines": ["ch1.10.sauce.05"] }
+  ],
+  "solution": [
+    { "type": "chain", "path": ["R", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "T"] }
+  ]
+}

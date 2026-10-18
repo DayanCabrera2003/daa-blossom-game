@@ -1,3 +1,4 @@
+import { PICTURE_SIZES } from '@levels/pictureSizes';
 import type Phaser from 'phaser';
 import type { Point } from '../input/target';
 import type { GardenPicture, SproutPicture } from '../picture/garden';
@@ -160,7 +161,10 @@ export class GardenView {
     this.labels.forEach((label, i) => {
       const s = sprouts[i];
       label.setVisible(s !== undefined);
-      if (s !== undefined) label.setText(s.label).setPosition(s.x, s.y + SPROUT_RADIUS + 1);
+      // The layout checks of the levels keep every name clear of the pieces around it with the
+      // same gap (levels/pictureSizes.ts).
+      const top = SPROUT_RADIUS + PICTURE_SIZES.labelGap;
+      if (s !== undefined) label.setText(s.label).setPosition(s.x, s.y + top);
     });
   }
 }

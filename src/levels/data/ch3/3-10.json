@@ -1,0 +1,75 @@
+{
+  "id": "3.10",
+  "secret": { "stars": 17 },
+  "sprouts": [
+    { "label": "R", "x": 40, "y": 55, "kind": "bee" },
+    { "label": "S", "x": 40, "y": 150, "kind": "bee" },
+    { "label": "a", "x": 110, "y": 100, "kind": "flower" },
+    { "label": "b", "x": 190, "y": 100, "kind": "bee" },
+    { "label": "c", "x": 270, "y": 100, "kind": "flower" },
+    { "label": "d", "x": 350, "y": 100, "kind": "bee" },
+    { "label": "e", "x": 430, "y": 100, "kind": "flower" },
+    { "label": "x", "x": 150, "y": 190, "kind": "bee" },
+    { "label": "y", "x": 210, "y": 190, "kind": "flower" },
+    { "label": "z", "x": 270, "y": 190, "kind": "bee" },
+    { "label": "w", "x": 330, "y": 190, "kind": "flower" },
+    { "label": "v", "x": 390, "y": 190, "kind": "bee" },
+    { "label": "u", "x": 450, "y": 190, "kind": "flower" }
+  ],
+  "vines": [
+    ["R", "a"],
+    ["S", "a"],
+    ["a", "b"],
+    ["b", "c"],
+    ["c", "d"],
+    ["d", "e"],
+    ["x", "y"],
+    ["y", "z"],
+    ["z", "w"],
+    ["w", "v"],
+    ["v", "u"]
+  ],
+  "lanterns": [
+    ["a", "b"],
+    ["c", "d"],
+    ["x", "y"],
+    ["z", "w"],
+    ["v", "u"]
+  ],
+  "goal": { "visible": false },
+  "fog": true,
+  "water": 15,
+  "victory": { "type": "coverCertificate" },
+  "hints": [
+    { "line": "ch3.10.sauce.01" },
+    { "line": "ch3.10.sauce.02", "highlight": ["x", "y", "z", "w", "v", "u"] },
+    { "line": "ch3.10.sauce.03" }
+  ],
+  "flow": [
+    { "step": "say", "lines": ["ch3.10.sauce.00"] },
+    { "step": "play" },
+    { "step": "say", "lines": ["ch3.10.sauce.04", "ch3.10.sauce.05"] }
+  ],
+  "solution": [
+    { "type": "inspect", "vertex": "R" },
+    { "type": "markRoot", "vertex": "R" },
+    { "type": "markMoon", "from": "R", "to": "a" },
+    { "type": "inspect", "vertex": "b" },
+    { "type": "markMoon", "from": "b", "to": "c" },
+    { "type": "inspect", "vertex": "d" },
+    { "type": "markMoon", "from": "d", "to": "e" },
+    { "type": "chain", "path": ["R", "a", "b", "c", "d", "e"] },
+    { "type": "inspect", "vertex": "S" },
+    { "type": "markRoot", "vertex": "S" },
+    { "type": "markMoon", "from": "S", "to": "a" },
+    { "type": "inspect", "vertex": "z" },
+    { "type": "inspect", "vertex": "v" },
+    { "type": "placeScarecrow", "vertex": "a" },
+    { "type": "placeScarecrow", "vertex": "b" },
+    { "type": "placeScarecrow", "vertex": "d" },
+    { "type": "placeScarecrow", "vertex": "x" },
+    { "type": "placeScarecrow", "vertex": "z" },
+    { "type": "placeScarecrow", "vertex": "v" },
+    { "type": "declareDone" }
+  ]
+}

@@ -1,9 +1,8 @@
 import type Phaser from 'phaser';
-import type { CardDemo } from '@levels/cards/demo';
 import type { Translate } from '@services/i18n';
 import { cardFrameAt } from '../animation/cardLoop';
 import { playUiSound } from '../audio/uiSound';
-import { cardDemoPicture } from '../picture/cardDemo';
+import type { CardLoop } from '../picture/cardDemo';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
 import { CardDemoView, DEMO_SIZE } from './CardDemoView';
@@ -14,11 +13,11 @@ import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 
-/** A mechanic card as the window shows it: its texts, already translated, and its demo. */
+/** A mechanic card as the window shows it: its texts, already translated, and what it loops. */
 export interface ShownCard {
   readonly title: string;
   readonly body: string;
-  readonly demo: CardDemo;
+  readonly loop: CardLoop;
 }
 
 /** How often the demo checks whether its next frame is due, in milliseconds. */
@@ -91,10 +90,10 @@ export class TutorialView {
     const opened = scene.time.now;
     let shown = -1;
     const paint = (): void => {
-      const frame = cardFrameAt(card.demo.frames.length, scene.time.now - opened);
+      const frame = cardFrameAt(card.loop.frames, scene.time.now - opened);
       if (frame === shown) return;
       shown = frame;
-      demo.render(cardDemoPicture(card.demo, frame));
+      demo.render(card.loop.pictureAt(frame));
     };
     paint();
     this.timer = scene.time.addEvent({ delay: TICK_MS, loop: true, callback: paint });

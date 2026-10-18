@@ -4,8 +4,8 @@ import { loadLevel } from '@levels/loader';
 /**
  * Synthetic levels for tests that need a garden of chapters 4, 5 or 7: copies of the drafts those
  * chapters started from, so the tests keep their data when the level files are rewritten, a
- * garden for the flower challenge (4.11), and the recipe and the races of chapter 6 as they were
- * first drafted.
+ * garden for the flower challenge (4.11), the recipe and the races of chapter 6 as they were
+ * first drafted, and a secret flower for the tests of progress (the real ones live in the catalog).
  * Each one is loaded through the real loader, so it is validated exactly like a level file. The
  * ids are kept, because the tools a level opens follow its id.
  */
@@ -238,7 +238,7 @@ const NESTED_FLOWERS = {
     { label: 'd', x: 300, y: 30 },
     { label: 'g', x: 230, y: 200 },
     { label: 'h', x: 140, y: 200 },
-    { label: 't', x: 140, y: 30 },
+    { label: 't', x: 100, y: 35 },
   ],
   vines: [
     ['R', 'a'],
@@ -593,6 +593,18 @@ export const brokenRecipeLevel = (): Level => load(BROKEN_RECIPE);
 /** The level built from `AUTOMATON`. */
 export const automatonLevel = (): Level => load(AUTOMATON);
 
+/**
+ * A secret flower closing chapter 4: the garden of `FESTIVAL`, played until won, with no lines and
+ * nothing unlocked, opened by 19 stars of the chapter.
+ */
+const SECRET_FLOWER = {
+  ...FESTIVAL,
+  id: '4.13',
+  secret: { stars: 19 },
+  hints: [],
+  flow: [{ step: 'play' }],
+};
+
 /** The level built from `BLOOM`. */
 export const bloomLevel = (): Level => load(BLOOM);
 
@@ -625,3 +637,6 @@ export const helixLevel = (): Level => load(HELIX);
 
 /** The level built from `TWO_COMPONENTS`. */
 export const twoComponentsLevel = (): Level => load(TWO_COMPONENTS);
+
+/** The level built from `SECRET_FLOWER`. */
+export const secretFlowerLevel = (): Level => load(SECRET_FLOWER);

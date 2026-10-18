@@ -505,6 +505,55 @@ const VOICE: readonly SelectedFile[] = [1, 2, 3, 4, 6, 7, 10].map((n) =>
   ),
 );
 
+/**
+ * The cosmetics of the hub (plan 08, section 1.2), won with stars: the two butterflies (four
+ * directions of four wingbeats each), the frog, the cat and the two hens (still, then moving), and
+ * the plant each seed sows (four frames of its sway). All of them already in the pack's colours.
+ */
+const HUB_CRITTERS: readonly SelectedFile[] = [
+  pick(
+    'critter.butterfly',
+    'sheet',
+    ninja('Actor/Monster/Butterfly/SpriteSheet.png'),
+    'images/hub/butterfly.png',
+    { frame: TILE },
+  ),
+  pick(
+    'critter.butterflyBlue',
+    'sheet',
+    ninja('Actor/Monster/ButterflyBlue/SpriteSheet.png'),
+    'images/hub/butterfly-blue.png',
+    { frame: TILE },
+  ),
+  pick('critter.frog', 'sheet', ninja('Actor/Animal/Frog/SpriteSheet.png'), 'images/hub/frog.png', {
+    frame: TILE,
+  }),
+  pick('critter.cat', 'sheet', ninja('Actor/Animal/Cat/SpriteSheet.png'), 'images/hub/cat.png', {
+    frame: TILE,
+  }),
+  pick(
+    'critter.chickenWhite',
+    'sheet',
+    ninja('Actor/Animal/Chicken/SpriteSheetWhite.png'),
+    'images/hub/chicken-white.png',
+    { frame: TILE },
+  ),
+  pick(
+    'critter.chickenBrown',
+    'sheet',
+    ninja('Actor/Animal/Chicken/SpriteSheetBrown.png'),
+    'images/hub/chicken-brown.png',
+    { frame: TILE },
+  ),
+  pick(
+    'deco.plant',
+    'sheet',
+    ninja('Backgrounds/Animated/Plant/SpriteSheet16x16.png'),
+    'images/hub/plant.png',
+    { frame: TILE },
+  ),
+];
+
 /** Everything `npm run assets` extracts, in the order the manifest lists it. */
 export const SELECTION: Selection = {
   packs: PACKS,
@@ -519,6 +568,7 @@ export const SELECTION: Selection = {
     ...JINGLES,
     ...SFX,
     ...VOICE,
+    ...HUB_CRITTERS,
   ],
   // The chimes, the sparkle and the fold chords, synthesized by the project (`npm run sounds`).
   own: OWN_WORK,

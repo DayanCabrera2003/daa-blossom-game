@@ -107,6 +107,16 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(startCards(layered, new Set(['layers']))).not.toContain('layers');
   });
 
+  it('the sun, the layers and undo follow the level the interface is told to show', () => {
+    const wild = nestedFlowersLevel();
+    expect(levelCards(wild, '5.2')).toContain('layers');
+    const early = levelCards(levelOf('1.3'), '0.1');
+    expect(early).not.toContain('sun');
+    expect(early).not.toContain('undo');
+    expect(startCards(levelOf('1.3'), new Set(), '0.1')).not.toContain('sun');
+    expect(helpCards(levelOf('1.3'), 0, '0.1')).not.toContain('sun');
+  });
+
   it('1.1 keeps passing the lantern closed, so its card waits for 1.2', () => {
     expect(levelCards(levelOf('1.1'))).not.toContain('passLantern');
     expect(levelCards(levelOf('1.2'))).toContain('passLantern');

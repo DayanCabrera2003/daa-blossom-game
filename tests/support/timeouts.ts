@@ -11,3 +11,10 @@ export const BRUTO_PROPERTY_TIMEOUT = 60_000;
  * busy machine takes longer than the second `vi.waitFor` gives by default.
  */
 export const BOOKS_IMPORT_TIMEOUT = 15_000;
+
+/**
+ * Time allowed to properties that lay out gardens of the free mode: untangling a garden of 24
+ * sprouts and 40 vines takes a few tens of milliseconds, so a few hundred of them, under coverage or
+ * when exploring with thousands of cases, pass vitest's default of 5 s per test.
+ */
+export const LAYOUT_PROPERTY_TIMEOUT = 60_000;

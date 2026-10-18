@@ -25,6 +25,8 @@ export interface GameContext {
   readonly teacherMode: boolean;
   /** A level to open straight away (teacher mode, `?level=`), or null to start at the hub. */
   readonly startLevel: string | null;
+  /** A shared link's `?garden=` as given, to open the free mode with (it reads it), or null. */
+  readonly startGarden: string | null;
   /** The playtest log of this browser (GDD §10), and the wall clock that dates its entries. */
   readonly playtest: PlaytestRecorder;
   readonly clock: () => number;

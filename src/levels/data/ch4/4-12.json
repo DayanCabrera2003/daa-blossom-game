@@ -14,7 +14,7 @@
     { "label": "U", "x": 40, "y": 190 },
     { "label": "p", "x": 100, "y": 190 },
     { "label": "q", "x": 160, "y": 190 },
-    { "label": "r", "x": 215, "y": 150 },
+    { "label": "o", "x": 215, "y": 150 },
     { "label": "k", "x": 285, "y": 165 },
     { "label": "l", "x": 270, "y": 222 },
     { "label": "m", "x": 205, "y": 224 },
@@ -34,12 +34,12 @@
     ["s", "T"],
     ["U", "p"],
     ["p", "q"],
-    ["q", "r"],
-    ["r", "k"],
+    ["q", "o"],
+    ["o", "k"],
     ["k", "l"],
     ["l", "m"],
     ["m", "q"],
-    ["r", "V"]
+    ["o", "V"]
   ],
   "lanterns": [
     ["a", "b"],
@@ -47,7 +47,7 @@
     ["h", "i"],
     ["g", "s"],
     ["p", "q"],
-    ["r", "k"],
+    ["o", "k"],
     ["l", "m"]
   ],
   "goal": { "visible": false },
@@ -83,14 +83,14 @@
     { "type": "markRoot", "vertex": "U" },
     { "type": "markMoon", "from": "U", "to": "p" },
     { "type": "inspect", "vertex": "q" },
-    { "type": "markMoon", "from": "q", "to": "r" },
+    { "type": "markMoon", "from": "q", "to": "o" },
     { "type": "markMoon", "from": "q", "to": "m" },
     { "type": "inspect", "vertex": "k" },
     { "type": "foldAt", "from": "k", "to": "l" },
-    { "type": "inspect", "vertex": "r" },
-    { "type": "markMoon", "from": "r", "to": "V" },
+    { "type": "inspect", "vertex": "o" },
+    { "type": "markMoon", "from": "o", "to": "V" },
     { "type": "unfold", "blossom": 0 },
-    { "type": "chain", "path": ["U", "p", "q", "m", "l", "k", "r", "V"] },
+    { "type": "chain", "path": ["U", "p", "q", "m", "l", "k", "o", "V"] },
     { "type": "declareDone" }
   ]
 }

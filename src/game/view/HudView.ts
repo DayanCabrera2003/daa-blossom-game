@@ -1,13 +1,19 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
-import { HUD_BUTTONS, hudRow, traceButtonLeft, type HudButton } from '../picture/bottomRows';
+import {
+  besideLeft,
+  bookButtonLeft,
+  HUD_BUTTONS,
+  hudRow,
+  traceButtonLeft,
+  type HudButton,
+} from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
 import type { AssetKey } from '../assets/keys';
 import { BOOK_ICON, ICON_GAP } from '../picture/buttonIcon';
-import { BOTTOM_ROWS } from '../picture/bottomRows';
 import { GEAR_SIZE } from './GearButton';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
@@ -37,6 +43,19 @@ export interface HudActions {
   readonly trace: () => void;
 }
 
+/** How a screen lays its HUD out (`systems/levelScreenOf.ts`). */
+export interface HudLayout {
+  /** The text key of the back button: "Volver", or "Diseñar" in the free mode. */
+  readonly backLabel: string;
+  /** The buttons of the bottom row, in `HUD_BUTTONS` order. */
+  readonly buttons: readonly HudButton[];
+  /** Where the teacher's trace button sits: the end of the tools' row, or beside the Códex. */
+  readonly traceRow: 'tools' | 'buttons';
+}
+
+/** The HUD of a level of the catalog. */
+const LEVEL_HUD: HudLayout = { backLabel: 'hud.back', buttons: HUD_BUTTONS, traceRow: 'tools' };
+
 /**
  * The HUD: the goal (or the question, when it is hidden), lanterns lit and water spent (after the
  * drop of the pack) on top; on wooden buttons, "Terminé", undo, redo, hint, "?" (the mechanic
@@ -57,7 +76,8 @@ export class HudView {
   private readonly prompt: Phaser.GameObjects.Text;
   /** The Council's count (chapter 7), on the right of the status line. */
   private readonly council: Phaser.GameObjects.Text;
-  private readonly buttons: Record<HudButton, Button>;
+  /** The buttons of the bottom row; a screen may leave some out (the free mode, its hint). */
+  private readonly buttons: Partial<Record<HudButton, Button>>;
   /** The Códex, at the bottom left after the settings, while some page of it is open. */
   private readonly book: Button;
   /** The teacher's trace panel, at the right end of the tools' row, in teacher mode only. */
@@ -67,6 +87,7 @@ export class HudView {
     scene: Phaser.Scene,
     private readonly t: Translate,
     actions: HudActions,
+    layout: HudLayout = LEVEL_HUD,
   ) {
     this.goal = scene.add.text(LAYOUT.margin, LAYOUT.topY, '', textStyle()).setDepth(100);
     this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
@@ -87,28 +108,33 @@ export class HudView {
       .setOrigin(1, 0)
       .setDepth(100);
     // Every button keeps its place even while hidden, so the row is laid out for all of them.
-    const made = HUD_BUTTONS.map(
-      (name) => new Button(scene, 0, LAYOUT.bottomY, t(`hud.${name}`), actions[name]),
+    const made = layout.buttons.map(
+      (name) =>
+        new Button(
+          scene,
+          0,
+          LAYOUT.bottomY,
+          t(name === 'back' ? layout.backLabel : `hud.${name}`),
+          actions[name],
+        ),
     );
     const lefts = hudRow(made.map((button) => button.width));
     made.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
     // Clear of the buttons laid out from the right: they only reach the left half of the row.
-    this.book = new Button(
-      scene,
-      LAYOUT.margin + GEAR_SIZE + BOTTOM_ROWS.gap,
-      LAYOUT.bottomY,
-      t('hud.book'),
-      actions.book,
-      [BOOK_ICON],
-    ).setVisible(false);
+    const bookLeft = bookButtonLeft(GEAR_SIZE);
+    this.book = new Button(scene, bookLeft, LAYOUT.bottomY, t('hud.book'), actions.book, [
+      BOOK_ICON,
+    ]).setVisible(false);
     this.trace = new Button(scene, 0, LAYOUT.toolbarY, t('hud.trace'), actions.trace).setVisible(
       false,
     );
-    this.trace.moveTo(traceButtonLeft(this.trace.width), LAYOUT.toolbarY);
-    this.buttons = Object.fromEntries(HUD_BUTTONS.map((name, i) => [name, made[i]])) as Record<
-      HudButton,
-      Button
-    >;
+    // In the free mode its orders end the tools' row, so the trace goes beside the Códex.
+    if (layout.traceRow === 'tools') {
+      this.trace.moveTo(traceButtonLeft(this.trace.width), LAYOUT.toolbarY);
+    } else {
+      this.trace.moveTo(besideLeft(bookLeft + this.book.width), LAYOUT.bottomY);
+    }
+    this.buttons = Object.fromEntries(layout.buttons.map((name, i) => [name, made[i]]));
   }
 
   /** Shows the Códex button when some page of the book is open, and hides it otherwise. */
@@ -146,12 +172,13 @@ export class HudView {
     this.water.setText(water).setX(x);
     x += this.water.width;
     this.layer.setText(layer).setX(layer === '' ? x : x + STATUS_GAP);
-    this.buttons.undo.setEnabled(hud.canUndo);
-    this.buttons.redo.setEnabled(hud.canRedo);
-    this.buttons.hint.setEnabled(hud.hintAvailable);
-    this.buttons.done.setVisible(hud.canDeclareDone);
-    this.buttons.checkMirror.setVisible(hud.canCheckMirror);
-    this.buttons.leaveLayer.setVisible(inside);
+    const { undo, redo, hint, done, checkMirror, leaveLayer } = this.buttons;
+    undo?.setEnabled(hud.canUndo);
+    redo?.setEnabled(hud.canRedo);
+    hint?.setEnabled(hud.hintAvailable);
+    done?.setVisible(hud.canDeclareDone);
+    checkMirror?.setVisible(hud.canCheckMirror);
+    leaveLayer?.setVisible(inside);
     this.prompt.setText(hud.prompt === null ? '' : this.t(hud.prompt.key, hud.prompt.params));
     this.council.setText(hud.council === null ? '' : this.t(hud.council.key, hud.council.params));
   }

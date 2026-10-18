@@ -10,11 +10,11 @@ import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import type { TraceEvent } from '@core/trace/events';
-import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
 import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
 import { automatonRun } from './automaton';
+import { judgeVictory } from './certifyAgain';
 import {
   advanceFlow,
   betRight,
@@ -67,12 +67,13 @@ import { computeStars, type StarResult } from './stars';
  * right and wrong, water). Pure: the level scene keeps a session and replaces it after every event.
  *
  * What is accepted depends on the step of the script (plan 03, phase 2): garden moves only while
- * playing, so the lanterns never change under a question that depends on them; undo, redo and the
- * sun while playing or waiting for the sun. When the light searches by itself (4.1, 4.2), its
- * marks enter the day once the scene has shown them, as moves the rules accepted; the automaton's
- * run (6.2, 6.3) makes a new day of its own, from the level's starting lanterns. The reflection of
- * the mirror challenge is drawn and checked only in its `draw` step, the chains of the flower
- * challenge only in its own step, and the recipe cards only in a `recipe` step. Once the script is over the garden is free again, as it
+ * playing or while the council asks for another certificate (7.6), so the lanterns never change
+ * under a question that depends on them; undo, redo and the sun while moves are taken or waiting
+ * for the sun. When the light searches by itself (4.1, 4.2), its marks enter the day once the scene
+ * has shown them, as moves the rules accepted; the automaton's run (6.2, 6.3) makes a new day of
+ * its own, from the level's starting lanterns. The reflection of the mirror challenge is drawn and
+ * checked only in its `draw` step, the chains of the flower challenge only in its own step, and the
+ * recipe cards only in a `recipe` step. Once the script is over the garden is free again, as it
  * always was after a win, but nothing more can be won.
  */
 export interface LevelSession {
@@ -107,6 +108,11 @@ export interface LevelSession {
    * (and after its step) `recipeBoardOf` deals it afresh from the step.
    */
   readonly recipe: RecipeBoard | null;
+  /**
+   * The stones of every certificate that won a step, as sets, in order: the one that won the play
+   * step, then each new one the council asked for (7.6). Empty until a step is won.
+   */
+  readonly certificates: readonly (readonly VertexId[])[];
 }
 
 /** The answer of a move: applied (for the animation queue), or refused and why. */
@@ -133,6 +139,7 @@ export type ScriptInput =
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
 const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
   'play',
+  'certifyAgain',
   'ask',
   'count',
   'draw',
@@ -144,10 +151,13 @@ const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
 /** The step of the script now, or null once it is over. */
 export const stepNow = (session: LevelSession): LevelStep | null => currentStep(session.flow);
 
-/** Whether garden moves are taken now: while playing, or once the script is over. */
-const takesMoves = (session: LevelSession): boolean => {
+/**
+ * Whether garden moves are taken now: while playing, while the council asks for another
+ * certificate, or once the script is over.
+ */
+export const takesMoves = (session: LevelSession): boolean => {
   const step = stepNow(session);
-  return step === null || step.step === 'play';
+  return step === null || step.step === 'play' || step.step === 'certifyAgain';
 };
 
 /** Whether undo, redo and the sun are taken now: while moves are, and while waiting for the sun. */
@@ -209,6 +219,7 @@ export function openSession(
     challenge: startChallenge(level.start.graph),
     flower: startFlowerChallenge(),
     recipe: null,
+    certificates: [],
   };
   // A script that is over at once (only lines) completes the level as it opens.
   return { session: { ...session, won: starsAt(session, flow) }, effects };
@@ -290,12 +301,21 @@ export function act(
     claims,
     waterSpent,
   };
-  // The victory belongs to the play step: integrity requires one exactly when there is a play step.
-  const { victory } = session.level.data;
-  const won =
-    stepNow(session)?.step === 'play' && victory !== undefined && isVictory(after, victory);
-  if (!won) return { session: moved, outcome, effects: reacted.effects };
-  const advanced = advance(moved, { type: 'won' }, now);
+  // The victory belongs to the play step (integrity requires one exactly when there is a play
+  // step), and to the council's call for another certificate, which only new stones answer.
+  const judged = judgeVictory(
+    stepNow(session),
+    session.certificates,
+    after,
+    session.level.data.victory,
+  );
+  if (judged.kind === 'none') return { session: moved, outcome, effects: reacted.effects };
+  if (judged.kind === 'repeated') {
+    const sameStones = { kind: 'sameStones', line: judged.line } as const;
+    return { session: moved, outcome, effects: [...reacted.effects, sameStones] };
+  }
+  const { certificates } = judged;
+  const advanced = advance({ ...moved, certificates }, { type: 'won' }, now);
   return { session: advanced.session, outcome, effects: [...reacted.effects, ...advanced.effects] };
 }
 

@@ -3,7 +3,9 @@ import lines from '@content/es/lines.json';
 import strings from '@content/es/strings.json';
 import { catalog } from '@levels/catalog';
 import { CARD_IDS } from '@levels/cards/schema';
+import { speakerOf, type Speaker } from '@game/systems/speaker';
 import { referencedLines } from '@levels/lines';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { MATHEMATICS } from './support/vocabulary';
 
@@ -49,12 +51,23 @@ describe('interface text (content/es/strings.json)', () => {
     expect(offending).toEqual([]);
   });
 
-  it('the overlays separate their words without the middle dot, which the pixel font draws raised', () => {
-    const offending = Object.entries(table).filter(
-      ([key, text]) =>
-        /^(codex|diagram|book|notebook|epilogue|teacher)\./.test(key) && text.includes('·'),
-    );
+  it('no text separates its words with the middle dot, which the pixel font draws raised', () => {
+    const offending = Object.entries(table).filter(([, text]) => text.includes('·'));
     expect(offending).toEqual([]);
+  });
+});
+
+describe('text files (content/es/*.json)', () => {
+  /** The keys written more than once in a JSON object file: parsing keeps only the last copy. */
+  const repeatedKeys = (file: string): string[] => {
+    const raw = readFileSync(new URL(`../src/content/es/${file}`, import.meta.url), 'utf8');
+    const keys = [...raw.matchAll(/^\s*"([^"]+)"\s*:/gm)].map((match) => match[1] as string);
+    return keys.filter((key, index) => keys.indexOf(key) !== index);
+  };
+
+  it('write each key once, so no text silently replaces another', () => {
+    expect(repeatedKeys('strings.json')).toEqual([]);
+    expect(repeatedKeys('lines.json')).toEqual([]);
   });
 });
 
@@ -74,6 +87,31 @@ describe('dialogue lines (content/es/lines.json)', () => {
   it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
     const offending = Object.entries(lineTable).filter(([, text]) => MATHEMATICS.test(text));
     expect(offending).toEqual([]);
+  });
+
+  it('no line separates its words with the middle dot, which the pixel font draws raised', () => {
+    const offending = Object.entries(lineTable).filter(([, text]) => text.includes('·'));
+    expect(offending).toEqual([]);
+  });
+
+  it('no level lets a character speak before the chapter that introduces him', () => {
+    /** The chapter of a level id, such as 4 for `4.13`. */
+    const chapterOf = (id: string): number => Number(id.split('.')[0]);
+    // A character is introduced by the first level of the main path that gives him a line: a
+    // secret flower is optional and may be played before later chapters, so it introduces no one.
+    const introduced = new Map<Speaker, number>();
+    for (const level of catalog().filter((candidate) => candidate.data.secret === undefined)) {
+      for (const speaker of referencedLines(level.data).map(speakerOf)) {
+        const chapter = chapterOf(level.data.id);
+        introduced.set(speaker, Math.min(chapter, introduced.get(speaker) ?? chapter));
+      }
+    }
+    const early = catalog().flatMap((level) =>
+      referencedLines(level.data).filter(
+        (id) => (introduced.get(speakerOf(id)) ?? Infinity) > chapterOf(level.data.id),
+      ),
+    );
+    expect(early).toEqual([]);
   });
 });
 

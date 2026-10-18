@@ -3,6 +3,7 @@ import type { WalkthroughProblem } from '@game/systems/walkthrough';
 import type { CodexProblem } from '@levels/codexChecks';
 import type { IntegrityProblem } from '@levels/integrity';
 import type { LoadError } from '@levels/loader';
+import type { SecretProblem } from '@levels/secretChecks';
 
 /** A reason's code followed by its details, e.g. `notAdjacent {"u":0,"v":2}`. */
 const withDetails = ({ code, ...details }: { readonly code: string }): string =>
@@ -29,6 +30,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return 'the solution is accepted but does not win the level';
     case 'solutionOverWater':
       return `the solution spends ${problem.used} drops of water, over the budget of ${problem.budget}`;
+    case 'waterAndBet':
+      return 'the level has both a water budget and a formal bet, but it can give only one extra star';
     case 'foreignLine':
       return `line ${problem.line} belongs to another level`;
     case 'unlockMismatch':
@@ -43,6 +46,12 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} needs the reflection, but the level has no mirror`;
     case 'pieceOutsideTangle':
       return `script step ${problem.step + 1} counts the piece through ${problem.sprout}, which is in no thread or loop`;
+    case 'threadsBeforeMirror':
+      return `script step ${problem.step + 1} counts the winning threads before the reflection shows`;
+    case 'threadsAfterSeparate':
+      return `script step ${problem.step + 1} counts the winning threads after the tangle is separated, which already tells them`;
+    case 'threadsOutOfRange':
+      return `script step ${problem.step + 1} offers 0 to ${problem.range} winning threads, but the reflection wins ${problem.answer}`;
     case 'noConflict':
       return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
     case 'drawUnbeatable':
@@ -51,6 +60,12 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
     case 'noChainToDraw':
       return `script step ${problem.step + 1} asks for chains, but the garden already holds the most`;
+    case 'certifyAgainWithoutCertificate':
+      return `script step ${problem.step + 1} asks for another certificate, but the level is not won with stones`;
+    case 'certifyAgainBeforePlay':
+      return `script step ${problem.step + 1} asks for another certificate before any play step presents a first one`;
+    case 'sameCertificate':
+      return `script step ${problem.step + 1} asks for another certificate, but the walkthrough presents no new stones`;
     case 'recallAhead':
       return `script step ${problem.step + 1} is a recipe that recalls level ${problem.level}, which is not played yet`;
     case 'flowerAfterPlay':
@@ -87,6 +102,16 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `${statementAt(problem)}: its lanterns already hold the most, so no better reflection can be drawn`;
     case 'counterexampleSameKindVine':
       return `${statementAt(problem)}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
+    case 'vinesCross':
+      return `the vines ${problem.vines[0].join('–')} and ${problem.vines[1].join('–')} cross`;
+    case 'labelOnSprout':
+      return `the name of ${problem.label} is drawn over the sprout ${problem.sprout}`;
+    case 'labelOnLabel':
+      return `the names of ${problem.labels[0]} and ${problem.labels[1]} are drawn over each other`;
+    case 'labelOnLantern':
+      return `the name of ${problem.label} is drawn over the lantern of the vine ${problem.vine.join('–')}`;
+    case 'labelsDifferByCase':
+      return `the names ${problem.labels[0]} and ${problem.labels[1]} differ only by case, which the pixel font shows as size alone`;
   }
 }
 
@@ -119,6 +144,24 @@ export function describeCodexProblem(problem: CodexProblem): string {
       return `level ${problem.level} opens only some tabs of Codex entry ${problem.entry}, already whole before`;
     case 'notebookLinkBehind':
       return `level ${problem.level}: notebook question ${problem.question + 1} links to ${problem.entry}, already open since ${problem.opensAt}`;
+  }
+}
+
+/** One readable line for a problem of a secret flower. */
+export function describeSecretProblem(problem: SecretProblem): string {
+  switch (problem.code) {
+    case 'secretNotLast':
+      return `secret flower ${problem.level} comes before ${problem.before} of its chapter; it must close the chapter`;
+    case 'secretTwice':
+      return `chapter ${problem.chapter} has more than one secret flower: ${problem.levels.join(', ')}`;
+    case 'secretUnlocks':
+      return `secret flower ${problem.level} unlocks something; it must open nothing`;
+    case 'secretNotebook':
+      return `secret flower ${problem.level} asks a notebook question`;
+    case 'secretDraft':
+      return `secret flower ${problem.level} is a draft`;
+    case 'secretStarsOutOfRange':
+      return `secret flower ${problem.level} asks for ${problem.stars} stars; its chapter allows ${problem.least} to ${problem.most}`;
   }
 }
 

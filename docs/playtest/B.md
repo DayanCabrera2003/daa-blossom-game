@@ -95,7 +95,7 @@ El juego publicado se despliega desde `main`: solo tiene los capítulos 3–4 de
 
 - Pantalla completa; no hay audio en greybox.
 - La plantilla de §7 impresa y un reloj a mano.
-- Comprobar que "Exportar registro de prueba" descarga un archivo.
+- Comprobar que "Exportar registro de prueba" (en el panel de ajustes) descarga un archivo.
 
 ---
 
@@ -149,7 +149,7 @@ La luz repite la búsqueda y Sauce pide señalar la enredadera donde se equivoc�
 
 ## 5. Al terminar
 
-1. **Exportar el registro** desde el hub ("Exportar registro de prueba") al final de **cada** sesión. Renombrar con persona y sesión (`P1-S2-florecer-playtest-<fecha>.json`). El de la segunda sesión contiene también la primera.
+1. **Exportar el registro** desde el hub: engranaje de ajustes → "Exportar registro de prueba" al final de **cada** sesión. Renombrar con persona y sesión (`P1-S2-florecer-playtest-<fecha>.json`). El de la segunda sesión contiene también la primera.
 2. **Preguntas de cierre** (abiertas, en este orden):
    - ¿Qué fue lo más confuso? ¿En qué momento?
    - En 4.1, cuando la luz dijo que no había cadena, ¿qué pensaste?

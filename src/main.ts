@@ -13,6 +13,7 @@ import { createLines } from '@services/lines';
 import { playtestRecorder } from '@services/playtestRecorder';
 import { createSaveStore } from '@services/saveStore';
 import { loadSettings } from '@services/settings';
+import { requestedGarden } from '@services/startGarden';
 import { requestedCodex, requestedLevel } from '@services/startLevel';
 import { isTeacherMode } from '@services/teacherMode';
 import Phaser from 'phaser';
@@ -22,6 +23,7 @@ import { PIXEL_FONT } from './game/picture/pixelFont';
 import { MusicPlayer } from './game/audio/MusicPlayer';
 import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
+import { openSandbox } from './game/scenes/SandboxGate';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './game/scale/integerZoom';
 import { panelRoom, panelUnit } from './game/scale/panelRoom';
 import { renderZoom, setRenderZoom } from './game/view/renderZoom';
@@ -62,6 +64,7 @@ provideContext(game, {
     window.location.search,
     levels.map((level) => level.data.id),
   ),
+  startGarden: requestedGarden(window.location.search),
   bus,
   saves,
   settings,
@@ -79,6 +82,10 @@ mountShell({
   codexOpen: (save) => openCodex(codexLevels, save, teacherMode),
   host: document.body,
 });
+// The free mode is registered (its thin gate, which loads it on demand): the overlays may offer it
+// now that they listen, and the epilogue's button opens it from the scene that is up.
+bus.emit('capabilities', { sandbox: true });
+bus.on('sandbox.open', () => openSandbox(game));
 // In teacher mode, the trace panel beside the garden, folded until asked for.
 if (teacherMode) mountTeacherShell({ bus, host: document.body });
 bus.on('overlay.changed', ({ open }) => {

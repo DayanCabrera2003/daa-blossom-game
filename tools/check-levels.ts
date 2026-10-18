@@ -1,23 +1,27 @@
 // check-levels: the level integrity checks, and the walkthrough of each level played through the
 // interface, as a readable report for authors and for CI.
-// Usage: npm run check-levels. Exits with code 1 if any level, or how the catalog opens the Codex,
-// has a problem.
+// Usage: npm run check-levels. Exits with code 1 if any level, how the catalog opens the Codex, or a
+// secret flower has a problem.
 import { playWalkthrough } from '@game/systems/walkthrough';
-import { checkCodex, type CodexLevel } from '@levels/codexChecks';
+import { checkCodex } from '@levels/codexChecks';
 import { checkIntegrity } from '@levels/integrity';
+import { vineCrossings } from '@levels/layoutChecks';
 import { loadLevel } from '@levels/loader';
+import type { LevelData } from '@levels/schema';
+import { checkSecrets } from '@levels/secretChecks';
 import {
   describeCodexProblem,
   describeLoadError,
   describeProblem,
+  describeSecretProblem,
   describeWalkthroughProblem,
 } from './describeProblem';
 import { expectedPath, readLevelFiles } from './levelFiles';
 
 const files = readLevelFiles();
 const seen = new Map<string, string>();
-/** The levels that load, for the checks of the whole catalog (the Codex). */
-const loaded: CodexLevel[] = [];
+/** The levels that load, for the checks of the whole catalog (the Codex, the secret flowers). */
+const loaded: LevelData[] = [];
 let failing = 0;
 
 for (const { path, json } of files) {
@@ -60,4 +64,26 @@ if (codexProblems.length === 0) {
   console.log('\nThe catalog opens the Codex wrongly:');
   for (const problem of codexProblems) console.log(`        - ${problem}`);
 }
-if (failing > 0 || codexProblems.length > 0) process.exitCode = 1;
+
+// Crossing vines are an error only in a secret flower; elsewhere a design may need them, so they
+// are reported for the author to judge.
+const crossed = loaded
+  .filter((level) => level.secret === undefined)
+  .map((level) => ({ id: level.id, count: vineCrossings(level).length }))
+  .filter(({ count }) => count > 0);
+if (crossed.length === 0) {
+  console.log('No vines cross in the levels of the main path.');
+} else {
+  console.log('\nVines cross in these levels of the main path (not an error):');
+  for (const { id, count } of crossed) console.log(`        - ${id}: ${count}`);
+}
+
+// A secret flower is sound only next to its chapter, so its checks also read the whole catalog.
+const secretProblems = checkSecrets(loaded).map(describeSecretProblem);
+if (secretProblems.length === 0) {
+  console.log('The secret flowers close their chapters.');
+} else {
+  console.log('\nThe secret flowers are wrong:');
+  for (const problem of secretProblems) console.log(`        - ${problem}`);
+}
+if (failing > 0 || codexProblems.length > 0 || secretProblems.length > 0) process.exitCode = 1;

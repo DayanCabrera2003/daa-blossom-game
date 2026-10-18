@@ -48,6 +48,29 @@ describe('the asset selection', () => {
     }
   });
 
+  it("takes the hub's critters and its seedling from Ninja Adventure, as 16 × 16 sheets at boot", () => {
+    const hub = files.filter((file) => file.out.startsWith('images/hub/'));
+    expect(hub.map((file) => [file.key, file.entry])).toEqual([
+      ['critter.butterfly', 'Actor/Monster/Butterfly/SpriteSheet.png'],
+      ['critter.butterflyBlue', 'Actor/Monster/ButterflyBlue/SpriteSheet.png'],
+      ['critter.frog', 'Actor/Animal/Frog/SpriteSheet.png'],
+      ['critter.cat', 'Actor/Animal/Cat/SpriteSheet.png'],
+      ['critter.chickenWhite', 'Actor/Animal/Chicken/SpriteSheetWhite.png'],
+      ['critter.chickenBrown', 'Actor/Animal/Chicken/SpriteSheetBrown.png'],
+      ['deco.plant', 'Backgrounds/Animated/Plant/SpriteSheet16x16.png'],
+    ]);
+    for (const file of hub) {
+      expect(file).toMatchObject({
+        pack: 'ninja',
+        kind: 'sheet',
+        group: 'boot',
+        frame: { width: 16, height: 16 },
+      });
+    }
+    // Appended after everything that was there, so no earlier entry moves.
+    expect(files.slice(-hub.length)).toEqual(hub);
+  });
+
   it('chooses the monogram extended font from its zip', () => {
     const font = files.find((file) => file.kind === 'font');
     expect(font).toMatchObject({ pack: 'monogram', entry: 'ttf/monogram-extended.ttf' });

@@ -14,8 +14,6 @@ import { levelScreen, trackFor } from '../src/game/systems/musicFor';
 const AWAITING: Readonly<Partial<Record<AssetKey, string>>> = {
   // The credits screen, still to be built (plan 06, section 1.7).
   'music.credits': 'the music of the credits screen',
-  // The seeds a won bet gives, which come with the cosmetics of the hub (GDD 5.4, plan 03).
-  'icon.seed': 'the icon of the seeds',
 };
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));

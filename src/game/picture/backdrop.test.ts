@@ -63,6 +63,13 @@ describe('the backdrop of a level (plan 06, phase 4)', () => {
     }
   });
 
+  it("can be painted in another chapter's season: a garden of the free mode takes the hub's", () => {
+    const picture = backdropPicture(TRIANGLE, '0');
+    expect(picture.season).toBe(seasonOf('0'));
+    const ground = [...picture.season.ground.block.flat(), ...picture.season.ground.sprinkles];
+    for (const tile of picture.tiles) expect(ground).toContainEqual(tile);
+  });
+
   it('tiles the whole canvas with the ground of its chapter', () => {
     const picture = backdropPicture(TRIANGLE);
     expect(picture.season).toBe(seasonOf('1'));

@@ -176,8 +176,8 @@ export default tseslint.config(
   },
   {
     // The shells are part of the initial script: they reach the heavy books (and the teacher's
-    // panel) only through import(), so KaTeX, marked and the entries stay in the deferred chunk.
-    // ESLint only sees static imports.
+    // panel) only through import(), so KaTeX, marked and the entries stay in the deferred chunk;
+    // and the free mode's share sheet the same way, in its own. ESLint only sees static imports.
     files: ['src/ui/shell.ts', 'src/ui/teacherShell.ts'],
     rules: {
       'no-restricted-imports': [
@@ -195,8 +195,10 @@ export default tseslint.config(
                 'diagram',
                 'book',
                 'books',
+                'sandbox',
               ].flatMap((name) => [`./${name}`, `./${name}/**`, `@ui/${name}`, `@ui/${name}/**`]),
-              message: 'the shell loads the books with import() the first time one opens.',
+              message:
+                'the shell loads the books and the share sheet with import() the first time one opens.',
             },
           ],
         },

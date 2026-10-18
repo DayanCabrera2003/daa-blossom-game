@@ -22,6 +22,8 @@ function stepLines(step: FlowStep): string[] {
       return [step.prompt];
     case 'pickVine':
       return step.reply === undefined ? [step.prompt] : [step.prompt, step.reply];
+    case 'certifyAgain':
+      return [step.repeated];
     default:
       return [];
   }

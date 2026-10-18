@@ -33,10 +33,14 @@ export class ToastView {
       .setAlpha(0);
   }
 
-  show(message: string): void {
+  /**
+   * Shows `message`, its panel centred on `centreY`: above the toolbar by default, or above a
+   * drawer that covers it (the free mode's generate menu).
+   */
+  show(message: string, centreY: number = LAYOUT.toastY): void {
     this.fade?.stop();
     this.wood?.destroy();
-    this.text.setText(message).setAlpha(1);
+    this.text.setText(message).setY(centreY).setAlpha(1);
     // The panel is sized to the message, its border around the text.
     const width = Math.round(this.text.width) + 2 * PANEL.pad;
     const height = Math.round(this.text.height) + 2 * PANEL.pad - 4;
@@ -45,7 +49,7 @@ export class ToastView {
       WOOD_PANEL,
       {
         x: Math.round((CANVAS_WIDTH - width) / 2),
-        y: Math.round(LAYOUT.toastY - height / 2),
+        y: Math.round(centreY - height / 2),
         width,
         height,
       },
