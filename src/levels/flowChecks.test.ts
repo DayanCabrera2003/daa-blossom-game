@@ -107,6 +107,7 @@ describe('the checks of a level script', () => {
       notebook: [
         {
           prompt: 'ch2.1.notebook.00',
+          codex: 'C2',
           options: [
             { line: 'ch2.1.notebook.01', correct: true },
             { line: 'ch2.1.notebook.02', correct: false },
@@ -141,6 +142,7 @@ describe('the checks of a level script', () => {
     const notebook = [
       {
         prompt: 'ch2.1.notebook.00',
+        codex: 'C2',
         options: [
           { line: 'ch2.1.notebook.01', correct: true },
           { line: 'ch2.1.notebook.02', correct: false },

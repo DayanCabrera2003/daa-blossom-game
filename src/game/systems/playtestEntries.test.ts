@@ -319,6 +319,7 @@ describe('playtest entries of bets, counts and the notebook', () => {
       notebook: [
         {
           prompt: 'ch1.9.notebook.00',
+          codex: 'C2',
           options: [
             { line: 'ch1.9.notebook.01', correct: true },
             { line: 'ch1.9.notebook.02', correct: false, counterexample },

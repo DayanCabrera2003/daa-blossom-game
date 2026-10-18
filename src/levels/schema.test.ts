@@ -116,6 +116,7 @@ describe('level schema', () => {
   it('a notebook question needs at least one right answer', () => {
     const notebook = {
       prompt: 'ch0.1.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch0.1.notebook.01', correct: false },
         { line: 'ch0.1.notebook.02', correct: false },
@@ -127,6 +128,7 @@ describe('level schema', () => {
   it('writes its notebook as a list of one question or more, each asked by its own step', () => {
     const question = {
       prompt: 'ch0.1.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch0.1.notebook.01', correct: true },
         { line: 'ch0.1.notebook.02', correct: false },

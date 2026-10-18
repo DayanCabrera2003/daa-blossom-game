@@ -23,6 +23,7 @@
   "notebook": [
     {
       "prompt": "ch6.6.notebook.01",
+      "codex": "C10",
       "options": [
         { "line": "ch6.6.notebook.02", "correct": true, "reply": "ch6.6.sauce.03" },
         { "line": "ch6.6.notebook.04", "correct": false, "reply": "ch6.6.sauce.05" },
@@ -58,6 +59,7 @@
     },
     {
       "prompt": "ch6.6.notebook.09",
+      "codex": "C10",
       "options": [
         { "line": "ch6.6.notebook.10", "correct": true, "reply": "ch6.6.sauce.11" },
         { "line": "ch6.6.notebook.12", "correct": false, "reply": "ch6.6.sauce.13" },

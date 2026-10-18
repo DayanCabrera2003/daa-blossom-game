@@ -42,6 +42,7 @@
   "notebook": [
     {
       "prompt": "ch5.3.notebook.05",
+      "codex": "C9",
       "options": [
         { "line": "ch5.3.notebook.06", "correct": true, "reply": "ch5.3.sauce.09" },
         {

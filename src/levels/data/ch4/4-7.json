@@ -36,6 +36,7 @@
   "notebook": [
     {
       "prompt": "ch4.7.notebook.05",
+      "codex": "C7",
       "options": [
         { "line": "ch4.7.notebook.06", "correct": true, "reply": "ch4.7.sauce.09" },
         { "line": "ch4.7.notebook.07", "correct": false, "reply": "ch4.7.sauce.10" },

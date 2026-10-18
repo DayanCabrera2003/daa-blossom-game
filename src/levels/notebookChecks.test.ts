@@ -28,6 +28,7 @@ const levelWith = (counterexample: unknown) => ({
   notebook: [
     {
       prompt: 'ch1.5.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch1.5.notebook.01', correct: true },
         { line: 'ch1.5.notebook.02', correct: false, counterexample },
@@ -80,6 +81,7 @@ describe('the checks of a notebook', () => {
     const folding = { mode: 'play', ...row, actions: ['chain', 'fold'] };
     const second = {
       prompt: 'ch1.5.notebook.03',
+      codex: 'C2',
       options: [
         { line: 'ch1.5.notebook.04', correct: false, counterexample: folding },
         { line: 'ch1.5.notebook.05', correct: true },

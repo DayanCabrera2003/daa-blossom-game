@@ -80,6 +80,7 @@
   "notebook": [
     {
       "prompt": "ch1.5.notebook.00",
+      "codex": "C2",
       "options": [
         {
           "line": "ch1.5.notebook.01",

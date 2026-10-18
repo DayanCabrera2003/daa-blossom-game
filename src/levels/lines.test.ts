@@ -17,6 +17,7 @@ const talkative = levelSchema.parse({
   notebook: [
     {
       prompt: 'ch4.7.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch4.7.notebook.01', correct: true },
         { line: 'ch4.7.notebook.02', correct: false },
@@ -50,6 +51,7 @@ describe('referencedLines', () => {
       notebook: [
         {
           prompt: 'ch4.7.notebook.00',
+          codex: 'C2',
           options: [
             { line: 'ch4.7.notebook.01', correct: true, reply: 'ch4.7.sauce.05' },
             {
@@ -99,6 +101,7 @@ describe('referencedLines', () => {
         ...(talkative.notebook ?? []),
         {
           prompt: 'ch4.7.notebook.03',
+          codex: 'C2',
           options: [
             { line: 'ch4.7.notebook.04', correct: true },
             { line: 'ch4.7.notebook.05', correct: false },

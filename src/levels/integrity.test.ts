@@ -201,6 +201,7 @@ describe('level integrity', () => {
   it('notebook lines belong to their own level too', () => {
     const notebook = {
       prompt: 'ch1.1.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch1.1.notebook.01', correct: true },
         { line: 'ch2.2.notebook.02', correct: false },
@@ -214,6 +215,7 @@ describe('level integrity', () => {
   it('a counterexample is checked as a garden, and its lines belong to the level', () => {
     const notebook = {
       prompt: 'ch1.1.notebook.00',
+      codex: 'C2',
       options: [
         { line: 'ch1.1.notebook.01', correct: true },
         {

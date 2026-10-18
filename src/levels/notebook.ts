@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { codexEntry } from './codex';
 import { actionType, lineId, sprouts, vine } from './fields';
 
 /**
@@ -46,9 +47,13 @@ const option = z
     'a right statement has no counterexample',
   );
 
-/** A notebook question: a prompt and options, at least one of them right. */
+/**
+ * A notebook question: a prompt and options, at least one of them right, and the Codex entry that
+ * translates the statement into mathematics (the notebook book links to it once it is open).
+ */
 export const notebookSchema = z.strictObject({
   prompt: lineId,
+  codex: codexEntry,
   options: z
     .array(option)
     .min(2)
