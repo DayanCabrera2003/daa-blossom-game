@@ -10,6 +10,7 @@ import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
+import { coverWith } from './focusables';
 
 /** Space around the panel's contents, in canvas pixels. */
 const PAD = 6;
@@ -84,12 +85,14 @@ export class RaceView {
 
   /** Builds the panel: its background, the title, the miniature, the counters and the chart. */
   private build(picture: RacePanelPicture): void {
-    const panel = this.scene.add
-      .rectangle(PAD - 2, TOP, CANVAS_WIDTH - 2 * (PAD - 2), HEIGHT, PALETTE.panel, 0.97)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(PANEL_DEPTH)
-      .setInteractive();
+    const panel = coverWith(
+      this.scene.add
+        .rectangle(PAD - 2, TOP, CANVAS_WIDTH - 2 * (PAD - 2), HEIGHT, PALETTE.panel, 0.97)
+        .setOrigin(0, 0)
+        .setStrokeStyle(1, PALETTE.panelEdge)
+        .setDepth(PANEL_DEPTH)
+        .setInteractive(),
+    );
     this.parts.push(panel);
     // The hourglass of the races, then the title after it.
     let titleX = PAD + 4;

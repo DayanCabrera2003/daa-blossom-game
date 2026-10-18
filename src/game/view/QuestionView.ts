@@ -9,6 +9,7 @@ import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { coverWith } from './focusables';
 
 /** One option as the panel shows it: what choosing it gives, and its text. */
 export interface ShownOption {
@@ -55,11 +56,13 @@ export class QuestionView {
     const { scene } = this;
     if (!reopening) playUiSound(scene, 'sfx.panelOpen');
     const { x, y, width } = QUESTION_PANEL;
-    const blocker = scene.add
-      .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
-      .setOrigin(0, 0)
-      .setDepth(BLOCKER_DEPTH)
-      .setInteractive();
+    const blocker = coverWith(
+      scene.add
+        .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
+        .setOrigin(0, 0)
+        .setDepth(BLOCKER_DEPTH)
+        .setInteractive(),
+    );
     const ink = PALETTE[WOOD_PANEL.text];
     const prompt = scene.add
       .text(0, 0, question.prompt, {

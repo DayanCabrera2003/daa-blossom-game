@@ -12,6 +12,7 @@ import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { coverWith } from './focusables';
 
 /** A mechanic card as the window shows it: its texts, already translated, and what it loops. */
 export interface ShownCard {
@@ -49,11 +50,13 @@ export class TutorialView {
     const { x, y, width } = TUTORIAL_PANEL;
     const left = x + PANEL.pad;
     const ink = PALETTE[WOOD_PANEL.text];
-    const blocker = scene.add
-      .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.4)
-      .setOrigin(0, 0)
-      .setDepth(BLOCKER_DEPTH)
-      .setInteractive();
+    const blocker = coverWith(
+      scene.add
+        .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.4)
+        .setOrigin(0, 0)
+        .setDepth(BLOCKER_DEPTH)
+        .setInteractive(),
+    );
     const title = scene.add
       .text(left, y + PANEL.pad, card.title, textStyle(10, ink))
       .setDepth(PANEL_DEPTH + 1);

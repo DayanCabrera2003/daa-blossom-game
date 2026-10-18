@@ -8,6 +8,7 @@ import { Button } from './Button';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
+import { coverWith } from './focusables';
 
 /** Space between rows, and around the panel's contents, in canvas pixels. */
 const GAP = 1;
@@ -92,12 +93,14 @@ export class RecipeView {
     const feedback = this.text(x + PAD, y + 2, told, inner - button.width - PAD, PALETTE.highlight);
     const bottom = Math.max(feedback.y + feedback.height, y + 2 + button.height) + PAD;
 
-    const panel = this.scene.add
-      .rectangle(x, top, width, bottom - top, PALETTE.panel, 0.97)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(PANEL_DEPTH)
-      .setInteractive();
+    const panel = coverWith(
+      this.scene.add
+        .rectangle(x, top, width, bottom - top, PALETTE.panel, 0.97)
+        .setOrigin(0, 0)
+        .setStrokeStyle(1, PALETTE.panelEdge)
+        .setDepth(PANEL_DEPTH)
+        .setInteractive(),
+    );
     this.parts.push(panel);
   }
 

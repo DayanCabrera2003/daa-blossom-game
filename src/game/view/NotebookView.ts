@@ -17,6 +17,7 @@ import { PALETTE } from './palette';
 import type { ShownOption } from './QuestionView';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { coverWith } from './focusables';
 
 /** What the notebook page shows, already translated. */
 export interface ShownNotebook {
@@ -69,11 +70,13 @@ export class NotebookView {
     const inner = innerWidth(width);
     const left = x + PANEL.pad;
     const ink = PALETTE[WOOD_PANEL.text];
-    const blocker = scene.add
-      .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
-      .setOrigin(0, 0)
-      .setDepth(BLOCKER_DEPTH)
-      .setInteractive();
+    const blocker = coverWith(
+      scene.add
+        .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
+        .setOrigin(0, 0)
+        .setDepth(BLOCKER_DEPTH)
+        .setInteractive(),
+    );
     this.parts.push(blocker);
 
     // The top row: the book and the notebook's name on the left, what to do on the right.

@@ -19,6 +19,7 @@ import { Button } from './Button';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { coverWith } from './focusables';
 
 /** What the panel's controls ask for; the scene changes the settings and calls `render`. */
 export interface SettingsActions {
@@ -95,11 +96,13 @@ export class SettingsView {
     );
     const rows = settingsRows(close.height);
     const { x, y } = settingsCorner(rows.height);
-    const blocker = scene.add
-      .rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, PALETTE.fog, 0.5)
-      .setOrigin(0, 0)
-      .setDepth(BLOCKER_DEPTH)
-      .setInteractive();
+    const blocker = coverWith(
+      scene.add
+        .rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, PALETTE.fog, 0.5)
+        .setOrigin(0, 0)
+        .setDepth(BLOCKER_DEPTH)
+        .setInteractive(),
+    );
     const panel = new WoodFrame(
       scene,
       SETTINGS_PANEL.frame,

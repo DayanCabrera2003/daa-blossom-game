@@ -9,6 +9,7 @@ import { PALETTE } from './palette';
 import { drawStars } from './StarIcons';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { coverWith } from './focusables';
 
 /** The stars a level can give (GDD §5). */
 const MAX_STARS = 3;
@@ -36,7 +37,7 @@ export function showVictoryPanel(
   const { width, height, pad } = VICTORY_PANEL;
   const x = (CANVAS_WIDTH - width) / 2;
   const y = (CANVAS_HEIGHT - height) / 2;
-  new WoodFrame(scene, WOOD_PANEL, { x, y, width, height }, 300).zone.setInteractive();
+  coverWith(new WoodFrame(scene, WOOD_PANEL, { x, y, width, height }, 300).zone.setInteractive());
   const ink = PALETTE[WOOD_PANEL.text];
   scene.add
     .text(CANVAS_WIDTH / 2, y + 8, t('victory.title'), textStyle(10, ink))
