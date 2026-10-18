@@ -311,12 +311,12 @@ describe('7.6: another proof', () => {
   const names = (stones: readonly VertexId[]) =>
     stones.map((stone) => level().data.sprouts[stone]?.label);
 
-  it('four lanterns fit, and four sets of stones prove it: none, b, C, and b with C', () => {
+  it('four lanterns fit, and four sets of stones prove it: none, b, M, and b with M', () => {
     const { graph } = level();
     const proving = [...Array(2 ** graph.n).keys()]
       .map((subset) => [...Array(graph.n).keys()].filter((v) => (subset >> v) & 1))
       .filter((stones) => tutteBergeBound(graph, stones) === 4);
-    expect(proving.map(names)).toEqual([[], ['b'], ['C'], ['b', 'C']]);
+    expect(proving.map(names)).toEqual([[], ['b'], ['M'], ['b', 'M']]);
   });
 
   it('the walkthrough presents two different sets of stones, and both prove its lanterns', () => {
@@ -327,7 +327,7 @@ describe('7.6: another proof', () => {
       state = play(state, [move]);
       if (move.type === 'declareDone') presented.push([...state.stones].sort((x, y) => x - y));
     }
-    expect(presented.map(names)).toEqual([[], ['C']]);
+    expect(presented.map(names)).toEqual([[], ['M']]);
     for (const stones of presented) {
       expect(checkTutteBerge(state.graph, state.matching, stones).ok).toBe(true);
     }

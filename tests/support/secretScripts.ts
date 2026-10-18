@@ -89,9 +89,9 @@ export const TANGLE = {
 
 /**
  * The council of 7.6: a row `a–b–c` and, apart, the triangles `p–q–r` and `s–t–o` joined by the
- * bridge `r–C–s`, with `p=q` and `s=t` lit. The most is 4 lanterns, two sprouts left in the dark;
- * the stones that prove it are ∅, {b}, {C} and {b, C}. The walkthrough lights `a=b` and `r=C`,
- * presents no stones, then {C}.
+ * bridge `r–M–s`, with `p=q` and `s=t` lit. The most is 4 lanterns, two sprouts left in the dark;
+ * the stones that prove it are ∅, {b}, {M} and {b, M}. The walkthrough lights `a=b` and `r=M`,
+ * presents no stones, then {M}.
  */
 export const COUNCIL = {
   id: '7.6',
@@ -101,7 +101,7 @@ export const COUNCIL = {
     { label: 'p', x: 60, y: 150 },
     { label: 'q', x: 120, y: 210 },
     { label: 'r', x: 140, y: 130 },
-    { label: 'C', x: 220, y: 130 },
+    { label: 'M', x: 220, y: 130 },
     { label: 's', x: 300, y: 130 },
     { label: 't', x: 320, y: 210 },
     { label: 'o', x: 380, y: 150 },
@@ -109,7 +109,7 @@ export const COUNCIL = {
   vines: [
     ...chainOf(['a', 'b', 'c']),
     ...chainOf(['p', 'q', 'r', 'p']),
-    ...chainOf(['r', 'C', 's']),
+    ...chainOf(['r', 'M', 's']),
     ...chainOf(['s', 't', 'o', 's']),
   ],
   lanterns: [
@@ -121,9 +121,9 @@ export const COUNCIL = {
   flow: [{ step: 'play' }, { step: 'certifyAgain', repeated: 'ch7.6.oaks.02' }],
   solution: [
     { type: 'join', u: 'a', v: 'b' },
-    { type: 'join', u: 'r', v: 'C' },
+    { type: 'join', u: 'r', v: 'M' },
     { type: 'declareDone' },
-    { type: 'liftStone', vertex: 'C' },
+    { type: 'liftStone', vertex: 'M' },
     { type: 'declareDone' },
   ],
 };

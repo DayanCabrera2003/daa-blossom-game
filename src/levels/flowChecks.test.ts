@@ -213,14 +213,14 @@ describe('the checks of a level script', () => {
 
   it('the walkthrough answers the call for another certificate with different stones', () => {
     const [joinAB, joinRC, done, lift] = COUNCIL.solution;
-    const repeated = [joinAB, joinRC, done, lift, { type: 'dropStone', vertex: 'C' }, done];
+    const repeated = [joinAB, joinRC, done, lift, { type: 'dropStone', vertex: 'M' }, done];
     expect(flowProblemsOf({ ...COUNCIL, solution: repeated })).toEqual([
       { code: 'sameCertificate', step: 1 },
     ]);
-    // Two calls need three different certificates: ∅, {C}, then {b}.
+    // Two calls need three different certificates: ∅, {M}, then {b}.
     const twice = [
       ...COUNCIL.solution,
-      { type: 'dropStone', vertex: 'C' },
+      { type: 'dropStone', vertex: 'M' },
       { type: 'liftStone', vertex: 'b' },
       done,
     ];

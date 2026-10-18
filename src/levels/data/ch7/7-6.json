@@ -35,7 +35,7 @@
       "y": 130
     },
     {
-      "label": "C",
+      "label": "M",
       "x": 240,
       "y": 130
     },
@@ -61,8 +61,8 @@
     ["p", "q"],
     ["q", "r"],
     ["r", "p"],
-    ["r", "C"],
-    ["C", "s"],
+    ["r", "M"],
+    ["M", "s"],
     ["s", "t"],
     ["t", "o"],
     ["o", "s"]
@@ -83,7 +83,7 @@
     },
     {
       "line": "ch7.6.sauce.09",
-      "highlight": ["r", "C"]
+      "highlight": ["r", "M"]
     },
     {
       "line": "ch7.6.sauce.10"
@@ -119,14 +119,14 @@
     {
       "type": "join",
       "u": "r",
-      "v": "C"
+      "v": "M"
     },
     {
       "type": "declareDone"
     },
     {
       "type": "liftStone",
-      "vertex": "C"
+      "vertex": "M"
     },
     {
       "type": "declareDone"

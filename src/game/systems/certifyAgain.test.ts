@@ -16,14 +16,14 @@ const play = (state: GardenState, actions: readonly Action[]): GardenState =>
 
 const level = councilLevel();
 const { victory } = level.data;
-const [a, b, , , , r, C] = [0, 1, 2, 3, 4, 5, 6];
+const [a, b, , , , r, M] = [0, 1, 2, 3, 4, 5, 6];
 /** The four lanterns lit, no stone lifted: not yet presented. */
 const lit = play(level.start, [
   { type: 'join', u: a, v: b },
-  { type: 'join', u: r, v: C },
+  { type: 'join', u: r, v: M },
 ]);
 const noStones = play(lit, [{ type: 'declareDone' }]);
-const bridge = play(lit, [{ type: 'liftStone', vertex: C }, { type: 'declareDone' }]);
+const bridge = play(lit, [{ type: 'liftStone', vertex: M }, { type: 'declareDone' }]);
 const playing: LevelStep = { step: 'play', reactions: [] };
 const again: LevelStep = { step: 'certifyAgain', repeated: 'ch7.6.oaks.02' };
 
@@ -43,15 +43,15 @@ describe('the certificates presented to the council', () => {
     });
     expect(judgeVictory(again, [[]], bridge, victory)).toEqual({
       kind: 'won',
-      certificates: [[], [C]],
+      certificates: [[], [M]],
     });
     // The same stones lifted in another order are the same certificate.
     const both = play(lit, [
-      { type: 'liftStone', vertex: C },
+      { type: 'liftStone', vertex: M },
       { type: 'liftStone', vertex: b },
       { type: 'declareDone' },
     ]);
-    expect(judgeVictory(again, [[b, C]], both, victory)).toEqual({
+    expect(judgeVictory(again, [[b, M]], both, victory)).toEqual({
       kind: 'repeated',
       line: 'ch7.6.oaks.02',
     });
