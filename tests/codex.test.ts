@@ -7,9 +7,12 @@ import { CODEX_ENTRIES, CODEX_TABS, type CodexEntryId } from '@levels/codex';
 import { renderMath } from '@ui/math/renderMath';
 import { markdownToHtml } from '@ui/math/markdown';
 import { parseCodexEntry, type CodexEntry } from '@ui/model/codexEntry';
+import { codexIndex } from '@ui/model/codexIndex';
 import { codexStructure, resultId, type CodexStructure } from '@ui/model/codexStructure';
 import { mathSpans } from '@ui/model/mathSpans';
 import { describe, expect, it } from 'vitest';
+import { codexSources, openCodex } from '@services/codexProgress';
+import { emptySave, recordCompletion } from '@services/save';
 import { MATHEMATICS } from './support/vocabulary';
 
 /**
@@ -206,5 +209,17 @@ describe('the structure of rigor of the formal tabs', () => {
     expect(
       rigorProblems('C11', '**Observación 11.1 (x).** (sin demostración: fuera de alcance)'),
     ).toEqual([]);
+  });
+});
+
+describe('the index of the Codex, with the real entries', () => {
+  it('after 0.5 alone shows C1 by its garden title, never by its formal one', () => {
+    const save = recordCompletion(emptySave(), '0.5', 1);
+    const open = openCodex(codexSources(catalog()), save, false);
+    const index = codexIndex(open, new Set(), new Map(entries.map((entry) => [entry.id, entry])));
+    const formal = entries[0]?.formalTitle ?? '';
+    expect(index[0]).toMatchObject({ kind: 'open', formalTitle: null });
+    expect(JSON.stringify(index)).not.toContain(formal);
+    expect(index.slice(1).every((row) => row.kind === 'closed')).toBe(true);
   });
 });
