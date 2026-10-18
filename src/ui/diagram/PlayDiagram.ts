@@ -11,13 +11,14 @@ import {
   type PlaySession,
 } from '@ui/model/diagramPlay';
 import type { DiagramSpec } from '@ui/model/diagramSpec';
-import { chainOf, targetOf } from '@ui/model/diagramTouch';
+import { chainOf } from '@ui/model/diagramTouch';
 import { helpKeys } from '@ui/model/diagramWords';
 import { snapshotOf } from '@ui/model/gardenSnapshot';
 import { fitGarden, miniGarden } from '@ui/model/miniGarden';
 import { refusalText } from '@ui/model/refusalText';
 import { drawGarden, gardenSvg } from './GardenSvg';
 import { diagramButton, part } from './parts';
+import { keepingFocus, listenForTouches } from './touches';
 
 /**
  * A garden the reader plays on, in the intuition tab of an entry (plan 07, phase 4): touch with the
@@ -65,9 +66,8 @@ export function playDiagram(
   hole.replaceChildren(figure);
 
   /** Draws the garden as the session has it, keeping the focus on the same sprout or vine. */
-  const draw = (): void => {
-    const active = page.activeElement;
-    const focused = active instanceof SVGElement ? active.dataset['target'] : undefined;
+  const draw = (): void => keepingFocus(svg, paint);
+  const paint = (): void => {
     const now = currentGarden(session);
     const moment = {
       snapshot: snapshotOf(now),
@@ -79,9 +79,6 @@ export function playDiagram(
       vine: (vine) => vine.lit && session.moves.has('split'),
       t,
     });
-    if (focused !== undefined) {
-      svg.querySelector<SVGElement>(`[data-target="${focused}"]`)?.focus();
-    }
     count.textContent = t('hud.lanterns', { count: lanternCount(session) });
     pass.disabled = chainOf(session.touched, session.moves) === null;
     undo.disabled = session.history.length === 1;
@@ -94,17 +91,6 @@ export function playDiagram(
     draw();
   };
 
-  /** Touches what `element` stands for, if anything. */
-  const touch = (element: Element | null): void => {
-    const name = element?.closest<SVGElement>('[data-target]')?.dataset['target'];
-    const target = name === undefined ? null : targetOf(name);
-    if (target !== null) update(touchPlay(session, target));
-  };
-  svg.addEventListener('click', (event) => touch(event.target as Element | null));
-  svg.addEventListener('keydown', (event) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    event.preventDefault();
-    touch(event.target as Element | null);
-  });
+  listenForTouches(svg, (target) => update(touchPlay(session, target)));
   draw();
 }
