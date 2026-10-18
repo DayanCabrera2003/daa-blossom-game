@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import { playUiSound } from '../audio/uiSound';
 import { badgeAt, buttonContent, ICON_GAP, type ButtonIcon } from '../picture/buttonIcon';
 import { WOOD_BUTTON, type ButtonState } from '../picture/wood';
+import { addFocusable } from './focusables';
 import { css, PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
@@ -10,7 +11,9 @@ import { WoodFrame } from './WoodFrame';
  * A small button of the HUD and the panels: a label, maybe after icons (the first maybe wearing a
  * badge on its corner, `picture/buttonIcon.ts`), on a wooden button of the pack
  * (`picture/wood.ts`), at rest, in hand or switched off, its letters in the colour that reads on
- * each look. A press clicks, unless the button is switched off.
+ * each look. A press clicks, unless the button is switched off. The keyboard's focus reaches it
+ * while it is shown and switched on, and Enter or Space on it press it the same way
+ * (`view/focusables.ts`).
  */
 export class Button {
   private readonly wood: WoodFrame;
@@ -20,11 +23,16 @@ export class Button {
   private readonly badge: Phaser.GameObjects.Image | null;
   /** The width the icons and their gaps take before the label. */
   private readonly iconRoom: number;
+  private readonly onPress: () => void;
   private enabled = true;
   private active = false;
+  private visible = true;
+  private destroyed = false;
+  /** The depth of its wood, which the keyboard's focus reads to know what is drawn above it. */
+  private depth = 100;
 
   constructor(
-    scene: Phaser.Scene,
+    private readonly scene: Phaser.Scene,
     x: number,
     y: number,
     label: string,
@@ -32,6 +40,7 @@ export class Button {
     icons: readonly ButtonIcon[] = [],
     badge: ButtonIcon | null = null,
   ) {
+    this.onPress = onPress;
     // An icon whose picture is not loaded is left out.
     this.icons = icons
       .filter((icon) => scene.textures.exists(icon.texture))
@@ -62,13 +71,24 @@ export class Button {
         'pointerdown',
         (_: Phaser.Input.Pointer, __: number, ___: number, event: Phaser.Types.Input.EventData) => {
           event.stopPropagation();
-          if (!this.enabled) return;
-          playUiSound(scene, 'sfx.button');
-          onPress();
+          this.press();
         },
       );
     this.moveTo(x, y);
     this.restyle();
+    addFocusable(scene, {
+      box: () => this.wood.bounds,
+      depth: () => this.depth,
+      live: () => this.visible && this.enabled && !this.destroyed,
+      press: () => this.press(),
+    });
+  }
+
+  /** What a touch does, and Enter or Space on the button in focus: it clicks, unless switched off. */
+  press(): void {
+    if (!this.enabled) return;
+    playUiSound(this.scene, 'sfx.button');
+    this.onPress();
   }
 
   /** Width on the canvas, to lay buttons out side by side. */
@@ -118,6 +138,7 @@ export class Button {
 
   /** Puts the button above other layers (panels drawn on top of the HUD). */
   setDepth(depth: number): this {
+    this.depth = depth;
     this.wood.setDepth(depth);
     for (const icon of this.icons) icon.setDepth(depth + 1);
     this.badge?.setDepth(depth + 2);
@@ -138,6 +159,7 @@ export class Button {
   }
 
   setVisible(visible: boolean): this {
+    this.visible = visible;
     this.wood.setVisible(visible);
     for (const icon of this.icons) icon.setVisible(visible);
     this.badge?.setVisible(visible);
@@ -146,6 +168,7 @@ export class Button {
   }
 
   destroy(): void {
+    this.destroyed = true;
     this.wood.destroy();
     for (const icon of this.icons) icon.destroy();
     this.badge?.destroy();
