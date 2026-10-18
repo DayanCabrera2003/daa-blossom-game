@@ -230,6 +230,8 @@ Las posiciones se escriben a mano dentro de `SPROUT_AREA`, con los tests de geom
 
 Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en `images` (600 KB) y en `initial`.
 
+*En ejecución:* pesan 10,1 KB. Ninguna se recolorea: la rana y la planta traen unos pocos colores fuera de `Palette.png`, como los tilesets de Ninja ya enviados, y son del mismo pack. Los frames con nombre de `frames.ts` nombran cada clave nueva, y `tests/assetUse.test.ts` cuenta eso como uso, así que las claves no pasan por `AWAITING` y la fase 7 no tiene nada que sacar de ahí.
+
 **Tests clave:** los de `tests/assets.test.ts` (cada entrada existe, cada frame cae dentro de su hoja, cada pack acreditado), `npm run assets:check` en local, `tests/assetBudget.test.ts` en verde.
 
 ---
@@ -244,7 +246,6 @@ Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en
 | `game/view/HubCrittersView.ts` | Pinta y anima animales, plantas y luciérnagas en una capa por debajo de carteles y botones; sin zonas de toque |
 | `game/scenes/hub/HubCosmetics.ts` | Crea la vista, muestra el aviso de cada cosmético nuevo y lo anota en el guardado |
 | `game/picture/secretFlower.ts`, `HubSecrets.ts` | A los 130 ★ el farolillo del poste se dibuja junto a la flor sin tapar su caja |
-| `tests/assetUse.test.ts` | Las claves de la fase 6 salen de `AWAITING` |
 | `content/es/strings.json`, `content/keys.ts` | `cosmetic.butterfly`, `cosmetic.frog`, `cosmetic.cat`, `cosmetic.butterflyBlue`, `cosmetic.chickens`, `cosmetic.fireflies`, `cosmetic.lanterns`, `cosmetic.seedling` |
 
 **Tests clave:** el mismo instante da la misma posición; ningún punto de reposo cae sobre un cartel, título o botón en ninguna combinación de capítulos terminados; la rana va al estanque si existe; las mariposas cierran su ciclo; sin estrellas no hay nada; con 134, todo; cada aviso aparece una sola vez.
