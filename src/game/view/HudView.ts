@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
-import { HUD_BUTTONS, hudRow, type HudButton } from '../picture/bottomRows';
+import { HUD_BUTTONS, hudRow, traceButtonLeft, type HudButton } from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -33,6 +33,8 @@ export interface HudActions {
   readonly leaveLayer: () => void;
   /** Opens the Códex. */
   readonly book: () => void;
+  /** Opens or folds the teacher's trace panel (teacher mode only). */
+  readonly trace: () => void;
 }
 
 /**
@@ -40,7 +42,8 @@ export interface HudActions {
  * drop of the pack) on top; on wooden buttons, "Terminé", undo, redo, hint, "?" (the mechanic
  * cards again) and back at the bottom right, switched off when not available, "Comprobar" beside them in the mirror challenge, and the way out
  * of a flower entered with the layers, whose depth the status line tells (5.2), and from 7.2 the
- * Council's count on the right of the status line.
+ * Council's count on the right of the status line. In teacher mode, the trace button ends the
+ * tools' row.
  */
 export class HudView {
   private readonly goal: Phaser.GameObjects.Text;
@@ -57,6 +60,8 @@ export class HudView {
   private readonly buttons: Record<HudButton, Button>;
   /** The Códex, at the bottom left after the settings, while some page of it is open. */
   private readonly book: Button;
+  /** The teacher's trace panel, at the right end of the tools' row, in teacher mode only. */
+  private readonly trace: Button;
 
   constructor(
     scene: Phaser.Scene,
@@ -96,6 +101,10 @@ export class HudView {
       actions.book,
       [BOOK_ICON],
     ).setVisible(false);
+    this.trace = new Button(scene, 0, LAYOUT.toolbarY, t('hud.trace'), actions.trace).setVisible(
+      false,
+    );
+    this.trace.moveTo(traceButtonLeft(this.trace.width), LAYOUT.toolbarY);
     this.buttons = Object.fromEntries(HUD_BUTTONS.map((name, i) => [name, made[i]])) as Record<
       HudButton,
       Button
@@ -105,6 +114,11 @@ export class HudView {
   /** Shows the Códex button when some page of the book is open, and hides it otherwise. */
   showBook(open: boolean): void {
     this.book.setVisible(open);
+  }
+
+  /** Shows the trace button, in teacher mode. */
+  showTrace(shown: boolean): void {
+    this.trace.setVisible(shown);
   }
 
   render(hud: HudPicture): void {

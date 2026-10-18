@@ -32,6 +32,7 @@ import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
 import { showEffect, type EffectStage } from './level/levelEffects';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
+import { TeacherBridge } from './level/teacherBridge';
 import { Presenter } from './presenter';
 import { queueLoads } from './queueLoads';
 import { addSettings } from './settingsPanel';
@@ -65,6 +66,8 @@ export class LevelScene extends Phaser.Scene {
   private winJingle: AssetKey = 'jingle.victory';
   /** Whether the win opened pages of the Codex, told when the victory panel shows. */
   private codexNotice = false;
+  /** Teacher mode's side of the screen: the trace panel's feed and the jumps between levels. */
+  private teacher!: TeacherBridge;
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -112,6 +115,7 @@ export class LevelScene extends Phaser.Scene {
       back: () => this.leave(),
       help: () => this.cards.help(level, this.controller.session.flow.index),
       book: () => this.context.bus.emit('book.open', { book: 'codex' }),
+      trace: () => this.context.bus.emit('teacher.toggle'),
     });
     // A new painter for every level: its timing starts afresh with the level.
     this.painter = new LevelRenderer(
@@ -181,6 +185,15 @@ export class LevelScene extends Phaser.Scene {
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });
+    this.teacher = new TeacherBridge(this.context.bus, this.context.teacherMode);
+    this.teacher.bindKeys(
+      this,
+      this.context.catalog.map((candidate) => candidate.data.id),
+      level.data.id,
+      (levelId) => this.scene.start('level', { levelId }),
+    );
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teacher.leave());
+    this.views.hud.showTrace(this.context.teacherMode);
     this.ready = true;
     // The cards of what opens with the level come first; then the script opens it: its first
     // lines, then whatever step waits for the player.
@@ -188,6 +201,7 @@ export class LevelScene extends Phaser.Scene {
     for (const effect of opened.effects) this.show(effect);
     this.painter.render(this.time.now);
     this.showBook();
+    this.teacher.feed(this.controller.session);
   }
 
   /** The Códex button of the HUD shows once some page of the book is open. */
@@ -228,6 +242,7 @@ export class LevelScene extends Phaser.Scene {
     this.controller = step.controller;
     for (const effect of step.effects) this.show(effect);
     this.painter.render(this.time.now);
+    this.teacher.feed(this.controller.session);
   }
 
   private show(effect: Effect): void {

@@ -57,6 +57,8 @@ export interface LevelButtons {
   readonly help: () => void;
   /** The book button: opens the Códex. */
   readonly book: () => void;
+  /** The trace button, in teacher mode only: opens or folds the teacher's panel. */
+  readonly trace: () => void;
 }
 
 /**
@@ -92,6 +94,7 @@ export const buildLevelViews = (
       back: buttons.back,
       help: buttons.help,
       book: buttons.book,
+      trace: buttons.trace,
       checkMirror: () => dispatch({ kind: 'checkMirror' }),
       leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
     }),
