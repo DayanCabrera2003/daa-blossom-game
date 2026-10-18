@@ -69,3 +69,23 @@ export function unlockedTabs(unlock: CodexUnlock): UnlockedTabs {
   if (typeof unlock === 'string') return { entry: unlock, tabs: CODEX_TABS };
   return { entry: unlock.entry, tabs: CODEX_TABS.filter((tab) => unlock.tabs.includes(tab)) };
 }
+
+/** The tabs open of each entry, entries in the order they first opened. */
+export type OpenTabs = ReadonlyMap<CodexEntryId, ReadonlySet<CodexTab>>;
+
+/** Gathers what a list of unlocks opens: the union of the tabs each one opens of each entry. */
+export function openedBy(unlocks: Iterable<CodexUnlock>): Map<CodexEntryId, Set<CodexTab>> {
+  const open = new Map<CodexEntryId, Set<CodexTab>>();
+  for (const unlock of unlocks) {
+    const { entry, tabs } = unlockedTabs(unlock);
+    const known = open.get(entry) ?? new Set<CodexTab>();
+    for (const tab of tabs) known.add(tab);
+    open.set(entry, known);
+  }
+  return open;
+}
+
+/** Whether these open tabs are the whole entry (an entry not open at all has none). */
+export function isWhole(tabs: ReadonlySet<CodexTab> | undefined): boolean {
+  return tabs !== undefined && CODEX_TABS.every((tab) => tabs.has(tab));
+}

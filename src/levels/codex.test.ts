@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CODEX_ENTRIES, CODEX_TABS, codexUnlock, unlockedTabs } from './codex';
+import { CODEX_ENTRIES, CODEX_TABS, codexUnlock, isWhole, openedBy, unlockedTabs } from './codex';
 
 describe('the Codex entries and how a level opens them', () => {
   it('the book has fourteen entries, C1 to C14, each with three tabs', () => {
@@ -45,5 +45,19 @@ describe('the Codex entries and how a level opens them', () => {
     ]) {
       expect(codexUnlock.safeParse(wrong).success).toBe(false);
     }
+  });
+
+  it('gathers what several unlocks open, tab by tab, an entry whole once all its tabs are', () => {
+    const open = openedBy([
+      'C2',
+      { entry: 'C1', tabs: ['intuition'] },
+      { entry: 'C1', tabs: ['bridge'] },
+    ]);
+    expect([...open.keys()]).toEqual(['C2', 'C1']);
+    expect([...(open.get('C1') ?? [])]).toEqual(['intuition', 'bridge']);
+    expect(isWhole(open.get('C1'))).toBe(false);
+    expect(isWhole(open.get('C2'))).toBe(true);
+    expect(isWhole(open.get('C3'))).toBe(false);
+    expect(openedBy([]).size).toBe(0);
   });
 });
