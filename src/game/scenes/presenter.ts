@@ -197,7 +197,7 @@ export class Presenter {
         this.replaying = {
           day: start.day,
           light: start.light === true,
-          plan: planReplay(start.day.length),
+          plan: planReplay(start.day.length, start.within),
           startedAt: this.scene.time.now,
           cursor: 0,
         };

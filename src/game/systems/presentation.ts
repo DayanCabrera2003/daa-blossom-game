@@ -36,6 +36,11 @@ export type Presentation =
       readonly kind: 'replay';
       readonly day: readonly GardenState[];
       readonly light?: boolean;
+      /**
+       * The longest the replay may take, in milliseconds: a long day steps faster to fit it (the
+       * mechanical gardener's run in the free mode). At the usual pace when absent.
+       */
+      readonly within?: number;
     }
   /**
    * A race being run (6.4, 6.5): the race of the script step `step`, its counters running for
