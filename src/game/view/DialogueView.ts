@@ -68,6 +68,8 @@ export class DialogueView {
   private offset: Point = { x: 0, y: 0 };
   /** The grip that drags the box by its tab and top border, while it is open. */
   private grip: PanelGrip | null = null;
+  /** Whether the line on the page sits beside a portrait or across the page. */
+  private page: 'plain' | 'portrayed' = 'portrayed';
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -207,7 +209,8 @@ export class DialogueView {
 
   /** Moves the whole box so that its top-left corner is at `at`. */
   private moveTo(at: Point): void {
-    const { box, tab, text, hint, portrait } = this.layouts.portrayed;
+    const { box, tab, hint, portrait } = this.layouts.portrayed;
+    const { text } = this.layouts[this.page];
     this.offset = { x: at.x - box.x, y: at.y - box.y };
     const { x: dx, y: dy } = this.offset;
     this.wood.setRect({ ...box, x: box.x + dx, y: box.y + dy });
@@ -221,7 +224,8 @@ export class DialogueView {
   /** Writes a line beside its speaker's portrait, or across the page for one who has none. */
   private show(line: SpokenLine): void {
     const portrait = portraitOf(line.speaker);
-    const { text } = this.layouts[portrait === null ? 'plain' : 'portrayed'];
+    this.page = portrait === null ? 'plain' : 'portrayed';
+    const { text } = this.layouts[this.page];
     this.name.setText(this.t(`speaker.${line.speaker}`));
     this.text
       .setPosition(text.x + this.offset.x, text.y + this.offset.y)
