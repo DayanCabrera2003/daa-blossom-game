@@ -175,9 +175,10 @@ export default tseslint.config(
     },
   },
   {
-    // The shell is part of the initial script: it reaches the heavy books only through import(),
-    // so KaTeX, marked and the entries stay in the deferred chunk. ESLint only sees static imports.
-    files: ['src/ui/shell.ts'],
+    // The shells are part of the initial script: they reach the heavy books (and the teacher's
+    // panel) only through import(), so KaTeX, marked and the entries stay in the deferred chunk.
+    // ESLint only sees static imports.
+    files: ['src/ui/shell.ts', 'src/ui/teacherShell.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
