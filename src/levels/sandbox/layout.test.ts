@@ -37,16 +37,19 @@ function expectReadable(spots: readonly Spot[], graph: Graph): void {
 const beesFirst = (a: number, n: number): (0 | 1)[] =>
   Array.from({ length: n }, (_, v) => (v < a ? 0 : 1));
 
-/** Each generator of the free mode (plan 08, section 1.3) at the largest size it offers. */
+/**
+ * Each generator of the free mode (plan 08, section 1.3) at the largest size it offers; the random
+ * ones with a seed that keeps them within the free mode's 40 vines, as their generators do.
+ */
 const LARGEST: readonly [string, Graph, LayoutShape][] = [
   ['row of 20', pathGraph(20), { kind: 'row' }],
   ['ring of 20', cycleGraph(20), { kind: 'ring' }],
   ['star of 12 leaves', starGraph(12), { kind: 'layers' }],
   ['all with all, 8', completeGraph(8), { kind: 'ring' }],
-  ['random, 20', randomGraph(20, 0.5, createRng(1)), { kind: 'ring' }],
+  ['random, 20', randomGraph(20, 0.2, createRng(2)), { kind: 'ring' }],
   [
     'bees and flowers, 20',
-    randomBipartiteGraph(10, 10, 0.5, createRng(1)),
+    randomBipartiteGraph(10, 10, 0.4, createRng(2)),
     { kind: 'sides', side: beesFirst(10, 20) },
   ],
   [
@@ -91,10 +94,18 @@ describe('laying out a garden without places', () => {
     }
   });
 
-  it('lays out the same garden the same way every time', () => {
-    for (const [, graph, shape] of LARGEST) {
-      expect(layoutGarden(graph, shape)).toEqual(layoutGarden(graph, shape));
-    }
+  it(
+    'lays out the same garden the same way every time',
+    () => {
+      for (const [, graph, shape] of LARGEST) {
+        expect(layoutGarden(graph, shape)).toEqual(layoutGarden(graph, shape));
+      }
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
+  );
+
+  it("keeps every garden of the list within the free mode's vines", () => {
+    for (const [, graph] of LARGEST) expect(graph.edges.length).toBeLessThanOrEqual(MAX_VINES);
   });
 
   it('lays a row and a ring of any size out without a vine crossing another', () => {

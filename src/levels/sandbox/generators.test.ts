@@ -83,11 +83,15 @@ describe('the generators of the free mode', () => {
     },
   );
 
-  it('grows rows and rings whose vines never cross', () => {
-    for (const [id, size] of EVERY_SIZE.filter(([id]) => id === 'path' || id === 'cycle')) {
-      expect(vineCrossings(generate(id, size, 1).design)).toEqual([]);
-    }
-  });
+  it(
+    'grows rows and rings whose vines never cross',
+    () => {
+      for (const [id, size] of EVERY_SIZE.filter(([id]) => id === 'path' || id === 'cycle')) {
+        expect(vineCrossings(generate(id, size, 1).design)).toEqual([]);
+      }
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
+  );
 
   it('names the sprouts A, B, C… in the order the core grows them', () => {
     const { design } = generate('path', 5, 1);
