@@ -5,6 +5,7 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { BUTTON_HEIGHT } from './panelLayout';
 import { SETTINGS_PANEL, settingsCorner, settingsRows } from './settingsPanelLayout';
 import { LINE_HEIGHT } from './textWrap';
+import { WOOD_PANEL } from './wood';
 
 describe('the rows of the settings panel', () => {
   const rows = settingsRows(BUTTON_HEIGHT);
@@ -31,5 +32,14 @@ describe('the rows of the settings panel', () => {
     expect(corner.x * 2 + SETTINGS_PANEL.width).toBe(CANVAS_WIDTH);
     expect(corner.y).toBeGreaterThan(0);
     expect(corner.y + rows.height).toBeLessThan(CANVAS_HEIGHT);
+  });
+
+  it('is framed in the wood of the other panels, its rows all on the face inside the frame', () => {
+    expect(SETTINGS_PANEL.frame).toBe(WOOD_PANEL);
+    const { slices } = SETTINGS_PANEL.frame;
+    expect(SETTINGS_PANEL.pad).toBeGreaterThanOrEqual(Math.max(slices.left, slices.right));
+    // The title's capitals start a few pixels below the top of its line.
+    expect(rows.title + 3).toBeGreaterThanOrEqual(slices.top);
+    expect(rows.height - (rows.close - 1 + BUTTON_HEIGHT)).toBeGreaterThanOrEqual(slices.bottom);
   });
 });

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import lines from '../src/content/es/lines.json';
 import strings from '../src/content/es/strings.json';
-import { estimatedButtonWidth } from '../src/game/picture/bottomRows';
+import { CHAR_ADVANCE, estimatedButtonWidth } from '../src/game/picture/bottomRows';
 import { dialogueBox } from '../src/game/picture/dialogueBox';
 import {
   innerWidth,
@@ -126,6 +126,10 @@ describe('the panels fit their texts', () => {
       const name = SETTINGS_PANEL.pad + estimatedButtonWidth(t(`settings.${channel}`));
       expect(name).toBeLessThanOrEqual(SETTINGS_PANEL.track.from);
     }
+    // The loudest percentage, written after its track, ends on the face, inside the wooden frame.
+    const loudest = [...t('settings.volume', { percent: 100 })].length * CHAR_ADVANCE;
+    const value = SETTINGS_PANEL.track.to + SETTINGS_PANEL.valueGap + loudest;
+    expect(value).toBeLessThanOrEqual(SETTINGS_PANEL.width - SETTINGS_PANEL.frame.slices.right);
   });
 
   it('the victory panel of a free garden says its line on one row, in place of the stars', () => {

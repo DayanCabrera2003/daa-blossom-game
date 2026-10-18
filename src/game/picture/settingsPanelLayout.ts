@@ -1,14 +1,24 @@
 import { AUDIO_CHANNELS } from '@services/settings';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
+import { WOOD_PANEL, type WoodPiece } from './wood';
 
 /**
  * Where everything goes on the settings panel, in canvas pixels from the panel's top-left corner:
  * the title, a row for each audio channel's slider, the mute box, the button that exports the
  * playtest log (GDD §10; it moved here from the hub's top line, plan 08 phase 5) and "Cerrar",
- * both buttons centred. Pure: the view draws what this says, and the tests check that the rows
- * never touch and the panel stays on the canvas.
+ * both buttons centred, all in the wooden frame of the other panels (plan 09, phase 2), so its
+ * text is written in that frame's ink. Pure: the view draws what this says, and the tests check
+ * that the rows never touch, stay on the frame's face and the panel stays on the canvas.
  */
-export const SETTINGS_PANEL = {
+export const SETTINGS_PANEL: {
+  readonly width: number;
+  readonly pad: number;
+  readonly row: number;
+  readonly track: { readonly from: number; readonly to: number };
+  readonly valueGap: number;
+  readonly gap: number;
+  readonly frame: WoodPiece;
+} = {
   width: 200,
   /** Clear space inside the panel's edges. */
   pad: 8,
@@ -16,9 +26,13 @@ export const SETTINGS_PANEL = {
   row: 16,
   /** Where each slider's track runs, from the panel's left edge. */
   track: { from: 64, to: 150 },
+  /** From the end of a slider's track to its percentage. */
+  valueGap: 10,
   /** Between the two buttons stacked at the bottom. */
   gap: 4,
-} as const;
+  /** The wood the panel is drawn in. */
+  frame: WOOD_PANEL,
+};
 
 /** The top of each row of the panel, from the panel's top, and the panel's height. */
 export interface SettingsRows {
