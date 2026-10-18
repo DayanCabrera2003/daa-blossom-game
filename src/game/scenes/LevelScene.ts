@@ -41,6 +41,7 @@ import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
 import { showEffect, type EffectStage } from './level/levelEffects';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
+import { addSandboxBar } from './level/sandboxBar';
 import { TeacherBridge } from './level/teacherBridge';
 import { Presenter } from './presenter';
 import { queueLoads } from './queueLoads';
@@ -120,14 +121,14 @@ export class LevelScene extends Phaser.Scene {
       this.scene.start('hub');
       return;
     }
-    const { level, screen } = found;
+    const { level, screen, orders } = found;
     this.level = level;
     this.screen = screen;
     // The chapter's track (its race variant in a level of races), or the hub's in the free mode;
     // a level of the same chapter as the one before goes on with it.
     this.context.music.play(trackFor(screen.music));
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
-    const opened = openController(level, this.time.now);
+    const opened = openController(level, this.time.now, orders);
     this.controller = opened.controller;
     this.log([{ kind: 'levelStart', at: this.context.clock(), level: level.data.id }]);
     const { t } = this.context;
@@ -208,6 +209,8 @@ export class LevelScene extends Phaser.Scene {
     };
     // The settings, at the bottom left, clear of the buttons laid out from the right.
     const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
+    // A garden of the free mode ends the tools' row with its orders: the gardener, the certificate.
+    if (orders !== null) addSandboxBar(this, t, orders, (event) => this.dispatch(event));
     bindLevelInput(this, {
       dispatch: (event) => this.dispatch(event),
       leave: () => this.leave(),

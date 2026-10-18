@@ -1,7 +1,7 @@
-// The folders and modules of the free mode (plan 08, phases 8 to 13): its code loads with import() only when
-// it opens, through the thin gate scene `src/game/scenes/SandboxGate.ts`, which stays outside
-// them. The initial script must never reach them (tests/initialScript.test.ts), and the budget
-// weighs what their dynamic imports load in a part of its own, apart from the books.
+// The folders and modules of the free mode (plan 08, phases 8 to 13): its code loads with import()
+// only when it opens, through the thin gate scene `src/game/scenes/SandboxGate.ts`, which stays
+// outside them. The initial script must never reach them (tests/initialScript.test.ts), and the
+// budget weighs what their dynamic imports load in a part of its own, apart from the books.
 
 /** The source folders of the free mode, from the project root, each ending in a slash. */
 export const FREE_MODE_FOLDERS: readonly string[] = [
@@ -12,8 +12,8 @@ export const FREE_MODE_FOLDERS: readonly string[] = [
 /**
  * The free mode's own modules that live in the pure folders (plan 08, phases 11 and 13), beside the
  * levels' pure logic: the editor's input, history, pictures and sounds, its design's store, and the
- * orders on a garden being played. Only the free mode imports
- * them, so they load with it and never with the initial script.
+ * orders on a garden being played. Only the free mode imports them, so they load with it and never
+ * with the initial script.
  */
 export const FREE_MODE_MODULES: readonly string[] = [
   'src/game/input/designIntent.ts',

@@ -8,6 +8,7 @@ import { catalogEntries } from '@services/progress';
 import { sandboxAccess, type SandboxAccess } from '@services/sandboxAccess';
 import { emptySave } from '@services/save';
 import { describe, expect, it } from 'vitest';
+import type { FreeOrders } from './levelController';
 import { act, openSession } from './levelSession';
 import { HUD_BUTTONS } from '../picture/bottomRows';
 import { levelScreen, trackFor } from './musicFor';
@@ -124,9 +125,10 @@ describe('the screen of a garden of the free mode', () => {
 describe('what the level scene opens', () => {
   const access = (): SandboxAccess => sandboxAccess(catalogEntries(LEVELS), emptySave(), false);
 
-  it('a level of the catalog by its id, with its screen', () => {
+  it('a level of the catalog by its id, with its screen and no orders of the free mode', () => {
     const opened = openedLevel({ levelId: '1.3' }, LEVELS, access);
     expect(opened?.level).toBe(levelById('1.3'));
+    expect(opened?.orders).toBeNull();
     expect(opened?.screen).toEqual(levelScreenOf(levelById('1.3'), null));
     expect(openingLevelId({ levelId: '1.3' })).toBe('1.3');
   });
@@ -135,10 +137,12 @@ describe('what the level scene opens', () => {
     expect(openedLevel({ levelId: '8.8' }, LEVELS, access)).toBeNull();
   });
 
-  it('a garden of the free mode as the editor built it, with the access of the progress', () => {
-    const opened = openedLevel({ sandbox: { level: played } }, LEVELS, access);
+  it('a garden of the free mode as the editor built it, with its orders and the access of the progress', () => {
+    const orders: FreeOrders = { solve: null, certify: null };
+    const opened = openedLevel({ sandbox: { level: played, orders } }, LEVELS, access);
     expect(opened?.level).toBe(played);
+    expect(opened?.orders).toBe(orders);
     expect(opened?.screen).toEqual(levelScreenOf(played, access()));
-    expect(openingLevelId({ sandbox: { level: played } })).toBe('9.1');
+    expect(openingLevelId({ sandbox: { level: played, orders } })).toBe('9.1');
   });
 });

@@ -44,6 +44,7 @@ import {
   undo,
   type History,
 } from '../../systems/history';
+import { freeOrders } from '../../systems/sandboxOrders';
 import type { LevelSceneData } from '../../systems/levelScreenOf';
 import { trackFor } from '../../systems/musicFor';
 import { fitCamera } from '../../view/fitCamera';
@@ -363,7 +364,8 @@ export class SandboxScene extends Phaser.Scene {
   /**
    * Plays the design: built as a level with the actions the player has met (all in teacher mode;
    * `services/sandboxAccess.ts`) and handed to the level scene, the editor's history kept to come
-   * back to. A design that does not make a level stays here, said kindly.
+   * back to, with the orders the player has met (the mechanical gardener, the certificate). A
+   * design that does not make a level stays here, said kindly.
    */
   private play(): void {
     const { catalog, saves, teacherMode, t } = this.context;
@@ -374,7 +376,8 @@ export class SandboxScene extends Phaser.Scene {
       return;
     }
     played = this.history;
-    const data: LevelSceneData = { sandbox: { level: playable.value } };
+    // The free mode's orders go with the garden, built here so their code stays in this chunk.
+    const data: LevelSceneData = { sandbox: { level: playable.value, orders: freeOrders(access) } };
     this.scene.start('level', data);
   }
 

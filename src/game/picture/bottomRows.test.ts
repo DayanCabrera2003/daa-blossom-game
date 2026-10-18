@@ -26,6 +26,7 @@ import {
   traceButtonLeft,
 } from './bottomRows';
 import { BOOK_ICON, iconRoom, TOOL_ICONS } from './buttonIcon';
+import { orderButtons } from './orderButtons';
 
 /** Every action of the game. */
 const ALL_ACTIONS = Object.keys(UNLOCKED_AT) as ActionType[];
@@ -50,8 +51,10 @@ const PAIR: Design = {
   lanterns: [],
 };
 
-/** The labels of the free mode's orders, in the order they sit. */
-const ORDER_KEYS = ['sandbox.solve', 'sandbox.certify'];
+/** The labels of the free mode's orders, all of them, in the order they sit. */
+const ORDER_KEYS = orderButtons({ solve: () => null, certify: () => null }).map(
+  ({ label: key }) => key,
+);
 
 const text = strings as Readonly<Record<string, string>>;
 

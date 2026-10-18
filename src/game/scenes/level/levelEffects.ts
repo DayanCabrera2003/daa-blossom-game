@@ -152,6 +152,27 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       if (lines.length > 0) stage.presenter.present({ kind: 'lines', lines });
       break;
     }
+    case 'ordered': {
+      // An order of the free mode: its day shown step by step with the sun walking it (a long run
+      // of the gardener fits its time), then what is said of it, each line in its speaker's voice.
+      const { day, within, lines } = effect;
+      stage.presenter.present(
+        within === null ? { kind: 'replay', day } : { kind: 'replay', day, within },
+      );
+      if (lines.length > 0) {
+        stage.presenter.present({
+          kind: 'lines',
+          lines: lines.map(({ key, params, speaker }) => ({
+            ...said(key, params),
+            speaker: speaker ?? 'sauce',
+          })),
+        });
+      }
+      break;
+    }
+    case 'orderRefused':
+      stage.toast.show(t(effect.text.key, effect.text.params));
+      break;
     case 'won':
       stage.win(effect.stars);
       break;

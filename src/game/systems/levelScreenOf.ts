@@ -1,5 +1,6 @@
 import type { Level } from '@levels/build';
 import type { SandboxAccess } from '@services/sandboxAccess';
+import type { FreeOrders } from './levelController';
 import { HUD_BUTTONS, type HudButton } from '../picture/bottomRows';
 import { chapterOfLevel } from '../picture/seasons';
 import { levelScreen, type MusicScreen } from './musicFor';
@@ -16,11 +17,12 @@ import { levelScreen, type MusicScreen } from './musicFor';
 
 /**
  * What the level scene opens with: a level of the catalog by its id, or a garden of the free mode
- * that the editor (in its own chunk) has already built as a level, so the scene never loads the
- * free mode's code.
+ * that the editor (in its own chunk) has already built as a level, with the free mode's orders on
+ * it (the mechanical gardener, the certificate), so the scene never loads the free mode's code.
  */
 export type LevelSceneData =
-  { readonly levelId: string } | { readonly sandbox: { readonly level: Level } };
+  | { readonly levelId: string }
+  | { readonly sandbox: { readonly level: Level; readonly orders: FreeOrders } };
 
 /** Where leaving a level goes: the hub, or the free mode's editor with the design played. */
 export type LevelExit = 'hub' | 'editor';
@@ -113,19 +115,23 @@ export const openingLevelId = (data: LevelSceneData): string =>
   'levelId' in data ? data.levelId : data.sandbox.level.data.id;
 
 /**
- * The level the scene opens and its screen: a level of `catalog` by its id (null when it has none
- * such), or the free mode's garden as handed over, on the screen `access` (what the free mode
- * offers, asked only then) says.
+ * The level the scene opens, its screen and the free mode's orders on it: a level of `catalog` by
+ * its id (null when it has none such), with no orders; or the free mode's garden and orders as
+ * handed over, on the screen `access` (what the free mode offers, asked only then) says.
  */
 export function openedLevel(
   data: LevelSceneData,
   catalog: readonly Level[],
   access: () => SandboxAccess,
-): { readonly level: Level; readonly screen: LevelScreen } | null {
+): {
+  readonly level: Level;
+  readonly screen: LevelScreen;
+  readonly orders: FreeOrders | null;
+} | null {
   if ('sandbox' in data) {
-    const { level } = data.sandbox;
-    return { level, screen: levelScreenOf(level, access()) };
+    const { level, orders } = data.sandbox;
+    return { level, screen: levelScreenOf(level, access()), orders };
   }
   const level = catalog.find((candidate) => candidate.data.id === data.levelId);
-  return level === undefined ? null : { level, screen: levelScreenOf(level, null) };
+  return level === undefined ? null : { level, screen: levelScreenOf(level, null), orders: null };
 }

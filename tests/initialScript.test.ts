@@ -89,6 +89,18 @@ describe('the initial script', () => {
     expect(modules.has('src/levels/sandbox/toLevel.ts')).toBe(false);
   });
 
+  it("shows the free mode's orders on the level screen, but their code comes with the garden", () => {
+    expect(modules.has('src/game/scenes/level/sandboxBar.ts')).toBe(true);
+    for (const module of [
+      'src/game/systems/sandboxOrders.ts',
+      'src/game/systems/sandboxSolve.ts',
+      'src/game/systems/sandboxCertificate.ts',
+    ]) {
+      expect({ module, initial: modules.has(module) }).toEqual({ module, initial: false });
+      expect(isFreeMode(module)).toBe(true);
+    }
+  });
+
   it("counts the free mode's scenes as the free mode's, out of the initial script", () => {
     expect(isFreeMode('src/game/scenes/sandbox/SandboxScene.ts')).toBe(true);
     expect(isFreeMode('src/levels/sandbox/design.ts')).toBe(true);
