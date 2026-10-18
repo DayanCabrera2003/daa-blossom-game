@@ -23,8 +23,9 @@ export const BUDGET: Readonly<Record<BudgetPart, number>> = {
   // Every track, though each is loaded with its own chapter.
   music: 20 * MB,
   // The books, loaded on demand: KaTeX, marked, their stylesheets, KaTeX's woff2 fonts, the
-  // entries and the diagrams (estimated at about 1 MB in plan 07).
-  codex: 1.2 * MB,
+  // entries, the diagrams and the teacher's panel. Settled at the close of plan 07, when all
+  // fourteen entries weighed 873 KB: about an eighth to spare, no more.
+  codex: 1 * MB,
 };
 
 /** The asset kinds weighed under each part of the budget that the manifest alone decides. */

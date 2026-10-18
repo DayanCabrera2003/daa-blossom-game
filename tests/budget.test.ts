@@ -65,7 +65,7 @@ describe('budgetReport', () => {
       limit: BUDGET.codex,
       over: false,
     });
-    expect(BUDGET.codex).toBe(1.2e6);
+    expect(BUDGET.codex).toBe(1e6);
   });
 
   it('flags every part over its limit, and only those', () => {
