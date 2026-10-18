@@ -9,7 +9,8 @@ import { finishedChapters, HUB_SIGN, HUB_TINT, hubGarden, signBox } from '../pic
 import { epilogueSignAt, HUB, layoutHub } from '../picture/hubLayout';
 import { PIXEL_FONT } from '../picture/pixelFont';
 import { cutOf, seasonOf } from '../picture/seasons';
-import { labelStars, STAR_SIZE } from '../picture/starIcon';
+import { levelButtonLabel } from '../picture/levelButtonLabel';
+import { STAR_SIZE } from '../picture/starIcon';
 import { epilogueReached } from '../systems/epilogue';
 import { trackFor } from '../systems/musicFor';
 import { BackdropView } from '../view/BackdropView';
@@ -75,9 +76,8 @@ export class HubScene extends Phaser.Scene {
         .filter((level) => level.id.startsWith(`${chapter}.`))
         .map(({ id }) => {
           // The pixel font has no star: the label leaves blank cells where its stars are drawn.
-          const room = labelStars(open.has(id) ? (save.levels[id]?.stars ?? 0) : 0);
-          const label = open.has(id) ? `${id} ${' '.repeat(room.spaces)}` : `${id} ·`;
-          const button = new Button(this, 0, 0, label, () =>
+          const { text, room } = levelButtonLabel(id, open.has(id), save.levels[id]?.stars ?? 0);
+          const button = new Button(this, 0, 0, text, () =>
             this.scene.start('level', { levelId: id }),
           );
           return { button: button.setEnabled(open.has(id)), room };

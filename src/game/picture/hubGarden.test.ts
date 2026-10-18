@@ -40,7 +40,8 @@ const NAMES = [
  */
 function hubBoxes(stars: boolean): Rect[] {
   const titleWidths = NAMES.map((name) => text(name.length) + HUB_SIGN.width + HUB_SIGN.gap);
-  // "1.1 ·" or "1.1 " and four blank cells for the stars; a digit more for "4.10" to "4.12".
+  // "1.1" with two cells to spare, or "1.1 " and four blank cells for the stars; a digit more for
+  // "4.10" to "4.12".
   const widths = COUNTS.map((count, c) =>
     Array.from({ length: count }, () => text((stars ? 8 : 5) + (c === 4 ? 1 : 0)) + 4),
   );
