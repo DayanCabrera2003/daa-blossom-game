@@ -289,6 +289,11 @@ describe('level integrity', () => {
     ]);
   });
 
+  it('the checks of the chain rule are part of its integrity', () => {
+    const opened = { ...trap, id: '4.5', chains: { rule: 'seen' }, forbid: [], unlocks: undefined };
+    expect(problemsOf(opened)).toContainEqual({ code: 'seenRuleOpen', action: 'split' });
+  });
+
   it('what a level unlocks must match the unlock table of the rules', () => {
     const wrong = { ...trap, unlocks: { actions: ['chain'] } };
     expect(problemsOf(wrong)).toContainEqual({

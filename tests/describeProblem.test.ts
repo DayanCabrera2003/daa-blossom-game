@@ -134,6 +134,8 @@ describe('readable level problems', () => {
         v: 'b',
         kind: 'flower',
       },
+      { code: 'seenRuleOpen', action: 'split' },
+      { code: 'badChainFlower', petals: ['c', 'd', 'b'] },
       { code: 'notAFlower', error: { code: 'evenLength', length: 4 } },
       { code: 'flowerBaseLit', base: 'b' },
       { code: 'flowerBaseNotFirst', base: 'b' },

@@ -53,6 +53,26 @@ describe('building a level', () => {
     expect(allowed.has('liftStone')).toBe(false);
   });
 
+  it('keeps the actions it closes as closed for the day, apart from those not learnt yet', () => {
+    expect(unwrapLevel(rotate).start.closed).toEqual(new Set(['fold', 'foldAt']));
+  });
+
+  it('turns the chain rule into ids, the closed flower base first; any chain by default', () => {
+    expect(unwrapLevel(rotate).start.chains).toEqual({ rule: 'any' });
+    expect(unwrapLevel({ ...rotate, chains: { rule: 'seen' } }).start.chains).toEqual({
+      rule: 'seen',
+    });
+    const closed: LevelData = { ...rotate, chains: { rule: 'fromBase', flower: ['b', 'c', 'd'] } };
+    expect(unwrapLevel(closed).start.chains).toEqual({
+      rule: 'fromBase',
+      base: 2,
+      petals: [2, 3, 4],
+    });
+    expect(
+      buildLevel({ ...rotate, chains: { rule: 'fromBase', flower: ['b', 'c', 'X'] } }),
+    ).toMatchObject({ error: { code: 'badLabel', error: { name: 'X' } } });
+  });
+
   it('carries fog over to the garden', () => {
     expect(unwrapLevel({ ...rotate, fog: true }).start.revealed).toEqual(new Array(6).fill(false));
   });

@@ -122,6 +122,12 @@ describe('a design to play', () => {
     expect(level.data.victory).toEqual({ type: 'maximum' });
   });
 
+  it('closes nothing for the day: a move not at hand is one not learnt yet, and any chain goes', () => {
+    const level = unwrap(toPlayable(PATH, actionsUnlockedBy('3.1')));
+    expect(level.start.closed).toEqual(new Set());
+    expect(level.start.chains).toEqual({ rule: 'any' });
+  });
+
   it('never allows inspecting: a garden of the free mode has no fog to lift', () => {
     for (const allowed of [ALL, actionsUnlockedBy('3.1'), actionsUnlockedBy('1.7')]) {
       const level = unwrap(toPlayable(PATH, allowed));

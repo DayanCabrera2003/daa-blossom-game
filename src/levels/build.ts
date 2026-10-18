@@ -3,8 +3,10 @@ import type { Graph, VertexId } from '@core/graph/types';
 import { createMatching, type MatchingError } from '@core/matching/createMatching';
 import type { Matching } from '@core/matching/types';
 import type { Action } from '@core/rules/actions';
+import { ANY_CHAIN, type ChainRule } from '@core/rules/chainRule';
 import { actionsUnlockedBy } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
+import { itemAt } from '@core/shared/itemAt';
 import { err, ok, type Result } from '@core/shared/result';
 import type { LevelData } from './schema';
 import type { LevelStep } from './flow';
@@ -49,8 +51,8 @@ export type BuildError =
 /**
  * Builds the playable level from its validated file: labels, garden, starting lanterns, the
  * reflection (a valid set of lanterns of the same garden), the actions it allows (those unlocked by
- * its id, minus `forbid`), the roots a search may start from, the petals of its flower and its
- * solution with ids.
+ * its id, minus `forbid`, which it keeps as closed for the day), its chain rule, the roots a search
+ * may start from, the petals of its flower and its solution with ids.
  */
 export function buildLevel(data: LevelData): Result<Level, BuildError> {
   const built = buildGarden({
@@ -111,13 +113,24 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     flower = petals.value;
   }
 
+  let chains: ChainRule = ANY_CHAIN;
+  if (data.chains.rule === 'fromBase') {
+    const petals = toSprouts(labels, data.chains.flower);
+    if (!petals.ok) return err({ code: 'badLabel', error: petals.error });
+    chains = { rule: 'fromBase', base: itemAt(petals.value, 0), petals: petals.value };
+  } else if (data.chains.rule === 'seen') {
+    chains = { rule: 'seen' };
+  }
+
   const forbidden = new Set(data.forbid);
   const start = createGardenState({
     graph,
     matching,
     fog: data.fog,
     ...(roots === undefined ? {} : { roots }),
+    chains,
     allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
+    closed: data.forbid,
   });
   return ok({
     data,

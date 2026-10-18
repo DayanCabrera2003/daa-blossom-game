@@ -4,7 +4,7 @@ import { nameOf } from '@core/graph/labels';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
 import type { ActionType } from '@core/rules/actions';
 import { UNLOCKED_AT } from '@core/rules/permissions';
-import type { Result } from '@core/shared/result';
+import { ok, type Result } from '@core/shared/result';
 import type { z } from 'zod';
 import type { Level } from '../build';
 import { buildGarden } from '../garden';
@@ -97,17 +97,26 @@ export function toPlayable(
   const forbid = ALL_ACTIONS.filter(
     (action) => !allowed.includes(action) || FOG_ACTIONS.includes(action),
   );
-  if (allowed.includes('declareDone')) return loadLevel({ ...file, forbid });
+  if (allowed.includes('declareDone')) return notYetLearnt(loadLevel({ ...file, forbid }));
   const garden = buildGarden({
     names: design.sprouts.map((sprout) => sprout.label),
     vines: design.vines,
     lanterns: [],
   });
   const optimum = garden.ok ? maximumSize(garden.value.graph) : 0;
-  return loadLevel({
-    ...file,
-    forbid,
-    goal: { visible: true, value: optimum },
-    victory: { type: 'matchingSize', value: optimum },
-  });
+  return notYetLearnt(
+    loadLevel({
+      ...file,
+      forbid,
+      goal: { visible: true, value: optimum },
+      victory: { type: 'matchingSize', value: optimum },
+    }),
+  );
 }
+
+/**
+ * The free mode forbids every move the player has not learnt yet, and none of them is closed for
+ * the day: a refusal still says "not yet", exactly as before levels could close moves.
+ */
+const notYetLearnt = (level: Result<Level, LoadError>): Result<Level, LoadError> =>
+  level.ok ? ok({ ...level.value, start: { ...level.value.start, closed: new Set() } }) : level;
