@@ -5,7 +5,8 @@ import { runPhase } from '@core/edmonds/phase';
 import { isMaximum } from '@core/edmonds/fast/maximum';
 import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
-import { isExposed, size } from '@core/matching/queries';
+import { size } from '@core/matching/queries';
+import { shortestChain } from '@core/matching/shortestChain';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import { sameGarden } from '@core/rules/sameGarden';
@@ -49,20 +50,21 @@ function chainToLight(state: GardenState): VertexId[] | null {
 
 /**
  * Lighting the most lanterns. Flowers are opened first (lanterns only move in the open garden).
- * With chains unlocked, the whole chain at once. Before that (chapter 1), two neighbors in the dark
- * are joined if there are any; otherwise the first lantern of a chain is passed along, which leaves
- * a shorter chain behind, until a join finishes it.
+ * With chains unlocked, the whole chain at once. Before that (chapter 1), along a shortest chain:
+ * two neighbors in the dark are joined; otherwise its first lantern is passed along, which leaves a
+ * chain two vines shorter behind, until a join finishes it.
  */
 function lightMore(state: GardenState): Action | null {
   const flower = state.layer.nodes.find((node) => node.kind === 'blossom');
   if (flower?.kind === 'blossom') return { type: 'unfold', blossom: flower.id };
-  const chain = chainToLight(state);
+  if (state.allowed.has('chain')) {
+    const chain = chainToLight(state);
+    return chain === null ? null : { type: 'chain', path: chain };
+  }
+  // Lanterns are passed along a shortest chain: any other one may be undone by the next found.
+  const chain = shortestChain(state.graph, state.matching);
   if (chain === null) return null;
-  if (state.allowed.has('chain')) return { type: 'chain', path: chain };
-  const free = state.graph.edges.find(
-    ([u, v]) => isExposed(state.matching, u) && isExposed(state.matching, v),
-  );
-  if (free !== undefined) return { type: 'join', u: free[0], v: free[1] };
+  if (chain.length === 2) return { type: 'join', u: itemAt(chain, 0), v: itemAt(chain, 1) };
   return { type: 'passLantern', from: itemAt(chain, 0), to: itemAt(chain, 1) };
 }
 
