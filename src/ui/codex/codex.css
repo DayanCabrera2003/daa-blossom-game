@@ -65,6 +65,11 @@
   font-size: 0.75em;
 }
 
+/* A formula and the word or punctuation that hugs it ("$M$-aumentante", "$G/B$,") share a line. */
+.book-text .math-nowrap {
+  white-space: nowrap;
+}
+
 .book-text .katex-display {
   margin: calc(4 * var(--px)) 0;
   overflow-x: auto;
