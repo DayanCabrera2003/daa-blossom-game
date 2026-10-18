@@ -41,6 +41,12 @@ function placeIn(open: OpenTabs, entry: CodexEntryId, unread: ReadonlySet<CodexP
   return { entry, tab: tab as CodexTab };
 }
 
+/** The page of `tab` in another open entry, or of its first tab when `tab` is not open there. */
+function keepTab(open: OpenTabs, entry: CodexEntryId, tab: CodexTab): BookPlace {
+  const tabs = tabsOf(open, entry);
+  return { entry, tab: tabs.includes(tab) ? tab : (tabs[0] as CodexTab) };
+}
+
 /**
  * The book as it opens: at `requested` when that entry is open, else at the first entry with an
  * unread page, else at the first open entry; every unread page wears the seal. Null when nothing
@@ -69,8 +75,18 @@ export function turnPage(open: OpenTabs, state: BookState, step: 1 | -1): BookPl
   const entries = entriesOf(open);
   const entry = entries[entries.indexOf(state.place.entry) + step];
   if (entry === undefined) return null;
-  const tabs = tabsOf(open, entry);
-  return { entry, tab: tabs.includes(state.place.tab) ? state.place.tab : (tabs[0] as CodexTab) };
+  return keepTab(open, entry, state.place.tab);
+}
+
+/**
+ * The first open entry (`step` -1) or the last (1), keeping the tab as turning does; null when the
+ * book is already there.
+ */
+export function endPage(open: OpenTabs, state: BookState, step: 1 | -1): BookPlace | null {
+  const entries = entriesOf(open);
+  const entry = step === 1 ? entries.at(-1) : entries[0];
+  if (entry === undefined || entry === state.place.entry) return null;
+  return keepTab(open, entry, state.place.tab);
 }
 
 /** Whether there is an open entry `step` away, to switch the arrows of the book on or off. */

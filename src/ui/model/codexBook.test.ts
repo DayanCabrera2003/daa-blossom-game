@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { CodexEntryId, CodexTab, OpenTabs } from '@levels/codex';
 import type { CodexPage } from '@services/codexPage';
-import { canTurn, chooseTab, moveTo, openBook, turnPage, type BookState } from './codexBook';
+import {
+  canTurn,
+  chooseTab,
+  endPage,
+  moveTo,
+  openBook,
+  turnPage,
+  type BookState,
+} from './codexBook';
 
 /** Open tabs from plain data. */
 const open = (rows: [CodexEntryId, CodexTab[]][]): OpenTabs =>
@@ -77,6 +85,27 @@ describe('turning the pages of the Codex', () => {
     expect(turnPage(book, at('C13', 'formal'), 1)).toBeNull();
     expect(canTurn(book, at('C1', 'formal'), -1)).toBe(false);
     expect(canTurn(book, at('C1', 'formal'), 1)).toBe(true);
+  });
+
+  it('goes to the first or the last open entry, unless it is there already', () => {
+    expect(endPage(book, at('C2', 'intuition'), 1)).toEqual({ entry: 'C13', tab: 'intuition' });
+    expect(endPage(book, at('C13', 'bridge'), -1)).toEqual({ entry: 'C1', tab: 'bridge' });
+    expect(endPage(book, at('C13', 'bridge'), 1)).toBeNull();
+    expect(endPage(book, at('C1', 'formal'), -1)).toBeNull();
+    expect(endPage(book, at('C13', 'bridge'), -1)).not.toBeNull();
+    expect(
+      endPage(
+        open([
+          ['C1', ALL],
+          ['C2', ['intuition']],
+        ]),
+        at('C1', 'formal'),
+        1,
+      ),
+    ).toEqual({
+      entry: 'C2',
+      tab: 'intuition',
+    });
   });
 
   it('chooses only a tab that is open', () => {
