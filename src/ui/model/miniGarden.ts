@@ -106,10 +106,11 @@ export interface MiniGarden {
 /**
  * Places a garden in the box: its sprouts' own places, scaled alike in both directions to fill the
  * width or the height left between the margins (never more than `maxScale`), centred across, and
- * rounded to whole pixels. The box is as tall as the garden needs, at most `maxHeight`.
+ * rounded to whole pixels. The box is `width` wide (the page's, or half of it for two gardens side
+ * by side) and as tall as the garden needs, at most `maxHeight`.
  */
-export function fitGarden(positions: readonly Point[]): MiniLayout {
-  const { width, maxHeight, margin, maxScale } = MINI;
+export function fitGarden(positions: readonly Point[], width: number = MINI.width): MiniLayout {
+  const { maxHeight, margin, maxScale } = MINI;
   const xs = positions.map((p) => p.x);
   const ys = positions.map((p) => p.y);
   const [left, top] = [Math.min(...xs), Math.min(...ys)];

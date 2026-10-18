@@ -79,6 +79,17 @@ describe('fitGarden', () => {
     expect((a?.x ?? 0) + (b?.x ?? 0)).toBe(MINI.width);
   });
 
+  it('fits a garden in a narrower box, for two gardens side by side', () => {
+    const garden = gardenOf('4.11');
+    const layout = fitGarden(garden.positions, MINI.width / 2);
+    expect(layout.width).toBe(MINI.width / 2);
+    expect(layout.height).toBeLessThanOrEqual(MINI.maxHeight);
+    for (const { x } of layout.at) {
+      expect(x).toBeGreaterThanOrEqual(MINI.margin.side);
+      expect(x).toBeLessThanOrEqual(MINI.width / 2 - MINI.margin.side);
+    }
+  });
+
   it('puts a lone sprout in the middle', () => {
     const layout = fitGarden([{ x: 7, y: 9 }]);
     expect(layout.at).toEqual([{ x: MINI.width / 2, y: MINI.margin.top }]);
