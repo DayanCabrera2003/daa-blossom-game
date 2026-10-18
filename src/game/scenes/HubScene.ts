@@ -27,6 +27,7 @@ import { cutFrame } from '../view/sheetCuts';
 import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
+import { addHubCosmetics } from './hub/HubCosmetics';
 import { addHubSecrets, type FlowerPlace } from './hub/HubSecrets';
 import { addHubTopLine } from './hub/HubTopLine';
 import { addSettings } from './settingsPanel';
@@ -153,11 +154,17 @@ export class HubScene extends Phaser.Scene {
       catalogEntries(catalog),
       (id) => save.levels[id] !== undefined,
     );
-    backdrop.paint({
-      tiles: groundOf(seasonOf('0'), seedOf('hub')),
-      ornaments: hubGarden(finished, taken),
-    });
+    const garden = hubGarden(finished, taken);
+    backdrop.paint({ tiles: groundOf(seasonOf('0'), seedOf('hub')), ornaments: garden });
     backdrop.tint(HUB_TINT);
+
+    // The little lives the stars and seeds bring, in the bed of the garden and by the signposts.
+    const pond = garden.find((piece) => piece.chapter === '2');
+    addHubCosmetics(this, {
+      taken,
+      pond: pond === undefined ? null : boxOf({ ...pond, ...pond.ornament }),
+      signs: [...signs.values()].map((place) => place.sign),
+    });
     // After the last garden the epilogue opens over the hub, now laid out behind it. Phaser keeps
     // a scene's data when it is started again without any, so the request is spent here: coming
     // back to the hub later never opens the epilogue again by itself.
