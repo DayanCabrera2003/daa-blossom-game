@@ -54,4 +54,9 @@ export interface BusEvents {
   readonly 'teacher.feed': TeacherFeed;
   /** What the game can do (today, whether the free mode exists). */
   readonly capabilities: Capabilities;
+  /**
+   * Start the free mode (the epilogue's button, offered only once `capabilities` says it exists);
+   * the game listens to it once it registers that mode (plan 08).
+   */
+  readonly 'sandbox.open': undefined;
 }

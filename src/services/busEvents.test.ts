@@ -21,5 +21,6 @@ describe('the events between the game and the overlays', () => {
       'bookOpen' | 'bookFlip' | 'bookClose' | 'click'
     >();
     expectTypeOf<BusEvents['capabilities']['sandbox']>().toEqualTypeOf<boolean>();
+    expectTypeOf<BusEvents['sandbox.open']>().toEqualTypeOf<undefined>();
   });
 });
