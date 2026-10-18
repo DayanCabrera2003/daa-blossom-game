@@ -89,6 +89,7 @@
     { "type": "markMoon", "from": "a", "to": "t" },
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
+    { "type": "inspect", "vertex": "g" },
     { "type": "chain", "path": ["t", "a", "b", "d", "c", "g", "h", "R"] },
     { "type": "inspect", "vertex": "S" },
     { "type": "markRoot", "vertex": "S" },

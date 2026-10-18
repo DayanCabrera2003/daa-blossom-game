@@ -92,6 +92,7 @@
     { "type": "unfold", "blossom": 2 },
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
+    { "type": "inspect", "vertex": "j" },
     { "type": "chain", "path": ["R", "j", "i", "h", "g", "e", "f", "d", "c", "b", "a", "t"] },
     { "type": "inspect", "vertex": "U" },
     { "type": "markRoot", "vertex": "U" },

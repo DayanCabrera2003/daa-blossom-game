@@ -18,6 +18,9 @@ const after = (state: GardenState, action: Action): GardenState => {
   return outcome.state;
 };
 
+/** The same garden with every vine in sight: lanterns are only lit along visible vines. */
+const clear = after(after(start, { type: 'inspect', vertex: 1 }), { type: 'inspect', vertex: 2 });
+
 describe('sameGarden', () => {
   it('a garden is the same as itself, and as a copy of itself', () => {
     expect(sameGarden(start, start)).toBe(true);
@@ -25,7 +28,7 @@ describe('sameGarden', () => {
   });
 
   it('a lantern lit makes another garden', () => {
-    expect(sameGarden(start, after(start, { type: 'join', u: 0, v: 1 }))).toBe(false);
+    expect(sameGarden(clear, after(clear, { type: 'join', u: 0, v: 1 }))).toBe(false);
   });
 
   it('lifting fog makes another garden', () => {
@@ -41,9 +44,9 @@ describe('sameGarden', () => {
   });
 
   it('two plays reaching the same lanterns by different moves meet', () => {
-    const direct = after(start, { type: 'join', u: 2, v: 3 });
+    const direct = after(clear, { type: 'join', u: 2, v: 3 });
     const roundabout = after(
-      after(after(start, { type: 'join', u: 1, v: 2 }), { type: 'split', u: 1, v: 2 }),
+      after(after(clear, { type: 'join', u: 1, v: 2 }), { type: 'split', u: 1, v: 2 }),
       { type: 'join', u: 2, v: 3 },
     );
     expect(sameGarden(direct, roundabout)).toBe(true);

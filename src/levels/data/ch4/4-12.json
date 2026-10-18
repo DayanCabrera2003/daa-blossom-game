@@ -90,6 +90,7 @@
     { "type": "inspect", "vertex": "o" },
     { "type": "markMoon", "from": "o", "to": "V" },
     { "type": "unfold", "blossom": 0 },
+    { "type": "inspect", "vertex": "m" },
     { "type": "chain", "path": ["U", "p", "q", "m", "l", "k", "o", "V"] },
     { "type": "declareDone" }
   ]

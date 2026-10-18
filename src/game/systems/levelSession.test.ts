@@ -154,7 +154,12 @@ describe('a level session', () => {
     ]);
     const undone = undoSession(undoSession(looked));
     expect(undone.waterSpent).toBe(2);
-    const won = playAll(undone, [{ type: 'join', u: 0, v: 1 }]);
+    // The fog is back, so the vine is looked at again before the lantern is lit along it.
+    const won = playAll(undone, [
+      { type: 'inspect', vertex: 0 },
+      { type: 'join', u: 0, v: 1 },
+    ]);
+    expect(won.waterSpent).toBe(3);
     expect(won.won).toEqual({ total: 2, noHints: true, withinWater: false });
   });
 });

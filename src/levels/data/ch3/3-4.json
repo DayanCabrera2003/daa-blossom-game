@@ -54,6 +54,7 @@
     { "type": "markMoon", "from": "R2", "to": "g" },
     { "type": "inspect", "vertex": "b" },
     { "type": "markMoon", "from": "b", "to": "d" },
+    { "type": "inspect", "vertex": "d" },
     { "type": "chain", "path": ["R1", "a", "b", "d", "c", "R2"] }
   ]
 }

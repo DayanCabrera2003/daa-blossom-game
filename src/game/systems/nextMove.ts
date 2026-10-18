@@ -49,17 +49,29 @@ function chainToLight(state: GardenState): VertexId[] | null {
 }
 
 /**
+ * The move itself, or in the fog the look it needs first: lanterns only move along vines in sight,
+ * so a move refused for a hidden vine becomes the inspection of the sprout that shows it.
+ */
+function throughTheFog(state: GardenState, move: Action): Action {
+  const outcome = applyAction(state, move);
+  if (outcome.ok || outcome.reason.code !== 'vineHidden' || !state.allowed.has('inspect')) {
+    return move;
+  }
+  return { type: 'inspect', vertex: outcome.reason.vertex };
+}
+
+/**
  * Lighting the most lanterns. Flowers are opened first (lanterns only move in the open garden).
- * With chains unlocked, the whole chain at once. Before that (chapter 1), along a shortest chain:
- * two neighbors in the dark are joined; otherwise its first lantern is passed along, which leaves a
- * chain two vines shorter behind, until a join finishes it.
+ * With chains unlocked, the whole chain at once, its vines looked at first in the fog. Before that
+ * (chapter 1), along a shortest chain: two neighbors in the dark are joined; otherwise its first
+ * lantern is passed along, which leaves a chain two vines shorter behind, until a join finishes it.
  */
 function lightMore(state: GardenState): Action | null {
   const flower = state.layer.nodes.find((node) => node.kind === 'blossom');
   if (flower?.kind === 'blossom') return { type: 'unfold', blossom: flower.id };
   if (state.allowed.has('chain')) {
     const chain = chainToLight(state);
-    return chain === null ? null : { type: 'chain', path: chain };
+    return chain === null ? null : throughTheFog(state, { type: 'chain', path: chain });
   }
   // Lanterns are passed along a shortest chain: any other one may be undone by the next found.
   const chain = shortestChain(state.graph, state.matching);

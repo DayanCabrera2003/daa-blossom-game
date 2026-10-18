@@ -1,6 +1,6 @@
 import { rotateStem as rotate } from '../../blossom/rotateStem';
 import type { Action } from '../actions';
-import { requireOpenGarden, requireSprouts } from '../checks';
+import { requireOpenGarden, requireSprouts, requireVisibleVines } from '../checks';
 import { reject, type ActionOutcome } from '../outcome';
 import { relight } from '../relight';
 import type { GardenState } from '../state';
@@ -8,13 +8,14 @@ import type { GardenState } from '../state';
 /**
  * Rotate the stem (level 4.10): a chain of gain 0 from a sprout in the dark, now with a name. The
  * darkness moves to the end of the stem, which is how a flower's base is made to sleep before
- * folding without losing anything (Códex C8).
+ * folding without losing anything (Códex C8). In the fog, only along vines in sight.
  */
 export function rotateStem(
   state: GardenState,
   { stem }: Extract<Action, { type: 'rotateStem' }>,
 ): ActionOutcome {
-  const invalid = requireSprouts(state, stem) ?? requireOpenGarden(state);
+  const invalid =
+    requireSprouts(state, stem) ?? requireOpenGarden(state) ?? requireVisibleVines(state, stem);
   if (invalid) return reject(invalid);
   const rotated = rotate(state.graph, state.matching, stem);
   if (!rotated.ok) return reject({ code: 'invalidPath', error: rotated.error });
