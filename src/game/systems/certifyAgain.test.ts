@@ -25,7 +25,7 @@ const lit = play(level.start, [
 const noStones = play(lit, [{ type: 'declareDone' }]);
 const bridge = play(lit, [{ type: 'liftStone', vertex: C }, { type: 'declareDone' }]);
 const playing: LevelStep = { step: 'play', reactions: [] };
-const again: LevelStep = { step: 'certifyAgain' };
+const again: LevelStep = { step: 'certifyAgain', repeated: 'ch7.6.oaks.02' };
 
 describe('the certificates presented to the council', () => {
   it('playing, the first certificate wins and is remembered', () => {

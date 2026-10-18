@@ -169,7 +169,11 @@ describe('the script engine', () => {
   });
 
   it('another certificate waits until the session says the victory holds again (7.6)', () => {
-    const started = start([play, { step: 'certifyAgain' }, say('ch7.6.oaks.01')]);
+    const started = start([
+      play,
+      { step: 'certifyAgain', repeated: 'ch7.6.oaks.02' },
+      say('ch7.6.oaks.01'),
+    ]);
     const won = advanceFlow(started.flow, { type: 'won' });
     expect(won.effects).toEqual([{ kind: 'certifyAgain', step: 1 }]);
     expect(advanceFlow(won.flow, { type: 'tap' }).flow).toBe(won.flow);

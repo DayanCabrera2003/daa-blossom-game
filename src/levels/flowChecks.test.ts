@@ -205,7 +205,7 @@ describe('the checks of a level script', () => {
     expect(flowProblemsOf({ ...COUNCIL, victory: { type: 'maximum' } })).toEqual([
       { code: 'certifyAgainWithoutCertificate', step: 1 },
     ]);
-    const early = [{ step: 'certifyAgain' }, { step: 'play' }];
+    const early = [{ step: 'certifyAgain', repeated: 'ch7.6.oaks.02' }, { step: 'play' }];
     expect(flowProblemsOf({ ...COUNCIL, flow: early })).toEqual([
       { code: 'certifyAgainBeforePlay', step: 0 },
     ]);
@@ -224,7 +224,7 @@ describe('the checks of a level script', () => {
       { type: 'liftStone', vertex: 'b' },
       done,
     ];
-    const flow = [...COUNCIL.flow, { step: 'certifyAgain' }];
+    const flow = [...COUNCIL.flow, { step: 'certifyAgain', repeated: 'ch7.6.oaks.02' }];
     expect(flowProblemsOf({ ...COUNCIL, flow, solution: twice })).toEqual([]);
     expect(flowProblemsOf({ ...COUNCIL, flow })).toEqual([{ code: 'sameCertificate', step: 2 }]);
   });

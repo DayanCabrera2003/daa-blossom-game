@@ -118,7 +118,7 @@ export const COUNCIL = {
   ],
   goal: { visible: false },
   victory: { type: 'tutteBergeCertificate' },
-  flow: [{ step: 'play' }, { step: 'certifyAgain' }],
+  flow: [{ step: 'play' }, { step: 'certifyAgain', repeated: 'ch7.6.oaks.02' }],
   solution: [
     { type: 'join', u: 'a', v: 'b' },
     { type: 'join', u: 'r', v: 'C' },
