@@ -359,5 +359,18 @@
   "speaker.bruto": "Bruto",
   "speaker.oaks": "Los Robles",
   "speaker.gardener": "Tú",
-  "speaker.notebook": "Cuaderno"
+  "speaker.notebook": "Cuaderno",
+  "hud.trace": "Traza",
+  "teacher.panel": "Traza del algoritmo",
+  "teacher.badge": "Modo profesor",
+  "teacher.fold": "Plegar",
+  "teacher.keys": "T abre y pliega la traza · RePág y AvPág cambian de nivel",
+  "teacher.day": "Tu día",
+  "teacher.dayHelp": "Sigue al sol del jardín: cada paso es una jugada y sus efectos.",
+  "teacher.dawn": "Amanecer: los faroles con los que empieza el nivel.",
+  "teacher.edmonds": "Edmonds desde aquí",
+  "teacher.edmondsHelp": "La receta completa desde los faroles del paso que muestra el sol. Toca una línea o usa las flechas para recorrerla.",
+  "teacher.certificate": "Certificado de Tutte–Berge",
+  "teacher.shown.day": "Tu día, paso {step} de {count}",
+  "teacher.shown.edmonds": "Edmonds, paso {step} de {count}"
 }
