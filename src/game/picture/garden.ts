@@ -116,6 +116,23 @@ export function flowerPictures(
 }
 
 /**
+ * With stones lifted, the outline of each odd group they leave, round its sprouts drawn at `at`.
+ * In the fog the groups would tell which vines join whom before they are inspected, so, like the
+ * Council's count, they are only drawn once the certificate is presented with "Terminé" (7.5).
+ */
+export function oddGroupPictures(
+  state: GardenState,
+  at: (v: VertexId) => Point,
+): (readonly Point[])[] {
+  const groupsHidden = state.revealed !== null && !state.declaredDone;
+  return state.stones.length === 0 || groupsHidden
+    ? []
+    : oddComponents(state.graph, state.stones).map((group) =>
+        flowerOutline(group.map(at), GROUP_PADDING),
+      );
+}
+
+/**
  * The picture of a garden: what each sprout, vine and flower looks like now. The views only paint
  * it, so every visual decision (which vine shows lit, which sprout wears a moon, what the fog hides)
  * is made, and tested, here. `kinds` says which sprouts are bees or flowers; a garden that has
@@ -173,21 +190,11 @@ export function gardenPicture(
 
   const flowers = flowerPictures(layer.nodes, at);
 
-  // In the fog the groups would tell which vines join whom before they are inspected, so, like the
-  // Council's count, they are only drawn once the certificate is presented with "Terminé" (7.5).
-  const groupsHidden = revealed !== null && !state.declaredDone;
-  const oddGroups =
-    state.stones.length === 0 || groupsHidden
-      ? []
-      : oddComponents(state.graph, state.stones).map((group) =>
-          flowerOutline(group.map(at), GROUP_PADDING),
-        );
-
   return {
     sprouts,
     vines,
     flowers,
-    oddGroups,
+    oddGroups: oddGroupPictures(state, at),
     fog: revealed === null ? null : { revealed },
     chain:
       extras.chain === null
