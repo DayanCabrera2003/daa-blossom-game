@@ -309,6 +309,8 @@ Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en
 
 **Tests clave:** sin el capítulo 1 terminado no hay modo libre y en modo profesor sí; con 4.5 como lo más avanzado no hay piedras ni jardinero, sí plegar y desplegar; un almacén con basura da diseño vacío; `?garden=` con un código roto se ignora; `ui/shell.test.ts` recibe `capabilities` después de montarse y el epílogo ofrece entonces el botón; `tests/initialScript.test.ts` alcanza `SandboxGate.ts` desde `src/main.ts` y ningún módulo de las carpetas del modo libre.
 
+**Decisiones del autor sobre las preguntas de F10.** (1) Se aceptan las dos reglas de arranque: sin nada ganado, el modo libre juega con las acciones del primer nivel; y `?level=` gana a `?garden=`. (2) **No** se aceptan los +5 KB que el decodificador del código de jardín sumaba al script inicial: al arrancar solo se detecta que `?garden=` está (una comprobación barata de texto) y se pasa el código tal cual; se decodifica y se valida dentro del trozo diferido del modo libre, ya cargado, y un código roto se dice con un aviso amable en el propio modo libre (ya no "se ignora"). El script inicial vuelve a ~1710 KB y `tests/initialScript.test.ts` vigila también que el decodificador del código de jardín quede fuera de él.
+
 ---
 
 ## Fase 11 — La escena del editor
