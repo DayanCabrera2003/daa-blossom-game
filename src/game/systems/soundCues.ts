@@ -77,12 +77,13 @@ export const refusalCues = (): SoundCue[] => [...REFUSED];
  * The sounds of one effect of the level controller, from the moment it is shown: an accepted move
  * plays its animation's, a refused one (a move, a touch on the reflection, a drawing that is no
  * chain) the gentle refusal, and what only the script shows plays nothing here. The sun dragged
- * through the day makes no move, so it is never heard.
+ * through the day makes no move, so it is never heard. With `reduced` motion the sounds keep time
+ * with the shorter plan the view then plays.
  */
-export function effectCues(effect: Effect): SoundCue[] {
+export function effectCues(effect: Effect, reduced = false): SoundCue[] {
   switch (effect.kind) {
     case 'animate':
-      return planCues(planAnimation(effect.events));
+      return planCues(planAnimation(effect.events, reduced));
     case 'rejected':
     case 'drawRefused':
       return refusalCues();

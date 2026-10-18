@@ -120,6 +120,13 @@ describe('the sounds of the effects of the controller', () => {
     expect(effectCues(effect)).toEqual(planCues(planAnimation(events)));
   });
 
+  it('with less motion, keeps in time with the shorter plan the view plays', () => {
+    const events: TraceEvent[] = [{ type: 'augment', path: [0, 1, 2, 3] }];
+    const effect: Effect = { kind: 'animate', action: ACTION, events };
+    expect(effectCues(effect, true)).toEqual(planCues(planAnimation(events, true)));
+    expect(effectCues(effect, true)).not.toEqual(effectCues(effect));
+  });
+
   it('answers every refusal with the gentle back sound, never a buzzer', () => {
     const refusals: Effect[] = [
       { kind: 'rejected', reason: { code: 'notNow' }, action: ACTION },
