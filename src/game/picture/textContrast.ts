@@ -148,14 +148,14 @@ export const TEXTS: readonly TextOnSurface[] = [
     what: 'goal, status, water, layers, council',
     text: 'label',
     surface: backdrop('levels'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'view/HudView.ts',
     what: 'prompt',
     text: 'sun',
     surface: backdrop('levels'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'view/OutlinedName.ts',
