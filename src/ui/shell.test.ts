@@ -112,6 +112,26 @@ describe('overlay shell', () => {
     expect(overlay).toEqual([true, false]);
   });
 
+  it('closing the Codex opened from the epilogue shows the epilogue again, still open', async () => {
+    const { bus, layer, shown, frames, overlay } = setUp();
+    bus.emit('epilogue.open');
+    await settle();
+    bus.emit('book.open', { book: 'codex', entry: 'C14' });
+    await settle();
+    frames[1]?.close();
+    await settle();
+    expect(shown).toEqual([
+      { kind: 'epilogue' },
+      { kind: 'book', book: { book: 'codex', entry: 'C14' } },
+      { kind: 'epilogue' },
+    ]);
+    expect(layer?.hidden).toBe(false);
+    expect(overlay).toEqual([true]);
+    frames[2]?.close();
+    expect(layer?.hidden).toBe(true);
+    expect(overlay).toEqual([true, false]);
+  });
+
   it('a books chunk that fails to load closes the layer and is tried again next time', async () => {
     let attempts = 0;
     const original = console.error;
