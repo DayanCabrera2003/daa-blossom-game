@@ -18,6 +18,7 @@ import { questionAt, type Question, type QuestionOption } from '../src/game/syst
 import { DEMO_SIZE } from '../src/game/view/CardDemoView';
 import { LAYOUT } from '../src/game/view/layout';
 import { RACE_COUNTERS } from '../src/game/view/RaceView';
+import { VICTORY_PANEL } from '../src/game/view/VictoryPanel';
 import { CARD_IDS } from '../src/levels/cards/schema';
 import { catalog } from '../src/levels/catalog';
 import { createTranslator } from '../src/services/i18n';
@@ -125,6 +126,12 @@ describe('the panels fit their texts', () => {
       const name = SETTINGS_PANEL.pad + estimatedButtonWidth(t(`settings.${channel}`));
       expect(name).toBeLessThanOrEqual(SETTINGS_PANEL.track.from);
     }
+  });
+
+  it('the victory panel of a free garden says its line on one row, in place of the stars', () => {
+    expect(charsIn(VICTORY_PANEL.width - 2 * VICTORY_PANEL.pad)).toBeGreaterThanOrEqual(
+      [...t('victory.free')].length,
+    );
   });
 
   it("a race's counters stay clear of its chart, whatever they say", () => {

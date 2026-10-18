@@ -379,13 +379,15 @@ export class LevelScene extends Phaser.Scene {
   /**
    * Shows the victory panel, offering the next level (if any) and the way back: the hub, or after
    * the last garden the epilogue, shown over the hub; in the free mode, only the way back to the
-   * editor. A toast below it tells when the win opened pages of the Codex.
+   * editor. A toast below it tells when the win opened pages of the Codex. The stars show only on
+   * a screen that gives them (never in the free mode, where nothing is earned).
    */
   private offerNext(stars: StarResult): void {
     this.context.music.jingle(this.winJingle);
     const { t } = this.context;
+    const earned = this.screen.showsStars ? stars : null;
     if (this.screen.back === 'editor') {
-      showVictoryPanel(this, t, stars, {
+      showVictoryPanel(this, t, earned, {
         next: null,
         back: { label: t(this.screen.backLabel), go: () => this.goBack() },
       });
@@ -396,7 +398,7 @@ export class LevelScene extends Phaser.Scene {
     const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const { next, back } = afterVictory(this.level.data.id, shown);
     const toHub: HubSceneData = { epilogue: back === 'epilogue' };
-    showVictoryPanel(this, t, stars, {
+    showVictoryPanel(this, t, earned, {
       next: next === null ? null : () => this.scene.start('level', { levelId: next }),
       back: {
         label: t(back === 'epilogue' ? 'epilogue.title' : 'victory.hub'),

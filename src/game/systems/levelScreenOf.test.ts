@@ -63,6 +63,7 @@ describe('the screen of a level of the catalog', () => {
         backLabel: 'hud.back',
         interfaceAt: id,
         ownGarden: false,
+        showsStars: true,
       });
     }
   });
@@ -87,6 +88,10 @@ describe('the screen of a garden of the free mode', () => {
     const screen = levelScreenOf(played, AT_1_8);
     expect(screen.interfaceAt).toBe('1.8');
     expect(screen.ownGarden).toBe(true);
+  });
+
+  it('shows no stars when won, since nothing is earned there', () => {
+    expect(levelScreenOf(played, AT_1_8).showsStars).toBe(false);
   });
 
   it('with the actions of 1.8 refuses folding, for the reason any level gives', () => {

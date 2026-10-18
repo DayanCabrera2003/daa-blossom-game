@@ -323,6 +323,7 @@ const UI = {
   'victory.stars': ['count'],
   'victory.next': [],
   'victory.hub': [],
+  'victory.free': [],
   'hub.title': [],
   'hub.chapter': ['number'],
   'hub.locked': [],

@@ -42,6 +42,11 @@ export interface LevelScreen {
   readonly interfaceAt: string;
   /** Whether the teacher's panel is fed the garden's sprouts: the catalog does not have them. */
   readonly ownGarden: boolean;
+  /**
+   * Whether the victory panel shows the stars won; a garden of the free mode earns none, so its
+   * panel says a line of its own instead.
+   */
+  readonly showsStars: boolean;
 }
 
 /** The chapter of the hub's season, worn by the free mode. */
@@ -62,6 +67,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
       backLabel: 'hud.back',
       interfaceAt: level.data.id,
       ownGarden: false,
+      showsStars: true,
     };
   }
   return {
@@ -73,6 +79,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
     backLabel: 'sandbox.design',
     interfaceAt: sandbox.interfaceAt,
     ownGarden: true,
+    showsStars: false,
   };
 }
 

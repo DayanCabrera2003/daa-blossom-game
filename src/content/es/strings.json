@@ -282,6 +282,7 @@
   "victory.stars": "Estrellas: {count}",
   "victory.next": "Siguiente jardín",
   "victory.hub": "Volver al jardín",
+  "victory.free": "Ya no cabe ni un farol más.",
   "hub.title": "Florecer",
   "hub.chapter": "Capítulo {number}",
   "hub.chapterName.0": "El Huerto",
