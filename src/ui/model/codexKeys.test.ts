@@ -2,10 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { bookCommand } from './codexKeys';
 
 describe('the keys of the Codex', () => {
-  it('Escape closes the book', () => {
-    expect(bookCommand('Escape')).toEqual({ kind: 'close' });
-  });
-
   it('the arrows and the page keys turn the pages', () => {
     for (const key of ['ArrowLeft', 'PageUp'])
       expect(bookCommand(key)).toEqual({ kind: 'turn', step: -1 });
@@ -27,7 +23,8 @@ describe('the keys of the Codex', () => {
   });
 
   it('any other key is left alone, so the page can still scroll and links be followed', () => {
-    for (const key of ['ArrowUp', 'ArrowDown', ' ', 'Enter', 'Tab', '4', 'a']) {
+    // Escape too: the frame closes every book with it.
+    for (const key of ['Escape', 'ArrowUp', 'ArrowDown', ' ', 'Enter', 'Tab', '4', 'a']) {
       expect(bookCommand(key)).toBeNull();
     }
   });
