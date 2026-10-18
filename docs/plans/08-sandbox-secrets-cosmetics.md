@@ -141,9 +141,9 @@ Los de `hardCases` traen sus faroles; el resto, a oscuras. Si una combinación p
 | `levels/flow.ts` | `count` con `of: 'winningThreads'` (cuántas piezas de la maraña gana el reflejo); paso nuevo `certifyAgain`: el jardín sigue y el paso termina cuando la victoria del nivel vuelve a cumplirse con piedras distintas de todas las ya presentadas |
 | `game/systems/answerKey.ts`, `game/systems/pond.ts` (donde hoy se responde `count`) | Pura: la respuesta de `winningThreads` con `decomposeSymmetricDifference` (piezas camino con ganancia > 0 a favor del reflejo) |
 | `levels/flowChecks.ts` | `winningThreads` solo en niveles con `mirror` y antes de `separate`; `certifyAgain` solo con victoria `tutteBergeCertificate` y después de un `play`; el recorrido de referencia presenta conjuntos distintos |
-| `game/systems/levelSession.ts` (o un archivo nuevo `certifyAgain.ts` si la sesión pasa de su tamaño) | Guarda los conjuntos de piedras presentados; el paso solo acaba con uno nuevo; uno repetido se contesta con una línea amable ("Esa ya nos la enseñaste") |
+| `game/systems/levelSession.ts` (o un archivo nuevo `certifyAgain.ts` si la sesión pasa de su tamaño) | Guarda los conjuntos de piedras presentados; el paso solo acaba con uno nuevo; a uno repetido le contestan los Robles con la línea que nombra el paso (`certifyAgain.repeated`) |
 | `game/systems/walkthrough.ts`, `game/systems/presentation.ts` | El recorrido y la presentación conocen los dos pasos (el `count` nuevo usa la vista de números existente) |
-| `content/es/strings.json`, `content/keys.ts` | `council.sameStones` |
+| `levels/flow.ts`, `levels/lines.ts` | `certifyAgain` lleva `repeated`: el id de la línea de los Robles (`ch7.6.oaks.NN`) para piedras ya vistas; cuenta como línea del nivel |
 
 "Terminé" se borra solo al mover una piedra (`applyAction` ya lo hace con cualquier jugada), así que `certifyAgain` no necesita nada del núcleo.
 
@@ -175,7 +175,7 @@ Las posiciones se escriben a mano dentro de `SPROUT_AREA`, con los tests de geom
 | `levels/data/ch2/2-5.json` | Las cuatro piezas, `mirror`, guion `say → mirror → count(winningThreads) → separate → play`, `maximum`, `secret.stars` 6 |
 | `levels/data/ch6/6-7.json` | Cuatro carreras (4/10, 5/1, 6/3, 8/1, presupuesto 1 000 000) y la pregunta, `secret.stars` 9 |
 | `levels/data/ch7/7-6.json` | Hilera y puente, `play` + `certifyAgain`, `tutteBergeCertificate`, `secret.stars` 8 |
-| `content/es/lines.json` | Sus líneas (Sauce; Bruto en 6.7; Robles en 7.6) |
+| `content/es/lines.json` | Sus líneas (Sauce; Bruto en 6.7; Robles en 7.6, entre ellas la de `repeated`: "Esa ya nos la enseñaste. Muéstranos otras piedras.") |
 | `tests/secrets.test.ts` | Lo de abajo |
 
 **Tests clave:** en 2.5 el reflejo gana exactamente dos piezas y pierde una, y la diferencia de faroles es 1 (la trampa existe); en 6.7, con `raceOf`, Bruto termina y da menos pasos que el autómata en las dos primeras carreras y más en las dos últimas (si una semilla deja de cumplirlo, el test lo dice antes que el jugador); en 7.6 hay al menos dos conjuntos que certifican (fuerza bruta sobre los subconjuntos) y la solución usa dos distintos.
