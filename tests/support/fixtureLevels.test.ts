@@ -12,6 +12,7 @@ import {
   pentagonLevel,
   racesLevel,
   recipeLevel,
+  secretFlowerLevel,
   stemRotationLevel,
   twoComponentsLevel,
 } from './fixtureLevels';
@@ -30,6 +31,7 @@ const FIXTURES = [
   ['7.2', pentagonLevel],
   ['7.3', helixLevel],
   ['7.4', twoComponentsLevel],
+  ['4.13', secretFlowerLevel],
 ] as const;
 
 describe('the fixture levels for tests', () => {
