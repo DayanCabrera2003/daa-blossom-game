@@ -2,6 +2,7 @@ import { PICTURE_SIZES } from '@levels/pictureSizes';
 import type Phaser from 'phaser';
 import type { Point } from '../input/target';
 import type { GardenPicture, SproutPicture } from '../picture/garden';
+import { GARDEN_DEPTHS } from '../picture/gardenDepths';
 import { sproutLook } from '../picture/sproutLook';
 import { everyFrame } from './everyFrame';
 import { LanternSprites } from './LanternSprites';
@@ -12,10 +13,12 @@ import { ensurePieceTextures } from './pieceTextures';
 import { SproutCrowns } from './SproutCrowns';
 
 /** Depths of the garden's layers: the lanterns' halo under the vines, the lanterns over them. */
-const HALO_DEPTH = 19;
-const VINE_DEPTH = 20;
-const LANTERN_DEPTH = 22;
-const SPROUT_DEPTH = 30;
+const {
+  halo: HALO_DEPTH,
+  vine: VINE_DEPTH,
+  lantern: LANTERN_DEPTH,
+  sprout: SPROUT_DEPTH,
+} = GARDEN_DEPTHS;
 
 /** Draws a dotted segment: dark vines are dotted, lit ones solid (GDD §4.1). */
 function dotted(graphics: Phaser.GameObjects.Graphics, a: Point, b: Point): void {

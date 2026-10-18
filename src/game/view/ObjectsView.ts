@@ -6,10 +6,11 @@ import { STONE_FALL_MS, STONE_SETTLE_MS, stoneFall } from '../picture/stoneSplit
 import { SPROUT_RADIUS } from './paintSprout';
 import { PALETTE } from './palette';
 import { LOOK } from '../picture/look';
+import { GARDEN_DEPTHS } from '../picture/gardenDepths';
 
 /** Depths: odd groups under the vines; stones and scarecrows over the sprouts. */
 const GROUP_DEPTH = 12;
-const OBJECT_DEPTH = 35;
+const OBJECT_DEPTH = GARDEN_DEPTHS.objects;
 
 /** The puff of dust of a stone set down: the six frames of the pack's smoke. */
 const DUST: AssetKey = 'fx.smoke';
