@@ -1,14 +1,19 @@
 import type { Graph } from '@core/graph/types';
 import type { Matching } from '@core/matching/types';
 import type { TraceEvent } from '@core/trace/events';
+import type { CodexTab } from '@levels/codex';
 
 /** The two books of the game: the Códex (GDD §5.6) and the Cuaderno (GDD §5.5). */
 export type BookName = 'codex' | 'notebook';
 
-/** A request to open a book, optionally at one Códex entry ("C8"). */
+/**
+ * A request to open a book, optionally at one Códex entry ("C8") and one of its tabs (a link of the
+ * Cuaderno opens the formal tab of the entry that translates its statement).
+ */
 export interface BookRequest {
   readonly book: BookName;
   readonly entry?: string;
+  readonly tab?: CodexTab;
 }
 
 /** The interface sounds a book asks the game to play on its audio bus. */
@@ -34,7 +39,7 @@ export interface Capabilities {
 /**
  * Every event between the game (`game/`) and the DOM overlays (`ui/`), with its payload. Neither
  * side imports the other: both import this map and share one bus, created in `main.ts`. Payloads
- * only use types of the core, never anything of Phaser or of the DOM.
+ * only use types of the core and of the level files, never anything of Phaser or of the DOM.
  */
 export interface BusEvents {
   /** Open a book (the HUD book button, a hub sign, a notebook link to the Códex). */

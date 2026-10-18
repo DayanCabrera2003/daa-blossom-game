@@ -51,6 +51,29 @@ describe('where the Codex opens', () => {
   });
 });
 
+describe('where a link of the notebook opens the Codex', () => {
+  it('at the tab asked for, when it is open in the entry asked for', () => {
+    expect(openBook(book, pages('C1:intuition'), 'C1', 'formal')?.place).toEqual({
+      entry: 'C1',
+      tab: 'formal',
+    });
+  });
+
+  it('a tab still closed in that entry opens it where it would open anyway', () => {
+    expect(openBook(book, pages(), 'C2', 'formal')?.place).toEqual({
+      entry: 'C2',
+      tab: 'intuition',
+    });
+  });
+
+  it('a tab asked for in an entry still closed changes nothing', () => {
+    expect(openBook(book, pages(), 'C5', 'formal')?.place).toEqual({
+      entry: 'C1',
+      tab: 'intuition',
+    });
+  });
+});
+
 describe('turning the pages of the Codex', () => {
   const at = (entry: CodexEntryId, tab: CodexTab): BookState => ({
     place: { entry, tab },

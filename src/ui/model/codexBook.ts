@@ -48,23 +48,28 @@ function keepTab(open: OpenTabs, entry: CodexEntryId, tab: CodexTab): BookPlace 
 }
 
 /**
- * The book as it opens: at `requested` when that entry is open, else at the first entry with an
- * unread page, else at the first open entry; every unread page wears the seal. Null when nothing
- * is open.
+ * The book as it opens: at `requested` when that entry is open (at its tab `tab` when that one is
+ * open too, as a link of the notebook asks), else at the first entry with an unread page, else at
+ * the first open entry; every unread page wears the seal. Null when nothing is open.
  */
 export function openBook(
   open: OpenTabs,
   unread: ReadonlySet<CodexPage>,
   requested?: string,
+  tab?: CodexTab,
 ): BookState | null {
   const entries = entriesOf(open);
   const asked = entries.find((entry) => entry === requested);
   const fresh = entries.find((entry) =>
-    tabsOf(open, entry).some((tab) => unread.has(pageOf(entry, tab))),
+    tabsOf(open, entry).some((candidate) => unread.has(pageOf(entry, candidate))),
   );
   const entry = asked ?? fresh ?? entries[0];
   if (entry === undefined) return null;
-  return { place: placeIn(open, entry, unread), sealed: new Set(unread) };
+  const place =
+    asked !== undefined && tab !== undefined && tabsOf(open, asked).includes(tab)
+      ? { entry: asked, tab }
+      : placeIn(open, entry, unread);
+  return { place, sealed: new Set(unread) };
 }
 
 /**

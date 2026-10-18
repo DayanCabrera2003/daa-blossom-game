@@ -33,14 +33,14 @@ import './codex.css';
  */
 
 /**
- * Opens the Codex in the shell's layer at the entry `request` asks for, when it is open, or at the
- * first page not read yet. With nothing open (it never shows then) the layer closes at once.
+ * Opens the Codex in the shell's layer at the entry (and tab) `request` asks for, when it is open,
+ * or at the first page not read yet. With nothing open (it never shows then) the layer closes at once.
  */
 export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translate): void {
   const entries = codexEntries();
   const save = frame.saves.get();
   const open: OpenTabs = frame.codexOpen(save);
-  const first = openBook(open, unreadPages(open, save), request.entry);
+  const first = openBook(open, unreadPages(open, save), request.entry, request.tab);
   if (first === null) {
     frame.close();
     return;
