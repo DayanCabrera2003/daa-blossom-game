@@ -13,6 +13,8 @@ import { gardenPicture } from '../picture/garden';
 import { checkText, drawingPicture } from '../picture/mirrorDrawing';
 import { reasonText } from '../picture/reasonText';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { hudRow } from '../picture/bottomRows';
+import { itemAt } from '@core/shared/itemAt';
 import {
   handleCounterexample,
   openCounterexample,
@@ -169,11 +171,10 @@ export class CounterexampleScene extends Phaser.Scene {
     const check = new Button(this, 0, LAYOUT.bottomY, t('hud.checkMirror'), () =>
       this.dispatch({ kind: 'checkMirror' }),
     );
-    let x = CANVAS_WIDTH - LAYOUT.margin;
-    for (const button of [leave, redo, undo, check]) {
-      x -= button.width + 3;
-      button.moveTo(x, LAYOUT.bottomY);
-    }
+    // Right to left from the margin, as the level's buttons (`picture/bottomRows.ts`).
+    const row = [leave, redo, undo, check];
+    const lefts = hudRow(row.map((button) => button.width));
+    row.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
     return { undo, redo, check };
   }
 
