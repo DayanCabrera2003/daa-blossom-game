@@ -215,7 +215,7 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | **Pasar el farol** | Un brote solitario toca a un vecino con farol: el vecino se lo da y su antigua pareja queda solitaria. Se puede encadenar a mano. | 1.1 (emerge de las reglas) |
 | **Cadena** | Arrastras desde un brote solitario a lo largo de enredaderas; el juego solo permite alternar (apagada, farol, apagada…). Al soltar en un brote solitario, todos los faroles se deslizan y se enciende uno nuevo (+1). Si sueltas en un brote con farol, se aplica igual pero con ganancia 0 (el juego lo marca en gris). | 1.3 |
 | **El sol (tiempo)** | Slider en la barra superior: rebobina y reproduce los movimientos propios o los del jardinero mecánico. | 0.5 |
-| **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da semillas (cosmético). | 1.6 |
+| **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da una semilla, la primera vez (también cada apuesta de las carreras de 6.5; la pregunta informal de 0.4, no). Cada semilla planta una planta en el hub. | 1.6 |
 | **Inspeccionar** | En niebla, revela las enredaderas de un brote. Cuesta una gota de agua. | 3.1 |
 | **Marcas sol / luna** | Colocas la marca sobre un brote; el juego solo acepta marcas coherentes con las reglas. | 3.1 |
 | **Espantapájaros** | Colocas uno sobre un brote; cubre todas sus enredaderas. | 3.7 |
