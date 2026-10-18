@@ -153,6 +153,8 @@ describe('the roll by hand', () => {
     it('a line taller than the window still moves the page on', () => {
       const tall = rollLines([{ style: 'title', text: 'a' }, text('b')], 200);
       expect(pageStarts(tall, 20, rollTravel(tall, 20))).toEqual([0, 28]);
+      const alone = rollLines([{ style: 'title', text: 'a' }], 200);
+      expect(pageStarts(alone, 20, rollTravel(alone, 20))).toEqual([0, 16]);
     });
   });
 });
