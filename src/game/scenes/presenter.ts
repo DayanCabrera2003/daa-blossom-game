@@ -84,6 +84,8 @@ export interface PresenterHooks {
   readonly cardClosed: (card: CardId) => void;
   /** The replayed day stepped on from `from` to `to`, for the sound of that step. */
   readonly replayed?: (from: GardenState, to: GardenState) => void;
+  /** The race of script step `step` started on screen, for the sounds of that race. */
+  readonly raceStarted?: (step: number) => void;
 }
 
 /**
@@ -210,6 +212,7 @@ export class Presenter {
           startedAt: this.scene.time.now,
           duration: start.duration,
         };
+        this.hooks.raceStarted?.(start.step);
         break;
       case 'counterexample':
         this.hooks.counterexample(start.question, start.option);

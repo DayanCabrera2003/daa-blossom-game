@@ -21,6 +21,9 @@ export const stepsAt = (elapsed: number): number =>
 /** When the clock reaches `steps`, in milliseconds after the start. */
 const timeFor = (steps: number): number => STEP_DOUBLING_MS * Math.log2(steps + 1);
 
+/** When a runner's counter stops, at the finish or asleep, in milliseconds after the start. */
+export const stopTime = (run: Run): number => timeFor(run.steps);
+
 /** One counter of a race at one moment. */
 export interface CounterPicture {
   /** The steps shown; a runner who stopped shows his own, asleep or not. */

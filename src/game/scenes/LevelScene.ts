@@ -13,6 +13,7 @@ import {
 } from '../systems/levelController';
 import { cardJingle, levelScreen, trackFor, victoryJingle } from '../systems/musicFor';
 import { playtestEntries } from '../systems/playtestEntries';
+import { raceCues } from '../systems/raceCues';
 import { replayCues } from '../systems/replayCues';
 import { effectCues } from '../systems/soundCues';
 import type { StarResult } from '../systems/stars';
@@ -131,6 +132,7 @@ export class LevelScene extends Phaser.Scene {
           this.sfx.cancel();
         },
         replayed: (from, to) => this.sfx.schedule(replayCues(from, to)),
+        raceStarted: (step) => this.sfx.schedule(raceCues(level.flow, step)),
         victory: (stars) => this.offerNext(stars),
         answer: (question, value) =>
           this.dispatch(
