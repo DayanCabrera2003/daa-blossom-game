@@ -8,8 +8,8 @@ import { WoodFrame } from './WoodFrame';
 
 /** How long a message stays before fading, in milliseconds. */
 const VISIBLE_MS = 2600;
-/** The depth of the toast: over the garden and the panels of the HUD, under the dialogue box. */
-const DEPTH = 150;
+/** The depth of the toast (`picture/toastBox.ts`). */
+const DEPTH = TOAST.depth;
 
 /**
  * Gentle feedback above the toolbar, on a small wooden panel: why a move was refused, in the

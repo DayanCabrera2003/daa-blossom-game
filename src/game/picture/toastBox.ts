@@ -12,6 +12,8 @@ export const TOAST = {
   bottom: CANVAS_HEIGHT - 29,
   /** The air between a toast and the top of a drawer it sits above. */
   aboveDrawer: 2,
+  /** Over the garden and the panels of the HUD, under the dialogue box. */
+  depth: 150,
 } as const;
 
 /** The wooden panel of a toast, and the middle of its text. */
