@@ -14,3 +14,13 @@ export function stepAtFraction(fraction: number, length: number): number {
 export function fractionOfStep(step: number, length: number): number {
   return length <= 1 ? 1 : step / (length - 1);
 }
+
+/**
+ * The slider position one step `direction` (-1 back, 1 on) from `fraction` in a day of `length`
+ * states: what the side arrows ask of the sun in focus (plan 09, phase 4), the same seek a drag to
+ * the next step makes. It stops at dawn and at dusk.
+ */
+export function nudgedFraction(fraction: number, length: number, direction: -1 | 1): number {
+  const step = stepAtFraction(fraction, length) + direction;
+  return fractionOfStep(Math.max(0, Math.min(length - 1, step)), length);
+}

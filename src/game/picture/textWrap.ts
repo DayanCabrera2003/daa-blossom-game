@@ -29,6 +29,25 @@ export function wrappedLines(text: string, chars: number): number {
   return count;
 }
 
+/**
+ * The lines of `text` wrapped at `chars` letters, the same way `wrappedLines` counts them, for a
+ * view that draws each line on its own (the credits' roll).
+ */
+export function wrapText(text: string, chars: number): string[] {
+  const lines: string[] = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    if (line === '') line = word;
+    else if ([...line].length + 1 + [...word].length <= chars) line = `${line} ${word}`;
+    else {
+      lines.push(line);
+      line = word;
+    }
+  }
+  lines.push(line);
+  return lines;
+}
+
 /** The height of `text` wrapped at `width` pixels. */
 export const textHeight = (text: string, width: number): number =>
   wrappedLines(text, charsIn(width)) * LINE_HEIGHT;

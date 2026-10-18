@@ -30,6 +30,7 @@ describe('the shape each flower folds into', () => {
       open: [positions[0], positions[1], positions[2]],
       centre: { x: 10, y: 10 },
       petals: 3,
+      inner: null,
     });
   });
 
@@ -40,6 +41,8 @@ describe('the shape each flower folds into', () => {
     expect(shapes.get(1)?.open).toEqual([{ x: 10, y: 10 }, positions[3], positions[4]]);
     expect(shapes.get(1)?.centre).toEqual({ x: 42, y: 12 });
     expect(shapes.get(1)?.petals).toBe(3);
+    // It folds over the nested flower, drawn small in its middle as the garden then draws it.
+    expect(shapes.get(1)?.inner).toBe(3);
     // The nested flower keeps its own shape, for when it is opened in turn.
     expect(shapes.get(0)?.centre).toEqual({ x: 10, y: 10 });
   });

@@ -26,6 +26,7 @@ import type { NotebookView, ShownNotebook } from '../view/NotebookView';
 import type { QuestionView, ShownOption, ShownQuestion } from '../view/QuestionView';
 import type { ShownCard, TutorialView } from '../view/TutorialView';
 import type { VeilView } from '../view/VeilView';
+import { questionAloud } from '../systems/aloud';
 
 /** A day replaying itself on screen: its states, its timing, when it began and what shows now. */
 interface Replaying {
@@ -57,6 +58,8 @@ export interface PresenterViews {
 export interface PresenterTexts {
   readonly t: Translate;
   readonly line: LineText;
+  /** Tells a screen reader a text, whole (the page's live region); silent without it. */
+  readonly say?: (text: string) => void;
 }
 
 /** What the presenter asks of the level scene, which owns the garden and the panels. */
@@ -134,6 +137,22 @@ export class Presenter {
     return racing === null
       ? null
       : { step: racing.step, elapsed: this.scene.time.now - racing.startedAt };
+  }
+
+  /** Whether a mechanic card is on screen. */
+  get cardOpen(): boolean {
+    return this.views.tutorial.open;
+  }
+
+  /** Dismisses the mechanic card on screen, as its button does (Escape). */
+  closeCard(): void {
+    this.views.tutorial.dismiss();
+  }
+
+  /** A digit: presses the option it names on the question or notebook page open, if any. */
+  optionKey(key: string): void {
+    if (this.views.question.open) this.views.question.pressKey(key);
+    else if (this.views.notebook.open) this.views.notebook.pressKey(key);
   }
 
   /** Queues an item to show on its own; it starts at once if nothing else is showing. */
@@ -228,13 +247,30 @@ export class Presenter {
    * long, then veils it while the player bets (1.6).
    */
   private ask(question: Question): void {
+    const { t, say } = this.texts;
     if (question.kind === 'notebook') {
-      this.views.notebook.show(this.page(question), (value) => this.hooks.answer(question, value));
+      const page = this.page(question);
+      this.views.notebook.show(page, (value) => this.hooks.answer(question, value));
+      say?.(
+        questionAloud(
+          t,
+          page.prompt,
+          page.options.map((option) => option.label),
+        ),
+      );
       return;
     }
     const open = () => {
-      if (question.preview !== null) this.views.veil.cover(this.texts.t('bet.veil'));
-      this.views.question.show(this.shown(question), (value) => this.hooks.answer(question, value));
+      if (question.preview !== null) this.views.veil.cover(t('bet.veil'));
+      const shown = this.shown(question);
+      this.views.question.show(shown, (value) => this.hooks.answer(question, value));
+      say?.(
+        questionAloud(
+          t,
+          shown.prompt,
+          shown.options.map((option) => option.label),
+        ),
+      );
     };
     if (question.preview === null) open();
     else this.scene.time.delayedCall(question.preview, open);

@@ -2,10 +2,13 @@ import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import type { UiEvent } from '../../systems/levelController';
 import { voiceLine } from '../../systems/lineVoice';
+import { nudgedFraction } from '../../systems/sun';
 import { AnimationView } from '../../view/AnimationView';
 import { BackdropView } from '../../view/BackdropView';
 import { DialogueView } from '../../view/DialogueView';
 import { FlowerView } from '../../view/FlowerView';
+import { movesLess } from '../motion';
+import { sayAloud, sayLineAloud } from '../sayAloud';
 import { FogView } from '../../view/FogView';
 import { GardenView } from '../../view/GardenView';
 import { HudView, type HudLayout } from '../../view/HudView';
@@ -74,8 +77,8 @@ export const buildLevelViews = (
 ): LevelViews => {
   const { dispatch } = buttons;
   return {
-    backdrop: new BackdropView(scene),
-    fog: new FogView(scene),
+    backdrop: new BackdropView(scene, () => movesLess(scene)),
+    fog: new FogView(scene, () => movesLess(scene)),
     flowers: new FlowerView(scene),
     objects: new ObjectsView(scene),
     garden: new GardenView(scene),
@@ -87,7 +90,7 @@ export const buildLevelViews = (
       check: () => dispatch({ kind: 'checkRecipe' }),
     }),
     race: new RaceView(scene, t),
-    animation: new AnimationView(scene),
+    animation: new AnimationView(scene, () => movesLess(scene)),
     hud: new HudView(
       scene,
       t,
@@ -106,9 +109,15 @@ export const buildLevelViews = (
       buttons.hud,
     ),
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
-    sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),
-    toast: new ToastView(scene),
-    dialogue: new DialogueView(scene, t, voiceLine),
+    sun: new SunSliderView(
+      scene,
+      (fraction) => dispatch({ kind: 'seek', fraction }),
+      // A side arrow on the sun seeks the step beside it, as a drag to that step would.
+      (direction, { fraction, steps }) =>
+        dispatch({ kind: 'seek', fraction: nudgedFraction(fraction, steps, direction) }),
+    ),
+    toast: new ToastView(scene, sayAloud(scene)),
+    dialogue: new DialogueView(scene, t, voiceLine, sayLineAloud(scene)),
   };
 };
 

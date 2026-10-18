@@ -8,6 +8,7 @@ import { WOOD_DIALOGUE } from '../picture/wood';
 import type { VoicedLine } from '../systems/lineVoice';
 import type { SpokenLine } from '../systems/speaker';
 import { everyFrame } from './everyFrame';
+import { addFocusable, coverWith } from './focusables';
 import { PALETTE } from './palette';
 import { PortraitView } from './PortraitView';
 import { textStyle } from './textStyle';
@@ -31,11 +32,14 @@ interface Typing {
  * pack (`picture/dialogueBox.ts` lays it out), with the speaker's name on its tab and the portrait
  * of a speaker who has one on the left of the page, the text wrapping in the room it leaves. In the
  * greybox most lines are not written yet and show as their id (`‹ch4.1.sauce.01›`), so playtesters
- * see where each line will be spoken. While open, it takes the touches meant for it, not the garden.
+ * see where each line will be spoken. While open, it takes the touches meant for it, not the garden,
+ * and Enter or Space move it on as a touch does.
  *
  * A line is typed letter by letter at its speaker's pace while he babbles (plan 06, phase 7); the
  * first touch completes the line and silences him, the next one moves on. The text is broken into
- * rows before it is typed, so a word never jumps to the next row halfway through.
+ * rows before it is typed, so a word never jumps to the next row halfway through. A screen reader
+ * is told each line once, whole, with who says it, as it starts (`sayAloud`), never letter by
+ * letter.
  */
 export class DialogueView {
   private readonly wood: WoodFrame;
@@ -56,11 +60,12 @@ export class DialogueView {
     private readonly scene: Phaser.Scene,
     private readonly t: Translate,
     private readonly voice: LineVoice,
+    private readonly sayAloud: (line: SpokenLine) => void = () => undefined,
   ) {
     this.layouts = { plain: dialogueBox(false), portrayed: dialogueBox(true) };
     const { box, tab, text, hint, portrait } = this.layouts.portrayed;
     this.wood = new WoodFrame(scene, WOOD_DIALOGUE, box, DEPTH);
-    this.wood.zone
+    coverWith(this.wood.zone)
       .setInteractive()
       .on(
         'pointerdown',
@@ -87,6 +92,13 @@ export class DialogueView {
     this.babble = new BabblePlayer(scene);
     everyFrame(scene, () => this.type());
     this.setVisible(false);
+    // The keyboard's focus reaches the box while it is open: Enter does what a touch does.
+    addFocusable(scene, {
+      box: () => this.wood.bounds,
+      depth: () => DEPTH,
+      live: () => this.shown,
+      press: () => this.touch(),
+    });
   }
 
   /** Whether the box is showing a line (and so taking touches). */
@@ -104,8 +116,12 @@ export class DialogueView {
     if (!this.open) this.advance();
   }
 
-  /** A touch on the box: completes the line being typed, or moves on to the next one. */
-  private touch(): void {
+  /**
+   * A touch on the box (or Enter, Space): completes the line being typed, or moves on to the next
+   * one; nothing while the box is closed.
+   */
+  touch(): void {
+    if (!this.shown) return;
     if (this.typing !== null) {
       this.complete();
       return;
@@ -144,6 +160,7 @@ export class DialogueView {
     this.portrait.show(portrait);
     this.portrait.speak();
     this.babble.play(voiced.syllables);
+    this.sayAloud(line);
     this.type();
   }
 

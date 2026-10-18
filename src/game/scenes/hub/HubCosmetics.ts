@@ -10,15 +10,13 @@ import { MAX_SEEDLINGS } from '../../picture/seedlings';
 import { HubCrittersView } from '../../view/HubCrittersView';
 import { ToastView } from '../../view/ToastView';
 import { contextOf } from '../context';
+import { movesLess } from '../motion';
+import { sayAloud } from '../sayAloud';
 
 /** When the first notice of a new cosmetic shows after the hub opens, in milliseconds. */
 const FIRST_NOTICE_MS = 800;
 /** Between two notices: one has faded (`ToastView` keeps it 2.6 s) before the next shows. */
 const NOTICE_EVERY_MS = 3400;
-
-/** Whether the player asked the system for less motion on screen. */
-const lessMotion = (): boolean =>
-  globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 /** Where the cosmetics may go in the hub, as `HubScene` has laid it out. */
 export interface HubCosmeticsPlace {
@@ -51,10 +49,10 @@ export function addHubCosmetics(scene: Phaser.Scene, place: HubCosmeticsPlace): 
     place.taken,
     place.pond,
   );
-  new HubCrittersView(scene, homes, place.signs, !lessMotion());
+  new HubCrittersView(scene, homes, place.signs, !movesLess(scene));
   if (teacherMode) return;
 
-  const toast = new ToastView(scene);
+  const toast = new ToastView(scene, sayAloud(scene));
   newCosmetics(open, save).forEach((id, i) => {
     scene.time.delayedCall(FIRST_NOTICE_MS + i * NOTICE_EVERY_MS, () => {
       toast.show(t(`cosmetic.${id}`));

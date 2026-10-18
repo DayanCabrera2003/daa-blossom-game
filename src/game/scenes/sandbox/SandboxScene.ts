@@ -8,6 +8,7 @@ import { sandboxAccess } from '@services/sandboxAccess';
 import { recordTutorialSeen } from '@services/save';
 import { createSandboxStore, type SandboxStore } from '@services/sandboxStore';
 import type { AssetKey } from '../../assets/keys';
+import { hubKeys } from '../../assets/loadPlan';
 import { playUiSound } from '../../audio/uiSound';
 import {
   chooseDesignTool,
@@ -55,11 +56,16 @@ import { paintHubGround } from '../../view/hubGround';
 import { PALETTE } from '../../view/palette';
 import { textStyle } from '../../view/textStyle';
 import { ToastView } from '../../view/ToastView';
+import { keepGardenClear } from '../../view/touchZone';
 import { TutorialView } from '../../view/TutorialView';
 import { contextOf, type GameContext } from '../context';
 import { SANDBOX_SCENE, type SandboxSceneData } from '../SandboxGate';
 import { DesignBar } from './DesignBar';
 import { GenerateMenu } from './GenerateMenu';
+import { FocusController } from '../focus/FocusController';
+import { sayAloud } from '../sayAloud';
+import { loadBehind } from '../loadBehind';
+import { OutlinedText } from '../../view/OutlinedText';
 
 /**
  * The free mode's last design, opened the first time the editor is (with this chunk, so its reading
@@ -108,8 +114,8 @@ export class SandboxScene extends Phaser.Scene {
   private menu!: GenerateMenu;
   private toast!: ToastView;
   private tutorial!: TutorialView;
-  private count!: Phaser.GameObjects.Text;
-  private prompt!: Phaser.GameObjects.Text;
+  private count!: OutlinedText;
+  private prompt!: OutlinedText;
 
   constructor() {
     super(SANDBOX_SCENE);
@@ -120,8 +126,13 @@ export class SandboxScene extends Phaser.Scene {
     this.context = contextOf(this);
     const { t, music, saves, storage } = this.context;
     store ??= createSandboxStore(storage);
-    // The free mode plays the hub's track (plan 08, section 1.3).
+    // The free mode plays the hub's track (plan 08, section 1.3), loaded behind it when a shared
+    // link opens the free mode before the hub ever showed.
     music.play(trackFor({ kind: 'hub' }));
+    loadBehind(
+      this,
+      hubKeys((key) => this.cache.audio.exists(key)),
+    );
     paintHubGround(this);
     if (data.returning === true && played !== null) {
       // Back from playing the design: on where the editor was, nothing to tell.
@@ -137,9 +148,14 @@ export class SandboxScene extends Phaser.Scene {
     this.cardOpen = false;
 
     const { margin, titleY, promptY } = DESIGN_HEADER;
-    this.add.text(margin, titleY, t('sandbox.title'), textStyle(8, PALETTE.lit));
-    this.count = this.add.text(CANVAS_WIDTH - margin, titleY, '', textStyle(8)).setOrigin(1, 0);
-    this.prompt = this.add.text(margin, promptY, '', textStyle(8));
+    // On the hub's grass, the header's lines are outlined as the sprouts' names are
+    // (`picture/textContrast.ts`).
+    new OutlinedText(this, margin, titleY, t('sandbox.title'), textStyle(8, PALETTE.lit));
+    this.count = new OutlinedText(this, CANVAS_WIDTH - margin, titleY, '', textStyle(8)).setOrigin(
+      1,
+      0,
+    );
+    this.prompt = new OutlinedText(this, margin, promptY, '', textStyle(8));
     this.garden = new GardenView(this);
     this.bar = new DesignBar(this, t, (button) => this.press(button));
     this.menu = new GenerateMenu(this, t, {
@@ -148,7 +164,7 @@ export class SandboxScene extends Phaser.Scene {
       another: () => this.choose(anotherSeed(this.choice)),
       done: () => this.closeMenu(),
     });
-    this.toast = new ToastView(this);
+    this.toast = new ToastView(this, sayAloud(this));
     this.tutorial = new TutorialView(this, t);
     this.bindInput();
     // A garden opened in the share sheet, while this editor is up.
@@ -189,6 +205,8 @@ export class SandboxScene extends Phaser.Scene {
   /** Listens to the pointer on the garden and to the keys. */
   private bindInput(): void {
     const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
+    // The buttons' grown touch zones keep off the editor's garden, where sprouts are placed.
+    keepGardenClear(this);
     this.input.on(
       'pointerdown',
       (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
@@ -212,6 +230,12 @@ export class SandboxScene extends Phaser.Scene {
     };
     this.input.on('pointerup', release);
     this.input.on('pointerupoutside', release);
+    // The keyboard's focus walks the bar, the menu and the card; Enter with nothing in focus
+    // closes the card, as "Entendido" does.
+    new FocusController(this, {
+      screen: () => 'editor',
+      fallback: () => this.tutorial.dismiss(),
+    });
     this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
       const command = designKey(
         { key: event.key, ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey },

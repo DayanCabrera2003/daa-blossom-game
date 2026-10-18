@@ -1,5 +1,5 @@
 import { PICTURE_SIZES } from './pictureSizes';
-import { boxesNear, segmentsCross, type Box, type Point } from './plane';
+import { boxesNear, segmentNearBox, segmentsCross, type Box, type Point } from './plane';
 import type { LevelData } from './schema';
 import { boxNearSprout, type SproutAt } from './sproutExtent';
 
@@ -13,6 +13,11 @@ export type LayoutProblem =
   | { readonly code: 'labelOnLabel'; readonly labels: readonly [string, string] }
   | {
       readonly code: 'labelOnLantern';
+      readonly label: string;
+      readonly vine: readonly [string, string];
+    }
+  | {
+      readonly code: 'labelOnVine';
       readonly label: string;
       readonly vine: readonly [string, string];
     }
@@ -35,6 +40,7 @@ const {
   glyph,
   tailedLetters,
   lantern,
+  vineStroke,
   labelClearance: clearance,
 } = PICTURE_SIZES;
 
@@ -120,6 +126,30 @@ function crowdedLabels(level: Layout): LayoutProblem[] {
   });
 }
 
+/**
+ * Whether the vine from `a` to `b`, lit as it may be later (its widest solid stroke), is drawn
+ * through a name's box or closer to it than the names' margin, in a straight line.
+ */
+export function vineOverLabel(a: Point, b: Point, box: Box): boolean {
+  return segmentNearBox(a, b, box, vineStroke / 2 + clearance);
+}
+
+/**
+ * The names a vine is drawn through or against, lit as it may be later (its widest solid stroke),
+ * each name with each vine once. A vine of the name's own sprout leaves from right above it and
+ * is never counted: the name is read as part of its sprout (its view outlines it, plan 09).
+ */
+export function labelsOnVines(level: Layout): LayoutProblem[] {
+  const vines = placedVines(level);
+  return level.sprouts.flatMap((sprout) => {
+    const box = labelBox(sprout);
+    return vines
+      .filter(({ vine }) => !vine.includes(sprout.label))
+      .filter(({ a, b }) => vineOverLabel(a, b, box))
+      .map(({ vine }): LayoutProblem => ({ code: 'labelOnVine', label: sprout.label, vine }));
+  });
+}
+
 /** The pairs of names that differ only by case: the pixel font tells `c` from `C` by size alone. */
 function caseTwins(level: Layout): LayoutProblem[] {
   const labels = level.sprouts.map((sprout) => sprout.label);
@@ -132,9 +162,10 @@ function caseTwins(level: Layout): LayoutProblem[] {
 }
 
 /**
- * The layout problems of a level, laid out by hand: every name must be readable on its own and
- * unlike the others, and a secret flower, being a puzzle of looking, has no crossing vines. Other
- * levels may keep crossings their design needs; `vineCrossings` reports them.
+ * The layout problems of a level, laid out by hand or by the free mode: every name must be readable
+ * on its own (no sprout, name, lantern or vine of other sprouts drawn over it) and unlike the
+ * others, and a secret flower, being a puzzle of looking, has no crossing vines. Other levels may
+ * keep crossings their design needs; `vineCrossings` reports them.
  */
 export function checkLayout(
   level: Layout & { readonly secret?: LevelData['secret'] },
@@ -142,6 +173,7 @@ export function checkLayout(
   return [
     ...(level.secret === undefined ? [] : vineCrossings(level)),
     ...crowdedLabels(level),
+    ...labelsOnVines(level),
     ...caseTwins(level),
   ];
 }

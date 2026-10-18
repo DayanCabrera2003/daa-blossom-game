@@ -15,6 +15,8 @@ import { GENERATORS } from '@levels/sandbox/generators';
 import type { DesignRejection } from '@levels/sandbox/design';
 import type { ImportRejection } from '@levels/sandbox/importText';
 import { DESIGN_TOOLS } from '@game/input/designIntent';
+import { KEY_HELP } from '@game/input/keyBindings';
+import { MOTION_CHOICES } from '@services/motion';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
 
@@ -196,8 +198,20 @@ const UI = {
   'epilogue.author.closing': [],
   'epilogue.readCodex': [],
   'epilogue.sandbox': [],
+  'epilogue.credits': [],
   'epilogue.back': [],
   'epilogue.keys': [],
+  'credits.back': [],
+  'credits.byline': [],
+  'credits.art': [],
+  'credits.music': [],
+  'credits.sound': [],
+  'credits.font': [],
+  'credits.software': [],
+  'credits.license': ['license'],
+  'credits.own': [],
+  'credits.ownWork': [],
+  'credits.thanks': [],
   'hud.trace': [],
   'teacher.panel': [],
   'teacher.badge': [],
@@ -351,6 +365,22 @@ const UI = {
   'settings.mute': [],
   'settings.close': [],
   'settings.exportLog': [],
+  'settings.credits': [],
+  'settings.keys': [],
+  'settings.motion': [],
+  // What a screen reader hears through the live region (plan 09, phase 6).
+  'a11y.line': ['speaker', 'text'],
+  'a11y.question': ['prompt', 'options'],
+  'a11y.option': ['number', 'option'],
+  'a11y.answerRight': [],
+  'a11y.answerWrong': [],
+  // Each position of the motion setting, on its button in the settings panel.
+  ...Object.fromEntries(MOTION_CHOICES.map((choice) => [`settings.motion.${choice}`, []])),
+  'keys.title': [],
+  'keys.pointer': [],
+  'keys.close': [],
+  // Over the game on a phone held upright, until it is turned (plan 09, phase 7).
+  'notice.turnPhone': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>
@@ -469,6 +499,7 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ),
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
+  ...Object.fromEntries(KEY_HELP.map((line) => [`keys.${line}`, []])),
   // The name of each speaker, on the tab of the dialogue box.
   ...Object.fromEntries(SPEAKERS.map((speaker) => [`speaker.${speaker}`, []])),
 };

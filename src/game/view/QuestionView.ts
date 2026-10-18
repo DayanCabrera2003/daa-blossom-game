@@ -9,6 +9,8 @@ import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { optionForKey } from '../input/optionKeys';
+import { coverWith } from './focusables';
 
 /** One option as the panel shows it: what choosing it gives, and its text. */
 export interface ShownOption {
@@ -32,11 +34,14 @@ const PANEL_DEPTH = 250;
  * The wooden panel of a question or a bet (plan 03, phase 4; laid out by `picture/panelLayout.ts`): the prompt, one button per option, and a
  * dim layer over the garden that takes every touch meant for it, so no lantern moves while the
  * question is open. The top bar and the dialogue box stay usable (a hint, going back). Options
- * flow left to right and wrap, so a row of numbers and a column of written answers both fit.
+ * flow left to right and wrap, so a row of numbers and a column of written answers both fit. The
+ * keyboard's focus reaches each option, and a digit presses the option it names.
  */
 export class QuestionView {
   private parts: { destroy(): void }[] = [];
   private buttons = new Map<number, Button>();
+  /** The options shown, in their order, for the digits. */
+  private options: readonly ShownOption[] = [];
 
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -55,11 +60,13 @@ export class QuestionView {
     const { scene } = this;
     if (!reopening) playUiSound(scene, 'sfx.panelOpen');
     const { x, y, width } = QUESTION_PANEL;
-    const blocker = scene.add
-      .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
-      .setOrigin(0, 0)
-      .setDepth(BLOCKER_DEPTH)
-      .setInteractive();
+    const blocker = coverWith(
+      scene.add
+        .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
+        .setOrigin(0, 0)
+        .setDepth(BLOCKER_DEPTH)
+        .setInteractive(),
+    );
     const ink = PALETTE[WOOD_PANEL.text];
     const prompt = scene.add
       .text(0, 0, question.prompt, {
@@ -67,6 +74,7 @@ export class QuestionView {
         wordWrap: { width: innerWidth(width) },
       })
       .setDepth(PANEL_DEPTH + 1);
+    this.options = question.options;
     const buttons = question.options.map((option) => {
       const button = new Button(scene, 0, 0, option.label, () => onAnswer(option.value));
       this.buttons.set(option.value, button.setDepth(PANEL_DEPTH + 2));
@@ -95,6 +103,20 @@ export class QuestionView {
     this.parts.push(blocker, prompt, ...buttons, footer, panel);
   }
 
+  /**
+   * A digit on the open question: presses the option it names (`input/optionKeys.ts`), as a touch
+   * would. Whether it pressed one.
+   */
+  pressKey(key: string): boolean {
+    const index = optionForKey(
+      key,
+      this.options.map((option) => option.label),
+    );
+    if (index === null) return false;
+    this.buttons.get(itemAt(this.options, index).value)?.press();
+    return true;
+  }
+
   /** Marks an option as the one the mentor points at (a grade-3 hint). */
   mark(value: number): void {
     this.buttons.get(value)?.setActive(true);
@@ -111,5 +133,6 @@ export class QuestionView {
     for (const part of this.parts) part.destroy();
     this.parts = [];
     this.buttons.clear();
+    this.options = [];
   }
 }

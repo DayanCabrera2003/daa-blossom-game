@@ -1,8 +1,9 @@
 /*
  * The books over the canvas (plan 07, phases 3 and 6): a wooden book of the pack (the 9-slice panel
  * of the dialogue and the notebook, 16 x 16 with borders 6 5 5 6) holding a page of light paper.
- * Every size is a whole number of logical pixels, `--px`, which is `--zoom` screen pixels like the
- * canvas under it, so the pixel font stays sharp and the book keeps its place at every zoom. The
+ * Every size is a whole number of logical pixels, `--px`, which is `--zoom` CSS pixels like the
+ * canvas under it: whole device pixels, fractional CSS pixels on a dense screen (plan 09, phase 7),
+ * so the pixel font stays sharp and the book keeps its place at every zoom. The
  * measures are those of `ui/model/bookLayout.ts` (tests/bookGeometry.test.ts holds them together)
  * and the colours those of the game's palette (src/game/view/palette.ts). What both books share is
  * here; each book's own look is in its stylesheet.
@@ -282,8 +283,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .book-turned {
-    animation: none;
-  }
+/* Less motion, as the game's setting says (it starts by following the system's preference). */
+:root[data-motion='reduced'] .book-turned {
+  animation: none;
 }

@@ -87,6 +87,9 @@ describe('readable level problems', () => {
     expect(describeProblem({ code: 'labelOnLantern', label: 'e', vine: ['e', 'f'] })).toBe(
       'the name of e is drawn over the lantern of the vine e–f',
     );
+    expect(describeProblem({ code: 'labelOnVine', label: 'a', vine: ['c', 'g'] })).toBe(
+      'the name of a is drawn over the vine c–g',
+    );
     expect(
       describeProblem({
         code: 'vinesCross',

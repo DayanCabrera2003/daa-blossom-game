@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { channelGain, soundGain } from '@services/audioGain';
 import type { AudioChannel, Settings } from '@services/settings';
+import { soundGainOf } from './mix';
 
 /** A sound as the game's sound manager makes it, whichever manager the browser got. */
 export type BusSound = ReturnType<Phaser.Game['sound']['add']>;
@@ -15,11 +16,15 @@ export interface PlayOptions {
   readonly rate?: number;
 }
 
-/** A sound playing on a channel, with the volume it was asked for (a fading track changes it). */
+/**
+ * A sound playing on a channel, with the volume it was asked for (a fading track changes it) and
+ * its own gain in the mix, which no fade changes.
+ */
 interface Playing {
   readonly sound: BusSound;
   readonly channel: AudioChannel;
   volume: number;
+  readonly mix: number;
 }
 
 /** A looping sound asked for before the browser let audio start. */
@@ -31,13 +36,19 @@ interface Waiting {
 
 /**
  * The game's audio bus: three channels (music, effects, voices), each at the gain the settings
- * give it (`services/audioGain.ts` decides; this only applies it). It lives as long as the game,
+ * give it (`services/audioGain.ts` decides; this only applies it), and each sound at its own gain
+ * in the mix (`mix.ts`) times the volume it is asked for. It lives as long as the game,
  * shared by every scene through the context.
  *
  * Browsers keep audio locked until the first touch; Phaser unlocks it then. Until that happens a
  * one-off sound is dropped (it would otherwise burst out late, all at once) and a looping one waits
  * and starts on the unlock. While the tab is hidden every channel is silent. A key with no loaded
  * sound is simply not played, so the bus works before any sound exists.
+ *
+ * On a phone (plan 09, phase 7) the unlock is the same: Phaser listens for the first touch on the
+ * whole page (its end, as iOS asks), and the canvas taking every touch for the game does not stop
+ * it from hearing one. On an iPhone the silent switch also silences Web Audio, which the game plays
+ * through: with the switch on the game is silent, as it should be, and nothing here can change it.
  */
 export class AudioBus {
   private readonly playing = new Set<Playing>();
@@ -75,7 +86,7 @@ export class AudioBus {
       loop: options.loop ?? false,
       rate: options.rate ?? 1,
     });
-    const playing: Playing = { sound, channel, volume };
+    const playing: Playing = { sound, channel, volume, mix: soundGainOf(key) };
     this.playing.add(playing);
     sound.once(Phaser.Sound.Events.COMPLETE, () => this.release(playing));
     sound.once(Phaser.Sound.Events.DESTROY, () => this.playing.delete(playing));
@@ -114,7 +125,8 @@ export class AudioBus {
   }
 
   private gainOf(playing: Playing): number {
-    return soundGain(channelGain(this.settings, playing.channel, this.hidden), playing.volume);
+    const gain = channelGain(this.settings, playing.channel, this.hidden);
+    return soundGain(gain, playing.volume * playing.mix);
   }
 
   private regain(): void {

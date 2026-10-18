@@ -23,7 +23,7 @@ export class VeilView {
       .setOrigin(0, 0)
       .setDepth(VEIL_DEPTH);
     this.text = scene.add
-      .text(CANVAS_WIDTH / 2, y + height - 60, '', textStyle(8, PALETTE.darkVine))
+      .text(CANVAS_WIDTH / 2, y + height - 60, '', textStyle(8, PALETTE.chainNone))
       .setOrigin(0.5, 0.5)
       .setDepth(VEIL_DEPTH + 1);
     this.uncover();

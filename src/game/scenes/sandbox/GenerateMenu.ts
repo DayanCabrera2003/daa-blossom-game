@@ -9,6 +9,7 @@ import { Button } from '../../view/Button';
 import { PALETTE } from '../../view/palette';
 import { textStyle } from '../../view/textStyle';
 import { WoodFrame } from '../../view/WoodFrame';
+import { coverWith } from '../../view/focusables';
 
 /** Over the garden and the editor's bar, under the toast. */
 const DRAWER_DEPTH = 120;
@@ -68,7 +69,7 @@ export class GenerateMenu {
     const panel = new WoodFrame(scene, WOOD_PANEL, layout.panel, DRAWER_DEPTH);
     this.panelTop = layout.panel.y;
     // The drawer's wood takes the touches that land on it, so none reaches the garden below.
-    panel.zone.setInteractive();
+    coverWith(panel.zone.setInteractive());
     this.generators.forEach((view, i) => {
       const at = itemAt(layout.generators, i);
       view.moveTo(at.x, at.y);

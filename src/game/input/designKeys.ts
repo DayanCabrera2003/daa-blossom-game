@@ -1,12 +1,16 @@
 import { itemAt } from '@core/shared/itemAt';
 import { DESIGN_TOOLS, type DesignTool } from './designIntent';
+import { escapeAction } from './escape';
+import { historyKey } from './keyBindings';
 
 /**
  * The keyboard of the free mode's editor (plan 08, phase 11), so it can be used without the mouse
  * as much as with it: 1 to 5 take the tools in the order of the bar, Ctrl/Cmd+Z undoes and
  * Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redoes (as in a level), G opens and closes the generate menu, and
  * Escape closes the innermost thing open (the card, the menu, the sprout chosen for a vine) before
- * it leaves the editor. Pure: the scene reads the key and does what this says.
+ * it leaves the editor, by the rule of every screen (`input/escape.ts`). Enter belongs to the
+ * keyboard's focus (plan 09, phase 4): it presses what the focus is on, or else closes the card.
+ * Pure: the scene reads the key and does what this says.
  */
 
 /** A key pressed, as the scene reads it from the browser's event. */
@@ -49,18 +53,34 @@ function toolOf(key: string): DesignTool | null {
 /** What `press` asks for with `context` open, or null when it asks for nothing. */
 export function designKey(press: DesignKeyPress, context: DesignKeyContext): DesignCommand | null {
   const key = press.key.toLowerCase();
-  if (context.cardOpen) {
-    return key === 'escape' || key === 'enter' ? { kind: 'closeCard' } : null;
-  }
-  if (context.menuOpen) {
-    return key === 'escape' || key === 'g' ? { kind: 'closeMenu' } : null;
-  }
+  if (key === 'escape') return escapeCommand(context);
+  if (context.cardOpen) return null;
+  if (context.menuOpen) return key === 'g' ? { kind: 'closeMenu' } : null;
   if (press.ctrl) {
-    if (key === 'y' || (key === 'z' && press.shift)) return { kind: 'redo' };
-    return key === 'z' ? { kind: 'undo' } : null;
+    const history = historyKey(press);
+    return history === null ? null : { kind: history };
   }
-  if (key === 'escape') return context.selecting ? { kind: 'letGo' } : { kind: 'leave' };
   if (key === 'g') return { kind: 'openMenu' };
   const tool = toolOf(key);
   return tool === null ? null : { kind: 'tool', tool };
+}
+
+/** What Escape closes in the editor, the innermost thing first, or else the editor itself. */
+function escapeCommand(context: DesignKeyContext): DesignCommand {
+  const action = escapeAction({
+    cardOpen: context.cardOpen,
+    menuOpen: context.menuOpen,
+    selecting: context.selecting,
+    canLeave: true,
+  });
+  switch (action) {
+    case 'closeCard':
+      return { kind: 'closeCard' };
+    case 'closeMenu':
+      return { kind: 'closeMenu' };
+    case 'letGo':
+      return { kind: 'letGo' };
+    default:
+      return { kind: 'leave' };
+  }
 }

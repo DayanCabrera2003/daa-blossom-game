@@ -364,3 +364,25 @@ describe('level integrity', () => {
     ]);
   });
 });
+
+describe('the names of a level and its vines', () => {
+  // D moved down and to the left: the vine C–D now runs through the name of B.
+  const crossed = {
+    ...trap,
+    sprouts: trap.sprouts.map((sprout) =>
+      sprout.label === 'D' ? { ...sprout, x: 40, y: 180 } : sprout,
+    ),
+  };
+  const level = (json: unknown) => {
+    const loaded = loadLevel(json);
+    if (!loaded.ok) throw new Error(`level does not load: ${JSON.stringify(loaded.error)}`);
+    return loaded.value;
+  };
+
+  it('pass a sound level, and find a name a vine runs through', () => {
+    expect(checkIntegrity(level(trap))).toEqual([]);
+    expect(checkIntegrity(level(crossed))).toEqual([
+      { code: 'labelOnVine', label: 'B', vine: ['C', 'D'] },
+    ]);
+  });
+});

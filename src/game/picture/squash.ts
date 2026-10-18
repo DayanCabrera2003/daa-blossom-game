@@ -17,6 +17,8 @@ export interface HopPose {
   /** Its width and height against its own size: below 1 squashed that way, above 1 stretched. */
   readonly scaleX: number;
   readonly scaleY: number;
+  /** How much of it shows, from 0 to 1: always all of it, but for a hop with less motion. */
+  readonly alpha: number;
 }
 
 /** The top of the arc, in logical pixels above the ground. */
@@ -36,11 +38,20 @@ const sized = (ground: Point, height: number, scaleY: number): HopPose => ({
   height,
   scaleX: 1 / scaleY,
   scaleY,
+  alpha: 1,
 });
 
-/** The lantern hopping from `from` to `to`, `progress` (0 to 1) of the way through the hop. */
-export function hopPose(from: Point, to: Point, progress: number): HopPose {
+/**
+ * The lantern hopping from `from` to `to`, `progress` (0 to 1) of the way through the hop. With
+ * `reduced` motion (plan 09, phase 6) it does not fly: it fades out on the sprout it leaves during
+ * the first half and fades in on the one it reaches during the second, at its own size.
+ */
+export function hopPose(from: Point, to: Point, progress: number, reduced = false): HopPose {
   const p = Math.min(1, Math.max(0, progress));
+  if (reduced) {
+    const ground = p < 0.5 ? from : to;
+    return { ...sized(ground, 0, 1), alpha: Math.abs(1 - 2 * p) };
+  }
   if (p <= CROUCH) return sized(from, 0, 1 - SQUASH * Math.sin(((Math.PI / 2) * p) / CROUCH));
   if (p >= 1 - LANDING) {
     const settled = (p - (1 - LANDING)) / LANDING;

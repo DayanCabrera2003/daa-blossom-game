@@ -15,7 +15,7 @@ import { untangle, type Field } from './untangle';
  * from R, each layer a column over the garden's height. Every shape is drawn over the whole free
  * area of the editor, between its header and its two rows of buttons, and then untangled
  * (`untangle.ts`) until no name of the free mode (A, B, C… in sprout order) is drawn over a sprout,
- * another name or a lantern, the checks of the catalog's levels. The result is deterministic, on
+ * another name, a lantern or a vine, the checks of the catalog's levels. The result is deterministic, on
  * whole pixels, inside the garden and keeps the spacing of the free mode; should the untangling
  * ever fail, the sprouts start again from a plain grid.
  */

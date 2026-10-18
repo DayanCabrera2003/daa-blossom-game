@@ -77,11 +77,15 @@ const plain = (sprouts: readonly DesignSprout[]): DesignSprout[] =>
 const sproutNamed = (design: Design, label: string): DesignSprout | undefined =>
   design.sprouts.find((sprout) => sprout.label === label);
 
-/** The layout problems that hide a name: a sprout, another name or a lantern drawn over it. */
+/**
+ * The layout problems that hide a name: a sprout, another name, a lantern or a vine of other
+ * sprouts drawn over it.
+ */
 const HIDING: ReadonlySet<LayoutProblem['code']> = new Set([
   'labelOnSprout',
   'labelOnLabel',
   'labelOnLantern',
+  'labelOnVine',
 ]);
 
 /** The names a design hides, each as a key, with the checks of the catalog's levels. */
@@ -94,7 +98,7 @@ const hiddenNames = (design: Design): Set<string> =>
 
 /**
  * The edited design, unless it hides a name the design before it kept clear (where a sprout would
- * sit, its name, or the lantern a new vine may carry). A design that came in with a hidden name,
+ * sit, its name, a new vine or the lantern it may carry). A design that came in with a hidden name,
  * from a file, can still be edited, and moving the sprout that hides it clears it.
  */
 function keepingNames(before: Design, after: Design): Result<Design, DesignRejection> {

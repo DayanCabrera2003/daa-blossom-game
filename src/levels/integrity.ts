@@ -97,8 +97,8 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
 
   problems.push(...checkFlow(level), ...checkFlower(level), ...checkNotebook(level));
 
-  // A garden laid out by hand must read well: no name hidden or confused with another, and no
-  // crossing vines in a secret flower, a puzzle of looking.
+  // A garden laid out by hand must read well: no name hidden (by a sprout, a name, a lantern or a
+  // vine) or confused with another, and no crossing vines in a secret flower, a puzzle of looking.
   problems.push(...checkLayout(data));
 
   for (const line of referencedLines(data)) {

@@ -24,9 +24,18 @@ export interface DriftParticle {
 /** `value` brought into [0, `size`). */
 const wrap = (value: number, size: number): number => ((value % size) + size) % size;
 
-/** The particles of `drift` at `time` (in milliseconds), their paths drawn from `seed`. */
-export function driftAt(drift: Drift, seed: number, time: number): DriftParticle[] {
+/**
+ * The particles of `drift` at `moment` (in milliseconds), their paths drawn from `seed`. With
+ * `reduced` motion (plan 09, phase 6) they stand still where they were at the start.
+ */
+export function driftAt(
+  drift: Drift,
+  seed: number,
+  moment: number,
+  reduced = false,
+): DriftParticle[] {
   const rng = createRng(seed);
+  const time = reduced ? 0 : moment;
   const seconds = time / 1000;
   const [width, height] = [CANVAS_WIDTH + 2 * DRIFT_MARGIN, CANVAS_HEIGHT + 2 * DRIFT_MARGIN];
   return Array.from({ length: drift.count }, (_, k) => {

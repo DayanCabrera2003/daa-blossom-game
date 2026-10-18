@@ -22,6 +22,7 @@ import {
   ACTION_CARD,
   helpCards,
   levelCards,
+  levelStepCard,
   offerCards,
   startCards,
   stepCard,
@@ -46,7 +47,7 @@ function walkLevels(played: readonly Level[]): Map<string, CardId[]> {
     const cards = [...startCards(level, seen)];
     for (const card of cards) seen.add(card);
     for (const step of level.flow) {
-      const card = stepCard(step.step, seen);
+      const card = levelStepCard(level, step.step, seen);
       if (card === null) continue;
       cards.push(card);
       seen.add(card);
@@ -251,5 +252,30 @@ describe('the "?" button: the cards of what is open in the level', () => {
 
   it('in the first garden it shows just the lanterns', () => {
     expect(helpCards(levelOf('0.1'), 0)).toEqual(['lanterns']);
+  });
+});
+
+describe('the secret flowers: no mechanic cards to teach (plan 08, section 1.1)', () => {
+  const secrets = levels.filter((level) => level.data.secret !== undefined);
+
+  it('are the seven of the catalog', () => {
+    expect(secrets).toHaveLength(7);
+  });
+
+  it.each(secrets.map((level) => [level.data.id, level] as const))(
+    '%s offers none as it starts nor in its steps, even to a new teacher profile',
+    (_, level) => {
+      // A new profile has seen no card; teacher mode plays the level with its own interface.
+      expect(startCards(level, new Set())).toEqual([]);
+      for (const step of level.flow) expect(levelStepCard(level, step.step, new Set())).toBeNull();
+      // "?" still opens the cards of what the garden has open.
+      expect(helpCards(level, level.flow.length)).not.toEqual([]);
+    },
+  );
+
+  it('a level of the chapters still offers the cards of its steps', () => {
+    const level = levelOf('1.8');
+    expect(levelStepCard(level, 'ask', new Set())).toBe('question');
+    expect(levelStepCard(level, 'ask', new Set(['question']))).toBeNull();
   });
 });

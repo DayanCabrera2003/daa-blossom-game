@@ -17,6 +17,8 @@ import { PALETTE } from './palette';
 import type { ShownOption } from './QuestionView';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { optionForKey } from '../input/optionKeys';
+import { addFocusable, coverWith } from './focusables';
 
 /** What the notebook page shows, already translated. */
 export interface ShownNotebook {
@@ -44,10 +46,12 @@ const FLIPS: readonly AssetKey[] = ['sfx.bookFlip1', 'sfx.bookFlip2', 'sfx.bookF
  * statement and one wooden row per ending, each long enough to wrap, so it is not a row of buttons
  * like a question but a list to read. A dim layer over the garden takes the touches meant for it.
  * Choosing an ending gives its value to the scene, which tells the script; a false one then opens
- * its counterexample.
+ * its counterexample. The keyboard's focus reaches each row, and a digit chooses its ending.
  */
 export class NotebookView {
   private parts: { destroy(): void }[] = [];
+  /** What choosing each ending does, in the order of the rows, for the digits. */
+  private choices: { readonly label: string; readonly choose: () => void }[] = [];
   /** How many pages have turned, for the next page turn's sound. */
   private flips = 0;
 
@@ -69,11 +73,13 @@ export class NotebookView {
     const inner = innerWidth(width);
     const left = x + PANEL.pad;
     const ink = PALETTE[WOOD_PANEL.text];
-    const blocker = scene.add
-      .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
-      .setOrigin(0, 0)
-      .setDepth(BLOCKER_DEPTH)
-      .setInteractive();
+    const blocker = coverWith(
+      scene.add
+        .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
+        .setOrigin(0, 0)
+        .setDepth(BLOCKER_DEPTH)
+        .setInteractive(),
+    );
     this.parts.push(blocker);
 
     // The top row: the book and the notebook's name on the left, what to do on the right.
@@ -127,6 +133,20 @@ export class NotebookView {
     this.parts.push(page);
   }
 
+  /**
+   * A digit on the open page: chooses the ending it names (`input/optionKeys.ts`), as a touch on its
+   * row would. Whether it chose one.
+   */
+  pressKey(key: string): boolean {
+    const index = optionForKey(
+      key,
+      this.choices.map((choice) => choice.label),
+    );
+    if (index === null) return false;
+    itemAt(this.choices, index).choose();
+    return true;
+  }
+
   /** Closes the notebook, taking the page and its blocker away. */
   close(): void {
     if (this.open) playUiSound(this.scene, 'sfx.bookClose');
@@ -149,23 +169,35 @@ export class NotebookView {
       PAGE_DEPTH + 2,
       PALETTE.button,
     );
+    // A touch on the row, Enter on it in focus, or its digit: the page turns to the answer.
+    const choose = (): void => {
+      const flip = this.flips;
+      this.flips = flip + 1;
+      playUiSound(scene, FLIPS[flip % FLIPS.length] ?? 'sfx.bookFlip1');
+      onAnswer(option.value);
+    };
     row.zone
       .setInteractive({ useHandCursor: true })
       .on(
         'pointerdown',
         (_: Phaser.Input.Pointer, __: number, ___: number, event: Phaser.Types.Input.EventData) => {
           event.stopPropagation();
-          const flip = this.flips;
-          this.flips = flip + 1;
-          playUiSound(scene, FLIPS[flip % FLIPS.length] ?? 'sfx.bookFlip1');
-          onAnswer(option.value);
+          choose();
         },
       );
+    addFocusable(scene, {
+      box: () => row.bounds,
+      depth: () => PAGE_DEPTH + 2,
+      live: () => row.zone.active,
+      press: choose,
+    });
+    this.choices.push({ label: option.label, choose });
     this.parts.push(row, text);
   }
 
   private clear(): void {
     for (const part of this.parts) part.destroy();
     this.parts = [];
+    this.choices = [];
   }
 }

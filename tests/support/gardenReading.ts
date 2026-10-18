@@ -22,7 +22,10 @@ function placed(graph: Graph, spots: readonly Spot[], shape?: LayoutShape) {
   };
 }
 
-/** Every name drawn over a sprout, another name or a lantern, as the catalog's checks find them. */
+/**
+ * Every name drawn over a sprout, another name, a lantern or a vine, as the catalog's checks find
+ * them.
+ */
 export const readingProblems = (
   graph: Graph,
   spots: readonly Spot[],

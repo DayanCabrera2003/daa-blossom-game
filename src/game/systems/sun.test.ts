@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { fractionOfStep, stepAtFraction } from './sun';
+import { fractionOfStep, nudgedFraction, stepAtFraction } from './sun';
 
 describe('the sun slider over the day', () => {
   it('dawn is the first state and dusk the last', () => {
@@ -27,6 +27,25 @@ describe('the sun slider over the day', () => {
         fc.integer({ min: 1, max: 200 }).chain((n) => fc.tuple(fc.constant(n), fc.nat(n - 1))),
         ([n, step]) => {
           expect(stepAtFraction(fractionOfStep(step, n), n)).toBe(step);
+        },
+      ),
+    );
+  });
+
+  it('an arrow moves the sun one step, as a drag to the next step would, and stops at both ends', () => {
+    expect(nudgedFraction(1, 5, -1)).toBe(0.75);
+    expect(nudgedFraction(0.5, 5, 1)).toBe(0.75);
+    expect(nudgedFraction(1, 5, 1)).toBe(1);
+    expect(nudgedFraction(0, 5, -1)).toBe(0);
+    expect(nudgedFraction(1, 1, -1)).toBe(1);
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 2, max: 40 }),
+        fc.integer({ min: 0, max: 39 }),
+        (length, at) => {
+          const step = Math.min(at, length - 1);
+          const back = nudgedFraction(fractionOfStep(step, length), length, -1);
+          expect(stepAtFraction(back, length)).toBe(Math.max(0, step - 1));
         },
       ),
     );

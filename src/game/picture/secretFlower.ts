@@ -8,15 +8,16 @@ import type { TextRef } from './hud';
 import { PIXEL_FONT } from './pixelFont';
 import type { SheetCut } from './seasons';
 import { STAR_SIZE } from './starIcon';
+import { WON_FLOWER_SIZE } from './wonFlower';
 
 /**
  * The secret flower of a chapter in the hub (plan 08, section 1.1), grown in the column at the
  * margin beside its chapter's signpost (`flowerBox`), as big as a sprout of the garden so it is
  * found without hunting: while it is shut it is a bud, the two leaves of a sprout, over a dim star
  * and the number of stars still missing; once it opens the pack's flower sways on those leaves in a
- * soft glow, asking to be touched; once won it is golden and still, over a golden star and the
- * number of stars it gave. Every piece is drawn inside the column; the column and the signpost
- * together take the touch. Pure: the scene draws what this says and does what a touch asks.
+ * soft glow, asking to be touched; once won it is a still golden rosette with the star in its
+ * middle (`wonFlower.ts`), filling the column, its tip telling the stars it gave. Every piece is
+ * drawn inside the column; the column and the signpost together take the touch. Pure: the scene draws what this says and does what a touch asks.
  */
 
 /** The leaves of the sprout's tile, without the empty rows and columns around them. */
@@ -35,15 +36,10 @@ export const BLOOM_SIZE = { width: 10, height: 8 } as const;
 /** Something drawn in the flower's column, its top-left corner on the canvas. */
 export type FlowerPiece =
   | { readonly kind: 'bud'; readonly x: number; readonly y: number }
-  | {
-      readonly kind: 'bloom';
-      readonly x: number;
-      readonly y: number;
-      /** Whether it sways between the two frames of its picture (an open flower, alive). */
-      readonly sways: boolean;
-      /** Whether it is tinted gold (a won flower). */
-      readonly golden: boolean;
-    }
+  /** The pack's open flower, swaying between the two frames of its picture. */
+  | { readonly kind: 'bloom'; readonly x: number; readonly y: number }
+  /** The golden rosette of a won flower (`wonFlower.ts`), still. */
+  | { readonly kind: 'won'; readonly x: number; readonly y: number }
   /** The soft light that pulses behind an open flower, filling the box. */
   | {
       readonly kind: 'glow';
@@ -56,15 +52,9 @@ export type FlowerPiece =
   | { readonly kind: 'star'; readonly x: number; readonly y: number; readonly earned: boolean }
   /**
    * A number in the pixel font beside the star; `y` is the top of its digits (a capital's height
-   * below the top of the line the scene writes), golden for a won flower.
+   * below the top of the line the scene writes).
    */
-  | {
-      readonly kind: 'count';
-      readonly x: number;
-      readonly y: number;
-      readonly text: string;
-      readonly golden: boolean;
-    };
+  | { readonly kind: 'count'; readonly x: number; readonly y: number; readonly text: string };
 
 /** What a touch on the flower (or Enter on it) does. */
 export type FlowerPress =
@@ -84,17 +74,17 @@ export interface FlowerPicture {
 }
 
 /**
- * A star and `count` beside it, a pixel apart, centred across the column `cell` with their tops
- * `top` pixels down it.
+ * A dim star and `count` (the stars still missing) beside it, a pixel apart, centred across the
+ * column `cell` with their tops `top` pixels down it.
  */
-function starAndCount(cell: Rect, top: number, count: number, won: boolean): FlowerPiece[] {
+function starAndCount(cell: Rect, top: number, count: number): FlowerPiece[] {
   const text = String(count);
   const width = STAR_SIZE + 1 + text.length * PIXEL_FONT.advance;
   const x = cell.x + Math.floor((cell.width - width) / 2);
   const y = cell.y + top;
   return [
-    { kind: 'star', x, y, earned: won },
-    { kind: 'count', x: x + STAR_SIZE + 1, y, text, golden: won },
+    { kind: 'star', x, y, earned: false },
+    { kind: 'count', x: x + STAR_SIZE + 1, y, text },
   ];
 }
 
@@ -121,7 +111,7 @@ export function secretFlowerPicture(
     case 'bud': {
       const missing = state.need - state.have;
       return {
-        pieces: [{ kind: 'bud', x: leavesX, y }, ...starAndCount(cell, countTop, missing, false)],
+        pieces: [{ kind: 'bud', x: leavesX, y }, ...starAndCount(cell, countTop, missing)],
         hit,
         tip: { key: 'hub.secret.budTip', params: { missing } },
         press: {
@@ -136,7 +126,7 @@ export function secretFlowerPicture(
           { kind: 'glow', ...cell },
           // The leaves at the bottom; the flower opens over their top row.
           { kind: 'bud', x: leavesX, y: y + cell.height - BUD_CUT.height },
-          { kind: 'bloom', x: bloomX, y, sways: true, golden: false },
+          { kind: 'bloom', x: bloomX, y },
         ],
         hit,
         tip: { key: 'hub.secret.openTip', params: {} },
@@ -145,8 +135,11 @@ export function secretFlowerPicture(
     case 'won':
       return {
         pieces: [
-          { kind: 'bloom', x: bloomX, y, sways: false, golden: true },
-          ...starAndCount(cell, countTop, state.stars, true),
+          {
+            kind: 'won',
+            x: x + Math.floor((cell.width - WON_FLOWER_SIZE) / 2),
+            y: y + Math.floor((cell.height - WON_FLOWER_SIZE) / 2),
+          },
         ],
         hit,
         tip: { key: 'hub.secret.wonTip', params: { stars: state.stars } },
@@ -155,19 +148,24 @@ export function secretFlowerPicture(
   }
 }
 
+/** The tip of a flower: the clear space round its words inside its dark patch, and its place. */
+export const FLOWER_TIP = {
+  pad: { x: 3, y: 1 },
+  /** From the top of the hub's garden bed to the top of the tip. */
+  gap: 1,
+} as const;
+
 /**
- * Where the tip of a flower `width` × `height` goes: just right of the box `sign` that takes its
- * touch (its column and signpost), over the chapter's title for as long as it is shown, centred on
- * its height; pulled back inside the canvas margins when it is long.
+ * Where the tip of a flower `width` × `height` goes: at the margin, along the top of the hub's
+ * garden bed, under the last chapter. Written beside its flower it covered the chapter's title and
+ * buttons (the review of plan 09, phase 4); the bed is the one strip of the hub where nothing is
+ * read or pressed (its pieces are scenery, the way to the epilogue sits at its bottom), so the tip
+ * there never hides a button, a title or a signpost, and it is always in the same place, under the
+ * column of the flowers, while the flower it tells of wears its ring. Kept on the canvas however
+ * long or tall it is.
  */
-export function flowerTipAt(sign: Rect, width: number, height: number): Point {
-  const x = Math.max(
-    HUB.margin,
-    Math.min(sign.x + sign.width + 2, CANVAS_WIDTH - HUB.margin - width),
-  );
-  const y = Math.max(
-    0,
-    Math.min(sign.y + Math.round((sign.height - height) / 2), CANVAS_HEIGHT - height),
-  );
+export function flowerTipAt(width: number, height: number): Point {
+  const x = Math.max(0, Math.min(HUB.margin, CANVAS_WIDTH - width));
+  const y = Math.max(0, Math.min(HUB.gardenTop + FLOWER_TIP.gap, CANVAS_HEIGHT - height));
   return { x, y };
 }

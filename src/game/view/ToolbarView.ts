@@ -3,13 +3,14 @@ import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
 import type { ToolId } from '../input/tools';
 import { toolbarRow } from '../picture/bottomRows';
-import { TOOL_ICONS } from '../picture/buttonIcon';
+import { TOOL_BADGES, TOOL_ICONS } from '../picture/buttonIcon';
 import { Button } from './Button';
 import { LAYOUT } from './layout';
 
 /**
  * The tools unlocked so far, in their own row above the buttons, on wooden buttons (the marks with
- * the sun of the pack, the stones with its rock); the one in hand is sunken.
+ * the sun of the pack and the moon as a badge on its corner, the stones with its rock); the one in
+ * hand is sunken.
  */
 export class ToolbarView {
   private buttons: { tool: ToolId; button: Button }[] = [];
@@ -34,6 +35,7 @@ export class ToolbarView {
           this.t(`tool.${tool}`),
           () => this.choose(tool),
           TOOL_ICONS[tool] ?? [],
+          TOOL_BADGES[tool] ?? null,
         ),
       }));
       const lefts = toolbarRow(this.buttons.map(({ button }) => button.width));

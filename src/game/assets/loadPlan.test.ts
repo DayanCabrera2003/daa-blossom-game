@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { audioSources } from './audioSources';
 import { ASSET_KEYS, assetEntry, type AssetKey } from './keys';
 import {
   BOOT_KEYS,
   chapterGroup,
   groupKeys,
+  hubKeys,
   levelKeys,
+  missingKeys,
   loadRequests,
   rawKeyOf,
   recolouredSheets,
@@ -25,12 +28,16 @@ describe('load groups', () => {
     expect(BOOT_KEYS).toEqual(ASSET_KEYS.filter((key) => assetEntry(key).group === 'boot'));
   });
 
-  it('loads at boot the art, effects, syllables, jingles and the hub music', () => {
+  it('loads at boot the art, effects, syllables and jingles, and no music', () => {
     const kinds = new Set(BOOT_KEYS.map((key) => assetEntry(key).kind));
-    for (const kind of ['image', 'sheet', 'sfx', 'voice', 'jingle', 'music'] as const) {
+    for (const kind of ['image', 'sheet', 'sfx', 'voice', 'jingle'] as const) {
       expect(kinds).toContain(kind);
     }
-    expect(BOOT_KEYS.filter((key) => assetEntry(key).kind === 'music')).toEqual(['music.hub']);
+    expect(kinds).not.toContain('music');
+  });
+
+  it('keeps the hub music for behind the hub, alone in its group', () => {
+    expect(groupKeys('hub')).toEqual(['music.hub']);
   });
 
   it('gives every chapter a music track of its own, and nothing else', () => {
@@ -78,6 +85,21 @@ describe('levelKeys', () => {
   });
 });
 
+describe('missingKeys', () => {
+  it('gives the keys of a group that are not loaded, in manifest order', () => {
+    expect(missingKeys('ch6', nothingLoaded)).toEqual(['music.ch6', 'music.ch6Race']);
+    expect(missingKeys('ch6', (key) => key === 'music.ch6')).toEqual(['music.ch6Race']);
+    expect(missingKeys('credits', () => true)).toEqual([]);
+  });
+});
+
+describe('hubKeys', () => {
+  it('loads the hub music behind the hub until it is there', () => {
+    expect(hubKeys(nothingLoaded)).toEqual(['music.hub']);
+    expect(hubKeys((key) => key === 'music.hub')).toEqual([]);
+  });
+});
+
 describe('loadRequests', () => {
   it('loads images and sheets by their path, sheets cut at their frame size', () => {
     expect(loadRequests(['image.palette', 'tiles.nature', 'fx.smoke'])).toEqual([
@@ -99,17 +121,28 @@ describe('loadRequests', () => {
     ]);
   });
 
-  it('loads music, effects, syllables and jingles as audio', () => {
-    expect(loadRequests(['music.hub', 'sfx.stone', 'voice.6', 'jingle.unlock'])).toEqual([
-      { loader: 'audio', key: 'music.hub', path: 'assets/audio/music/hub.ogg' },
-      { loader: 'audio', key: 'sfx.stone', path: 'assets/audio/sfx/stone.ogg' },
-      { loader: 'audio', key: 'voice.6', path: 'assets/audio/voice/voice6.wav' },
-      { loader: 'audio', key: 'jingle.unlock', path: 'assets/audio/jingles/unlock.wav' },
+  it('loads music, effects, syllables and jingles as audio, each offered as its files', () => {
+    const keys = ['music.hub', 'sfx.stone', 'voice.6', 'jingle.unlock'] as const;
+    expect(loadRequests(keys)).toEqual(
+      keys.map((key) => ({ loader: 'audio', key, paths: audioSources(key) })),
+    );
+  });
+
+  it('offers a sound its original first, so a browser that plays it never fetches the fallback', () => {
+    expect(loadRequests(['voice.6'])).toEqual([
+      { loader: 'audio', key: 'voice.6', paths: ['assets/audio/voice/voice6.wav'] },
     ]);
+    for (const request of loadRequests(['music.hub', 'sfx.stone'])) {
+      expect(request.loader === 'audio' && request.paths[0]?.endsWith('.ogg')).toBe(true);
+    }
   });
 
   it('leaves the font to the page, which loads it before the game starts', () => {
     expect(loadRequests(['font.monogram'])).toEqual([]);
+  });
+
+  it('leaves the page its own icon, which the game never draws', () => {
+    expect(loadRequests(['icon.favicon'])).toEqual([]);
   });
 
   it('loads a Kenney sheet as a plain image under its raw key, to be recoloured', () => {
@@ -119,9 +152,9 @@ describe('loadRequests', () => {
     expect(rawKeyOf('kenney.town')).not.toBe('kenney.town');
   });
 
-  it('asks for every boot key but the font, each under one key', () => {
+  it('asks for every boot key but the font and the page icon, each under one key', () => {
     const requests = loadRequests(BOOT_KEYS);
-    expect(requests).toHaveLength(BOOT_KEYS.length - 1);
+    expect(requests).toHaveLength(BOOT_KEYS.length - 2);
     expect(new Set(requests.map((request) => request.key)).size).toBe(requests.length);
   });
 });

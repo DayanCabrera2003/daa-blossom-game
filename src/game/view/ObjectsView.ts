@@ -5,10 +5,12 @@ import type { GardenPicture, SproutPicture } from '../picture/garden';
 import { STONE_FALL_MS, STONE_SETTLE_MS, stoneFall } from '../picture/stoneSplit';
 import { SPROUT_RADIUS } from './paintSprout';
 import { PALETTE } from './palette';
+import { LOOK } from '../picture/look';
+import { GARDEN_DEPTHS } from '../picture/gardenDepths';
 
 /** Depths: odd groups under the vines; stones and scarecrows over the sprouts. */
 const GROUP_DEPTH = 12;
-const OBJECT_DEPTH = 35;
+const OBJECT_DEPTH = GARDEN_DEPTHS.objects;
 
 /** The puff of dust of a stone set down: the six frames of the pack's smoke. */
 const DUST: AssetKey = 'fx.smoke';
@@ -17,7 +19,7 @@ const DUST_FRAMES = 6;
 const DUST_FPS = 16;
 
 /** Where a scarecrow stands: beside its sprout, to the right, so the sprout still shows. */
-const SCARECROW_SIDE = SPROUT_RADIUS + 5;
+const SCARECROW_SIDE = SPROUT_RADIUS + LOOK.scarecrowGap;
 
 /**
  * Keeps one image per piece of a kind on the sprouts that wear it, reusing them from one render to

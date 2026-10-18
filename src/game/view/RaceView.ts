@@ -8,8 +8,10 @@ import type { RaceLayout, RacePanelPicture } from '../picture/racePanel';
 import { fontMetrics } from '../picture/pixelFont';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LAYOUT } from './layout';
+import { OutlinedText } from './OutlinedText';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
+import { coverWith } from './focusables';
 
 /** Space around the panel's contents, in canvas pixels. */
 const PAD = 6;
@@ -59,8 +61,7 @@ export class RaceView {
   private parts: { destroy(): void }[] = [];
   /** The race and chart painted now, as a key, so an unchanged one is not built again. */
   private shown = 'null';
-  private counters: { automaton: Phaser.GameObjects.Text; bruto: Phaser.GameObjects.Text } | null =
-    null;
+  private counters: { automaton: OutlinedText; bruto: OutlinedText } | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -84,12 +85,14 @@ export class RaceView {
 
   /** Builds the panel: its background, the title, the miniature, the counters and the chart. */
   private build(picture: RacePanelPicture): void {
-    const panel = this.scene.add
-      .rectangle(PAD - 2, TOP, CANVAS_WIDTH - 2 * (PAD - 2), HEIGHT, PALETTE.panel, 0.97)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(PANEL_DEPTH)
-      .setInteractive();
+    const panel = coverWith(
+      this.scene.add
+        .rectangle(PAD - 2, TOP, CANVAS_WIDTH - 2 * (PAD - 2), HEIGHT, PALETTE.panel, 0.97)
+        .setOrigin(0, 0)
+        .setStrokeStyle(1, PALETTE.panelEdge)
+        .setDepth(PANEL_DEPTH)
+        .setInteractive(),
+    );
     this.parts.push(panel);
     // The hourglass of the races, then the title after it.
     let titleX = PAD + 4;
@@ -148,10 +151,10 @@ export class RaceView {
       const label = this.text(x + LEGEND_DOT_ROOM, y0 - 22, this.t(key), colour);
       g.fillStyle(colour, 1).fillCircle(x + 2, y0 - 22 + label.height / 2, 2);
     }
-    this.text(x0 + 3, y0 - 11, this.t('race.axis.steps'), PALETTE.darkVine);
-    this.text(x0 + width - 30, y0 + height + 10, this.t('race.axis.sprouts'), PALETTE.darkVine);
+    this.text(x0 + 3, y0 - 11, this.t('race.axis.steps'), PALETTE.highlight);
+    this.text(x0 + width - 30, y0 + height + 10, this.t('race.axis.sprouts'), PALETTE.highlight);
     for (const { n, x } of chart.sizes) {
-      this.text(x0 + x - 4, y0 + height + 2, String(n), PALETTE.darkVine);
+      this.text(x0 + x - 4, y0 + height + 2, String(n), PALETTE.highlight);
     }
     const at = (dot: { x: number; y: number }) => ({ x: x0 + dot.x, y: y0 + dot.y });
     // The automaton's curve, dot by dot.
@@ -180,13 +183,18 @@ export class RaceView {
   }
 
   /** A runner's counter, wrapping before the chart. */
-  private counter(y: number, colour: number): Phaser.GameObjects.Text {
+  private counter(y: number, colour: number): OutlinedText {
     return this.text(RACE_COUNTERS.x, y, '', colour).setWordWrapWidth(RACE_COUNTERS.width);
   }
 
-  /** A line of text on the panel. */
-  private text(x: number, y: number, text: string, colour: number): Phaser.GameObjects.Text {
-    const shown = this.scene.add.text(x, y, text, textStyle(8, colour)).setDepth(PANEL_DEPTH + 2);
+  /**
+   * A line of text on the panel, with the dark outline of the sprouts' names: the runners' amber
+   * and blue do not read on the wood alone, and on their outline they do (`picture/textContrast.ts`).
+   */
+  private text(x: number, y: number, text: string, colour: number): OutlinedText {
+    const shown = new OutlinedText(this.scene, x, y, text, textStyle(8, colour)).setDepth(
+      PANEL_DEPTH + 2,
+    );
     this.parts.push(shown);
     return shown;
   }

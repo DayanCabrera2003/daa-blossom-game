@@ -2,12 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { assetEntry } from '../assets/keys';
 import { fontMetrics } from './pixelFont';
 import {
+  badgeAt,
+  buttonContent,
   BOOK_ICON,
   ICON_GAP,
   iconRoom,
+  MOON_BADGE,
   RACE_ICON,
   ROCK_ICON,
   SUN_ICON,
+  TOOL_BADGES,
   TOOL_ICONS,
 } from './buttonIcon';
 
@@ -42,5 +46,37 @@ describe('the icons on buttons (plan 06, section 1.6)', () => {
       expect(Number.isInteger(width * icon.scale)).toBe(true);
       expect(height * icon.scale).toBeLessThanOrEqual(fontMetrics(8).fontSize);
     }
+  });
+
+  it('the tool of marks wears the moon of the pack as a badge of 8 × 8 pixels', () => {
+    expect(TOOL_BADGES.marks).toBe(MOON_BADGE);
+    expect(MOON_BADGE.texture).toBe('icon.moon');
+    const { width, height } = assetEntry(MOON_BADGE.texture).image ?? { width: 0, height: 0 };
+    expect(width * MOON_BADGE.scale).toBe(8);
+    expect(height * MOON_BADGE.scale).toBe(8);
+  });
+
+  it('sets a badge on the bottom-right corner of its icon, a pixel past it, into the gap', () => {
+    expect(badgeAt({ x: 10, y: 20, width: 12, height: 12 }, 8)).toEqual({
+      x: 15,
+      y: 25,
+      width: 8,
+      height: 8,
+    });
+  });
+});
+
+describe('the pieces inside a button', () => {
+  it('centres each icon on the wood, two pixels in, with the label after the last gap', () => {
+    const at = buttonContent(100, 50, 14, [
+      { width: 12, height: 12 },
+      { width: 8, height: 8 },
+    ]);
+    expect(at.icons).toEqual([
+      { x: 102, y: 50, width: 12, height: 12 },
+      { x: 102 + 12 + ICON_GAP, y: 52, width: 8, height: 8 },
+    ]);
+    expect(at.labelX).toBe(102 + 12 + ICON_GAP + 8 + ICON_GAP);
+    expect(buttonContent(100, 50, 14, []).labelX).toBe(102);
   });
 });

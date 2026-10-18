@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkLayout, vineCrossings } from './layoutChecks';
+import { checkLayout, labelsOnVines, vineCrossings } from './layoutChecks';
 
 /** A sprout named `label` at (x, y). */
 const at = (label: string, x: number, y: number) => ({ label, x, y });
@@ -64,6 +64,14 @@ describe('checkLayout', () => {
 
   it('passes a garden with room around every name', () => {
     expect(checkLayout(plain)).toEqual([]);
+  });
+
+  it('finds a name a vine of other sprouts runs through, as the free mode keeps them too', () => {
+    // B–C runs level at y 64, through the name of A (61 to 68); its lantern hangs far to the right.
+    const sprouts = [at('A', 100, 50), at('B', 40, 64), at('C', 200, 64)];
+    expect(checkLayout({ sprouts, vines: [['B', 'C']], secret: undefined })).toEqual([
+      { code: 'labelOnVine', label: 'A', vine: ['B', 'C'] },
+    ]);
   });
 
   it('finds a name drawn over the lantern of a short vine down from its sprout', () => {
@@ -157,5 +165,39 @@ describe('checkLayout', () => {
         ],
       },
     ]);
+  });
+});
+
+describe('labelsOnVines', () => {
+  // The name of A, at (100, 50), is written from x 97 to 103 and from y 61 to 68. The vines run
+  // long, so that their lanterns hang far from it.
+  const A = at('A', 100, 50);
+  const across = (y: number) => ({
+    sprouts: [A, at('B', 40, y), at('C', 200, y)],
+    vines: [['B', 'C'] as const],
+  });
+  const onVine = { code: 'labelOnVine', label: 'A', vine: ['B', 'C'] };
+
+  it('finds a name a horizontal vine runs through', () => {
+    expect(labelsOnVines(across(64))).toEqual([onVine]);
+  });
+
+  it('finds a name just above a horizontal vine, and leaves one a pixel of air above it', () => {
+    // The lit stroke is 2 px wide: at 69 it reaches up to 68, at 70 to 69.
+    expect(labelsOnVines(across(69))).toEqual([onVine]);
+    expect(labelsOnVines(across(70))).toEqual([]);
+  });
+
+  it('finds a vertical vine through the middle of a name', () => {
+    const garden = {
+      sprouts: [A, at('P', 100, -100), at('Q', 100, 200)],
+      vines: [['P', 'Q'] as const],
+    };
+    expect(labelsOnVines(garden)).toEqual([{ code: 'labelOnVine', label: 'A', vine: ['P', 'Q'] }]);
+  });
+
+  it("never counts a vine of the name's own sprout", () => {
+    const garden = { sprouts: [A, at('D', 100, 120)], vines: [['A', 'D'] as const] };
+    expect(labelsOnVines(garden)).toEqual([]);
   });
 });

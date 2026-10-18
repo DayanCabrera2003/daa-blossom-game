@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import lines from '../src/content/es/lines.json';
 import strings from '../src/content/es/strings.json';
-import { estimatedButtonWidth } from '../src/game/picture/bottomRows';
+import { CHAR_ADVANCE, estimatedButtonWidth } from '../src/game/picture/bottomRows';
 import { dialogueBox } from '../src/game/picture/dialogueBox';
 import {
   innerWidth,
@@ -12,13 +12,15 @@ import {
   TUTORIAL_PANEL,
   tutorialLayout,
 } from '../src/game/picture/panelLayout';
-import { SETTINGS_PANEL } from '../src/game/picture/settingsPanelLayout';
+import { motionChoicesAt, SETTINGS_PANEL } from '../src/game/picture/settingsPanelLayout';
+import { MOTION_CHOICES } from '../src/services/motion';
 import { charsIn, LINE_HEIGHT, textHeight, wrappedLines } from '../src/game/picture/textWrap';
 import { questionAt, type Question, type QuestionOption } from '../src/game/systems/question';
 import { DEMO_SIZE } from '../src/game/view/CardDemoView';
 import { LAYOUT } from '../src/game/view/layout';
 import { RACE_COUNTERS } from '../src/game/view/RaceView';
-import { VICTORY_PANEL } from '../src/game/view/VictoryPanel';
+import { VICTORY, victoryLayout } from '../src/game/picture/victoryLayout';
+import { BUTTON_HEIGHT as VICTORY_BUTTON_HEIGHT } from '../src/game/picture/panelLayout';
 import { CARD_IDS } from '../src/levels/cards/schema';
 import { catalog } from '../src/levels/catalog';
 import { createTranslator } from '../src/services/i18n';
@@ -118,7 +120,13 @@ describe('the panels fit their texts', () => {
 
   it('the settings panel fits its buttons and the labels of its rows', () => {
     const inner = innerWidth(SETTINGS_PANEL.width);
-    for (const label of [t('settings.exportLog'), t('settings.close'), t('settings.mute')]) {
+    for (const label of [
+      t('settings.exportLog'),
+      t('settings.credits'),
+      t('settings.keys'),
+      t('settings.close'),
+      t('settings.mute'),
+    ]) {
       expect(estimatedButtonWidth(label)).toBeLessThanOrEqual(inner);
     }
     // Each channel's name ends before its slider's track starts.
@@ -126,12 +134,54 @@ describe('the panels fit their texts', () => {
       const name = SETTINGS_PANEL.pad + estimatedButtonWidth(t(`settings.${channel}`));
       expect(name).toBeLessThanOrEqual(SETTINGS_PANEL.track.from);
     }
+    // The motion's three buttons, side by side, stay on the face inside the wooden frame.
+    const choices = MOTION_CHOICES.map((choice) =>
+      estimatedButtonWidth(t(`settings.motion.${choice}`)),
+    );
+    const lefts = motionChoicesAt(choices);
+    expect(lefts[0]).toBeGreaterThanOrEqual(SETTINGS_PANEL.pad);
+    expect((lefts.at(-1) ?? 0) + (choices.at(-1) ?? 0)).toBeLessThanOrEqual(
+      SETTINGS_PANEL.width - SETTINGS_PANEL.pad,
+    );
+    expect(estimatedButtonWidth(t('settings.motion'))).toBeLessThanOrEqual(inner);
+    // The loudest percentage, written after its track, ends on the face, inside the wooden frame.
+    const loudest = [...t('settings.volume', { percent: 100 })].length * CHAR_ADVANCE;
+    const value = SETTINGS_PANEL.track.to + SETTINGS_PANEL.valueGap + loudest;
+    expect(value).toBeLessThanOrEqual(SETTINGS_PANEL.width - SETTINGS_PANEL.frame.slices.right);
   });
 
   it('the victory panel of a free garden says its line on one row, in place of the stars', () => {
-    expect(charsIn(VICTORY_PANEL.width - 2 * VICTORY_PANEL.pad)).toBeGreaterThanOrEqual(
-      [...t('victory.free')].length,
-    );
+    const line = [...t('victory.free')].length * CHAR_ADVANCE;
+    const layout = victoryLayout([estimatedButtonWidth(t('sandbox.design'))], line);
+    expect(line).toBeLessThanOrEqual(layout.width - 2 * VICTORY.pad);
+  });
+
+  it("the victory panel's buttons never sit on one another, whatever way back and next it offers", () => {
+    // Every way back the level scene names, each with and without "Siguiente jardín".
+    const backs = [t('victory.hub'), t('epilogue.title'), t('sandbox.design')];
+    const stars = [...t('victory.stars', { count: 3 })].length * CHAR_ADVANCE + 40;
+    for (const back of backs) {
+      for (const withNext of [false, true]) {
+        const widths = [back, ...(withNext ? [t('victory.next')] : [])].map((label) =>
+          estimatedButtonWidth(label),
+        );
+        const layout = victoryLayout(widths, stars);
+        const boxes = layout.buttons.map((at, i) => ({
+          x0: at.x,
+          x1: at.x + (widths[i] ?? 0),
+          y0: at.y,
+          y1: at.y + VICTORY_BUTTON_HEIGHT,
+        }));
+        for (const box of boxes) {
+          expect(box.x0).toBeGreaterThanOrEqual(layout.x + VICTORY.pad);
+          expect(box.x1).toBeLessThanOrEqual(layout.x + layout.width - VICTORY.pad);
+        }
+        const [a, b] = boxes;
+        if (a !== undefined && b !== undefined) {
+          expect(a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0).toBe(true);
+        }
+      }
+    }
   });
 
   it("a race's counters stay clear of its chart, whatever they say", () => {

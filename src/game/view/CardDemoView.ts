@@ -228,10 +228,13 @@ export class CardDemoView {
     }
   }
 
-  /** A small text centred at (x, y), above the strip's boxes. */
+  /**
+   * A small text centred at (x, y), on the strip's boxes: in ink, the dark letters that read on
+   * the light wood of a button (`picture/textContrast.ts`).
+   */
   private label(text: string, x: number, y: number): Phaser.GameObjects.Text {
     const made = this.scene.add
-      .text(x, y, text, textStyle(8))
+      .text(x, y, text, textStyle(8, PALETTE.ink))
       .setOrigin(0.5, 0.5)
       .setDepth(this.depth + 1);
     this.labels.push(made);

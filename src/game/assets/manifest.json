@@ -715,10 +715,23 @@
         "height": 16
       }
     },
+    "icon.moon": {
+      "path": "assets/images/ui/icons/moon.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Skill Icon/Meteo/Moon.png",
+      "bytes": 352,
+      "sha256": "a8c50817ea49379b8abe5302ab0aa4faa61a1854f1585aae1b879b7fca417539",
+      "image": {
+        "width": 24,
+        "height": 24
+      }
+    },
     "music.hub": {
       "path": "assets/audio/music/hub.ogg",
       "kind": "music",
-      "group": "boot",
+      "group": "hub",
       "pack": "ninja",
       "source": "Audio/Musics/4 - Village.ogg",
       "bytes": 1049153,
@@ -1211,6 +1224,15 @@
         "width": 16,
         "height": 16
       }
+    },
+    "icon.favicon": {
+      "path": "assets/images/favicon.png",
+      "kind": "icon",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Items/Resource/Grass.png",
+      "bytes": 284,
+      "sha256": "1f507bb591e0b2fb4eea40ca7a39c99929ab446e15ab9373dd4e8d89418b9a75"
     },
     "sfx.chime1": {
       "path": "assets/audio/sfx/chime-01.wav",

@@ -19,6 +19,7 @@ import type { StarResult } from '../../systems/stars';
 import type { AnimationView } from '../../view/AnimationView';
 import type { ToastView } from '../../view/ToastView';
 import type { Presenter } from '../presenter';
+import { answerAloud } from '../../systems/aloud';
 
 /** Where the effects of the level controller are shown, and what they are read against. */
 export interface EffectStage {
@@ -31,6 +32,10 @@ export interface EffectStage {
   readonly controller: () => Controller;
   /** The scene's clock, in milliseconds. */
   readonly now: () => number;
+  /** Whether the game moves less now (the motion setting, plan 09 phase 6). */
+  readonly moveLess: () => boolean;
+  /** Tells a screen reader a text, whole (plan 09, phase 6). */
+  readonly say: (text: string) => void;
   readonly toast: ToastView;
   readonly animation: AnimationView;
   readonly presenter: Presenter;
@@ -89,7 +94,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
     case 'animate':
       // Played where the layer entered draws the sprouts (5.2).
       stage.animation.play(
-        planAnimation(effect.events),
+        planAnimation(effect.events, stage.moveLess()),
         animationGarden(stage.controller().session.history, layerOf(stage.controller())),
         stage.now(),
       );
@@ -187,9 +192,13 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       if (question !== null) stage.presenter.present({ kind: 'question', question });
       break;
     }
-    case 'answered':
+    case 'answered': {
       stage.presenter.answered();
+      // A screen reader hears whether it was the one, as the reply and the garden show it.
+      const said = answerAloud(t, stage.level.flow[effect.step]?.step, effect.correct);
+      if (said !== null) stage.say(said);
       break;
+    }
     case 'pickVine':
       // The mentor asks; the touch on a vine that answers goes through the controller.
       stage.presenter.present({ kind: 'lines', lines: [spokenLine(effect.prompt, line)] });

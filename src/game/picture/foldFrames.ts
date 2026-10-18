@@ -20,25 +20,34 @@ export const FOLD_FRAMES = 8;
 /** Slow at the start and quick at the end, as petals that close over themselves. */
 const easeIn = (t: number): number => t * t;
 
-/** The frames of folding the sprouts at `open` into a flower at `centre`, open first. */
-export function foldFrames(open: readonly Point[], centre: Point): FoldFrame[] {
+/**
+ * The frames of folding the sprouts at `open` into a flower at `centre`, open first. With `reduced`
+ * motion (plan 09, phase 6) the sprouts stay where they stand while the petals close over them: the
+ * same frames, a fade instead of a flight.
+ */
+export function foldFrames(open: readonly Point[], centre: Point, reduced = false): FoldFrame[] {
   return Array.from({ length: FOLD_FRAMES }, (_, i): FoldFrame => {
     const closed = i / (FOLD_FRAMES - 1);
     const t = easeIn(closed);
     return {
-      positions: open.map((p) =>
-        i === FOLD_FRAMES - 1
-          ? centre
-          : { x: p.x + t * (centre.x - p.x), y: p.y + t * (centre.y - p.y) },
-      ),
+      positions: reduced
+        ? open
+        : open.map((p) =>
+            i === FOLD_FRAMES - 1
+              ? centre
+              : { x: p.x + t * (centre.x - p.x), y: p.y + t * (centre.y - p.y) },
+          ),
       closed,
     };
   });
 }
 
-/** The frames of unfolding the flower at `centre` back to the sprouts at `open`, closed first. */
-export function unfoldFrames(open: readonly Point[], centre: Point): FoldFrame[] {
-  return foldFrames(open, centre).reverse();
+/**
+ * The frames of unfolding the flower at `centre` back to the sprouts at `open`, closed first; with
+ * `reduced` motion, a fade.
+ */
+export function unfoldFrames(open: readonly Point[], centre: Point, reduced = false): FoldFrame[] {
+  return foldFrames(open, centre, reduced).reverse();
 }
 
 /** The frame of `frames` that shows `progress` (0 to 1) of the way through the step. */

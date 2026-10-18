@@ -9,9 +9,11 @@ import {
 } from '@services/musicFade';
 import type { AssetKey } from '../assets/keys';
 import type { AudioBus, BusSound } from './AudioBus';
+import { MIX } from './mix';
 
 /** A track this player started, and when it rose and (once replaced) began to fall. */
 interface Track {
+  readonly key: AssetKey;
   readonly sound: BusSound;
   span: TrackSpan;
 }
@@ -20,12 +22,14 @@ interface Track {
  * The music of the game, on the music channel of the audio bus. It lives as long as the game, so a
  * track keeps playing from one scene to the next: the scenes say which track their screen wants
  * (`systems/musicFor.ts` decides) and which jingle a moment rings, and this only plays them. A new
- * track loops, crossfading over 800 ms with the one before; asking again for the track already
+ * track loops, crossfading with the one before (for as long as the mix, `mix.ts`, says); asking again for the track already
  * playing changes nothing. Under a jingle the music ducks, and comes back once the jingle ends
  * (`services/musicFade.ts` gives the levels; they are applied every frame).
  *
  * A track asked for before the browser lets audio start begins on the first touch; a jingle asked
- * for then is dropped, as the bus drops any one-off sound. A key with no loaded sound plays nothing.
+ * for then is dropped, as the bus drops any one-off sound. A key with no loaded sound plays nothing
+ * until its sound arrives: a track still wanted then starts, with its fade (the hub's music loads
+ * behind the hub, plan 09, phase 9).
  */
 export class MusicPlayer {
   private tracks: Track[] = [];
@@ -43,6 +47,15 @@ export class MusicPlayer {
     game.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
       if (this.current !== null) this.start(this.current);
     });
+    // Whichever scene's loader brings a sound, it lands in the game's one audio cache.
+    game.cache.audio.events.on(Phaser.Cache.Events.ADD, (_cache: unknown, key: string) =>
+      this.arrived(key),
+    );
+  }
+
+  /** The track the screen wants now, playing or about to; null for silence. */
+  get track(): AssetKey | null {
+    return this.current;
   }
 
   /** Plays `key` in a loop, crossfading from whatever played; the same track again goes on as is. */
@@ -60,7 +73,7 @@ export class MusicPlayer {
   jingle(key: AssetKey): void {
     const sound = this.bus.play('music', key);
     if (sound === null) return;
-    this.duck = startDuck(this.duck, this.now());
+    this.duck = startDuck(this.duck, this.now(), MIX.music);
     this.jingles += 1;
     // Released by the bus when it completes (or stopped with the channel): either way, destroyed.
     sound.once(Phaser.Sound.Events.DESTROY, () => {
@@ -71,18 +84,28 @@ export class MusicPlayer {
 
   private start(key: AssetKey): void {
     const sound = this.bus.play('music', key, { loop: true, volume: 0 });
-    if (sound !== null) this.tracks.push({ sound, span: { start: this.now(), end: null } });
+    if (sound !== null) this.tracks.push({ key, sound, span: { start: this.now(), end: null } });
+  }
+
+  /**
+   * A sound has just been loaded: when it is the track the screen wants and that track is not
+   * already rising or playing (nor waiting for the first touch), it starts now.
+   */
+  private arrived(key: string): void {
+    if (key !== this.current || this.game.sound.locked) return;
+    const playing = this.tracks.some((track) => track.key === key && track.span.end === null);
+    if (!playing) this.start(this.current);
   }
 
   /** Every frame: each track at its crossfade level times the duck; faded tracks are stopped. */
   private update(): void {
     const now = this.now();
-    const duck = duckLevel(this.duck, now);
+    const duck = duckLevel(this.duck, now, MIX.music);
     for (const track of this.tracks) {
-      if (trackFaded(track.span, now)) this.bus.stopSound(track.sound);
-      else this.bus.setVolume(track.sound, trackLevel(track.span, now) * duck);
+      if (trackFaded(track.span, now, MIX.music)) this.bus.stopSound(track.sound);
+      else this.bus.setVolume(track.sound, trackLevel(track.span, now, MIX.music) * duck);
     }
-    this.tracks = this.tracks.filter((track) => !trackFaded(track.span, now));
+    this.tracks = this.tracks.filter((track) => !trackFaded(track.span, now, MIX.music));
   }
 
   private now(): number {

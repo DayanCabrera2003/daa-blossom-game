@@ -1,7 +1,7 @@
 import type { Graph, VertexId } from '@core/graph/types';
 import { itemAt } from '@core/shared/itemAt';
 import type { SproutKind } from '../fields';
-import { labelBox, lanternBox } from '../layoutChecks';
+import { labelBox, lanternBox, vineOverLabel } from '../layoutChecks';
 import { PICTURE_SIZES } from '../pictureSizes';
 import { boxesNear, segmentsCross, type Box, type Point } from '../plane';
 import { boxNearSprout } from '../sproutExtent';
@@ -10,7 +10,8 @@ import { boxNearSprout } from '../sproutExtent';
  * Makes a garden laid out without places readable (plan 08, section 1.3): a few rounds in which
  * every sprout caught in a clash moves to the spot of the garden that clashes least. A clash is
  * anything the layout checks of the catalog's levels would report about a name (drawn over a
- * sprout's body or crown, another name or the lantern any vine may carry), or two sprouts closer than the spacing.
+ * sprout's body or crown, another name, the lantern any vine may carry or a vine of other sprouts),
+ * or two sprouts closer than the spacing.
  * A sprout only moves when that lowers its clashes, so the rounds always end; among the spots that
  * clash as little, it takes the one whose vines cross the fewest others and then the nearest, so a
  * shape that already reads well keeps its look. Pure and deterministic.
@@ -108,15 +109,19 @@ class Tangle {
       if (boxesNear(own, label, clearance)) count++;
     }
     const mine = new Set(itemAt(this.vinesOf, v));
-    this.graph.edges.forEach((_, e) => {
+    this.graph.edges.forEach(([a, b], e) => {
       if (!mine.has(e)) {
         if (boxesNear(own, itemAt(this.lanterns, e), clearance)) count++;
+        if (vineOverLabel(this.at(a), this.at(b), own)) count++;
         return;
       }
-      // A lantern of `v`'s own vines moves with it, past every name, `v`'s own included.
-      const lantern = lanternBox(...this.ends(e, v, spot));
+      // A vine of `v`'s own moves with it, its lantern past every name, `v`'s own included, and
+      // the vine itself past the names of every sprout it does not join.
+      const ends = this.ends(e, v, spot);
+      const lantern = lanternBox(...ends);
       for (let s = 0; s < this.graph.n; s++) {
         if (boxesNear(s === v ? own : itemAt(this.labels, s), lantern, clearance)) count++;
+        if (s !== a && s !== b && vineOverLabel(...ends, itemAt(this.labels, s))) count++;
       }
     });
     return count;

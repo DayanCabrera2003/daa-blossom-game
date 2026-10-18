@@ -5,6 +5,7 @@ import { counterexampleAt } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
+import { historyKey, keyAction } from '../input/keyBindings';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { animationGarden } from '../picture/animationGarden';
@@ -23,6 +24,8 @@ import {
 import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
 import { voiceLine } from '../systems/lineVoice';
+import { movesLess } from './motion';
+import { sayAloud, sayLineAloud } from './sayAloud';
 import { planCues, refusalCues } from '../systems/soundCues';
 import { spokenLine } from '../systems/speaker';
 import { AnimationView } from '../view/AnimationView';
@@ -40,6 +43,8 @@ import { PALETTE } from '../view/palette';
 import { textStyle } from '../view/textStyle';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
+import { keepGardenClear } from '../view/touchZone';
+import { FocusController } from './focus/FocusController';
 import { contextOf, type GameContext } from './context';
 
 /** What the level scene gives the counterexample screen when it opens it. */
@@ -123,16 +128,16 @@ export class CounterexampleScene extends Phaser.Scene {
       })
       .setDepth(100);
     this.views = {
-      fog: new FogView(this),
+      fog: new FogView(this, () => movesLess(this)),
       flowers: new FlowerView(this),
       objects: new ObjectsView(this),
       garden: new GardenView(this),
       marks: new MarksView(this),
       mirror: new MirrorView(this, t),
-      animation: new AnimationView(this),
+      animation: new AnimationView(this, () => movesLess(this)),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
-      toast: new ToastView(this),
-      dialogue: new DialogueView(this, t, voiceLine),
+      toast: new ToastView(this, sayAloud(this)),
+      dialogue: new DialogueView(this, t, voiceLine, sayLineAloud(this)),
       lanterns: this.add.text(LAYOUT.margin, LAYOUT.bottomY, '', textStyle(8)).setDepth(100),
       ...this.buttons(data.back),
     };
@@ -177,6 +182,8 @@ export class CounterexampleScene extends Phaser.Scene {
     const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
     const free = (over: Phaser.GameObjects.GameObject[]) =>
       over.length === 0 && !this.views.dialogue.open;
+    // The buttons' grown touch zones keep off the garden, whose touches are the player's moves.
+    keepGardenClear(this);
     this.input.on(
       'pointerdown',
       (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
@@ -197,14 +204,17 @@ export class CounterexampleScene extends Phaser.Scene {
         this.dispatch({ kind: 'release', point: at(pointer) });
       },
     );
-    const keys = this.input.keyboard;
-    keys?.on('keydown-Z', (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) this.dispatch({ kind: 'undo' });
+    // The keyboard's focus walks the buttons and moves the dialogue on; Escape goes back.
+    new FocusController(this, {
+      screen: () => 'counterexample',
+      fallback: () => this.views.dialogue.touch(),
     });
-    keys?.on('keydown-Y', (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) this.dispatch({ kind: 'redo' });
+    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
+      const press = { key: event.key, ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey };
+      const history = historyKey(press);
+      if (history !== null) this.dispatch({ kind: history });
+      else if (keyAction('counterexample', press) === 'escape') this.leave(back);
     });
-    keys?.on('keydown-ESC', () => this.leave(back));
   }
 
   /** One event through the controller; a new move ends any animation still playing. */
@@ -234,7 +244,7 @@ export class CounterexampleScene extends Phaser.Scene {
         this.sfx.schedule(refusalCues());
         break;
       case 'animate': {
-        const steps = planAnimation(effect.events);
+        const steps = planAnimation(effect.events, movesLess(this));
         const garden = animationGarden(this.controller.history, {
           positions: this.controller.positions,
           path: [],

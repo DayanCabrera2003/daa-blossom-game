@@ -13,10 +13,10 @@
     { "label": "J", "x": 200, "y": 166, "kind": "flower" },
     { "label": "K", "x": 290, "y": 166, "kind": "bee" },
     { "label": "L", "x": 380, "y": 166, "kind": "flower" },
-    { "label": "M", "x": 110, "y": 224, "kind": "flower" },
-    { "label": "N", "x": 200, "y": 224, "kind": "bee" },
-    { "label": "O", "x": 290, "y": 224, "kind": "flower" },
-    { "label": "P", "x": 380, "y": 224, "kind": "bee" }
+    { "label": "M", "x": 110, "y": 223, "kind": "flower" },
+    { "label": "N", "x": 200, "y": 223, "kind": "bee" },
+    { "label": "O", "x": 290, "y": 223, "kind": "flower" },
+    { "label": "P", "x": 380, "y": 223, "kind": "bee" }
   ],
   "vines": [
     ["A", "B"],

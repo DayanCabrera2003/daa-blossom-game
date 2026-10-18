@@ -55,10 +55,10 @@ export function toolbarRow(widths: readonly number[]): number[] {
  * The left edge of each HUD button's panel, given their widths in `HUD_BUTTONS` order: right to
  * left from the margin, a gap before each, so the first button ends a gap short of the margin.
  */
-export function hudRow(widths: readonly number[]): number[] {
+export function hudRow(widths: readonly number[], gap: number = BOTTOM_ROWS.gap): number[] {
   let x: number = CANVAS_WIDTH - BOTTOM_ROWS.margin;
   return widths.map((width) => {
-    x -= width + BOTTOM_ROWS.gap;
+    x -= width + gap;
     return x;
   });
 }
@@ -70,14 +70,60 @@ export function hudRow(widths: readonly number[]): number[] {
 export const traceButtonLeft = (width: number): number => CANVAS_WIDTH - BOTTOM_ROWS.margin - width;
 
 /** The left edge of a button set a gap after another that ends at `right`. */
-export const besideLeft = (right: number): number => right + BOTTOM_ROWS.gap;
+export const besideLeft = (right: number, gap: number = BOTTOM_ROWS.gap): number => right + gap;
 
 /**
  * The left edge of the Códex button on the bottom row: beside the settings' gear, `gearSize` wide,
  * which sits at the margin.
  */
-export const bookButtonLeft = (gearSize: number): number =>
-  besideLeft(BOTTOM_ROWS.margin + gearSize);
+export const bookButtonLeft = (gearSize: number, gap: number = BOTTOM_ROWS.gap): number =>
+  besideLeft(BOTTOM_ROWS.margin + gearSize, gap);
+
+/** The widths of what the bottom row holds: from the left, the gear, the Códex and the trace. */
+export interface BottomRowWidths {
+  readonly gear: number;
+  readonly book: number;
+  /** The teacher's trace, when it sits on this row (the free mode in teacher mode). */
+  readonly trace: number | null;
+  /** The HUD buttons, in `HUD_BUTTONS` order, laid out from the right. */
+  readonly buttons: readonly number[];
+}
+
+/** Where the bottom row puts each of its panels, and the gap it keeps between them. */
+export interface BottomRow {
+  readonly gap: number;
+  readonly book: number;
+  readonly trace: number | null;
+  readonly buttons: readonly number[];
+}
+
+/**
+ * The bottom row of the level HUD: the gear at the margin, the Códex and the trace after it, and
+ * the HUD buttons from the right, all with the usual gap when they fit with it. When they do not
+ * (a fallback face a pixel wider per letter, before the pixel font loads), the gap shrinks a pixel
+ * at a time, never under 1 px, until both ends of the row keep it between them. Buttons are never
+ * narrowed, so no text is ever cut.
+ */
+export function bottomRow(widths: BottomRowWidths): BottomRow {
+  const at = (gap: number): BottomRow => {
+    const book = bookButtonLeft(widths.gear, gap);
+    const trace = widths.trace === null ? null : besideLeft(book + widths.book, gap);
+    return { gap, book, trace, buttons: hudRow(widths.buttons, gap) };
+  };
+  const fits = (row: BottomRow): boolean => {
+    const leftEnd =
+      row.trace === null || widths.trace === null
+        ? row.book + widths.book
+        : row.trace + widths.trace;
+    const rightStart = Math.min(CANVAS_WIDTH - BOTTOM_ROWS.margin, ...row.buttons);
+    return rightStart - leftEnd >= row.gap;
+  };
+  for (let gap: number = BOTTOM_ROWS.gap; gap > 1; gap--) {
+    const row = at(gap);
+    if (fits(row)) return row;
+  }
+  return at(1);
+}
 
 /**
  * The left edge of each of the free mode's orders (the mechanical gardener, the certificate), given

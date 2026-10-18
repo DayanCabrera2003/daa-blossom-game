@@ -1,21 +1,28 @@
 import Phaser from 'phaser';
+import { itemAt } from '@core/shared/itemAt';
 import type { SecretFlower } from '@services/secretFlowers';
 import { playUiSound } from '../../audio/uiSound';
-import { flowerKey, type FlowerKey } from '../../input/flowerFocus';
+import { flowerKey } from '../../input/flowerFocus';
+import { keyAction } from '../../input/keyBindings';
 import type { Rect } from '../../picture/boxDistance';
 import type { TextRef } from '../../picture/hud';
 import { PIXEL_FONT } from '../../picture/pixelFont';
 import {
   BUD_CUT,
+  FLOWER_TIP,
   flowerTipAt,
   secretFlowerPicture,
   type FlowerPicture,
 } from '../../picture/secretFlower';
+import { wonFlowerPixels, WON_FLOWER_TONES } from '../../picture/wonFlower';
 import { css, PALETTE } from '../../view/palette';
 import { cutFrame } from '../../view/sheetCuts';
 import { drawStars } from '../../view/StarIcons';
+import { addFocusable, type Focusable } from '../../view/focusables';
+import { OutlinedText } from '../../view/OutlinedText';
 import { textStyle } from '../../view/textStyle';
 import { contextOf } from '../context';
+import type { FocusController } from '../focus/FocusController';
 
 /** The pack's animated flower: two frames side by side, the open flower sways between them. */
 const BLOOM_SHEET = 'anim.flower';
@@ -34,8 +41,6 @@ const FLOWER_DEPTH = 1;
 const RING_DEPTH = 2;
 /** Over the hub's buttons (100 to 102), under the settings panel (400). */
 const TIP_DEPTH = 150;
-/** Clear space around the tip's words, inside its dark patch. */
-const TIP_PAD = { x: 3, y: 1 };
 
 /** A flower on the hub: which level it is, its picture, and the box that takes its touch. */
 interface ShownFlower {
@@ -54,14 +59,17 @@ export interface FlowerPlace {
 export interface HubSecretsTarget {
   /** Whether something over the hub (the settings panel) should take the keys instead. */
   readonly blocked: () => boolean;
+  /** The hub's keyboard focus, which the flowers are part of. */
+  readonly focus: FocusController;
 }
 
 /**
  * The secret flowers beside the signposts of the hub (plan 08, phase 5): each chapter's flower,
  * drawn as `picture/secretFlower.ts` says, in the column at `places` of its chapter, beside its
  * signpost. A pointer on a flower rings it and shows its tip; a touch enters an open or won
- * flower, or says why a bud is still shut. The keyboard does the same (`input/flowerFocus.ts`): F
- * and Shift+F move the focus, Enter or Space press, Escape leaves.
+ * flower, or says why a bud is still shut. The keyboard does the same: the flowers are in the hub's
+ * focus order, between their signposts and their chapters' buttons, Enter or Space press the one in
+ * focus, and F and Shift+F jump straight from flower to flower (`input/flowerFocus.ts`).
  */
 export function addHubSecrets(
   scene: Phaser.Scene,
@@ -86,15 +94,15 @@ export function addHubSecrets(
     .text(0, 0, '', {
       ...textStyle(8, PALETTE.label),
       backgroundColor: css(PALETTE.ink),
-      padding: TIP_PAD,
+      padding: FLOWER_TIP.pad,
     })
     .setDepth(TIP_DEPTH)
     .setVisible(false);
   let tellTimer: Phaser.Time.TimerEvent | null = null;
-  /** The flower the keyboard is on, as an index into `shown`. */
+  /** The flower the keyboard's focus is on, as an index into `shown`. */
   let focus: number | null = null;
 
-  /** Rings flower `i` and shows `text` beside it; with null, hides both. */
+  /** Rings flower `i` (unless the focus is on it) and shows `text` beside it; with null, hides both. */
   const show = (i: number | null, text: TextRef | null = null): void => {
     tellTimer?.remove();
     tellTimer = null;
@@ -105,15 +113,16 @@ export function addHubSecrets(
       return;
     }
     const { hit } = flower;
+    // The flower the keyboard is on wears the focus's ring instead of this one.
     ring
       .clear()
       .lineStyle(1, PALETTE.highlight)
       .strokeRect(hit.x - 0.5, hit.y - 0.5, hit.width + 1, hit.height + 1)
-      .setVisible(true);
+      .setVisible(i !== focus);
     const words = text ?? flower.picture.tip;
     if (words === null) return;
     tip.setText(t(words.key, words.params)).setVisible(true);
-    const at = flowerTipAt(hit, Math.ceil(tip.width), Math.ceil(tip.height));
+    const at = flowerTipAt(Math.ceil(tip.width), Math.ceil(tip.height));
     tip.setPosition(at.x, at.y);
   };
 
@@ -148,24 +157,38 @@ export function addHubSecrets(
       );
   });
 
-  /** A key on the flowers, unless the settings panel is up. */
-  const onKey = (key: FlowerKey): void => {
+  // Each flower is a stop of the hub's focus: in focus it is ringed and shows its tip.
+  const items: Focusable[] = shown.map(({ hit }, i) => ({
+    box: () => hit,
+    depth: () => RING_DEPTH,
+    live: () => true,
+    press: () => press(i),
+    focused: (on) => {
+      if (on) focus = i;
+      else if (focus === i) focus = null;
+      show(focus);
+    },
+  }));
+  for (const item of items) addFocusable(scene, item);
+
+  // F and Shift+F, unless the settings panel is up: the next or previous flower takes the focus.
+  scene.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
     if (target.blocked()) return;
-    const after = flowerKey(key, focus, shown.length);
-    focus = after.focus;
-    if (after.press !== null) press(after.press);
-    else show(focus);
-  };
-  const keys = scene.input.keyboard;
-  keys?.on('keydown-F', (event: KeyboardEvent) => onKey(event.shiftKey ? 'previous' : 'next'));
-  keys?.on('keydown-ENTER', () => onKey('press'));
-  keys?.on('keydown-SPACE', () => onKey('press'));
-  keys?.on('keydown-ESC', () => onKey('leave'));
+    const action = keyAction('hub', { key: event.key, ctrl: event.ctrlKey, shift: event.shiftKey });
+    if (action !== 'flowerNext' && action !== 'flowerPrevious') return;
+    const at = items.findIndex((item) => item === target.focus.current);
+    const after = flowerKey(
+      action === 'flowerNext' ? 'next' : 'previous',
+      at < 0 ? null : at,
+      items.length,
+    );
+    if (after.focus !== null) target.focus.focusOn(itemAt(items, after.focus));
+  });
 }
 
 /**
- * Draws the pieces of a flower, in order: the glow (pulsing), the bud's leaves, the flower
- * (swaying, or golden), the star and its number.
+ * Draws the pieces of a flower, in order: the glow (pulsing), the bud's leaves, the open flower
+ * (swaying) or the golden rosette of a won one, the star and its number.
  */
 function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
   for (const piece of picture.pieces) {
@@ -191,10 +214,10 @@ function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
     } else if (piece.kind === 'star') {
       drawStars(scene, piece.x, piece.y, [{ x: 0, earned: piece.earned }], FLOWER_DEPTH);
     } else if (piece.kind === 'count') {
-      const colour = piece.golden ? PALETTE.sun : PALETTE.label;
-      scene.add
-        .text(piece.x, piece.y - DIGIT_DROP, piece.text, textStyle(8, colour))
-        .setDepth(FLOWER_DEPTH);
+      // On the hub's grass, outlined as the sprouts' names are (`picture/textContrast.ts`).
+      new OutlinedText(scene, piece.x, piece.y - DIGIT_DROP, piece.text, textStyle(8)).setDepth(
+        FLOWER_DEPTH,
+      );
     } else if (piece.kind === 'bud') {
       const frame = cutFrame(scene.textures, BUD_CUT);
       if (frame === null) continue;
@@ -202,23 +225,29 @@ function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
         .image(piece.x, piece.y, BUD_CUT.sheet, frame)
         .setOrigin(0, 0)
         .setDepth(FLOWER_DEPTH);
+    } else if (piece.kind === 'won') {
+      const g = scene.add.graphics().setDepth(FLOWER_DEPTH);
+      for (const pixel of wonFlowerPixels())
+        g.fillStyle(PALETTE[WON_FLOWER_TONES[pixel.tone]], 1).fillRect(
+          piece.x + pixel.x,
+          piece.y + pixel.y,
+          1,
+          1,
+        );
     } else if (scene.textures.exists(BLOOM_SHEET)) {
       const bloom = scene.add
         .image(piece.x, piece.y, BLOOM_SHEET, 0)
         .setOrigin(0, 0)
         .setDepth(FLOWER_DEPTH);
-      if (piece.golden) bloom.setTint(PALETTE.sun);
-      if (piece.sways) {
-        let frame = 0;
-        scene.time.addEvent({
-          delay: SWAY_MS,
-          loop: true,
-          callback: () => {
-            frame = 1 - frame;
-            bloom.setFrame(frame);
-          },
-        });
-      }
+      let frame = 0;
+      scene.time.addEvent({
+        delay: SWAY_MS,
+        loop: true,
+        callback: () => {
+          frame = 1 - frame;
+          bloom.setFrame(frame);
+        },
+      });
     }
   }
 }

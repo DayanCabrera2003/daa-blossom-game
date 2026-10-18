@@ -60,3 +60,25 @@ describe('the frames of folding a flower', () => {
     expect(foldFrameAt(frames, -1)).toBe(frames[0]);
   });
 });
+
+describe('folding with less motion (plan 09, phase 6)', () => {
+  const open = [
+    { x: 10, y: 10 },
+    { x: 30, y: 10 },
+    { x: 20, y: 30 },
+  ];
+  const centre = { x: 20, y: 16 };
+
+  it('keeps the sprouts where they stand while the petals close: a fade, not a flight', () => {
+    const frames = foldFrames(open, centre, true);
+    expect(frames).toHaveLength(FOLD_FRAMES);
+    for (const frame of frames) expect(frame.positions).toEqual(open);
+    expect(frames.map((frame) => frame.closed)).toEqual(
+      foldFrames(open, centre).map((frame) => frame.closed),
+    );
+  });
+
+  it('unfolds the same way backwards', () => {
+    expect(unfoldFrames(open, centre, true)).toEqual(foldFrames(open, centre, true).reverse());
+  });
+});

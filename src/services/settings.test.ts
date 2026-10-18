@@ -4,22 +4,26 @@ import {
   AUDIO_CHANNELS,
   defaultSettings,
   loadSettings,
+  nudgeVolume,
+  setMotion,
   setVolume,
   SETTINGS_KEY,
   stepVolume,
   toggleMute,
   writeSettings,
 } from './settings';
+import { MOTION_CHOICES } from './motion';
 import { memoryStore } from '../../tests/support/memoryStore';
 
 describe('the player settings', () => {
-  it('a new player hears music at half and effects and voices at 0.8, not muted', () => {
+  it('a new player hears music at half and effects and voices at 0.8, not muted, moving like the system', () => {
     expect(defaultSettings()).toEqual({
-      version: 1,
+      version: 2,
       music: 0.5,
       sfx: 0.8,
       voice: 0.8,
       muted: false,
+      motion: 'system',
     });
     expect(loadSettings(memoryStore())).toEqual(defaultSettings());
   });
@@ -59,6 +63,14 @@ describe('the player settings', () => {
     expect(setVolume(defaultSettings(), 'sfx', -1).sfx).toBe(0);
   });
 
+  it('an arrow moves a volume one tenth, and stops at silence and at full', () => {
+    const half = setVolume(defaultSettings(), 'voice', 0.5);
+    expect(nudgeVolume(half, 'voice', 1).voice).toBe(0.6);
+    expect(nudgeVolume(half, 'voice', -1)).toEqual({ ...half, voice: 0.4 });
+    expect(nudgeVolume(setVolume(half, 'sfx', 1), 'sfx', 1).sfx).toBe(1);
+    expect(nudgeVolume(setVolume(half, 'sfx', 0), 'sfx', -1).sfx).toBe(0);
+  });
+
   it('mute switches on and off, keeping the volumes', () => {
     const muted = toggleMute(defaultSettings());
     expect(muted).toEqual({ ...defaultSettings(), muted: true });
@@ -66,15 +78,40 @@ describe('the player settings', () => {
   });
 
   it('a stored volume between steps comes back on its step', () => {
-    const raw = '{"version":1,"music":0.47,"sfx":0.8,"voice":0.8,"muted":false}';
+    const raw = '{"version":2,"music":0.47,"sfx":0.8,"voice":0.8,"muted":false,"motion":"full"}';
     expect(loadSettings(memoryStore({ [SETTINGS_KEY]: raw })).music).toBe(0.5);
+  });
+
+  it('the settings of before the motion setting keep their volumes and move like the system', () => {
+    const raw = '{"version":1,"music":0.3,"sfx":0.6,"voice":0.1,"muted":true}';
+    expect(loadSettings(memoryStore({ [SETTINGS_KEY]: raw }))).toEqual({
+      version: 2,
+      music: 0.3,
+      sfx: 0.6,
+      voice: 0.1,
+      muted: true,
+      motion: 'system',
+    });
+  });
+
+  it('the motion setting takes each of its three positions, keeping the rest', () => {
+    for (const motion of MOTION_CHOICES) {
+      const store = memoryStore();
+      const settings = setMotion(setVolume(defaultSettings(), 'music', 0.2), motion);
+      expect(settings).toEqual({ ...defaultSettings(), music: 0.2, motion });
+      writeSettings(store, settings);
+      expect(loadSettings(store)).toEqual(settings);
+    }
   });
 
   it('never fails on damaged or foreign settings: the defaults come back', () => {
     const damaged = [
       '{not json',
       'null',
+      '{"version":3,"music":0.5,"sfx":0.8,"voice":0.8,"muted":false,"motion":"full"}',
       '{"version":2,"music":0.5,"sfx":0.8,"voice":0.8,"muted":false}',
+      '{"version":2,"music":0.5,"sfx":0.8,"voice":0.8,"muted":false,"motion":"wild"}',
+      '{"version":1,"music":0.5,"sfx":0.8,"voice":0.8,"muted":false,"motion":"full"}',
       '{"version":1,"music":1.5,"sfx":0.8,"voice":0.8,"muted":false}',
       '{"version":1,"music":"loud","sfx":0.8,"voice":0.8,"muted":false}',
       '{"version":1,"music":0.5,"sfx":0.8,"voice":0.8}',

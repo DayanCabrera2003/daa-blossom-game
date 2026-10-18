@@ -3,11 +3,18 @@
 //                               table of the characters each font draws (glyphs.json)
 //        npm run assets:check   writes nothing; exits with code 1 unless the committed files are
 //                               exactly what the zips give (local only: the zips are not committed)
+//                               and every Ogg sound has a sound AAC fallback (plan 09, phase 8)
+// The fallbacks are made by `npm run assets:fallbacks` (ffmpeg); `npm run assets` keeps them.
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import fallbackJson from '../src/game/assets/fallbacks.json';
+import { parseFallbacks } from '../src/game/assets/fallbackSchema';
 import { compareOutputs } from './assets/compareOutputs';
 import { extract } from './assets/extract';
+import { checkFallbacks } from './assets/fallbackCheck';
+import { mp4DurationMs } from './assets/mp4Duration';
+import { oggVorbisInfo } from './assets/oggVorbis';
 import { glyphTable } from './assets/glyphTable';
 import { SELECTION } from './assets/selection';
 
@@ -31,7 +38,18 @@ const readZip = (zip: string): Uint8Array => {
   return new Uint8Array(readFileSync(path));
 };
 
-const extracted = extract(SELECTION, readZip).files;
+const extraction = extract(SELECTION, readZip);
+const extracted = extraction.files;
+
+/** The audio fallbacks, which no pack gives: made by ffmpeg, checked apart, kept on a rewrite. */
+const fallbacks = parseFallbacks(fallbackJson);
+const fallbackFiles = new Set(Object.values(fallbacks.files).map((file) => `public/${file.path}`));
+
+/** The bytes at a path relative to the repository root, or null when there is no such file. */
+const readCommitted = (path: string): Uint8Array | null => {
+  const full = join(ROOT, path);
+  return existsSync(full) ? new Uint8Array(readFileSync(full)) : null;
+};
 
 // The characters each font draws, read from the extracted bytes rather than from the disk, which
 // the write below replaces.
@@ -48,13 +66,19 @@ const extractedBytes = (path: string): Uint8Array => {
 const files = [...extracted, glyphTable(fonts, extractedBytes)];
 
 if (process.argv.includes('--check')) {
-  const problems = compareOutputs(files, {
-    read: (path) => {
-      const full = join(ROOT, path);
-      return existsSync(full) ? new Uint8Array(readFileSync(full)) : null;
-    },
-    listAssets,
-  });
+  const problems = [
+    ...compareOutputs(files, {
+      read: readCommitted,
+      listAssets: () => listAssets().filter((path) => !fallbackFiles.has(path)),
+    }),
+    ...checkFallbacks(extraction.manifest, fallbacks, {
+      originalMs: (path) => oggVorbisInfo(extractedBytes(path)).durationMs,
+      fallback: (path) => {
+        const bytes = readCommitted(path);
+        return bytes === null ? null : { bytes: bytes.length, durationMs: mp4DurationMs(bytes) };
+      },
+    }),
+  ];
   for (const problem of problems) console.log(`  !!  ${problem}`);
   console.log(
     problems.length === 0
@@ -63,9 +87,14 @@ if (process.argv.includes('--check')) {
   );
   if (problems.length > 0) process.exitCode = 1;
 } else {
-  // Start from an empty folder, so a file dropped from the selection does not linger.
+  // Start from an empty folder, so a file dropped from the selection does not linger; the audio
+  // fallbacks, which only ffmpeg makes, are put back as they were (the check says if one is stale).
+  const kept = [...fallbackFiles].flatMap((path) => {
+    const bytes = readCommitted(path);
+    return bytes === null ? [] : [{ path, bytes }];
+  });
   rmSync(join(ROOT, ASSETS_DIR), { recursive: true, force: true });
-  for (const { path, bytes } of files) {
+  for (const { path, bytes } of [...files, ...kept]) {
     mkdirSync(dirname(join(ROOT, path)), { recursive: true });
     writeFileSync(join(ROOT, path), bytes);
   }

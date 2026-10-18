@@ -1,11 +1,15 @@
 import type { GardenState } from '@core/rules/state';
 import { UNMATCHED } from '@core/matching/types';
 import type { AssetKey } from '../assets/keys';
+import { MIX } from '../audio/mix';
 import { chimeKey } from './chimeScale';
 import type { SoundCue } from './soundCues';
 
-/** How loud a replayed day sounds, against the move itself: an echo of the day, not the day. */
-export const REPLAY_VOLUME = 0.5;
+/**
+ * How loud a replayed day sounds, against the move itself: an echo of the day, not the day. A
+ * number of the mix (`audio/mix.ts`, plan 09, phase 8).
+ */
+export const REPLAY_VOLUME = MIX.replay;
 
 /** How many lanterns are lit: each joins two sprouts. */
 const lanterns = (state: GardenState): number =>

@@ -12,6 +12,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { designArb } from '../../../tests/support/designs';
 import { automatonLevel } from '../../../tests/support/fixtureLevels';
+import { LAYOUT_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { act, garden, openSession, type LevelSession } from './levelSession';
 import { certifySession, type CertificateKinds } from './sandboxCertificate';
 import { solveSession } from './sandboxSolve';
@@ -101,26 +102,33 @@ describe('the certificate of a free garden, on demand', () => {
     );
   });
 
-  it('property: in a garden of bees and flowers, as many scarecrows as lanterns guard every vine', () => {
-    fc.assert(
-      fc.property(fc.integer({ min: 4, max: 16 }), fc.nat(1000), (count, seed) => {
-        const { design } = generate('beesFlowers', count, seed);
-        const certified = certifySession(solved(sessionOf(design)), {
-          stones: false,
-          scarecrows: true,
-        });
-        expect(certified?.kind).toBe('certified');
-        if (certified?.kind !== 'certified') return;
-        const dusk = garden(certified.session);
-        expect(checkVertexCover(dusk.graph, dusk.scarecrows).ok).toBe(true);
-        expect(dusk.scarecrows).toHaveLength(size(dusk.matching));
-        // Without the stones learnt, none is lifted.
-        expect(dusk.stones).toEqual([]);
-        expect(certified.stones).toBeNull();
-      }),
-      { numRuns: 40 },
-    );
-  });
+  // Each case grows and lays out a garden of up to 16 bees and flowers, slow under coverage.
+  it(
+    'property: in a garden of bees and flowers, as many scarecrows as lanterns guard every vine',
+    {
+      timeout: LAYOUT_PROPERTY_TIMEOUT,
+    },
+    () => {
+      fc.assert(
+        fc.property(fc.integer({ min: 4, max: 16 }), fc.nat(1000), (count, seed) => {
+          const { design } = generate('beesFlowers', count, seed);
+          const certified = certifySession(solved(sessionOf(design)), {
+            stones: false,
+            scarecrows: true,
+          });
+          expect(certified?.kind).toBe('certified');
+          if (certified?.kind !== 'certified') return;
+          const dusk = garden(certified.session);
+          expect(checkVertexCover(dusk.graph, dusk.scarecrows).ok).toBe(true);
+          expect(dusk.scarecrows).toHaveLength(size(dusk.matching));
+          // Without the stones learnt, none is lifted.
+          expect(dusk.stones).toEqual([]);
+          expect(certified.stones).toBeNull();
+        }),
+        { numRuns: 40 },
+      );
+    },
+  );
 
   it("property: from the player's own marks, it is refused or it closes", () => {
     const moves = fc.array(

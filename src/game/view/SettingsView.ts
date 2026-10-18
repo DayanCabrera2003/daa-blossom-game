@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
+import { MOTION_CHOICES, type MotionChoice } from '@services/motion';
 import { AUDIO_CHANNELS, type AudioChannel, type Settings } from '@services/settings';
 import { playUiSound } from '../audio/uiSound';
 import { assetEntry } from '../assets/keys';
@@ -12,20 +13,35 @@ import {
   volumePercent,
   type SliderTrack,
 } from '../picture/volumeSlider';
-import { SETTINGS_PANEL, settingsCorner, settingsRows } from '../picture/settingsPanelLayout';
+import {
+  motionChoicesAt,
+  SETTINGS_PANEL,
+  settingsCorner,
+  settingsRows,
+} from '../picture/settingsPanelLayout';
 import { checkbox, GRABBER, SLIDER_FILL, sliderLook } from '../picture/woodControls';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
+import { addFocusable } from './focusables';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
+import { coverWith } from './focusables';
 
 /** What the panel's controls ask for; the scene changes the settings and calls `render`. */
 export interface SettingsActions {
   readonly volume: (channel: AudioChannel, value: number) => void;
+  /** A side arrow on a slider in focus: its volume a step down (-1) or up (1). */
+  readonly nudge: (channel: AudioChannel, direction: -1 | 1) => void;
   readonly mute: () => void;
+  /** Sets how much the game moves: like the system, less, or all of it. */
+  readonly motion: (choice: MotionChoice) => void;
   /** Downloads the playtest log, for playtesters to send back (GDD §10). */
   readonly exportLog: () => void;
+  /** Opens the credits screen over the scene. */
+  readonly credits: () => void;
+  /** Opens the card of the keys over the panel. */
+  readonly keys: () => void;
 }
 
 /** The panel's size and the rows on it, in canvas pixels (`picture/settingsPanelLayout.ts`). */
@@ -33,6 +49,8 @@ const WIDTH = SETTINGS_PANEL.width;
 const PAD = SETTINGS_PANEL.pad;
 const ROW = SETTINGS_PANEL.row;
 const TRACK = SETTINGS_PANEL.track;
+/** The colour the panel's text is written in, the one that reads on its wood. */
+const INK = PALETTE[SETTINGS_PANEL.frame.text];
 /** Depths: the blocker over everything else, then the panel and what is on it. */
 const BLOCKER_DEPTH = 400;
 const PANEL_DEPTH = 410;
@@ -56,15 +74,20 @@ interface Slider {
 }
 
 /**
- * The settings panel: a slider for the music, one for the effects and one for the voices, each
- * with its percentage, the mute box, the button that exports the playtest log, and "Cerrar". A dim layer over the whole screen takes every
- * touch meant for what is below while the panel is open. The panel only draws and reports: what
- * a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene.
+ * The settings panel, in the wooden frame of the other panels and written in its ink: a slider for
+ * the music, one for the effects and one for the voices, each with its percentage, the mute box,
+ * the motion setting's three buttons, the button that exports the playtest log, "Créditos",
+ * "Teclas" and "Cerrar". A dim layer over the whole screen takes every touch meant for what is
+ * below while the panel is open. The panel only draws and reports:
+ * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene. The
+ * keyboard's focus reaches each slider (the side arrows move it a step) and the mute box.
  */
 export class SettingsView {
   private parts: { destroy(): void }[] = [];
   private sliders: Slider[] = [];
   private box: Phaser.GameObjects.Image | null = null;
+  /** The motion setting's buttons, one per position, in `MOTION_CHOICES` order. */
+  private choices: Button[] = [];
   /** The settings shown, so a slider lit or dimmed by the pointer is drawn again as they are. */
   private shown: Settings | null = null;
 
@@ -90,31 +113,43 @@ export class SettingsView {
     );
     const rows = settingsRows(close.height);
     const { x, y } = settingsCorner(rows.height);
-    const blocker = scene.add
-      .rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, PALETTE.fog, 0.5)
-      .setOrigin(0, 0)
-      .setDepth(BLOCKER_DEPTH)
-      .setInteractive();
-    const panel = scene.add
-      .rectangle(x, y, WIDTH, rows.height, PALETTE.panel, 0.98)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(PANEL_DEPTH)
-      .setInteractive();
+    const blocker = coverWith(
+      scene.add
+        .rectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT, PALETTE.fog, 0.5)
+        .setOrigin(0, 0)
+        .setDepth(BLOCKER_DEPTH)
+        .setInteractive(),
+    );
+    const panel = new WoodFrame(
+      scene,
+      SETTINGS_PANEL.frame,
+      { x, y, width: WIDTH, height: rows.height },
+      PANEL_DEPTH,
+    );
+    panel.zone.setInteractive();
     const title = scene.add
-      .text(x + PAD, y + rows.title, t('settings.title'), textStyle(10, PALETTE.lit))
+      .text(x + PAD, y + rows.title, t('settings.title'), textStyle(10, INK))
       .setDepth(PANEL_DEPTH + 1);
     this.parts.push(blocker, panel, title);
     this.sliders = AUDIO_CHANNELS.map((channel, i) =>
       this.addSlider(channel, x, y + itemAt(rows.sliders, i)),
     );
     this.addMute(x + PAD, y + rows.mute);
+    this.addMotion(x, y + rows.motion, y + rows.motionChoices);
     const exportLog = new Button(scene, 0, 0, t('settings.exportLog'), () =>
       this.actions.exportLog(),
     ).setDepth(PANEL_DEPTH + 4);
+    const credits = new Button(scene, 0, 0, t('settings.credits'), () =>
+      this.actions.credits(),
+    ).setDepth(PANEL_DEPTH + 4);
+    const keys = new Button(scene, 0, 0, t('settings.keys'), () => this.actions.keys()).setDepth(
+      PANEL_DEPTH + 4,
+    );
     exportLog.moveTo(x + Math.round((WIDTH - exportLog.width) / 2), y + rows.exportLog);
+    credits.moveTo(x + Math.round((WIDTH - credits.width) / 2), y + rows.credits);
+    keys.moveTo(x + Math.round((WIDTH - keys.width) / 2), y + rows.keys);
     close.moveTo(x + Math.round((WIDTH - close.width) / 2), y + rows.close);
-    this.parts.push(exportLog, close);
+    this.parts.push(exportLog, credits, keys, close);
     this.render(settings);
   }
 
@@ -126,6 +161,7 @@ export class SettingsView {
       this.drawSlider(itemAt(this.sliders, i), settings[channel]),
     );
     this.box?.setTexture(checkbox(settings.muted));
+    MOTION_CHOICES.forEach((choice, i) => this.choices[i]?.setActive(choice === settings.motion));
   }
 
   /** Takes the panel and its blocker away, sounding its wood if it was open. */
@@ -139,6 +175,7 @@ export class SettingsView {
     for (const part of this.parts) part.destroy();
     this.parts = [];
     this.sliders = [];
+    this.choices = [];
     this.box = null;
     this.shown = null;
   }
@@ -171,7 +208,7 @@ export class SettingsView {
     const track = { x0: x + TRACK.from, x1: x + TRACK.to };
     const middle = y + 4;
     const label = scene.add
-      .text(x + PAD, y, this.t(`settings.${channel}`), textStyle(8))
+      .text(x + PAD, y, this.t(`settings.${channel}`), textStyle(8, INK))
       .setDepth(PANEL_DEPTH + 1);
     const line = scene.add
       .rectangle(track.x0, middle, track.x1 - track.x0, 1, PALETTE.panelEdge)
@@ -208,9 +245,41 @@ export class SettingsView {
       )
       .on('pointerover', () => this.hover(channel, true))
       .on('pointerout', () => this.hover(channel, false));
-    const value = scene.add.text(track.x1 + 10, y, '', textStyle(8)).setDepth(PANEL_DEPTH + 1);
+    const value = scene.add
+      .text(track.x1 + SETTINGS_PANEL.valueGap, y, '', textStyle(8, INK))
+      .setDepth(PANEL_DEPTH + 1);
     this.parts.push(label, line, fill, hit, knob, value);
+    addFocusable(scene, {
+      box: () => {
+        const { x: left, y: top, width, height } = hit.getBounds();
+        return { x: left, y: top, width, height };
+      },
+      depth: () => hit.depth,
+      live: () => hit.active,
+      // Enter on a slider has nothing to press: the arrows move it.
+      press: () => undefined,
+      adjust: (direction) => this.actions.nudge(channel, direction),
+    });
     return { knob, fill, value, track, middle, hovered: false };
+  }
+
+  /**
+   * The motion setting (plan 09, phase 6): its name, and under it a button for each position, the
+   * one in force sunken as a tool in hand; each is a button, so the keyboard reaches it too.
+   */
+  private addMotion(x: number, nameTop: number, choicesTop: number): void {
+    const { scene, t } = this;
+    const name = scene.add
+      .text(x + PAD, nameTop, t('settings.motion'), textStyle(8, INK))
+      .setDepth(PANEL_DEPTH + 1);
+    this.choices = MOTION_CHOICES.map((choice) =>
+      new Button(scene, 0, 0, t(`settings.motion.${choice}`), () =>
+        this.actions.motion(choice),
+      ).setDepth(PANEL_DEPTH + 4),
+    );
+    const lefts = motionChoicesAt(this.choices.map((button) => button.width));
+    this.choices.forEach((button, i) => button.moveTo(x + itemAt(lefts, i), choicesTop));
+    this.parts.push(name, ...this.choices);
   }
 
   /**
@@ -224,7 +293,7 @@ export class SettingsView {
       .setOrigin(0, 0)
       .setDepth(PANEL_DEPTH + 1);
     const label = scene.add
-      .text(x + 17, y, this.t('settings.mute'), textStyle(8))
+      .text(x + 17, y, this.t('settings.mute'), textStyle(8, INK))
       .setDepth(PANEL_DEPTH + 1);
     const hit = scene.add
       .zone(x - 2, y - 1, label.x + label.width - x + 4, 11)
@@ -233,5 +302,11 @@ export class SettingsView {
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => this.actions.mute());
     this.parts.push(this.box, label, hit);
+    addFocusable(scene, {
+      box: () => ({ x: hit.x, y: hit.y, width: hit.width, height: hit.height }),
+      depth: () => hit.depth,
+      live: () => hit.active,
+      press: () => this.actions.mute(),
+    });
   }
 }

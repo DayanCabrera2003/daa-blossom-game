@@ -1,3 +1,5 @@
+import { LOOK } from './look';
+
 /**
  * The flicker of a lantern (GDD §4.1: "halo de 2 tonos, parpadeo de 3 frames"): three frames of a
  * halo in two tones, a warm inner one and a wide faint outer one, shown in turn. Each lantern
@@ -16,12 +18,14 @@ export interface Halo {
   readonly outer: HaloRing;
 }
 
+/** Frame `i` of the halo, from the table of the look (`look.ts`). */
+const haloFrame = (i: 0 | 1 | 2): Halo => ({
+  inner: { radius: LOOK.haloInnerRadius[i], alpha: LOOK.haloInnerAlpha[i] },
+  outer: { radius: LOOK.haloOuterRadius[i], alpha: LOOK.haloOuterAlpha[i] },
+});
+
 /** The three frames, a breath in and out: small, large, middle. */
-export const HALO_FRAMES: readonly [Halo, Halo, Halo] = [
-  { inner: { radius: 8, alpha: 0.5 }, outer: { radius: 12, alpha: 0.22 } },
-  { inner: { radius: 9, alpha: 0.58 }, outer: { radius: 14, alpha: 0.28 } },
-  { inner: { radius: 8, alpha: 0.54 }, outer: { radius: 13, alpha: 0.25 } },
-];
+export const HALO_FRAMES: readonly [Halo, Halo, Halo] = [haloFrame(0), haloFrame(1), haloFrame(2)];
 
 /** How long each frame shows, in milliseconds. */
 export const FLICKER_FRAME_MS = 160;

@@ -14,14 +14,18 @@ const DEPTH = 150;
 
 /**
  * Gentle feedback above the toolbar, on a small wooden panel: why a move was refused, in the
- * garden's words (never a code, never a punishment). A new message replaces the previous one.
+ * garden's words (never a code, never a punishment). A new message replaces the previous one, and
+ * each is said whole to a screen reader through `say`.
  */
 export class ToastView {
   private readonly text: Phaser.GameObjects.Text;
   private wood: WoodFrame | null = null;
   private fade: Phaser.Tweens.Tween | null = null;
 
-  constructor(private readonly scene: Phaser.Scene) {
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly say: (text: string) => void = () => undefined,
+  ) {
     this.text = scene.add
       .text(CANVAS_WIDTH / 2, LAYOUT.toastY, '', {
         ...textStyle(8, PALETTE[WOOD_PANEL.text]),
@@ -41,6 +45,7 @@ export class ToastView {
     this.fade?.stop();
     this.wood?.destroy();
     this.text.setText(message).setY(centreY).setAlpha(1);
+    this.say(message);
     // The panel is sized to the message, its border around the text.
     const width = Math.round(this.text.width) + 2 * PANEL.pad;
     const height = Math.round(this.text.height) + 2 * PANEL.pad - 4;

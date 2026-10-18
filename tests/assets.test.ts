@@ -3,12 +3,14 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import fallbackJson from '../src/game/assets/fallbacks.json';
+import { parseFallbacks } from '../src/game/assets/fallbackSchema';
 import { FRAMES, frameRect } from '../src/game/assets/frames';
 import { ASSET_KEYS, assetEntry, packCredit, packCredits } from '../src/game/assets/keys';
 import { pngSize } from '../tools/assets/pngSize';
 
 // Integrity of the committed assets, without the pack zips (CI does not have them): the manifest
-// and public/assets/ agree file for file, every named frame falls inside its sheet, and every pack
+// with the table of audio fallbacks and public/assets/ agree file for file, every named frame falls inside its sheet, and every pack
 // is credited. `npm run assets:check` additionally proves, locally, that both come from the zips.
 
 const PUBLIC = fileURLToPath(new URL('../public', import.meta.url));
@@ -26,8 +28,21 @@ describe('committed assets', () => {
     expect(createHash('sha256').update(bytes).digest('hex')).toBe(entry.sha256);
   });
 
-  it('has no file under public/assets that the manifest does not list', () => {
-    const listed = new Set(ASSET_KEYS.map((key) => assetEntry(key).path));
+  const fallbacks = Object.values(parseFallbacks(fallbackJson).files);
+
+  it.each(fallbacks.map((fallback) => [fallback.path, fallback] as const))(
+    'the fallback %s exists with the size its table records',
+    (path, fallback) => {
+      expect(existsSync(join(PUBLIC, path))).toBe(true);
+      expect(read(path).length).toBe(fallback.bytes);
+    },
+  );
+
+  it('has no file under public/assets that the manifest or the fallbacks do not list', () => {
+    const listed = new Set([
+      ...ASSET_KEYS.map((key) => assetEntry(key).path),
+      ...fallbacks.map((fallback) => fallback.path),
+    ]);
     const onDisk = readdirSync(join(PUBLIC, 'assets'), { recursive: true, withFileTypes: true })
       .filter((entry) => entry.isFile())
       .map((entry) => relative(PUBLIC, join(entry.parentPath, entry.name)).split('\\').join('/'));

@@ -30,9 +30,10 @@ describe('the asset selection', () => {
     }
   });
 
-  it('loads only the hub music at boot, and each chapter its own track', () => {
+  it('loads no music at boot: the hub music behind the hub, each chapter its own track', () => {
     const music = files.filter((file) => file.kind === 'music');
-    expect(music.filter((file) => file.group === 'boot').map((file) => file.key)).toEqual([
+    expect(music.filter((file) => file.group === 'boot')).toEqual([]);
+    expect(music.filter((file) => file.group === 'hub').map((file) => file.key)).toEqual([
       'music.hub',
     ]);
     // Chapter 0 has no pack track: its night is the synthesized crickets (`tools/synth`).
@@ -67,8 +68,10 @@ describe('the asset selection', () => {
         frame: { width: 16, height: 16 },
       });
     }
-    // Appended after everything that was there, so no earlier entry moves.
-    expect(files.slice(-hub.length)).toEqual(hub);
+    // Appended after everything that was there, so no earlier entry moves; only the page's icon
+    // (plan 09, phase 9) comes after them.
+    expect(files.slice(-hub.length - 1, -1)).toEqual(hub);
+    expect(files.at(-1)?.key).toBe('icon.favicon');
   });
 
   it('chooses the monogram extended font from its zip', () => {

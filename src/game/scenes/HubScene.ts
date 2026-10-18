@@ -4,6 +4,8 @@ import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progres
 import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
+import { OutlinedText } from '../view/OutlinedText';
+import { hubKeys } from '../assets/loadPlan';
 import { chapterTitle } from '../picture/chapterTitle';
 import {
   finishedChapters,
@@ -28,9 +30,11 @@ import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
 import { addHubCosmetics } from './hub/HubCosmetics';
+import { bindHubKeys } from './hub/hubKeys';
 import { addHubSecrets, type FlowerPlace } from './hub/HubSecrets';
 import { addHubTopLine } from './hub/HubTopLine';
 import { addSettings } from './settingsPanel';
+import { loadBehind } from './loadBehind';
 
 /** Above the buttons' labels, which sit at depth 101. */
 const STAR_DEPTH = 102;
@@ -66,8 +70,13 @@ export class HubScene extends Phaser.Scene {
     fitCamera(this);
     const { catalog, t, saves, teacherMode, music, bus } = contextOf(this);
     const save = saves.get();
-    // The hub's own track; coming back from a level crossfades to it.
+    // The hub's own track; coming back from a level crossfades to it. It is not in the first load:
+    // the hub shows at once and its music loads behind it, rising with its fade when it arrives.
     music.play(trackFor({ kind: 'hub' }));
+    loadBehind(
+      this,
+      hubKeys((key) => this.cache.audio.exists(key)),
+    );
     const backdrop = new BackdropView(this);
     // The title, the counter of stars and seeds, and the signs of the books, along the top.
     const topLine = addHubTopLine(this);
@@ -93,7 +102,8 @@ export class HubScene extends Phaser.Scene {
     );
     const titles = chapters.map((chapter) => {
       const title = chapterTitle(chapter);
-      return this.add.text(TITLE_X, 0, t(title.key, title.params), textStyle(8));
+      // On the hub's grass, outlined as the sprouts' names are (`picture/textContrast.ts`).
+      return new OutlinedText(this, TITLE_X, 0, t(title.key, title.params), textStyle(8));
     });
     const height = rows[0]?.[0]?.button.height ?? 0;
     // Each title is laid out with its flower's column and its signpost before it.
@@ -142,11 +152,14 @@ export class HubScene extends Phaser.Scene {
     }
 
     // The settings, at the top right across from the title.
-    const settings = addSettings(this, topLine.gear);
+    const settings = addSettings(this, topLine.gear, 'hub');
+    // The keyboard's focus walks all of it; Escape closes the settings or takes the focus away.
+    const focus = bindHubKeys(this, settings);
 
     // The secret flowers, beside the signposts of their chapters: never buttons, found by looking.
     addHubSecrets(this, secretFlowers(catalogEntries(catalog), save, teacherMode), signs, {
       blocked: settings.open,
+      focus,
     });
 
     // The garden grows on the orchard's grass, a piece for each chapter finished.

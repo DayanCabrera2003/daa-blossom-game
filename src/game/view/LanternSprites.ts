@@ -3,14 +3,15 @@ import type { Point } from '../input/target';
 import { lanternFlicker } from '../picture/lanternFlicker';
 import { PALETTE } from './palette';
 import { PIECE_TEXTURES } from './pieceTextures';
+import { LOOK_TONES } from '../picture/look';
 
 /** Which lantern: the player's amber one, or the silvery one of the pond's reflection. */
 export type LanternTone = 'amber' | 'silver';
 
 /** The colours of each tone's halo: the inner ring, then the wide pale one. */
 const HALO_COLOURS: Readonly<Record<LanternTone, readonly [number, number]>> = {
-  amber: [PALETTE.lit, PALETTE.litGlow],
-  silver: [PALETTE.moon, PALETTE.mirror],
+  amber: [PALETTE[LOOK_TONES.haloAmber[0]], PALETTE[LOOK_TONES.haloAmber[1]]],
+  silver: [PALETTE[LOOK_TONES.haloSilver[0]], PALETTE[LOOK_TONES.haloSilver[1]]],
 };
 
 /**

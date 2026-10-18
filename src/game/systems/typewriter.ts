@@ -1,3 +1,4 @@
+import { MIX } from '../audio/mix';
 import type { Speaker } from './speaker';
 
 /**
@@ -12,16 +13,10 @@ export interface Pace {
 
 /**
  * The pace of each speaker (plan 06, section 1.9; GDD §3.2): the mentor calm, the gnome hurried,
- * the oaks slow and solemn. The gardener's answers and the notebook do not babble, but are typed
- * all the same, at a plain pace between the mentor's and the gnome's.
+ * the oaks slow and solemn, the gardener and the notebook plain. A table of the mix
+ * (`audio/mix.ts`, plan 09, phase 8), where the author tunes it by ear.
  */
-export const PACES: Readonly<Record<Speaker, Pace>> = {
-  sauce: { lettersPerSecond: 24, commaPause: 120, stopPause: 300 },
-  bruto: { lettersPerSecond: 40, commaPause: 60, stopPause: 120 },
-  oaks: { lettersPerSecond: 16, commaPause: 250, stopPause: 500 },
-  gardener: { lettersPerSecond: 30, commaPause: 100, stopPause: 200 },
-  notebook: { lettersPerSecond: 30, commaPause: 100, stopPause: 200 },
-};
+export const PACES: Readonly<Record<Speaker, Pace>> = MIX.paces;
 
 /** Marks after which the voice takes a short breath. */
 const COMMAS = new Set([',', ';', ':']);

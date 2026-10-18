@@ -3,6 +3,7 @@ import type { TraceEvent } from '@core/trace/events';
 import type { CodexTab } from '@levels/codex';
 import type { ImportRejection } from '@levels/sandbox/importText';
 import type { LevelData } from '@levels/schema';
+import type { MotionChoice } from './motion';
 
 /** The two books of the game: the Códex (GDD §5.6) and the Cuaderno (GDD §5.5). */
 export type BookName = 'codex' | 'notebook';
@@ -46,6 +47,8 @@ export interface TeacherFeed {
 export interface Capabilities {
   /** Whether the free mode (sandbox) scene is registered. */
   readonly sandbox: boolean;
+  /** Whether the credits screen is registered (its gate, which loads it on demand). */
+  readonly credits: boolean;
 }
 
 /**
@@ -94,6 +97,11 @@ export interface BusEvents {
    * the game listens to it once it registers that mode (plan 08).
    */
   readonly 'sandbox.open': undefined;
+  /**
+   * Open the credits over whatever scenes are up (the settings panel's and the epilogue's
+   * "Créditos"); they come back as they were when the credits end.
+   */
+  readonly 'credits.open': undefined;
   /** Open the share sheet over the free mode's editor, with its garden (its "Compartir" button). */
   readonly 'sandbox.share': ShareRequest;
   /**
@@ -103,4 +111,16 @@ export interface BusEvents {
   readonly 'sandbox.imported': { readonly text: string };
   /** The game's answer to `sandbox.imported`: the sheet closes, or says kindly why not. */
   readonly 'sandbox.importAnswer': ImportAnswer;
+  /**
+   * Something a screen reader should say, whole (plan 09, phase 6): a line of dialogue with who says
+   * it, a notice, a question, whether an answer was the one. The page's live region writes it.
+   */
+  readonly 'a11y.say': { readonly text: string };
+  /**
+   * The canvas has drawn its loading bar (plan 09, phase 9): the lantern the page drew in CSS before
+   * the script goes, the bar taking over in its place and tones.
+   */
+  readonly 'loading.drawn': undefined;
+  /** The motion setting changed in the settings panel: the page's styles follow it. */
+  readonly 'motion.changed': { readonly motion: MotionChoice };
 }

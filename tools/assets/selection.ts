@@ -276,9 +276,10 @@ const SEASONS: readonly SelectedFile[] = [
 ];
 
 /**
- * Wooden panels, buttons, sliders, checkboxes and icons (section 1.6). The plain button and the
- * moon are left out: no label reads on the plain button's orange face (`picture/wood.ts`), and the
- * toolbar has no room for a moon beside the sun of the tool of marks (`picture/buttonIcon.ts`).
+ * Wooden panels, buttons, sliders, checkboxes and icons (section 1.6). The plain button is left
+ * out: no label reads on its orange face (`picture/wood.ts`). The toolbar has no room for a moon
+ * beside the sun of the tool of marks, so the moon is a small badge on the sun's corner
+ * (`picture/buttonIcon.ts`).
  */
 const UI: readonly SelectedFile[] = [
   pick('ui.dialogBox', 'image', ninja('Ui/Dialog/DialogBox.png'), 'images/ui/dialog-box.png'),
@@ -366,14 +367,19 @@ const UI: readonly SelectedFile[] = [
     'images/kenney/ui-pixel.png',
     { frame: TILE },
   ),
+  // The moon of the tool of marks, a badge on the corner of its sun (plan 09, phase 2).
+  pick('icon.moon', 'image', ninja('Ui/Skill Icon/Meteo/Moon.png'), 'images/ui/icons/moon.png'),
 ];
 
 /**
  * Music, one track per screen (section 1.7). Keys and file names name the screen, not the track,
- * so swapping a track after listening only changes its entry here. Only the hub's goes in `boot`.
+ * so swapping a track after listening only changes its entry here. None goes in `boot`: the hub's
+ * loads behind the hub once it shows (plan 09, phase 9), each chapter's with its first level.
  */
 const MUSIC: readonly SelectedFile[] = [
-  pick('music.hub', 'music', ninja('Audio/Musics/4 - Village.ogg'), 'audio/music/hub.ogg'),
+  pick('music.hub', 'music', ninja('Audio/Musics/4 - Village.ogg'), 'audio/music/hub.ogg', {
+    group: 'hub',
+  }),
   pick('music.ch1', 'music', ninja('Audio/Musics/31 - Sunny.ogg'), 'audio/music/ch1.ogg', {
     group: 'ch1',
   }),
@@ -554,6 +560,14 @@ const HUB_CRITTERS: readonly SelectedFile[] = [
   ),
 ];
 
+/**
+ * The page's own icon (plan 09, phase 9): a loose 16 × 16 picture of the pack, a sprout of grass,
+ * linked by `index.html` as its favicon and never loaded by the game.
+ */
+const PAGE: readonly SelectedFile[] = [
+  pick('icon.favicon', 'icon', ninja('Items/Resource/Grass.png'), 'images/favicon.png'),
+];
+
 /** Everything `npm run assets` extracts, in the order the manifest lists it. */
 export const SELECTION: Selection = {
   packs: PACKS,
@@ -569,6 +583,7 @@ export const SELECTION: Selection = {
     ...SFX,
     ...VOICE,
     ...HUB_CRITTERS,
+    ...PAGE,
   ],
   // The chimes, the sparkle and the fold chords, synthesized by the project (`npm run sounds`).
   own: OWN_WORK,

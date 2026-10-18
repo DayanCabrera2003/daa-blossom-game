@@ -8,6 +8,7 @@ import { Button } from './Button';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
+import { addFocusable, coverWith } from './focusables';
 
 /** Space between rows, and around the panel's contents, in canvas pixels. */
 const GAP = 1;
@@ -80,7 +81,7 @@ export class RecipeView {
     slot('recipe.cases', picture.cases);
     slot('recipe.end', picture.end === null ? [] : [picture.end]);
     y += 2;
-    heading(t('recipe.table'), PALETTE.darkVine);
+    heading(t('recipe.table'), PALETTE.highlight);
     rows(picture.table, false);
 
     // At the bottom, what the last check found beside the button that asks again.
@@ -92,12 +93,14 @@ export class RecipeView {
     const feedback = this.text(x + PAD, y + 2, told, inner - button.width - PAD, PALETTE.highlight);
     const bottom = Math.max(feedback.y + feedback.height, y + 2 + button.height) + PAD;
 
-    const panel = this.scene.add
-      .rectangle(x, top, width, bottom - top, PALETTE.panel, 0.97)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(PANEL_DEPTH)
-      .setInteractive();
+    const panel = coverWith(
+      this.scene.add
+        .rectangle(x, top, width, bottom - top, PALETTE.panel, 0.97)
+        .setOrigin(0, 0)
+        .setStrokeStyle(1, PALETTE.panelEdge)
+        .setDepth(PANEL_DEPTH)
+        .setInteractive(),
+    );
     this.parts.push(panel);
   }
 
@@ -124,7 +127,8 @@ export class RecipeView {
     y: number,
     width: number,
   ): number {
-    const text = this.text(x + 3, y + 1, this.t(cardTextKey(card)), width - 6, PALETTE.label);
+    // Dark letters on the light wood of a card, as on a button at rest (`picture/textContrast.ts`).
+    const text = this.text(x + 3, y + 1, this.t(cardTextKey(card)), width - 6, PALETTE.ink);
     const row = this.scene.add
       .rectangle(x, y, width, text.height + 2, placed ? PALETTE.buttonActive : PALETTE.button)
       .setOrigin(0, 0)
@@ -139,6 +143,12 @@ export class RecipeView {
         },
       );
     this.parts.push(row);
+    addFocusable(this.scene, {
+      box: () => ({ x: row.x, y: row.y, width: row.width, height: row.height }),
+      depth: () => row.depth,
+      live: () => row.active,
+      press: () => this.actions.card(card),
+    });
     return row.height;
   }
 

@@ -27,8 +27,10 @@ import { playtestEntries } from '../systems/playtestEntries';
 import { raceCues } from '../systems/raceCues';
 import { replayCues } from '../systems/replayCues';
 import { effectCues } from '../systems/soundCues';
+import { movesLess } from './motion';
+import { sayAloud } from './sayAloud';
 import type { StarResult } from '../systems/stars';
-import { startCards, stepCard } from '../systems/tutorials';
+import { levelStepCard, startCards } from '../systems/tutorials';
 import { SfxPlayer } from '../audio/SfxPlayer';
 import { fitCamera } from '../view/fitCamera';
 import { LAYOUT } from '../view/layout';
@@ -190,7 +192,7 @@ export class LevelScene extends Phaser.Scene {
         },
         cardClosed: (card) => this.cards.closed(card),
       },
-      { t, line: this.context.line },
+      { t, line: this.context.line, say: sayAloud(this) },
     );
     this.cards = new LevelCards(this.context, this.presenter);
     this.stage = {
@@ -200,6 +202,8 @@ export class LevelScene extends Phaser.Scene {
       line: this.context.line,
       controller: () => this.controller,
       now: () => this.time.now,
+      moveLess: () => movesLess(this),
+      say: sayAloud(this),
       toast: this.views.toast,
       animation: this.views.animation,
       presenter: this.presenter,
@@ -208,7 +212,7 @@ export class LevelScene extends Phaser.Scene {
       jingle: (key) => this.context.music.jingle(key),
     };
     // The settings, at the bottom left, clear of the buttons laid out from the right.
-    const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
+    const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 }, 'level');
     // A garden of the free mode ends the tools' row with its orders: the gardener, the certificate.
     if (orders !== null) addSandboxBar(this, t, orders, (event) => this.dispatch(event));
     bindLevelInput(this, {
@@ -217,7 +221,13 @@ export class LevelScene extends Phaser.Scene {
       insideLayer: () => this.controller.layers.length > 0,
       settingsOpen: settings.open,
       closeSettings: settings.close,
+      keysOpen: settings.keysOpen,
+      closeKeys: settings.closeKeys,
+      cardOpen: () => this.presenter.cardOpen,
+      closeCard: () => this.presenter.closeCard(),
+      answerKey: (key) => this.presenter.optionKey(key),
       dialogueOpen: () => this.views.dialogue.open,
+      advanceDialogue: () => this.views.dialogue.touch(),
       drawing: () => this.controller.pointer.chain !== null,
     });
     this.teacher = new TeacherBridge(this.context.bus, teacherMode, screen.ownGarden);
@@ -290,10 +300,10 @@ export class LevelScene extends Phaser.Scene {
 
   private show(effect: Effect): void {
     // A step that brings a new gesture shows its card first, before whatever it opens.
-    const card = stepCard(effect.kind, this.cards.seen);
+    const card = levelStepCard(this.level, effect.kind, this.cards.seen);
     if (card !== null) this.cards.offer([card]);
     showEffect(effect, this.stage);
-    this.sfx.schedule(effectCues(effect));
+    this.sfx.schedule(effectCues(effect, movesLess(this)));
   }
 
   /** Records `entries` in the playtest log, when the screen logs (never in the free mode). */

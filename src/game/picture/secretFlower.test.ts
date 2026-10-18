@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SecretFlowerState } from '@services/secretFlowers';
-import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { frameRect } from '../assets/frames';
 import { assetEntry } from '../assets/keys';
 import type { Rect } from './boxDistance';
@@ -9,11 +9,13 @@ import { PIXEL_FONT } from './pixelFont';
 import {
   BLOOM_SIZE,
   BUD_CUT,
+  FLOWER_TIP,
   flowerTipAt,
   secretFlowerPicture,
   type FlowerPiece,
 } from './secretFlower';
 import { STAR_SIZE } from './starIcon';
+import { WON_FLOWER_SIZE } from './wonFlower';
 
 /** A chapter's flower column and signpost, as `flowerBox` and `signBox` put them. */
 const CELL: Rect = { x: HUB.margin, y: 39, width: 16, height: 16 };
@@ -37,6 +39,8 @@ function pieceBox(piece: FlowerPiece): Rect {
       return { x: piece.x, y: piece.y, width: BUD_CUT.width, height: BUD_CUT.height };
     case 'bloom':
       return { x: piece.x, y: piece.y, ...BLOOM_SIZE };
+    case 'won':
+      return { x: piece.x, y: piece.y, width: WON_FLOWER_SIZE, height: WON_FLOWER_SIZE };
     case 'glow':
       return piece;
     case 'star':
@@ -70,9 +74,7 @@ describe('the secret flower beside its signpost', () => {
     const bud = secretFlowerPicture(state, CELL, SIGN);
     expect(bud.pieces.map((piece) => piece.kind)).toEqual(['bud', 'star', 'count']);
     expect(piecesOf(state, 'star')).toEqual([expect.objectContaining({ earned: false })]);
-    expect(piecesOf(state, 'count')).toEqual([
-      expect.objectContaining({ text: '3', golden: false }),
-    ]);
+    expect(piecesOf(state, 'count')).toEqual([expect.objectContaining({ text: '3' })]);
     expect(bud.tip).toEqual({ key: 'hub.secret.budTip', params: { missing: 3 } });
     expect(bud.press).toEqual({
       kind: 'tell',
@@ -85,23 +87,29 @@ describe('the secret flower beside its signpost', () => {
     expect(open.pieces).toEqual([
       expect.objectContaining({ kind: 'glow' }),
       expect.objectContaining({ kind: 'bud' }),
-      expect.objectContaining({ kind: 'bloom', sways: true, golden: false }),
+      expect.objectContaining({ kind: 'bloom' }),
     ]);
     expect(open.tip).toEqual({ key: 'hub.secret.openTip', params: {} });
     expect(open.press).toEqual({ kind: 'play' });
   });
 
-  it('a won flower is golden and still, with a golden star and the stars it won', () => {
+  it('a won flower is a golden rosette with the star, still, filling its column', () => {
     const state: SecretFlowerState = { kind: 'won', stars: 2 };
     const won = secretFlowerPicture(state, CELL, SIGN);
-    expect(won.pieces.map((piece) => piece.kind)).toEqual(['bloom', 'star', 'count']);
-    expect(won.pieces[0]).toEqual(expect.objectContaining({ sways: false, golden: true }));
-    expect(piecesOf(state, 'star')).toEqual([expect.objectContaining({ earned: true })]);
-    expect(piecesOf(state, 'count')).toEqual([
-      expect.objectContaining({ text: '2', golden: true }),
+    expect(won.pieces).toEqual([
+      { kind: 'won', x: CELL.x, y: CELL.y + Math.floor((CELL.height - WON_FLOWER_SIZE) / 2) },
     ]);
+    // The stars it gave are told by its tip.
     expect(won.tip).toEqual({ key: 'hub.secret.wonTip', params: { stars: 2 } });
     expect(won.press).toEqual({ kind: 'play' });
+  });
+
+  it('a won flower reads bigger than an open one', () => {
+    const height = (state: SecretFlowerState, kind: FlowerPiece['kind']): number =>
+      Math.max(...piecesOf(state, kind).map((piece) => pieceBox(piece).height));
+    expect(height({ kind: 'won', stars: 3 }, 'won')).toBeGreaterThan(
+      height({ kind: 'open' }, 'bloom'),
+    );
   });
 
   it('an open flower is as tall as its column, so it reads at least as big as a sprout', () => {
@@ -147,16 +155,26 @@ describe('the secret flower beside its signpost', () => {
 });
 
 describe('the tip of a secret flower', () => {
-  it('stands right of the signpost, centred on it', () => {
-    expect(flowerTipAt(SIGN, 100, 14)).toEqual({ x: SIGN.x + SIGN.width + 2, y: SIGN.y + 1 });
+  it('is written at the margin along the top of the garden bed, under every chapter', () => {
+    const at = flowerTipAt(100, 10);
+    expect(at).toEqual({ x: HUB.margin, y: HUB.gardenTop + FLOWER_TIP.gap });
   });
 
-  it('never leaves the canvas, however long it is', () => {
-    const at = flowerTipAt(SIGN, CANVAS_WIDTH, 14);
-    expect(at.x).toBe(HUB.margin);
-    const long = flowerTipAt(SIGN, 440, 14);
-    expect(long.x + 440).toBeLessThanOrEqual(CANVAS_WIDTH - HUB.margin);
-    const high = flowerTipAt({ ...SIGN, y: -10 }, 50, 14);
-    expect(high.y).toBeGreaterThanOrEqual(0);
+  it('is the same place whichever flower it tells of, so the eye knows where to look', () => {
+    expect(flowerTipAt(60, 10)).toEqual(flowerTipAt(300, 10));
+  });
+
+  it('never leaves the canvas, however long or tall it is', () => {
+    const wide = flowerTipAt(CANVAS_WIDTH, 10);
+    expect(wide.x).toBeGreaterThanOrEqual(0);
+    const tall = flowerTipAt(50, CANVAS_HEIGHT);
+    expect(tall.y).toBeGreaterThanOrEqual(0);
+    const low = flowerTipAt(50, 60);
+    expect(low.y + 60).toBeLessThanOrEqual(CANVAS_HEIGHT);
+  });
+
+  it('keeps its words a little in from the edges of its dark patch', () => {
+    expect(FLOWER_TIP.pad.x).toBeGreaterThan(0);
+    expect(FLOWER_TIP.pad.y).toBeGreaterThanOrEqual(0);
   });
 });

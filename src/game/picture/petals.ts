@@ -73,18 +73,34 @@ export function petalRing(centre: Point, count: number, reach: number, heart: nu
   });
 }
 
+/** The petals a flower is drawn with: its own ring and, with one nested in it, that one's ring. */
+export interface FlowerPetals {
+  readonly petals: readonly Petal[];
+  readonly inner: readonly Petal[] | null;
+}
+
 /**
- * The petals of a flower folding, `closed` (0 to 1) of the way (`foldFrames.ts`): one per child of
- * its cycle at `open`, reaching out to the farthest of them while open and closing down onto the
- * flower the garden draws at `centre`, so they show over it as they close.
+ * The petals of a flower of `petals` petals at `centre`, with a flower of `inner` petals folded
+ * inside it (null with none), as the garden draws it once folded.
  */
-export function closingPetals(centre: Point, open: readonly Point[], closed: number): Petal[] {
-  const farthest = Math.max(
-    FLOWER_REACH,
-    ...open.map((p) => Math.hypot(p.x - centre.x, p.y - centre.y)),
-  );
-  const reach = farthest + (FLOWER_REACH - farthest) * closed;
-  return petalRing(centre, open.length, reach, FLOWER_HEART);
+function drawnPetals(centre: Point, petals: number, inner: number | null): FlowerPetals {
+  return {
+    petals: petalRing(centre, petals, FLOWER_REACH, FLOWER_HEART),
+    inner: inner === null ? null : petalRing(centre, inner, INNER_REACH, INNER_HEART),
+  };
+}
+
+/**
+ * The petals of a flower as it folds or opens (`foldFrames.ts`): from the first frame to the last,
+ * the size the garden draws the folded flower at (`flowerLooks`), so the petals never start wider
+ * than the flower they become; the frames move the sprouts and fade the flower in or out.
+ */
+export function foldPetals(shape: {
+  readonly centre: Point;
+  readonly petals: number;
+  readonly inner: number | null;
+}): FlowerPetals {
+  return drawnPetals(shape.centre, shape.petals, shape.inner);
 }
 
 /**
@@ -102,11 +118,7 @@ export function flowerLooks(flowers: readonly FlowerPicture[]): FlowerLook[] {
       {
         id: flower.id,
         centre: flower.centre,
-        petals: petalRing(flower.centre, flower.petals, FLOWER_REACH, FLOWER_HEART),
-        inner:
-          nested === undefined
-            ? null
-            : petalRing(flower.centre, nested.petals, INNER_REACH, INNER_HEART),
+        ...drawnPetals(flower.centre, flower.petals, nested?.petals ?? null),
       },
     ];
   });

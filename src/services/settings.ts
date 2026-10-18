@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { MOTION_CHOICES, type MotionChoice } from './motion';
 import type { KeyValueStore } from './save';
 
 /** Where the player's settings are kept in the browser, apart from the progress. */
 export const SETTINGS_KEY = 'florecer.settings';
 
-const SETTINGS_VERSION = 1 as const;
+const SETTINGS_VERSION = 2 as const;
 
 /** The audio channels, each with its own volume: music, sound effects and the voices' babble. */
 export const AUDIO_CHANNELS = ['music', 'sfx', 'voice'] as const;
@@ -25,8 +26,9 @@ export const stepVolume = (value: number): number =>
 /** A stored volume: out of range is damage; between steps is rounded onto its step. */
 const volume = z.number().min(0).max(1).transform(stepVolume);
 
-const settingsSchema = z.strictObject({
-  version: z.literal(SETTINGS_VERSION),
+/** The settings of version 1, before the motion setting (plan 09, phase 6). */
+const settingsV1Schema = z.strictObject({
+  version: z.literal(1),
   music: volume,
   sfx: volume,
   voice: volume,
@@ -34,27 +36,53 @@ const settingsSchema = z.strictObject({
   muted: z.boolean(),
 });
 
-/** The player's settings: the volume of each audio channel, and whether everything is muted. */
+const settingsSchema = z.strictObject({
+  ...settingsV1Schema.shape,
+  version: z.literal(SETTINGS_VERSION),
+  /** How much the game moves: like the system, less, or all of it (`motion.ts`). */
+  motion: z.enum(MOTION_CHOICES),
+});
+
+/** Settings of any version this game has written: the older ones are brought up to date. */
+const storedSchema = z.union([
+  settingsSchema,
+  settingsV1Schema.transform((old): Settings => ({
+    ...old,
+    version: SETTINGS_VERSION,
+    motion: 'system',
+  })),
+]);
+
+/**
+ * The player's settings: the volume of each audio channel, whether everything is muted, and how
+ * much the game moves.
+ */
 export type Settings = z.infer<typeof settingsSchema>;
 
-/** The settings of a new player: music in the background, effects and voices clearer. */
+/**
+ * The settings of a new player: music in the background, effects and voices clearer, and the motion
+ * the system asks for.
+ */
 export const defaultSettings = (): Settings => ({
   version: SETTINGS_VERSION,
   music: 0.5,
   sfx: 0.8,
   voice: 0.8,
   muted: false,
+  motion: 'system',
 });
 
 /**
- * Reads the settings. Anything unreadable (none yet, damaged JSON, another version, storage
- * refused) gives the defaults: the game always starts, at worst with the volumes it ships with.
+ * Reads the settings, bringing those of an older version up to date (the motion of version 1's
+ * player follows the system). Anything unreadable (none yet, damaged JSON, an unknown version,
+ * storage refused) gives the defaults: the game always starts, at worst with the volumes it ships
+ * with.
  */
 export function loadSettings(store: KeyValueStore): Settings {
   try {
     const raw = store.getItem(SETTINGS_KEY);
     if (raw === null) return defaultSettings();
-    const parsed = settingsSchema.safeParse(JSON.parse(raw));
+    const parsed = storedSchema.safeParse(JSON.parse(raw));
     return parsed.success ? parsed.data : defaultSettings();
   } catch {
     return defaultSettings();
@@ -76,8 +104,21 @@ export const setVolume = (settings: Settings, channel: AudioChannel, value: numb
   [channel]: stepVolume(value),
 });
 
+/** The settings with the volume of `channel` one step (a tenth) down or up: an arrow on its slider. */
+export const nudgeVolume = (
+  settings: Settings,
+  channel: AudioChannel,
+  direction: -1 | 1,
+): Settings => setVolume(settings, channel, settings[channel] + direction / STEPS);
+
 /** The settings with mute switched over; the volumes stay as they were. */
 export const toggleMute = (settings: Settings): Settings => ({
   ...settings,
   muted: !settings.muted,
+});
+
+/** The settings with the motion set to `motion`; the rest stays as it was. */
+export const setMotion = (settings: Settings, motion: MotionChoice): Settings => ({
+  ...settings,
+  motion,
 });

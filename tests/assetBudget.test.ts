@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import fallbackJson from '../src/game/assets/fallbacks.json';
+import { parseFallbacks } from '../src/game/assets/fallbackSchema';
 import manifestJson from '../src/game/assets/manifest.json';
 import { parseManifest } from '../src/game/assets/manifestSchema';
 import { BUDGET, manifestSizes } from '../tools/assets/budget';
@@ -6,7 +8,8 @@ import { BUDGET, manifestSizes } from '../tools/assets/budget';
 // The committed assets keep within the budget of plan 06, phase 11. The JavaScript is only known
 // after a build, so `npm run budget` weighs it; here the boot group keeps room for all of it.
 
-const SIZES = manifestSizes(parseManifest(manifestJson));
+// Each sound weighs the larger of its file and its fallback: what one browser fetches.
+const SIZES = manifestSizes(parseManifest(manifestJson), parseFallbacks(fallbackJson));
 
 describe('the asset budget', () => {
   it.each([

@@ -22,6 +22,16 @@ export interface TeacherModule {
   mountTeacher(layer: HTMLElement, bus: Bus<BusEvents>): TeacherView;
 }
 
+/** The shell once mounted, as the page's layout speaks to it. */
+export interface TeacherShell {
+  /**
+   * Tells whether the panel fits beside the canvas in the window as it is now
+   * (`game/scale/panelRoom.ts`): where it does not (a phone, a narrow window), an open panel stays
+   * out of sight, and shows again where it was left once there is room.
+   */
+  fit(fits: boolean): void;
+}
+
 /** What `mountTeacherShell` needs; `load` and `later` stand in for the chunk and the clock in tests. */
 export interface TeacherShellOptions {
   readonly bus: Bus<BusEvents>;
@@ -46,13 +56,14 @@ export const LEAVE_GRACE_MS = 300;
  * decides when). Opening it tells the game to make room beside the canvas (`teacher.panel`) and,
  * the first time, loads the panel with the books chunk, KaTeX and all. Every feed of the level is
  * then shown as it comes. A panel that fails to load folds again, and is tried anew next time.
+ * Where the window has no room for it beside the canvas, an open panel stays out of sight (`fit`).
  */
 export function mountTeacherShell({
   bus,
   host,
   load = () => import('./books'),
   later = (run, ms) => void setTimeout(run, ms),
-}: TeacherShellOptions): void {
+}: TeacherShellOptions): TeacherShell {
   const layer = host.ownerDocument.createElement('div');
   layer.className = 'teacher-layer';
   layer.hidden = true;
@@ -68,6 +79,8 @@ export function mountTeacherShell({
   host.appendChild(layer);
 
   let state = FOLDED_PANEL;
+  /** Whether the window has room for the panel beside the canvas. */
+  let fits = true;
   let view: TeacherView | null = null;
   let loading: Promise<void> | null = null;
 
@@ -90,7 +103,7 @@ export function mountTeacherShell({
     const was = isShown(state);
     state = next;
     const now = isShown(state);
-    layer.hidden = !now;
+    layer.hidden = !(now && fits);
     if (now !== was) bus.emit('teacher.panel', { open: now });
     if (!now) return;
     if (view === null) build();
@@ -105,4 +118,10 @@ export function mountTeacherShell({
       if (state.feed === left) update(withoutFeed(state));
     }, LEAVE_GRACE_MS);
   });
+  return {
+    fit(next) {
+      fits = next;
+      layer.hidden = !(isShown(state) && fits);
+    },
+  };
 }

@@ -1,4 +1,5 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
+import type { PALETTE } from '../view/palette';
 
 /** A rectangle in logical pixels. */
 export interface BarRect {
@@ -13,6 +14,17 @@ export interface LoadingBar {
   readonly frame: BarRect;
   readonly fill: BarRect;
 }
+
+/**
+ * The colours of the bar: its edge, what has loaded and what has not. They are the colours of the
+ * lantern `index.html` draws before the script (its edge and its light) on the same dark ground,
+ * where the bar appears, so the bar takes over from it with no jump in place or tone.
+ */
+export const LOADING_TONES = {
+  edge: 'panelEdge',
+  fill: 'lit',
+  empty: 'background',
+} as const satisfies Readonly<Record<string, keyof typeof PALETTE>>;
 
 /** The frame's size: the fill is 160 × 8 inside a one-pixel edge. */
 const FRAME_WIDTH = 162;

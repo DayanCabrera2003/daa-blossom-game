@@ -11,11 +11,15 @@ import type { Point } from '../input/target';
  * come from `foldFrames.ts`.
  */
 
-/** The children of a flower's cycle where they stand open, the flower's middle, its petals. */
+/**
+ * The children of a flower's cycle where they stand open, the flower's middle, its petals, and the
+ * petals of the first flower folded directly inside it (null with none), drawn small in its middle.
+ */
 export interface FoldShape {
   readonly open: readonly Point[];
   readonly centre: Point;
   readonly petals: number;
+  readonly inner: number | null;
 }
 
 /**
@@ -36,6 +40,7 @@ export function foldShapes(
         open: node.cycle.map(middle),
         centre: middle(node),
         petals: node.cycle.length,
+        inner: node.cycle.find((child) => child.kind === 'blossom')?.cycle.length ?? null,
       });
     node.cycle.forEach(walk);
   };

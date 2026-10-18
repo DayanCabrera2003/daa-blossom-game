@@ -1,14 +1,7 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
-import {
-  besideLeft,
-  bookButtonLeft,
-  HUD_BUTTONS,
-  hudRow,
-  traceButtonLeft,
-  type HudButton,
-} from '../picture/bottomRows';
+import { bottomRow, HUD_BUTTONS, traceButtonLeft, type HudButton } from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -17,6 +10,7 @@ import { BOOK_ICON, ICON_GAP } from '../picture/buttonIcon';
 import { GEAR_SIZE } from './GearButton';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
+import { OutlinedText } from './OutlinedText';
 import { textStyle } from './textStyle';
 
 /** The water drop of the pack, before the water spent. */
@@ -65,17 +59,17 @@ const LEVEL_HUD: HudLayout = { backLabel: 'hud.back', buttons: HUD_BUTTONS, trac
  * tools' row.
  */
 export class HudView {
-  private readonly goal: Phaser.GameObjects.Text;
+  private readonly goal: OutlinedText;
   /** The status line: the lanterns lit, the water (after its drop) and the depth of the layers. */
-  private readonly status: Phaser.GameObjects.Text;
-  private readonly water: Phaser.GameObjects.Text;
-  private readonly layer: Phaser.GameObjects.Text;
+  private readonly status: OutlinedText;
+  private readonly water: OutlinedText;
+  private readonly layer: OutlinedText;
   /** The drop of the pack before the water spent, when its picture is loaded. */
   private readonly drop: Phaser.GameObjects.Image | null;
   /** What a waiting script step expects (drag the sun, touch a sprout…), centred under the goal. */
-  private readonly prompt: Phaser.GameObjects.Text;
+  private readonly prompt: OutlinedText;
   /** The Council's count (chapter 7), on the right of the status line. */
-  private readonly council: Phaser.GameObjects.Text;
+  private readonly council: OutlinedText;
   /** The buttons of the bottom row; a screen may leave some out (the free mode, its hint). */
   private readonly buttons: Partial<Record<HudButton, Button>>;
   /** The Códex, at the bottom left after the settings, while some page of it is open. */
@@ -89,24 +83,21 @@ export class HudView {
     actions: HudActions,
     layout: HudLayout = LEVEL_HUD,
   ) {
-    this.goal = scene.add.text(LAYOUT.margin, LAYOUT.topY, '', textStyle()).setDepth(100);
-    this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
-    this.water = scene.add.text(0, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
-    this.layer = scene.add.text(0, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
+    // Written straight on the season's ground, each line wears the outline of the sprouts' names.
+    const line = (x: number, y: number, colour?: number): OutlinedText =>
+      new OutlinedText(scene, x, y, '', textStyle(8, colour)).setDepth(100);
+    this.goal = line(LAYOUT.margin, LAYOUT.topY);
+    this.status = line(LAYOUT.margin, LAYOUT.secondY);
+    this.water = line(0, LAYOUT.secondY);
+    this.layer = line(0, LAYOUT.secondY);
     this.drop = scene.textures.exists(WATER_ICON)
       ? scene.add
           .image(0, LAYOUT.secondY - 1, WATER_ICON)
           .setOrigin(0, 0)
           .setDepth(100)
       : null;
-    this.prompt = scene.add
-      .text(CANVAS_WIDTH / 2, LAYOUT.secondY, '', textStyle(8, PALETTE.sun))
-      .setOrigin(0.5, 0)
-      .setDepth(100);
-    this.council = scene.add
-      .text(CANVAS_WIDTH - LAYOUT.margin, LAYOUT.secondY, '', textStyle(8))
-      .setOrigin(1, 0)
-      .setDepth(100);
+    this.prompt = line(CANVAS_WIDTH / 2, LAYOUT.secondY, PALETTE.sun).setOrigin(0.5, 0);
+    this.council = line(CANVAS_WIDTH - LAYOUT.margin, LAYOUT.secondY).setOrigin(1, 0);
     // Every button keeps its place even while hidden, so the row is laid out for all of them.
     const made = layout.buttons.map(
       (name) =>
@@ -118,21 +109,28 @@ export class HudView {
           actions[name],
         ),
     );
-    const lefts = hudRow(made.map((button) => button.width));
-    made.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
-    // Clear of the buttons laid out from the right: they only reach the left half of the row.
-    const bookLeft = bookButtonLeft(GEAR_SIZE);
-    this.book = new Button(scene, bookLeft, LAYOUT.bottomY, t('hud.book'), actions.book, [
+    this.book = new Button(scene, 0, LAYOUT.bottomY, t('hud.book'), actions.book, [
       BOOK_ICON,
     ]).setVisible(false);
     this.trace = new Button(scene, 0, LAYOUT.toolbarY, t('hud.trace'), actions.trace).setVisible(
       false,
     );
     // In the free mode its orders end the tools' row, so the trace goes beside the Códex.
-    if (layout.traceRow === 'tools') {
+    const traceBelow = layout.traceRow === 'buttons';
+    // The gear, the Códex (and the trace) from the left, the buttons from the right; the row
+    // squeezes its gaps if a wider fallback face would make them meet.
+    const row = bottomRow({
+      gear: GEAR_SIZE,
+      book: this.book.width,
+      trace: traceBelow ? this.trace.width : null,
+      buttons: made.map((button) => button.width),
+    });
+    made.forEach((button, i) => button.moveTo(itemAt(row.buttons, i), LAYOUT.bottomY));
+    this.book.moveTo(row.book, LAYOUT.bottomY);
+    if (row.trace === null) {
       this.trace.moveTo(traceButtonLeft(this.trace.width), LAYOUT.toolbarY);
     } else {
-      this.trace.moveTo(besideLeft(bookLeft + this.book.width), LAYOUT.bottomY);
+      this.trace.moveTo(row.trace, LAYOUT.bottomY);
     }
     this.buttons = Object.fromEntries(layout.buttons.map((name, i) => [name, made[i]]));
   }

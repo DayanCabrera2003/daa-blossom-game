@@ -10,13 +10,18 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 `npm run assets:check` proves the committed copies match the zips. Each line below is
 `file inside the pack` → `file under public/assets/`.
 
+Every Ogg Vorbis sound also ships as an AAC copy in `.m4a`, next to it under the same name, for
+Safari before 18.4, which cannot play the Ogg container: `npm run assets:fallbacks` converts the
+extracted file with the system's ffmpeg (7.1.5, its own AAC encoder, 64 kb/s per channel). Each
+copy is the same CC0 work in another format, credited with its original below.
+
 ## Ninja Adventure Asset Pack
 
 - Author: Pixel-boy and AAA
 - Version: not stated by the pack
 - License: CC0-1.0
 - Source: https://pixel-boy.itch.io/ninja-adventure-asset-pack
-- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, the music of the hub and of chapters 1 to 7, two jingles, a few effects, the babble syllables, and the butterflies, frog, cat, hens and seedling plants of the hub.
+- Used for: Palette, tilesets of the garden and the seasonal backdrops, portraits and dialogue frame, the lantern, effects and particles, the wooden interface, icons, the music of the hub and of chapters 1 to 7, two jingles, a few effects, the babble syllables, the butterflies, frog, cat, hens and seedling plants of the hub, and the page's icon (a sprout of grass).
 
 - `Palette.png` → `images/palette.png`
 - `Backgrounds/Tilesets/TilesetFloor.png` → `images/tiles/floor.png`
@@ -60,6 +65,7 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - `Items/Object/Book.png` → `images/ui/icons/book.png`
 - `Items/Food/Seed1.png` → `images/ui/icons/seed.png`
 - `Items/Object/Hourglass.png` → `images/ui/icons/hourglass.png`
+- `Ui/Skill Icon/Meteo/Moon.png` → `images/ui/icons/moon.png`
 - `Audio/Musics/4 - Village.ogg` → `audio/music/hub.ogg`
 - `Audio/Musics/31 - Sunny.ogg` → `audio/music/ch1.ogg`
 - `Audio/Musics/39 - Boat.ogg` → `audio/music/ch2.ogg`
@@ -88,6 +94,7 @@ files listed under each pack into `public/assets/` (wave files brought to mono a
 - `Actor/Animal/Chicken/SpriteSheetWhite.png` → `images/hub/chicken-white.png`
 - `Actor/Animal/Chicken/SpriteSheetBrown.png` → `images/hub/chicken-brown.png`
 - `Backgrounds/Animated/Plant/SpriteSheet16x16.png` → `images/hub/plant.png`
+- `Items/Resource/Grass.png` → `images/favicon.png`
 
 ## monogram
 
@@ -202,10 +209,27 @@ is `the sound's parameters` → `file under public/assets/`.
 
 ## Libraries
 
-The game also ships the code of the libraries below, which the Codex loads only when a book is
-first opened. They are not art, music or sound, so the CC0 rule of this file does not apply to
-them; their licenses ask for the notices kept in their folders under `node_modules/`, and they are
-credited here.
+The game also ships the code of the libraries below: Phaser and Zod with the game itself, KaTeX
+and marked only when a book of the Codex is first opened. They are not art, music or sound, so the
+CC0 rule of this file does not apply to them; their licenses ask for the notices kept in their
+folders under `node_modules/`, and they are credited here. The credits screen of the game lists
+them too.
+
+### Phaser
+
+- Authors: Richard Davey and Phaser Studio Inc.
+- Version: 3.90.0
+- License: MIT
+- Source: https://phaser.io (https://github.com/phaserjs/phaser)
+- Used for: The game engine: the canvas, the scenes, the pictures, the sounds and the input.
+
+### Zod
+
+- Authors: Colin McDonnell
+- Version: 4.6.5
+- License: MIT
+- Source: https://zod.dev (https://github.com/colinhacks/zod)
+- Used for: Checking the files of the levels, the Codex and the saved games as they are read.
 
 ### KaTeX
 
