@@ -271,7 +271,7 @@ Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y e
 
 ### 5.10 Flores secretas
 
-Puzles opcionales difíciles escondidos en el hub (uno o dos por capítulo). No enseñan nada nuevo, exigen combinar. Ejemplos en 7.9.
+Puzles opcionales difíciles escondidos en el hub: una por capítulo, del Prado al Consejo (siete; el Huerto no tiene). No enseñan nada nuevo, exigen combinar, y solo usan las acciones de su capítulo. Ejemplos en 7.9.
 
 
 ### 5.11 Tarjetas de mecánica
