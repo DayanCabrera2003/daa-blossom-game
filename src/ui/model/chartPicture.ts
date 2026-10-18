@@ -1,6 +1,7 @@
 import { runOf, type RaceResult } from '@core/cost/benchmark';
 import type { Level } from '@levels/build';
 import { racesOf } from '@levels/races';
+import { MINI } from './miniGarden';
 
 /**
  * The chart of the races of C11 (plan 07, phase 5; levels 6.4 and 6.5): steps against the size of
@@ -10,6 +11,9 @@ import { racesOf } from '@levels/races';
  * mechanical gardener's curve stays inside, Bruto's leaves through the top, and once he falls
  * asleep his dot says so instead of standing at the budget he ran out of.
  */
+
+/** The whole picture of the chart, in its pixels: as wide as a small garden. */
+export const CHART_SIZE = { width: MINI.width, height: 150 } as const;
 
 /** The box the chart is drawn in, in pixels of the picture; y grows downwards. */
 export interface ChartBox {

@@ -1,12 +1,11 @@
 import type { RaceResult } from '@core/cost/benchmark';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
-import { chartPicture, type ChartPicture } from '@ui/model/chartPicture';
+import { CHART_SIZE, chartPicture, type ChartPicture } from '@ui/model/chartPicture';
 import { chartWords, numberedSizes, raceCount } from '@ui/model/chartWords';
 import type { DiagramSpec } from '@ui/model/diagramSpec';
 import { helpKeys } from '@ui/model/diagramWords';
 import type { Point } from '@ui/model/diagramGarden';
-import { MINI } from '@ui/model/miniGarden';
 import { part } from './parts';
 import { stepControls } from './stepControls';
 import { pointsOf, shape } from './svgShape';
@@ -19,8 +18,8 @@ import { pointsOf, shape } from './svgShape';
  * above it an arrow out of the chart.
  */
 
-/** The chart's picture, in its pixels: as wide as a small garden, and the plot inside its margins. */
-const CHART = { width: MINI.width, height: 150 } as const;
+/** The chart's picture, in its pixels, and the plot inside its margins. */
+const CHART = CHART_SIZE;
 const PLOT = { left: 26, top: 24, right: 12, bottom: 20 } as const;
 const BOX = {
   width: CHART.width - PLOT.left - PLOT.right,
