@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { codexUnlock } from './codex';
 import { actionType, label, levelActionOptions, lineId, sprouts, vine } from './fields';
 import { flowSchema } from './flow';
 import { flowInputOptions } from './flowInput';
@@ -74,13 +75,11 @@ export const levelSchema = z.strictObject({
   notebook: z.array(notebookSchema).min(1).optional(),
   /** What happens in the level, in order; played until won when the level writes no script. */
   flow: flowSchema,
-  /** What finishing the level unlocks: actions and Codex entries (C1…C14). */
+  /** What finishing the level unlocks: actions, and Codex entries whole or by tabs (`codex.ts`). */
   unlocks: z
     .strictObject({
       actions: z.array(actionType).default([]),
-      codex: z
-        .array(z.string().regex(/^C(1[0-4]|[1-9])$/, 'expected a Codex entry C1…C14'))
-        .default([]),
+      codex: z.array(codexUnlock).default([]),
     })
     .default({ actions: [], codex: [] }),
   /**

@@ -187,4 +187,13 @@ describe('level schema', () => {
     };
     expect(levelSchema.safeParse(mixed).success).toBe(false);
   });
+  it('a level opens whole Codex entries, or only some of their tabs', () => {
+    const unlocks = { codex: ['C2', { entry: 'C1', tabs: ['intuition'] }] };
+    expect(levelSchema.parse({ ...twoSprouts, unlocks }).unlocks.codex).toEqual(unlocks.codex);
+    const wrong = { codex: [{ entry: 'C1', tabs: ['proof'] }] };
+    expect(levelSchema.safeParse({ ...twoSprouts, unlocks: wrong }).success).toBe(false);
+    expect(levelSchema.safeParse({ ...twoSprouts, unlocks: { codex: ['C15'] } }).success).toBe(
+      false,
+    );
+  });
 });
