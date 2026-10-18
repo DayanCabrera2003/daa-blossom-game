@@ -60,6 +60,14 @@ function button(page: Document, className: string, focus: string, onPress: () =>
 const seal = (page: Document, t: Translate): HTMLElement =>
   make(page, 'span', 'codex-seal', t('codex.new'));
 
+/** The "new" seal of a tab: a small dot beside its name, so the tab keeps to one line. */
+function dot(page: Document, t: Translate): HTMLElement {
+  const made = make(page, 'span', 'codex-dot');
+  made.setAttribute('role', 'img');
+  made.setAttribute('aria-label', t('codex.new'));
+  return made;
+}
+
 /**
  * Opens the Codex in the shell's layer at the entry `request` asks for, when it is open, or at the
  * first page not read yet. With nothing open (it never shows then) the layer closes at once.
@@ -78,19 +86,22 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   const page = book.ownerDocument;
   book.style.setProperty('--wood-panel', `url("${WOOD_PANEL}")`);
 
-  // The parts of the book, built once; `draw` fills them for the page shown.
+  // The parts of the book, built once; `draw` fills them for the page shown. The head is one row:
+  // the book's name over the index, and over the page its heading with the way out beside it.
+  const title = make(page, 'h1', 'codex-title', t('codex.title'));
   const head = make(page, 'header', 'codex-head');
-  head.append(make(page, 'h1', 'codex-title', t('codex.title')));
+  const heading = make(page, 'h2', 'codex-heading');
+  const gardenTitle = make(page, 'span', 'codex-garden-title');
+  const formalTitle = make(page, 'span', 'codex-formal-title');
+  heading.append(gardenTitle, formalTitle);
   const closeButton = button(page, 'codex-button codex-close', 'close', close);
   closeButton.textContent = t('codex.close');
-  head.append(closeButton);
+  head.append(heading, closeButton);
   const index = make(page, 'nav', 'codex-index');
   index.setAttribute('aria-label', t('codex.contents'));
   const list = make(page, 'ol', 'codex-list');
   index.append(list);
   const sheet = make(page, 'article', 'codex-page');
-  const gardenTitle = make(page, 'h2', 'codex-garden-title');
-  const formalTitle = make(page, 'p', 'codex-formal-title');
   const tabs = make(page, 'div', 'codex-tabs');
   tabs.setAttribute('role', 'tablist');
   const text = make(page, 'div', 'codex-text');
@@ -99,14 +110,14 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   text.dataset['focus'] = 'text';
   const notice = make(page, 'p', 'codex-notice');
   notice.setAttribute('aria-live', 'polite');
-  sheet.append(gardenTitle, formalTitle, tabs, text, notice);
+  sheet.append(tabs, text, notice);
   const foot = make(page, 'footer', 'codex-foot');
   const previous = button(page, 'codex-button', 'previous', () => turn(-1));
   previous.textContent = t('codex.previous');
   const next = button(page, 'codex-button', 'next', () => turn(1));
   next.textContent = t('codex.next');
   foot.append(previous, make(page, 'span', 'codex-keys', t('codex.keys')), next);
-  book.append(head, index, sheet, foot);
+  book.append(title, head, index, sheet, foot);
 
   /** Fills the book for the page shown, keeping the keyboard focus on the same control. */
   const draw = (current: BookState): void => {
@@ -142,6 +153,8 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
     const formalOpen = open.get(entry)?.has('formal') === true;
     formalTitle.textContent = formalOpen ? (shown?.formalTitle ?? '') : '';
     formalTitle.hidden = !formalOpen;
+    // Cut short on the narrow row, the heading is read whole in its tooltip.
+    heading.title = [gardenTitle.textContent, formalTitle.textContent].filter(Boolean).join('\n');
     tabs.replaceChildren(
       ...CODEX_TABS.filter((name) => open.get(entry)?.has(name) === true).map((name) => {
         const choose = button(page, 'codex-tab', `tab-${name}`, () =>
@@ -151,7 +164,7 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
         choose.setAttribute('aria-selected', String(name === tab));
         // Numbered as the keys that choose them.
         choose.textContent = `${CODEX_TABS.indexOf(name) + 1} ${t(`codex.tab.${name}`)}`;
-        if (current.sealed.has(pageOf(entry, name))) choose.append(seal(page, t));
+        if (current.sealed.has(pageOf(entry, name))) choose.append(dot(page, t));
         return choose;
       }),
     );

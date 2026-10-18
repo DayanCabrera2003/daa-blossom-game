@@ -59,19 +59,46 @@
   outline-offset: var(--px);
 }
 
-/* The head: the book's name and the way out, always in the same corner. */
-.codex-head {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
+/*
+ * The head, one row: the book's name over the index, and over the page the heading of the entry
+ * shown with the way out beside it, always in the same corner.
+ */
 .codex-title {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
   margin: 0;
   font-size: inherit;
   font-weight: normal;
   color: var(--ink);
+}
+
+.codex-head {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--px));
+  min-width: 0;
+}
+
+.codex-close {
+  flex: none;
+}
+
+/*
+ * The heading of the entry on one line: its garden title, then its formal title once earned, set
+ * apart by a stroke of the wood. The pixel font has one sharp size, so the formal title is told
+ * apart by the stroke and by giving way first: it is the one cut short with an ellipsis.
+ */
+.codex-heading {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+  white-space: nowrap;
 }
 
 .codex-button {
@@ -96,6 +123,8 @@
  * the row's tooltip, give them whole). The closed ones are greyed.
  */
 .codex-index {
+  grid-column: 1;
+  grid-row: 2;
   overflow-x: hidden;
   overflow-y: auto;
   background: var(--paper-edge);
@@ -152,39 +181,58 @@
   color: var(--ink);
 }
 
-/* The page, on the right: the titles, the tabs, and the text on paper. */
-.codex-page {
-  display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
-  min-width: 0;
-}
-
 .codex-garden-title {
-  grid-row: 1;
-  margin: 0;
-  font-size: inherit;
-  font-weight: normal;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--ink);
 }
 
 .codex-formal-title {
-  grid-row: 2;
-  margin: 0;
+  flex: 0 1000 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: calc(4 * var(--px));
+  padding-left: calc(4 * var(--px));
+  border-left: var(--px) solid var(--wood-edge);
   color: var(--ink);
 }
 
-.codex-tabs {
-  grid-row: 3;
-  display: flex;
-  gap: calc(2 * var(--px));
-  margin-top: calc(2 * var(--px));
+/* The page, on the right: the tabs, and the text on paper. */
+.codex-page {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
 }
 
+.codex-tabs {
+  grid-row: 1;
+  display: flex;
+  gap: calc(2 * var(--px));
+}
+
+/* A tab is its number and its name on one line, with a dot beside it while it is new. */
 .codex-tab {
+  display: flex;
+  flex: none;
+  align-items: center;
   padding: 0 calc(4 * var(--px));
   border: var(--px) solid var(--wood-edge);
   border-bottom: 0;
   background: var(--button);
+  white-space: nowrap;
+}
+
+.codex-dot {
+  width: calc(3 * var(--px));
+  height: calc(3 * var(--px));
+  margin-left: calc(3 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--seal);
 }
 
 .codex-tab[aria-selected='true'] {
@@ -196,7 +244,7 @@
  * measure (`cqh` in diagram.css), so each one fits with its controls in the height shown.
  */
 .codex-text {
-  grid-row: 4;
+  grid-row: 2;
   container-type: size;
   overflow-y: auto;
   padding: calc(3 * var(--px)) calc(6 * var(--px));
@@ -241,7 +289,7 @@
 }
 
 .codex-notice {
-  grid-row: 5;
+  grid-row: 3;
   margin: var(--px) 0 0;
   color: var(--ink);
 }
@@ -251,9 +299,10 @@
   margin: 0;
 }
 
-/* The foot: the pages back and forth, and how the keys work. */
+/* The foot, one row: the pages back and forth, and how the keys work in one short line. */
 .codex-foot {
   grid-column: 1 / -1;
+  grid-row: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -261,10 +310,17 @@
 }
 
 .codex-keys {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--ink);
   text-align: center;
-  /* The help of the keys is set apart by wide spaces, which the page must not fold into one. */
-  white-space: pre-wrap;
+  /* Set apart by wide spaces, which the page must not fold into one, and never on two lines. */
+  white-space: pre;
+}
+
+.codex-foot .codex-button {
+  flex: none;
 }
 
 /* A new page slides in, unless the player asked for less motion. */
