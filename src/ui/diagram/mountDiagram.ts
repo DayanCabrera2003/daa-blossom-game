@@ -5,6 +5,7 @@ import { diagramGarden, type DiagramSources } from '@ui/model/diagramGarden';
 import { replaySteps } from '@ui/model/diagramReplay';
 import { parseDiagramSpec } from '@ui/model/diagramSpec';
 import { reflectionOf } from '@ui/model/pondPicture';
+import { coverDiagram } from './CoverDiagram';
 import { playDiagram } from './PlayDiagram';
 import { pondDiagram } from './PondDiagram';
 import { replayDiagram } from './ReplayDiagram';
@@ -59,6 +60,9 @@ export function mountDiagram(hole: HTMLElement, t: Translate): void {
       pondDiagram(hole, garden.value, mirror.value, block, t);
       return;
     }
+    case 'cover':
+      coverDiagram(hole, garden.value, block, t);
+      return;
     default:
       report(`no ${block.kind} diagram is drawn yet`);
   }
