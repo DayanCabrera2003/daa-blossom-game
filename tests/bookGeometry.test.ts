@@ -10,7 +10,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 const SHEET = readFileSync(
-  join(import.meta.dirname, '..', 'src', 'ui', 'codex', 'codex.css'),
+  join(import.meta.dirname, '..', 'src', 'ui', 'book', 'book.css'),
   'utf8',
 );
 
@@ -39,7 +39,7 @@ describe('the measures of the book, in its stylesheet', () => {
   });
 
   it('the text of the page has the border and padding the model counts', () => {
-    const text = rule('.codex-text');
+    const text = rule('.book-text');
     expect(text).toContain(`padding: ${px(BOOK.text.padY)} ${px(BOOK.text.padX)};`);
     expect(text).toContain(`border: ${px(BOOK.text.border)} solid var(--wood-edge);`);
   });

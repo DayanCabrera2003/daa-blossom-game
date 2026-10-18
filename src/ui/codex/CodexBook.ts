@@ -15,58 +15,22 @@ import {
   type BookState,
 } from '@ui/model/codexBook';
 import { codexIndex } from '@ui/model/codexIndex';
-import { bookCommand } from '@ui/model/codexKeys';
-import { openOverlay } from '../overlay';
+import { focusAgain, focusedKey, openBookFrame, setHeading, turnIn } from '../book/bookFrame';
+import { button, dot, make, seal } from '../book/bookParts';
 import type { OverlayFrame } from '../shell';
 import { codexEntries } from './entries';
 import { renderTab, scrollToResult } from './EntryPage';
 import './codex.css';
 
 /**
- * The Codex as a book (GDD §5.6; plan 07, phase 3): the index on the left (closed entries as closed
- * pages, the new ones sealed), the page on the right with the tabs open of its entry, and above
- * them the ways to turn the pages and to close the book. Pointer and keyboard both work: the arrows and PageUp/PageDown turn the
- * pages, Home and End go to the ends, 1 2 3 choose a tab, Escape closes. What is open, where the
- * book opens and where each key leads are decided in `ui/model/`; this module only builds the DOM
- * and marks each page read in the shared save as soon as it is shown.
+ * The Codex as a book (GDD §5.6; plan 07, phase 3), on the frame every book shares
+ * (`ui/book/bookFrame.ts`): the index on the left (closed entries as closed pages, the new ones
+ * sealed), the page on the right with the tabs open of its entry, and above them the ways to turn
+ * the pages and to close the book. Pointer and keyboard both work: the arrows and PageUp/PageDown
+ * turn the pages, Home and End go to the ends, 1 2 3 choose a tab, Escape closes. What is open,
+ * where the book opens and where each key leads are decided in `ui/model/`; this module only
+ * builds the DOM and marks each page read in the shared save as soon as it is shown.
  */
-
-/** Where the picture of the book's wood is, next to the page (public/assets). */
-const WOOD_PANEL = `${import.meta.env.BASE_URL}assets/images/ui/wood/panel.png`;
-
-/** A new element of `tag` in `page`, with a class and maybe a text. */
-function make<K extends keyof HTMLElementTagNameMap>(
-  page: Document,
-  tag: K,
-  className: string,
-  text?: string,
-): HTMLElementTagNameMap[K] {
-  const element = page.createElement(tag);
-  element.className = className;
-  if (text !== undefined) element.textContent = text;
-  return element;
-}
-
-/** A button of the book, with the key that finds it again after the page is drawn anew. */
-function button(page: Document, className: string, focus: string, onPress: () => void) {
-  const made = make(page, 'button', className);
-  made.type = 'button';
-  made.dataset['focus'] = focus;
-  made.addEventListener('click', onPress);
-  return made;
-}
-
-/** The "new" seal, after a title or on a tab. */
-const seal = (page: Document, t: Translate): HTMLElement =>
-  make(page, 'span', 'codex-seal', t('codex.new'));
-
-/** The "new" seal of a tab: a small dot beside its name, so the tab keeps to one line. */
-function dot(page: Document, t: Translate): HTMLElement {
-  const made = make(page, 'span', 'codex-dot');
-  made.setAttribute('role', 'img');
-  made.setAttribute('aria-label', t('codex.new'));
-  return made;
-}
 
 /**
  * Opens the Codex in the shell's layer at the entry `request` asks for, when it is open, or at the
@@ -82,52 +46,29 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
     return;
   }
   let state: BookState = first;
-  const { book, close } = openOverlay(frame, t('codex.title'), 'codex-book');
+  const parts = openBookFrame(
+    frame,
+    {
+      title: t('codex.title'),
+      className: 'codex-book',
+      keys: t('codex.keys'),
+      onTurn: (step) => turn(step),
+      onCommand: (command) => {
+        if (command.kind === 'turn') turn(command.step);
+        else if (command.kind === 'end') goTo(endPage(open, state, command.step));
+        else goTo(chooseTab(open, state, command.tab));
+      },
+    },
+    t,
+  );
+  const { book, list, tabs, text, notice, previous, next } = parts;
   const page = book.ownerDocument;
-  book.style.setProperty('--wood-panel', `url("${WOOD_PANEL}")`);
-
-  // The parts of the book, built once; `draw` fills them for the page shown. The head is the only
-  // row besides the page: over the index the book's name and the arrows that turn its pages, over
-  // the page its heading with the way out beside it. The help of the keys sits under the index.
-  const corner = make(page, 'div', 'codex-corner');
-  const previous = button(page, 'codex-button codex-turn', 'previous', () => turn(-1));
-  previous.textContent = t('codex.previous');
-  previous.setAttribute('aria-label', t('codex.previousPage'));
-  previous.title = t('codex.previousPage');
-  const next = button(page, 'codex-button codex-turn', 'next', () => turn(1));
-  next.textContent = t('codex.next');
-  next.setAttribute('aria-label', t('codex.nextPage'));
-  next.title = t('codex.nextPage');
-  corner.append(make(page, 'h1', 'codex-title', t('codex.title')), previous, next);
-  const head = make(page, 'header', 'codex-head');
-  const heading = make(page, 'h2', 'codex-heading');
-  const gardenTitle = make(page, 'span', 'codex-garden-title');
-  const formalTitle = make(page, 'span', 'codex-formal-title');
-  heading.append(gardenTitle, formalTitle);
-  const closeButton = button(page, 'codex-button codex-close', 'close', close);
-  closeButton.textContent = t('codex.close');
-  head.append(heading, closeButton);
-  const index = make(page, 'nav', 'codex-index');
-  index.setAttribute('aria-label', t('codex.contents'));
-  const list = make(page, 'ol', 'codex-list');
-  index.append(list, make(page, 'p', 'codex-keys', t('codex.keys')));
-  const sheet = make(page, 'article', 'codex-page');
-  const tabs = make(page, 'div', 'codex-tabs');
-  tabs.setAttribute('role', 'tablist');
-  const text = make(page, 'div', 'codex-text');
-  text.setAttribute('role', 'tabpanel');
-  text.tabIndex = 0;
-  text.dataset['focus'] = 'text';
   // The page its diagrams fit their gardens to (ui/diagram/fitToPage.ts).
   text.dataset['diagramPage'] = '';
-  const notice = make(page, 'p', 'codex-notice');
-  notice.setAttribute('aria-live', 'polite');
-  sheet.append(tabs, text, notice);
-  book.append(corner, head, index, sheet);
 
   /** Fills the book for the page shown, keeping the keyboard focus on the same control. */
   const draw = (current: BookState): void => {
-    const focused = (page.activeElement as HTMLElement | null)?.dataset['focus'];
+    const focused = focusedKey(parts);
     const { entry, tab } = current.place;
     const shownRows: HTMLElement[] = [];
     list.replaceChildren(
@@ -155,12 +96,9 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
       }),
     );
     const shown = entries.get(entry);
-    gardenTitle.textContent = shown?.gardenTitle ?? '';
+    // The garden title, and the formal one once its tab is open.
     const formalOpen = open.get(entry)?.has('formal') === true;
-    formalTitle.textContent = formalOpen ? (shown?.formalTitle ?? '') : '';
-    formalTitle.hidden = !formalOpen;
-    // Cut short on the narrow row, the heading is read whole in its tooltip.
-    heading.title = [gardenTitle.textContent, formalTitle.textContent].filter(Boolean).join('\n');
+    setHeading(parts, shown?.gardenTitle ?? '', formalOpen ? (shown?.formalTitle ?? '') : null);
     tabs.replaceChildren(
       ...CODEX_TABS.filter((name) => open.get(entry)?.has(name) === true).map((name) => {
         const choose = button(page, 'codex-tab', `tab-${name}`, () =>
@@ -188,18 +126,12 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
       },
       t,
     );
-    // The new page slides in; the class is set anew so the animation plays again.
-    text.classList.remove('codex-turned');
-    void text.offsetWidth;
-    text.classList.add('codex-turned');
+    turnIn(parts);
     // The entry shown stays in view in a long index.
     for (const row of shownRows) row.scrollIntoView({ block: 'nearest' });
     previous.disabled = !canTurn(open, current, -1);
     next.disabled = !canTurn(open, current, 1);
-    // The focus goes back to the control that had it, or to the text, so the arrows scroll it.
-    const again =
-      focused === undefined ? null : book.querySelector<HTMLElement>(`[data-focus="${focused}"]`);
-    (again !== null && !(again as HTMLButtonElement).disabled ? again : text).focus();
+    focusAgain(parts, focused);
     // Shown is read: the save remembers it at once, the seal stays until the page is left.
     frame.saves.update((saved) => markRead(saved, pageOf(entry, tab), open));
   };
@@ -216,17 +148,5 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
   };
   const turn = (step: 1 | -1): void => goTo(turnPage(open, state, step));
 
-  book.addEventListener('keydown', (event) => {
-    const target = event.target as HTMLElement | null;
-    // A key meant for a field of a diagram (a slider) stays there; so do shortcuts with modifiers.
-    if (target !== null && target.closest('input, select, textarea') !== null) return;
-    if (event.altKey || event.ctrlKey || event.metaKey) return;
-    const command = bookCommand(event.key);
-    if (command === null) return;
-    event.preventDefault();
-    if (command.kind === 'turn') turn(command.step);
-    else if (command.kind === 'end') goTo(endPage(open, state, command.step));
-    else goTo(chooseTab(open, state, command.tab));
-  });
   draw(state);
 }

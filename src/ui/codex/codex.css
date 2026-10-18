@@ -1,158 +1,13 @@
 /*
- * The books over the canvas (plan 07, phase 3): a wooden book of the pack (the 9-slice panel of the
- * dialogue and the notebook, 16 x 16 with borders 6 5 5 6) holding a page of light paper. Every
- * size is a whole number of logical pixels, `--px`, which is `--zoom` screen pixels like the
- * canvas under it, so the pixel font stays sharp and the book keeps its place at every zoom. The
- * colours are those of the game's palette (src/game/view/palette.ts).
+ * The Codex's own look (plan 07, phase 3), on the frame every book shares (ui/book/book.css): its
+ * index of entries, its tabs, and its formulas in KaTeX.
  */
-
-.book-backdrop {
-  --px: calc(1px * var(--zoom, 2));
-  --ink: #141b1b;
-  --paper: #f2eaf1;
-  --paper-edge: #fce2ca;
-  --wood: #965340;
-  --wood-edge: #543c52;
-  --button: #bd7959;
-  --button-active: #d3865f;
-  --button-off: #695953;
-  --seal: #ef914f;
-  --link: #2d697b;
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: rgb(20 27 27 / 0.6);
-}
-
-.book {
-  box-sizing: border-box;
-  width: min(100vw, calc(464 * var(--px)));
-  height: min(100vh, calc(258 * var(--px)));
-  display: grid;
-  grid-template-columns: calc(176 * var(--px)) 1fr;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: calc(4 * var(--px));
-  padding: calc(4 * var(--px));
-  border-style: solid;
-  border-width: calc(6 * var(--px)) calc(5 * var(--px)) calc(5 * var(--px)) calc(6 * var(--px));
-  border-color: var(--wood-edge);
-  border-image: var(--wood-panel) 6 5 5 6 fill / calc(6 * var(--px)) calc(5 * var(--px))
-    calc(5 * var(--px)) calc(6 * var(--px)) stretch;
-  background-color: var(--wood);
-  image-rendering: pixelated;
-  color: var(--ink);
-  font-family: monogram, monospace;
-  font-size: calc(16 * var(--px));
-  line-height: calc(13 * var(--px));
-  outline: none;
-}
-
-.book button {
-  font: inherit;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.book :focus-visible {
-  outline: var(--px) solid var(--ink);
-  outline-offset: var(--px);
-}
 
 /*
- * The head, the only row besides the page: over the index the book's name and the arrows that
- * turn its pages, over the page the heading of the entry shown with the way out beside it, always
- * in the same corner.
+ * An entry of the index: two lines at most, its garden title and, once earned, its formal title,
+ * each cut short with an ellipsis when it does not fit (the page on the right, and the row's
+ * tooltip, give them whole). The closed ones are greyed.
  */
-.codex-corner {
-  grid-column: 1;
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  gap: calc(2 * var(--px));
-}
-
-.codex-title {
-  flex: 1 1 auto;
-  margin: 0;
-  font-size: inherit;
-  font-weight: normal;
-  color: var(--ink);
-}
-
-.codex-head {
-  grid-column: 2;
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  gap: calc(4 * var(--px));
-  min-width: 0;
-}
-
-.codex-close {
-  flex: none;
-}
-
-/* The arrows that turn the pages: one character each, named in full for a screen reader. */
-.codex-turn {
-  flex: none;
-  min-width: calc(14 * var(--px));
-}
-
-/*
- * The heading of the entry on one line: its garden title, then its formal title once earned, set
- * apart by a stroke of the wood. The pixel font has one sharp size, so the formal title is told
- * apart by the stroke and by giving way first: it is the one cut short with an ellipsis.
- */
-.codex-heading {
-  display: flex;
-  flex: 1 1 auto;
-  min-width: 0;
-  margin: 0;
-  font-size: inherit;
-  font-weight: normal;
-  white-space: nowrap;
-}
-
-.codex-button {
-  padding: 0 calc(3 * var(--px));
-  border: var(--px) solid var(--wood-edge);
-  background: var(--button);
-}
-
-.codex-button:hover:not(:disabled) {
-  background: var(--button-active);
-}
-
-.codex-button:disabled {
-  background: var(--button-off);
-  color: var(--paper);
-  cursor: default;
-}
-
-/*
- * The index, on the left: two lines per entry at most, its garden title and, once earned, its
- * formal title, each cut short with an ellipsis when it does not fit (the page on the right, and
- * the row's tooltip, give them whole). The closed ones are greyed.
- */
-.codex-index {
-  grid-column: 1;
-  grid-row: 2;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  min-height: 0;
-}
-
-.codex-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: hidden;
-  overflow-y: auto;
-  background: var(--paper-edge);
-  border: var(--px) solid var(--wood-edge);
-}
-
 .codex-row {
   border-bottom: var(--px) solid var(--paper);
 }
@@ -189,48 +44,6 @@
   color: var(--link);
 }
 
-.codex-seal {
-  align-self: start;
-  margin-left: calc(2 * var(--px));
-  padding: 0 var(--px);
-  background: var(--seal);
-  color: var(--ink);
-}
-
-.codex-garden-title {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--ink);
-}
-
-.codex-formal-title {
-  flex: 0 1000 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-left: calc(4 * var(--px));
-  padding-left: calc(4 * var(--px));
-  border-left: var(--px) solid var(--wood-edge);
-  color: var(--ink);
-}
-
-/* The page, on the right: the tabs, and the text on paper. */
-.codex-page {
-  grid-column: 2;
-  grid-row: 2;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  min-width: 0;
-}
-
-.codex-tabs {
-  grid-row: 1;
-  display: flex;
-  gap: calc(2 * var(--px));
-}
-
 /* A tab is its number and its name on one line, with a dot beside it while it is new. */
 .codex-tab {
   display: flex;
@@ -243,99 +56,24 @@
   white-space: nowrap;
 }
 
-.codex-dot {
-  width: calc(3 * var(--px));
-  height: calc(3 * var(--px));
-  margin-left: calc(3 * var(--px));
-  border: var(--px) solid var(--wood-edge);
-  background: var(--seal);
-}
-
 .codex-tab[aria-selected='true'] {
   background: var(--paper);
 }
 
-/*
- * The text of the tab, in the row that takes the room left. Its small gardens measure it, so each
- * one fits with its controls in the height shown (ui/diagram/fitToPage.ts).
- */
-.codex-text {
-  grid-row: 2;
-  overflow-y: auto;
-  padding: calc(3 * var(--px)) calc(6 * var(--px));
-  border: var(--px) solid var(--wood-edge);
-  background: var(--paper);
-  overflow-wrap: break-word;
-}
-
-.codex-text p,
-.codex-text ul,
-.codex-text ol {
-  margin: 0 0 calc(6 * var(--px));
-}
-
-.codex-text h2,
-.codex-text h3 {
-  margin: calc(6 * var(--px)) 0 calc(3 * var(--px));
-  font-size: inherit;
-  color: var(--wood);
-}
-
-.codex-text a {
-  color: var(--link);
-}
-
 /* KaTeX's em is far taller than the pixel font's letters: this brings their heights together. */
-.codex-text .katex {
+.book-text .katex {
   font-size: 0.75em;
 }
 
-.codex-text .katex-display {
+.book-text .katex-display {
   margin: calc(4 * var(--px)) 0;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
 /* The holes the diagrams and the glossary fill in later phases take no room while empty. */
-.codex-text .codex-diagram:empty,
-.codex-text .codex-bridge:empty,
-.codex-text .codex-glossary:empty {
+.book-text .codex-diagram:empty,
+.book-text .codex-bridge:empty,
+.book-text .codex-glossary:empty {
   display: none;
-}
-
-.codex-notice {
-  grid-row: 3;
-  margin: var(--px) 0 0;
-  color: var(--ink);
-}
-
-/* With nothing to say, the notice gives its line to the text (and stays, for screen readers). */
-.codex-notice:empty {
-  margin: 0;
-}
-
-/* How the keys work, under the index, on the wood. */
-.codex-keys {
-  margin: calc(2 * var(--px)) 0 0;
-  color: var(--ink);
-  /* Set apart by wide spaces, which the page must not fold into one. */
-  white-space: pre-wrap;
-}
-
-/* A new page slides in, unless the player asked for less motion. */
-.codex-turned {
-  animation: codex-turn 160ms ease-out;
-}
-
-@keyframes codex-turn {
-  from {
-    opacity: 0;
-    transform: translateX(calc(6 * var(--px)));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .codex-turned {
-    animation: none;
-  }
 }

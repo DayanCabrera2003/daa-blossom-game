@@ -5,14 +5,14 @@ import { WOOD_PANEL } from '@game/picture/wood';
 import { PALETTE } from '@game/view/palette';
 
 /**
- * The words the Codex book writes straight on its wood (src/ui/codex/codex.css): the book's name,
- * the titles of the entry shown, the notices and the help of the keys. They take the ink the game
+ * The words the books write straight on their wood (src/ui/book/book.css): the book's name, the
+ * titles of the page shown, the notices and the help of the keys. They take the ink the game
  * writes on its wooden panel, the colour `tests/wood.test.ts` holds to the contrast WCAG asks of
  * body text on the very pixels of the panel, never a light colour that melts into the orange.
  */
 
 const SHEET = readFileSync(
-  join(import.meta.dirname, '..', 'src', 'ui', 'codex', 'codex.css'),
+  join(import.meta.dirname, '..', 'src', 'ui', 'book', 'book.css'),
   'utf8',
 );
 
@@ -32,14 +32,14 @@ function token(name: string): number {
 
 /** The pieces of text written on the wood, not on the paper of the page or on a button. */
 const ON_WOOD = [
-  '.codex-title',
-  '.codex-garden-title',
-  '.codex-formal-title',
-  '.codex-notice',
-  '.codex-keys',
+  '.book-title',
+  '.book-main-title',
+  '.book-sub-title',
+  '.book-notice',
+  '.book-keys',
 ];
 
-describe('the words of the Codex written on its wood', () => {
+describe('the words of the books written on their wood', () => {
   it('the ink of the book is the ink of the wooden panel', () => {
     expect(token('ink')).toBe(PALETTE[WOOD_PANEL.text]);
   });
