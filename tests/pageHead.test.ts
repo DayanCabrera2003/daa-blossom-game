@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { assetEntry, keysOfKind } from '../src/game/assets/keys';
 
 // What the page brings before its script (plan 09, phase 9): its icon, taken from a CC0 pack the
-// credits already name. Checked on the source page and, when there is a build, on the built one,
+// credits already name, and the pixel font, preloaded so it downloads beside the script. Checked on the source page and, when there is a build, on the built one,
 // where every path must be relative so the game works under the GitHub Pages sub-path.
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -34,6 +34,26 @@ describe('the page icon', () => {
 
   it.skipIf(!BUILT)('is linked by the built page at a relative path it ships', () => {
     const href = linkHref(builtPage(), 'icon');
+    expect(href).not.toBeNull();
+    expect(href?.startsWith('/')).toBe(false);
+    expect(existsSync(join(DIST, href ?? ''))).toBe(true);
+  });
+});
+
+describe('the pixel font', () => {
+  const font = assetEntry('font.monogram').path;
+
+  it('is preloaded by the page, so it is on its way before the script asks for it', () => {
+    expect(linkHref(PAGE, 'preload')).toBe(`/${font}`);
+    const link = /<link[^>]*rel="preload"[^>]*>/.exec(PAGE)?.[0] ?? '';
+    // A font is fetched in CORS mode: without `crossorigin` the preload is fetched twice.
+    expect(link).toMatch(/\bas="font"/);
+    expect(link).toMatch(/\btype="font\/ttf"/);
+    expect(link).toMatch(/\bcrossorigin\b/);
+  });
+
+  it.skipIf(!BUILT)('is preloaded by the built page at a relative path it ships', () => {
+    const href = linkHref(builtPage(), 'preload');
     expect(href).not.toBeNull();
     expect(href?.startsWith('/')).toBe(false);
     expect(existsSync(join(DIST, href ?? ''))).toBe(true);
