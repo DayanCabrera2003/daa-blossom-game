@@ -8,6 +8,7 @@ import { degree, neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
 import { createMatching } from '@core/matching/createMatching';
 import { checkAugmentingPath } from '@core/matching/paths';
+import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
 import { isExposed, isMatchedEdge, matchedEdges, mateOf, size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
@@ -26,7 +27,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 /** The secret flowers of these tests, by id. */
-const FLOWERS = ['1.10', '3.10', '4.13', '5.6'] as const;
+const FLOWERS = ['1.10', '2.5', '3.10', '4.13', '5.6'] as const;
 
 /** Closest two sprouts of a secret flower may sit, in pixels: twice a sprout's radius and air. */
 const MIN_SPACING = 18;
@@ -126,6 +127,34 @@ describe('1.10: twelve dead ends', () => {
         }),
     );
     expect(deadEnds).toHaveLength(12);
+  });
+});
+
+describe('2.5: how many threads win', () => {
+  const level = () => levelOf('2.5');
+  /** The pieces of the tangle, from your lanterns to the reflection's. */
+  const pieces = () => {
+    const { start, mirror } = level();
+    if (mirror === null) throw new Error('2.5 has no reflection');
+    return decomposeSymmetricDifference(start.matching, mirror);
+  };
+
+  it('the reflection wins two pieces and loses one, though it holds only one lantern more', () => {
+    const gains = pieces().map((piece) => piece.gain);
+    expect(gains.filter((gain) => gain > 0)).toEqual([1, 1]);
+    expect(gains.filter((gain) => gain < 0)).toEqual([-1]);
+    const { start, mirror } = level();
+    expect(size(mirror ?? start.matching) - size(start.matching)).toBe(1);
+  });
+
+  it('the walkthrough answers two before it lights the two winning threads', () => {
+    const { walkthrough, solution } = level();
+    expect(walkthrough.find((entry) => entry.type === 'answer')).toEqual({
+      type: 'answer',
+      option: 2,
+    });
+    const end = play(level().start, solution);
+    expect(size(end.matching)).toBe(10);
   });
 });
 
