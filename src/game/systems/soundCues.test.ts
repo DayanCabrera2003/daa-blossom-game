@@ -19,8 +19,8 @@ const EVERY_STEP: readonly AnimationStep[] = [
   { kind: 'reveal', vertex: 2, duration: DURATIONS.reveal },
   { kind: 'chain', path: [0, 1], duration: DURATIONS.chain },
   { kind: 'clear', duration: DURATIONS.clear },
-  { kind: 'place', vertex: 2, object: 'stone', duration: DURATIONS.place },
-  { kind: 'place', vertex: 2, object: 'scarecrow', duration: DURATIONS.place },
+  { kind: 'place', vertex: 2, object: 'stone', placed: true, duration: DURATIONS.stone },
+  { kind: 'place', vertex: 2, object: 'scarecrow', placed: true, duration: DURATIONS.place },
 ];
 
 /** When each step of a plan starts, in milliseconds from the start of the plan. */

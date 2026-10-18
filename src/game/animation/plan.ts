@@ -2,19 +2,26 @@ import type { VertexId } from '@core/graph/types';
 import { itemAt } from '@core/shared/itemAt';
 import type { TraceEvent } from '@core/trace/events';
 
-/** How long each kind of step lasts, in milliseconds (greybox values, tuned at the art phase). */
+/**
+ * How long each kind of step lasts, in milliseconds, tuned to the key animations (GDD §4.1): a hop
+ * crouches, flies and lands (`picture/squash.ts`); a fold shows its eight frames
+ * (`picture/foldFrames.ts`); the conflict blinks three times between sun and moon
+ * (`picture/conflictBlink.ts`); a stone falls, settles and parts the garden
+ * (`picture/stoneSplit.ts`). A scarecrow set down or taken off is a `place`.
+ */
 export const DURATIONS = {
-  hop: 140,
+  hop: 260,
   light: 180,
   putOut: 150,
-  mark: 90,
-  conflict: 500,
-  fold: 420,
-  unfold: 420,
+  mark: 120,
+  conflict: 720,
+  fold: 560,
+  unfold: 560,
   reveal: 220,
   chain: 500,
   clear: 200,
   place: 150,
+  stone: 640,
 } as const;
 
 /** One thing the view animates; the garden it ends on is already known (logic is instant). */
@@ -51,6 +58,8 @@ export type AnimationStep =
       readonly kind: 'place';
       readonly vertex: VertexId;
       readonly object: 'scarecrow' | 'stone';
+      /** Set down (a stone lifted from the garden, a scarecrow placed), or taken off. */
+      readonly placed: boolean;
       readonly duration: number;
     };
 
@@ -93,10 +102,24 @@ function stepsOf(event: TraceEvent): AnimationStep[] {
       return [{ kind: 'clear', duration: DURATIONS.clear }];
     case 'scarecrow':
       return [
-        { kind: 'place', vertex: event.vertex, object: 'scarecrow', duration: DURATIONS.place },
+        {
+          kind: 'place',
+          vertex: event.vertex,
+          object: 'scarecrow',
+          placed: event.placed,
+          duration: DURATIONS.place,
+        },
       ];
     case 'stone':
-      return [{ kind: 'place', vertex: event.vertex, object: 'stone', duration: DURATIONS.place }];
+      return [
+        {
+          kind: 'place',
+          vertex: event.vertex,
+          object: 'stone',
+          placed: event.lifted,
+          duration: DURATIONS.stone,
+        },
+      ];
     default:
       return [];
   }
