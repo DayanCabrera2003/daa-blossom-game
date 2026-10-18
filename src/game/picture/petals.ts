@@ -74,6 +74,20 @@ export function petalRing(centre: Point, count: number, reach: number, heart: nu
 }
 
 /**
+ * The petals of a flower folding, `closed` (0 to 1) of the way (`foldFrames.ts`): one per child of
+ * its cycle at `open`, reaching out to the farthest of them while open and closing down onto the
+ * flower the garden draws at `centre`, so they show over it as they close.
+ */
+export function closingPetals(centre: Point, open: readonly Point[], closed: number): Petal[] {
+  const farthest = Math.max(
+    FLOWER_REACH,
+    ...open.map((p) => Math.hypot(p.x - centre.x, p.y - centre.y)),
+  );
+  const reach = farthest + (FLOWER_REACH - farthest) * closed;
+  return petalRing(centre, open.length, reach, FLOWER_HEART);
+}
+
+/**
  * The flowers on top (depth 0) among `flowers`, listed outermost first with each one's nested
  * flowers right after it (as `gardenPicture` lists them), each with the first flower folded
  * directly inside it drawn small in its middle.

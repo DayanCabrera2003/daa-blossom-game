@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { Point } from '../input/target';
 import type { FlowerPicture } from './garden';
-import { FLOWER_HEART, FLOWER_REACH, flowerLooks, INNER_REACH, petalRing } from './petals';
+import {
+  closingPetals,
+  FLOWER_HEART,
+  FLOWER_REACH,
+  flowerLooks,
+  INNER_REACH,
+  petalRing,
+} from './petals';
 
 const distance = (a: Point, b: Point): number => Math.hypot(a.x - b.x, a.y - b.y);
 
@@ -75,5 +82,34 @@ describe('the petals of a folded flower', () => {
   it('stops looking for a nested flower at the next flower on top', () => {
     const looks = flowerLooks([flower(0, 0, 3, centre), flower(1, 0, 3, centre)]);
     expect(looks.map((look) => look.inner)).toEqual([null, null]);
+  });
+});
+
+describe('the petals closing as a flower folds (GDD §4.1, key animation 2)', () => {
+  const middle: Point = { x: 100, y: 100 };
+  const open: Point[] = [
+    { x: 100, y: 60 },
+    { x: 130, y: 120 },
+    { x: 70, y: 120 },
+  ];
+
+  it('reaches out to the farthest sprout while open, one petal per sprout', () => {
+    const petals = closingPetals(middle, open, 0);
+    expect(petals).toHaveLength(3);
+    for (const petal of petals) expect(distance(petal.tip, middle)).toBeCloseTo(40);
+  });
+
+  it('closes down onto the flower the garden draws, shorter at every frame', () => {
+    expect(closingPetals(middle, open, 1)).toEqual(
+      petalRing(middle, 3, FLOWER_REACH, FLOWER_HEART),
+    );
+    const reach = (closed: number): number =>
+      distance(closingPetals(middle, open, closed)[0]?.tip ?? middle, middle);
+    for (let k = 1; k <= 7; k++) expect(reach(k / 7)).toBeLessThan(reach((k - 1) / 7));
+  });
+
+  it('never opens wider than a flower for sprouts already close to the middle', () => {
+    const near = closingPetals(middle, [middle, middle, middle], 0);
+    for (const petal of near) expect(distance(petal.tip, middle)).toBeCloseTo(FLOWER_REACH);
   });
 });
