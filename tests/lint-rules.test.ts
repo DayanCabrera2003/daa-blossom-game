@@ -151,6 +151,46 @@ describe('the view never changes the logic', () => {
   });
 });
 
+describe('the math libraries of the Códex', () => {
+  // KaTeX and marked are heavy and only render the books: they live in ui/math, in the deferred chunk.
+  const IMPORTS = ["import katex from 'katex';", "import { marked } from 'marked';"];
+  const FORBIDDEN = [
+    'src/core/virtual.ts',
+    'src/levels/virtual.ts',
+    'src/services/virtual.ts',
+    'src/game/virtual.ts',
+    'src/game/scenes/virtual.ts',
+    'src/game/systems/virtual.ts',
+    'src/game/view/virtual.ts',
+    'src/ui/codex/virtual.ts',
+    'src/ui/model/virtual.ts',
+    'src/ui/shell.ts',
+  ];
+
+  it.each(FORBIDDEN)('%s may not import katex nor marked', async (filePath) => {
+    for (const code of IMPORTS) {
+      expect(await firedRules(filePath, `${code}\nexport {};`)).toContain('no-restricted-imports');
+    }
+  });
+
+  it.each(['src/ui/math/virtual.ts', 'tests/virtual.test.ts'])(
+    '%s may import katex and marked',
+    async (filePath) => {
+      for (const code of IMPORTS) {
+        expect(await firedRules(filePath, `${code}\nexport {};`)).not.toContain(
+          'no-restricted-imports',
+        );
+      }
+    },
+  );
+
+  it('ui/math still may not import game', async () => {
+    expect(
+      await firedRules('src/ui/math/virtual.ts', "import { x } from '@game/scene';\nexport { x };"),
+    ).toContain('no-restricted-imports');
+  });
+});
+
 describe('one responsibility per file', () => {
   const lines = (count: number): string =>
     Array.from({ length: count }, (_, i) => `export const v${i} = ${i};`).join('\n');

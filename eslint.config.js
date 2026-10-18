@@ -8,12 +8,22 @@ import tseslint from 'typescript-eslint';
 /** Import patterns that point at a given layer, whether through its alias or a relative path. */
 const layer = (name) => [`@${name}`, `@${name}/**`, `**/${name}`, `**/${name}/**`];
 
-/** Builds a no-restricted-imports rule that forbids the given layers (and optionally Phaser). */
-const forbidLayers = (layers, message, { phaser = true } = {}) => [
+/** The libraries that render the Códex: heavy, so only ui/math (in the deferred chunk) uses them. */
+const MATH_LIBRARIES = {
+  group: ['katex', 'katex/**', 'marked', 'marked/**'],
+  message: 'only src/ui/math may import katex and marked; they load with the books, never before.',
+};
+
+/**
+ * Builds a no-restricted-imports rule that forbids the given layers, Phaser (unless `phaser` is
+ * false) and the math libraries (unless `math` is false).
+ */
+const forbidLayers = (layers, message, { phaser = true, math = true } = {}) => [
   'error',
   {
     patterns: [
       ...(phaser ? [{ group: ['phaser', 'phaser/**'], message }] : []),
+      ...(math ? [MATH_LIBRARIES] : []),
       ...layers.map((name) => ({ group: layer(name), message })),
     ],
   },
@@ -120,11 +130,31 @@ export default tseslint.config(
     },
   },
   {
+    // Services are shared by the game and the overlays; they never render the Códex.
+    files: ['src/services/**/*.ts'],
+    rules: {
+      'no-restricted-imports': forbidLayers([], 'services/ never render the Códex.', {
+        phaser: false,
+      }),
+    },
+  },
+  {
     files: ['src/ui/**/*.ts'],
     rules: {
       'no-restricted-imports': forbidLayers(
         ['game'],
         'ui/ must not import game/; use the event bus.',
+      ),
+    },
+  },
+  {
+    // The only home of KaTeX and marked; it loads with the books, in the deferred chunk.
+    files: ['src/ui/math/**/*.ts'],
+    rules: {
+      'no-restricted-imports': forbidLayers(
+        ['game'],
+        'ui/ must not import game/; use the event bus.',
+        { math: false },
       ),
     },
   },
