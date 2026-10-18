@@ -51,11 +51,8 @@ describe('interface text (content/es/strings.json)', () => {
     expect(offending).toEqual([]);
   });
 
-  it('the overlays separate their words without the middle dot, which the pixel font draws raised', () => {
-    const offending = Object.entries(table).filter(
-      ([key, text]) =>
-        /^(codex|diagram|book|notebook|epilogue|teacher)\./.test(key) && text.includes('·'),
-    );
+  it('no text separates its words with the middle dot, which the pixel font draws raised', () => {
+    const offending = Object.entries(table).filter(([, text]) => text.includes('·'));
     expect(offending).toEqual([]);
   });
 });
@@ -89,6 +86,11 @@ describe('dialogue lines (content/es/lines.json)', () => {
 
   it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
     const offending = Object.entries(lineTable).filter(([, text]) => MATHEMATICS.test(text));
+    expect(offending).toEqual([]);
+  });
+
+  it('no line separates its words with the middle dot, which the pixel font draws raised', () => {
+    const offending = Object.entries(lineTable).filter(([, text]) => text.includes('·'));
     expect(offending).toEqual([]);
   });
 

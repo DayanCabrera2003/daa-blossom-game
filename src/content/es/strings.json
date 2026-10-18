@@ -62,7 +62,7 @@
   "hud.prompt.draw": "Toca enredaderas para dibujar tu reflejo y pulsa Comprobar",
   "hud.goalHidden": "¿Cuántos faroles caben?",
   "hud.bet": "Apostaste {count}",
-  "hud.mirror": "Tú: {yours} · Reflejo: {mirror}",
+  "hud.mirror": "Tú: {yours} — Reflejo: {mirror}",
   "hud.lanterns": "Faroles: {count}",
   "hud.water": "Agua: {used}/{budget}",
   "hud.waterNoBudget": "Agua: {used}",
