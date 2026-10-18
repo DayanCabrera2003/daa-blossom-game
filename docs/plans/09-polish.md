@@ -217,6 +217,8 @@ El jardín en sí (juntar, pasar el farol, cadena, plegar…) **no** se juega co
 
 **Hito P3 (F7), revisión en pantalla de la sesión principal:** con emulación de dispositivo del mismo navegador headless (medidas y densidades de la tabla, táctil activado): hub, un nivel con cadena, un libro, el editor del modo libre; en vertical, el aviso "gira el teléfono" (y que desaparece al girar). Lo que solo un teléfono real enseña (iOS, Safari móvil, sonido) va a la lista del autor (sección "Comprobaciones a mano del autor").
 
+*Tras P3:* el autor acepta por ahora que las zonas de toque del HUD de un nivel se queden en 16 px CSS en los teléfonos más pequeños de la tabla (por debajo de los 24 del hub); una nueva disposición del HUD que llegue a 24 queda anotada como posible mejora posterior, fuera de este plan.
+
 ---
 
 ## Fase 8 — Audio: formatos, respaldo y mezcla como datos
