@@ -258,6 +258,8 @@ Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se 
 
 Todos salen de Ninja Adventure o se dibujan por código, viven por debajo de carteles y botones y nunca ocupan el lecho donde crecen las piezas de los capítulos.
 
+Junto al título del hub, un contador con las estrellas totales y las semillas. Para dejarle sitio (y al cartel del modo libre), el botón "Exportar registro de prueba" pasa de la línea superior del hub al panel de ajustes.
+
 ### 5.5 El Cuaderno del Jardinero
 
 Tras dominar una idea, el mentor pide "escríbelo". El jugador elige entre 3–4 enunciados. Los falsos son plausibles y **se refutan con un mini-jardín contraejemplo que el jugador puede tocar**. Al elegir el correcto, se guarda en el Cuaderno con las palabras del jardín; el Códex lo traduce después.
