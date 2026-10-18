@@ -11,6 +11,7 @@ import { RUNNERS } from '@core/cost/benchmark';
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import { doublingTextKey } from '@levels/races';
 import { COSMETIC_IDS } from '@services/cosmetics';
+import { GENERATORS } from '@levels/sandbox/generators';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
 
@@ -371,6 +372,11 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...Object.fromEntries(CODEX_TABS.map((tab) => [`codex.tab.${tab}`, []])),
   // The notice of each cosmetic of the hub, shown once when it first comes.
   ...Object.fromEntries(COSMETIC_IDS.map((id) => [`cosmetic.${id}`, []])),
+  // The name of each generator of the free mode, in its generate menu, with "another at random"
+  // and the notice of a garden grown smaller than asked so its vines fit.
+  ...Object.fromEntries(GENERATORS.map((generator) => [generator.textKey, []])),
+  'sandbox.gen.another': [],
+  'sandbox.gen.shrunk': ['size'],
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
   // The name of each speaker, on the tab of the dialogue box.
