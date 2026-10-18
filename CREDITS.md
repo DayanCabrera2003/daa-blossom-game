@@ -203,10 +203,27 @@ is `the sound's parameters` → `file under public/assets/`.
 
 ## Libraries
 
-The game also ships the code of the libraries below, which the Codex loads only when a book is
-first opened. They are not art, music or sound, so the CC0 rule of this file does not apply to
-them; their licenses ask for the notices kept in their folders under `node_modules/`, and they are
-credited here.
+The game also ships the code of the libraries below: Phaser and Zod with the game itself, KaTeX
+and marked only when a book of the Codex is first opened. They are not art, music or sound, so the
+CC0 rule of this file does not apply to them; their licenses ask for the notices kept in their
+folders under `node_modules/`, and they are credited here. The credits screen of the game lists
+them too.
+
+### Phaser
+
+- Authors: Richard Davey and Phaser Studio Inc.
+- Version: 3.90.0
+- License: MIT
+- Source: https://phaser.io (https://github.com/phaserjs/phaser)
+- Used for: The game engine: the canvas, the scenes, the pictures, the sounds and the input.
+
+### Zod
+
+- Authors: Colin McDonnell
+- Version: 4.6.5
+- License: MIT
+- Source: https://zod.dev (https://github.com/colinhacks/zod)
+- Used for: Checking the files of the levels, the Codex and the saved games as they are read.
 
 ### KaTeX
 
