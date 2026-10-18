@@ -5,6 +5,7 @@ import { catalog } from '@levels/catalog';
 import { codexSources, openCodex } from '@services/codexProgress';
 import { catalogEntries, visibleLevels } from '@services/progress';
 import { emptySave, recordCompletion } from '@services/save';
+import { BOOK } from '@ui/model/bookLayout';
 import { EPILOGUE_ENTRY, EPILOGUE_USES, epilogueChoices, paragraphsOf } from '@ui/model/epilogue';
 import { describe, expect, it } from 'vitest';
 import { MATHEMATICS } from './support/vocabulary';
@@ -27,6 +28,7 @@ const SHOWN = [
   'epilogue.keys',
   ...epilogueChoices(new Map([['C14', new Set(['intuition'] as const)]]), {
     sandbox: true,
+    credits: true,
   }).map((button) => button.label),
 ];
 
@@ -46,6 +48,25 @@ describe('the words of the epilogue', () => {
   });
 });
 
+describe('the row of the ways on', () => {
+  it('fits the book with every button the epilogue can offer and the help of the keys', () => {
+    // As the stylesheets lay it out: each wooden button is its word, 3 pixels of padding and a
+    // pixel of border on each side; the row puts 4 pixels between its parts (epilogue.css).
+    const all = epilogueChoices(new Map([['C14', new Set(['intuition'] as const)]]), {
+      sandbox: true,
+      credits: true,
+    });
+    const word = (key: string): number => [...(TABLE[key] ?? '')].length * BOOK.glyph;
+    const row =
+      word('epilogue.keys') +
+      all.reduce((width, button) => width + word(button.label) + 2 * (3 + 1), 0) +
+      all.length * 4;
+    const inside = BOOK.width - BOOK.border.left - BOOK.border.right - 2 * BOOK.padding;
+    expect(all).toHaveLength(4);
+    expect(row).toBeLessThanOrEqual(inside);
+  });
+});
+
 describe('the way to the epilogue', () => {
   const levels = catalog();
   const shown = visibleLevels(catalogEntries(levels), false);
@@ -59,10 +80,9 @@ describe('the way to the epilogue', () => {
     const won = recordCompletion(emptySave(), EPILOGUE_LEVEL, 3);
     const open = openCodex(codexSources(levels), won, false);
     expect(open.has(EPILOGUE_ENTRY)).toBe(true);
-    expect(epilogueChoices(open, { sandbox: false }).map((button) => button.choice)).toEqual([
-      'readCodex',
-      'back',
-    ]);
+    expect(
+      epilogueChoices(open, { sandbox: false, credits: false }).map((button) => button.choice),
+    ).toEqual(['readCodex', 'back']);
     expect(epilogueReached(won, false)).toBe(true);
   });
 

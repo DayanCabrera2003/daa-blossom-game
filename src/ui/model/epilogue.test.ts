@@ -8,7 +8,7 @@ const opened = (...entries: CodexEntryId[]): OpenTabs =>
 
 describe('what the epilogue offers', () => {
   it('reads the last entry of the Codex and goes back to the garden, nothing else today', () => {
-    expect(epilogueChoices(opened('C14'), { sandbox: false })).toEqual([
+    expect(epilogueChoices(opened('C14'), { sandbox: false, credits: false })).toEqual([
       { choice: 'readCodex', label: 'epilogue.readCodex' },
       { choice: 'back', label: 'epilogue.back' },
     ]);
@@ -16,17 +16,24 @@ describe('what the epilogue offers', () => {
   });
 
   it('offers the free mode only once the game says it exists, before the way back', () => {
-    expect(epilogueChoices(opened('C14'), { sandbox: true }).map((c) => c.choice)).toEqual([
-      'readCodex',
-      'sandbox',
-      'back',
+    expect(
+      epilogueChoices(opened('C14'), { sandbox: true, credits: false }).map((c) => c.choice),
+    ).toEqual(['readCodex', 'sandbox', 'back']);
+  });
+
+  it('offers the credits once the game says it has them, after the free mode, before the way back', () => {
+    expect(epilogueChoices(opened('C14'), { sandbox: true, credits: true })).toEqual([
+      { choice: 'readCodex', label: 'epilogue.readCodex' },
+      { choice: 'sandbox', label: 'epilogue.sandbox' },
+      { choice: 'credits', label: 'epilogue.credits' },
+      { choice: 'back', label: 'epilogue.back' },
     ]);
   });
 
   it('never offers a page of the Codex that is still closed', () => {
-    expect(epilogueChoices(opened('C13'), { sandbox: false }).map((c) => c.choice)).toEqual([
-      'back',
-    ]);
+    expect(
+      epilogueChoices(opened('C13'), { sandbox: false, credits: false }).map((c) => c.choice),
+    ).toEqual(['back']);
   });
 
   it('tells the three real uses in order: kidneys, molecules, pairs', () => {

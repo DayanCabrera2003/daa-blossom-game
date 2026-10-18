@@ -46,6 +46,8 @@ export interface TeacherFeed {
 export interface Capabilities {
   /** Whether the free mode (sandbox) scene is registered. */
   readonly sandbox: boolean;
+  /** Whether the credits screen is registered (its gate, which loads it on demand). */
+  readonly credits: boolean;
 }
 
 /**

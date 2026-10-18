@@ -230,19 +230,22 @@ describe('overlay shell', () => {
     const { bus, frames } = setUp();
     bus.emit('epilogue.open');
     await settle();
-    expect(frames[0]?.capabilities()).toEqual({ sandbox: false });
-    bus.emit('capabilities', { sandbox: true });
-    expect(frames[0]?.capabilities()).toEqual({ sandbox: true });
+    expect(frames[0]?.capabilities()).toEqual({ sandbox: false, credits: false });
+    bus.emit('capabilities', { sandbox: true, credits: true });
+    expect(frames[0]?.capabilities()).toEqual({ sandbox: true, credits: true });
   });
 
   it('keeps what the game announces right after mounting it, so the epilogue offers the free mode', async () => {
     // The order of main.ts: the shell is mounted, then the game announces the free mode.
     const { bus, frames } = setUp();
-    bus.emit('capabilities', { sandbox: true });
+    bus.emit('capabilities', { sandbox: true, credits: true });
     bus.emit('epilogue.open');
     await settle();
-    const choices = epilogueChoices(new Map(), frames[0]?.capabilities() ?? { sandbox: false });
-    expect(choices.map((button) => button.choice)).toEqual(['sandbox', 'back']);
+    const choices = epilogueChoices(
+      new Map(),
+      frames[0]?.capabilities() ?? { sandbox: false, credits: false },
+    );
+    expect(choices.map((button) => button.choice)).toEqual(['sandbox', 'credits', 'back']);
   });
 
   it(

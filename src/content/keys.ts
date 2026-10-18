@@ -196,6 +196,7 @@ const UI = {
   'epilogue.author.closing': [],
   'epilogue.readCodex': [],
   'epilogue.sandbox': [],
+  'epilogue.credits': [],
   'epilogue.back': [],
   'epilogue.keys': [],
   'credits.back': [],

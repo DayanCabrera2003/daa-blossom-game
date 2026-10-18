@@ -83,9 +83,10 @@ mountShell({
   codexOpen: (save) => openCodex(codexLevels, save, teacherMode),
   host: document.body,
 });
-// The free mode is registered (its thin gate, which loads it on demand): the overlays may offer it
-// now that they listen, and the epilogue's button opens it from the scene that is up.
-bus.emit('capabilities', { sandbox: true });
+// The free mode and the credits are registered (their thin gates, which load them on demand): the
+// overlays may offer them now that they listen, and the epilogue's buttons open them from the scene
+// that is up.
+bus.emit('capabilities', { sandbox: true, credits: true });
 bus.on('sandbox.open', () => openSandbox(game));
 // The credits' thin gate is registered too: the settings panel and the epilogue open them.
 bus.on('credits.open', () => openCredits(game));

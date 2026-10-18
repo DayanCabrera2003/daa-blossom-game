@@ -98,7 +98,7 @@ export function mountShell({
   // What the layer shows, from the bottom up (`ui/model/overlayStack.ts`); only the top is drawn.
   let stack: readonly OverlayRequest[] = [];
   // Listened to from the start, so an announcement made before any book opens is not lost.
-  let capable: Capabilities = { sandbox: false };
+  let capable: Capabilities = { sandbox: false, credits: false };
   bus.on('capabilities', (announced) => (capable = announced));
 
   /** Hides and empties the layer and gives the input back, whatever it was showing. */

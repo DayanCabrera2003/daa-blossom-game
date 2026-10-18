@@ -48,13 +48,18 @@ export function showEpilogue(frame: OverlayFrame, t: Translate): void {
   );
   text.append(make(page, 'p', 'epilogue-lead', t('epilogue.lead')), uses, note);
 
-  // What each button does: the Codex opens over the epilogue at its last entry; the free mode is
-  // the game's to start once the epilogue is closed; going back closes it, like Escape.
+  // What each button does: the Codex opens over the epilogue at its last entry; the free mode and
+  // the credits are the game's to start once the epilogue is closed; going back closes it, like
+  // Escape.
   const act: Readonly<Record<EpilogueChoice, () => void>> = {
     readCodex: () => frame.bus.emit('book.open', { book: 'codex', entry: EPILOGUE_ENTRY }),
     sandbox: () => {
       close();
       frame.bus.emit('sandbox.open');
+    },
+    credits: () => {
+      close();
+      frame.bus.emit('credits.open');
     },
     back: close,
   };
