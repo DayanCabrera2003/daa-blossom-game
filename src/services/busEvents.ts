@@ -1,6 +1,7 @@
 import type { GardenState } from '@core/rules/state';
 import type { TraceEvent } from '@core/trace/events';
 import type { CodexTab } from '@levels/codex';
+import type { LevelData } from '@levels/schema';
 
 /** The two books of the game: the Códex (GDD §5.6) and the Cuaderno (GDD §5.5). */
 export type BookName = 'codex' | 'notebook';
@@ -22,10 +23,16 @@ export type BusSound = 'bookOpen' | 'bookFlip' | 'bookClose' | 'click';
  * What the teacher's trace panel needs from the level being played (GDD §5.8): which level (its
  * whole garden, the names and places of its sprouts are the catalog's), every garden of the
  * player's day so far with the events that made each, and the one the sun shows now. The panel
- * writes the day from it, and runs Edmonds from the lanterns of the garden shown.
+ * writes the day from it, and runs Edmonds from the lanterns of the garden shown. A garden that is
+ * not in the catalog (the free mode's) brings its own sprouts.
  */
 export interface TeacherFeed {
   readonly level: string;
+  /**
+   * The sprouts of a garden the catalog does not have (names, places, bees and flowers), which the
+   * panel cannot look up by `level`; absent for a level of the catalog. Its vines are in `day`.
+   */
+  readonly sprouts?: LevelData['sprouts'];
   /** The gardens of the day, dawn first: the history the sun walks. */
   readonly day: readonly GardenState[];
   /** Beside each garden of the day, the events the rules answered to its move (none at dawn). */

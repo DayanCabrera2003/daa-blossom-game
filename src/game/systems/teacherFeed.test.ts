@@ -31,4 +31,10 @@ describe("the teacher's feed of a level", () => {
     expect(dawn?.cursor).toBe(0);
     expect(dawn?.day).toHaveLength(2);
   });
+
+  it("carries the garden's sprouts only when told the garden is its own, not the catalog's", () => {
+    const session = openSession(level, 0).session;
+    expect(teacherFeed(session, true)?.sprouts).toBeUndefined();
+    expect(teacherFeed(session, true, true)?.sprouts).toBe(level.data.sprouts);
+  });
 });
