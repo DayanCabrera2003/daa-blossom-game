@@ -21,6 +21,7 @@ export const FREE_MODE_MODULES: readonly string[] = [
   'src/game/input/designIntent.ts',
   'src/game/input/designKeys.ts',
   'src/game/systems/designHistory.ts',
+  'src/game/systems/designImport.ts',
   'src/game/systems/designSounds.ts',
   'src/game/systems/generateChoice.ts',
   'src/game/picture/designHeader.ts',

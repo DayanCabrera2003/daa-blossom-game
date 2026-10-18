@@ -69,15 +69,15 @@ export interface DesignBarInput {
   readonly design: Design;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
-  /** Whether the free mode can play a garden, and share one yet (sharing comes in phase 14). */
+  /** Whether the free mode can play a garden. */
   readonly canPlay: boolean;
-  readonly canShare: boolean;
 }
 
 /**
  * Which buttons may be pressed: every tool, generate and the way back always; undo and redo when
- * the history has a step that way; clear and share once there is a sprout to clear or share; play
- * once there is a vine, since a garden without one has nothing to light.
+ * the history has a step that way; clear once there is a sprout to clear; share always, since its
+ * sheet also opens a garden into an empty editor; play once there is a vine, since a garden without
+ * one has nothing to light.
  */
 export function designBarState(input: DesignBarInput): DesignBarState {
   const { design } = input;
@@ -95,7 +95,7 @@ export function designBarState(input: DesignBarInput): DesignBarState {
       back: true,
       redo: input.canRedo,
       undo: input.canUndo,
-      share: input.canShare && sprouts,
+      share: true,
       play: input.canPlay && design.vines.length > 0,
     },
   };

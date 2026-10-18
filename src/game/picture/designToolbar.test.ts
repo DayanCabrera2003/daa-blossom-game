@@ -85,7 +85,6 @@ describe("what the editor's bar offers now", () => {
       canUndo: false,
       canRedo: false,
       canPlay: true,
-      canShare: true,
       ...over,
     });
 
@@ -105,10 +104,10 @@ describe("what the editor's bar offers now", () => {
     expect([both.undo, both.redo]).toEqual([true, true]);
   });
 
-  it('clear and share need a sprout; play needs a vine', () => {
+  it('clear needs a sprout; play needs a vine; share is always there, to open a garden too', () => {
     expect([state().enabled.clear, state().enabled.share, state().enabled.play]).toEqual([
       false,
-      false,
+      true,
       false,
     ]);
     const sprout = state({ design: ONE }).enabled;
@@ -123,7 +122,7 @@ describe("what the editor's bar offers now", () => {
     expect(vine.play).toBe(true);
   });
 
-  it('play and share stay off until the free mode can do them', () => {
+  it('play stays off until the free mode can do it', () => {
     const design: Design = {
       sprouts: [
         { label: 'A', x: 100, y: 100 },
@@ -132,7 +131,6 @@ describe("what the editor's bar offers now", () => {
       vines: [['A', 'B']],
       lanterns: [],
     };
-    const off = state({ design, canPlay: false, canShare: false }).enabled;
-    expect([off.play, off.share]).toEqual([false, false]);
+    expect(state({ design, canPlay: false }).enabled.play).toBe(false);
   });
 });

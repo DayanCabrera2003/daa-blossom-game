@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { EMPTY_DESIGN, editDesign, type Design, type DesignEdit } from '@levels/sandbox/design';
 import { openingDesign, type OpeningProblem } from '@levels/sandbox/opening';
+import { shareOf } from '@levels/sandbox/share';
 import { toPlayable } from '@levels/sandbox/toLevel';
 import { catalogEntries } from '@services/progress';
 import { sandboxAccess } from '@services/sandboxAccess';
@@ -26,6 +27,7 @@ import { designBarState, type DesignButton } from '../../picture/designToolbar';
 import { EDITOR_CARD, editorCardLoop } from '../../picture/editorCard';
 import { CANVAS_WIDTH } from '../../scale/integerZoom';
 import { amendDesign, recordDesign } from '../../systems/designHistory';
+import { importIntoHistory } from '../../systems/designImport';
 import { designSound, GENERATED_SOUND } from '../../systems/designSounds';
 import {
   anotherSeed,
@@ -85,7 +87,9 @@ const NOTICE_ABOVE_MENU = 14;
  * undo and redo walk the history of designs. The first time, a mechanic card shows the gestures.
  * "Jugar" builds the design as a level here, in this chunk, with the actions the player has met,
  * and hands it to the level scene, which plays it and comes back with "Diseñar" (plan 08, phase
- * 12). Sharing the garden comes with phase 14; its button waits, switched off.
+ * 12). "Compartir" opens the share sheet over the editor (a DOM overlay, plan 08, phase 14) with
+ * the design's code and level file; a garden opened there comes back on the bus as the text it was,
+ * is read here and becomes the design shown (undoable), and the sheet hears why if it is none.
  */
 export class SandboxScene extends Phaser.Scene {
   private context!: GameContext;
@@ -147,6 +151,9 @@ export class SandboxScene extends Phaser.Scene {
     this.toast = new ToastView(this);
     this.tutorial = new TutorialView(this, t);
     this.bindInput();
+    // A garden opened in the share sheet, while this editor is up.
+    const stop = this.context.bus.on('sandbox.imported', ({ text }) => this.opened(text));
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, stop);
     this.render();
     if (saves.get().tutorialsSeen.includes(EDITOR_CARD)) this.notify(this.pendingNotice);
     else this.showCard();
@@ -259,8 +266,7 @@ export class SandboxScene extends Phaser.Scene {
       case 'play':
         return this.play();
       case 'share':
-        // Phase 14: the button stays switched off until then.
-        return;
+        return this.context.bus.emit('sandbox.share', shareOf(this.design));
       default:
         return this.take(button);
     }
@@ -283,6 +289,21 @@ export class SandboxScene extends Phaser.Scene {
     }
     this.history = recordDesign(this.history, outcome.value);
     this.keep();
+  }
+
+  /**
+   * A text opened in the share sheet: a garden becomes the design shown, after the one before so
+   * undo goes back to it, with nothing left chosen; the sheet is answered at once either way.
+   */
+  private opened(text: string): void {
+    const { history, answer } = importIntoHistory(this.history, text);
+    if (answer.ok) {
+      this.history = history;
+      this.keep();
+      this.take(this.pointer.tool);
+      this.notify(this.context.t('share.done'));
+    }
+    this.context.bus.emit('sandbox.importAnswer', answer);
   }
 
   /** Undo or redo: the design at the cursor's new place, with nothing left chosen. */
@@ -400,7 +421,6 @@ export class SandboxScene extends Phaser.Scene {
         canUndo: canUndo(this.history),
         canRedo: canRedo(this.history),
         canPlay: true,
-        canShare: false,
       }),
     );
     this.menu.render(this.choice);
