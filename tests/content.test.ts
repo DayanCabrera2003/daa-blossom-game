@@ -48,6 +48,13 @@ describe('interface text (content/es/strings.json)', () => {
     const offending = Object.entries(table).filter(([, text]) => MATHEMATICS.test(text));
     expect(offending).toEqual([]);
   });
+
+  it('the books separate their words without the middle dot, which the pixel font draws raised', () => {
+    const offending = Object.entries(table).filter(
+      ([key, text]) => /^(codex|diagram)\./.test(key) && text.includes('·'),
+    );
+    expect(offending).toEqual([]);
+  });
 });
 
 describe('dialogue lines (content/es/lines.json)', () => {

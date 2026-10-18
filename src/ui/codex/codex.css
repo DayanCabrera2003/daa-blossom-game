@@ -249,6 +249,8 @@
 .codex-keys {
   color: var(--ink);
   text-align: center;
+  /* The help of the keys is set apart by wide spaces, which the page must not fold into one. */
+  white-space: pre-wrap;
 }
 
 /* A new page slides in, unless the player asked for less motion. */
