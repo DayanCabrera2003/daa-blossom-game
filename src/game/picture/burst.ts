@@ -37,9 +37,20 @@ export interface Burst {
   readonly petals: readonly BurstPetal[];
 }
 
-/** The burst from `origin`, `elapsed` ms after the landing, its petals thrown as `seed` says. */
-export function burstAt(origin: Point, elapsed: number, seed: number): Burst | null {
+/**
+ * The burst from `origin`, `elapsed` ms after the landing, its petals thrown as `seed` says. With
+ * `reduced` motion (plan 09, phase 6) no petals fly: the spark alone still marks the new lantern.
+ */
+export function burstAt(
+  origin: Point,
+  elapsed: number,
+  seed: number,
+  reduced = false,
+): Burst | null {
   if (elapsed < 0 || elapsed >= BURST_MS) return null;
+  const spark = Math.floor(elapsed / SPARK_FRAME_MS);
+  const sparkFrame = spark < SPARK_FRAMES ? spark : null;
+  if (reduced) return { spark: sparkFrame, petals: [] };
   const rng = createRng(seed);
   const t = elapsed / 1000;
   const share = elapsed / BURST_MS;
@@ -57,6 +68,5 @@ export function burstAt(origin: Point, elapsed: number, seed: number): Burst | n
       alpha,
     };
   });
-  const spark = Math.floor(elapsed / SPARK_FRAME_MS);
-  return { spark: spark < SPARK_FRAMES ? spark : null, petals };
+  return { spark: sparkFrame, petals };
 }

@@ -55,3 +55,15 @@ describe('the sparkle and petals where a chain lands (GDD §4.1, key animation 1
     expect(burstAt(origin, -1, 3)).toBeNull();
   });
 });
+
+describe('the burst with less motion (plan 09, phase 6)', () => {
+  it('throws no petals, but still sparkles over the new lantern for as long', () => {
+    for (let elapsed = 0; elapsed < BURST_MS; elapsed += 20) {
+      const reduced = burstAt(origin, elapsed, 7, true);
+      const full = burstAt(origin, elapsed, 7);
+      expect(reduced?.petals).toEqual([]);
+      expect(reduced?.spark).toBe(full?.spark);
+    }
+    expect(burstAt(origin, BURST_MS, 7, true)).toBeNull();
+  });
+});
