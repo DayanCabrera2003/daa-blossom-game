@@ -8,6 +8,7 @@ import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
 import type { CountStep } from '@levels/flow';
 import { raceBetVerdict } from '@levels/races';
+import { winningThreads } from '@levels/winningThreads';
 import { lanternsOn, pieceOf, pondPieces } from './pond';
 
 /**
@@ -49,12 +50,11 @@ export const rightVine = (state: GardenState, u: VertexId, v: VertexId): boolean
   isConflictVine(state.layer, state.search, u, v);
 
 /**
- * The right count of the winning threads (2.5): how many pieces of the tangle `yours ⊕ mirror` give
- * the reflection more lanterns than you. A loop always holds as many of each side, so they are all
- * threads; the core's decomposition measures what each one is worth.
+ * The right count of the winning threads (2.5): how many threads of the tangle `yours ⊕ mirror`
+ * give the reflection more lanterns than you.
  */
 export const rightWinningThreads = (yours: Matching, mirror: Matching): number =>
-  pondPieces(yours, mirror).filter((piece) => piece.gain > 0).length;
+  winningThreads(yours, mirror);
 
 /** The right number of a `count` step, judged on the garden `state` as it is now. */
 export function countAnswer(level: Level, state: GardenState, step: CountStep): number {

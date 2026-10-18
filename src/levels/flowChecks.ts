@@ -18,6 +18,7 @@ import { demoStart } from './demoStart';
 import type { LevelStep } from './flow';
 import { raceBetVerdict, racesAround } from './races';
 import { TAUGHT_IN } from './recipeCards';
+import { winningThreads } from './winningThreads';
 
 /** Something wrong with the script of a level; `step` is the index of the step in the script. */
 export type FlowProblem =
@@ -25,6 +26,17 @@ export type FlowProblem =
   | { readonly code: 'notebookMissing'; readonly step: number }
   | { readonly code: 'mirrorMissing'; readonly step: number }
   | { readonly code: 'pieceOutsideTangle'; readonly step: number; readonly sprout: string }
+  /** A count of the winning threads before the reflection shows: there is no tangle to look at. */
+  | { readonly code: 'threadsBeforeMirror'; readonly step: number }
+  /** A count of the winning threads once the tangle is separated: the pieces already tell it. */
+  | { readonly code: 'threadsAfterSeparate'; readonly step: number }
+  /** A count of the winning threads whose numbers (0 to `range`) leave out the right `answer`. */
+  | {
+      readonly code: 'threadsOutOfRange';
+      readonly step: number;
+      readonly range: number;
+      readonly answer: number;
+    }
   /** A step about the conflict of the search, where the reference search has met no conflict. */
   | { readonly code: 'noConflict'; readonly step: number }
   /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
@@ -125,14 +137,16 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
 
 /**
  * The checks of a level script (plan 03, phase 1) that the schema cannot see: every question has a
- * right answer, each notebook step has its notebook question to show, the steps of the pond have a reflection,
- * a `count` of lanterns asks about a sprout that is in the tangle, pointing at the conflict and a
- * `count` of its loop come where the search has met a conflict (4.2), a bet offers the right number among its own (a bet
- * nobody can win is no bet), a mirror challenge can be won (a better reflection exists), a flower
- * challenge has a flower and a chain to draw in the garden the level starts with, every demo is
- * accepted by the rules, and so is every move of the light's own search and of the automaton's run
- * (whose recipe must be one it can run), a recipe recalls only levels that come before it, and a
- * doubling bet stands between a race and one twice its size, with a clear right answer.
+ * right answer, each notebook step has its notebook question to show, the steps of the pond have a
+ * reflection, a `count` of lanterns asks about a sprout that is in the tangle, a `count` of the
+ * winning threads comes after the reflection shows and before the tangle is separated and offers
+ * its right number, pointing at the conflict and a `count` of its loop come where the search has
+ * met a conflict (4.2), a bet offers the right number among its own (a bet nobody can win is no
+ * bet), a mirror challenge can be won (a better reflection exists), a flower challenge has a flower
+ * and a chain to draw in the garden the level starts with, every demo is accepted by the rules, and
+ * so is every move of the light's own search and of the automaton's run (whose recipe must be one
+ * it can run), a recipe recalls only levels that come before it, and a doubling bet stands between
+ * a race and one twice its size, with a clear right answer.
  *
  * Lanterns and marks only move in a play step, where the reference solution is played, and when the
  * light searches by itself (4.1, 4.2), where its marks are added, and when the automaton runs from
@@ -145,6 +159,9 @@ export function checkFlow(level: Level): FlowProblem[] {
   /** The garden as the steps so far leave it. */
   let garden = start;
   let afterPlay = false;
+  /** Whether the reflection has appeared, and whether the tangle has been separated. */
+  let mirrorShown = false;
+  let separated = false;
   /** Whether the search of the garden now meets a conflict. */
   const conflictNow = (): boolean => findConflict(garden.layer, garden.search) !== null;
 
@@ -197,6 +214,8 @@ export function checkFlow(level: Level): FlowProblem[] {
       case 'explore':
       case 'separate':
         if (mirror === null) problems.push({ code: 'mirrorMissing', step });
+        if (flowStep.step === 'mirror') mirrorShown = true;
+        if (flowStep.step === 'separate') separated = true;
         break;
       case 'pickVine':
         if (!conflictNow()) problems.push({ code: 'noConflict', step });
@@ -210,8 +229,16 @@ export function checkFlow(level: Level): FlowProblem[] {
           problems.push({ code: 'mirrorMissing', step });
           break;
         }
-        // The winning threads are counted on the whole tangle: no sprout to look for.
-        if (flowStep.of === 'winningThreads') break;
+        // The winning threads are counted on the whole tangle, shown and not yet separated (2.5).
+        if (flowStep.of === 'winningThreads') {
+          if (!mirrorShown) problems.push({ code: 'threadsBeforeMirror', step });
+          if (separated) problems.push({ code: 'threadsAfterSeparate', step });
+          const answer = winningThreads(garden.matching, mirror);
+          if (answer > flowStep.range) {
+            problems.push({ code: 'threadsOutOfRange', step, range: flowStep.range, answer });
+          }
+          break;
+        }
         if (!inTangle(garden.matching, mirror, flowStep.piece)) {
           const sprout = nameOf(level.labels, flowStep.piece);
           problems.push({ code: 'pieceOutsideTangle', step, sprout });

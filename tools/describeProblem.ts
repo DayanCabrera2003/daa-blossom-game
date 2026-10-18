@@ -46,6 +46,12 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} needs the reflection, but the level has no mirror`;
     case 'pieceOutsideTangle':
       return `script step ${problem.step + 1} counts the piece through ${problem.sprout}, which is in no thread or loop`;
+    case 'threadsBeforeMirror':
+      return `script step ${problem.step + 1} counts the winning threads before the reflection shows`;
+    case 'threadsAfterSeparate':
+      return `script step ${problem.step + 1} counts the winning threads after the tangle is separated, which already tells them`;
+    case 'threadsOutOfRange':
+      return `script step ${problem.step + 1} offers 0 to ${problem.range} winning threads, but the reflection wins ${problem.answer}`;
     case 'noConflict':
       return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
     case 'drawUnbeatable':

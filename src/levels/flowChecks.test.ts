@@ -183,6 +183,23 @@ describe('the checks of a level script', () => {
     );
   });
 
+  it('the winning threads are counted once the reflection shows, before the tangle splits', () => {
+    const threads = TANGLE.flow[1];
+    const flow = [threads, { step: 'mirror' }, { step: 'separate' }, threads, { step: 'play' }];
+    expect(flowProblemsOf({ ...TANGLE, flow, solution: TANGLE.solution.slice(2) })).toEqual([
+      { code: 'threadsBeforeMirror', step: 0 },
+      { code: 'threadsAfterSeparate', step: 3 },
+    ]);
+  });
+
+  it('the numbers offered for the winning threads include the right one', () => {
+    const narrow = { ...TANGLE.flow[1], range: 1 };
+    const flow = [TANGLE.flow[0], narrow, ...TANGLE.flow.slice(2)];
+    expect(flowProblemsOf({ ...TANGLE, flow })).toEqual([
+      { code: 'threadsOutOfRange', step: 1, range: 1, answer: 2 },
+    ]);
+  });
+
   it('a count asks about a sprout inside some thread or loop of the tangle', () => {
     expect(flowProblemsOf({ ...pond, flow: [count('A'), count('G')] })).toEqual([
       { code: 'pieceOutsideTangle', step: 1, sprout: 'G' },
