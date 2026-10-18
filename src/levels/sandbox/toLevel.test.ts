@@ -6,24 +6,13 @@ import { unwrap } from '@core/shared/result';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { designArb } from '../../../tests/support/designs';
-import { checkIntegrity, type IntegrityProblem } from '../integrity';
+import { checkIntegrity } from '../integrity';
 import { loadLevel } from '../loader';
 import { EMPTY_DESIGN, type Design } from './design';
 import { SANDBOX_LEVEL_ID, toLevelFile, toPlayable } from './toLevel';
 
 /** Every action of the game. */
 const ALL = Object.keys(UNLOCKED_AT) as ActionType[];
-
-/**
- * The integrity problems of a level that a garden of the free mode may keep: names drawn over a
- * neighbour or a lantern. They only make a garden harder to read, and the editor lets the player
- * place sprouts as they like; a garden copied into the catalog has them fixed by its author.
- */
-const READING = new Set<IntegrityProblem['code']>([
-  'labelOnSprout',
-  'labelOnLabel',
-  'labelOnLantern',
-]);
 
 /** A path A–B–C–D with B=C lit: one chain, A–B=C–D, lights a second lantern. */
 const PATH: Design = {
@@ -109,13 +98,14 @@ describe('a design as a level file', () => {
     expect(toPlayable(EMPTY_DESIGN, ALL).ok).toBe(false);
   });
 
-  it('property: loads and passes every check of the catalog but the reading of names', () => {
+  it('property: a design made in the editor loads and passes every check of the catalog', () => {
     fc.assert(
       fc.property(designArb(), (design) => {
         const level = loadLevel(toLevelFile(design));
         expect(level.ok).toBe(true);
         if (!level.ok) return;
-        expect(checkIntegrity(level.value).filter(({ code }) => !READING.has(code))).toEqual([]);
+        // No exemption: the editor never lets a name be hidden.
+        expect(checkIntegrity(level.value)).toEqual([]);
       }),
       { numRuns: 120 },
     );
