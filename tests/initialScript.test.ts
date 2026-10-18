@@ -1,0 +1,81 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+
+// What the initial script holds, read from the sources (plan 08, phase 8): the modules the entry
+// reaches through static imports, as the bundler follows them; `import()` starts a deferred chunk
+// and is not followed. The initial script is close to its budget, so the free mode loads on demand
+// like the books: none of its modules may be reached from the entry. `import type` is erased and
+// not followed; any other import, even of types only, keeps the module (verbatimModuleSyntax).
+
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
+const ENTRY = join(ROOT, 'src/main.ts');
+
+/** The path aliases of vite.config.ts and tsconfig.json. */
+const ALIASES: Readonly<Record<string, string>> = {
+  '@core': 'src/core',
+  '@levels': 'src/levels',
+  '@game': 'src/game',
+  '@ui': 'src/ui',
+  '@services': 'src/services',
+  '@content': 'src/content',
+};
+
+/** The folders of the free mode that load only once it opens. */
+const FREE_MODE = ['src/levels/sandbox/'];
+
+/** Static `import … from` and `export … from` of a source, and its bare `import '…'`. */
+const STATIC_IMPORT = /^\s*(?:import|export)\s+(?!type\s)(?:[^'";]*?\s+from\s+)?['"]([^'"]+)['"]/gm;
+
+/** The file a specifier names from `from`, or null for a package (Phaser, zod…). */
+function resolveSpecifier(specifier: string, from: string): string | null {
+  const alias = Object.keys(ALIASES).find(
+    (name) => specifier === name || specifier.startsWith(`${name}/`),
+  );
+  let base: string;
+  if (alias !== undefined) base = join(ROOT, ALIASES[alias] ?? '', specifier.slice(alias.length));
+  else if (specifier.startsWith('.')) base = resolve(dirname(from), specifier);
+  else return null;
+  const found = [base, `${base}.ts`, join(base, 'index.ts')].find(
+    (path) => existsSync(path) && !path.endsWith('/') && /\.\w+$/.test(path),
+  );
+  if (found === undefined) throw new Error(`cannot resolve ${specifier} from ${from}`);
+  return found;
+}
+
+/** Every module the entry reaches through static imports, as paths from the project root. */
+function initialModules(): Set<string> {
+  const seen = new Set<string>();
+  const pending = [ENTRY];
+  for (let file = pending.pop(); file !== undefined; file = pending.pop()) {
+    const path = relative(ROOT, file);
+    if (seen.has(path)) continue;
+    seen.add(path);
+    if (!file.endsWith('.ts')) continue;
+    for (const [, specifier] of readFileSync(file, 'utf8').matchAll(STATIC_IMPORT)) {
+      const target = resolveSpecifier(specifier ?? '', file);
+      if (target !== null) pending.push(target);
+    }
+  }
+  return seen;
+}
+
+describe('the initial script', () => {
+  const modules = initialModules();
+
+  it('is read the way the bundler reads it: static imports in, import() out', () => {
+    expect(modules.has('src/main.ts')).toBe(true);
+    expect(modules.has('src/levels/catalog.ts')).toBe(true);
+    expect(modules.has('src/ui/shell.ts')).toBe(true);
+    // The books, behind the shell's import(), load later.
+    expect(modules.has('src/ui/books.ts')).toBe(false);
+  });
+
+  it('never holds a module of the free mode: it loads when the free mode opens', () => {
+    const early = [...modules].filter((path) =>
+      FREE_MODE.some((folder) => path.startsWith(folder)),
+    );
+    expect(early).toEqual([]);
+  });
+});
