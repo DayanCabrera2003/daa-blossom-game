@@ -193,6 +193,24 @@ describe('level integrity', () => {
     expect(problemsOf(thirsty)).toContainEqual({ code: 'solutionOverWater', used: 2, budget: 1 });
   });
 
+  it('a level offers a water budget or a formal bet, never both: the save keeps three stars', () => {
+    const betting = {
+      ...trap,
+      flow: [{ step: 'bet', prompt: 'ch1.1.sauce.00', range: 3 }, { step: 'play' }],
+      solution: [{ type: 'bet', value: 2 }, ...trap.solution],
+    };
+    const both = { ...betting, water: 4 };
+    expect(problemsOf(betting)).toEqual([]);
+    expect(problemsOf({ ...trap, water: 4 })).toEqual([]);
+    expect(problemsOf(both)).toContainEqual({ code: 'waterAndBet' });
+    // An informal bet earns no star, so it may sit next to a water budget.
+    const informal = {
+      ...both,
+      flow: [{ step: 'bet', prompt: 'ch1.1.sauce.00', range: 3, informal: true }, { step: 'play' }],
+    };
+    expect(problemsOf(informal)).not.toContainEqual({ code: 'waterAndBet' });
+  });
+
   it('dialogue lines belong to their own level', () => {
     const foreign = { ...trap, hints: [{ line: 'ch2.4.sauce.01', highlight: [] }] };
     expect(problemsOf(foreign)).toContainEqual({ code: 'foreignLine', line: 'ch2.4.sauce.01' });

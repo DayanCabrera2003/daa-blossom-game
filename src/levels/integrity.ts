@@ -12,6 +12,7 @@ import { sameKindVines, type KindClash } from './kinds';
 import { referencedLines } from './lines';
 import { checkNotebook, type NotebookProblem } from './notebookChecks';
 import { gardenAtPlay } from './playStart';
+import { hasFormalBet } from './starsCeiling';
 
 /** Something wrong with a level that the schema alone cannot see. */
 export type IntegrityProblem =
@@ -24,6 +25,7 @@ export type IntegrityProblem =
   | { readonly code: 'solutionRefused'; readonly step: number; readonly reason: RejectReason }
   | { readonly code: 'solutionFallsShort' }
   | { readonly code: 'solutionOverWater'; readonly used: number; readonly budget: number }
+  | { readonly code: 'waterAndBet' }
   | { readonly code: 'foreignLine'; readonly line: string }
   | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string }
   | ({ readonly code: 'sameKindVine' } & KindClash)
@@ -81,6 +83,10 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
   if (replayed && data.water !== null && state.waterUsed > data.water) {
     problems.push({ code: 'solutionOverWater', used: state.waterUsed, budget: data.water });
   }
+
+  // Each level gives at most three stars, all the save keeps: completing it, no hint, and one extra,
+  // either the water budget or a right formal bet. Offering both would promise a fourth.
+  if (data.water !== null && hasFormalBet(data)) problems.push({ code: 'waterAndBet' });
 
   // A garden of bees and flowers is two-sided for real: no vine joins two of a kind.
   for (const clash of sameKindVines(data.sprouts, data.vines)) {

@@ -30,6 +30,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return 'the solution is accepted but does not win the level';
     case 'solutionOverWater':
       return `the solution spends ${problem.used} drops of water, over the budget of ${problem.budget}`;
+    case 'waterAndBet':
+      return 'the level has both a water budget and a formal bet, but it can give only one extra star';
     case 'foreignLine':
       return `line ${problem.line} belongs to another level`;
     case 'unlockMismatch':

@@ -81,6 +81,9 @@ describe('readable level problems', () => {
     expect(describeProblem({ code: 'solutionFallsShort' })).toBe(
       'the solution is accepted but does not win the level',
     );
+    expect(describeProblem({ code: 'waterAndBet' })).toBe(
+      'the level has both a water budget and a formal bet, but it can give only one extra star',
+    );
   });
 
   it('every kind of problem has a message', () => {
