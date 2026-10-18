@@ -11,6 +11,7 @@ import {
   secretFlowerPicture,
   type FlowerPicture,
 } from '../../picture/secretFlower';
+import { wonFlowerPixels, WON_FLOWER_TONES } from '../../picture/wonFlower';
 import { css, PALETTE } from '../../view/palette';
 import { cutFrame } from '../../view/sheetCuts';
 import { drawStars } from '../../view/StarIcons';
@@ -164,8 +165,8 @@ export function addHubSecrets(
 }
 
 /**
- * Draws the pieces of a flower, in order: the glow (pulsing), the bud's leaves, the flower
- * (swaying, or golden), the star and its number.
+ * Draws the pieces of a flower, in order: the glow (pulsing), the bud's leaves, the open flower
+ * (swaying) or the golden rosette of a won one, the star and its number.
  */
 function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
   for (const piece of picture.pieces) {
@@ -191,9 +192,8 @@ function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
     } else if (piece.kind === 'star') {
       drawStars(scene, piece.x, piece.y, [{ x: 0, earned: piece.earned }], FLOWER_DEPTH);
     } else if (piece.kind === 'count') {
-      const colour = piece.golden ? PALETTE.sun : PALETTE.label;
       scene.add
-        .text(piece.x, piece.y - DIGIT_DROP, piece.text, textStyle(8, colour))
+        .text(piece.x, piece.y - DIGIT_DROP, piece.text, textStyle(8))
         .setDepth(FLOWER_DEPTH);
     } else if (piece.kind === 'bud') {
       const frame = cutFrame(scene.textures, BUD_CUT);
@@ -202,23 +202,29 @@ function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
         .image(piece.x, piece.y, BUD_CUT.sheet, frame)
         .setOrigin(0, 0)
         .setDepth(FLOWER_DEPTH);
+    } else if (piece.kind === 'won') {
+      const g = scene.add.graphics().setDepth(FLOWER_DEPTH);
+      for (const pixel of wonFlowerPixels())
+        g.fillStyle(PALETTE[WON_FLOWER_TONES[pixel.tone]], 1).fillRect(
+          piece.x + pixel.x,
+          piece.y + pixel.y,
+          1,
+          1,
+        );
     } else if (scene.textures.exists(BLOOM_SHEET)) {
       const bloom = scene.add
         .image(piece.x, piece.y, BLOOM_SHEET, 0)
         .setOrigin(0, 0)
         .setDepth(FLOWER_DEPTH);
-      if (piece.golden) bloom.setTint(PALETTE.sun);
-      if (piece.sways) {
-        let frame = 0;
-        scene.time.addEvent({
-          delay: SWAY_MS,
-          loop: true,
-          callback: () => {
-            frame = 1 - frame;
-            bloom.setFrame(frame);
-          },
-        });
-      }
+      let frame = 0;
+      scene.time.addEvent({
+        delay: SWAY_MS,
+        loop: true,
+        callback: () => {
+          frame = 1 - frame;
+          bloom.setFrame(frame);
+        },
+      });
     }
   }
 }

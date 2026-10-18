@@ -11,6 +11,7 @@ import {
   type FlowerPiece,
 } from '../src/game/picture/secretFlower';
 import { STAR_SIZE } from '../src/game/picture/starIcon';
+import { WON_FLOWER_SIZE } from '../src/game/picture/wonFlower';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../src/game/scale/integerZoom';
 import { catalog } from '../src/levels/catalog';
 import { starsCeiling } from '../src/levels/starsCeiling';
@@ -52,6 +53,8 @@ function pieceBox(piece: FlowerPiece): Rect {
       return { x: piece.x, y: piece.y, width: BUD_CUT.width, height: BUD_CUT.height };
     case 'bloom':
       return { x: piece.x, y: piece.y, ...BLOOM_SIZE };
+    case 'won':
+      return { x: piece.x, y: piece.y, width: WON_FLOWER_SIZE, height: WON_FLOWER_SIZE };
     case 'glow':
       return piece;
     case 'star':
