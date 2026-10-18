@@ -131,6 +131,8 @@ export class HubScene extends Phaser.Scene {
     const exportX = gear.x - HUB.gap - width;
     exportButton.moveTo(exportX, HUB.exportY);
     taken.push({ x: exportX, y: HUB.exportY - 1, width, height: tall });
+    // Where the next sign of the top line ends, going leftwards.
+    let topLeft = exportX;
 
     // The Códex, before the export on the top line, once some page of it is open: the hub grows
     // with the game, and in teacher mode the whole book is open from the start.
@@ -158,12 +160,29 @@ export class HubScene extends Phaser.Scene {
         .setDepth(STAR_DEPTH);
       seal.setX(codexX - HUB.gap - seal.width);
       taken.push(boxOf(seal));
+      topLeft = seal.x;
       const showSeal = (now: SaveData): void => {
         seal.setVisible(hasNewPages(codexOpen, now));
       };
       showSeal(save);
       const unsubscribe = saves.subscribe(showSeal);
       this.events.once(Phaser.Scenes.Events.SHUTDOWN, unsubscribe);
+    }
+
+    // The Cuaderno, before the Códex, once a statement is written (and in teacher mode, to look at
+    // the book): it opens as a book over the hub, with a ribbon to the Códex.
+    if (save.notebook.length > 0 || teacherMode) {
+      const notebook = new Button(this, 0, 0, t('hub.notebook'), () =>
+        bus.emit('book.open', { book: 'notebook' }),
+      );
+      const notebookX = topLeft - HUB.gap - notebook.width;
+      notebook.moveTo(notebookX, HUB.exportY);
+      taken.push({
+        x: notebookX,
+        y: HUB.exportY - 1,
+        width: notebook.width,
+        height: notebook.height,
+      });
     }
 
     addSettings(this, gear);
