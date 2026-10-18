@@ -137,7 +137,7 @@ The chimes, the sparkle, the fold chords and the crickets of the prologue are no
 
 To use another file of a pack, add it to `tools/assets/selection.ts` (at the end of its group), run `npm run assets`, and credit it in `CREDITS.md`.
 
-The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600 KB, the font 100 KB, effects, syllables and jingles 1.5 MB, the first load (JavaScript plus the `boot` group) 5 MB, all the music 20 MB, each track loaded with its own chapter, the books (KaTeX, marked, the Códex, the Cuaderno and the teacher's panel, loaded the first time one opens) 1 MB, and the free mode (the editor and the share sheet, loaded the first time it opens) 60 KB. `tests/assetBudget.test.ts` holds the assets to it; `npm run budget`, run by CI after the build, adds the JavaScript.
+The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600 KB, the font 100 KB, effects, syllables and jingles 1.5 MB, the first load (JavaScript plus the `boot` group) 3.5 MB, all the music 20 MB, each track loaded with its own chapter, the books (KaTeX, marked, the Códex, the Cuaderno and the teacher's panel, loaded the first time one opens) 1 MB, and the free mode (the editor and the share sheet, loaded the first time it opens) 60 KB. `tests/assetBudget.test.ts` holds the assets to it; `npm run budget`, run by CI after the build, adds the JavaScript.
 
 ## The author's kit
 
