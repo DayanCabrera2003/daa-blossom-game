@@ -8,7 +8,7 @@ import { reflectionOf } from '@ui/model/pondPicture';
 import { flowerOf } from '@ui/model/cutPlay';
 import { cutDiagram } from './CutDiagram';
 import { placingDiagram } from './PlacingDiagram';
-import { SCARECROWS } from './placingKinds';
+import { SCARECROWS, STONES } from './placingKinds';
 import { playDiagram } from './PlayDiagram';
 import { pondDiagram } from './PondDiagram';
 import { replayDiagram } from './ReplayDiagram';
@@ -65,6 +65,9 @@ export function mountDiagram(hole: HTMLElement, t: Translate): void {
     }
     case 'cover':
       placingDiagram(hole, garden.value, block, SCARECROWS, t);
+      return;
+    case 'stones':
+      placingDiagram(hole, garden.value, block, STONES, t);
       return;
     case 'cut': {
       const flower = flowerOf(garden.value);
