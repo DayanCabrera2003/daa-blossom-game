@@ -30,7 +30,7 @@
   width: min(100vw, calc(464 * var(--px)));
   height: min(100vh, calc(258 * var(--px)));
   display: grid;
-  grid-template-columns: calc(128 * var(--px)) 1fr;
+  grid-template-columns: calc(176 * var(--px)) 1fr;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: calc(4 * var(--px));
   padding: calc(4 * var(--px));
@@ -90,8 +90,13 @@
   cursor: default;
 }
 
-/* The index, on the left: one line per entry, the closed ones greyed. */
+/*
+ * The index, on the left: two lines per entry at most, its garden title and, once earned, its
+ * formal title, each cut short with an ellipsis when it does not fit (the page on the right, and
+ * the row's tooltip, give them whole). The closed ones are greyed.
+ */
 .codex-index {
+  overflow-x: hidden;
   overflow-y: auto;
   background: var(--paper-edge);
   border: var(--px) solid var(--wood-edge);
@@ -114,7 +119,7 @@
 
 .codex-entry {
   display: grid;
-  grid-template-columns: calc(14 * var(--px)) 1fr auto;
+  grid-template-columns: calc(14 * var(--px)) minmax(0, 1fr) auto;
   width: 100%;
   padding: var(--px) calc(3 * var(--px));
   border: 0;
@@ -125,6 +130,13 @@
 .codex-entry:hover,
 .codex-entry[aria-current='page'] {
   background: var(--paper);
+}
+
+.codex-name,
+.codex-sub {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .codex-sub {

@@ -131,6 +131,8 @@ export function showCodex(frame: OverlayFrame, request: BookRequest, t: Translat
         go.append(make(page, 'span', 'codex-name', row.gardenTitle));
         if (row.isNew) go.append(seal(page, t));
         if (row.formalTitle !== null) go.append(make(page, 'span', 'codex-sub', row.formalTitle));
+        // A title cut short by the narrow index is read whole in the row's tooltip.
+        go.title = [row.gardenTitle, row.formalTitle ?? ''].filter(Boolean).join('\n');
         item.append(go);
         return item;
       }),
