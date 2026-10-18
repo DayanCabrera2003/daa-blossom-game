@@ -147,4 +147,16 @@ describe('decomposeSymmetricDifference', () => {
       { numRuns: 500 },
     );
   });
+
+  it('property (Códex C3, Cor. 3.4): a garden bigger by k leaves at least k winning chains', () => {
+    fc.assert(
+      fc.property(graphWithTwoMatchingsArb(), ([g, from, to]) => {
+        const winning = decomposeSymmetricDifference(from, to).filter(
+          (c) => c.kind === 'path' && c.gain === 1,
+        );
+        expect(winning.length).toBeGreaterThanOrEqual(size(to) - size(from));
+        for (const c of winning) expect(checkAugmentingPath(g, from, c.vertices).ok).toBe(true);
+      }),
+    );
+  });
 });
