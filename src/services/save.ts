@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { codexEntry, type CodexEntryId } from '@levels/codex';
 
 /** The part of `localStorage` the save needs, so tests (and a refusing browser) can stand in. */
 export interface KeyValueStore {
@@ -9,7 +10,7 @@ export interface KeyValueStore {
 /** Where progress is kept in the browser. */
 export const SAVE_KEY = 'florecer.save';
 
-const SAVE_VERSION = 3 as const;
+const SAVE_VERSION = 4 as const;
 
 /** Each completed level with its best number of stars; the same in every version. */
 const levels = z.record(z.string(), z.strictObject({ stars: z.number().int().min(0).max(3) }));
@@ -21,27 +22,40 @@ const saveSchema = z.strictObject({
   notebook: z.array(z.string()),
   /** The mechanic cards the player has closed (GDD §5.11), each shown once, in the order seen. */
   tutorialsSeen: z.array(z.string()),
+  /**
+   * The Codex entries the player has opened in the book, in the order read, so the others wear the
+   * "new" seal. Which entries are open is never saved: it follows from the completed levels.
+   */
+  codexRead: z.array(codexEntry),
 });
 
 /**
  * The saves of older versions, each turned into the current one without losing progress. Version
- * 1 had no notebook and version 2 no mechanic cards: what is missing comes back empty.
+ * 1 had no notebook, version 2 no mechanic cards and version 3 no pages read: what is missing
+ * comes back empty.
  */
 const olderSaves = z
   .union([
     z.strictObject({ version: z.literal(1), levels }),
     z.strictObject({ version: z.literal(2), levels, notebook: z.array(z.string()) }),
+    z.strictObject({
+      version: z.literal(3),
+      levels,
+      notebook: z.array(z.string()),
+      tutorialsSeen: z.array(z.string()),
+    }),
   ])
   .transform((save) => ({
     version: SAVE_VERSION,
     levels: save.levels,
     notebook: 'notebook' in save ? save.notebook : [],
-    tutorialsSeen: [] as string[],
+    tutorialsSeen: 'tutorialsSeen' in save ? save.tutorialsSeen : [],
+    codexRead: [] as CodexEntryId[],
   }));
 
 /**
- * Progress of a player: each completed level with its best number of stars, the notebook, and the
- * mechanic cards already seen.
+ * Progress of a player: each completed level with its best number of stars, the notebook, the
+ * mechanic cards already seen and the Codex entries already read.
  */
 export type SaveData = z.infer<typeof saveSchema>;
 
@@ -51,6 +65,7 @@ export const emptySave = (): SaveData => ({
   levels: {},
   notebook: [],
   tutorialsSeen: [],
+  codexRead: [],
 });
 
 /**
@@ -96,4 +111,9 @@ export function recordTutorialSeen(save: SaveData, card: string): SaveData {
   return save.tutorialsSeen.includes(card)
     ? save
     : { ...save, tutorialsSeen: [...save.tutorialsSeen, card] };
+}
+
+/** The progress after opening a Codex entry in the book; each entry is recorded once. */
+export function recordCodexRead(save: SaveData, entry: CodexEntryId): SaveData {
+  return save.codexRead.includes(entry) ? save : { ...save, codexRead: [...save.codexRead, entry] };
 }

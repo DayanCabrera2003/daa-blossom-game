@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   emptySave,
   loadSave,
+  recordCodexRead,
   recordCompletion,
   recordNotebook,
   recordTutorialSeen,
@@ -28,8 +29,36 @@ describe('saved progress', () => {
     expect(twice.levels['1.1']).toEqual({ stars: 3 });
   });
 
-  it('a new player has written nothing in the notebook and seen no mechanic card', () => {
-    expect(emptySave()).toEqual({ version: 3, levels: {}, notebook: [], tutorialsSeen: [] });
+  it('a new player has written nothing in the notebook, seen no mechanic card, read no page', () => {
+    expect(emptySave()).toEqual({
+      version: 4,
+      levels: {},
+      notebook: [],
+      tutorialsSeen: [],
+      codexRead: [],
+    });
+  });
+
+  it('records each Codex entry read once, in the order read', () => {
+    const read = recordCodexRead(recordCodexRead(recordCodexRead(emptySave(), 'C1'), 'C3'), 'C1');
+    expect(read.codexRead).toEqual(['C1', 'C3']);
+  });
+
+  it('a save of version 3 keeps its progress, notebook and cards, with no page read', () => {
+    const v3 =
+      '{"version":3,"levels":{"2.4":{"stars":3}},"notebook":["1.5","2.4"],"tutorialsSeen":["sun"]}';
+    expect(loadSave(memoryStore({ [SAVE_KEY]: v3 }))).toEqual({
+      version: 4,
+      levels: { '2.4': { stars: 3 } },
+      notebook: ['1.5', '2.4'],
+      tutorialsSeen: ['sun'],
+      codexRead: [],
+    });
+  });
+
+  it('a page read that is not an entry of the Codex is damage, like any other', () => {
+    const bad = '{"version":4,"levels":{},"notebook":[],"tutorialsSeen":[],"codexRead":["C15"]}';
+    expect(loadSave(memoryStore({ [SAVE_KEY]: bad }))).toEqual(emptySave());
   });
 
   it('records each mechanic card once, in the order seen', () => {
@@ -43,10 +72,11 @@ describe('saved progress', () => {
   it('a save of version 2 keeps all its progress and notebook, with no card seen', () => {
     const v2 = '{"version":2,"levels":{"1.5":{"stars":2}},"notebook":["1.5"]}';
     expect(loadSave(memoryStore({ [SAVE_KEY]: v2 }))).toEqual({
-      version: 3,
+      version: 4,
       levels: { '1.5': { stars: 2 } },
       notebook: ['1.5'],
       tutorialsSeen: [],
+      codexRead: [],
     });
   });
 
@@ -58,10 +88,11 @@ describe('saved progress', () => {
   it('a save of version 1 keeps all its progress, with an empty notebook', () => {
     const v1 = '{"version":1,"levels":{"0.1":{"stars":3},"1.2":{"stars":1}}}';
     expect(loadSave(memoryStore({ [SAVE_KEY]: v1 }))).toEqual({
-      version: 3,
+      version: 4,
       levels: { '0.1': { stars: 3 }, '1.2': { stars: 1 } },
       notebook: [],
       tutorialsSeen: [],
+      codexRead: [],
     });
   });
 
