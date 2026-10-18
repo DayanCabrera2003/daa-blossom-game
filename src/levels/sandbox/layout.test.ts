@@ -19,8 +19,8 @@ import { MAX_VINES, MIN_SPACING } from './limits';
 /**
  * Whether a layout of `graph` puts every sprout on a whole pixel inside the editor's free area
  * (under its header, over its buttons), 18 px apart,
- * with no name drawn over a sprout, another name or a lantern: the checks of the catalog's levels,
- * with no exemption.
+ * with no name drawn over a sprout, another name, a lantern or a vine: the checks of the catalog's
+ * levels, with no exemption.
  */
 function expectReadable(spots: readonly Spot[], graph: Graph, shape?: LayoutShape): void {
   expect(spots).toHaveLength(graph.n);

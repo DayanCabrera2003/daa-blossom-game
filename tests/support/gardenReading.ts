@@ -1,5 +1,10 @@
 import type { Graph } from '@core/graph/types';
-import { checkLayout, vineCrossings, type LayoutProblem } from '../../src/levels/layoutChecks';
+import {
+  checkLayout,
+  labelsOnVines,
+  vineCrossings,
+  type LayoutProblem,
+} from '../../src/levels/layoutChecks';
 import { sideKind, type LayoutShape, type Spot } from '../../src/levels/sandbox/layout';
 import { LETTERS } from '../../src/levels/sandbox/names';
 
@@ -22,12 +27,18 @@ function placed(graph: Graph, spots: readonly Spot[], shape?: LayoutShape) {
   };
 }
 
-/** Every name drawn over a sprout, another name or a lantern, as the catalog's checks find them. */
+/**
+ * Every name drawn over a sprout, another name, a lantern or a vine, as the catalog's checks find
+ * them.
+ */
 export const readingProblems = (
   graph: Graph,
   spots: readonly Spot[],
   shape?: LayoutShape,
-): LayoutProblem[] => checkLayout(placed(graph, spots, shape));
+): LayoutProblem[] => {
+  const garden = placed(graph, spots, shape);
+  return [...checkLayout(garden), ...labelsOnVines(garden)];
+};
 
 /** How many pairs of vines cross. */
 export const crossingCount = (graph: Graph, spots: readonly Spot[]): number =>
