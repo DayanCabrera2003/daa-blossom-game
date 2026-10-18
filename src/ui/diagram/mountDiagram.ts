@@ -6,8 +6,9 @@ import { replaySteps } from '@ui/model/diagramReplay';
 import { parseDiagramSpec } from '@ui/model/diagramSpec';
 import { reflectionOf } from '@ui/model/pondPicture';
 import { flowerOf } from '@ui/model/cutPlay';
-import { coverDiagram } from './CoverDiagram';
 import { cutDiagram } from './CutDiagram';
+import { placingDiagram } from './PlacingDiagram';
+import { SCARECROWS } from './placingKinds';
 import { playDiagram } from './PlayDiagram';
 import { pondDiagram } from './PondDiagram';
 import { replayDiagram } from './ReplayDiagram';
@@ -63,7 +64,7 @@ export function mountDiagram(hole: HTMLElement, t: Translate): void {
       return;
     }
     case 'cover':
-      coverDiagram(hole, garden.value, block, t);
+      placingDiagram(hole, garden.value, block, SCARECROWS, t);
       return;
     case 'cut': {
       const flower = flowerOf(garden.value);
