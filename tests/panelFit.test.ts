@@ -12,7 +12,8 @@ import {
   TUTORIAL_PANEL,
   tutorialLayout,
 } from '../src/game/picture/panelLayout';
-import { SETTINGS_PANEL } from '../src/game/picture/settingsPanelLayout';
+import { motionChoicesAt, SETTINGS_PANEL } from '../src/game/picture/settingsPanelLayout';
+import { MOTION_CHOICES } from '../src/services/motion';
 import { charsIn, LINE_HEIGHT, textHeight, wrappedLines } from '../src/game/picture/textWrap';
 import { questionAt, type Question, type QuestionOption } from '../src/game/systems/question';
 import { DEMO_SIZE } from '../src/game/view/CardDemoView';
@@ -132,6 +133,16 @@ describe('the panels fit their texts', () => {
       const name = SETTINGS_PANEL.pad + estimatedButtonWidth(t(`settings.${channel}`));
       expect(name).toBeLessThanOrEqual(SETTINGS_PANEL.track.from);
     }
+    // The motion's three buttons, side by side, stay on the face inside the wooden frame.
+    const choices = MOTION_CHOICES.map((choice) =>
+      estimatedButtonWidth(t(`settings.motion.${choice}`)),
+    );
+    const lefts = motionChoicesAt(choices);
+    expect(lefts[0]).toBeGreaterThanOrEqual(SETTINGS_PANEL.pad);
+    expect((lefts.at(-1) ?? 0) + (choices.at(-1) ?? 0)).toBeLessThanOrEqual(
+      SETTINGS_PANEL.width - SETTINGS_PANEL.pad,
+    );
+    expect(estimatedButtonWidth(t('settings.motion'))).toBeLessThanOrEqual(inner);
     // The loudest percentage, written after its track, ends on the face, inside the wooden frame.
     const loudest = [...t('settings.volume', { percent: 100 })].length * CHAR_ADVANCE;
     const value = SETTINGS_PANEL.track.to + SETTINGS_PANEL.valueGap + loudest;

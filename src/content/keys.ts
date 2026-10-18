@@ -16,6 +16,7 @@ import type { DesignRejection } from '@levels/sandbox/design';
 import type { ImportRejection } from '@levels/sandbox/importText';
 import { DESIGN_TOOLS } from '@game/input/designIntent';
 import { KEY_HELP } from '@game/input/keyBindings';
+import { MOTION_CHOICES } from '@services/motion';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
 
@@ -366,6 +367,9 @@ const UI = {
   'settings.exportLog': [],
   'settings.credits': [],
   'settings.keys': [],
+  'settings.motion': [],
+  // Each position of the motion setting, on its button in the settings panel.
+  ...Object.fromEntries(MOTION_CHOICES.map((choice) => [`settings.motion.${choice}`, []])),
   'keys.title': [],
   'keys.pointer': [],
   'keys.close': [],

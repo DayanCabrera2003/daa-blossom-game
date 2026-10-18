@@ -3,9 +3,25 @@ import { itemAt } from '@core/shared/itemAt';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { BUTTON_HEIGHT } from './panelLayout';
-import { SETTINGS_PANEL, settingsCorner, settingsRows } from './settingsPanelLayout';
+import {
+  motionChoicesAt,
+  SETTINGS_PANEL,
+  settingsCorner,
+  settingsRows,
+} from './settingsPanelLayout';
 import { LINE_HEIGHT } from './textWrap';
 import { WOOD_PANEL } from './wood';
+
+describe('the three buttons of the motion setting', () => {
+  it('stand side by side a gap apart, centred across the panel', () => {
+    const lefts = motionChoicesAt([46, 52, 52]);
+    expect(lefts).toHaveLength(3);
+    expect(itemAt(lefts, 1)).toBe(itemAt(lefts, 0) + 46 + SETTINGS_PANEL.gap);
+    expect(itemAt(lefts, 2)).toBe(itemAt(lefts, 1) + 52 + SETTINGS_PANEL.gap);
+    const right = SETTINGS_PANEL.width - (itemAt(lefts, 2) + 52);
+    expect(Math.abs(itemAt(lefts, 0) - right)).toBeLessThanOrEqual(1);
+  });
+});
 
 describe('the rows of the settings panel', () => {
   const rows = settingsRows(BUTTON_HEIGHT);
@@ -21,8 +37,11 @@ describe('the rows of the settings panel', () => {
   it('stacks the mute box, the export button, "Créditos", "Teclas" and "Cerrar" without touching', () => {
     const last = itemAt(rows.sliders, rows.sliders.length - 1);
     expect(rows.mute - last).toBe(SETTINGS_PANEL.row);
-    // The mute line ends before the export button's wood starts, a pixel above its label.
-    expect(rows.mute + LINE_HEIGHT).toBeLessThanOrEqual(rows.exportLog - 1);
+    // The motion's name a row under the mute box, its three buttons under it, and the export
+    // button's wood after them, each a pixel above its label.
+    expect(rows.motion - rows.mute).toBe(SETTINGS_PANEL.row);
+    expect(rows.motion + LINE_HEIGHT).toBeLessThanOrEqual(rows.motionChoices - 1);
+    expect(rows.motionChoices - 1 + BUTTON_HEIGHT).toBeLessThan(rows.exportLog - 1);
     expect(rows.exportLog - 1 + BUTTON_HEIGHT).toBeLessThan(rows.credits - 1);
     expect(rows.credits - 1 + BUTTON_HEIGHT).toBeLessThan(rows.keys - 1);
     expect(rows.keys - 1 + BUTTON_HEIGHT).toBeLessThan(rows.close - 1);
