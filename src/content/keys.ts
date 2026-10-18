@@ -372,6 +372,9 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...Object.fromEntries(CODEX_TABS.map((tab) => [`codex.tab.${tab}`, []])),
   // The notice of each cosmetic of the hub, shown once when it first comes.
   ...Object.fromEntries(COSMETIC_IDS.map((id) => [`cosmetic.${id}`, []])),
+  // The free mode's title, and its way back to the hub.
+  'sandbox.title': [],
+  'sandbox.back': [],
   // The name of each generator of the free mode, in its generate menu, with "another at random"
   // and the notice of a garden grown smaller than asked so its vines fit.
   ...Object.fromEntries(GENERATORS.map((generator) => [generator.textKey, []])),

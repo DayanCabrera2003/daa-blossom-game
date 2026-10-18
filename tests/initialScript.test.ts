@@ -68,6 +68,9 @@ describe('the initial script', () => {
     expect(modules.has('src/ui/shell.ts')).toBe(true);
     // The books, behind the shell's import(), load later.
     expect(modules.has('src/ui/books.ts')).toBe(false);
+    // The free mode's thin gate is registered from the start; its scene loads later.
+    expect(modules.has('src/game/scenes/SandboxGate.ts')).toBe(true);
+    expect(modules.has('src/game/scenes/sandbox/SandboxScene.ts')).toBe(false);
   });
 
   it('never holds a module of the free mode: it loads when the free mode opens', () => {
