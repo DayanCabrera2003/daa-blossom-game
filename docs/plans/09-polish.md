@@ -17,7 +17,7 @@
 - **Una responsabilidad por archivo, ≤ 1000 líneas.** `LevelScene.ts` (422 líneas) y `HubScene.ts` (174) no crecen con lógica: el foco, el teclado y los créditos entran por archivos pequeños y descriptores puros.
 - **Las fases se ejecutan de una en una**, en el orden de "Orden y dependencias". **Ninguna fase abre un navegador**, ni un servidor de desarrollo o de vista previa, ni hace capturas: verifica con tests. Al cerrar cada hito, la **sesión principal** revisa en pantalla (un único navegador headless, cerrado al terminar) lo que necesita ojos, con la lista del hito.
 
-Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typecheck, coverage ≥ 95 %, check-levels, build), más `npm run budget` tras el build en las fases que cambian lo que se empaqueta (3, 4, 5, 6, 7, 8, 9, 10) y `npm run assets:check` en local en las fases que cambian la selección de recursos (2 si cambia algún icono, 8, 9).
+Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typecheck, coverage ≥ 95 %, check-levels, build), más `npm run budget` tras el build en las fases que cambian lo que se empaqueta (3, 4, 6, 7, 8, 9, 10) y `npm run assets:check` en local en las fases que cambian la selección de recursos (2 si cambia algún icono, 8, 9).
 
 ---
 
@@ -35,16 +35,16 @@ Todo lo abierto que se encontró, sin repetir, con su origen y la fase que lo ci
 | 6 | Los pétalos del plegado empiezan más anchos que la flor ya dibujada | Revisión de F10 del Plan 06 | F2 |
 | 7 | El disco oscuro del estanque sobre el farol de un hilo con doble luz | Revisión de F3 del Plan 06 | F2 (ojos) |
 | 8 | Opacidad (0,16) y deriva de la nube de niebla; brillo del halo del farol; espantapájaros a 12 px de su brote | Revisión de F3 del Plan 06 | F2 (ojos) |
-| 9 | El icono de la luna no aparece en ningún sitio (la barra pasaría de 480 px); el Plan 06 §1.4 lo pedía en el HUD | Revisión de F11 del Plan 06 | Apéndice A, F2 |
+| 9 | El icono de la luna no aparece en ningún sitio (la barra pasaría de 480 px); el Plan 06 §1.4 lo pedía en el HUD | Revisión de F11 del Plan 06 | F2 (Apéndice A 15: insignia en "Marcas") |
 | 10 | El panel de ajustes sigue siendo un rectángulo plano; los demás paneles son de madera 9-slice | Revisión de F11 del Plan 06 | F2 |
 | 11 | Duración de salto, destello, plegado y piedra; el conflicto parpadea dorado/azul | Revisión de F10 del Plan 06 | F2 (ojos) |
 | 12 | Pantalla de créditos; `music.credits` en la lista de espera de `tests/assetUse.test.ts` | Plan 06 §1.7, Plan 08 (fuera de alcance), `tests/assetUse.test.ts` | F3 |
 | 13 | Navegación con teclado del hub más allá de F / Mayús+F | Plan 08, pendiente | F4 |
 | 14 | Teclado en niveles, paneles, preguntas, tarjetas, victoria y ajustes; anillo de foco | GDD §11.12, revisión de la sesión principal | F4 |
-| 15 | Un gesto de cadena alternativo al arrastre ("se decide en el pulido") | Plan 02, decisión abierta 2 | Apéndice A, F5 |
+| 15 | Un gesto de cadena alternativo al arrastre ("se decide en el pulido") | Plan 02, decisión abierta 2 | Apéndice A 16: no; F5 descartada, el README lo dice (F12) |
 | 16 | El movimiento reducido solo se respeta en los cosméticos del hub y en los libros, no en las animaciones del nivel | Código (`HubCosmetics.ts`, `book.css`, `epilogue.css`) | F6 |
 | 17 | Contraste del texto sobre sus paneles; diálogo legible por un lector de pantalla | GDD §11.12 | F6 |
-| 18 | Móviles: con `integerZoom` un teléfono apaisado queda a ×1 (480 × 270 px CSS, letra de 8 px); vertical, sin aviso; toques del navegador (doble toque, desplazamiento, menú) sobre el lienzo | Código (`scale/integerZoom.ts`, `index.html`), GDD §11.12 | F7 (+ Apéndice A) |
+| 18 | Móviles: con `integerZoom` un teléfono apaisado queda a ×1 (480 × 270 px CSS, letra de 8 px); vertical, sin aviso; toques del navegador (doble toque, desplazamiento, menú) sobre el lienzo | Código (`scale/integerZoom.ts`, `index.html`), GDD §11.12 | F7 (Apéndice A 17: aviso "gira el teléfono") |
 | 19 | Safari y Ogg Vorbis (31 archivos `.ogg`: toda la música y los efectos de Kenney); respaldo reproducible si hace falta | Plan 06, riesgos y decisión de copiar las músicas tal cual | F8 |
 | 20 | Rangos de tono del balbuceo, Robles a tres voces al 60 %, ritmo de escritura (30 letras/s del jardinero y del Cuaderno, ×3), volúmenes | Revisión de F7 del Plan 06 | F8 (oído) |
 | 21 | Primera carga de ~4,1 MB (con 1 MB de música del hub en `boot`); pantalla oscura hasta que el script de 1,7 MB arranca; sin favicon | `npm run budget` del Plan 08, `index.html`, `public/` | F9 |
@@ -57,7 +57,7 @@ Todo lo abierto que se encontró, sin repetir, con su origen y la fase que lo ci
 | 28 | `README.md` dice "The guided walk and the final polish are still to come", no enlaza el juego publicado ni dice qué navegadores ni qué teclas | `README.md` | F12 |
 | 29 | GDD §5.9 dice "Guion en sección 10"; el guion es la §9 | `docs/GDD.md` | F12 |
 | 30 | `package.json` en versión 0.0.0; sin tag 1.0 | `package.json`, `git tag` | F12 |
-| 31 | Preguntas de diseño abiertas de niveles concretos (3.5, 1.9, 1.3, 2.4, 5.1–5.3, 6.3, 6.4–6.5, 7.4, 7.5), nombres de capítulo, título, firma | Planes 04–05 (informes de fase), GDD §12 | Apéndice A |
+| 31 | Preguntas de diseño abiertas de niveles concretos (3.5, 1.9, 1.3, 2.4, 5.1–5.3, 6.3, 6.4–6.5, 7.4, 7.5), nombres de capítulo, título, firma | Planes 04–05 (informes de fase), GDD §12 | Apéndice A (título y firma contestados; el resto, pendiente del autor) |
 
 ---
 
@@ -99,11 +99,11 @@ El editor del modo libre **no** recibe este motivo en esta fase (ver F1): aquí 
 | `game/picture/pond.ts`, `game/view/MirrorView.ts` | El disco oscuro del estanque se dibuja por debajo del farol de un hilo con doble luz (orden de capas como dato, probado) |
 | `game/picture/secretFlower.ts` | La flor ganada se lee mejor: una forma propia más grande dentro de la misma columna de 16 px (pétalos dorados con contorno de 1 px y la estrella encima), sin salir de su caja |
 | `game/view/SettingsView.ts`, `game/picture/settingsPanelLayout.ts` | El panel de ajustes con el marco de madera 9-slice de los demás paneles (`WoodFrame`), con el mismo contenido |
-| `game/picture/hud.ts`, `game/view/HudView.ts` | El icono de la luna, **según la respuesta del autor** (Apéndice A, pregunta 15); sin respuesta, no se toca y se anota |
+| `game/picture/hud.ts`, `game/view/HudView.ts` | El icono de la luna (Apéndice A, pregunta 15, respuesta **(b)**): una insignia de 8 × 8 dentro del botón de la herramienta "Marcas", sin texto, junto al sol; la caja del botón no cambia y la barra sigue cabiendo en 480 px |
 
-**Tests clave:** el radio del primer fotograma del plegado es el del dibujo de la flor para 3, 5 y 7 pétalos y para la anidada; cada valor de `look.ts` está en su rango y el halo nunca iguala el color de un brote a oscuras (contraste, `picture/contrast.ts`); en un estanque de prueba, el farol del hilo doblemente iluminado queda por encima del disco; la flor ganada cabe en `flowerBox` en todas las disposiciones del hub (`tests/hubFlowers.test.ts`); el panel de ajustes sigue cabiendo con el marco (`tests/panelFit.test.ts`).
+**Tests clave:** el radio del primer fotograma del plegado es el del dibujo de la flor para 3, 5 y 7 pétalos y para la anidada; cada valor de `look.ts` está en su rango y el halo nunca iguala el color de un brote a oscuras (contraste, `picture/contrast.ts`); en un estanque de prueba, el farol del hilo doblemente iluminado queda por encima del disco; la flor ganada cabe en `flowerBox` en todas las disposiciones del hub (`tests/hubFlowers.test.ts`); el panel de ajustes sigue cabiendo con el marco (`tests/panelFit.test.ts`); la insignia de la luna cabe dentro del botón "Marcas" junto al sol, sin pisar su texto, con las palabras y la fuente reales.
 
-**Hito P1 (F0–F2), revisión en pantalla de la sesión principal:** 4.11 y 7.5 a ×3 (los nombres se leen); el modo libre con la fuente de reserva forzada; un JSON con brotes arriba; `?teacher&level=1.10` sin tarjetas; plegar y desplegar en 4.4 (los pétalos arrancan del tamaño de la flor); 2.3 con un hilo de doble luz; 3.1 (niebla), 3.7 (espantapájaros), 4.2 (conflicto); el hub con una flor ganada (guardado sintético de F11, o uno escrito a mano para la revisión); el panel de ajustes. Lo que no convenza se ajusta en `look.ts` antes de seguir.
+**Hito P1 (F0–F2), revisión en pantalla de la sesión principal:** 4.11 y 7.5 a ×3 (los nombres se leen); el modo libre con la fuente de reserva forzada; un JSON con brotes arriba; `?teacher&level=1.10` sin tarjetas; plegar y desplegar en 4.4 (los pétalos arrancan del tamaño de la flor); 2.3 con un hilo de doble luz; 3.1 (niebla), 3.7 (espantapájaros), 4.2 (conflicto); el hub con una flor ganada (guardado sintético de F11, o uno escrito a mano para la revisión); el panel de ajustes; la insignia de la luna en "Marcas". Lo que no convenza se ajusta en `look.ts` antes de seguir.
 
 ---
 
@@ -111,7 +111,7 @@ El editor del modo libre **no** recibe este motivo en esta fase (ver F1): aquí 
 
 | Archivo | Responsabilidad |
 |---|---|
-| `game/assets/creditsModel.ts` (o `services/credits.ts`) | Pura: de la selección de recursos (`tools/assets/selection.ts` reducida a datos que el juego puede importar, o del manifiesto si ya lleva pack y autor), las secciones de la pantalla: el juego y su autor (firma del Apéndice A, pregunta 14), cada pack con autor, licencia y para qué se usa, la obra propia (campanitas, acordes, grillos), la fuente monogram, KaTeX y sus fuentes (SIL OFL 1.1), Phaser, y el agradecimiento. Nombres propios tal cual; todo lo demás, claves de `strings.json` |
+| `game/assets/creditsModel.ts` (o `services/credits.ts`) | Pura: de la selección de recursos (`tools/assets/selection.ts` reducida a datos que el juego puede importar, o del manifiesto si ya lleva pack y autor), las secciones de la pantalla: el juego y su autor (firma del Apéndice A, pregunta 14: "Dayan", "Diseño y Análisis de Algoritmos (DAA)", 2026, en la única clave `credits.byline`, que el autor puede cambiar), cada pack con autor, licencia y para qué se usa, la obra propia (campanitas, acordes, grillos), la fuente monogram, KaTeX y sus fuentes (SIL OFL 1.1), Phaser, y el agradecimiento. Nombres propios tal cual; todo lo demás, claves de `strings.json` |
 | `game/picture/creditsRoll.ts` | Pura: la posición de cada línea en el instante t (desplazamiento lento que dura lo que la pista `music.credits`, 68 s, y se detiene al final), y con movimiento reducido, páginas que se pasan con una tecla o un toque |
 | `game/scenes/CreditsGate.ts`, `game/scenes/credits/CreditsScene.ts` | Como el modo libre: un cabo en el script inicial que carga la escena con `import()`; la escena pinta el fondo del hub al amanecer, el rollo y la música de créditos (grupo `credits` de `loadPlan`), y vuelve a donde se abrió con Esc, Intro o un toque al final |
 | `game/view/SettingsView.ts`, `ui/epilogue/EpilogueScreen.ts`, `ui/model/epilogue.ts`, `services/busEvents.ts` | Entradas: un botón "Créditos" en el panel de ajustes y otro en el epílogo (evento `credits.open`, como `sandbox.open`) |
@@ -135,15 +135,15 @@ El editor del modo libre **no** recibe este motivo en esta fase (ver F1): aquí 
 | `game/input/flowerFocus.ts` | Se integra en el orden general (F / Mayús+F siguen funcionando como atajo) |
 | `game/view/SettingsView.ts`, `content/es/strings.json` | Una línea de "Teclas" en ajustes, o una tarjeta de ayuda con la tabla de `keyBindings` (sus textos en `strings.json`) |
 
-El jardín en sí (juntar, pasar el farol, cadena, plegar…) con teclado es la fase 5, que depende del Apéndice A.
+El jardín en sí (juntar, pasar el farol, cadena, plegar…) **no** se juega con teclado (Apéndice A, pregunta 16, respuesta (a)): se juega con puntero o toque, y la fase 5 queda descartada.
 
 **Tests clave:** con el catálogo y las palabras reales, cada pantalla del hub (0, mitad y todo ganado; profesor) tiene un orden de foco que recorre todas sus cajas pulsables una vez y vuelve al principio; el anillo de foco cabe en el lienzo para cada caja; no hay teclas repetidas por pantalla; Intro sobre un botón de nivel produce el mismo evento que su toque (sobre el descriptor, no sobre Phaser); con un libro abierto el juego no recibe teclas (lo de hoy, `overlay.changed`, sigue probado).
 
 ---
 
-## Fase 5 — El jardín con teclado (según el Apéndice A, pregunta 16)
+## Fase 5 — El jardín con teclado — **descartada por el autor**
 
-Solo si el autor elige una opción; sin respuesta, la fase se salta y el README dice que el jardín se juega con ratón o toque.
+**Descartada por el autor** (Apéndice A, pregunta 16, respuesta (a)): el jardín se juega con puntero o toque. No se ejecuta; el README (F12) dice que el jardín se juega con ratón o toque y que el teclado recorre los menús, paneles y preguntas. Se conserva abajo solo como registro de lo que se habría hecho.
 
 | Archivo | Responsabilidad |
 |---|---|
@@ -168,7 +168,7 @@ Solo si el autor elige una opción; sin respuesta, la fase se salta y el README 
 
 **Tests clave:** sin preferencia y con el sistema pidiendo menos movimiento, se reduce; con `full`, no; el guardado de ajustes anterior migra; con movimiento reducido el plan de una cadena de 5 saltos tiene los mismos pasos en el mismo orden y dura menos; cada par texto–fondo del juego da al menos 4,5:1 (o el umbral que se fije en la fase para texto pixel grande, justificado) — los que no lleguen se corrigen dentro de la paleta de 53 colores; `a11y.say` recibe la línea completa (no letra a letra) y nada en modo de juego normal escribe en la región más de una vez por línea.
 
-**Hito P2 (F3–F6), revisión en pantalla de la sesión principal:** los créditos desde ajustes y desde el epílogo (rollo, final quieto, vuelta); un recorrido solo con teclado: hub → nivel 1.3 → pregunta → victoria → ajustes → Códex → hub, con el anillo visible; el jardín con teclado si F5 se hizo; un nivel con movimiento reducido (emulado por el navegador); la región `aria-live` en el árbol de accesibilidad.
+**Hito P2 (F3, F4, F6), revisión en pantalla de la sesión principal:** los créditos desde ajustes y desde el epílogo (rollo, final quieto, vuelta); un recorrido solo con teclado: hub → nivel 1.3 → pregunta → victoria → ajustes → Códex → hub, con el anillo visible; un nivel con movimiento reducido (emulado por el navegador); la región `aria-live` en el árbol de accesibilidad.
 
 ---
 
@@ -178,14 +178,14 @@ Solo si el autor elige una opción; sin respuesta, la fase se salta y el README 
 |---|---|
 | `game/scale/integerZoom.ts` | El zoom entero se elige en **píxeles del dispositivo** (`devicePixelRatio`): el lienzo real mide 480·z × 270·z píxeles físicos y se muestra a ese tamaño dividido por la densidad. En un teléfono de densidad 3 apaisado (844 × 390 CSS) da ×4 físico (640 × 360 CSS) en vez de ×1; en escritorio a densidad 1, lo mismo que hoy. Sigue siendo pixel perfect: cada píxel lógico son z × z píxeles físicos |
 | `main.ts`, `game/view/renderZoom.ts`, `game/scale/panelRoom.ts`, `ui/book/book.css` | Usan el zoom físico; `--zoom` de los libros se expresa en píxeles CSS con la misma regla; el panel del profesor no se ofrece abierto si no cabe |
-| `game/scale/orientation.ts` | Pura: si la ventana está en vertical y el lienzo quedaría por debajo de un mínimo legible, qué hacer (**según el Apéndice A, pregunta 17**) |
+| `game/scale/orientation.ts` | Pura: si la ventana está en vertical y el lienzo quedaría por debajo de un mínimo legible, se muestra el aviso "gira el teléfono" sobre el juego (Apéndice A, pregunta 17, respuesta **(a)**): en vertical no se juega hasta girarlo, y el aviso no se puede cerrar; al girar, desaparece solo. Su texto, en `strings.json` |
 | `game/input/hitPadding.ts` | Pura: agranda la zona de toque de cada botón hacia el espacio libre a su alrededor (hasta la mitad del hueco con su vecino), sin cambiar el dibujo; los brotes ya tienen tolerancia en `HitTest` |
 | `index.html` | `touch-action: none` y sin selección ni resaltado de toque sobre el lienzo; sin menú contextual en el lienzo; `viewport` sin zoom accidental por doble toque |
 | `game/audio/AudioBus.ts` | Comprobado el desbloqueo del audio tras el primer toque en iOS (ya existe); se anota que el interruptor de silencio del iPhone calla Web Audio |
 
 **Tests clave:** una tabla de pantallas (360 × 640 y 640 × 360 a densidad 3, 390 × 844 y 844 × 390 a 3, 768 × 1024 a 2, 1366 × 768 a 1, 1920 × 1080 a 1, 2560 × 1440 a 1, 3840 × 2160 a 2 y a 1,5) da para cada una el zoom físico, el tamaño CSS del lienzo (nunca mayor que la ventana) y el tamaño CSS del botón más pequeño; con `hitPadding`, ninguna zona de toque de un botón del hub ni del HUD queda por debajo de un mínimo en píxeles CSS fijado en la fase (con el criterio escrito) en apaisado de teléfono, y ninguna zona pisa la de su vecino; los libros a esas medidas (`tests/pageLayout.test.ts`, `tests/bookGeometry.test.ts`) siguen cabiendo.
 
-**Hito P3 (F7), revisión en pantalla de la sesión principal:** con emulación de dispositivo del mismo navegador headless (medidas y densidades de la tabla, táctil activado): hub, un nivel con cadena, un libro, el editor del modo libre; vertical según la respuesta del autor. Lo que solo un teléfono real enseña (iOS, Safari móvil, sonido) va a la lista del autor (sección "Comprobaciones a mano del autor").
+**Hito P3 (F7), revisión en pantalla de la sesión principal:** con emulación de dispositivo del mismo navegador headless (medidas y densidades de la tabla, táctil activado): hub, un nivel con cadena, un libro, el editor del modo libre; en vertical, el aviso "gira el teléfono" (y que desaparece al girar). Lo que solo un teléfono real enseña (iOS, Safari móvil, sonido) va a la lista del autor (sección "Comprobaciones a mano del autor").
 
 ---
 
@@ -262,9 +262,9 @@ Solo si el autor elige una opción; sin respuesta, la fase se salta y el README 
 
 | Archivo | Responsabilidad |
 |---|---|
-| `README.md` | Final: qué es, el enlace al juego publicado (https://dayancabrera2003.github.io/daa-blossom-game/), cómo se juega (ratón, toque, teclado: la tabla de `keyBindings`), navegadores, modo profesor, modo libre, flores secretas, créditos, accesibilidad (movimiento reducido, teclado, lector), cómo construir, probar, extraer recursos y medir el presupuesto, el kit del autor, licencia. Sin "still to come" |
+| `README.md` | Final: qué es, el enlace al juego publicado (https://dayancabrera2003.github.io/daa-blossom-game/), cómo se juega (el jardín con ratón o toque; el teclado en menús, paneles y preguntas: la tabla de `keyBindings`), navegadores, modo profesor, modo libre, flores secretas, créditos, accesibilidad (movimiento reducido, teclado, lector), cómo construir, probar, extraer recursos y medir el presupuesto, el kit del autor, licencia. Sin "still to come" |
 | `CREDITS.md` | Revisión final con lo añadido (favicon, respaldos de audio si los hay) |
-| `docs/GDD.md` | Arreglos menores, cada uno en su commit: §5.9 "Guion en sección 9"; lo que el autor haya decidido del Apéndice A |
+| `docs/GDD.md` | Arreglos menores, cada uno en su commit: §5.9 "Guion en sección 9"; lo que el autor haya decidido del Apéndice A (hoy: el icono de la luna en "Marcas", el aviso en vertical, sin jardín con teclado, la firma; el título *Florecer* se queda) |
 | `docs/plans/09-polish.md` | Las decisiones tomadas en ejecución y el presupuesto medido |
 | `package.json` | `"version": "1.0.0"` |
 | `tools/assets/budget.ts` | Límites definitivos con lo medido |
@@ -278,12 +278,12 @@ Tras la revisión del hito final y el visto bueno del autor: merge `develop → 
 ## Orden y dependencias
 
 ```
-F0 → F1 → F2 → [P1] → F3 → F4 → F5 → F6 → [P2] → F7 → [P3] → F8 → F9 → F10 → [P4] → F11 → F12
+F0 → F1 → F2 → [P1] → F3 → F4 → F6 → [P2] → F7 → [P3] → F8 → F9 → F10 → [P4] → F11 → F12
 ```
 
-Una fase a la vez, siempre. F1 usa el check de F0; F2 es independiente pero cierra el hito visual P1. F3 antes de F4 (el teclado incluye la pantalla de créditos) y F4 antes de F5 (el cursor del jardín vive en el mismo controlador de foco); F6 añade el ajuste de movimiento al panel que F2 enmarcó y F3 amplió. F7 antes de F8 (el desbloqueo de audio en táctil se comprueba con los dispositivos de F7). F9 después de F8 (la música del hub fuera de `boot` usa `audioSources`). F10 necesita los cabos de F3 y F9 para sus avisos y su HTML. F11 necesita los guardados del juego ya definitivos (F6 cambia los ajustes, no el guardado) y las URL definitivas. F12 cierra.
+Una fase a la vez, siempre. F1 usa el check de F0; F2 es independiente pero cierra el hito visual P1. F3 antes de F4 (el teclado incluye la pantalla de créditos); F5 está descartada por el autor; F6 añade el ajuste de movimiento al panel que F2 enmarcó y F3 amplió. F7 antes de F8 (el desbloqueo de audio en táctil se comprueba con los dispositivos de F7). F9 después de F8 (la música del hub fuera de `boot` usa `audioSources`). F10 necesita los cabos de F3 y F9 para sus avisos y su HTML. F11 necesita los guardados del juego ya definitivos (F6 cambia los ajustes, no el guardado) y las URL definitivas. F12 cierra.
 
-**Hito P1 (F0–F2):** legibilidad y piezas. **Hito P2 (F3–F6):** créditos, teclado, movimiento, lector. **Hito P3 (F7):** pantallas pequeñas. **Hito P4 (F8–F10):** audio, carga y Pages. **Hito final (F11–F12):** kit y versión. Tras el hito final y el visto bueno del autor: merge a `main` y `v1.0.0`; la sesión principal comprueba el juego publicado (carga, un nivel, un libro, la 404).
+**Hito P1 (F0–F2):** legibilidad y piezas. **Hito P2 (F3, F4, F6):** créditos, teclado, movimiento, lector. **Hito P3 (F7):** pantallas pequeñas. **Hito P4 (F8–F10):** audio, carga y Pages. **Hito final (F11–F12):** kit y versión. Tras el hito final y el visto bueno del autor: merge a `main` y `v1.0.0`; la sesión principal comprueba el juego publicado (carga, un nivel, un libro, la 404).
 
 ---
 
@@ -292,7 +292,7 @@ Una fase a la vez, siempre. F1 usa el check de F0; F2 es independiente pero cier
 - **El pulido no toca el núcleo ni los niveles** salvo posiciones de brotes para leer los nombres (F0); por eso `tests/playability.test.ts` no cambia en todo el plan.
 - **Zoom entero en píxeles físicos** en vez de en píxeles CSS (F7, pregunta abierta 1): sigue siendo pixel perfect y es lo único que hace legible el juego en un teléfono sin escalado fraccionario.
 - **La pantalla de créditos es una escena del lienzo**, diferida como el modo libre: usa la fuente, el fondo y la música del juego, y no pesa en el script inicial.
-- **El teclado emula el puntero**: Intro es un toque y el cursor del jardín produce los mismos gestos; ninguna jugada nueva, ningún camino paralelo a `applyAction`.
+- **El teclado emula el puntero**: Intro es un toque; ninguna jugada nueva, ningún camino paralelo a `applyAction`. El jardín no se juega con teclado (Apéndice A, pregunta 16).
 - **Lo que se ajusta de oído o de vista, en tablas** (`look.ts`, `mix.ts`): el autor cambia números, no código.
 - **Sin *service worker***: un modo sin conexión es otro producto; aquí basta con que un fallo de red se diga y no rompa nada.
 - **Los guardados del kit se cargan desde la consola**, no con un parámetro de URL nuevo: no añade superficie al juego publicado.
@@ -334,7 +334,7 @@ Lo que ningún test ni el navegador headless pueden ver; antes del merge a `main
 - [ ] Escuchar la lista de la fase 8 en el ordenador y en el teléfono; anotar cambios como números de `game/audio/mix.ts`.
 - [ ] Safari en macOS y en iOS: arranca, suena la música (o el respaldo), se lee a su zoom, el táctil funciona, la cadena por arrastre no desplaza la página.
 - [ ] Firefox: arranca, suena, los libros y KaTeX se ven, el teclado recorre el hub.
-- [ ] Un teléfono real apaisado (y vertical, según la pregunta 17): hub, un nivel, un libro, el modo libre.
+- [ ] Un teléfono real apaisado (y en vertical, el aviso "gira el teléfono"): hub, un nivel, un libro, el modo libre.
 - [ ] Un lector de pantalla (VoiceOver, NVDA u Orca) lee el diálogo de 0.1.
 - [ ] El juego publicado tras el merge: carga, la 404, un despliegue nuevo con una pestaña vieja abierta (aviso de recargar).
 
@@ -344,27 +344,29 @@ Lo que ningún test ni el navegador headless pueden ver; antes del merge a `main
 
 Se listan con sus opciones, sin recomendar. Las fases que dependen de una respuesta lo dicen; sin respuesta, se quedan como están.
 
-| # | Pregunta | Origen | Opciones |
-|---|---|---|---|
-| 1 | **3.5, el agua.** El GDD da agua = brotes + 2 (18 para 16), que nunca se agota | Plan 04, informe de fase | (a) dejarlo como dice el GDD; (b) agua = la búsqueda ordenada + 2, para que se pueda quedar sin agua; (c) otro valor |
-| 2 | **1.9 con 16 brotes** | Plan 03, informe de fase | (a) dejarlo; (b) reducirlo |
-| 3 | **La enredadera c–z de 1.3** | Plan 03, informe de fase | (a) dejarla; (b) quitarla |
-| 4 | **2.4, la rejilla demasiado regular** | Plan 03, informe de fase | (a) dejarla; (b) desordenar las posiciones (mismo jardín) |
-| 5 | **5.1–5.3: un orden de búsqueda poco habitual puede saltarse el anidamiento** | Plan 05, informe de fase | (a) dejarlo; (b) fijar raíces u orden (`roots`) para que el anidamiento salga siempre; (c) usar la luz automática para la búsqueda |
-| 6 | **6.3, la victoria pide 4; el GDD dice 3** | Plan 05, informe de fase | (a) 4 y se corrige el GDD; (b) 3 y se cambia el nivel |
-| 7 | **6.4–6.5, la respuesta "≈ 4 a 8 veces"** para cocientes medidos de ×3,7 a ×4,5 | Plan 05, informe de fase | (a) dejarla; (b) "≈ 3 a 5 veces"; (c) otra redacción |
-| 8 | **7.4, la línea `ch7.4.sauce.08` explica las lunas antes de que el protocolo C pregunte por ellas** | Plan 05, informe de fase; `docs/playtest/C.md` | (a) dejarla; (b) moverla después de la pregunta; (c) reescribirla sin la explicación |
-| 9 | **7.5, tres piezas sin agua** | Plan 05, informe de fase | (a) dejarlo; (b) añadir agua |
-| 10 | **Umbrales "propuesta" de los playtests** (A, B, C) y límites de 60 / 75 / 90 minutos | `docs/playtest/A.md`, `B.md`, `C.md` | (a) confirmarlos; (b) ajustarlos uno a uno |
-| 11 | **Los playtests sobre el juego con arte.** Los protocolos son de greybox y la regla "no se pinta hasta que el greybox pasa" ya no puede cumplirse | GDD §10; `docs/playtest/*.md` | (a) hacerlos sobre el juego actual y leer los resultados como prueba de comprensión, no de greybox; (b) añadir un modo sin arte para el playtest; (c) no hacerlos |
-| 12 | **Líneas en español escritas por los planes** (hoja `docs/review/lineas.md` de F11) | Plan 03 y siguientes | (a) aprobarlas tal cual; (b) revisarlas en la hoja y pasar los cambios |
-| 13 | **Nombres de capítulo en el hub**: forma corta ("El Prado") o larga ("Primavera: El Prado") | Plan 03, informe de fase | (a) corta; (b) larga; (c) larga solo en el título del capítulo |
-| 14 | **Firma de los créditos**: nombre del autor, asignatura, año, agradecimientos | F3 | El texto que dé el autor |
-| 15 | **El icono de la luna** (no cabe en la barra a 480 px) | Revisión del Plan 06 | (a) no mostrarlo y corregir el Plan 06; (b) la insignia de 8 × 8 en el botón de la herramienta, sin texto; (c) en otro sitio del HUD |
-| 16 | **El jardín con teclado** (el gesto de cadena alternativo que el Plan 02 dejó para el pulido) | Plan 02, decisión abierta 2 | (a) no: el jardín se juega con ratón o toque; (b) cursor sobre brotes, Intro = toque, y la cadena con Mayús + flechas por enredaderas; (c) un modo "Cadena" en el que cada Intro añade el siguiente brote |
-| 17 | **Teléfono en vertical** | GDD §11.12 | (a) un aviso "gira el teléfono" sobre el juego; (b) jugar pequeño en vertical sin aviso; (c) ambas cosas: aviso que se puede cerrar |
-| 18 | **Título definitivo** | GDD §12 | *Florecer*, *Faroles*, *El Jardín de Edmonds* u otro |
-| 19 | **Inglés antes de la 1.0** | GDD §12 | (a) no, 1.0 en español; (b) sí, en un plan propio |
+**Respuestas del autor (2026-10-18).** Contestadas: 14, 15, 16, 17 y 18 (columna "Respuesta"). Las demás (1–13 y 19) quedan **pendientes de decisión del autor**: hasta que las conteste se aplica la opción "dejarlo" (todo sigue como está hoy). Las preguntas técnicas ("Preguntas abiertas") se aprobaron con su valor por defecto.
+
+| # | Pregunta | Origen | Opciones | Respuesta |
+|---|---|---|---|---|
+| 1 | **3.5, el agua.** El GDD da agua = brotes + 2 (18 para 16), que nunca se agota | Plan 04, informe de fase | (a) dejarlo como dice el GDD; (b) agua = la búsqueda ordenada + 2, para que se pueda quedar sin agua; (c) otro valor | Pendiente del autor; se deja como está |
+| 2 | **1.9 con 16 brotes** | Plan 03, informe de fase | (a) dejarlo; (b) reducirlo | Pendiente del autor; se deja como está |
+| 3 | **La enredadera c–z de 1.3** | Plan 03, informe de fase | (a) dejarla; (b) quitarla | Pendiente del autor; se deja como está |
+| 4 | **2.4, la rejilla demasiado regular** | Plan 03, informe de fase | (a) dejarla; (b) desordenar las posiciones (mismo jardín) | Pendiente del autor; se deja como está |
+| 5 | **5.1–5.3: un orden de búsqueda poco habitual puede saltarse el anidamiento** | Plan 05, informe de fase | (a) dejarlo; (b) fijar raíces u orden (`roots`) para que el anidamiento salga siempre; (c) usar la luz automática para la búsqueda | Pendiente del autor; se deja como está |
+| 6 | **6.3, la victoria pide 4; el GDD dice 3** | Plan 05, informe de fase | (a) 4 y se corrige el GDD; (b) 3 y se cambia el nivel | Pendiente del autor; se deja como está |
+| 7 | **6.4–6.5, la respuesta "≈ 4 a 8 veces"** para cocientes medidos de ×3,7 a ×4,5 | Plan 05, informe de fase | (a) dejarla; (b) "≈ 3 a 5 veces"; (c) otra redacción | Pendiente del autor; se deja como está |
+| 8 | **7.4, la línea `ch7.4.sauce.08` explica las lunas antes de que el protocolo C pregunte por ellas** | Plan 05, informe de fase; `docs/playtest/C.md` | (a) dejarla; (b) moverla después de la pregunta; (c) reescribirla sin la explicación | Pendiente del autor; se deja como está |
+| 9 | **7.5, tres piezas sin agua** | Plan 05, informe de fase | (a) dejarlo; (b) añadir agua | Pendiente del autor; se deja como está |
+| 10 | **Umbrales "propuesta" de los playtests** (A, B, C) y límites de 60 / 75 / 90 minutos | `docs/playtest/A.md`, `B.md`, `C.md` | (a) confirmarlos; (b) ajustarlos uno a uno | Pendiente del autor; se deja como está |
+| 11 | **Los playtests sobre el juego con arte.** Los protocolos son de greybox y la regla "no se pinta hasta que el greybox pasa" ya no puede cumplirse | GDD §10; `docs/playtest/*.md` | (a) hacerlos sobre el juego actual y leer los resultados como prueba de comprensión, no de greybox; (b) añadir un modo sin arte para el playtest; (c) no hacerlos | Pendiente del autor; se deja como está |
+| 12 | **Líneas en español escritas por los planes** (hoja `docs/review/lineas.md` de F11) | Plan 03 y siguientes | (a) aprobarlas tal cual; (b) revisarlas en la hoja y pasar los cambios | Pendiente del autor; se deja como está |
+| 13 | **Nombres de capítulo en el hub**: forma corta ("El Prado") o larga ("Primavera: El Prado") | Plan 03, informe de fase | (a) corta; (b) larga; (c) larga solo en el título del capítulo | Pendiente del autor; se deja como está |
+| 14 | **Firma de los créditos**: nombre del autor, asignatura, año, agradecimientos | F3 | El texto que dé el autor | Autor "Dayan", asignatura "Diseño y Análisis de Algoritmos (DAA)", año 2026; una sola clave en `strings.json` (`credits.byline`) que el autor puede cambiar luego |
+| 15 | **El icono de la luna** (no cabe en la barra a 480 px) | Revisión del Plan 06 | (a) no mostrarlo y corregir el Plan 06; (b) la insignia de 8 × 8 en el botón de la herramienta, sin texto; (c) en otro sitio del HUD | **(b)** la insignia de 8 × 8 dentro del botón de la herramienta "Marcas", sin texto, junto al sol |
+| 16 | **El jardín con teclado** (el gesto de cadena alternativo que el Plan 02 dejó para el pulido) | Plan 02, decisión abierta 2 | (a) no: el jardín se juega con ratón o toque; (b) cursor sobre brotes, Intro = toque, y la cadena con Mayús + flechas por enredaderas; (c) un modo "Cadena" en el que cada Intro añade el siguiente brote | **(a)** no: el jardín se juega con puntero o toque; la fase 5 queda descartada |
+| 17 | **Teléfono en vertical** | GDD §11.12 | (a) un aviso "gira el teléfono" sobre el juego; (b) jugar pequeño en vertical sin aviso; (c) ambas cosas: aviso que se puede cerrar | **(a)** solo el aviso "gira el teléfono" sobre el juego; en vertical no se juega hasta girarlo |
+| 18 | **Título definitivo** | GDD §12 | *Florecer*, *Faroles*, *El Jardín de Edmonds* u otro | *Florecer* (se queda) |
+| 19 | **Inglés antes de la 1.0** | GDD §12 | (a) no, 1.0 en español; (b) sí, en un plan propio | Pendiente del autor; se deja como está |
 
 ## Apéndice B — Kit del autor
 
