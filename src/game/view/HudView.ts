@@ -6,7 +6,9 @@ import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
 import type { AssetKey } from '../assets/keys';
-import { ICON_GAP } from '../picture/buttonIcon';
+import { BOOK_ICON, ICON_GAP } from '../picture/buttonIcon';
+import { BOTTOM_ROWS } from '../picture/bottomRows';
+import { GEAR_SIZE } from './GearButton';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
@@ -29,6 +31,8 @@ export interface HudActions {
   readonly checkMirror: () => void;
   /** Leaves the innermost flower entered with the layers (5.2). */
   readonly leaveLayer: () => void;
+  /** Opens the Códex. */
+  readonly book: () => void;
 }
 
 /**
@@ -51,6 +55,8 @@ export class HudView {
   /** The Council's count (chapter 7), on the right of the status line. */
   private readonly council: Phaser.GameObjects.Text;
   private readonly buttons: Record<HudButton, Button>;
+  /** The Códex, at the bottom left after the settings, while some page of it is open. */
+  private readonly book: Button;
 
   constructor(
     scene: Phaser.Scene,
@@ -81,10 +87,24 @@ export class HudView {
     );
     const lefts = hudRow(made.map((button) => button.width));
     made.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
+    // Clear of the buttons laid out from the right: they only reach the left half of the row.
+    this.book = new Button(
+      scene,
+      LAYOUT.margin + GEAR_SIZE + BOTTOM_ROWS.gap,
+      LAYOUT.bottomY,
+      t('hud.book'),
+      actions.book,
+      [BOOK_ICON],
+    ).setVisible(false);
     this.buttons = Object.fromEntries(HUD_BUTTONS.map((name, i) => [name, made[i]])) as Record<
       HudButton,
       Button
     >;
+  }
+
+  /** Shows the Códex button when some page of the book is open, and hides it otherwise. */
+  showBook(open: boolean): void {
+    this.book.setVisible(open);
   }
 
   render(hud: HudPicture): void {

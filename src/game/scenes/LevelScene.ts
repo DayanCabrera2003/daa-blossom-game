@@ -109,6 +109,7 @@ export class LevelScene extends Phaser.Scene {
       dispatch: (event) => this.dispatch(event),
       back: () => this.leave(),
       help: () => this.cards.help(level, this.controller.session.flow.index),
+      book: () => this.context.bus.emit('book.open', { book: 'codex' }),
     });
     // A new painter for every level: its timing starts afresh with the level.
     this.painter = new LevelRenderer(
@@ -184,6 +185,13 @@ export class LevelScene extends Phaser.Scene {
     this.cards.offer(startCards(level, this.cards.seen));
     for (const effect of opened.effects) this.show(effect);
     this.painter.render(this.time.now);
+    this.showBook();
+  }
+
+  /** The Códex button of the HUD shows once some page of the book is open. */
+  private showBook(): void {
+    const { catalog, saves, teacherMode } = this.context;
+    this.views.hud.showBook(openCodex(codexSources(catalog), saves.get(), teacherMode).size > 0);
   }
 
   override update(time: number): void {
@@ -286,6 +294,8 @@ export class LevelScene extends Phaser.Scene {
     saves.update((save) => recordCompletion(save, id, stars.total));
     this.winJingle = victoryJingle(before, unlockedLevels(shown, saves.get(), teacherMode));
     this.codexNotice = pagesOpened(pagesBefore, openCodex(pages, saves.get(), teacherMode));
+    // The first win that opens a page also brings the book's button.
+    this.showBook();
     this.presenter.present({ kind: 'victory', stars });
   }
 

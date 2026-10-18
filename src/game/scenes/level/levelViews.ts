@@ -55,6 +55,8 @@ export interface LevelButtons {
   readonly back: () => void;
   /** The "?" button: shows the level's mechanic cards again. */
   readonly help: () => void;
+  /** The book button: opens the Códex. */
+  readonly book: () => void;
 }
 
 /**
@@ -89,6 +91,7 @@ export const buildLevelViews = (
       hint: () => dispatch({ kind: 'hint' }),
       back: buttons.back,
       help: buttons.help,
+      book: buttons.book,
       checkMirror: () => dispatch({ kind: 'checkMirror' }),
       leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
     }),
