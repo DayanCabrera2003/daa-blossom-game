@@ -40,6 +40,12 @@ export const levelSchema = z.strictObject({
    * teacher mode shows it, so playtesters never reach it.
    */
   draft: z.boolean().default(false),
+  /**
+   * A secret flower (GDD §5.10): the optional puzzle after the last level of its chapter, hidden on
+   * the chapter's signpost in the hub. It opens once the chapter is finished with at least `stars`
+   * stars in its other levels; it is never a button of the hub and opens no level after it.
+   */
+  secret: z.strictObject({ stars: z.number().int().min(1) }).optional(),
   vines: z.array(vine),
   /** Lanterns lit when the level starts. */
   lanterns: z.array(vine).default([]),

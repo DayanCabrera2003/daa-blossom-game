@@ -32,6 +32,16 @@ describe('level schema', () => {
     expect(parsed.mirror).toBeUndefined();
   });
 
+  it('marks a secret flower with the stars of its chapter that open it', () => {
+    expect(levelSchema.parse(twoSprouts).secret).toBeUndefined();
+    expect(levelSchema.parse({ ...twoSprouts, secret: { stars: 14 } }).secret).toEqual({
+      stars: 14,
+    });
+    for (const secret of [{ stars: 0 }, { stars: 1.5 }, { stars: 3, more: true }, {}]) {
+      expect(levelSchema.safeParse({ ...twoSprouts, secret }).success).toBe(false);
+    }
+  });
+
   it('opening lines live in a say step of the script, not in a field of their own', () => {
     expect(levelSchema.safeParse({ ...twoSprouts, script: ['ch0.1.sauce.00'] }).success).toBe(
       false,
