@@ -291,7 +291,7 @@ Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, pa
 
 ### 5.9 Paseo guiado
 
-Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y explica la teoría en cada uno. Es el entregable "video" del profesor y el tráiler didáctico del juego. Guion en sección 10.
+Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y explica la teoría en cada uno. Es el entregable "video" del profesor y el tráiler didáctico del juego. Guion en sección 9.
 
 ### 5.10 Flores secretas
 
