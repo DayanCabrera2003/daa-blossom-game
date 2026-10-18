@@ -238,7 +238,7 @@ const NESTED_FLOWERS = {
     { label: 'd', x: 300, y: 30 },
     { label: 'g', x: 230, y: 200 },
     { label: 'h', x: 140, y: 200 },
-    { label: 't', x: 140, y: 30 },
+    { label: 't', x: 100, y: 35 },
   ],
   vines: [
     ['R', 'a'],
