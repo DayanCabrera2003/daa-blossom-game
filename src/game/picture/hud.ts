@@ -98,20 +98,22 @@ function goalText(session: LevelSession): TextRef {
 
 /**
  * The picture of the HUD for a session, the tool in hand, at time `now`, `depth` flowers deep in
- * the layers.
+ * the layers. The sun, the layers and the Council's count show as from level `interfaceAt`: the
+ * level itself, but for a garden of the free mode, which shows the interface the player has met.
  */
 export function hudPicture(
   session: LevelSession,
   pointer: PointerState,
   now: number,
   depth = 0,
+  interfaceAt: string = session.level.data.id,
 ): HudPicture {
   const state = garden(session);
   const { data } = session.level;
   const { history } = session;
   const step = stepNow(session)?.step;
   const prompt = step === undefined ? undefined : PROMPTS[step];
-  const layers = isUiUnlocked('layers', data.id);
+  const layers = isUiUnlocked('layers', interfaceAt);
   return {
     goal: goalText(session),
     lanterns: size(state.matching),
@@ -121,7 +123,7 @@ export function hudPicture(
     canRedo: canRedo(history),
     canDeclareDone: state.allowed.has('declareDone'),
     hintAvailable: isHintAvailable(session, now),
-    sun: isUiUnlocked('sun', data.id)
+    sun: isUiUnlocked('sun', interfaceAt)
       ? {
           fraction: fractionOfStep(history.cursor, history.states.length),
           steps: history.states.length,
@@ -134,6 +136,6 @@ export function hudPicture(
     canCheckMirror: step === 'draw',
     prompt: prompt === undefined ? null : { key: prompt, params: {} },
     layers: layers ? depth : null,
-    council: councilCount(session.level, state),
+    council: councilCount(session.level, state, interfaceAt),
   };
 }

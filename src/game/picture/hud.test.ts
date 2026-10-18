@@ -210,4 +210,13 @@ describe('the picture of the HUD', () => {
     const hud = hudPicture(startSession(levelById('2.1'), 0), initialPointer('lanterns'), 0);
     expect(hud.prompt).toEqual({ key: 'hud.prompt.explore', params: {} });
   });
+
+  it("shows the pieces of the interface of the level it is told, not of the garden's own id", () => {
+    const session = startSession(levelById('0.5'), 0);
+    const pointer = initialPointer('lanterns');
+    expect(hudPicture(session, pointer, 0, 0, '0.4').sun).toBeNull();
+    const later = hudPicture(startSession(levelById('0.1'), 0), pointer, 0, 0, '5.2');
+    expect(later.sun).not.toBeNull();
+    expect(later.layers).toBe(0);
+  });
 });

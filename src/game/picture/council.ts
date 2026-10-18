@@ -15,10 +15,16 @@ import type { TextRef } from './hud';
  *
  * It is there from 7.2 on, also with no stone lifted (U = ∅: the loop of five is one odd group).
  * In the fog (7.5) the groups would show vines not inspected yet, so the count is only worked out
- * once the certificate is presented with "Terminé"; until then the bar says so. Null before 7.2.
+ * once the certificate is presented with "Terminé"; until then the bar says so. Null before 7.2:
+ * before the level `interfaceAt` whose interface the screen shows (the level itself, but for a
+ * garden of the free mode, which shows the interface the player has met).
  */
-export function councilCount(level: Level, state: GardenState): TextRef | null {
-  if (!isUiUnlocked('council', level.data.id)) return null;
+export function councilCount(
+  level: Level,
+  state: GardenState,
+  interfaceAt: string = level.data.id,
+): TextRef | null {
+  if (!isUiUnlocked('council', interfaceAt)) return null;
   if (level.data.fog && !state.declaredDone) return { key: 'hud.councilHidden', params: {} };
   const { graph, stones, matching } = state;
   const atLeast = graph.n - 2 * tutteBergeBound(graph, stones);
