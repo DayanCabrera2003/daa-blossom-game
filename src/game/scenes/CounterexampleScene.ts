@@ -5,6 +5,7 @@ import { counterexampleAt } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
+import { historyKey, keyAction } from '../input/keyBindings';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { animationGarden } from '../picture/animationGarden';
@@ -40,6 +41,7 @@ import { PALETTE } from '../view/palette';
 import { textStyle } from '../view/textStyle';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
+import { FocusController } from './focus/FocusController';
 import { contextOf, type GameContext } from './context';
 
 /** What the level scene gives the counterexample screen when it opens it. */
@@ -197,14 +199,17 @@ export class CounterexampleScene extends Phaser.Scene {
         this.dispatch({ kind: 'release', point: at(pointer) });
       },
     );
-    const keys = this.input.keyboard;
-    keys?.on('keydown-Z', (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) this.dispatch({ kind: 'undo' });
+    // The keyboard's focus walks the buttons and moves the dialogue on; Escape goes back.
+    new FocusController(this, {
+      screen: () => 'counterexample',
+      fallback: () => this.views.dialogue.touch(),
     });
-    keys?.on('keydown-Y', (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) this.dispatch({ kind: 'redo' });
+    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
+      const press = { key: event.key, ctrl: event.ctrlKey || event.metaKey, shift: event.shiftKey };
+      const history = historyKey(press);
+      if (history !== null) this.dispatch({ kind: history });
+      else if (keyAction('counterexample', press) === 'escape') this.leave(back);
     });
-    keys?.on('keydown-ESC', () => this.leave(back));
   }
 
   /** One event through the controller; a new move ends any animation still playing. */
