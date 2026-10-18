@@ -1,14 +1,20 @@
+import type { Blossom, GardenNode } from '@core/blossom/types';
 import { checkVertexCover } from '@core/certificates/vertexCover';
+import { encodeGarden } from '@core/codes/gardenCode';
+import { nestedFlowers } from '@core/generators/hardCases';
+import { createGraph } from '@core/graph/createGraph';
 import { idOf } from '@core/graph/labels';
 import { degree, neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
+import { createMatching } from '@core/matching/createMatching';
 import { checkAugmentingPath } from '@core/matching/paths';
-import { isExposed, isMatchedEdge, mateOf, size } from '@core/matching/queries';
+import { isExposed, isMatchedEdge, matchedEdges, mateOf, size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
 import { searchStatus } from '@core/search/searchStatus';
 import { itemAt } from '@core/shared/itemAt';
+import { unwrap } from '@core/shared/result';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { describe, expect, it } from 'vitest';
@@ -20,7 +26,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 /** The secret flowers of these tests, by id. */
-const FLOWERS = ['1.10', '3.10', '4.13'] as const;
+const FLOWERS = ['1.10', '3.10', '4.13', '5.6'] as const;
 
 /** Closest two sprouts of a secret flower may sit, in pixels: twice a sprout's radius and air. */
 const MIN_SPACING = 18;
@@ -210,5 +216,31 @@ describe('4.13: the order does not matter', () => {
       expect(size(end.matching)).toBe(8);
       expect(end.matching).toEqual(reference.matching);
     }
+  });
+});
+
+describe('5.6: four flowers, one inside another', () => {
+  const level = () => levelOf('5.6');
+
+  it('is the garden of four nested flowers with an exit from a to t, by its garden code', () => {
+    const nested = nestedFlowers(3);
+    const t = nested.graph.n;
+    const graph = unwrap(createGraph(t + 1, [...nested.graph.edges, [sproutOf(level(), 'a'), t]]));
+    const matching = unwrap(createMatching(graph, matchedEdges(nested.matching)));
+    expect(encodeGarden(level().graph, level().start.matching)).toBe(encodeGarden(graph, matching));
+    expect(sproutOf(level(), 't')).toBe(t);
+  });
+
+  it('folds four flowers, each inside the next, before it unfolds them from the outside in', () => {
+    const { start, solution } = level();
+    const firstUnfold = solution.findIndex((move) => move.type === 'unfold');
+    const folded = play(start, solution.slice(0, firstUnfold));
+    /** How many flowers deep a node goes: 0 for a sprout. */
+    const depth = (node: GardenNode): number =>
+      node.kind === 'blossom' ? 1 + Math.max(...node.cycle.map((child) => depth(child))) : 0;
+    const flowers = folded.layer.nodes.filter((node): node is Blossom => node.kind === 'blossom');
+    expect(flowers.map((flower) => depth(flower))).toEqual([4]);
+    const unfolds = solution.flatMap((move) => (move.type === 'unfold' ? [move.blossom] : []));
+    expect(unfolds).toEqual([3, 2, 1, 0]);
   });
 });
