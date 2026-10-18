@@ -49,9 +49,10 @@ describe('interface text (content/es/strings.json)', () => {
     expect(offending).toEqual([]);
   });
 
-  it('the books separate their words without the middle dot, which the pixel font draws raised', () => {
+  it('the overlays separate their words without the middle dot, which the pixel font draws raised', () => {
     const offending = Object.entries(table).filter(
-      ([key, text]) => /^(codex|diagram)\./.test(key) && text.includes('·'),
+      ([key, text]) =>
+        /^(codex|diagram|book|notebook|epilogue|teacher)\./.test(key) && text.includes('·'),
     );
     expect(offending).toEqual([]);
   });
