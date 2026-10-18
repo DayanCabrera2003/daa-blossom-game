@@ -115,6 +115,7 @@
   "notebook.title": "Cuaderno del Jardinero",
   "notebook.choose": "Toca lo que es verdad.",
   "notebook.written": "Escrito en tu Cuaderno.",
+  "codex.unlocked": "Se abrió una página del Códex.",
   "counterexample.back": "Volver al Cuaderno",
   "pond.strands": "Hilos: {count}",
   "mirror.notBetter": "Tu reflejo enciende {drawn} y tu jardín {yours}: ese no te gana.",

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
+import { codexSources, openCodex, pagesOpened } from '@services/codexProgress';
 import { unlockedLevels, visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook } from '@services/save';
 import type { AssetKey } from '../assets/keys';
@@ -60,6 +61,8 @@ export class LevelScene extends Phaser.Scene {
   private sfx!: SfxPlayer;
   /** The jingle of the win, rung when the victory panel shows. */
   private winJingle: AssetKey = 'jingle.victory';
+  /** Whether the win opened pages of the Codex, told when the victory panel shows. */
+  private codexNotice = false;
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -267,7 +270,8 @@ export class LevelScene extends Phaser.Scene {
 
   /**
    * Records the win at once; the victory panel waits its turn behind any lines or replay, and so
-   * does its jingle, chosen now from the levels the win opens.
+   * do its jingle, chosen now from the levels the win opens, and the notice of the Codex pages it
+   * opens.
    */
   private win(stars: StarResult): void {
     const id = this.level.data.id;
@@ -277,12 +281,18 @@ export class LevelScene extends Phaser.Scene {
       teacherMode,
     );
     const before = unlockedLevels(shown, saves.get(), teacherMode);
+    const pages = codexSources(catalog);
+    const pagesBefore = openCodex(pages, saves.get(), teacherMode);
     saves.update((save) => recordCompletion(save, id, stars.total));
     this.winJingle = victoryJingle(before, unlockedLevels(shown, saves.get(), teacherMode));
+    this.codexNotice = pagesOpened(pagesBefore, openCodex(pages, saves.get(), teacherMode));
     this.presenter.present({ kind: 'victory', stars });
   }
 
-  /** Shows the victory panel, offering the next level (if any) or the hub. */
+  /**
+   * Shows the victory panel, offering the next level (if any) or the hub; a toast below it tells
+   * when the win opened pages of the Codex.
+   */
   private offerNext(stars: StarResult): void {
     const id = this.level.data.id;
     this.context.music.jingle(this.winJingle);
@@ -297,5 +307,6 @@ export class LevelScene extends Phaser.Scene {
       next: next === undefined ? null : () => this.scene.start('level', { levelId: next.id }),
       hub: () => this.scene.start('hub'),
     });
+    if (this.codexNotice) this.views.toast.show(this.context.t('codex.unlocked'));
   }
 }

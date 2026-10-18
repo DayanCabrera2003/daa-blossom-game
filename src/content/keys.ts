@@ -138,6 +138,7 @@ const UI = {
   'notebook.title': [],
   'notebook.choose': [],
   'notebook.written': [],
+  'codex.unlocked': [],
   'counterexample.back': [],
   'pond.strands': ['count'],
   'mirror.notBetter': ['drawn', 'yours'],
