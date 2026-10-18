@@ -1,4 +1,5 @@
 import type { Rect } from '../picture/boxDistance';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 
 /**
  * Bigger touch zones for the buttons (plan 09, phase 7). On a phone the canvas's 14-pixel buttons
@@ -80,5 +81,48 @@ export function hitZone(box: Rect, room: TouchRoom, max: number = HIT_PADDING.ma
     y: box.y - pads.top,
     width: box.width + pads.left + pads.right,
     height: box.height + pads.top + pads.bottom,
+  };
+}
+
+/** Something on the screen: the box it covers and the depth it is drawn at. */
+export interface Placed {
+  readonly box: Rect;
+  readonly depth: number;
+}
+
+/** The whole canvas. */
+const CANVAS: Rect = { x: 0, y: 0, width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
+
+/** Whether `inner` lies inside `outer`. */
+const holds = (outer: Rect, inner: Rect): boolean =>
+  inner.x >= outer.x &&
+  inner.y >= outer.y &&
+  inner.x + inner.width <= outer.x + outer.width &&
+  inner.y + inner.height <= outer.y + outer.height;
+
+/**
+ * The room round `button` on a screen of `others` (the other pressable things), `covers` (the
+ * panels and dim layers that take touches) and `kept` (the rooms kept for other touches). The
+ * smallest cover drawn under the button that holds it is its panel, and the zone stays inside it;
+ * a button on no panel stays on the canvas and off the kept rooms (a panel's own buttons need not
+ * keep off the garden: the panel already takes the touches over it).
+ */
+export function touchRoom(
+  button: Placed,
+  others: readonly Placed[],
+  covers: readonly Placed[],
+  kept: readonly Rect[],
+): TouchRoom {
+  const area = (box: Rect): number => box.width * box.height;
+  const panel = covers
+    .filter((cover) => cover.depth <= button.depth && holds(cover.box, button.box))
+    .reduce<Placed | null>(
+      (best, cover) => (best === null || area(cover.box) < area(best.box) ? cover : best),
+      null,
+    );
+  return {
+    neighbours: others.map((other) => other.box),
+    bounds: panel?.box ?? CANVAS,
+    keepClear: panel === null ? kept : [],
   };
 }

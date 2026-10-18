@@ -2,7 +2,7 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import type { Rect } from '../picture/boxDistance';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
-import { HIT_PADDING, hitZone, type TouchRoom } from './hitPadding';
+import { HIT_PADDING, hitZone, touchRoom, type TouchRoom } from './hitPadding';
 
 const CANVAS: Rect = { x: 0, y: 0, width: CANVAS_WIDTH, height: CANVAS_HEIGHT };
 const room = (over: Partial<TouchRoom> = {}): TouchRoom => ({
@@ -149,5 +149,35 @@ describe('the touch zone of a button (plan 09, phase 7)', () => {
         });
       }),
     );
+  });
+});
+
+describe('the room round a button on a screen', () => {
+  const button = { box: { x: 100, y: 100, width: 30, height: 14 }, depth: 201 };
+  const garden: Rect = { x: 0, y: 24, width: CANVAS_WIDTH, height: 217 };
+
+  it('on the HUD: the canvas holds it, the others are its neighbours, the garden is kept clear', () => {
+    const other = { box: { x: 140, y: 100, width: 20, height: 14 }, depth: 100 };
+    expect(touchRoom({ ...button, depth: 100 }, [other], [], [garden])).toEqual({
+      neighbours: [other.box],
+      bounds: CANVAS,
+      keepClear: [garden],
+    });
+  });
+
+  it('in a panel: the smallest cover under it holds it, and nothing else is kept clear', () => {
+    const dim = { box: CANVAS, depth: 199 };
+    const panel = { box: { x: 90, y: 90, width: 100, height: 40 }, depth: 200 };
+    const above = { box: { x: 95, y: 95, width: 60, height: 30 }, depth: 300 };
+    expect(touchRoom(button, [], [dim, panel, above], [garden])).toEqual({
+      neighbours: [],
+      bounds: panel.box,
+      keepClear: [],
+    });
+  });
+
+  it('a cover that does not hold the whole button is not its panel', () => {
+    const half = { box: { x: 110, y: 90, width: 100, height: 40 }, depth: 200 };
+    expect(touchRoom(button, [], [half], []).bounds).toEqual(CANVAS);
   });
 });
