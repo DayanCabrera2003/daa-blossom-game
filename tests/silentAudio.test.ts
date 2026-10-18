@@ -15,6 +15,7 @@ import { defaultSettings } from '../src/services/settings';
 // The few names of the engine the bus and the players use: the rest of Phaser needs a browser.
 vi.mock('phaser', () => ({
   default: {
+    Cache: { Events: { ADD: 'add' } },
     Core: { Events: { HIDDEN: 'hidden', VISIBLE: 'visible', STEP: 'step' } },
     Sound: { Events: { UNLOCKED: 'unlocked', COMPLETE: 'complete', DESTROY: 'destroy' } },
   },
@@ -72,7 +73,7 @@ function fakeGame(loaded: readonly string[] = []) {
   const game = {
     events,
     sound,
-    cache: { audio: { exists: (key: string) => loaded.includes(key) } },
+    cache: { audio: { exists: (key: string) => loaded.includes(key), events: emitter() } },
     loop: { time: 0 },
   };
   return { game, made };
