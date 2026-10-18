@@ -5,30 +5,59 @@ import { frameRect } from '../assets/frames';
 import { assetEntry } from '../assets/keys';
 import type { Rect } from './boxDistance';
 import { HUB } from './hubLayout';
-import { BLOOM_SIZE, BUD_CUT, flowerTipAt, secretFlowerPicture } from './secretFlower';
+import { PIXEL_FONT } from './pixelFont';
+import {
+  BLOOM_SIZE,
+  BUD_CUT,
+  flowerTipAt,
+  secretFlowerPicture,
+  type FlowerPiece,
+} from './secretFlower';
 import { STAR_SIZE } from './starIcon';
 
-/** A chapter's signpost, as `signBox` puts it. */
-const SIGN: Rect = { x: HUB.margin, y: 39, width: 16, height: 16 };
+/** A chapter's flower column and signpost, as `flowerBox` and `signBox` put them. */
+const CELL: Rect = { x: HUB.margin, y: 39, width: 16, height: 16 };
+const SIGN: Rect = { x: HUB.margin + 18, y: 39, width: 16, height: 16 };
+/** The box of the flower's column and its signpost together. */
+const BOTH: Rect = { x: CELL.x, y: CELL.y, width: SIGN.x + SIGN.width - CELL.x, height: 16 };
 
 const STATES: SecretFlowerState[] = [
   { kind: 'none' },
   { kind: 'bud', need: 14, have: 11 },
+  { kind: 'bud', need: 19, have: 10 },
   { kind: 'open' },
   { kind: 'won', stars: 2 },
+  { kind: 'won', stars: 3 },
 ];
 
 /** The box a piece covers on the canvas. */
-function pieceBox(piece: ReturnType<typeof secretFlowerPicture>['pieces'][number]): Rect {
-  if (piece.kind === 'bud')
-    return { x: piece.x, y: piece.y, width: BUD_CUT.width, height: BUD_CUT.height };
-  if (piece.kind === 'bloom') return { x: piece.x, y: piece.y, ...BLOOM_SIZE };
-  return { x: piece.x, y: piece.y, width: STAR_SIZE, height: STAR_SIZE };
+function pieceBox(piece: FlowerPiece): Rect {
+  switch (piece.kind) {
+    case 'bud':
+      return { x: piece.x, y: piece.y, width: BUD_CUT.width, height: BUD_CUT.height };
+    case 'bloom':
+      return { x: piece.x, y: piece.y, ...BLOOM_SIZE };
+    case 'glow':
+      return piece;
+    case 'star':
+      return { x: piece.x, y: piece.y, width: STAR_SIZE, height: STAR_SIZE };
+    case 'count':
+      return {
+        x: piece.x,
+        y: piece.y,
+        width: piece.text.length * PIXEL_FONT.advance,
+        height: PIXEL_FONT.capHeight,
+      };
+  }
 }
 
-describe('the secret flower on a signpost', () => {
+/** The pieces of `state`'s picture of a kind. */
+const piecesOf = (state: SecretFlowerState, kind: FlowerPiece['kind']): FlowerPiece[] =>
+  secretFlowerPicture(state, CELL, SIGN).pieces.filter((piece) => piece.kind === kind);
+
+describe('the secret flower beside its signpost', () => {
   it('shows nothing and takes no touch while its chapter is unfinished', () => {
-    expect(secretFlowerPicture({ kind: 'none' }, SIGN)).toEqual({
+    expect(secretFlowerPicture({ kind: 'none' }, CELL, SIGN)).toEqual({
       pieces: [],
       hit: null,
       tip: null,
@@ -36,9 +65,14 @@ describe('the secret flower on a signpost', () => {
     });
   });
 
-  it('a bud is the two leaves of a sprout, says how many stars are missing and tells on a touch', () => {
-    const bud = secretFlowerPicture({ kind: 'bud', need: 14, have: 11 }, SIGN);
-    expect(bud.pieces.map((piece) => piece.kind)).toEqual(['bud']);
+  it('a bud is the two leaves of a sprout, with a dim star and the number of stars missing', () => {
+    const state: SecretFlowerState = { kind: 'bud', need: 14, have: 11 };
+    const bud = secretFlowerPicture(state, CELL, SIGN);
+    expect(bud.pieces.map((piece) => piece.kind)).toEqual(['bud', 'star', 'count']);
+    expect(piecesOf(state, 'star')).toEqual([expect.objectContaining({ earned: false })]);
+    expect(piecesOf(state, 'count')).toEqual([
+      expect.objectContaining({ text: '3', golden: false }),
+    ]);
     expect(bud.tip).toEqual({ key: 'hub.secret.budTip', params: { missing: 3 } });
     expect(bud.press).toEqual({
       kind: 'tell',
@@ -46,34 +80,54 @@ describe('the secret flower on a signpost', () => {
     });
   });
 
-  it('an open flower sways and is entered with a touch', () => {
-    const open = secretFlowerPicture({ kind: 'open' }, SIGN);
+  it('an open flower glows and sways on the leaves of its bud, and is entered with a touch', () => {
+    const open = secretFlowerPicture({ kind: 'open' }, CELL, SIGN);
     expect(open.pieces).toEqual([
+      expect.objectContaining({ kind: 'glow' }),
+      expect.objectContaining({ kind: 'bud' }),
       expect.objectContaining({ kind: 'bloom', sways: true, golden: false }),
     ]);
     expect(open.tip).toEqual({ key: 'hub.secret.openTip', params: {} });
     expect(open.press).toEqual({ kind: 'play' });
   });
 
-  it('a won flower is golden and still, with a star under it, and can be played again', () => {
-    const won = secretFlowerPicture({ kind: 'won', stars: 2 }, SIGN);
-    expect(won.pieces.map((piece) => piece.kind)).toEqual(['bloom', 'star']);
+  it('a won flower is golden and still, with a golden star and the stars it won', () => {
+    const state: SecretFlowerState = { kind: 'won', stars: 2 };
+    const won = secretFlowerPicture(state, CELL, SIGN);
+    expect(won.pieces.map((piece) => piece.kind)).toEqual(['bloom', 'star', 'count']);
     expect(won.pieces[0]).toEqual(expect.objectContaining({ sways: false, golden: true }));
+    expect(piecesOf(state, 'star')).toEqual([expect.objectContaining({ earned: true })]);
+    expect(piecesOf(state, 'count')).toEqual([
+      expect.objectContaining({ text: '2', golden: true }),
+    ]);
     expect(won.tip).toEqual({ key: 'hub.secret.wonTip', params: { stars: 2 } });
     expect(won.press).toEqual({ kind: 'play' });
   });
 
+  it('an open flower is as tall as its column, so it reads at least as big as a sprout', () => {
+    const boxes = secretFlowerPicture({ kind: 'open' }, CELL, SIGN).pieces.map(pieceBox);
+    const top = Math.min(...boxes.map((box) => box.y));
+    const bottom = Math.max(...boxes.map((box) => box.y + box.height));
+    expect(bottom - top).toBe(CELL.height);
+  });
+
   it.each(STATES.filter((state) => state.kind !== 'none'))(
-    'is touched on the whole signpost and draws inside it (%o)',
+    'draws inside its column, the star never on the number, and is touched on the column and the signpost (%o)',
     (state) => {
-      const picture = secretFlowerPicture(state, SIGN);
-      expect(picture.hit).toEqual(SIGN);
-      for (const piece of picture.pieces) {
-        const box = pieceBox(piece);
-        expect(box.x).toBeGreaterThanOrEqual(SIGN.x);
-        expect(box.y).toBeGreaterThanOrEqual(SIGN.y);
-        expect(box.x + box.width).toBeLessThanOrEqual(SIGN.x + SIGN.width);
-        expect(box.y + box.height).toBeLessThanOrEqual(SIGN.y + SIGN.height);
+      const picture = secretFlowerPicture(state, CELL, SIGN);
+      expect(picture.hit).toEqual(BOTH);
+      const boxes = picture.pieces.map(pieceBox);
+      for (const box of boxes) {
+        expect(box.x).toBeGreaterThanOrEqual(CELL.x);
+        expect(box.y).toBeGreaterThanOrEqual(CELL.y);
+        expect(box.x + box.width).toBeLessThanOrEqual(CELL.x + CELL.width);
+        expect(box.y + box.height).toBeLessThanOrEqual(CELL.y + CELL.height);
+      }
+      const star = picture.pieces.find((piece) => piece.kind === 'star');
+      const count = picture.pieces.find((piece) => piece.kind === 'count');
+      if (star !== undefined && count !== undefined) {
+        expect(pieceBox(star).x + STAR_SIZE).toBeLessThan(count.x);
+        expect(count.y).toBe(star.y);
       }
     },
   );

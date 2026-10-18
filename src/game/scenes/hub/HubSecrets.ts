@@ -4,6 +4,7 @@ import { playUiSound } from '../../audio/uiSound';
 import { flowerKey, type FlowerKey } from '../../input/flowerFocus';
 import type { Rect } from '../../picture/boxDistance';
 import type { TextRef } from '../../picture/hud';
+import { PIXEL_FONT } from '../../picture/pixelFont';
 import {
   BUD_CUT,
   flowerTipAt,
@@ -20,9 +21,15 @@ import { contextOf } from '../context';
 const BLOOM_SHEET = 'anim.flower';
 /** How long each frame of the sway lasts, in milliseconds. */
 const SWAY_MS = 450;
+/** How long the glow behind an open flower takes to brighten or to fade, in milliseconds. */
+const GLOW_MS = 900;
+/** The glow's opacity at its faintest and at its brightest. */
+const GLOW_ALPHA = { from: 0.15, to: 0.45 } as const;
+/** From the top of a line of the pixel font to the top of its digits. */
+const DIGIT_DROP = PIXEL_FONT.ascent - PIXEL_FONT.capHeight;
 /** How long the reason a bud is shut stays up after a touch, in milliseconds. */
 const TELL_MS = 4000;
-/** Over the signposts (depth 0); the ring around the flower in focus over it. */
+/** Over the ground (depth 0); the ring around the flower in focus over it. */
 const FLOWER_DEPTH = 1;
 const RING_DEPTH = 2;
 /** Over the hub's buttons (100 to 102), under the settings panel (400). */
@@ -30,11 +37,17 @@ const TIP_DEPTH = 150;
 /** Clear space around the tip's words, inside its dark patch. */
 const TIP_PAD = { x: 3, y: 1 };
 
-/** A flower on the hub: which level it is, its picture, and the box of its signpost. */
+/** A flower on the hub: which level it is, its picture, and the box that takes its touch. */
 interface ShownFlower {
   readonly id: string;
   readonly picture: FlowerPicture;
   readonly hit: Rect;
+}
+
+/** Where a chapter's flower goes: its column at the margin, and the signpost beside it. */
+export interface FlowerPlace {
+  readonly cell: Rect;
+  readonly sign: Rect;
 }
 
 /** What the secret flowers need from the hub. */
@@ -44,24 +57,24 @@ export interface HubSecretsTarget {
 }
 
 /**
- * The secret flowers on the signposts of the hub (plan 08, phase 5): each chapter's flower, drawn
- * as `picture/secretFlower.ts` says, on the signpost at `signs` of its chapter. A pointer on a
- * flower rings it and shows its tip; a touch enters an open or won flower, or says why a bud is
- * still shut. The keyboard does the same (`input/flowerFocus.ts`): F and Shift+F move the focus,
- * Enter or Space press, Escape leaves.
+ * The secret flowers beside the signposts of the hub (plan 08, phase 5): each chapter's flower,
+ * drawn as `picture/secretFlower.ts` says, in the column at `places` of its chapter, beside its
+ * signpost. A pointer on a flower rings it and shows its tip; a touch enters an open or won
+ * flower, or says why a bud is still shut. The keyboard does the same (`input/flowerFocus.ts`): F
+ * and Shift+F move the focus, Enter or Space press, Escape leaves.
  */
 export function addHubSecrets(
   scene: Phaser.Scene,
   flowers: readonly SecretFlower[],
-  signs: ReadonlyMap<string, Rect>,
+  places: ReadonlyMap<string, FlowerPlace>,
   target: HubSecretsTarget,
 ): void {
   const { t } = contextOf(scene);
   const shown: ShownFlower[] = [];
   for (const flower of flowers) {
-    const sign = signs.get(flower.chapter);
-    if (sign === undefined) continue;
-    const picture = secretFlowerPicture(flower.state, sign);
+    const place = places.get(flower.chapter);
+    if (place === undefined) continue;
+    const picture = secretFlowerPicture(flower.state, place.cell, place.sign);
     if (picture.hit === null) continue;
     paint(scene, picture);
     shown.push({ id: flower.id, picture, hit: picture.hit });
@@ -81,7 +94,7 @@ export function addHubSecrets(
   /** The flower the keyboard is on, as an index into `shown`. */
   let focus: number | null = null;
 
-  /** Rings flower `i` and shows `text` beside its signpost; with null, hides both. */
+  /** Rings flower `i` and shows `text` beside it; with null, hides both. */
   const show = (i: number | null, text: TextRef | null = null): void => {
     tellTimer?.remove();
     tellTimer = null;
@@ -150,11 +163,38 @@ export function addHubSecrets(
   keys?.on('keydown-ESC', () => onKey('leave'));
 }
 
-/** Draws the pieces of a flower: the bud, the flower (swaying, or golden), the star. */
+/**
+ * Draws the pieces of a flower, in order: the glow (pulsing), the bud's leaves, the flower
+ * (swaying, or golden), the star and its number.
+ */
 function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
   for (const piece of picture.pieces) {
-    if (piece.kind === 'star') {
-      drawStars(scene, piece.x, piece.y, [{ x: 0, earned: true }], FLOWER_DEPTH);
+    if (piece.kind === 'glow') {
+      const glow = scene.add
+        .ellipse(
+          piece.x + piece.width / 2,
+          piece.y + piece.height / 2,
+          piece.width,
+          piece.height,
+          PALETTE.litGlow,
+        )
+        .setAlpha(GLOW_ALPHA.from)
+        .setDepth(FLOWER_DEPTH);
+      scene.tweens.add({
+        targets: glow,
+        alpha: GLOW_ALPHA.to,
+        duration: GLOW_MS,
+        ease: 'Sine.easeInOut',
+        yoyo: true,
+        repeat: -1,
+      });
+    } else if (piece.kind === 'star') {
+      drawStars(scene, piece.x, piece.y, [{ x: 0, earned: piece.earned }], FLOWER_DEPTH);
+    } else if (piece.kind === 'count') {
+      const colour = piece.golden ? PALETTE.sun : PALETTE.label;
+      scene.add
+        .text(piece.x, piece.y - DIGIT_DROP, piece.text, textStyle(8, colour))
+        .setDepth(FLOWER_DEPTH);
     } else if (piece.kind === 'bud') {
       const frame = cutFrame(scene.textures, BUD_CUT);
       if (frame === null) continue;
