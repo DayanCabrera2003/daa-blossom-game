@@ -8,7 +8,7 @@ const to: Point = { x: 160, y: 110 };
 
 describe('the lantern hopping from sprout to sprout (GDD §4.1, key animation 1)', () => {
   it('starts and ends at its own size, on the sprouts it leaves and reaches', () => {
-    expect(hopPose(from, to, 0)).toEqual({ ...from, height: 0, scaleX: 1, scaleY: 1 });
+    expect(hopPose(from, to, 0)).toEqual({ ...from, height: 0, scaleX: 1, scaleY: 1, alpha: 1 });
     const landed = hopPose(from, to, 1);
     expect(landed.x).toBe(to.x);
     expect(landed.y).toBe(to.y);
@@ -61,5 +61,43 @@ describe('the lantern hopping from sprout to sprout (GDD §4.1, key animation 1)
   it('keeps out-of-range times at the ends of the hop', () => {
     expect(hopPose(from, to, -0.5)).toEqual(hopPose(from, to, 0));
     expect(hopPose(from, to, 1.5)).toEqual(hopPose(from, to, 1));
+  });
+});
+
+describe('the hop with less motion (plan 09, phase 6)', () => {
+  it('never squashes, stretches nor leaves the ground', () => {
+    fc.assert(
+      fc.property(fc.double({ min: 0, max: 1, noNaN: true }), (progress) => {
+        const pose = hopPose(from, to, progress, true);
+        expect(pose.scaleX).toBe(1);
+        expect(pose.scaleY).toBe(1);
+        expect(pose.height).toBe(0);
+      }),
+    );
+  });
+
+  it('fades out on the sprout it leaves and in on the one it reaches, never in between', () => {
+    expect(hopPose(from, to, 0, true)).toMatchObject({ ...from, alpha: 1 });
+    expect(hopPose(from, to, 0.25, true)).toMatchObject({ ...from, alpha: 0.5 });
+    expect(hopPose(from, to, 0.75, true)).toMatchObject({ ...to, alpha: 0.5 });
+    expect(hopPose(from, to, 1, true)).toMatchObject({ ...to, alpha: 1 });
+    fc.assert(
+      fc.property(fc.double({ min: 0, max: 1, noNaN: true }), (progress) => {
+        const pose = hopPose(from, to, progress, true);
+        const onOne =
+          (pose.x === from.x && pose.y === from.y) || (pose.x === to.x && pose.y === to.y);
+        expect(onOne).toBe(true);
+        expect(pose.alpha).toBeGreaterThanOrEqual(0);
+        expect(pose.alpha).toBeLessThanOrEqual(1);
+      }),
+    );
+  });
+
+  it('is always fully seen with all its motion', () => {
+    fc.assert(
+      fc.property(fc.double({ min: 0, max: 1, noNaN: true }), (progress) => {
+        expect(hopPose(from, to, progress).alpha).toBe(1);
+      }),
+    );
   });
 });
