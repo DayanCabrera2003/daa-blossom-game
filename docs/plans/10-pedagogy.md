@@ -418,6 +418,20 @@ Cada uno es un commit `docs:` propio, antes del código de su fase.
 6. **¿Sauce invita a leer el Códex al terminar cada capítulo?** (riesgo de playtest de la revisión, §6, fuera de los diez problemas): (a) no; (b) sí, una línea al final del último nivel de cada capítulo («En el Códex esto tiene nombre»).
 7. **Las líneas nuevas**: revisarlas en `docs/review/lineas-plan10.md` antes de la 1.1.0 (gate de F13).
 
+**Respuestas (2026-10-18).** Del autor: 1, 2, 3, 4 y 7. De la sesión principal, con el visto bueno del autor para decidirlas: 5 y 6. Las fases las aplican tal cual; los corchetes del Apéndice A se leen con estas respuestas.
+
+| # | Respuesta | Dónde se aplica |
+|---|---|---|
+| 1 | **(a) tréboles**: «abejas y tréboles»; en singular, «un trébol» | F6, F7 (sin corchetes) y F10 |
+| 2 | **(b) jardines secretos** («un jardín secreto») | F10 |
+| 3 | **(a) el día** («Arrastra el día»). El icono **se queda (i)**: el sol del asa es el día que pasa; solo cambia la palabra | F10 (sin buscar icono nuevo) |
+| 4 | **(a) «Presentar»** (`hud.present`) | F4 |
+| 5 | **(b) «≈ 3 a 5 veces»** (cocientes medidos de ×3,7 a ×4,5) | F9 |
+| 6 | **(b) sí**: al final de cada capítulo Sauce invita, en una línea corta, a leer la página del Códex que se acaba de abrir | F11 (líneas nuevas, en la hoja del autor) |
+| 7 | El autor revisa las líneas nuevas en la hoja de F0 (`docs/review/lineas-plan10.md`) antes de la 1.1.0 | F13 (gate) |
+
+Las preguntas técnicas siguen con su valor por defecto.
+
 **Técnicas** (con el valor por defecto recomendado):
 
 1. **¿La regla en el nivel o global?** En el nivel (sección 2.2).
