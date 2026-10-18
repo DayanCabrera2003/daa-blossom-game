@@ -82,8 +82,10 @@ export class FocusController {
       shift: event.shiftKey,
     });
     if (action === 'press') {
-      // Space must not scroll the page under the canvas.
+      // Space must not scroll the page under the canvas; a key held down presses only once, so it
+      // never runs on into the screen the press opens.
       event.preventDefault();
+      if (event.repeat) return;
       const { current } = this.state;
       if (current !== null) current.press();
       else this.options.fallback?.();
