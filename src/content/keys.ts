@@ -368,6 +368,12 @@ const UI = {
   'settings.credits': [],
   'settings.keys': [],
   'settings.motion': [],
+  // What a screen reader hears through the live region (plan 09, phase 6).
+  'a11y.line': ['speaker', 'text'],
+  'a11y.question': ['prompt', 'options'],
+  'a11y.option': ['number', 'option'],
+  'a11y.answerRight': [],
+  'a11y.answerWrong': [],
   // Each position of the motion setting, on its button in the settings panel.
   ...Object.fromEntries(MOTION_CHOICES.map((choice) => [`settings.motion.${choice}`, []])),
   'keys.title': [],

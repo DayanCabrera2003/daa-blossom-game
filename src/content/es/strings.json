@@ -508,5 +508,10 @@
   "keys.mute": "M: silencia o devuelve el sonido",
   "keys.teacher": "T: la traza; RePág y AvPág: otro nivel",
   "keys.pointer": "El jardín se juega con el ratón o con el dedo.",
-  "keys.close": "Cerrar"
+  "keys.close": "Cerrar",
+  "a11y.line": "{speaker}: {text}",
+  "a11y.question": "{prompt} {options}",
+  "a11y.option": "{number}: {option}.",
+  "a11y.answerRight": "Respuesta acertada.",
+  "a11y.answerWrong": "No era esa respuesta."
 }
