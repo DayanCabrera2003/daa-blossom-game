@@ -2,6 +2,8 @@
 
 Capítulos 3–4 en greybox (círculos, rombos y líneas, sin arte ni voz). Lo dirige el autor. Fuente: GDD §10 (Hito B), §7 (capítulos 3 y 4) y §2 (principios). Todo lo que este documento no cambia sigue como en `docs/playtest/A.md` (papel del observador, qué no decir, cuándo parar, cómo clasificar hallazgos).
 
+> **Hoy (plan 09):** el protocolo se escribió para el greybox; el juego ya tiene arte, música, efectos y balbuceo. Lo que cambia en la preparación está en §3; los umbrales y criterios no cambian (Apéndice A del plan 09, preguntas 10 y 11, pendientes del autor). La hoja de una página para cada sesión es [`kit.md`](kit.md).
+
 ---
 
 ## 1. Objetivo del Hito B
@@ -78,7 +80,7 @@ Antes de la **primera** sesión de cada persona: un perfil nuevo del navegador, 
 | `florecer.save` | El progreso: niveles abiertos, estrellas, Cuaderno, tarjetas vistas |
 | `florecer.playtest` | El registro de la prueba (lo que se exporta) |
 
-Antes de la **segunda** sesión: comprobar que el hub muestra abierto el nivel 3.1 y ganados los de 0–2. Una ventana privada no sirve si se cierra entre sesiones: se pierde todo.
+Antes de la **segunda** sesión: comprobar que el hub muestra abierto el nivel 3.1 y ganados los de 0–2. Una ventana privada no sirve si se cierra entre sesiones: se pierde todo. Si la persona hizo el Hito A en otro navegador, o se perdió su progreso, `npm run save -- after-ch2` imprime una línea que, pegada en la consola del navegador con el juego abierto, deja ganados los capítulos 0–2 y abierto 3.1 (ver [`kit.md`](kit.md)).
 
 ### Cómo abrir el juego
 
@@ -93,9 +95,9 @@ El juego publicado se despliega desde `main`: solo tiene los capítulos 3–4 de
 
 ### Antes de que llegue la persona
 
-- Pantalla completa; no hay audio en greybox.
+- Pantalla completa. El juego tiene sonido: auriculares o altavoz al volumen de una conversación, el mismo para todas las personas; los volúmenes del juego, como vienen.
 - La plantilla de §7 impresa y un reloj a mano.
-- Comprobar que "Exportar registro de prueba" (en el panel de ajustes) descarga un archivo.
+- Comprobar que "Exportar registro de prueba" descarga un archivo: está en el panel de ajustes, que abre el engranaje (en el hub, arriba a la derecha; en un nivel, abajo a la izquierda).
 
 ---
 

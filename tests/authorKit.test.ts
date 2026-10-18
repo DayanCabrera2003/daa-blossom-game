@@ -67,3 +67,17 @@ describe('the recording script', () => {
     expect(minutes).toBeLessThanOrEqual(30);
   });
 });
+
+describe.each(['../docs/playtest/A.md', '../docs/playtest/B.md', '../docs/playtest/C.md'])(
+  'the protocol %s',
+  (path) => {
+    const text = read(path);
+
+    it('points to the kit, and loads only saves that npm run save makes', () => {
+      expect(text).toContain('[`kit.md`](kit.md)');
+      for (const point of all(text, /npm run save -- ([a-z0-9-]+)/g)) {
+        expect(isSavePoint(point), point).toBe(true);
+      }
+    });
+  },
+);
