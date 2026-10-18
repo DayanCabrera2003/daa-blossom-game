@@ -125,4 +125,33 @@ describe('Edmonds, the full recipe', () => {
       ),
     );
   });
+
+  it('property (C11, Prop. 11.2): each phase records O(n²) steps, within its exact bound', () => {
+    const gardens = fc.oneof(
+      graphWithDensityArb({ maxN: 20 }),
+      fc.integer({ min: 1, max: 8 }).map((k) => nestedFlowers(k).graph),
+      fc.integer({ min: 1, max: 8 }).map((k) => helixOf(k).graph),
+    );
+    fc.assert(
+      fc.property(
+        gardens.chain((graph) => fc.tuple(fc.constant(graph), matchingArb(graph))),
+        ([graph, initial]) => {
+          const run = edmonds(graph, initial);
+          const { n } = graph;
+          const m = graph.edges.length;
+          const folds = Math.max(0, Math.floor((n - 1) / 2));
+          // One search start, n labels, 2m + folds·(n − 1) looks, two steps per fold, one unfold
+          // per flower, and the chain or the failure that ends the phase.
+          const bound = 2 + n + 2 * m + folds * (n + 2);
+          const starts = run.trace.flatMap((event, i) => (event.type === 'searchStart' ? [i] : []));
+          const ends = [...starts.slice(1), run.trace.length - 1];
+          starts.forEach((start, i) => {
+            expect((ends[i] as number) - start).toBeLessThanOrEqual(bound);
+          });
+          // Phases: one per chain lit, plus the last one.
+          expect(starts.length).toBe(size(run.matching) - size(initial) + 1);
+        },
+      ),
+    );
+  });
 });
