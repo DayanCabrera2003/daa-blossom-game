@@ -43,7 +43,7 @@ Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typeche
 
 (Máximos medidos en el catálogo actual: 1 por completar, 1 sin pistas, 1 con agua donde la hay, 1 por la apuesta formal de 1.6.) El Huerto no tiene flor (§7.9 no la lista).
 
-**Dónde está** (escondida): florece **en el poste del cartel de su capítulo**, el que ya cuelga cada título del hub (`signBox`). Todos los capítulos tienen poste en cualquier disposición, así que la flor siempre tiene sitio y nunca tapa un botón. Estados: sin flor (capítulo sin terminar); capullo cerrado (terminado, faltan estrellas: tocarlo dice "Esta flor se abre con 14 estrellas del Prado. Tienes 11."); flor abierta (toca y entras); flor con sus estrellas (ganada). Al ganarla, el panel de victoria vuelve al hub (nunca ofrece "siguiente").
+**Dónde está** (escondida): florece **junto al poste del cartel de su capítulo**, el que ya cuelga cada título del hub (`signBox`), en una columna de 16 px reservada en el margen antes del poste (`flowerBox`; tras la revisión en pantalla de F5, dibujada dentro del poste no se veía). La columna existe en cualquier disposición, haya flor o no, así que la flor siempre tiene sitio y nunca tapa un botón; el poste y la columna juntos reciben el toque. Estados: sin flor (capítulo sin terminar); capullo cerrado, del tamaño de un brote, con una estrella apagada y las que faltan (tocarlo dice "Esta flor se abre con 14 estrellas del Prado. Tienes 11."); flor abierta, que se mece sobre las hojas del capullo con un halo que late (toca y entras); flor dorada con una estrella dorada y las que dio (ganada). Al ganarla, el panel de victoria vuelve al hub (nunca ofrece "siguiente").
 
 Cada diseño se comprobó al escribir el plan con el propio núcleo (`maximumSize`, `decomposeSymmetricDifference`, `tutteBergeBound`, `race`); las fases lo vuelven a comprobar con la integridad completa.
 
@@ -398,7 +398,7 @@ Una fase a la vez, siempre. F1 necesita el campo `secret` de F0 solo para sus fi
 - **El jardín libre es un nivel, la flor secreta es un nivel.** Así heredan la integridad, la jugabilidad, el panel del profesor, el sol, deshacer y todas las vistas sin escribir un motor paralelo.
 - **Ids numéricos para las flores secretas** (el siguiente de cada capítulo) en vez de un formato propio: no cambian la expresión regular de los ids, ni las rutas, ni las líneas, y dan las acciones justas del capítulo.
 - **Umbrales en vez de gasto.** Nada se compra ni se pierde; las estrellas solo suman.
-- **La flor en el poste del capítulo**, no en el lecho del hub: el lecho ya está lleno (las ocho piezas ocupan 448 de 464 px) y el poste existe en cualquier disposición.
+- **La flor junto al poste del capítulo**, no en el lecho del hub: el lecho ya está lleno (las ocho piezas ocupan 448 de 464 px) y el poste existe en cualquier disposición. La columna de la flor (18 px con su hueco) no añade ninguna línea de botones ni con todos los niveles a tres estrellas.
 - **El jardinero mecánico usa todas sus herramientas** aunque el jugador no las tenga: no se las da al jugador, y ver algo que aún no sabe hacer en su propio jardín es el mismo papel que tuvo en 6.2.
 - **El diseño se guarda aparte** (`florecer.sandbox`), sin versión de guardado compartida: un diseño a medias nunca rompe el progreso.
 - **El código de jardín no lleva posiciones** (es canónico y corto, Plan 01); el JSON sí. Importar un código dispone el jardín de nuevo.
