@@ -5,23 +5,18 @@ import { size as lanternCount } from '@core/matching/queries';
 import { unwrap } from '@core/shared/result';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { checkIntegrity, type IntegrityProblem } from '../integrity';
+import { checkIntegrity } from '../integrity';
+import { vineCrossings } from '../layoutChecks';
 import { loadLevel } from '../loader';
 import { limitBreach } from './design';
 import { GENERATORS, GENERATOR_IDS, generate, generatorOf, type GeneratorId } from './generators';
+import { LAYOUT_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { MAX_VINES } from './limits';
 import { LETTERS } from './names';
 import { toLevelFile } from './toLevel';
 
-/**
- * The integrity problems a garden of the free mode may keep (as in `toLevel.test.ts`): names drawn
- * over a neighbour or a lantern only make it harder to read, and matter once it joins the catalog.
- */
-const READING = new Set<IntegrityProblem['code']>([
-  'labelOnSprout',
-  'labelOnLabel',
-  'labelOnLantern',
-]);
+/** The seeds each size is grown from: the random generators grow a different garden from each. */
+const SEEDS = [1, 7, 23, 99] as const;
 
 /** Every size each generator offers, from its smallest to its largest. */
 const EVERY_SIZE: readonly [GeneratorId, number][] = GENERATORS.flatMap(({ id, min, max }) =>
@@ -74,16 +69,25 @@ describe('the generators of the free mode', () => {
   });
 
   it.each(EVERY_SIZE)(
-    '%s of size %i grows a design within limits that loads and passes the checks',
+    '%s of size %i grows a design within limits that loads and passes every check',
     (id, size) => {
-      const { design } = generate(id, size, 7);
-      expect(limitBreach(design)).toBeNull();
-      const level = loadLevel(toLevelFile(design));
-      expect(level.ok).toBe(true);
-      if (!level.ok) return;
-      expect(checkIntegrity(level.value).filter(({ code }) => !READING.has(code))).toEqual([]);
+      for (const seed of SEEDS) {
+        const { design } = generate(id, size, seed);
+        expect(limitBreach(design)).toBeNull();
+        const level = loadLevel(toLevelFile(design));
+        expect(level.ok).toBe(true);
+        if (!level.ok) return;
+        // No exemption: every name reads on its own, as in the catalog.
+        expect(checkIntegrity(level.value)).toEqual([]);
+      }
     },
   );
+
+  it('grows rows and rings whose vines never cross', () => {
+    for (const [id, size] of EVERY_SIZE.filter(([id]) => id === 'path' || id === 'cycle')) {
+      expect(vineCrossings(generate(id, size, 1).design)).toEqual([]);
+    }
+  });
 
   it('names the sprouts A, B, C… in the order the core grows them', () => {
     const { design } = generate('path', 5, 1);
@@ -145,24 +149,28 @@ describe('the generators of the free mode', () => {
     expect(small).toMatchObject({ size: 4, shrunk: false });
   });
 
-  it('property: any generator, size and seed grows a design within the limits', () => {
-    fc.assert(
-      fc.property(
-        fc.constantFrom(...GENERATOR_IDS).chain((id) => {
-          const { min, max } = generatorOf(id);
-          return fc.tuple(fc.constant(id), fc.integer({ min, max }), fc.integer());
-        }),
-        ([id, size, seed]) => {
-          const outcome = generate(id, size, seed);
-          expect(limitBreach(outcome.design)).toBeNull();
-          expect(outcome.size).toBeLessThanOrEqual(size);
-          expect(outcome.shrunk).toBe(outcome.size < size);
-          expect(loadLevel(toLevelFile(outcome.design)).ok).toBe(true);
-        },
-      ),
-      { numRuns: 200 },
-    );
-  });
+  it(
+    'property: any generator, size and seed grows a design within the limits',
+    () => {
+      fc.assert(
+        fc.property(
+          fc.constantFrom(...GENERATOR_IDS).chain((id) => {
+            const { min, max } = generatorOf(id);
+            return fc.tuple(fc.constant(id), fc.integer({ min, max }), fc.integer());
+          }),
+          ([id, size, seed]) => {
+            const outcome = generate(id, size, seed);
+            expect(limitBreach(outcome.design)).toBeNull();
+            expect(outcome.size).toBeLessThanOrEqual(size);
+            expect(outcome.shrunk).toBe(outcome.size < size);
+            expect(loadLevel(toLevelFile(outcome.design)).ok).toBe(true);
+          },
+        ),
+        { numRuns: 200 },
+      );
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
+  );
 
   it('refuses a size its generator does not offer', () => {
     expect(() => generate('path', 21, 1)).toThrow();

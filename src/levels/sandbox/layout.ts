@@ -3,15 +3,20 @@ import { invariant } from '@core/shared/invariant';
 import { itemAt } from '@core/shared/itemAt';
 import { SPROUT_AREA } from '../fields';
 import { MAX_SPROUTS, MIN_SPACING } from './limits';
+import { LETTERS } from './names';
+import { untangle, type Field } from './untangle';
 
 /**
  * Where the sprouts of a garden go when it comes without places (plan 08, section 1.3): one grown
  * by a generator, or read from a garden code, which carries no positions. Each shape suits a kind
- * of garden: a row zigzags from left to right, a ring sits on an ellipse, bees and flowers stand in
- * columns on either side, and the gardens of flowers spread from left to right by their distance
- * from R. A few passes then push apart any two sprouts still too close. The result is
- * deterministic, on whole pixels, inside the garden and keeps the spacing of the free mode; should
- * the passes ever fail, the sprouts fall back to a plain grid, which always does.
+ * of garden: a row zigzags from left to right, a ring runs along two arcs, bees and flowers stand
+ * in columns on either side, and the gardens of flowers spread from left to right by their distance
+ * from R, each layer a column over the garden's height. Every shape is drawn over the whole free
+ * area of the editor, between its header and its two rows of buttons, and then untangled
+ * (`untangle.ts`) until no name of the free mode (A, B, C… in sprout order) is drawn over a sprout,
+ * another name or a lantern, the checks of the catalog's levels. The result is deterministic, on
+ * whole pixels, inside the garden and keeps the spacing of the free mode; should the untangling
+ * ever fail, the sprouts start again from a plain grid.
  */
 
 /** Where a sprout sits, on whole pixels. */
@@ -27,28 +32,47 @@ export type LayoutShape =
   | { readonly kind: 'layers' }
   | { readonly kind: 'sides'; readonly side: readonly (0 | 1)[] };
 
-/** Room left inside the sprout area, so names and lanterns at the edges stay clear of it. */
-const PAD = 12;
-const LEFT = SPROUT_AREA.x0 + PAD;
-const RIGHT = SPROUT_AREA.x1 - PAD;
-const TOP = SPROUT_AREA.y0 + PAD;
-const BOTTOM = SPROUT_AREA.y1 - PAD;
-const MIDDLE_Y = (TOP + BOTTOM) / 2;
+/**
+ * Where the sprouts of a laid-out garden go: the sprout area, less a margin at the sides for the
+ * names, two pixels at the top (under the editor's header) and four at the bottom, so the name of
+ * the lowest sprout ends above the editor's rows of buttons.
+ */
+const FIELD: Field = {
+  left: SPROUT_AREA.x0 + 12,
+  right: SPROUT_AREA.x1 - 12,
+  top: SPROUT_AREA.y0 + 2,
+  bottom: SPROUT_AREA.y1 - 4,
+};
+const MIDDLE_Y = (FIELD.top + FIELD.bottom) / 2;
+const CENTRE_X = (FIELD.left + FIELD.right) / 2;
 
-/** The spacing the layouts aim for: the free mode's, with a little air for rounding. */
-const AIM = MIN_SPACING + 4;
+/** The spacing the layouts keep: the free mode's, with a little air for rounding. */
+const AIM = MIN_SPACING + 2;
 
-/** The most sprouts a column holds with `AIM` between them. */
-const PER_COLUMN = Math.floor((BOTTOM - TOP) / AIM) + 1;
+/**
+ * How far a row's sprouts rise and fall from its middle line: far enough that the lantern of a
+ * vine between two neighbours hangs clear of the name of the higher one.
+ */
+const ZIGZAG = 30;
 
-/** How far a row's sprouts rise and fall from its middle line. */
-const ZIGZAG = 24;
+/** The widest step between two sprouts of a column, so a short column does not scatter. */
+const MOST_STEP = 46;
 
-/** Between two columns of the same side of a garden of bees and flowers. */
-const SIDE_COLUMN_GAP = 40;
+/** How far the sprouts of a column of flowers step aside by turns, so their names stay clear. */
+const STAGGER = 12;
 
-/** How many times the sprouts still too close are pushed apart before giving up on the shape. */
-const PASSES = 60;
+/**
+ * The step between two sprouts of a column of flowers, staggered, and of a column of bees or
+ * flowers, which is not: under it a name would be drawn over the sprout below.
+ */
+const STAGGERED_STEP = 16;
+const STRAIGHT_STEP = 27;
+
+/** How far the columns of each side of a garden of bees and flowers stand from its middle. */
+const SIDE_COLUMNS = [80, 140, 200] as const;
+
+/** How much the arcs of a ring bow out from their ends. */
+const BOW = 40;
 
 /** `count` values spread evenly from `from` to `to`; one value sits halfway. */
 const spread = (count: number, from: number, to: number): number[] =>
@@ -58,37 +82,70 @@ const spread = (count: number, from: number, to: number): number[] =>
 
 /** A row from left to right, rising and falling by turns so neighbours never touch. */
 const row = (n: number): Spot[] =>
-  spread(n, LEFT, RIGHT).map((x, i) => ({ x, y: MIDDLE_Y + (i % 2 === 0 ? -1 : 1) * ZIGZAG }));
+  spread(n, FIELD.left, FIELD.right).map((x, i) => ({
+    x,
+    y: MIDDLE_Y + (i % 2 === 0 ? -1 : 1) * ZIGZAG,
+  }));
 
-/** A ring on the widest ellipse of the garden, from its top, clockwise. */
+/**
+ * A ring: the first half of the sprouts along an arc over the garden from left to right, the rest
+ * back along an arc under it, so the ring closes at both ends with nothing in between.
+ */
 const ring = (n: number): Spot[] => {
-  const [rx, ry] = [(RIGHT - LEFT) / 2, (BOTTOM - TOP) / 2];
-  const cx = (LEFT + RIGHT) / 2;
-  return Array.from({ length: n }, (_, i) => {
-    const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
-    return { x: cx + rx * Math.cos(angle), y: MIDDLE_Y + ry * Math.sin(angle) };
-  });
+  const over = Math.ceil(n / 2);
+  const under = n - over;
+  const halfWidth = (FIELD.right - FIELD.left) / 2;
+  // How far from its middle a point of either arc is, from 0 to 1.
+  const bend = (x: number): number => BOW * ((x - CENTRE_X) / halfWidth) ** 2;
+  // The arc under the garden keeps half a step in from the ends when it is the shorter one.
+  const inset = under < over && over > 1 ? (FIELD.right - FIELD.left) / (over - 1) / 2 : 0;
+  return [
+    ...spread(over, FIELD.left, FIELD.right).map((x) => ({
+      x,
+      y: (over === 1 && under === 0 ? MIDDLE_Y : FIELD.top) + bend(x),
+    })),
+    ...spread(under, FIELD.right - inset, FIELD.left + inset).map((x) => ({
+      x,
+      y: FIELD.bottom - bend(x),
+    })),
+  ];
 };
 
-/** Columns of sprouts, each split into columns that fit, in order, as lists of sprouts. */
-const fitColumns = (columns: readonly VertexId[][]): VertexId[][] =>
-  columns.flatMap((column) =>
-    Array.from({ length: Math.ceil(column.length / PER_COLUMN) }, (_, k) =>
-      column.slice(k * PER_COLUMN, (k + 1) * PER_COLUMN),
-    ),
+/** Splits a list into `parts` lists of sizes as even as can be, in order. */
+const chunks = <T>(list: readonly T[], parts: number): T[][] =>
+  Array.from({ length: parts }, (_, k) =>
+    list.slice(Math.round((k * list.length) / parts), Math.round(((k + 1) * list.length) / parts)),
   );
 
-/** The sprouts of each column standing at `x`, spread evenly up and down the middle line. */
-const standColumn = (spots: Spot[], column: readonly VertexId[], x: number): void => {
-  const half = ((column.length - 1) * AIM) / 2;
-  spread(column.length, MIDDLE_Y - half, MIDDLE_Y + half).forEach((y, i) => {
-    spots[itemAt(column, i)] = { x, y };
+/** How many sprouts a column holds, `step` apart, inside the field. */
+const holds = (step: number): number => Math.floor((FIELD.bottom - FIELD.top) / step) + 1;
+
+/**
+ * The sprouts of `column` standing around `x` over the garden's height, at most `MOST_STEP` apart,
+ * centred on `middle` but kept inside; with `stagger`, every other one a little to each side.
+ */
+const standColumn = (
+  spots: Spot[],
+  column: readonly VertexId[],
+  x: number,
+  middle: number,
+  stagger: number,
+): void => {
+  const count = column.length;
+  const step = count === 1 ? 0 : Math.min(MOST_STEP, (FIELD.bottom - FIELD.top) / (count - 1));
+  const half = (step * (count - 1)) / 2;
+  const centre = Math.min(FIELD.bottom - half, Math.max(FIELD.top + half, middle));
+  spread(count, centre - half, centre + half).forEach((y, i) => {
+    const aside = count === 1 ? 0 : (i % 2 === 0 ? -1 : 1) * stagger;
+    spots[itemAt(column, i)] = { x: x + aside, y };
   });
 };
 
 /**
  * The gardens of flowers: each sprout in the column of its distance from the first sprout of its
- * piece (R, sprout 0, for the first), the pieces one after another from left to right.
+ * piece (R, sprout 0, for the first), the pieces one after another from left to right. Columns
+ * spread over the garden's width and each over its height; neighbouring columns rise and fall by
+ * turns, so a long chain zigzags like a row.
  */
 const layers = (graph: Graph): Spot[] => {
   const depth = new Array<number>(graph.n).fill(-1);
@@ -110,79 +167,49 @@ const layers = (graph: Graph): Spot[] => {
       }
     }
   }
-  const fitted = fitColumns(columns);
+  const fitted = columns.flatMap((column) =>
+    chunks(column, Math.ceil(column.length / holds(STAGGERED_STEP))),
+  );
   const spots: Spot[] = new Array<Spot>(graph.n);
-  const xs = spread(fitted.length, LEFT, RIGHT);
-  fitted.forEach((column, c) => standColumn(spots, column, itemAt(xs, c)));
+  const inset = fitted.some((column) => column.length > 1) ? STAGGER : 0;
+  const xs = spread(fitted.length, FIELD.left + inset, FIELD.right - inset);
+  fitted.forEach((column, c) => {
+    const middle = MIDDLE_Y + (c % 2 === 0 ? -1 : 1) * (fitted.length > 1 ? ZIGZAG : 0);
+    standColumn(spots, column, itemAt(xs, c), middle, STAGGER);
+  });
   return spots;
 };
 
 /** The bees (side 0) in columns on the left, the flowers (side 1) in columns on the right. */
 const sides = (side: readonly (0 | 1)[]): Spot[] => {
   const spots: Spot[] = new Array<Spot>(side.length);
-  const centre = (LEFT + RIGHT) / 2;
   for (const s of [0, 1] as const) {
     const members = side.flatMap((t, v) => (t === s ? [v] : []));
     // Each side's columns grow outwards from the middle of the garden.
-    fitColumns([members]).forEach((column, c) => {
-      const away = SIDE_COLUMN_GAP * (c + 1);
-      standColumn(spots, column, s === 0 ? centre - away : centre + away);
+    chunks(members, Math.ceil(members.length / holds(STRAIGHT_STEP))).forEach((column, c) => {
+      const away = itemAt(SIDE_COLUMNS, c);
+      standColumn(spots, column, s === 0 ? CENTRE_X - away : CENTRE_X + away, MIDDLE_Y, 0);
     });
   }
   return spots;
 };
 
-/** Whether every sprout sits on a whole pixel inside the garden, the spacing apart. */
-const readable = (spots: readonly Spot[]): boolean =>
-  spots.every(
-    ({ x, y }, i) =>
-      x >= SPROUT_AREA.x0 &&
-      x <= SPROUT_AREA.x1 &&
-      y >= SPROUT_AREA.y0 &&
-      y <= SPROUT_AREA.y1 &&
-      spots.slice(i + 1).every((other) => Math.hypot(other.x - x, other.y - y) >= MIN_SPACING),
-  );
-
-/** Keeps a value between two bounds. */
-const clamp = (value: number, low: number, high: number): number =>
-  Math.min(high, Math.max(low, value));
-
-/**
- * Pushes apart, a few passes over every pair, the sprouts closer than the spacing aimed for, each
- * by half of what is missing, then rounds them to whole pixels inside the garden.
- */
-const settle = (start: readonly Spot[]): Spot[] => {
-  const spots = start.map(({ x, y }) => ({ x, y }));
-  for (let pass = 0; pass < PASSES; pass++) {
-    let moved = false;
-    spots.forEach((a, i) => {
-      for (const b of spots.slice(i + 1)) {
-        const [dx, dy] = [b.x - a.x, b.y - a.y];
-        const distance = Math.hypot(dx, dy);
-        if (distance >= AIM) continue;
-        // Two sprouts on the same spot part sideways.
-        const [ux, uy] = distance === 0 ? [1, 0] : [dx / distance, dy / distance];
-        const push = (AIM - distance) / 2;
-        a.x = clamp(a.x - ux * push, SPROUT_AREA.x0, SPROUT_AREA.x1);
-        a.y = clamp(a.y - uy * push, SPROUT_AREA.y0, SPROUT_AREA.y1);
-        b.x = clamp(b.x + ux * push, SPROUT_AREA.x0, SPROUT_AREA.x1);
-        b.y = clamp(b.y + uy * push, SPROUT_AREA.y0, SPROUT_AREA.y1);
-        moved = true;
-      }
-    });
-    if (!moved) break;
-  }
-  return spots.map(({ x, y }) => ({ x: Math.round(x), y: Math.round(y) }));
-};
-
-/** A plain grid of `n` sprouts, row after row: always inside the garden and apart. */
+/** A plain grid of `n` sprouts, row after row, far enough apart for a name under each. */
 const grid = (n: number): Spot[] => {
-  const perRow = Math.floor((RIGHT - LEFT) / AIM) + 1;
+  const [across, down] = [2 * STAGGER, STRAIGHT_STEP + 1];
+  const perRow = Math.floor((FIELD.right - FIELD.left) / across) + 1;
   return Array.from({ length: n }, (_, i) => ({
-    x: LEFT + AIM * (i % perRow),
-    y: TOP + AIM * Math.floor(i / perRow),
+    x: FIELD.left + across * (i % perRow),
+    y: FIELD.top + down * Math.floor(i / perRow),
   }));
 };
+
+/** The spots rounded to whole pixels and kept inside the field. */
+const onPixels = (spots: readonly Spot[]): Spot[] =>
+  spots.map(({ x, y }) => ({
+    x: Math.min(FIELD.right, Math.max(FIELD.left, Math.round(x))),
+    y: Math.min(FIELD.bottom, Math.max(FIELD.top, Math.round(y))),
+  }));
 
 /** Where each sprout of `graph` goes, in sprout order, laid out in `shape`. */
 export function layoutGarden(graph: Graph, shape: LayoutShape): Spot[] {
@@ -199,6 +226,9 @@ export function layoutGarden(graph: Graph, shape: LayoutShape): Spot[] {
         : shape.kind === 'sides'
           ? sides(shape.side)
           : layers(graph);
-  const settled = settle(start);
-  return readable(settled) ? settled : grid(graph.n);
+  const names = LETTERS.slice(0, graph.n);
+  const shaped = untangle(graph, names, onPixels(start), FIELD, AIM);
+  if (shaped.clean) return [...shaped.spots];
+  const plain = untangle(graph, names, onPixels(grid(graph.n)), FIELD, AIM);
+  return [...(plain.clean ? plain : shaped).spots];
 }

@@ -7,13 +7,20 @@ import { randomGraph } from '@core/generators/random';
 import { createRng } from '@core/shared/rng';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
+import { crossingCount, readingProblems } from '../../../tests/support/gardenReading';
+import { LAYOUT_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { SPROUT_AREA } from '../fields';
 import { layoutGarden, type LayoutShape, type Spot } from './layout';
-import { MIN_SPACING } from './limits';
+import { MAX_VINES, MIN_SPACING } from './limits';
 
-/** Whether a layout puts every sprout on a whole pixel inside the garden, 18 px apart. */
-function expectReadable(spots: readonly Spot[], n: number): void {
-  expect(spots).toHaveLength(n);
+/**
+ * Whether a layout of `graph` puts every sprout on a whole pixel inside the garden, 18 px apart,
+ * with no name drawn over a sprout, another name or a lantern: the checks of the catalog's levels,
+ * with no exemption.
+ */
+function expectReadable(spots: readonly Spot[], graph: Graph): void {
+  expect(spots).toHaveLength(graph.n);
+  expect(readingProblems(graph, spots)).toEqual([]);
   spots.forEach((spot, i) => {
     expect(Number.isInteger(spot.x) && Number.isInteger(spot.y)).toBe(true);
     expect(spot.x).toBeGreaterThanOrEqual(SPROUT_AREA.x0);
@@ -74,13 +81,13 @@ function depthsFromR(graph: Graph): number[] {
 
 describe('laying out a garden without places', () => {
   it.each(LARGEST)('keeps %s inside the garden and its sprouts apart', (_, graph, shape) => {
-    expectReadable(layoutGarden(graph, shape), graph.n);
+    expectReadable(layoutGarden(graph, shape), graph);
   });
 
   it('lays out no sprout, or one, too', () => {
     expect(layoutGarden(pathGraph(0), { kind: 'ring' })).toEqual([]);
     for (const kind of ['row', 'ring', 'layers'] as const) {
-      expectReadable(layoutGarden(pathGraph(1), { kind }), 1);
+      expectReadable(layoutGarden(pathGraph(1), { kind }), pathGraph(1));
     }
   });
 
@@ -88,6 +95,23 @@ describe('laying out a garden without places', () => {
     for (const [, graph, shape] of LARGEST) {
       expect(layoutGarden(graph, shape)).toEqual(layoutGarden(graph, shape));
     }
+  });
+
+  it('lays a row and a ring of any size out without a vine crossing another', () => {
+    for (let n = 2; n <= 24; n++) {
+      expect(crossingCount(pathGraph(n), layoutGarden(pathGraph(n), { kind: 'row' }))).toBe(0);
+    }
+    for (let n = 3; n <= 24; n++) {
+      expect(crossingCount(cycleGraph(n), layoutGarden(cycleGraph(n), { kind: 'ring' }))).toBe(0);
+    }
+  });
+
+  it("spreads the layers of a deep garden over most of the garden's height", () => {
+    const spots = layoutGarden(nestedFlowers(4).graph, { kind: 'layers' });
+    const ys = spots.map(({ y }) => y);
+    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThanOrEqual(
+      (SPROUT_AREA.y1 - SPROUT_AREA.y0) / 2,
+    );
   });
 
   it('walks a row from left to right', () => {
@@ -119,29 +143,37 @@ describe('laying out a garden without places', () => {
     }
   });
 
-  it('property: any garden of the free mode, in any shape, stays readable', () => {
-    fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 24 }),
-        fc.double({ min: 0, max: 0.6, noNaN: true }),
-        fc.integer(),
-        fc.constantFrom('row', 'ring', 'layers', 'sides'),
-        (n, p, seed, kind) => {
-          const graph = randomGraph(n, p, createRng(seed));
-          const sides = bipartition(graph);
-          const shape: LayoutShape =
-            kind === 'sides'
-              ? {
-                  kind,
-                  side: sides.kind === 'bipartite' ? sides.side : beesFirst(n >> 1, n),
-                }
-              : { kind };
-          expectReadable(layoutGarden(graph, shape), n);
-        },
-      ),
-      { numRuns: 150 },
-    );
-  });
+  it(
+    'property: any garden of the free mode, in any shape, stays readable',
+    () => {
+      fc.assert(
+        fc.property(
+          fc.integer({ min: 0, max: 24 }),
+          fc.double({ min: 0, max: 1, noNaN: true }),
+          fc.integer(),
+          fc.constantFrom('row', 'ring', 'layers', 'sides'),
+          (n, chance, seed, kind) => {
+            // About 48 vines at the most likely, so the limit of 40 skips few gardens.
+            const p = chance * Math.min(0.6, 96 / Math.max(1, n * (n - 1)));
+            const graph = randomGraph(n, p, createRng(seed));
+            // The free mode holds 40 vines at most: a garden with more never gets laid out.
+            fc.pre(graph.edges.length <= MAX_VINES);
+            const sides = bipartition(graph);
+            const shape: LayoutShape =
+              kind === 'sides'
+                ? {
+                    kind,
+                    side: sides.kind === 'bipartite' ? sides.side : beesFirst(n >> 1, n),
+                  }
+                : { kind };
+            expectReadable(layoutGarden(graph, shape), graph);
+          },
+        ),
+        { numRuns: 150 },
+      );
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
+  );
 
   it('refuses a garden larger than the free mode holds', () => {
     expect(() => layoutGarden(pathGraph(25), { kind: 'ring' })).toThrow();

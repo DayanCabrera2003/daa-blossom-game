@@ -1,11 +1,15 @@
 import { encodeGarden } from '@core/codes/gardenCode';
 import { completeGraph, pathGraph } from '@core/generators/families';
+import { randomGraph } from '@core/generators/random';
+import { createRng } from '@core/shared/rng';
 import { emptyMatching } from '@core/matching/createMatching';
 import { unwrap } from '@core/shared/result';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { designArb } from '../../../tests/support/designs';
+import { LAYOUT_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { buildGarden } from '../garden';
+import { checkLayout } from '../layoutChecks';
 import { SPROUT_AREA } from '../fields';
 import type { Design } from './design';
 import { MAX_IMPORT_LENGTH, importText } from './importText';
@@ -126,17 +130,45 @@ describe('importing a text into the free mode', () => {
     );
   });
 
-  it('property: the code comes back as the same garden with the same lanterns', () => {
-    fc.assert(
-      fc.property(designArb(), (design) => {
-        const code = codeOf(design);
-        const imported = importText(code);
-        expect(imported.ok).toBe(true);
-        if (imported.ok) expect(codeOf(imported.value)).toBe(code);
-      }),
-      { numRuns: 120 },
-    );
-  });
+  it(
+    'property: the code comes back as the same garden with the same lanterns',
+    () => {
+      fc.assert(
+        fc.property(designArb(), (design) => {
+          const code = codeOf(design);
+          const imported = importText(code);
+          expect(imported.ok).toBe(true);
+          if (imported.ok) expect(codeOf(imported.value)).toBe(code);
+        }),
+        { numRuns: 120 },
+      );
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
+  );
+
+  it(
+    'property: a garden read from a code is laid out with every name readable',
+    () => {
+      fc.assert(
+        fc.property(
+          fc.integer({ min: 1, max: 24 }),
+          fc.double({ min: 0, max: 1, noNaN: true }),
+          fc.integer(),
+          (n, chance, seed) => {
+            // About 48 vines at the most likely, so the limit of 40 skips few gardens.
+            const p = chance * Math.min(0.6, 96 / Math.max(1, n * (n - 1)));
+            const graph = randomGraph(n, p, createRng(seed));
+            fc.pre(graph.edges.length <= 40);
+            const imported = importText(encodeGarden(graph, emptyMatching(graph)));
+            expect(imported.ok).toBe(true);
+            if (imported.ok) expect(checkLayout(imported.value)).toEqual([]);
+          },
+        ),
+        { numRuns: 120 },
+      );
+    },
+    LAYOUT_PROPERTY_TIMEOUT,
+  );
 
   it('property: any text gives a design or a reason, never an exception', () => {
     fc.assert(
