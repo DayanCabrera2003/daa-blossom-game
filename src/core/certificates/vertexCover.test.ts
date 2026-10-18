@@ -1,11 +1,17 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { bipartiteWithMatchingArb, graphArb } from '../../../tests/support/arbitraries';
+import {
+  bipartiteGraphArb,
+  bipartiteWithMatchingArb,
+  graphArb,
+} from '../../../tests/support/arbitraries';
 import { bruteForceMatching } from '../bruteforce/maximumMatching';
 import { cycleGraph, pathGraph, starGraph } from '../generators/families';
 import { bipartition } from '../graph/bipartition';
 import { createGraph } from '../graph/createGraph';
-import { createMatching } from '../matching/createMatching';
+import { neighbors } from '../graph/queries';
+import type { Graph, VertexId } from '../graph/types';
+import { createMatching, emptyMatching } from '../matching/createMatching';
 import { size } from '../matching/queries';
 import { unwrap } from '../shared/result';
 import { bipartiteMatching } from '../search/bipartiteMatching';
@@ -134,6 +140,51 @@ describe('König cover from the final forest', () => {
         const cover = koenigCover(graph, run.forest);
         expect(checkVertexCover(graph, cover).ok).toBe(true);
         expect(cover.length).toBe(size(run.matching));
+      }),
+    );
+  });
+});
+
+/** The sprouts on side 0 of a garden of bees and flowers (a bug if it has an odd loop). */
+function beesOf(graph: Graph): VertexId[] {
+  const sides = bipartition(graph);
+  if (sides.kind !== 'bipartite') throw new Error('not bees and flowers');
+  return sides.side.flatMap((side, v) => (side === 0 ? [v] : []));
+}
+
+/** N(S): every sprout with a vine to some sprout of `group`. */
+const neighborhood = (graph: Graph, group: readonly VertexId[]): Set<VertexId> =>
+  new Set(group.flatMap((v) => neighbors(graph, v)));
+
+/** Every subset of `items`. */
+const subsets = <T>(items: readonly T[]): T[][] =>
+  items.reduce<T[][]>((all, item) => [...all, ...all.map((subset) => [...subset, item])], [[]]);
+
+describe("Hall's condition from König (C14, Theorem 14.6)", () => {
+  it('property: every bee finds a flower exactly when no group of bees has fewer flowers', () => {
+    fc.assert(
+      fc.property(bipartiteGraphArb({ maxN: 10 }), (graph) => {
+        const bees = beesOf(graph);
+        const outcome = bruteForceMatching(graph);
+        if (outcome.status !== 'complete') throw new Error('brute force gave up');
+        const everyBee = size(outcome.matching) === bees.length;
+        const hall = subsets(bees).every(
+          (group) => neighborhood(graph, group).size >= group.length,
+        );
+        expect(hall).toBe(everyBee);
+      }),
+    );
+  });
+
+  it('property: when a bee is left without a flower, the bees off a smallest cover are the culprits', () => {
+    fc.assert(
+      fc.property(bipartiteGraphArb({ maxN: 10 }), (graph) => {
+        const bees = beesOf(graph);
+        const run = unwrap(bipartiteMatching(graph, emptyMatching(graph)));
+        if (size(run.matching) === bees.length) return;
+        const cover = new Set(koenigCover(graph, run.forest));
+        const group = bees.filter((bee) => !cover.has(bee));
+        expect(neighborhood(graph, group).size).toBeLessThan(group.length);
       }),
     );
   });
