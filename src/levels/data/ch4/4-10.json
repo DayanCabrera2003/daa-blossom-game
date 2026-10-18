@@ -22,6 +22,7 @@
   ],
   "goal": { "visible": true, "value": 3 },
   "forbid": ["fold", "foldAt"],
+  "chains": { "rule": "fromBase", "flower": ["b", "c", "d"] },
   "victory": { "type": "matchingSize", "value": 3 },
   "hints": [
     { "line": "ch4.10.sauce.02" },
