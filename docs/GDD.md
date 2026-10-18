@@ -254,9 +254,9 @@ Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se 
 | 70 | Una mariposa azul |
 | 90 | Dos gallinas que picotean |
 | 110 | Luciérnagas sobre el jardín |
-| 130 | Un farolillo encendido en cada poste de capítulo |
+| 130 | El brillo de un farol encendido en cada poste de capítulo |
 
-Todos salen de Ninja Adventure o se dibujan por código, viven por debajo de carteles y botones y nunca ocupan el lecho donde crecen las piezas de los capítulos.
+Todos salen de Ninja Adventure o se dibujan por código. Cada uno vive y se mueve en un hueco propio del hub, libre de todo lo que se lee o se pulsa (carteles, títulos, botones, flores secretas) y de los demás, así que nunca tapan nada ni se mueven cuando llega otro; si el sistema pide menos movimiento, se quedan quietos.
 
 Junto al título del hub, un contador con las estrellas totales y las semillas. Para dejarle sitio (y al cartel del modo libre), el botón "Exportar registro de prueba" pasa de la línea superior del hub al panel de ajustes.
 
