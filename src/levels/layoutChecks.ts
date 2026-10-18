@@ -41,7 +41,7 @@ const {
  * The box the letters of a sprout's name fill: centred under the sprout, from the top of a capital
  * to the baseline, or down to the end of the descent when a letter hangs a tail below it.
  */
-function labelBox({ label, x, y }: Placed): Box {
+export function labelBox({ label, x, y }: Placed): Box {
   const top = y + sproutRadius + labelGap;
   const tailed = [...label].some((letter) => tailedLetters.includes(letter));
   const half = (glyph.advance * label.length) / 2;
@@ -54,7 +54,7 @@ function labelBox({ label, x, y }: Placed): Box {
 }
 
 /** The box of the lantern any vine may carry, hung at its middle rounded to a whole pixel. */
-function lanternBox(a: Point, b: Point): Box {
+export function lanternBox(a: Point, b: Point): Box {
   const [x, y] = [Math.round((a.x + b.x) / 2), Math.round((a.y + b.y) / 2)];
   return {
     left: x + lantern.left,
