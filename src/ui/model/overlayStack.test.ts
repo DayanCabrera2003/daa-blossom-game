@@ -15,19 +15,19 @@ describe('what the overlay layer shows after opening and closing', () => {
   });
 
   it('a book opened from the epilogue goes back to the epilogue when it closes', () => {
-    const shown = afterShow([epilogue], codex);
+    const shown = afterShow<Shown>([epilogue], codex);
     expect(shown).toEqual([epilogue, codex]);
     expect(afterClose(shown)).toEqual([epilogue]);
     expect(afterClose(afterClose(shown))).toEqual([]);
   });
 
   it('a book opened from another book takes its place, keeping the epilogue under them', () => {
-    expect(afterShow([codex], notebook)).toEqual([notebook]);
-    expect(afterShow([epilogue, notebook], codex)).toEqual([epilogue, codex]);
+    expect(afterShow<Shown>([codex], notebook)).toEqual([notebook]);
+    expect(afterShow<Shown>([epilogue, notebook], codex)).toEqual([epilogue, codex]);
   });
 
   it('the epilogue always starts afresh, on its own', () => {
-    expect(afterShow([codex], epilogue)).toEqual([epilogue]);
-    expect(afterShow([epilogue, codex], epilogue)).toEqual([epilogue]);
+    expect(afterShow<Shown>([codex], epilogue)).toEqual([epilogue]);
+    expect(afterShow<Shown>([epilogue, codex], epilogue)).toEqual([epilogue]);
   });
 });
