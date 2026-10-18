@@ -210,7 +210,7 @@ credited here.
 
 ### KaTeX fonts
 
-- Authors: the KaTeX contributors, after the Computer Modern fonts of Donald Knuth
+- Authors: Design Science, Inc. (the MathJax fonts, 2009-2010) and Khan Academy (2014-2018)
 - Version: the one shipped with KaTeX 0.19.0
 - License: SIL Open Font License 1.1 (https://openfontlicense.org)
 - Source: https://github.com/KaTeX/katex-fonts
