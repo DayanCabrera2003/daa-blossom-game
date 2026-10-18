@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
+import { itemAt } from '@core/shared/itemAt';
 import type { SecretFlower } from '@services/secretFlowers';
 import { playUiSound } from '../../audio/uiSound';
-import { flowerKey, type FlowerKey } from '../../input/flowerFocus';
+import { flowerKey } from '../../input/flowerFocus';
+import { keyAction } from '../../input/keyBindings';
 import type { Rect } from '../../picture/boxDistance';
 import type { TextRef } from '../../picture/hud';
 import { PIXEL_FONT } from '../../picture/pixelFont';
@@ -15,8 +17,10 @@ import { wonFlowerPixels, WON_FLOWER_TONES } from '../../picture/wonFlower';
 import { css, PALETTE } from '../../view/palette';
 import { cutFrame } from '../../view/sheetCuts';
 import { drawStars } from '../../view/StarIcons';
+import { addFocusable, type Focusable } from '../../view/focusables';
 import { textStyle } from '../../view/textStyle';
 import { contextOf } from '../context';
+import type { FocusController } from '../focus/FocusController';
 
 /** The pack's animated flower: two frames side by side, the open flower sways between them. */
 const BLOOM_SHEET = 'anim.flower';
@@ -55,14 +59,17 @@ export interface FlowerPlace {
 export interface HubSecretsTarget {
   /** Whether something over the hub (the settings panel) should take the keys instead. */
   readonly blocked: () => boolean;
+  /** The hub's keyboard focus, which the flowers are part of. */
+  readonly focus: FocusController;
 }
 
 /**
  * The secret flowers beside the signposts of the hub (plan 08, phase 5): each chapter's flower,
  * drawn as `picture/secretFlower.ts` says, in the column at `places` of its chapter, beside its
  * signpost. A pointer on a flower rings it and shows its tip; a touch enters an open or won
- * flower, or says why a bud is still shut. The keyboard does the same (`input/flowerFocus.ts`): F
- * and Shift+F move the focus, Enter or Space press, Escape leaves.
+ * flower, or says why a bud is still shut. The keyboard does the same: the flowers are in the hub's
+ * focus order, between their signposts and their chapters' buttons, Enter or Space press the one in
+ * focus, and F and Shift+F jump straight from flower to flower (`input/flowerFocus.ts`).
  */
 export function addHubSecrets(
   scene: Phaser.Scene,
@@ -92,10 +99,10 @@ export function addHubSecrets(
     .setDepth(TIP_DEPTH)
     .setVisible(false);
   let tellTimer: Phaser.Time.TimerEvent | null = null;
-  /** The flower the keyboard is on, as an index into `shown`. */
+  /** The flower the keyboard's focus is on, as an index into `shown`. */
   let focus: number | null = null;
 
-  /** Rings flower `i` and shows `text` beside it; with null, hides both. */
+  /** Rings flower `i` (unless the focus is on it) and shows `text` beside it; with null, hides both. */
   const show = (i: number | null, text: TextRef | null = null): void => {
     tellTimer?.remove();
     tellTimer = null;
@@ -106,11 +113,12 @@ export function addHubSecrets(
       return;
     }
     const { hit } = flower;
+    // The flower the keyboard is on wears the focus's ring instead of this one.
     ring
       .clear()
       .lineStyle(1, PALETTE.highlight)
       .strokeRect(hit.x - 0.5, hit.y - 0.5, hit.width + 1, hit.height + 1)
-      .setVisible(true);
+      .setVisible(i !== focus);
     const words = text ?? flower.picture.tip;
     if (words === null) return;
     tip.setText(t(words.key, words.params)).setVisible(true);
@@ -149,19 +157,33 @@ export function addHubSecrets(
       );
   });
 
-  /** A key on the flowers, unless the settings panel is up. */
-  const onKey = (key: FlowerKey): void => {
+  // Each flower is a stop of the hub's focus: in focus it is ringed and shows its tip.
+  const items: Focusable[] = shown.map(({ hit }, i) => ({
+    box: () => hit,
+    depth: () => RING_DEPTH,
+    live: () => true,
+    press: () => press(i),
+    focused: (on) => {
+      if (on) focus = i;
+      else if (focus === i) focus = null;
+      show(focus);
+    },
+  }));
+  for (const item of items) addFocusable(scene, item);
+
+  // F and Shift+F, unless the settings panel is up: the next or previous flower takes the focus.
+  scene.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
     if (target.blocked()) return;
-    const after = flowerKey(key, focus, shown.length);
-    focus = after.focus;
-    if (after.press !== null) press(after.press);
-    else show(focus);
-  };
-  const keys = scene.input.keyboard;
-  keys?.on('keydown-F', (event: KeyboardEvent) => onKey(event.shiftKey ? 'previous' : 'next'));
-  keys?.on('keydown-ENTER', () => onKey('press'));
-  keys?.on('keydown-SPACE', () => onKey('press'));
-  keys?.on('keydown-ESC', () => onKey('leave'));
+    const action = keyAction('hub', { key: event.key, ctrl: event.ctrlKey, shift: event.shiftKey });
+    if (action !== 'flowerNext' && action !== 'flowerPrevious') return;
+    const at = items.findIndex((item) => item === target.focus.current);
+    const after = flowerKey(
+      action === 'flowerNext' ? 'next' : 'previous',
+      at < 0 ? null : at,
+      items.length,
+    );
+    if (after.focus !== null) target.focus.focusOn(itemAt(items, after.focus));
+  });
 }
 
 /**

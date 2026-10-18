@@ -28,6 +28,7 @@ import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
 import { contextOf } from './context';
 import { addHubCosmetics } from './hub/HubCosmetics';
+import { bindHubKeys } from './hub/hubKeys';
 import { addHubSecrets, type FlowerPlace } from './hub/HubSecrets';
 import { addHubTopLine } from './hub/HubTopLine';
 import { addSettings } from './settingsPanel';
@@ -143,10 +144,13 @@ export class HubScene extends Phaser.Scene {
 
     // The settings, at the top right across from the title.
     const settings = addSettings(this, topLine.gear);
+    // The keyboard's focus walks all of it; Escape closes the settings or takes the focus away.
+    const focus = bindHubKeys(this, settings);
 
     // The secret flowers, beside the signposts of their chapters: never buttons, found by looking.
     addHubSecrets(this, secretFlowers(catalogEntries(catalog), save, teacherMode), signs, {
       blocked: settings.open,
+      focus,
     });
 
     // The garden grows on the orchard's grass, a piece for each chapter finished.
