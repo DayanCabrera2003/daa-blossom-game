@@ -4,6 +4,7 @@ import type { ActionType } from '@core/rules/actions';
 import { NAMED_CHAPTERS } from '@game/picture/chapterTitle';
 import type { RefusalCode } from '@game/systems/refusal';
 import { CARD_IDS } from '@levels/cards/schema';
+import { CODEX_TABS } from '@levels/codex';
 import { RECIPE_CARDS, RECIPE_CASES } from '@core/recipe/recipe';
 import { cardTextKey, failureTextKey, RECALL_KEY } from '@levels/recipeCards';
 import { RUNNERS } from '@core/cost/benchmark';
@@ -139,6 +140,17 @@ const UI = {
   'notebook.choose': [],
   'notebook.written': [],
   'codex.unlocked': [],
+  'codex.title': [],
+  'codex.contents': [],
+  'codex.closedPage': ['number'],
+  'codex.closedLink': [],
+  'codex.new': [],
+  'codex.previous': [],
+  'codex.next': [],
+  'codex.close': [],
+  'codex.keys': [],
+  'hub.codex': [],
+  'hud.book': [],
   'counterexample.back': [],
   'pond.strands': ['count'],
   'mirror.notBetter': ['drawn', 'yours'],
@@ -228,6 +240,8 @@ export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ),
   // The name of each named chapter, over its levels in the hub.
   ...Object.fromEntries(NAMED_CHAPTERS.map((chapter) => [`hub.chapterName.${chapter}`, []])),
+  // The name of each tab of a Codex entry, on its tab in the book.
+  ...Object.fromEntries(CODEX_TABS.map((tab) => [`codex.tab.${tab}`, []])),
   // The name of each audio channel, beside its slider in the settings panel.
   ...Object.fromEntries(AUDIO_CHANNELS.map((channel) => [`settings.${channel}`, []])),
   // The name of each speaker, on the tab of the dialogue box.
