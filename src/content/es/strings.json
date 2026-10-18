@@ -185,7 +185,7 @@
   "diagram.recipe.whole": "La receta entera:",
   "diagram.help.chart": "Avanza carrera a carrera: el jardinero mecánico sube despacio; Bruto se sale por arriba enseguida.",
   "diagram.chart.label": "Los pasos de cada carrera según los brotes del jardín",
-  "diagram.chart.count": "Carrera {race} de {count}",
+  "diagram.chart.count": "Carrera {race} de {count} — {n} brotes",
   "diagram.chart.race": "Jardín de {n} brotes: el jardinero mecánico da {steps} pasos; Bruto, {bruto}.",
   "diagram.chart.asleep": "Jardín de {n} brotes: el jardinero mecánico da {steps} pasos; Bruto se duerme antes de terminar.",
   "diagram.help.layers": "Toca una flor plegada para verla por dentro.",

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import strings from '@content/es/strings.json';
 import type { RaceResult } from '@core/cost/benchmark';
 import { createTranslator } from '@services/i18n';
-import { chartWords, numberedSizes } from './chartWords';
+import { chartWords, numberedSizes, raceCount } from './chartWords';
 
 const t = createTranslator(strings);
 
@@ -24,6 +24,12 @@ describe('the words of the chart of C11', () => {
       t('diagram.chart.asleep', { n: 64, steps: 640 }),
     );
     expect(t('diagram.chart.asleep', { n: 64, steps: 640 })).toMatch(/64/);
+  });
+
+  it('says beside the controls which race is shown, of how many, and the size of its garden', () => {
+    const races = [6, 8, 10].map((n) => race(n, { status: 'complete', steps: n }));
+    expect(raceCount(races, 1, t)).toBe('Carrera 1 de 3 — 6 brotes');
+    expect(raceCount(races, 3, t)).toBe('Carrera 3 de 3 — 10 brotes');
   });
 
   it('numbers the sizes far enough apart, skipping those too close to the last one numbered', () => {

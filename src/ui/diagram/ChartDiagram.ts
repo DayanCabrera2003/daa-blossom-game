@@ -2,7 +2,7 @@ import type { RaceResult } from '@core/cost/benchmark';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
 import { chartPicture, type ChartPicture } from '@ui/model/chartPicture';
-import { chartWords, numberedSizes } from '@ui/model/chartWords';
+import { chartWords, numberedSizes, raceCount } from '@ui/model/chartWords';
 import type { DiagramSpec } from '@ui/model/diagramSpec';
 import { helpKeys } from '@ui/model/diagramWords';
 import type { Point } from '@ui/model/diagramGarden';
@@ -148,7 +148,7 @@ export function chartDiagram(
   /** Shows the first `k` races. */
   const show = (k: number): void => {
     paintChart(svg, chartPicture(races, k, BOX), t);
-    controls.show(k, t('diagram.chart.count', { race: k, count: races.length }));
+    controls.show(k, raceCount(races, k, t));
     told.textContent = chartWords(itemAt(races, k - 1), t);
   };
   show(1);

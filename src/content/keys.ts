@@ -206,7 +206,7 @@ const UI = {
   'diagram.recipe.whole': [],
   'diagram.help.chart': [],
   'diagram.chart.label': [],
-  'diagram.chart.count': ['race', 'count'],
+  'diagram.chart.count': ['race', 'count', 'n'],
   'diagram.chart.race': ['n', 'steps', 'bruto'],
   'diagram.chart.asleep': ['n', 'steps'],
   'diagram.help.layers': [],

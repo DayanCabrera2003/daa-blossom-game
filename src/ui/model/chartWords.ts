@@ -1,4 +1,5 @@
 import { runOf, type RaceResult } from '@core/cost/benchmark';
+import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
 
 /**
@@ -11,6 +12,14 @@ export function chartWords(race: RaceResult, t: Translate): string {
   return bruto.asleep
     ? t('diagram.chart.asleep', { n: race.n, steps })
     : t('diagram.chart.race', { n: race.n, steps, bruto: bruto.steps });
+}
+
+/**
+ * Where the walk of the chart is, beside its controls: race `k` (from 1) of `races`, and the size of
+ * its garden, so the reader knows which race the last dots are without reading the chart.
+ */
+export function raceCount(races: readonly RaceResult[], k: number, t: Translate): string {
+  return t('diagram.chart.count', { race: k, count: races.length, n: itemAt(races, k - 1).n });
 }
 
 /**
