@@ -47,3 +47,14 @@ export class SandboxGate extends Phaser.Scene {
       });
   }
 }
+
+/**
+ * Opens the free mode from whatever scene is up (the hub, under the epilogue that asked for it):
+ * that scene stops and the gate starts in its place.
+ */
+export function openSandbox(game: Phaser.Game, garden: string | null = null): void {
+  const data: SandboxSceneData = { garden };
+  const [active] = game.scene.getScenes(true);
+  if (active === undefined) game.scene.start(SANDBOX_GATE, data);
+  else active.scene.start(SANDBOX_GATE, data);
+}

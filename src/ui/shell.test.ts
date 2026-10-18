@@ -5,6 +5,7 @@ import { createSaveStore } from '@services/saveStore';
 import { describe, expect, it, vi } from 'vitest';
 import { memoryStore } from '../../tests/support/memoryStore';
 import { BOOKS_IMPORT_TIMEOUT } from '../../tests/support/timeouts';
+import { epilogueChoices } from './model/epilogue';
 import { mountShell, type BooksModule, type OverlayFrame, type OverlayRequest } from './shell';
 
 /** The few parts of a DOM element the shell touches, open to inspection; tests run without a DOM. */
@@ -187,6 +188,16 @@ describe('overlay shell', () => {
     expect(frames[0]?.capabilities()).toEqual({ sandbox: false });
     bus.emit('capabilities', { sandbox: true });
     expect(frames[0]?.capabilities()).toEqual({ sandbox: true });
+  });
+
+  it('keeps what the game announces right after mounting it, so the epilogue offers the free mode', async () => {
+    // The order of main.ts: the shell is mounted, then the game announces the free mode.
+    const { bus, frames } = setUp();
+    bus.emit('capabilities', { sandbox: true });
+    bus.emit('epilogue.open');
+    await settle();
+    const choices = epilogueChoices(new Map(), frames[0]?.capabilities() ?? { sandbox: false });
+    expect(choices.map((button) => button.choice)).toEqual(['sandbox', 'back']);
   });
 
   it(

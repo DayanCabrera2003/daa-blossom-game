@@ -6,6 +6,7 @@ import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import type { PlaytestRecorder } from '@services/playtestRecorder';
 import type { KeyValueStore } from '@services/save';
+import type { SandboxStore } from '@services/sandboxStore';
 import type { SaveStore } from '@services/saveStore';
 import type { Settings } from '@services/settings';
 import type { AudioBus } from '../audio/AudioBus';
@@ -25,6 +26,10 @@ export interface GameContext {
   readonly teacherMode: boolean;
   /** A level to open straight away (teacher mode, `?level=`), or null to start at the hub. */
   readonly startLevel: string | null;
+  /** A garden code to open the free mode with straight away (a shared link's `?garden=`), or null. */
+  readonly startGarden: string | null;
+  /** The last garden designed in the free mode, kept apart from the progress. */
+  readonly sandbox: SandboxStore;
   /** The playtest log of this browser (GDD §10), and the wall clock that dates its entries. */
   readonly playtest: PlaytestRecorder;
   readonly clock: () => number;

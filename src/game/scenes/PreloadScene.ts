@@ -6,6 +6,7 @@ import { fitCamera } from '../view/fitCamera';
 import { PALETTE } from '../view/palette';
 import { contextOf } from './context';
 import { queueLoads } from './queueLoads';
+import { SANDBOX_GATE, type SandboxSceneData } from './SandboxGate';
 import { paletteFrom, recolourSheets } from './recolourSheets';
 
 /** The palette swatch the Kenney sheets are recoloured to. */
@@ -14,8 +15,9 @@ const PALETTE_KEY: AssetKey = 'image.palette';
 /**
  * Loads the `boot` group (`game/assets/loadPlan.ts` says what it holds) behind a loading bar, then
  * recolours the Kenney sheets to the Ninja Adventure palette read from its swatch, and hands over
- * to the hub, or straight to a level when teacher mode asks for one (`?teacher&level=ID`). A file
- * that fails to load is left out; the game still starts, drawing what it has.
+ * to the hub, or straight to a level when teacher mode asks for one (`?teacher&level=ID`), or to
+ * the free mode when a shared link brings a garden (`?garden=CODE`; a teacher's level comes first).
+ * A file that fails to load is left out; the game still starts, drawing what it has.
  */
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -46,8 +48,10 @@ export class PreloadScene extends Phaser.Scene {
         paletteFrom(this.textures, PALETTE_KEY),
       );
     }
-    const { startLevel } = contextOf(this);
-    if (startLevel === null) this.scene.start('hub');
-    else this.scene.start('level', { levelId: startLevel });
+    const { startLevel, startGarden } = contextOf(this);
+    if (startLevel !== null) this.scene.start('level', { levelId: startLevel });
+    else if (startGarden !== null)
+      this.scene.start(SANDBOX_GATE, { garden: startGarden } satisfies SandboxSceneData);
+    else this.scene.start('hub');
   }
 }
