@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import { BabblePlayer } from '../audio/BabblePlayer';
 import { playUiSound } from '../audio/uiSound';
-import { dialogueBox, type DialogueBoxLayout } from '../picture/dialogueBox';
+import { DIALOGUE_DEPTH, dialogueBox, type DialogueBoxLayout } from '../picture/dialogueBox';
 import { portraitOf } from '../picture/portrait';
 import { WOOD_DIALOGUE } from '../picture/wood';
 import type { VoicedLine } from '../systems/lineVoice';
@@ -14,8 +14,8 @@ import { PortraitView } from './PortraitView';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 
-/** The box's depth: over the garden and the HUD, under the panels of questions and cards. */
-const DEPTH = 200;
+/** The box's depth (`picture/dialogueBox.ts`). */
+const DEPTH = DIALOGUE_DEPTH;
 
 /** How the box speaks a line: given by the scene (`systems/lineVoice.ts`), as views only draw. */
 export type LineVoice = (line: SpokenLine) => VoicedLine;

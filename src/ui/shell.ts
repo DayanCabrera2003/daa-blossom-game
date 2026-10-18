@@ -1,6 +1,7 @@
 import type { OpenTabs } from '@levels/codex';
 import type { Bus } from '@services/bus';
 import type { BookRequest, BusEvents, Capabilities, ShareRequest } from '@services/busEvents';
+import type { LazyPart } from '@services/chunkFailure';
 import type { SaveData } from '@services/save';
 import type { SaveStore } from '@services/saveStore';
 import { afterClose, afterShow } from '@ui/model/overlayStack';
@@ -74,8 +75,9 @@ export interface ShellOptions {
  * Mounts the light shell of the DOM overlays: an empty layer over the canvas, hidden until a book,
  * the epilogue or the share sheet is asked for on the bus. The first request loads the books chunk
  * (or, for the share sheet, its own); the layer shows at once and `overlay.changed` tells the game to stop taking input until the books close it. A chunk
- * that fails to load (offline), or a book that fails to show, closes the layer again; the chunk is
- * asked for anew on the next request. Closing a book opened from the epilogue shows the epilogue
+ * that fails to load (offline, or gone after a new version), or a book that fails to show, closes
+ * the layer again and is told on the bus (`load.failed`); the chunk is asked for anew on the next
+ * request. Closing a book opened from the epilogue shows the epilogue
  * again, without giving the input back in between.
  */
 export function mountShell({
@@ -130,10 +132,13 @@ export function mountShell({
     close,
   };
 
-  /** A book, or the sheet, that failed: report it, forget its chunk and give the input back. */
-  const failed = (error: unknown): void => {
+  /**
+   * A book, or the sheet, that failed: tell the page (`load.failed`, which writes it to the console
+   * and says kindly what to do when the chunk did not arrive) and give the input back.
+   */
+  const failed = (part: LazyPart, error: unknown): void => {
     // A broken book never breaks the garden.
-    console.error(error);
+    bus.emit('load.failed', { part, error });
     hide();
   };
 
@@ -145,7 +150,7 @@ export function mountShell({
         .then((module) => module.showShare(request.share, frame))
         .catch((error: unknown) => {
           sheet = null;
-          failed(error);
+          failed('share', error);
         });
       return;
     }
@@ -154,7 +159,7 @@ export function mountShell({
       .then((module) => module.show(request, frame))
       .catch((error: unknown) => {
         books = null;
-        failed(error);
+        failed('books', error);
       });
   };
 

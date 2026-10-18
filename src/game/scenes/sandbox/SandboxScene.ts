@@ -24,6 +24,7 @@ import type { Point } from '../../input/target';
 import { DESIGN_HEADER, designHeader } from '../../picture/designHeader';
 import { designPicture } from '../../picture/designPicture';
 import { designReasonText } from '../../picture/designReason';
+import { TOAST } from '../../picture/toastBox';
 import { designBarState, type DesignButton } from '../../picture/designToolbar';
 import { EDITOR_CARD, editorCardLoop } from '../../picture/editorCard';
 import { CANVAS_WIDTH } from '../../scale/integerZoom';
@@ -78,9 +79,6 @@ let store: SandboxStore | null = null;
  * (`returning`), the editor goes on from it, design, undo and redo as they were.
  */
 let played: History<Design> | null = null;
-
-/** How far above the generate menu's wood a notice is centred while the menu is open. */
-const NOTICE_ABOVE_MENU = 14;
 
 /**
  * The free mode's editor (plan 08, phase 11), in its own chunk: only the gate's import() reaches
@@ -397,7 +395,7 @@ export class SandboxScene extends Phaser.Scene {
   private notify(message: string | null): void {
     this.pendingNotice = null;
     if (message === null) return;
-    if (this.menu.open) this.toast.show(message, this.menu.top - NOTICE_ABOVE_MENU);
+    if (this.menu.open) this.toast.show(message, this.menu.top - TOAST.aboveDrawer);
     else this.toast.show(message);
   }
 

@@ -4,6 +4,7 @@ import { SIDE_BY_SIDE } from '@levels/fields';
 import type { Point } from '../input/target';
 import { FLOWER_HEART, FLOWER_REACH, petalRing } from '../picture/petals';
 import type { CutPicture, SideBySidePicture } from '../picture/sideBySide';
+import { CAPTION } from '../picture/sideBySideCaption';
 import { restingLook } from '../picture/sproutLook';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { everyFrame } from './everyFrame';
@@ -60,11 +61,12 @@ export class SideBySideView {
     this.highlights = scene.add.graphics().setDepth(OVER_DEPTH + 0.4);
     everyFrame(scene, (now) => this.lanterns.tick(now));
     this.caption = scene.add
-      .text(CANVAS_WIDTH / 2, LAYOUT.garden.y, '', {
+      // Where `picture/sideBySideCaption.ts` measures it, so it never covers a sprout.
+      .text(CANVAS_WIDTH / 2, CAPTION.top, '', {
         ...textStyle(8, PALETTE.highlight),
         backgroundColor: `${css(PALETTE.background)}cc`,
         align: 'center',
-        wordWrap: { width: CANVAS_WIDTH - 16 },
+        wordWrap: { width: CAPTION.wrap },
       })
       .setOrigin(0.5, 0)
       .setDepth(OVER_DEPTH + 1);

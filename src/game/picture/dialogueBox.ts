@@ -13,6 +13,9 @@ import { WOOD_DIALOGUE } from './wood';
  * that the longest line of each speaker fits its rows.
  */
 
+/** The box's depth: over the garden, the HUD and its panels, under the panels of questions and cards. */
+export const DIALOGUE_DEPTH = 200;
+
 /** The rows of text the box holds: the longest line of the mentor, beside his portrait. */
 export const DIALOGUE_ROWS = 4;
 

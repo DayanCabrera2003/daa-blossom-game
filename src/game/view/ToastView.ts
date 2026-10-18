@@ -1,16 +1,15 @@
 import type Phaser from 'phaser';
-import { PANEL } from '../picture/panelLayout';
+import { TOAST, toastBox } from '../picture/toastBox';
 import { WOOD_PANEL } from '../picture/wood';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
-import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 
 /** How long a message stays before fading, in milliseconds. */
 const VISIBLE_MS = 2600;
-/** The depth of the toast: over the garden and the panels of the HUD, under the dialogue box. */
-const DEPTH = 150;
+/** The depth of the toast (`picture/toastBox.ts`). */
+const DEPTH = TOAST.depth;
 
 /**
  * Gentle feedback above the toolbar, on a small wooden panel: why a move was refused, in the
@@ -27,9 +26,9 @@ export class ToastView {
     private readonly say: (text: string) => void = () => undefined,
   ) {
     this.text = scene.add
-      .text(CANVAS_WIDTH / 2, LAYOUT.toastY, '', {
+      .text(CANVAS_WIDTH / 2, TOAST.bottom, '', {
         ...textStyle(8, PALETTE[WOOD_PANEL.text]),
-        wordWrap: { width: CANVAS_WIDTH - 4 * PANEL.pad },
+        wordWrap: { width: TOAST.wrap },
         align: 'center',
       })
       .setOrigin(0.5, 0.5)
@@ -38,26 +37,21 @@ export class ToastView {
   }
 
   /**
-   * Shows `message`, its panel centred on `centreY`: above the toolbar by default, or above a
-   * drawer that covers it (the free mode's generate menu).
+   * Shows `message`, its panel ending at `bottom`: above the toolbar by default, or above a drawer
+   * that covers it (the free mode's generate menu). A message that wraps grows upwards.
    */
-  show(message: string, centreY: number = LAYOUT.toastY): void {
+  show(message: string, bottom: number = TOAST.bottom): void {
     this.fade?.stop();
     this.wood?.destroy();
-    this.text.setText(message).setY(centreY).setAlpha(1);
+    this.text.setText(message).setAlpha(1);
     this.say(message);
-    // The panel is sized to the message, its border around the text.
-    const width = Math.round(this.text.width) + 2 * PANEL.pad;
-    const height = Math.round(this.text.height) + 2 * PANEL.pad - 4;
+    // The panel is sized to the message, its border around the text (`picture/toastBox.ts`).
+    const box = toastBox(this.text.width, this.text.height, bottom);
+    this.text.setY(box.textY);
     const wood = new WoodFrame(
       this.scene,
       WOOD_PANEL,
-      {
-        x: Math.round((CANVAS_WIDTH - width) / 2),
-        y: Math.round(centreY - height / 2),
-        width,
-        height,
-      },
+      { x: box.x, y: box.y, width: box.width, height: box.height },
       DEPTH,
     );
     this.wood = wood;

@@ -46,8 +46,26 @@ export const RACE_COUNTERS = { x: PAD + 4, width: CHART_AT.x - PAD - 8, rows: 2 
 const AUTOMATON = PALETTE.lit;
 const BRUTO = PALETTE.moon;
 
-/** Room before a legend's name for the dot of its colour. */
-const LEGEND_DOT_ROOM = 7;
+/**
+ * Where the chart writes its words, from the corner of its box: each runner's name after a dot of
+ * its colour (the automaton's at the axis, Bruto's halfway along), the axes' names (steps over the
+ * vertical axis, sprouts at the right end under the sizes), each size under its place on the
+ * bottom axis, and "asleep" over a dot of Bruto's that fell asleep. `tests/screenFit.test.ts`
+ * checks none of them meets another with the real words.
+ */
+export const RACE_CHART = {
+  at: CHART_AT,
+  /** The legend's row, over the chart; the room before each name for its dot. */
+  legendDy: -22,
+  legendDotRoom: 7,
+  /** Where each runner's legend starts, from the chart's left edge, given the chart's width. */
+  legendX: (width: number): readonly [number, number] => [-2, width / 2],
+  steps: { dx: 3, dy: -11 },
+  /** The sprouts' axis name ends this far short of the axis's right end. */
+  sprouts: { fromRight: 30, dy: 10 },
+  size: { dx: -4, dy: 1 },
+  asleep: { dx: -6, dy: -10 },
+} as const;
 
 /**
  * The races (GDD 6.4, 6.5, plan 05 phase 4): over the garden, under the hourglass of the pack and
@@ -143,18 +161,22 @@ export class RaceView {
       .lineBetween(x0, y0, x0, y0 + height)
       .lineBetween(x0, y0 + height, x0 + width, y0 + height);
     // Each runner's name after a dot of its curve's colour, drawn: the pixel font has no ●.
+    const [automatonX, brutoX] = RACE_CHART.legendX(width);
     const legend = [
-      [x0 - 2, 'race.legend.automaton', AUTOMATON],
-      [x0 + width / 2, 'race.legend.bruto', BRUTO],
+      [x0 + automatonX, 'race.legend.automaton', AUTOMATON],
+      [x0 + brutoX, 'race.legend.bruto', BRUTO],
     ] as const;
+    const legendY = y0 + RACE_CHART.legendDy;
     for (const [x, key, colour] of legend) {
-      const label = this.text(x + LEGEND_DOT_ROOM, y0 - 22, this.t(key), colour);
-      g.fillStyle(colour, 1).fillCircle(x + 2, y0 - 22 + label.height / 2, 2);
+      const label = this.text(x + RACE_CHART.legendDotRoom, legendY, this.t(key), colour);
+      g.fillStyle(colour, 1).fillCircle(x + 2, legendY + label.height / 2, 2);
     }
-    this.text(x0 + 3, y0 - 11, this.t('race.axis.steps'), PALETTE.highlight);
-    this.text(x0 + width - 30, y0 + height + 10, this.t('race.axis.sprouts'), PALETTE.highlight);
+    const { steps, sprouts, size } = RACE_CHART;
+    this.text(x0 + steps.dx, y0 + steps.dy, this.t('race.axis.steps'), PALETTE.highlight);
+    const sproutsAt = { x: x0 + width - sprouts.fromRight, y: y0 + height + sprouts.dy };
+    this.text(sproutsAt.x, sproutsAt.y, this.t('race.axis.sprouts'), PALETTE.highlight);
     for (const { n, x } of chart.sizes) {
-      this.text(x0 + x - 4, y0 + height + 2, String(n), PALETTE.highlight);
+      this.text(x0 + x + size.dx, y0 + height + size.dy, String(n), PALETTE.highlight);
     }
     const at = (dot: { x: number; y: number }) => ({ x: x0 + dot.x, y: y0 + dot.y });
     // The automaton's curve, dot by dot.
@@ -172,7 +194,9 @@ export class RaceView {
     for (const dot of chart.bruto) {
       const { x, y } = at(dot);
       if (dot.mark === 'above') g.fillTriangle(x - 3, y + 3, x + 3, y + 3, x, y - 2);
-      if (dot.mark === 'asleep') this.text(x - 6, y - 10, this.t('race.asleep'), BRUTO);
+      const { asleep } = RACE_CHART;
+      if (dot.mark === 'asleep')
+        this.text(x + asleep.dx, y + asleep.dy, this.t('race.asleep'), BRUTO);
     }
   }
 

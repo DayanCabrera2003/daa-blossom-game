@@ -2,6 +2,8 @@
 
 Capítulos 0–2 en greybox (círculos y líneas, sin arte ni voz). Lo dirige el autor. Fuente: GDD §10 (Hito A) y §2 (principios).
 
+> **Hoy (plan 09):** el protocolo se escribió para el greybox; el juego ya tiene arte, música, efectos y balbuceo. Lo que cambia en la preparación está en §3; los umbrales y criterios no cambian (Apéndice A del plan 09, preguntas 10 y 11, pendientes del autor). La hoja de una página para cada sesión es [`kit.md`](kit.md).
+
 ---
 
 ## 1. Objetivo del Hito A
@@ -83,9 +85,9 @@ Se recomienda el build de producción o Pages: es lo que verá un jugador real.
 
 ### Antes de que llegue la persona
 
-- Pantalla completa, sonido indiferente (no hay audio en greybox).
+- Pantalla completa. El juego tiene sonido: auriculares o altavoz al volumen de una conversación, el mismo para todas las personas; los volúmenes del juego, como vienen.
 - Una copia impresa de la plantilla de §7 y un reloj a mano para anotar momentos.
-- Probar en ese mismo equipo que el botón "Exportar registro de prueba" del panel de ajustes descarga un archivo.
+- Probar en ese mismo equipo que el botón "Exportar registro de prueba" descarga un archivo: está en el panel de ajustes, que abre el engranaje (en el hub, arriba a la derecha; en un nivel, abajo a la izquierda).
 
 ---
 

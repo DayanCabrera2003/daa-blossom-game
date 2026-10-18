@@ -1,6 +1,6 @@
 {
   "name": "daa-blossom-game",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "A cozy pixel-art puzzle game that teaches Edmonds' Blossom algorithm.",
   "license": "MIT",
@@ -27,7 +27,9 @@
     "sounds": "tsx tools/synthesize-sounds.ts",
     "format": "prettier --write --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\"",
     "format:check": "prettier --check --no-error-on-unmatched-pattern \"src/**/*.{ts,json}\" \"tests/**/*.ts\" \"tools/**/*.ts\" \"*.{ts,js,json}\"",
-    "budget": "tsx tools/check-budget.ts"
+    "budget": "tsx tools/check-budget.ts",
+    "save": "tsx tools/make-save.ts",
+    "lines": "tsx tools/line-sheet.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

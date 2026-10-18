@@ -30,3 +30,9 @@ export const PIXEL_PROPERTY_TIMEOUT = 30_000;
  * about a second when exploring with thousands of cases, more under coverage on a busy machine.
  */
 export const TOUCH_PROPERTY_TIMEOUT = 30_000;
+
+/**
+ * Time allowed to the test that lays out the recipe panel for every recipe a player can build (768
+ * of them, every page of both columns): about a second, more under coverage on a busy machine.
+ */
+export const RECIPE_FIT_TIMEOUT = 30_000;

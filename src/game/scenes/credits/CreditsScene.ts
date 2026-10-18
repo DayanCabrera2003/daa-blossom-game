@@ -3,6 +3,7 @@ import type { AssetKey } from '../../assets/keys';
 import { creditLines } from '../../assets/creditsModel';
 import { groupKeys, loadRequests } from '../../assets/loadPlan';
 import {
+  backLeft,
   CREDITS_ROLL,
   offsetAt,
   pageAfter,
@@ -97,10 +98,7 @@ export class CreditsScene extends Phaser.Scene {
     this.addRollCamera();
 
     const back = new Button(this, 0, 0, t('credits.back'), () => this.leave());
-    back.moveTo(
-      CREDITS_ROLL.panel.x + CREDITS_ROLL.panel.width - back.width + 2,
-      CREDITS_ROLL.backRow,
-    );
+    back.moveTo(backLeft(back.width), CREDITS_ROLL.backRow);
     this.listen();
   }
 

@@ -6,7 +6,8 @@ import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
 import type { AssetKey } from '../assets/keys';
-import { BOOK_ICON, ICON_GAP } from '../picture/buttonIcon';
+import { BOOK_ICON } from '../picture/buttonIcon';
+import { statusEnd, statusLine } from '../picture/statusLine';
 import { GEAR_SIZE } from './GearButton';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
@@ -15,8 +16,6 @@ import { textStyle } from './textStyle';
 
 /** The water drop of the pack, before the water spent. */
 const WATER_ICON: AssetKey = 'icon.water';
-/** Between two parts of the status line: three letters of air. */
-const STATUS_GAP = 18;
 
 /** What the HUD buttons do; the level scene decides. */
 export interface HudActions {
@@ -157,19 +156,33 @@ export class HudView {
     const inside = hud.layers !== null && hud.layers > 0;
     const layer = inside ? this.t('hud.layer', { depth: hud.layers ?? 0 }) : '';
     this.status.setText(lanterns);
-    // The water after its drop, then the layers, each a little apart from what comes before.
-    let x = this.status.x + this.status.width;
-    this.drop?.setVisible(water !== '');
-    if (water !== '') {
-      x += STATUS_GAP;
-      if (this.drop !== null) {
-        this.drop.setX(x);
-        x += this.drop.width + ICON_GAP;
-      }
-    }
-    this.water.setText(water).setX(x);
-    x += this.water.width;
-    this.layer.setText(layer).setX(layer === '' ? x : x + STATUS_GAP);
+    this.prompt.setText(hud.prompt === null ? '' : this.t(hud.prompt.key, hud.prompt.params));
+    this.council.setText(hud.council === null ? '' : this.t(hud.council.key, hud.council.params));
+    // The water after its drop, then the layers, apart from what comes before and ending before
+    // the prompt and the Council's count (`picture/statusLine.ts`).
+    const shortWater =
+      hud.water === null
+        ? ''
+        : hud.water.budget === null
+          ? this.t('hud.waterNoBudgetShort', { used: hud.water.used })
+          : this.t('hud.waterShort', { used: hud.water.used, budget: hud.water.budget });
+    const at = statusLine(
+      {
+        start: this.status.x,
+        lanterns: this.status.width,
+        drop: this.drop?.width ?? 0,
+        water:
+          water === ''
+            ? null
+            : { full: widthOf(this.water, water), short: widthOf(this.water, shortWater) },
+        layer: layer === '' ? null : widthOf(this.layer, layer),
+      },
+      statusEnd(this.prompt.width, this.council.width),
+    );
+    this.drop?.setVisible(at.drop !== null);
+    if (at.drop !== null) this.drop?.setX(at.drop);
+    this.water.setText(at.short ? shortWater : water).setX(at.water ?? 0);
+    this.layer.setText(layer).setX(at.layer ?? 0);
     const { undo, redo, hint, done, checkMirror, leaveLayer } = this.buttons;
     undo?.setEnabled(hud.canUndo);
     redo?.setEnabled(hud.canRedo);
@@ -177,7 +190,8 @@ export class HudView {
     done?.setVisible(hud.canDeclareDone);
     checkMirror?.setVisible(hud.canCheckMirror);
     leaveLayer?.setVisible(inside);
-    this.prompt.setText(hud.prompt === null ? '' : this.t(hud.prompt.key, hud.prompt.params));
-    this.council.setText(hud.council === null ? '' : this.t(hud.council.key, hud.council.params));
   }
 }
+
+/** How wide `line` draws `text`, measured on the line itself. */
+const widthOf = (line: OutlinedText, text: string): number => line.setText(text).width;

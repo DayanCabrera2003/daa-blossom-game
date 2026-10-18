@@ -1,7 +1,7 @@
 # FLORECER — Documento de diseño
 
 *Un juego de jardín que enseña el algoritmo de Edmonds (Blossom) de principio a fin.*
-*Proyecto para Diseño y Análisis de Algoritmos. Título provisional.*
+*Proyecto para Diseño y Análisis de Algoritmos.*
 
 ---
 
@@ -291,7 +291,7 @@ Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, pa
 
 ### 5.9 Paseo guiado
 
-Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y explica la teoría en cada uno. Es el entregable "video" del profesor y el tráiler didáctico del juego. Guion en sección 10.
+Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y explica la teoría en cada uno. Es el entregable "video" del profesor y el tráiler didáctico del juego. Guion en sección 9.
 
 ### 5.10 Flores secretas
 
@@ -877,6 +877,6 @@ Si hubiera que recortar, el orden de recorte es: flores secretas → modo libre 
 ## 12. Pendientes
 
 - Confirmar con el temario oficial de DAA que el emparejamiento en grafos generales no se cubre en clase.
-- Título definitivo (candidatos: *Florecer*, *Faroles*, *El Jardín de Edmonds*).
+- ~~Título definitivo~~: decidido, *Florecer* (los otros candidatos eran *Faroles* y *El Jardín de Edmonds*).
 - Idioma de la interfaz (español; inglés como segundo idioma si hay tiempo). Código y commits siempre en inglés.
 - Presentar este documento al profesor y ajustar el alcance según su respuesta.

@@ -17,6 +17,7 @@ import type { ImportRejection } from '@levels/sandbox/importText';
 import { DESIGN_TOOLS } from '@game/input/designIntent';
 import { KEY_HELP } from '@game/input/keyBindings';
 import { MOTION_CHOICES } from '@services/motion';
+import { LAZY_PARTS } from '@services/chunkFailure';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
 
@@ -140,6 +141,8 @@ const UI = {
   'hud.lanterns': ['count'],
   'hud.water': ['used', 'budget'],
   'hud.waterNoBudget': ['used'],
+  'hud.waterShort': ['used', 'budget'],
+  'hud.waterNoBudgetShort': ['used'],
   'hud.done': [],
   'hud.undo': [],
   'hud.redo': [],
@@ -336,6 +339,9 @@ const UI = {
   'recipe.table': [],
   'recipe.empty': [],
   'recipe.check': [],
+  'recipe.previous': [],
+  'recipe.next': [],
+  'recipe.page': ['page', 'pages'],
   'recipe.right': [],
   'race.title': ['count'],
   'race.counter.brutoAsleep': [],
@@ -381,6 +387,20 @@ const UI = {
   'keys.close': [],
   // Over the game on a phone held upright, until it is turned (plan 09, phase 7).
   'notice.turnPhone': [],
+  // When a part that loads on demand does not open, or the browser will not store (plan 09,
+  // phase 10).
+  'notice.offline': ['part'],
+  'notice.updated': [],
+  'notice.storage': [],
+  'notice.reload': [],
+  'notice.close': [],
+  ...Object.fromEntries(LAZY_PARTS.map((part) => [`notice.part.${part}`, []])),
+  // Written into the page and its 404 page when the game is built (plan 09, phase 10).
+  'page.description': [],
+  'page.noscript': [],
+  'page.notFound.title': [],
+  'page.notFound.text': [],
+  'page.notFound.link': [],
 } as const satisfies Record<string, Params>;
 
 const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>

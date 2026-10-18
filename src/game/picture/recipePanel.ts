@@ -1,3 +1,4 @@
+import type { RecipeFailure } from '@core/recipe/check';
 import { isPlaced, type RecipeCardId } from '@core/recipe/recipe';
 import { failureTextKey, RECALL_KEY, taughtIn } from '@levels/recipeCards';
 import { recipeBoardOf, type LevelSession } from '../systems/levelSession';
@@ -16,11 +17,6 @@ export interface RecipePanelPicture {
   readonly end: RecipeCardId | null;
   /** The cards not in the recipe, in the table's fixed order. */
   readonly table: readonly RecipeCardId[];
-  /**
-   * What the last check said, while the recipe is as it was checked: why its first failing card
-   * fails, and the level that taught that case. Empty before a check and after a touch.
-   */
-  readonly feedback: readonly PanelText[];
 }
 
 /**
@@ -41,26 +37,27 @@ export const TABLE_ORDER: readonly RecipeCardId[] = [
 ];
 
 /**
- * The recipe panel of the session now: the recipe in its slots, the cards left on the table and
- * what the last check said; null outside a `recipe` step, when the panel is closed. A right
- * recipe ends the step, so the panel only ever tells what is wrong; the toast says it is right.
+ * What a toast says of a failed check (plan 09, decision on phase 10): why the first failing card
+ * fails, or which case is left unanswered, and the level that taught that case.
+ */
+export const checkFeedback = (failure: RecipeFailure): readonly PanelText[] => [
+  { key: failureTextKey(failure), params: {} },
+  { key: RECALL_KEY, params: { level: taughtIn(failure) } },
+];
+
+/**
+ * The recipe panel of the session now: the recipe in its slots and the cards left on the table;
+ * null outside a `recipe` step, when the panel is closed. What a check says is a toast
+ * (`checkFeedback`), so the panel only ever shows the cards.
  */
 export function recipePicture(session: LevelSession): RecipePanelPicture | null {
   const board = recipeBoardOf(session);
   if (board === null) return null;
-  const { recipe, verdict } = board;
-  const feedback: PanelText[] =
-    verdict === null || verdict.right
-      ? []
-      : [
-          { key: failureTextKey(verdict.failure), params: {} },
-          { key: RECALL_KEY, params: { level: taughtIn(verdict.failure) } },
-        ];
+  const { recipe } = board;
   return {
     mark: recipe.mark,
     cases: recipe.cases,
     end: recipe.end,
     table: TABLE_ORDER.filter((card) => !isPlaced(recipe, card)),
-    feedback,
   };
 }

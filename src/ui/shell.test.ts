@@ -199,6 +199,33 @@ describe('overlay shell', () => {
     }
   });
 
+  it('a chunk that fails to load is told on the bus with its part, for the page to say kindly', async () => {
+    const offline = new TypeError('Failed to fetch dynamically imported module: books.js');
+    const { bus } = setUp(() => Promise.reject(offline));
+    const failed: BusEvents['load.failed'][] = [];
+    bus.on('load.failed', (failure) => failed.push(failure));
+    bus.emit('book.open', { book: 'codex' });
+    await settle();
+    expect(failed).toEqual([{ part: 'books', error: offline }]);
+  });
+
+  it("the share sheet's chunk that fails to load is told as the share sheet's", async () => {
+    const bus = createBus<BusEvents>();
+    const failed: BusEvents['load.failed'][] = [];
+    bus.on('load.failed', (failure) => failed.push(failure));
+    const offline = new TypeError('Importing a module script failed.');
+    mountShell({
+      bus,
+      saves: createSaveStore(memoryStore()),
+      codexOpen: () => new Map(),
+      host: fakeElement() as unknown as HTMLElement,
+      loadShare: () => Promise.reject(offline),
+    });
+    bus.emit('sandbox.share', { code: null, json: null });
+    await settle();
+    expect(failed).toEqual([{ part: 'share', error: offline }]);
+  });
+
   it('a book that fails to show closes the layer', async () => {
     const original = console.error;
     console.error = () => undefined;

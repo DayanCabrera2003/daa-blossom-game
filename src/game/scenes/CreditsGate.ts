@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { HUB_TINT } from '../picture/hubGarden';
 import { backdropTint } from '../picture/dayTint';
 import { fitCamera } from '../view/fitCamera';
+import { contextOf } from './context';
 import { paintHubGround } from '../view/hubGround';
 
 /** The key of the gate, the scene the game starts to open the credits. */
@@ -29,8 +30,9 @@ export function wakeOpened(scene: Phaser.Scene, data: CreditsSceneData): void {
  * The thin gate of the credits screen (plan 09, phase 3), the only part of it in the initial
  * script, like the free mode's: started, it shows the hub's grass at dawn, loads the credits'
  * scene with import() (its own chunk), adds it to the game the first time and starts it with the
- * scenes it was opened over. If the chunk cannot load (offline), those scenes wake again and the
- * player is back where they were. It imports nothing of the credits but through that import().
+ * scenes it was opened over. If the chunk cannot load (offline, or gone after a new version), those
+ * scenes wake again, the player is back where they were and the page says so kindly. It imports
+ * nothing of the credits but through that import().
  */
 export class CreditsGate extends Phaser.Scene {
   constructor() {
@@ -50,8 +52,9 @@ export class CreditsGate extends Phaser.Scene {
         this.scene.start(CREDITS_SCENE, request);
       })
       .catch((error: unknown) => {
-        // Credits that do not load never strand the player: report it, back where they were.
-        console.error(error);
+        // Credits that do not load never strand the player: back where they were, and the page
+        // says why (`load.failed`).
+        contextOf(this).bus.emit('load.failed', { part: 'credits', error });
         if (!this.sys.isActive()) return;
         wakeOpened(this, request);
         this.scene.stop();
