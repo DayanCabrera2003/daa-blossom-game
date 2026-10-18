@@ -283,6 +283,8 @@ Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredad
 
 El jardinero mecánico aparece tras 6.2 y usa todas sus herramientas aunque el jugador aún no las tenga (no se las da). El certificado a demanda sale del bosque de la última búsqueda sin cadena: piedras en las lunas (tras 7.4) y, si el jardín es de abejas y flores, espantapájaros (tras 3.8). No hay carrera contra Bruto en el modo libre.
 
+Compartir da el código de jardín corto (brotes, enredaderas y faroles, sin posiciones: al importarlo se dispone solo), un enlace `?garden=<código>` que abre el modo libre con ese jardín, y el mismo JSON de los niveles (con posiciones y nombres, válido para el catálogo una vez se le da su id). Importar acepta un código o un JSON, pegado o desde un archivo, y lo valida todo antes de usarlo.
+
 ### 5.8 Modo profesor
 
 Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, panel con la traza del algoritmo en notación matemática junto al jardín.
