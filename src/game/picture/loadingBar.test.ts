@@ -16,6 +16,10 @@ describe('loadingBar', () => {
     expect(full.fill.width).toBe(full.frame.width - 2);
   });
 
+  it('stays empty when the progress is not a number', () => {
+    expect(loadingBar(Number.NaN).fill.width).toBe(0);
+  });
+
   it('fills inside its frame, a pixel in from each edge', () => {
     const { frame, fill } = loadingBar(0.5);
     expect(fill.x).toBe(frame.x + 1);

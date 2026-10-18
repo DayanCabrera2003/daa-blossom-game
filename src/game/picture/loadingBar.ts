@@ -20,7 +20,8 @@ const FRAME_HEIGHT = 10;
 
 /**
  * The loading bar at `progress` (Phaser's 0 to 1), centred on the logical canvas. The fill grows
- * in whole pixels, so it stays crisp at any zoom, and a progress outside 0 to 1 is held to it.
+ * in whole pixels, so it stays crisp at any zoom; a progress outside 0 to 1 is held to it, and one
+ * that is not a number leaves the bar empty.
  */
 export function loadingBar(progress: number): LoadingBar {
   const frame: BarRect = {
@@ -30,7 +31,7 @@ export function loadingBar(progress: number): LoadingBar {
     height: FRAME_HEIGHT,
   };
   const inner = FRAME_WIDTH - 2;
-  const held = Math.min(1, Math.max(0, progress));
+  const held = Number.isNaN(progress) ? 0 : Math.min(1, Math.max(0, progress));
   return {
     frame,
     fill: {
