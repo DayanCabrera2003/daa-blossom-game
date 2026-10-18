@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Point } from '../input/target';
-import { FOLD_FRAMES, foldFrames, unfoldFrames } from './foldFrames';
+import { FOLD_FRAMES, foldFrameAt, foldFrames, unfoldFrames } from './foldFrames';
 
 const open: Point[] = [
   { x: 100, y: 60 },
@@ -48,5 +48,15 @@ describe('the frames of folding a flower', () => {
   it('unfolds the same way backwards', () => {
     expect(unfoldFrames(open, centre)).toEqual([...foldFrames(open, centre)].reverse());
     expect(unfoldFrames(open, centre)[7]?.positions).toEqual(open);
+  });
+
+  it('shows each frame for an eighth of the step, the last one to the very end', () => {
+    const frames = foldFrames(open, centre);
+    expect(foldFrameAt(frames, 0)).toBe(frames[0]);
+    expect(foldFrameAt(frames, 0.124)).toBe(frames[0]);
+    expect(foldFrameAt(frames, 0.125)).toBe(frames[1]);
+    expect(foldFrameAt(frames, 0.99)).toBe(frames[7]);
+    expect(foldFrameAt(frames, 1)).toBe(frames[7]);
+    expect(foldFrameAt(frames, -1)).toBe(frames[0]);
   });
 });

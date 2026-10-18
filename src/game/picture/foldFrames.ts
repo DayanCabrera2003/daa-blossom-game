@@ -1,3 +1,4 @@
+import { itemAt } from '@core/shared/itemAt';
 import type { Point } from '../input/target';
 
 /**
@@ -39,3 +40,7 @@ export function foldFrames(open: readonly Point[], centre: Point): FoldFrame[] {
 export function unfoldFrames(open: readonly Point[], centre: Point): FoldFrame[] {
   return foldFrames(open, centre).reverse();
 }
+
+/** The frame of `frames` that shows `progress` (0 to 1) of the way through the step. */
+export const foldFrameAt = (frames: readonly FoldFrame[], progress: number): FoldFrame =>
+  itemAt(frames, Math.min(frames.length - 1, Math.max(0, Math.floor(progress * frames.length))));
