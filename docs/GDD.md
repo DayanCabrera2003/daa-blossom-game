@@ -776,7 +776,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 ### 7.9 Flores secretas (opcionales)
 
 - **Prado:** una cadena de longitud 11 escondida entre 12 callejones.
-- **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de superponer.
+- **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de separar la maraña (la maraña ya es la superposición; la tentación es restar los faroles).
 - **Invernadero:** certificar con espantapájaros un jardín donde la búsqueda no llega a todos los brotes (obliga a añadir los no visitados de un lado; enlaza con C5).
 - **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa).
 - **Salvaje:** cuatro flores anidadas.
