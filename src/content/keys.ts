@@ -178,6 +178,7 @@ const UI = {
   'teacher.dawn': [],
   'teacher.edmonds': [],
   'teacher.edmondsHelp': [],
+  'teacher.edmondsStart': [],
   'teacher.certificate': [],
   'teacher.shown.day': ['step', 'count'],
   'teacher.shown.edmonds': ['step', 'count'],

@@ -372,5 +372,6 @@
   "teacher.edmondsHelp": "La receta completa desde los faroles del paso que muestra el sol. Toca una línea o usa las flechas para recorrerla.",
   "teacher.certificate": "Certificado de Tutte–Berge",
   "teacher.shown.day": "Tu día, paso {step} de {count}",
-  "teacher.shown.edmonds": "Edmonds, paso {step} de {count}"
+  "teacher.shown.edmonds": "Edmonds, paso {step} de {count}",
+  "teacher.edmondsStart": "Los faroles del paso que muestra el sol, antes de la primera fase."
 }
