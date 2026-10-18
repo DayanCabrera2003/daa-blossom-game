@@ -1,0 +1,105 @@
+/*
+ * The free mode's share sheet (plan 08, phase 14), on the frame and the colours every book shares
+ * (ui/book/book.css): the same wood, one column like the epilogue. The title on the wood, a sheet
+ * of paper with the code, the link and the file of the garden and the box to open another, the
+ * line that says what happened, and the way back under it. Every size is a whole number of
+ * logical pixels, `--px`, so the pixel font stays sharp.
+ */
+
+.book.share {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+}
+
+.share-title {
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* The paper: it takes the room left and scrolls, with the wheel or the keys. */
+.share-paper {
+  min-height: 0;
+  overflow-y: auto;
+  padding: calc(3 * var(--px)) calc(8 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--paper);
+}
+
+.share-part {
+  margin: 0 0 calc(5 * var(--px));
+}
+
+/* The garden's next part sits apart from the box that opens another, by a rule of the wood. */
+.share-import {
+  margin: 0;
+  padding-top: calc(3 * var(--px));
+  border-top: var(--px) solid var(--wood-edge);
+}
+
+.share-label {
+  display: block;
+  color: var(--wood);
+}
+
+.share-row {
+  display: flex;
+  gap: calc(4 * var(--px));
+  align-items: stretch;
+}
+
+.share-opening {
+  justify-content: flex-end;
+  margin-top: calc(2 * var(--px));
+}
+
+/* The fields hold the text to copy or the one pasted, in the book's own letters. */
+.share-field,
+.share-paste {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 0 calc(2 * var(--px));
+  border: var(--px) solid var(--wood-edge);
+  background: var(--paper-edge);
+  color: var(--ink);
+  font: inherit;
+}
+
+.share-field {
+  flex: 1;
+}
+
+.share-paste {
+  display: block;
+  width: 100%;
+  resize: none;
+}
+
+.share-hint,
+.share-empty {
+  margin: var(--px) 0 0;
+}
+
+/* What just happened: copied, or why a text is no garden, on the wood under the paper. */
+.share-status {
+  margin: 0;
+  min-height: calc(13 * var(--px));
+  color: var(--paper);
+}
+
+.share-status.share-trouble {
+  color: var(--seal);
+}
+
+.share-actions {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--px));
+}
+
+.share-keys {
+  margin: 0 auto 0 0;
+  color: var(--ink);
+}

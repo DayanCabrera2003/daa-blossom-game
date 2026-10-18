@@ -6,7 +6,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { memoryStore } from '../../tests/support/memoryStore';
 import { BOOKS_IMPORT_TIMEOUT } from '../../tests/support/timeouts';
 import { epilogueChoices } from './model/epilogue';
-import { mountShell, type BooksModule, type OverlayFrame, type OverlayRequest } from './shell';
+import {
+  mountShell,
+  type BooksModule,
+  type OverlayFrame,
+  type OverlayRequest,
+  type ShareModule,
+} from './shell';
 
 /** The few parts of a DOM element the shell touches, open to inspection; tests run without a DOM. */
 interface FakeElement {
@@ -52,6 +58,15 @@ function setUp(load?: () => Promise<BooksModule>) {
   };
   const overlay: boolean[] = [];
   bus.on('overlay.changed', ({ open }) => overlay.push(open));
+  // The share sheet, in a chunk of its own, recording the gardens it is asked to share.
+  const shared: BusEvents['sandbox.share'][] = [];
+  let shareLoads = 0;
+  const sheet: ShareModule = {
+    showShare(request, frame) {
+      shared.push(request);
+      frames.push(frame);
+    },
+  };
   mountShell({
     bus,
     saves: createSaveStore(memoryStore()),
@@ -63,9 +78,22 @@ function setUp(load?: () => Promise<BooksModule>) {
         loads += 1;
         return Promise.resolve(books);
       }),
+    loadShare: () => {
+      shareLoads += 1;
+      return Promise.resolve(sheet);
+    },
   });
   const layer = host.children[0];
-  return { bus, layer, shown, frames, overlay, loads: () => loads };
+  return {
+    bus,
+    layer,
+    shown,
+    shared,
+    frames,
+    overlay,
+    loads: () => loads,
+    shareLoads: () => shareLoads,
+  };
 }
 
 /** Lets pending promise callbacks run. */
@@ -92,6 +120,23 @@ describe('overlay shell', () => {
       { kind: 'book', book: { book: 'codex', entry: 'C3' } },
       { kind: 'book', book: { book: 'notebook' } },
     ]);
+  });
+
+  it('the share sheet opens in the same layer from its own chunk, never the books', async () => {
+    const { bus, layer, shown, shared, frames, overlay, loads, shareLoads } = setUp();
+    bus.emit('sandbox.share', { code: 'AQRA', json: null });
+    expect(layer?.hidden).toBe(false);
+    expect(overlay).toEqual([true]);
+    await settle();
+    expect(shared).toEqual([{ code: 'AQRA', json: null }]);
+    expect(shown).toEqual([]);
+    expect([loads(), shareLoads()]).toEqual([0, 1]);
+    frames[0]?.close();
+    expect(layer?.hidden).toBe(true);
+    expect(overlay).toEqual([true, false]);
+    bus.emit('sandbox.share', { code: null, json: null });
+    await settle();
+    expect(shareLoads()).toBe(1);
   });
 
   it('the epilogue opens in the same layer', async () => {

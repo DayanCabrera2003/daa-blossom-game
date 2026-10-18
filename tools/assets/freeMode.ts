@@ -7,6 +7,8 @@
 export const FREE_MODE_FOLDERS: readonly string[] = [
   'src/levels/sandbox/',
   'src/game/scenes/sandbox/',
+  // The share sheet (phase 14), which the overlay shell loads with import() of its own.
+  'src/ui/sandbox/',
 ];
 
 /**
