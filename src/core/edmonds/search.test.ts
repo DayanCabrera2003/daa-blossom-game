@@ -5,10 +5,11 @@ import { expectForestInvariants } from '../../../tests/support/forestInvariants'
 import { expandPath } from '../blossom/expand';
 import { bruteForceMatching } from '../bruteforce/maximumMatching';
 import { createGraph } from '../graph/createGraph';
+import { neighbors } from '../graph/queries';
 import type { Graph } from '../graph/types';
 import { createMatching } from '../matching/createMatching';
 import { checkAugmentingPath } from '../matching/paths';
-import { size } from '../matching/queries';
+import { isExposed, size } from '../matching/queries';
 import { unwrap } from '../shared/result';
 import type { TraceEvent } from '../trace/events';
 import { createRecorder } from '../trace/recorder';
@@ -127,6 +128,25 @@ describe('search with flowers', () => {
         if (outcome.kind !== 'noPath') return;
         expectForestInvariants(outcome.layer.graph, outcome.layer.matching, outcome.forest);
         expect(size(matching)).toBe(optimum(graph));
+      }),
+    );
+  });
+
+  it('property (C10, Lemma 10.3): a failed search leaves only moons around every sun', () => {
+    fc.assert(
+      fc.property(graphWithMatchingArb(), ([graph, matching]) => {
+        const outcome = searchWithFlowers(graph, matching);
+        if (outcome.kind !== 'noPath') return;
+        const { layer, forest } = outcome;
+        layer.nodes.forEach((node, id) => {
+          const label = forest.label[id];
+          // Flowers are born suns: every moon and every unreached node is a plain sprout.
+          if (label !== 'outer') expect(node.kind).toBe('sprout');
+          // The nodes in the dark are exactly the roots of the forest.
+          expect(isExposed(layer.matching, id)).toBe(label === 'outer' && forest.root[id] === id);
+          if (label !== 'outer') return;
+          for (const x of neighbors(layer.graph, id)) expect(forest.label[x]).toBe('inner');
+        });
       }),
     );
   });
