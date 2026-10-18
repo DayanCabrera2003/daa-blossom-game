@@ -1,14 +1,7 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
-import {
-  besideLeft,
-  bookButtonLeft,
-  HUD_BUTTONS,
-  hudRow,
-  traceButtonLeft,
-  type HudButton,
-} from '../picture/bottomRows';
+import { bottomRow, HUD_BUTTONS, traceButtonLeft, type HudButton } from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -118,21 +111,28 @@ export class HudView {
           actions[name],
         ),
     );
-    const lefts = hudRow(made.map((button) => button.width));
-    made.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
-    // Clear of the buttons laid out from the right: they only reach the left half of the row.
-    const bookLeft = bookButtonLeft(GEAR_SIZE);
-    this.book = new Button(scene, bookLeft, LAYOUT.bottomY, t('hud.book'), actions.book, [
+    this.book = new Button(scene, 0, LAYOUT.bottomY, t('hud.book'), actions.book, [
       BOOK_ICON,
     ]).setVisible(false);
     this.trace = new Button(scene, 0, LAYOUT.toolbarY, t('hud.trace'), actions.trace).setVisible(
       false,
     );
     // In the free mode its orders end the tools' row, so the trace goes beside the Códex.
-    if (layout.traceRow === 'tools') {
+    const traceBelow = layout.traceRow === 'buttons';
+    // The gear, the Códex (and the trace) from the left, the buttons from the right; the row
+    // squeezes its gaps if a wider fallback face would make them meet.
+    const row = bottomRow({
+      gear: GEAR_SIZE,
+      book: this.book.width,
+      trace: traceBelow ? this.trace.width : null,
+      buttons: made.map((button) => button.width),
+    });
+    made.forEach((button, i) => button.moveTo(itemAt(row.buttons, i), LAYOUT.bottomY));
+    this.book.moveTo(row.book, LAYOUT.bottomY);
+    if (row.trace === null) {
       this.trace.moveTo(traceButtonLeft(this.trace.width), LAYOUT.toolbarY);
     } else {
-      this.trace.moveTo(besideLeft(bookLeft + this.book.width), LAYOUT.bottomY);
+      this.trace.moveTo(row.trace, LAYOUT.bottomY);
     }
     this.buttons = Object.fromEntries(layout.buttons.map((name, i) => [name, made[i]]));
   }

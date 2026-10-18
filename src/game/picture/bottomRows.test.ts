@@ -16,6 +16,7 @@ import { GEAR_SIZE } from '../view/GearButton';
 import {
   besideLeft,
   bookButtonLeft,
+  bottomRow,
   BOTTOM_ROWS,
   CHAR_ADVANCE,
   estimatedButtonWidth,
@@ -76,15 +77,20 @@ const toolWidth = (tool: ToolId, advance?: number): number =>
 const spans = (lefts: readonly number[], widths: readonly number[]): [number, number][] =>
   lefts.map((left, i) => [left, left + (widths[i] ?? 0)]);
 
-/** Whether panels stay inside the canvas margins and no two of them touch. */
-function fitsOnCanvas(lefts: readonly number[], widths: readonly number[]): boolean {
+/**
+ * Whether panels stay inside the canvas margins and no two of them touch: `gap` pixels apart at
+ * least, the rows' usual gap unless a squeezed row says otherwise.
+ */
+function fitsOnCanvas(
+  lefts: readonly number[],
+  widths: readonly number[],
+  gap: number = BOTTOM_ROWS.gap,
+): boolean {
   const sorted = spans(lefts, widths).sort(([a], [b]) => a - b);
   const inside = sorted.every(
     ([left, right]) => left >= BOTTOM_ROWS.margin && right <= CANVAS_WIDTH - BOTTOM_ROWS.margin,
   );
-  const apart = sorted.every(
-    ([left], i) => i === 0 || left >= (sorted[i - 1]?.[1] ?? 0) + BOTTOM_ROWS.gap,
-  );
+  const apart = sorted.every(([left], i) => i === 0 || left >= (sorted[i - 1]?.[1] ?? 0) + gap);
   return inside && apart;
 }
 
@@ -131,15 +137,23 @@ describe('the two bottom rows of the level HUD', () => {
     // Below: the gear, the Códex and the trace from the left; the buttons from the right.
     const width = (key: string, advance?: number): number =>
       estimatedButtonWidth(label(key), advance);
-    const book = width('hud.book') + iconRoom([BOOK_ICON]);
-    const bookLeft = bookButtonLeft(GEAR_SIZE);
-    const trace = width('hud.trace');
-    const buttons = names.map((key) => width(key));
-    const lefts = [BOTTOM_ROWS.margin, bookLeft, besideLeft(bookLeft + book), ...hudRow(buttons)];
-    expect(fitsOnCanvas(lefts, [GEAR_SIZE, book, trace, ...buttons])).toBe(true);
-    // In the wider fallback face the buttons alone still fit, as in any level.
-    const wide = names.map((key) => width(key, CHAR_ADVANCE + 1));
-    expect(fitsOnCanvas(hudRow(wide), wide)).toBe(true);
+    const below = (advance?: number) => {
+      const widths = {
+        gear: GEAR_SIZE,
+        book: width('hud.book', advance) + iconRoom([BOOK_ICON]),
+        trace: width('hud.trace', advance),
+        buttons: names.map((key) => width(key, advance)),
+      };
+      const row = bottomRow(widths);
+      const lefts = [BOTTOM_ROWS.margin, row.book, row.trace ?? 0, ...row.buttons];
+      const all = [widths.gear, widths.book, widths.trace, ...widths.buttons];
+      return { row, fits: fitsOnCanvas(lefts, all, row.gap) };
+    };
+    // In the game's face, with the usual gap; in the wider fallback face too, the gaps squeezed.
+    expect(below()).toMatchObject({ fits: true, row: { gap: BOTTOM_ROWS.gap } });
+    const wide = below(CHAR_ADVANCE + 1);
+    expect(wide.fits).toBe(true);
+    expect(wide.row.gap).toBeGreaterThanOrEqual(1);
     // Above: every tool the free mode may give (no inspecting: it has no fog), then its orders.
     const level = unwrap(toPlayable(PAIR, ALL_ACTIONS));
     const tools = availableTools(level.start.allowed, true);
@@ -149,6 +163,43 @@ describe('the two bottom rows of the level HUD', () => {
     expect(
       fitsOnCanvas([...toolbarRow(widths), ...ordersRow(orders)], [...widths, ...orders]),
     ).toBe(true);
+  });
+
+  it('the bottom row keeps its gap where it fits, and squeezes it, never under 1 px, where not', () => {
+    const roomy = bottomRow({ gear: GEAR_SIZE, book: 40, trace: null, buttons: [30, 30] });
+    const bookLeft = bookButtonLeft(GEAR_SIZE);
+    expect(roomy).toEqual({
+      gap: BOTTOM_ROWS.gap,
+      book: bookLeft,
+      trace: null,
+      buttons: hudRow([30, 30]),
+    });
+    const traced = bottomRow({ gear: GEAR_SIZE, book: 40, trace: 20, buttons: [30] });
+    expect(traced.trace).toBe(besideLeft(bookLeft + 40));
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 1, max: 60 }),
+        fc.option(fc.integer({ min: 1, max: 60 })),
+        fc.array(fc.integer({ min: 1, max: 120 }), { maxLength: 8 }),
+        (book, trace, buttons) => {
+          const widths = { gear: GEAR_SIZE, book, trace, buttons };
+          const row = bottomRow(widths);
+          expect(row.gap).toBeGreaterThanOrEqual(1);
+          expect(row.gap).toBeLessThanOrEqual(BOTTOM_ROWS.gap);
+          const lefts = [
+            BOTTOM_ROWS.margin,
+            row.book,
+            ...(row.trace === null ? [] : [row.trace]),
+            ...row.buttons,
+          ];
+          const all = [GEAR_SIZE, book, ...(trace === null ? [] : [trace]), ...buttons];
+          const room = CANVAS_WIDTH - 2 * BOTTOM_ROWS.margin - all.reduce((a, b) => a + b, 0);
+          // Whatever fits with a gap between every two panels (and before the right margin) does.
+          if (room >= all.length) expect(fitsOnCanvas(lefts, all, row.gap)).toBe(true);
+          if (room >= all.length * BOTTOM_ROWS.gap) expect(row.gap).toBe(BOTTOM_ROWS.gap);
+        },
+      ),
+    );
   });
 
   it("the free mode's orders end the tools' row at the margin, in their order", () => {
