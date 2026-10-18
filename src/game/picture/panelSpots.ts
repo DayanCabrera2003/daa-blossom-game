@@ -14,12 +14,6 @@ import { LAYOUT } from '../view/layout';
  * into the top bar, which stays readable. Pure.
  */
 
-/** The kinds of panel a player can move, each remembered apart. */
-export const PANEL_KINDS = ['question', 'notebook', 'card', 'recipe', 'dialogue', 'toast'] as const;
-
-/** A kind of panel. */
-export type PanelKind = (typeof PANEL_KINDS)[number];
-
 /** How far apart the spots of the grid are, across and down. */
 const GRID = { x: 8, y: 4 } as const;
 
