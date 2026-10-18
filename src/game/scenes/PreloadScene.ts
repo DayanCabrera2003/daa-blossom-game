@@ -51,7 +51,10 @@ export class PreloadScene extends Phaser.Scene {
     const { startLevel, startGarden } = contextOf(this);
     if (startLevel !== null) this.scene.start('level', { levelId: startLevel });
     else if (startGarden !== null)
-      this.scene.start(SANDBOX_GATE, { garden: startGarden } satisfies SandboxSceneData);
+      this.scene.start(SANDBOX_GATE, {
+        garden: startGarden,
+        returning: false,
+      } satisfies SandboxSceneData);
     else this.scene.start('hub');
   }
 }

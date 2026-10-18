@@ -18,14 +18,16 @@ export class TeacherBridge {
   /** The day last fed, so a repaint that changed nothing is not fed again. */
   private fed: { history: unknown; events: unknown } | null = null;
 
+  /** `ownGarden`: the garden is not in the catalog (the free mode's), so the feed brings it. */
   constructor(
     private readonly bus: Bus<BusEvents>,
     private readonly teacherMode: boolean,
+    private readonly ownGarden = false,
   ) {}
 
   /** Feeds the panel the day of `session`, unless it is the one fed last. */
   feed(session: LevelSession): void {
-    const feed = teacherFeed(session, this.teacherMode);
+    const feed = teacherFeed(session, this.teacherMode, this.ownGarden);
     if (feed === null) return;
     if (this.fed?.history === session.history && this.fed.events === session.dayEvents) return;
     this.fed = { history: session.history, events: session.dayEvents };

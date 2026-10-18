@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
 import { codexSources, openCodex, pagesOpened } from '@services/codexProgress';
+import type { PlaytestEntry } from '@services/playtestLog';
 import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
+import { sandboxAccess } from '@services/sandboxAccess';
 import { recordBetsWon, recordCompletion, recordNotebook } from '@services/save';
 import type { AssetKey } from '../assets/keys';
 import { levelKeys, loadRequests } from '../assets/loadPlan';
@@ -14,7 +16,13 @@ import {
 } from '../systems/levelController';
 import { afterVictory } from '../systems/afterVictory';
 import { betsWon } from '../systems/betsWon';
-import { cardJingle, levelScreen, trackFor, victoryJingle } from '../systems/musicFor';
+import {
+  openedLevel,
+  openingLevelId,
+  type LevelSceneData,
+  type LevelScreen,
+} from '../systems/levelScreenOf';
+import { cardJingle, JINGLES, trackFor, victoryJingle } from '../systems/musicFor';
 import { playtestEntries } from '../systems/playtestEntries';
 import { raceCues } from '../systems/raceCues';
 import { replayCues } from '../systems/replayCues';
@@ -36,6 +44,7 @@ import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/l
 import { TeacherBridge } from './level/teacherBridge';
 import { Presenter } from './presenter';
 import { queueLoads } from './queueLoads';
+import { SANDBOX_GATE, type SandboxSceneData } from './SandboxGate';
 import { addSettings } from './settingsPanel';
 
 /**
@@ -45,11 +54,15 @@ import { addSettings } from './settingsPanel';
  * `level/LevelRenderer.ts` repaint every layer after each event. Dialogue, questions, replays and the
  * victory panel go through the presenter (`presenter.ts`), which shows them in the order the
  * presentation queue decides, and the mechanic cards through `level/LevelCards.ts`. What stays here is the wiring, and what outlives the screen: the save
- * and the playtest log.
+ * and the playtest log. It plays a level of the catalog or a garden of the free mode alike: what
+ * differs (music, backdrop, what is kept and logged, the way back, the interface shown) comes from
+ * the pure screen descriptor (`systems/levelScreenOf.ts`), asked once as the level opens.
  */
 export class LevelScene extends Phaser.Scene {
   private context!: GameContext;
   private level!: Level;
+  /** The screen the level is played on: of the catalog, or of the free mode. */
+  private screen!: LevelScreen;
   private controller!: Controller;
   private labels: readonly string[] = [];
   private views!: LevelViews;
@@ -82,46 +95,60 @@ export class LevelScene extends Phaser.Scene {
 
   /**
    * Loads the music of the level's chapter (its race variant too, in chapter 6) unless an earlier
-   * level of the chapter already did; the boot group is loaded by then.
+   * level of the chapter already did; the boot group is loaded by then. A garden of the free mode
+   * (chapter 9, which has no music of its own) loads nothing.
    */
   preload(): void {
-    const { levelId } = this.sys.settings.data as { levelId: string };
-    const missing = levelKeys(levelId, (key) => this.cache.audio.exists(key));
+    const data = this.sys.settings.data as LevelSceneData;
+    const missing = levelKeys(openingLevelId(data), (key) => this.cache.audio.exists(key));
     queueLoads(this.load, loadRequests(missing));
   }
 
-  create(data: { levelId: string }): void {
+  /**
+   * Opens a level of the catalog by its id, or a garden of the free mode as its editor built it;
+   * the only place that tells them apart, through the screen descriptor.
+   */
+  create(data: LevelSceneData): void {
     fitCamera(this);
     this.ready = false;
     this.context = contextOf(this);
-    const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
-    if (level === undefined) {
+    const { catalog, saves, teacherMode } = this.context;
+    const found = openedLevel(data, catalog, () =>
+      sandboxAccess(catalogEntries(catalog), saves.get(), teacherMode),
+    );
+    if (found === null) {
       this.scene.start('hub');
       return;
     }
+    const { level, screen } = found;
     this.level = level;
-    // The chapter's track (its race variant in a level of races); a level of the same chapter as
-    // the one before goes on with it.
-    this.context.music.play(trackFor(levelScreen(level)));
+    this.screen = screen;
+    // The chapter's track (its race variant in a level of races), or the hub's in the free mode;
+    // a level of the same chapter as the one before goes on with it.
+    this.context.music.play(trackFor(screen.music));
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
     const opened = openController(level, this.time.now);
     this.controller = opened.controller;
-    this.context.playtest.record([
-      { kind: 'levelStart', at: this.context.clock(), level: level.data.id },
-    ]);
+    this.log([{ kind: 'levelStart', at: this.context.clock(), level: level.data.id }]);
     const { t } = this.context;
     this.sfx = new SfxPlayer(this, this.context.audio);
     this.views = buildLevelViews(this, t, {
       dispatch: (event) => this.dispatch(event),
       back: () => this.leave(),
-      help: () => this.cards.help(level, this.controller.session.flow.index),
+      backLabel: screen.backLabel,
+      help: () => this.cards.help(level, this.controller.session.flow.index, screen.interfaceAt),
       book: () => this.context.bus.emit('book.open', { book: 'codex' }),
       trace: () => this.context.bus.emit('teacher.toggle'),
     });
     // A new painter for every level: its timing starts afresh with the level.
     this.painter = new LevelRenderer(
       this.views,
-      { labels: this.labels, kinds: level.data.sprouts.map((sprout) => sprout.kind) },
+      {
+        labels: this.labels,
+        kinds: level.data.sprouts.map((sprout) => sprout.kind),
+        season: screen.season,
+        interfaceAt: screen.interfaceAt,
+      },
       {
         controller: () => this.controller,
         replaySun: () => this.presenter.replaySun,
@@ -186,10 +213,10 @@ export class LevelScene extends Phaser.Scene {
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });
-    this.teacher = new TeacherBridge(this.context.bus, this.context.teacherMode);
+    this.teacher = new TeacherBridge(this.context.bus, teacherMode, screen.ownGarden);
     this.teacher.bindKeys(
       this,
-      this.context.catalog.map((candidate) => candidate.data.id),
+      catalog.map((candidate) => candidate.data.id),
       level.data.id,
       (levelId) => this.scene.start('level', { levelId }),
     );
@@ -203,7 +230,7 @@ export class LevelScene extends Phaser.Scene {
     this.ready = true;
     // The cards of what opens with the level come first; then the script opens it: its first
     // lines, then whatever step waits for the player.
-    this.cards.offer(startCards(level, this.cards.seen));
+    this.cards.offer(startCards(level, this.cards.seen, screen.interfaceAt));
     for (const effect of opened.effects) this.show(effect);
     this.painter.render(this.time.now);
     this.showBook();
@@ -242,9 +269,7 @@ export class LevelScene extends Phaser.Scene {
       this.sfx.cancel();
     }
     const step = handle(this.controller, event, this.time.now);
-    this.context.playtest.record(
-      playtestEntries(this.controller, event, step, this.context.clock()),
-    );
+    this.log(playtestEntries(this.controller, event, step, this.context.clock()));
     this.controller = step.controller;
     for (const effect of step.effects) this.show(effect);
     this.painter.render(this.time.now);
@@ -259,10 +284,19 @@ export class LevelScene extends Phaser.Scene {
     this.sfx.schedule(effectCues(effect));
   }
 
-  /** Back to the hub; a level left unwon is logged as left. */
+  /** Records `entries` in the playtest log, when the screen logs (never in the free mode). */
+  private log(entries: readonly PlaytestEntry[]): void {
+    if (this.screen.logsPlaytest) this.context.playtest.record(entries);
+  }
+
+  /**
+   * Back the way the screen leads: to the hub, or to the free mode's editor with the design that
+   * was played (through the free mode's gate, which loads the editor if needed); a level left
+   * unwon is logged as left.
+   */
   private leave(): void {
     if (this.controller.session.won === null) {
-      this.context.playtest.record([
+      this.log([
         {
           kind: 'levelEnd',
           at: this.context.clock(),
@@ -272,11 +306,25 @@ export class LevelScene extends Phaser.Scene {
         },
       ]);
     }
-    this.scene.start('hub');
+    this.goBack();
   }
 
-  /** Writes the level's statement in the player's notebook, saved at once, and says so. */
+  /** To where the screen's way back leads. */
+  private goBack(): void {
+    if (this.screen.back === 'hub') {
+      this.scene.start('hub');
+      return;
+    }
+    const data: SandboxSceneData = { garden: null, returning: true };
+    this.scene.start(SANDBOX_GATE, data);
+  }
+
+  /**
+   * Writes the level's statement in the player's notebook, saved at once, and says so; a screen
+   * that keeps no progress writes nothing.
+   */
   private writeNotebook(): void {
+    if (!this.screen.keepsProgress) return;
     this.context.saves.update((save) => recordNotebook(save, this.level.data.id));
     this.views.toast.show(this.context.t('notebook.written'));
   }
@@ -302,9 +350,16 @@ export class LevelScene extends Phaser.Scene {
   /**
    * Records the win and the bets it won at once; the victory panel waits its turn behind any lines
    * or replay, and so do its jingle, chosen now from the levels the win opens, and the notice of
-   * the Codex pages it opens.
+   * the Codex pages it opens. A screen that keeps no progress (the free mode) records nothing: its
+   * win only rings the victory and shows the panel.
    */
   private win(stars: StarResult): void {
+    if (!this.screen.keepsProgress) {
+      this.winJingle = JINGLES.victory;
+      this.codexNotice = false;
+      this.presenter.present({ kind: 'victory', stars });
+      return;
+    }
     const id = this.level.data.id;
     const { catalog, teacherMode, saves } = this.context;
     const shown = visibleLevels(catalogEntries(catalog), teacherMode);
@@ -323,13 +378,21 @@ export class LevelScene extends Phaser.Scene {
 
   /**
    * Shows the victory panel, offering the next level (if any) and the way back: the hub, or after
-   * the last garden the epilogue, shown over the hub. A toast below it tells when the win opened
-   * pages of the Codex.
+   * the last garden the epilogue, shown over the hub; in the free mode, only the way back to the
+   * editor. A toast below it tells when the win opened pages of the Codex.
    */
   private offerNext(stars: StarResult): void {
     this.context.music.jingle(this.winJingle);
+    const { t } = this.context;
+    if (this.screen.back === 'editor') {
+      showVictoryPanel(this, t, stars, {
+        next: null,
+        back: { label: t(this.screen.backLabel), go: () => this.goBack() },
+      });
+      return;
+    }
     // The next level the player can see: outside teacher mode, drafts are skipped.
-    const { catalog, teacherMode, t } = this.context;
+    const { catalog, teacherMode } = this.context;
     const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const { next, back } = afterVictory(this.level.data.id, shown);
     const toHub: HubSceneData = { epilogue: back === 'epilogue' };

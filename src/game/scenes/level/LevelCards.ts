@@ -44,11 +44,14 @@ export class LevelCards {
 
   /**
    * "?": the cards of what `level` has open at step `step`, again, one after another; seen or not,
-   * and not queued a second time while they are still showing.
+   * and not queued a second time while they are still showing. Undo, the sun and the layers as
+   * from level `interfaceAt`, the one whose interface the screen shows.
    */
-  help(level: Level, step: number): void {
+  help(level: Level, step: number, interfaceAt: string): void {
     if (this.presenter.cardsQueued) return;
-    for (const card of helpCards(level, step)) this.presenter.present({ kind: 'tutorial', card });
+    for (const card of helpCards(level, step, interfaceAt)) {
+      this.presenter.present({ kind: 'tutorial', card });
+    }
   }
 
   /** A mechanic card in the player's words, looping its demo. */

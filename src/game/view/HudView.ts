@@ -63,10 +63,12 @@ export class HudView {
   /** The teacher's trace panel, at the right end of the tools' row, in teacher mode only. */
   private readonly trace: Button;
 
+  /** `backLabel` is the text key of the back button: "Volver", or "Diseñar" in the free mode. */
   constructor(
     scene: Phaser.Scene,
     private readonly t: Translate,
     actions: HudActions,
+    backLabel = 'hud.back',
   ) {
     this.goal = scene.add.text(LAYOUT.margin, LAYOUT.topY, '', textStyle()).setDepth(100);
     this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
@@ -88,7 +90,14 @@ export class HudView {
       .setDepth(100);
     // Every button keeps its place even while hidden, so the row is laid out for all of them.
     const made = HUD_BUTTONS.map(
-      (name) => new Button(scene, 0, LAYOUT.bottomY, t(`hud.${name}`), actions[name]),
+      (name) =>
+        new Button(
+          scene,
+          0,
+          LAYOUT.bottomY,
+          t(name === 'back' ? backLabel : `hud.${name}`),
+          actions[name],
+        ),
     );
     const lefts = hudRow(made.map((button) => button.width));
     made.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));

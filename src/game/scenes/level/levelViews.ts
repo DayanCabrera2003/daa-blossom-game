@@ -51,8 +51,10 @@ export interface LevelViews {
 export interface LevelButtons {
   /** An event for the level controller (buttons, tools, the sun slider). */
   readonly dispatch: (event: UiEvent) => void;
-  /** The back button: leaves for the hub. */
+  /** The back button: leaves for the hub, or in the free mode for the editor. */
   readonly back: () => void;
+  /** The text key of the back button ("Volver", or "Diseñar" in the free mode). */
+  readonly backLabel: string;
   /** The "?" button: shows the level's mechanic cards again. */
   readonly help: () => void;
   /** The book button: opens the Códex. */
@@ -86,18 +88,23 @@ export const buildLevelViews = (
     }),
     race: new RaceView(scene, t),
     animation: new AnimationView(scene),
-    hud: new HudView(scene, t, {
-      done: () => dispatch({ kind: 'done' }),
-      undo: () => dispatch({ kind: 'undo' }),
-      redo: () => dispatch({ kind: 'redo' }),
-      hint: () => dispatch({ kind: 'hint' }),
-      back: buttons.back,
-      help: buttons.help,
-      book: buttons.book,
-      trace: buttons.trace,
-      checkMirror: () => dispatch({ kind: 'checkMirror' }),
-      leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
-    }),
+    hud: new HudView(
+      scene,
+      t,
+      {
+        done: () => dispatch({ kind: 'done' }),
+        undo: () => dispatch({ kind: 'undo' }),
+        redo: () => dispatch({ kind: 'redo' }),
+        hint: () => dispatch({ kind: 'hint' }),
+        back: buttons.back,
+        help: buttons.help,
+        book: buttons.book,
+        trace: buttons.trace,
+        checkMirror: () => dispatch({ kind: 'checkMirror' }),
+        leaveLayer: () => dispatch({ kind: 'leaveLayer' }),
+      },
+      buttons.backLabel,
+    ),
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),
     toast: new ToastView(scene),

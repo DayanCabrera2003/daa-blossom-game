@@ -12,6 +12,11 @@ export const SANDBOX_SCENE = 'sandbox';
 export interface SandboxSceneData {
   /** A shared link's garden code, not yet read (it may be broken), or null for the last design kept. */
   readonly garden: string | null;
+  /**
+   * Whether the editor opens back from playing its design: then it goes on where it was, with the
+   * design and its undo history as they were when "Jugar" was pressed.
+   */
+  readonly returning: boolean;
 }
 
 /**
@@ -30,7 +35,10 @@ export class SandboxGate extends Phaser.Scene {
   create(data: Partial<SandboxSceneData> = {}): void {
     fitCamera(this);
     paintHubGround(this);
-    const request: SandboxSceneData = { garden: data.garden ?? null };
+    const request: SandboxSceneData = {
+      garden: data.garden ?? null,
+      returning: data.returning ?? false,
+    };
     import('./sandbox/SandboxScene')
       .then(({ SandboxScene }) => {
         // Left while loading (nothing here takes input, but the game may have moved on).
@@ -53,7 +61,7 @@ export class SandboxGate extends Phaser.Scene {
  * that scene stops and the gate starts in its place.
  */
 export function openSandbox(game: Phaser.Game, garden: string | null = null): void {
-  const data: SandboxSceneData = { garden };
+  const data: SandboxSceneData = { garden, returning: false };
   const [active] = game.scene.getScenes(true);
   if (active === undefined) game.scene.start(SANDBOX_GATE, data);
   else active.scene.start(SANDBOX_GATE, data);
