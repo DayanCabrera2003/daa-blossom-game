@@ -36,7 +36,7 @@ Definición de "hecho" de cada fase: la del Plan 03 (lint, format:check, typeche
 | 1 Prado | 9 | 19 | 14 | 1.10 |
 | 2 Estanque | 4 | 8 | 6 | 2.5 |
 | 3 Invernadero | 9 | 24 | 17 | 3.10 |
-| 4 Festival | 12 | 26 | 19 | 4.13 |
+| 4 Festival | 12 | 25 | 19 | 4.13 |
 | 5 Salvaje | 5 | 11 | 8 | 5.6 |
 | 6 Recetario | 6 | 12 | 9 | 6.7 |
 | 7 Consejo | 5 | 10 | 8 | 7.6 |
@@ -63,7 +63,7 @@ Cada diseño se comprobó al escribir el plan con el propio núcleo (`maximumSiz
 
 ### 1.2 Estrellas, semillas y cosméticos
 
-- **Estrellas totales:** la suma de las mejores estrellas de cada nivel ganado (flores secretas incluidas). Hoy el catálogo da como mínimo 55 (una por nivel) y como máximo 120; las flores añaden 15 (3.10 tiene agua): 135.
+- **Estrellas totales:** la suma de las mejores estrellas de cada nivel ganado (flores secretas incluidas). Hoy el catálogo da como mínimo 55 (una por nivel) y como máximo 119; las flores añaden 15 (3.10 tiene agua): 134.
 - **Semillas** (GDD §5.1: "acertar da semillas"): una por cada apuesta acertada, la primera vez: la formal de 1.6 y las seis de las carreras de 6.5 (las informales, como 0.4, no). Hoy, como mucho 7. Se guardan (`betsWon`), porque no se pueden derivar de las estrellas. Cada semilla planta una planta animada en el hub.
 - **Umbrales, no gasto.** Los cosméticos llegan solos al alcanzar su umbral de estrellas y no se pierden; no hay tienda ni moneda que gastar. Es más simple, no puede "bloquear" nada y no castiga.
 
@@ -247,9 +247,9 @@ Las hojas elegidas pesan juntas unos 16 KB (medido en el zip): caben de sobra en
 | `tests/assetUse.test.ts` | Las claves de la fase 6 salen de `AWAITING` |
 | `content/es/strings.json`, `content/keys.ts` | `cosmetic.butterfly`, `cosmetic.frog`, `cosmetic.cat`, `cosmetic.butterflyBlue`, `cosmetic.chickens`, `cosmetic.fireflies`, `cosmetic.lanterns`, `cosmetic.seedling` |
 
-**Tests clave:** el mismo instante da la misma posición; ningún punto de reposo cae sobre un cartel, título o botón en ninguna combinación de capítulos terminados; la rana va al estanque si existe; las mariposas cierran su ciclo; sin estrellas no hay nada; con 135, todo; cada aviso aparece una sola vez.
+**Tests clave:** el mismo instante da la misma posición; ningún punto de reposo cae sobre un cartel, título o botón en ninguna combinación de capítulos terminados; la rana va al estanque si existe; las mariposas cierran su ciclo; sin estrellas no hay nada; con 134, todo; cada aviso aparece una sola vez.
 
-**Hito H2 (F4–F7):** estrellas, semillas, flores en los postes y cosméticos. Revisión en pantalla con guardados sintéticos (0, 60, 135 estrellas) cargados por la sesión principal.
+**Hito H2 (F4–F7):** estrellas, semillas, flores en los postes y cosméticos. Revisión en pantalla con guardados sintéticos (0, 60, 134 estrellas) cargados por la sesión principal.
 
 ---
 
