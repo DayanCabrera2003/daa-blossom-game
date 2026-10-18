@@ -131,7 +131,8 @@ export function addHubTopLine(scene: Phaser.Scene): HubTopLineParts {
     [{ x: 0, earned: true }],
     0,
   );
-  if (scene.textures.exists(SEED_ICON)) {
+  // The seed only once there is one to count.
+  if (counter.seed !== null && scene.textures.exists(SEED_ICON)) {
     const top = y + Math.round((LINE_HEIGHT - (assetEntry(SEED_ICON).image?.height ?? 0)) / 2);
     scene.add.image(x + counter.seed, top, SEED_ICON).setOrigin(0, 0);
   }
