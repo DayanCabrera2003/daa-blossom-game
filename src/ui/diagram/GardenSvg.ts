@@ -24,6 +24,8 @@ export interface GardenSvgOptions {
   readonly sprouts: boolean;
   /** Which vines can be touched. */
   readonly vine: (vine: MiniVine) => boolean;
+  /** What a screen reader says of each folded flower that can be touched; none can when left out. */
+  readonly flower?: (id: number) => string;
   readonly t: Translate;
 }
 
@@ -39,9 +41,12 @@ function touchable(element: SVGElement, target: string, words: string): void {
   element.setAttribute('aria-label', words);
 }
 
-/** A flower's outline, and its petals round its middle (one dot each). */
-function paintFlower(page: Document, flower: MiniFlower): SVGGElement {
+/** A flower's outline, and its petals round its middle (one dot each); touchable if asked. */
+function paintFlower(page: Document, flower: MiniFlower, options: GardenSvgOptions): SVGGElement {
   const group = shape(page, 'g', { class: 'dg-flower-group' });
+  if (options.flower !== undefined) {
+    touchable(group, targetName({ kind: 'flower', id: flower.id }), options.flower(flower.id));
+  }
   group.append(shape(page, 'polygon', { class: 'dg-flower', points: pointsOf(flower.outline) }));
   for (let k = 0; k < flower.petals; k++) {
     const angle = (2 * Math.PI * k) / flower.petals - Math.PI / 2;
@@ -272,7 +277,7 @@ export function drawGarden(
   svg.replaceChildren(
     shape(page, 'rect', { class: 'dg-ground', width, height }),
     ...overlayUnder(page, overlay),
-    ...picture.flowers.map((flower) => paintFlower(page, flower)),
+    ...picture.flowers.map((flower) => paintFlower(page, flower, options)),
     ...picture.vines.map((vine) => paintVine(page, vine, names, options)),
     ...overlayStrands(page, overlay),
     ...picture.sprouts.map((sprout) => paintSprout(page, sprout, picture.radius, options)),
