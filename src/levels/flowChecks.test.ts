@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AUTOMATON, BLOOM } from '../../tests/support/fixtureLevels';
-import { TANGLE } from '../../tests/support/secretScripts';
+import { COUNCIL, TANGLE } from '../../tests/support/secretScripts';
 import { checkFlow } from './flowChecks';
 import { loadLevel } from './loader';
 
@@ -198,6 +198,35 @@ describe('the checks of a level script', () => {
     expect(flowProblemsOf({ ...TANGLE, flow })).toEqual([
       { code: 'threadsOutOfRange', step: 1, range: 1, answer: 2 },
     ]);
+  });
+
+  it('the council asks for another certificate after a play won with one (7.6)', () => {
+    expect(flowProblemsOf(COUNCIL)).toEqual([]);
+    expect(flowProblemsOf({ ...COUNCIL, victory: { type: 'maximum' } })).toEqual([
+      { code: 'certifyAgainWithoutCertificate', step: 1 },
+    ]);
+    const early = [{ step: 'certifyAgain' }, { step: 'play' }];
+    expect(flowProblemsOf({ ...COUNCIL, flow: early })).toEqual([
+      { code: 'certifyAgainBeforePlay', step: 0 },
+    ]);
+  });
+
+  it('the walkthrough answers the call for another certificate with different stones', () => {
+    const [joinAB, joinRC, done, lift] = COUNCIL.solution;
+    const repeated = [joinAB, joinRC, done, lift, { type: 'dropStone', vertex: 'C' }, done];
+    expect(flowProblemsOf({ ...COUNCIL, solution: repeated })).toEqual([
+      { code: 'sameCertificate', step: 1 },
+    ]);
+    // Two calls need three different certificates: ∅, {C}, then {b}.
+    const twice = [
+      ...COUNCIL.solution,
+      { type: 'dropStone', vertex: 'C' },
+      { type: 'liftStone', vertex: 'b' },
+      done,
+    ];
+    const flow = [...COUNCIL.flow, { step: 'certifyAgain' }];
+    expect(flowProblemsOf({ ...COUNCIL, flow, solution: twice })).toEqual([]);
+    expect(flowProblemsOf({ ...COUNCIL, flow })).toEqual([{ code: 'sameCertificate', step: 2 }]);
   });
 
   it('a count asks about a sprout inside some thread or loop of the tangle', () => {

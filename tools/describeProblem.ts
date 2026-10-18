@@ -60,6 +60,12 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
     case 'noChainToDraw':
       return `script step ${problem.step + 1} asks for chains, but the garden already holds the most`;
+    case 'certifyAgainWithoutCertificate':
+      return `script step ${problem.step + 1} asks for another certificate, but the level is not won with stones`;
+    case 'certifyAgainBeforePlay':
+      return `script step ${problem.step + 1} asks for another certificate before any play step presents a first one`;
+    case 'sameCertificate':
+      return `script step ${problem.step + 1} asks for another certificate, but the walkthrough presents no new stones`;
     case 'recallAhead':
       return `script step ${problem.step + 1} is a recipe that recalls level ${problem.level}, which is not played yet`;
     case 'flowerAfterPlay':
