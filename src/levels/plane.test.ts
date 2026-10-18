@@ -123,6 +123,11 @@ describe('segmentNearBox', () => {
     expect(segmentNearBox(p(23, 0), p(0, 23), box(0, 0, 10, 10), 2.2)).toBe(true);
   });
 
+  it('counts a segment exactly as far as the reach from a corner as not near', () => {
+    // (35, -30) to (-29, 18) passes exactly 3 from the corner (0, 0).
+    expect(segmentNearBox(p(35, -30), p(-29, 18), box(0, 0, 10, 10), 3)).toBe(false);
+  });
+
   it('measures from the end of a segment that stops short of the box', () => {
     expect(segmentNearBox(p(30, 5), p(11, 5), box(0, 0, 10, 10), 2)).toBe(true);
     expect(segmentNearBox(p(30, 5), p(12, 5), box(0, 0, 10, 10), 2)).toBe(false);
@@ -143,7 +148,9 @@ describe('segmentNearBox', () => {
         }
         const step = Math.hypot(bx - ax, by - ay) / 400;
         if (walked > 3 + step) expect(segmentNearBox(p(ax, ay), p(bx, by), target, 3)).toBe(false);
-        if (walked < 3) expect(segmentNearBox(p(ax, ay), p(bx, by), target, 3)).toBe(true);
+        // A segment exactly `reach` from a corner is not near; the walk's rounding may put it a
+        // hair under, so only a clear margin under counts.
+        if (walked < 3 - 1e-9) expect(segmentNearBox(p(ax, ay), p(bx, by), target, 3)).toBe(true);
       }),
     );
   });
