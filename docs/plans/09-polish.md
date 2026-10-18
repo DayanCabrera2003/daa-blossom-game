@@ -225,6 +225,8 @@ El jardín en sí (juntar, pasar el farol, cadena, plegar…) **no** se juega co
 
 **Primero se mide, luego se decide.** La fase empieza comprobando, con la tabla de compatibilidad vigente de los navegadores, qué versiones de Safari (macOS e iOS) y de Firefox decodifican Ogg Vorbis por Web Audio, que es lo que usa Phaser, y deja el resultado escrito en esta sección. El soporte de Safari ha cambiado entre versiones y en iOS va con la versión del sistema, así que el plan no lo da por sabido.
 
+*Medido (2026-10-18, datos de caniuse, `ogg-vorbis`):* Chrome, Edge y Firefox de escritorio y de Android decodifican Ogg Vorbis. **Safari no, hasta la 18.4**: de macOS 11.3 a Safari 18.3 entiende el códec Vorbis solo dentro de WebM, no el contenedor Ogg, y en iOS no hay nada hasta 17.4 y lo mismo (Vorbis sin Ogg) de 17.4 a 18.3; desde Safari 18.4 (macOS e iOS 18.4, marzo de 2025) y en Safari 26 y 27, sí. Phaser elige el archivo por `canPlayType('audio/ogg; codecs="vorbis"')`, que en esos Safari dice que no: sin respaldo, un iPhone o un iPad que no pase de iOS 18.3 (los que ya no reciben iOS 26, como el iPad de 6.ª generación con iPadOS 17) carga el juego sin música y sin la mitad de los efectos. **Hace falta respaldo**: AAC en `.m4a` (Safari lo decodifica en todas sus versiones; Phaser lo reconoce por `canPlayType('audio/x-m4a')`), el `.ogg` primero, de modo que los navegadores que entienden Ogg no cambian nada.
+
 | Archivo | Responsabilidad |
 |---|---|
 | `game/assets/audioSources.ts` | Pura: para una clave de audio, la lista de archivos a ofrecer en orden (el `.ogg` o `.wav` de hoy y, si existe, su respaldo); Phaser elige el primero que el navegador dice poder reproducir (`load.audio(key, [urls])`) |
