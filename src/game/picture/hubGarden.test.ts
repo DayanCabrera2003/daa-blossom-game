@@ -8,6 +8,9 @@ import { PIXEL_FONT } from './pixelFont';
 import {
   finishedChapters,
   HUB_PIECES,
+  flowerBox,
+  HUB_FLOWER,
+  HUB_HEAD,
   HUB_SIGN,
   HUB_TINT,
   hubGarden,
@@ -39,11 +42,14 @@ const NAMES = [
  * widest buttons): the top line, then each chapter's sign, title and buttons.
  */
 function hubBoxes(stars: boolean): Rect[] {
-  const titleWidths = NAMES.map((name) => text(name.length) + HUB_SIGN.width + HUB_SIGN.gap);
+  const titleWidths = NAMES.map((name) => text(name.length) + HUB_HEAD);
   // "1.1" with two cells to spare, or "1.1 " and four blank cells for the stars; a digit more for
   // "4.10" to "4.12".
   const widths = COUNTS.map((count, c) =>
-    Array.from({ length: count }, () => text((stars ? 8 : 5) + (c === 4 ? 1 : 0)) + 4),
+    Array.from(
+      { length: count },
+      (_, b) => text((stars ? 8 : 5) + (c === 4 && b >= 9 ? 1 : 0)) + 4,
+    ),
   );
   const layout = layoutHub(widths, HEIGHT, titleWidths);
   // The top line at its fullest: the teacher badge, a three-digit counter, the Códex with its
@@ -63,6 +69,7 @@ function hubBoxes(stars: boolean): Rect[] {
     top.gear,
     ...top.signs,
     ...layout.chapters.flatMap(({ titleY, buttons }, c) => [
+      flowerBox(titleY, HEIGHT),
       signBox(titleY, HEIGHT),
       { x: HUB.margin, y: titleY, width: titleWidths[c] ?? 0, height: HEIGHT },
       ...buttons.map(({ x, y }, b) => ({
@@ -167,12 +174,24 @@ describe('the hub that grows (plan 06, section 1.5)', () => {
     expect(hubGarden(ALL, [everywhere])).toEqual([]);
   });
 
-  it("puts each chapter's sign at the margin, on the line of its title", () => {
-    expect(signBox(40, 14)).toEqual({
+  it("puts each chapter's secret flower at the margin and its sign after it, on the line of its title", () => {
+    expect(flowerBox(40, 14)).toEqual({
       x: HUB.margin,
+      y: 39,
+      width: HUB_FLOWER.width,
+      height: HUB_SIGN.width,
+    });
+    expect(signBox(40, 14)).toEqual({
+      x: HUB.margin + HUB_FLOWER.width + HUB_FLOWER.gap,
       y: 39,
       width: HUB_SIGN.width,
       height: HUB_SIGN.width,
     });
+    // The title starts after both, so the head of a chapter is the flower, the sign and the gaps.
+    expect(HUB_HEAD).toBe(HUB_FLOWER.width + HUB_FLOWER.gap + HUB_SIGN.width + HUB_SIGN.gap);
+  });
+
+  it('the column of the secret flowers is at least as big as a sprout', () => {
+    expect(HUB_FLOWER.width).toBeGreaterThanOrEqual(16);
   });
 });

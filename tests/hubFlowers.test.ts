@@ -5,7 +5,7 @@ import { boxesOverlap, type Rect } from '../src/game/picture/boxDistance';
 import { BOOK_ICON, iconRoom } from '../src/game/picture/buttonIcon';
 import { chapterTitle } from '../src/game/picture/chapterTitle';
 import { hubCounter } from '../src/game/picture/hubCounter';
-import { HUB_SIGN, signBox } from '../src/game/picture/hubGarden';
+import { HUB_HEAD, signBox } from '../src/game/picture/hubGarden';
 import { HUB, layoutHub } from '../src/game/picture/hubLayout';
 import { hubTopLine } from '../src/game/picture/hubTopLine';
 import { BUTTON_HEIGHT } from '../src/game/picture/panelLayout';
@@ -44,7 +44,7 @@ function hubOf(teacherMode: boolean): { boxes: Rect[]; signs: Map<string, Rect> 
   );
   const titles = chapters.map((chapter) => {
     const title = chapterTitle(chapter);
-    return text(t(title.key, title.params)) + HUB_SIGN.width + HUB_SIGN.gap;
+    return text(t(title.key, title.params)) + HUB_HEAD;
   });
   const layout = layoutHub(widths, BUTTON_HEIGHT, titles);
   const top = hubTopLine({
@@ -66,9 +66,9 @@ function hubOf(teacherMode: boolean): { boxes: Rect[]; signs: Map<string, Rect> 
     const chapter = chapters[c] ?? '';
     signs.set(chapter, signBox(titleY, BUTTON_HEIGHT));
     boxes.push({
-      x: HUB.margin + HUB_SIGN.width + HUB_SIGN.gap,
+      x: HUB.margin + HUB_HEAD,
       y: titleY,
-      width: (titles[c] ?? 0) - HUB_SIGN.width - HUB_SIGN.gap,
+      width: (titles[c] ?? 0) - HUB_HEAD,
       height: BUTTON_HEIGHT - 2,
     });
     buttons.forEach(({ x, y }, b) =>

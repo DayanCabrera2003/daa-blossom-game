@@ -5,7 +5,14 @@ import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
 import { chapterTitle } from '../picture/chapterTitle';
-import { finishedChapters, HUB_SIGN, HUB_TINT, hubGarden, signBox } from '../picture/hubGarden';
+import {
+  finishedChapters,
+  flowerBox,
+  HUB_HEAD,
+  HUB_TINT,
+  hubGarden,
+  signBox,
+} from '../picture/hubGarden';
 import { epilogueSignAt, HUB, layoutHub } from '../picture/hubLayout';
 import { PIXEL_FONT } from '../picture/pixelFont';
 import { cutOf, seasonOf } from '../picture/seasons';
@@ -27,8 +34,8 @@ import { addSettings } from './settingsPanel';
 /** Above the buttons' labels, which sit at depth 101. */
 const STAR_DEPTH = 102;
 
-/** Where a chapter title starts: after the signpost it hangs from. */
-const TITLE_X = HUB.margin + HUB_SIGN.width + HUB_SIGN.gap;
+/** Where a chapter title starts: after its flower's column and the signpost it hangs from. */
+const TITLE_X = HUB.margin + HUB_HEAD;
 
 /** The box a text or a button covers, to keep the hub's garden off it. */
 const boxOf = (thing: { x: number; y: number; width: number; height: number }): Rect => ({
@@ -88,7 +95,7 @@ export class HubScene extends Phaser.Scene {
       return this.add.text(TITLE_X, 0, t(title.key, title.params), textStyle(8));
     });
     const height = rows[0]?.[0]?.button.height ?? 0;
-    // Each title is laid out with its signpost before it.
+    // Each title is laid out with its flower's column and its signpost before it.
     const layout = layoutHub(
       rows.map((row) => row.map(({ button }) => button.width)),
       height,
@@ -108,7 +115,8 @@ export class HubScene extends Phaser.Scene {
       if (signFrame !== null) {
         this.add.image(sign.x, sign.y, signpost.sheet, signFrame).setOrigin(0, 0);
       }
-      taken.push(sign, boxOf(title));
+      // The column of the secret flower is kept clear too, flower or not.
+      taken.push(flowerBox(placement.titleY, height), sign, boxOf(title));
       placement.buttons.forEach((at, b) => {
         const { button, room } = itemAt(itemAt(rows, c), b);
         button.moveTo(at.x, at.y);
