@@ -50,7 +50,10 @@ export function openOverlay(frame: OverlayFrame, label: string, className: strin
   });
   book.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      // Closing gives the keys back to the game at once: this Escape must not reach it too (it
+      // would leave the level).
       event.preventDefault();
+      event.stopPropagation();
       close();
     } else if (event.key === 'Tab') {
       keepFocusInside(book, event);
