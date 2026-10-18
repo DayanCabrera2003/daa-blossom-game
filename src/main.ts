@@ -23,7 +23,7 @@ import { MusicPlayer } from './game/audio/MusicPlayer';
 import { gameConfig } from './game/config';
 import { provideContext } from './game/scenes/context';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './game/scale/integerZoom';
-import { panelRoom } from './game/scale/panelRoom';
+import { panelRoom, panelUnit } from './game/scale/panelRoom';
 import { renderZoom, setRenderZoom } from './game/view/renderZoom';
 import { mountShell } from './ui/shell';
 import { mountTeacherShell } from './ui/teacherShell';
@@ -90,11 +90,13 @@ bus.on('sound', (sound) => void audio.play('sfx', soundOf(sound)));
 /**
  * Fits the canvas to the window at its whole zoom, and when the teacher's panel is open shares the
  * window with it: the page body ends where the panel starts, so the canvas centres in what is left
- * and no sprout lies under the panel.
+ * and no sprout lies under the panel; the panel's pixel is the books' at that zoom while its lines
+ * stay long enough.
  */
 const relayout = (): void => {
   const { zoom, panel } = roomForWindow();
   document.documentElement.style.setProperty('--teacher-width', `${panel}px`);
+  document.documentElement.style.setProperty('--teacher-unit', String(panelUnit(zoom, panel)));
   document.body.style.marginRight = `${panel}px`;
   if (zoom !== renderZoom()) {
     applyZoom(zoom);

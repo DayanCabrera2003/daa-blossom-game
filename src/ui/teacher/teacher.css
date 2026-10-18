@@ -1,15 +1,15 @@
 /*
  * The teacher's trace panel (plan 07, phase 13), at the right of the window in the room the canvas
  * leaves it. Night ground and paper ink, like the game round it, with the wood of the books on its
- * edge. Its unit `--px` is one logical pixel one zoom step below the canvas's (never under one
- * screen pixel), so the pixel font stays sharp and the long traces still fit; the formulas are
- * KaTeX's, never smaller than a comfortable reading size. The small garden stays in sight at the
+ * edge. Its unit `--px` is the books' logical pixel at the canvas's zoom, a step smaller only when a
+ * line would hold too few letters (`--teacher-unit`, from `game/scale/panelRoom.ts`), so its words
+ * read at the size of the books' and the pixel font stays sharp; the formulas are KaTeX's, a little
+ * smaller than the words, never under a comfortable reading size. The small garden stays in sight at the
  * top while the traces scroll under it.
  */
 
 .teacher-panel {
-  --tp: max(1, calc(var(--zoom, 2) - 1));
-  --px: calc(1px * var(--tp));
+  --px: calc(1px * var(--teacher-unit, 1));
   --ink: #f2eaf1;
   --ink-soft: #abc2bc;
   --night: #141b1b;

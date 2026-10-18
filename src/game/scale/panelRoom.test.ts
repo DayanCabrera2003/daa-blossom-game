@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CANVAS_WIDTH, integerZoom } from './integerZoom';
-import { PANEL_WIDTH, panelRoom } from './panelRoom';
+import { PANEL_LINE, PANEL_WIDTH, panelRoom, panelUnit } from './panelRoom';
 
 describe('room for the teacher panel beside the canvas', () => {
   it('folded, the canvas keeps the whole window', () => {
@@ -32,5 +32,41 @@ describe('room for the teacher panel beside the canvas', () => {
 
   it('a window too narrow for both still shows the panel at its narrowest, over the canvas', () => {
     expect(panelRoom(600, 400, true)).toEqual({ zoom: 1, panel: PANEL_WIDTH.min });
+  });
+});
+
+describe("the teacher panel's pixel", () => {
+  /** The characters of the pixel font a line of the panel holds at `unit`, inside its edges. */
+  const lineOf = (panel: number, unit: number): number =>
+    Math.floor((panel - 11 * unit) / (6 * unit));
+
+  it("is the books' at the zoom of the canvas, on the windows the author reviews", () => {
+    for (const [width, height] of [
+      [1440, 810],
+      [1920, 1080],
+      [1366, 768],
+      [1280, 720],
+    ] as const) {
+      const { zoom, panel } = panelRoom(width, height, true);
+      expect({ width, unit: panelUnit(zoom, panel) }).toEqual({ width, unit: zoom });
+    }
+  });
+
+  it('steps down while a line of the panel would hold too few characters', () => {
+    // 2560 × 1440: the canvas at ×4 leaves the panel its widest, too narrow for ×4 letters.
+    const { zoom, panel } = panelRoom(2560, 1440, true);
+    expect(zoom).toBe(4);
+    expect(panelUnit(zoom, panel)).toBe(3);
+  });
+
+  it('keeps every line long enough, and is never under one screen pixel', () => {
+    for (let zoom = 1; zoom <= 8; zoom += 1) {
+      for (let panel = PANEL_WIDTH.min; panel <= PANEL_WIDTH.max; panel += 7) {
+        const unit = panelUnit(zoom, panel);
+        expect(unit).toBeGreaterThanOrEqual(1);
+        expect(unit).toBeLessThanOrEqual(zoom);
+        if (unit > 1) expect(lineOf(panel, unit)).toBeGreaterThanOrEqual(PANEL_LINE);
+      }
+    }
   });
 });
