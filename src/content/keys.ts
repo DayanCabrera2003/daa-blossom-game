@@ -274,6 +274,7 @@ const UI = {
   'diagram.event.declareDone': [],
   'hub.codex': [],
   'hub.notebook': [],
+  'hub.sandbox': [],
   'hud.book': [],
   'counterexample.back': [],
   'pond.strands': ['count'],

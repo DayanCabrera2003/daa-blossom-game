@@ -235,6 +235,7 @@
   "diagram.event.declareDone": "«Terminé»: el jardín no puede hacerlo mejor.",
   "hub.codex": "Códex",
   "hub.notebook": "Cuaderno",
+  "hub.sandbox": "Modo libre",
   "hud.book": "Códex",
   "counterexample.back": "Volver al Cuaderno",
   "pond.strands": "Hilos: {count}",

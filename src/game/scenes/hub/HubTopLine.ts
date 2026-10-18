@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import { codexSources, hasNewPages, openCodex } from '@services/codexProgress';
 import { catalogEntries } from '@services/progress';
+import { sandboxAccess } from '@services/sandboxAccess';
 import type { SaveData } from '@services/save';
 import { seeds } from '@services/seeds';
 import { totalStars } from '@services/starCount';
@@ -38,7 +39,8 @@ export interface HubTopLineParts {
 /**
  * The hub's top line (plan 08, phase 5): the hub's title, the teacher badge in teacher mode, the
  * counter of the game's stars and of the seeds, and before the gear the Códex (once a page of it
- * is open) and the Cuaderno (once a statement is written; in teacher mode, both). Where each goes
+ * is open), the Cuaderno (once a statement is written) and the free mode (once chapter 1 is
+ * finished; in teacher mode, all three). Where each goes
  * is `picture/hubTopLine.ts`'s; reading the Códex over the hub takes its "new" seal away, and the
  * signs are laid out again.
  */
@@ -54,7 +56,7 @@ export function addHubTopLine(scene: Phaser.Scene): HubTopLineParts {
   const counter = hubCounter(totalStars(catalogEntries(catalog), save), seeds(save), seedWidth);
   const count = scene.add.text(0, 0, counter.text, textStyle(8));
 
-  // The signs, right to left from the gear: the Códex, then the Cuaderno.
+  // The signs, right to left from the gear: the Códex, the Cuaderno, then the free mode.
   const signs: Button[] = [];
   const codexOpen = openCodex(codexSources(catalog), save, teacherMode);
   const codex =
@@ -69,6 +71,10 @@ export function addHubTopLine(scene: Phaser.Scene): HubTopLineParts {
     signs.push(
       new Button(scene, 0, 0, t('hub.notebook'), () => bus.emit('book.open', { book: 'notebook' })),
     );
+  }
+  // The free mode, once chapter 1 is finished (in teacher mode, always): the game opens it.
+  if (sandboxAccess(catalogEntries(catalog), save, teacherMode).exists) {
+    signs.push(new Button(scene, 0, 0, t('hub.sandbox'), () => bus.emit('sandbox.open')));
   }
 
   /** The top line for the signs as wide as they are now. */

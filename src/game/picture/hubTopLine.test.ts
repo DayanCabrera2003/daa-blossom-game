@@ -23,8 +23,8 @@ const CODEX =
   estimatedButtonWidth(strings['hub.codex'] + ' '.repeat(labelSeal(strings['codex.new']).spaces)) +
   iconRoom([BOOK_ICON]);
 const NOTEBOOK = estimatedButtonWidth(strings['hub.notebook']);
-/** The free mode's sign, which comes in a later phase of plan 08 with these words. */
-const SANDBOX = estimatedButtonWidth('Modo libre');
+/** The free mode's sign, once chapter 1 is finished (always in teacher mode). */
+const SANDBOX = estimatedButtonWidth(strings['hub.sandbox']);
 
 /** Every box of a top line, the gear's included. */
 const boxesOf = (line: ReturnType<typeof hubTopLine>) => [

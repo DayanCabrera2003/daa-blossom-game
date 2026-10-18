@@ -15,7 +15,7 @@ import { createTranslator } from '../../src/services/i18n';
 import { catalogEntries, visibleLevels } from '../../src/services/progress';
 
 // The hub as `HubScene` lays it out with the real catalog and the real words, every level at
-// three stars (the widest buttons) and the counter at its widest: the boxes of the top line, the
+// three stars (the widest buttons), the counter at its widest and every sign of the top line: the boxes of the top line, the
 // titles and the buttons, and each chapter's flower column and signpost. The tests of what grows
 // in the hub (the secret flowers, the cosmetics) keep clear of these.
 
@@ -53,6 +53,8 @@ export function hubOf(teacherMode: boolean): { boxes: Rect[]; signs: Map<string,
       estimatedButtonWidth(t('hub.codex') + ' '.repeat(labelSeal(t('codex.new')).spaces)) +
         iconRoom([BOOK_ICON]),
       estimatedButtonWidth(t('hub.notebook')),
+      // The free mode's sign: there in teacher mode, and once chapter 1 is finished.
+      estimatedButtonWidth(t('hub.sandbox')),
     ],
     signHeight: BUTTON_HEIGHT,
   });
