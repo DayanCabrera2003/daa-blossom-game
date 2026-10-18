@@ -1,7 +1,9 @@
 import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import type { UiEvent } from '../../systems/levelController';
+import { voiceLine } from '../../systems/lineVoice';
 import { AnimationView } from '../../view/AnimationView';
+import { BackdropView } from '../../view/BackdropView';
 import { DialogueView } from '../../view/DialogueView';
 import { FlowerView } from '../../view/FlowerView';
 import { FogView } from '../../view/FogView';
@@ -22,8 +24,12 @@ import { TutorialView } from '../../view/TutorialView';
 import { VeilView } from '../../view/VeilView';
 import type { PresenterViews } from '../presenter';
 
-/** Every layer the level screen paints, from the fog at the bottom to the dialogue box on top. */
+/**
+ * Every layer the level screen paints, from the backdrop at the bottom (under the fog) to the
+ * dialogue box on top.
+ */
 export interface LevelViews {
+  readonly backdrop: BackdropView;
   readonly fog: FogView;
   readonly flowers: FlowerView;
   readonly objects: ObjectsView;
@@ -62,6 +68,7 @@ export const buildLevelViews = (
 ): LevelViews => {
   const { dispatch } = buttons;
   return {
+    backdrop: new BackdropView(scene),
     fog: new FogView(scene),
     flowers: new FlowerView(scene),
     objects: new ObjectsView(scene),
@@ -88,7 +95,7 @@ export const buildLevelViews = (
     toolbar: new ToolbarView(scene, t, (tool) => dispatch({ kind: 'tool', tool })),
     sun: new SunSliderView(scene, (fraction) => dispatch({ kind: 'seek', fraction })),
     toast: new ToastView(scene),
-    dialogue: new DialogueView(scene, t('dialogue.continue')),
+    dialogue: new DialogueView(scene, t, voiceLine),
   };
 };
 

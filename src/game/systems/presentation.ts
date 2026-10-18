@@ -1,6 +1,7 @@
 import type { GardenState } from '@core/rules/state';
 import type { CardId } from '@levels/cards/schema';
 import type { Question } from './question';
+import type { SpokenLine } from './speaker';
 import type { StarResult } from './stars';
 
 /**
@@ -18,8 +19,11 @@ export type Presentation =
    * closes it, and its panel keeps the garden from taking touches meanwhile.
    */
   | { readonly kind: 'tutorial'; readonly card: CardId }
-  /** Lines of dialogue, already translated; over when the player closes the box. */
-  | { readonly kind: 'lines'; readonly lines: readonly string[] }
+  /**
+   * Lines of dialogue, already translated, each with who says it; over when the player closes the
+   * box.
+   */
+  | { readonly kind: 'lines'; readonly lines: readonly SpokenLine[] }
   /** A question or a bet, until it is answered; its panel keeps the garden from taking touches. */
   | { readonly kind: 'question'; readonly question: Question }
   /**

@@ -5,9 +5,16 @@ import { HUD_BUTTONS, hudRow, type HudButton } from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
+import type { AssetKey } from '../assets/keys';
+import { ICON_GAP } from '../picture/buttonIcon';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
+
+/** The water drop of the pack, before the water spent. */
+const WATER_ICON: AssetKey = 'icon.water';
+/** Between two parts of the status line: three letters of air. */
+const STATUS_GAP = 18;
 
 /** What the HUD buttons do; the level scene decides. */
 export interface HudActions {
@@ -25,15 +32,20 @@ export interface HudActions {
 }
 
 /**
- * The greybox HUD: the goal (or the question, when it is hidden), lanterns lit and water spent on
- * top; "Terminé", undo, redo, hint, "?" (the mechanic cards again) and back at the bottom right,
- * greyed out when not available, "Comprobar" beside them in the mirror challenge, and the way out
+ * The HUD: the goal (or the question, when it is hidden), lanterns lit and water spent (after the
+ * drop of the pack) on top; on wooden buttons, "Terminé", undo, redo, hint, "?" (the mechanic
+ * cards again) and back at the bottom right, switched off when not available, "Comprobar" beside them in the mirror challenge, and the way out
  * of a flower entered with the layers, whose depth the status line tells (5.2), and from 7.2 the
  * Council's count on the right of the status line.
  */
 export class HudView {
   private readonly goal: Phaser.GameObjects.Text;
+  /** The status line: the lanterns lit, the water (after its drop) and the depth of the layers. */
   private readonly status: Phaser.GameObjects.Text;
+  private readonly water: Phaser.GameObjects.Text;
+  private readonly layer: Phaser.GameObjects.Text;
+  /** The drop of the pack before the water spent, when its picture is loaded. */
+  private readonly drop: Phaser.GameObjects.Image | null;
   /** What a waiting script step expects (drag the sun, touch a sprout…), centred under the goal. */
   private readonly prompt: Phaser.GameObjects.Text;
   /** The Council's count (chapter 7), on the right of the status line. */
@@ -47,6 +59,14 @@ export class HudView {
   ) {
     this.goal = scene.add.text(LAYOUT.margin, LAYOUT.topY, '', textStyle()).setDepth(100);
     this.status = scene.add.text(LAYOUT.margin, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
+    this.water = scene.add.text(0, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
+    this.layer = scene.add.text(0, LAYOUT.secondY, '', textStyle(8)).setDepth(100);
+    this.drop = scene.textures.exists(WATER_ICON)
+      ? scene.add
+          .image(0, LAYOUT.secondY - 1, WATER_ICON)
+          .setOrigin(0, 0)
+          .setDepth(100)
+      : null;
     this.prompt = scene.add
       .text(CANVAS_WIDTH / 2, LAYOUT.secondY, '', textStyle(8, PALETTE.sun))
       .setOrigin(0.5, 0)
@@ -78,7 +98,20 @@ export class HudView {
           : this.t('hud.water', { used: hud.water.used, budget: hud.water.budget });
     const inside = hud.layers !== null && hud.layers > 0;
     const layer = inside ? this.t('hud.layer', { depth: hud.layers ?? 0 }) : '';
-    this.status.setText([lanterns, water, layer].filter((part) => part !== '').join('   '));
+    this.status.setText(lanterns);
+    // The water after its drop, then the layers, each a little apart from what comes before.
+    let x = this.status.x + this.status.width;
+    this.drop?.setVisible(water !== '');
+    if (water !== '') {
+      x += STATUS_GAP;
+      if (this.drop !== null) {
+        this.drop.setX(x);
+        x += this.drop.width + ICON_GAP;
+      }
+    }
+    this.water.setText(water).setX(x);
+    x += this.water.width;
+    this.layer.setText(layer).setX(layer === '' ? x : x + STATUS_GAP);
     this.buttons.undo.setEnabled(hud.canUndo);
     this.buttons.redo.setEnabled(hud.canRedo);
     this.buttons.hint.setEnabled(hud.hintAvailable);

@@ -4,8 +4,10 @@ import { invariant } from '@core/shared/invariant';
 import { counterexampleAt } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
+import { SfxPlayer } from '../audio/SfxPlayer';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
+import { animationGarden } from '../picture/animationGarden';
 import { gardenPicture } from '../picture/garden';
 import { checkText, drawingPicture } from '../picture/mirrorDrawing';
 import { reasonText } from '../picture/reasonText';
@@ -20,6 +22,9 @@ import {
 } from '../systems/counterexampleController';
 import { counterexampleEntries } from '../systems/counterexampleEntries';
 import { canRedo, canUndo } from '../systems/history';
+import { voiceLine } from '../systems/lineVoice';
+import { planCues, refusalCues } from '../systems/soundCues';
+import { spokenLine } from '../systems/speaker';
 import { AnimationView } from '../view/AnimationView';
 import { Button } from '../view/Button';
 import { DialogueView } from '../view/DialogueView';
@@ -82,6 +87,8 @@ export class CounterexampleScene extends Phaser.Scene {
   };
   /** Whether a press started on this screen: the touch that opened it must not end here as a tap. */
   private pressing = false;
+  /** Plays the sounds of moves and refusals on the effects channel. */
+  private sfx!: SfxPlayer;
 
   constructor() {
     super('counterexample');
@@ -91,6 +98,7 @@ export class CounterexampleScene extends Phaser.Scene {
     fitCamera(this);
     this.context = contextOf(this);
     this.pressing = false;
+    this.sfx = new SfxPlayer(this, this.context.audio);
     const { t, line } = this.context;
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
     const asked = level?.data.notebook?.[data.question];
@@ -124,12 +132,12 @@ export class CounterexampleScene extends Phaser.Scene {
       animation: new AnimationView(this),
       toolbar: new ToolbarView(this, t, (tool) => this.dispatch({ kind: 'tool', tool })),
       toast: new ToastView(this),
-      dialogue: new DialogueView(this, t('dialogue.continue')),
+      dialogue: new DialogueView(this, t, voiceLine),
       lanterns: this.add.text(LAYOUT.margin, LAYOUT.bottomY, '', textStyle(8)).setDepth(100),
       ...this.buttons(data.back),
     };
     this.listen(data.back);
-    this.views.dialogue.say([line(counterexample.line)]);
+    this.views.dialogue.say([spokenLine(counterexample.line, line)]);
     this.render();
   }
 
@@ -201,7 +209,10 @@ export class CounterexampleScene extends Phaser.Scene {
 
   /** One event through the controller; a new move ends any animation still playing. */
   private dispatch(event: CounterexampleEvent): void {
-    if (event.kind !== 'move') this.views.animation.finish();
+    if (event.kind !== 'move') {
+      this.views.animation.finish();
+      this.sfx.cancel();
+    }
     const step = handleCounterexample(this.controller, event);
     this.context.playtest.record(
       counterexampleEntries(this.levelId, step.effects, this.context.clock()),
@@ -216,17 +227,24 @@ export class CounterexampleScene extends Phaser.Scene {
     switch (effect.kind) {
       case 'rejected':
         this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
+        this.sfx.schedule(refusalCues());
         break;
       case 'drawRefused':
         this.views.toast.show(reasonText(effect.reason, null, this.labels, t));
+        this.sfx.schedule(refusalCues());
         break;
       case 'animate': {
         const steps = planAnimation(effect.events);
-        this.views.animation.play(steps, this.controller.positions, this.time.now);
+        const garden = animationGarden(this.controller.history, {
+          positions: this.controller.positions,
+          path: [],
+        });
+        this.views.animation.play(steps, garden, this.time.now);
+        this.sfx.schedule(planCues(steps));
         break;
       }
       case 'say':
-        this.views.dialogue.say([line(effect.line)]);
+        this.views.dialogue.say([spokenLine(effect.line, line)]);
         break;
       case 'mirrorChecked': {
         // What the check found is painted from the controller on every render; here it is told.

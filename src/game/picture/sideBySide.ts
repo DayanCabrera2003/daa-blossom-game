@@ -62,6 +62,8 @@ export interface CutPicture {
 export interface SideBySidePicture {
   /** The flower's outline in the open garden. */
   readonly outline: readonly Point[];
+  /** How many petals the folded flower shows: one per sprout of its cycle. */
+  readonly petals: number;
   /** The nodes of the folded garden, by folded id. */
   readonly nodes: readonly FoldedNodePicture[];
   readonly vines: readonly FoldedVinePicture[];
@@ -146,6 +148,7 @@ export function sideBySidePicture(
   }
   return {
     outline: flowerOutline(flower.map(at), FLOWER_PADDING),
+    petals: flower.length,
     nodes,
     vines,
     cut,

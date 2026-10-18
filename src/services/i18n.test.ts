@@ -24,6 +24,6 @@ describe('translating interface text', () => {
   });
 
   it('never fails on a missing key: it shows the key itself', () => {
-    expect(t('hud.nowhere')).toBe('⟨hud.nowhere⟩');
+    expect(t('hud.nowhere')).toBe('‹hud.nowhere›');
   });
 });

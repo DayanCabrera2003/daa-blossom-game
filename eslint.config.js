@@ -82,12 +82,41 @@ export default tseslint.config(
   {
     // Pure game logic: decisions live here and are unit tested; only scenes and views may draw.
     // A later block replaces the earlier no-restricted-imports options, so ui/ is forbidden again.
-    files: ['src/game/{input,systems,animation,scale,picture}/**/*.ts'],
+    files: ['src/game/{input,systems,animation,scale,picture,assets}/**/*.ts'],
     rules: {
       'no-restricted-imports': forbidLayers(
         ['ui'],
         'pure game logic may not use Phaser nor import ui/; only scenes and views draw.',
       ),
+    },
+  },
+  {
+    // The view never changes the logic: views and audio may name the types of the controller, the
+    // reducer and the level flow, but never call them. A separate rule, so ui/ stays forbidden.
+    files: ['src/game/{view,audio}/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@game/systems', '@game/systems/**', '**/systems', '**/systems/**'],
+              allowTypeImports: true,
+              message: 'views and audio only read the logic: import its types, never its values.',
+            },
+            {
+              group: ['@core/rules', '@core/rules/**', '**/core/rules', '**/core/rules/**'],
+              allowTypeImports: true,
+              message: 'views and audio only read the logic: import its types, never its values.',
+            },
+            {
+              group: ['@levels/flow*', '**/levels/flow*'],
+              allowTypeImports: true,
+              message: 'views and audio only read the logic: import its types, never its values.',
+            },
+          ],
+        },
+      ],
     },
   },
   {

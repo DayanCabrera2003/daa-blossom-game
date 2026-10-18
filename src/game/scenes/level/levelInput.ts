@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { escapeAction } from '../../input/escape';
 import type { Point } from '../../input/target';
 import type { UiEvent } from '../../systems/levelController';
 
@@ -10,6 +11,10 @@ export interface LevelInputTarget {
   readonly leave: () => void;
   /** Whether a flower is entered with the layers: then Escape leaves it instead (5.2). */
   readonly insideLayer: () => boolean;
+  /** Whether the settings panel is open: then Escape closes it instead. */
+  readonly settingsOpen: () => boolean;
+  /** Closes the settings panel. */
+  readonly closeSettings: () => void;
   /** Whether the dialogue box is open: it takes the touches meant for it. */
   readonly dialogueOpen: () => boolean;
   /** Whether a chain is being drawn: only then does a drag move it on. */
@@ -19,7 +24,8 @@ export interface LevelInputTarget {
 /**
  * Listens to the pointer and the keys of the level screen. Presses and releases on the garden go to
  * the controller; touches on buttons and on the dialogue stay theirs. Ctrl/Cmd+Z and Ctrl/Cmd+Y undo
- * and redo, Escape leaves the flower entered with the layers, or else the level.
+ * and redo, Escape closes the settings panel, or leaves the flower entered with the layers, or else
+ * the level (`input/escape.ts`).
  */
 export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): void => {
   const { dispatch } = target;
@@ -49,7 +55,12 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
     if (event.ctrlKey || event.metaKey) dispatch({ kind: 'redo' });
   });
   keys?.on('keydown-ESC', () => {
-    if (target.insideLayer()) dispatch({ kind: 'leaveLayer' });
+    const action = escapeAction({
+      settingsOpen: target.settingsOpen(),
+      insideLayer: target.insideLayer(),
+    });
+    if (action === 'closeSettings') target.closeSettings();
+    else if (action === 'leaveLayer') dispatch({ kind: 'leaveLayer' });
     else target.leave();
   });
 };

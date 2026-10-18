@@ -1,76 +1,130 @@
-import Phaser from 'phaser';
-import { PALETTE } from './palette';
+import type Phaser from 'phaser';
+import { playUiSound } from '../audio/uiSound';
+import { ICON_GAP, type ButtonIcon } from '../picture/buttonIcon';
+import { WOOD_BUTTON, type ButtonState } from '../picture/wood';
+import { css, PALETTE } from './palette';
 import { textStyle } from './textStyle';
+import { WoodFrame } from './WoodFrame';
 
-/** A small text button of the greybox HUD: a label on a panel, active, idle or switched off. */
+/**
+ * A small button of the HUD and the panels: a label, maybe after icons, on a wooden button of the
+ * pack (`picture/wood.ts`), at rest, in hand or switched off, its letters in the colour that reads
+ * on each look. A press clicks, unless the button is switched off.
+ */
 export class Button {
-  private readonly panel: Phaser.GameObjects.Rectangle;
+  private readonly wood: WoodFrame;
   private readonly text: Phaser.GameObjects.Text;
+  private readonly icons: Phaser.GameObjects.Image[];
   private enabled = true;
+  private active = false;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, label: string, onPress: () => void) {
-    this.text = scene.add.text(x, y, label, textStyle()).setOrigin(0, 0).setDepth(101);
-    this.panel = scene.add
-      .rectangle(x - 2, y - 1, this.text.width + 4, this.text.height + 2, PALETTE.button)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(100)
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    label: string,
+    onPress: () => void,
+    icons: readonly ButtonIcon[] = [],
+  ) {
+    // An icon whose picture is not loaded is left out.
+    this.icons = icons
+      .filter((icon) => scene.textures.exists(icon.texture))
+      .map((icon) =>
+        scene.add.image(0, 0, icon.texture).setOrigin(0, 0).setScale(icon.scale).setDepth(101),
+      );
+    this.text = scene.add.text(0, 0, label, textStyle()).setOrigin(0, 0).setDepth(101);
+    const iconRoom = this.icons.reduce((room, icon) => room + icon.displayWidth + ICON_GAP, 0);
+    this.wood = new WoodFrame(
+      scene,
+      WOOD_BUTTON.idle,
+      { x: x - 2, y: y - 1, width: iconRoom + this.text.width + 4, height: this.text.height + 2 },
+      100,
+      PALETTE.button,
+    );
+    this.wood.zone
       .setInteractive({ useHandCursor: true })
       .on(
         'pointerdown',
         (_: Phaser.Input.Pointer, __: number, ___: number, event: Phaser.Types.Input.EventData) => {
           event.stopPropagation();
-          if (this.enabled) onPress();
+          if (!this.enabled) return;
+          playUiSound(scene, 'sfx.button');
+          onPress();
         },
       );
+    this.moveTo(x, y);
+    this.restyle();
   }
 
   /** Width on the canvas, to lay buttons out side by side. */
   get width(): number {
-    return this.panel.width;
+    return this.wood.bounds.width;
   }
 
   /** Height on the canvas, to lay rows of buttons out. */
   get height(): number {
-    return this.panel.height;
+    return this.wood.bounds.height;
   }
 
   /** Moves the button so that its panel's top-left corner is at (x, y). */
   moveTo(x: number, y: number): this {
-    this.panel.setPosition(x, y - 1);
-    this.text.setPosition(x + 2, y);
+    const { width, height } = this.wood.bounds;
+    this.wood.setRect({ x, y: y - 1, width, height });
+    // Each icon is centred on the button's height, the label after them.
+    let left = x + 2;
+    for (const icon of this.icons) {
+      icon.setPosition(left, Math.round(y - 1 + (height - icon.displayHeight) / 2));
+      left += icon.displayWidth + ICON_GAP;
+    }
+    this.text.setPosition(left, y);
     return this;
   }
 
   /** Puts the button above other layers (panels drawn on top of the HUD). */
   setDepth(depth: number): this {
-    this.panel.setDepth(depth);
+    this.wood.setDepth(depth);
+    for (const icon of this.icons) icon.setDepth(depth + 1);
     this.text.setDepth(depth + 1);
     return this;
   }
 
-  /** Greys the button out when its action is not available now. */
+  /** Switches the button off when its action is not available now. */
   setEnabled(enabled: boolean): this {
     this.enabled = enabled;
-    this.panel.setFillStyle(enabled ? PALETTE.button : PALETTE.buttonOff);
-    this.text.setAlpha(enabled ? 1 : 0.4);
-    return this;
+    return this.restyle();
   }
 
   /** Marks the button as the one in use (the tool in hand). */
   setActive(active: boolean): this {
-    this.panel.setFillStyle(active ? PALETTE.buttonActive : PALETTE.button);
-    return this;
+    this.active = active;
+    return this.restyle();
   }
 
   setVisible(visible: boolean): this {
-    this.panel.setVisible(visible);
+    this.wood.setVisible(visible);
+    for (const icon of this.icons) icon.setVisible(visible);
     this.text.setVisible(visible);
     return this;
   }
 
   destroy(): void {
-    this.panel.destroy();
+    this.wood.destroy();
+    for (const icon of this.icons) icon.destroy();
     this.text.destroy();
+  }
+
+  /** The look of the button now: off before in hand, in hand before at rest. */
+  private get state(): ButtonState {
+    if (!this.enabled) return 'off';
+    return this.active ? 'active' : 'idle';
+  }
+
+  /** Draws the wood of the button's look and writes its label in the colour that reads on it. */
+  private restyle(): this {
+    const piece = WOOD_BUTTON[this.state];
+    this.wood.setPiece(piece);
+    this.text.setColor(css(PALETTE[piece.text]));
+    for (const icon of this.icons) icon.setAlpha(this.enabled ? 1 : 0.5);
+    return this;
   }
 }

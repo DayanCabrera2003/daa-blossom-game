@@ -1,5 +1,9 @@
 import type { TraceEvent } from '@core/trace/events';
 import { describe, expect, it } from 'vitest';
+import { BURST_MS } from '../picture/burst';
+import { CONFLICT_BLINKS } from '../picture/conflictBlink';
+import { FOLD_FRAMES } from '../picture/foldFrames';
+import { STONE_FALL_MS, STONE_SETTLE_MS } from '../picture/stoneSplit';
 import { DURATIONS, planAnimation, stepAt, totalDuration } from './plan';
 
 describe('animation plan of a move', () => {
@@ -48,6 +52,18 @@ describe('animation plan of a move', () => {
     ]);
   });
 
+  it('a stone or a scarecrow says whether it is set down or taken off', () => {
+    expect(
+      planAnimation([
+        { type: 'stone', vertex: 2, lifted: true },
+        { type: 'scarecrow', vertex: 3, placed: false },
+      ]),
+    ).toEqual([
+      { kind: 'place', vertex: 2, object: 'stone', placed: true, duration: DURATIONS.stone },
+      { kind: 'place', vertex: 3, object: 'scarecrow', placed: false, duration: DURATIONS.place },
+    ]);
+  });
+
   it('marks say which mark they are', () => {
     expect(planAnimation([{ type: 'labelInner', vertex: 1, parent: 0, root: 0 }])).toEqual([
       { kind: 'mark', vertex: 1, mark: 'moon', duration: DURATIONS.mark },
@@ -72,5 +88,25 @@ describe('playing the plan', () => {
   it('after the end (or when the player acts again, which skips ahead) it is finished', () => {
     expect(stepAt(steps, 2 * DURATIONS.hop)).toBeNull();
     expect(stepAt([], 0)).toBeNull();
+  });
+});
+
+describe('how long the key animations last (GDD §4.1)', () => {
+  it('gives a hop time to crouch, fly and land, quicker than the sparkle where it lands', () => {
+    expect(DURATIONS.hop).toBeGreaterThanOrEqual(200);
+    expect(DURATIONS.hop).toBeLessThan(BURST_MS);
+  });
+
+  it('shows each of the eight frames of a fold for a moment the eye can catch', () => {
+    expect(DURATIONS.fold / FOLD_FRAMES).toBeGreaterThanOrEqual(60);
+    expect(DURATIONS.unfold).toBe(DURATIONS.fold);
+  });
+
+  it('blinks the conflict slowly enough to tell sun from moon', () => {
+    expect(DURATIONS.conflict / (2 * CONFLICT_BLINKS)).toBeGreaterThanOrEqual(100);
+  });
+
+  it('lets a stone fall and settle, with time left for the garden to part', () => {
+    expect(DURATIONS.stone).toBeGreaterThan(2 * (STONE_FALL_MS + STONE_SETTLE_MS));
   });
 });

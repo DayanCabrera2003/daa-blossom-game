@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # The same gates as every push (lint, format, types, coverage, levels, build): nothing that
-  # fails them is ever published.
+  # The same gates as every push (lint, format, types, coverage, levels, build, budget):
+  # nothing that fails them is ever published.
   checks:
     uses: ./.github/workflows/ci.yml
 

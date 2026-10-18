@@ -24,3 +24,5 @@ jobs:
       - run: npm run coverage
       - run: npm run check-levels
       - run: npm run build
+      # The built JavaScript and the assets within their budget (plan 06, phase 11).
+      - run: npm run budget

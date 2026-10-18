@@ -83,7 +83,7 @@ describe("why a move was refused, in the garden's words", () => {
     ];
     for (const [reason, action] of reasons) {
       const text = reasonText(reason, action, labels, t);
-      expect(text).not.toMatch(/[{}⟨⟩]/);
+      expect(text).not.toMatch(/[{}‹›]/);
     }
   });
 

@@ -61,6 +61,11 @@ describe('the picture of the garden', () => {
     expect(sprouts.map((s) => s.mark)).toEqual(['sun', 'moon', 'sun', 'sun', 'sun', null]);
     expect(flowers).toHaveLength(1);
     expect(flowers[0]).toMatchObject({ id: 0, depth: 0 });
+    // Three sprouts fold, so three petals, around the middle of b, c and d.
+    const [b, c, d] = [2, 3, 4].map((v) => placesOf(festival)[v] ?? { x: 0, y: 0 });
+    expect(flowers[0]?.petals).toBe(3);
+    expect(flowers[0]?.centre.x).toBeCloseTo(((b?.x ?? 0) + (c?.x ?? 0) + (d?.x ?? 0)) / 3);
+    expect(flowers[0]?.centre.y).toBeCloseTo(((b?.y ?? 0) + (c?.y ?? 0) + (d?.y ?? 0)) / 3);
     expect(vines.find((vine) => vine.u === 2 && vine.v === 3)?.inFlower).toBe(true);
     expect(vines.find((vine) => vine.u === 3 && vine.v === 5)?.inFlower).toBe(false);
   });
@@ -73,6 +78,10 @@ describe('the picture of the garden', () => {
       [1, 0],
       [0, 1],
     ]);
+    // A petal of the outer flower is the inner flower itself: its petals count it once.
+    const outer = twice.layer.nodes.find((node) => node.kind === 'blossom' && node.id === 1);
+    expect(flowers[0]?.petals).toBe(outer?.kind === 'blossom' ? outer.cycle.length : -1);
+    expect(flowers[1]?.petals).toBe(3);
   });
 
   it('in the fog, only vines of inspected sprouts are seen', () => {

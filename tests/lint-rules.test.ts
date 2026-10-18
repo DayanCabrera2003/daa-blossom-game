@@ -82,7 +82,7 @@ describe('layer boundaries', () => {
 
 describe('pure game logic', () => {
   // Decisions of the game live in pure folders; only scenes and views may draw with Phaser.
-  const PURE = ['input', 'systems', 'animation', 'scale', 'picture'];
+  const PURE = ['input', 'systems', 'animation', 'scale', 'picture', 'assets'];
 
   it.each(PURE)('src/game/%s may not import Phaser', async (folder) => {
     expect(
@@ -111,6 +111,43 @@ describe('pure game logic', () => {
         ),
       ).not.toContain('no-restricted-imports');
     }
+  });
+});
+
+describe('the view never changes the logic', () => {
+  // Views and audio only read what the logic decided: they may name its types, never call it.
+  const LOGIC = [
+    "import { x } from '../systems/stars';",
+    "import { x } from '@game/systems/stars';",
+    "import { x } from '@core/rules/reducer';",
+    "import { x } from '@levels/flow';",
+    "import { x } from '@levels/flowInput';",
+  ];
+
+  it.each(['view', 'audio'])('src/game/%s may not import values of the logic', async (folder) => {
+    for (const code of LOGIC) {
+      expect(await firedRules(`src/game/${folder}/virtual.ts`, `${code}\nexport { x };`)).toContain(
+        '@typescript-eslint/no-restricted-imports',
+      );
+    }
+  });
+
+  it.each(['view', 'audio'])('src/game/%s may import types of the logic', async (folder) => {
+    for (const code of LOGIC) {
+      const typeOnly = code.replace('import {', 'import type {');
+      expect(
+        await firedRules(`src/game/${folder}/virtual.ts`, `${typeOnly}\nexport type { x };`),
+      ).not.toContain('@typescript-eslint/no-restricted-imports');
+    }
+  });
+
+  it('views may import values of the pure pictures', async () => {
+    expect(
+      await firedRules(
+        'src/game/view/virtual.ts',
+        "import { x } from '../picture/garden';\nexport { x };",
+      ),
+    ).not.toContain('@typescript-eslint/no-restricted-imports');
   });
 });
 

@@ -1,9 +1,11 @@
 import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
+import { ICON_GAP, RACE_ICON } from '../picture/buttonIcon';
 import type { CostChart } from '../picture/costChart';
 import type { CounterPicture } from '../picture/raceClock';
 import { raceCounterText } from '../picture/raceCounterText';
 import type { RaceLayout, RacePanelPicture } from '../picture/racePanel';
+import { fontMetrics } from '../picture/pixelFont';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
@@ -32,16 +34,26 @@ export const RACE_LAYOUT: RaceLayout = {
  */
 const PANEL_DEPTH = 110;
 
+/**
+ * Where each runner's counter is written, under the miniature: from the panel's padding to just
+ * short of the chart, wrapping in up to two rows, so a long count never runs into the chart.
+ */
+export const RACE_COUNTERS = { x: PAD + 4, width: CHART_AT.x - PAD - 8, rows: 2 } as const;
+
 /** The colours of the two runners, on the chart and in their counters. */
 const AUTOMATON = PALETTE.lit;
 const BRUTO = PALETTE.moon;
 
+/** Room before a legend's name for the dot of its colour. */
+const LEGEND_DOT_ROOM = 7;
+
 /**
- * The races in greybox (GDD 6.4, 6.5, plan 05 phase 4): over the garden, the garden of the race
- * zoomed out with its sprouts tiny on a ring, a counter for each runner under it, and in the lower
- * right the chart of the races seen so far, the automaton's dots joined in a gentle curve and
- * Bruto's leaving through the top, or asleep. The counters run every frame; the rest is rebuilt
- * only when the picture's race or chart changes. It paints the picture, nothing more.
+ * The races (GDD 6.4, 6.5, plan 05 phase 4): over the garden, under the hourglass of the pack and
+ * the race's title, the garden of the race zoomed out with its sprouts tiny on a ring, a counter
+ * for each runner under it, and in the lower right the chart of the races seen so far, the
+ * automaton's dots joined in a gentle curve and Bruto's leaving through the top, or asleep. The
+ * counters run every frame; the rest is rebuilt only when the picture's race or chart changes. It
+ * paints the picture, nothing more.
  */
 export class RaceView {
   private parts: { destroy(): void }[] = [];
@@ -79,25 +91,43 @@ export class RaceView {
       .setDepth(PANEL_DEPTH)
       .setInteractive();
     this.parts.push(panel);
-    this.text(PAD + 4, TOP + 4, this.t('race.title', { count: picture.size }), PALETTE.label);
+    // The hourglass of the races, then the title after it.
+    let titleX = PAD + 4;
+    if (this.scene.textures.exists(RACE_ICON.texture)) {
+      const icon = this.scene.add
+        .image(titleX, TOP + 1, RACE_ICON.texture)
+        .setOrigin(0, 0)
+        .setScale(RACE_ICON.scale)
+        .setDepth(PANEL_DEPTH + 2);
+      this.parts.push(icon);
+      titleX += icon.displayWidth + ICON_GAP;
+    }
+    this.text(titleX, TOP + 4, this.t('race.title', { count: picture.size }), PALETTE.label);
     this.drawMiniature(picture);
     const { miniature } = RACE_LAYOUT;
     const below = miniature.y + miniature.height + 4;
+    const rows = RACE_COUNTERS.rows * fontMetrics(8).fontSize;
     this.counters = {
-      automaton: this.text(PAD + 4, below, '', AUTOMATON),
-      bruto: this.text(PAD + 4, below + 12, '', BRUTO),
+      automaton: this.counter(below, AUTOMATON),
+      bruto: this.counter(below + rows, BRUTO),
     };
     this.drawChart(picture.chart);
   }
 
-  /** The garden of the race seen from far away: thin vines, tiny sprouts. */
+  /**
+   * The garden of the race seen from far away: thin vines, and tiny sprouts in the garden's own
+   * look, cold blue bodies with the near-black outline of the pieces and a glint of light.
+   */
   private drawMiniature(picture: RacePanelPicture): void {
     const g = this.scene.add.graphics().setDepth(PANEL_DEPTH + 1);
     this.parts.push(g);
     g.lineStyle(1, PALETTE.darkVine, 0.35);
     for (const [a, b] of picture.miniature.vines) g.lineBetween(a.x, a.y, b.x, b.y);
-    g.fillStyle(PALETTE.dark, 1);
-    for (const { x, y } of picture.miniature.sprouts) g.fillCircle(x, y, 1.5);
+    for (const { x, y } of picture.miniature.sprouts) {
+      g.fillStyle(PALETTE.background, 1).fillCircle(x, y, 2.5);
+      g.fillStyle(PALETTE.dark, 1).fillCircle(x, y, 1.5);
+      g.fillStyle(PALETTE.moon, 0.8).fillRect(Math.round(x) - 1, Math.round(y) - 1, 1, 1);
+    }
   }
 
   /** The chart: its axes and labels, the sizes along the bottom, and the dots seen so far. */
@@ -109,8 +139,15 @@ export class RaceView {
     g.lineStyle(1, PALETTE.label, 0.7)
       .lineBetween(x0, y0, x0, y0 + height)
       .lineBetween(x0, y0 + height, x0 + width, y0 + height);
-    this.text(x0 - 2, y0 - 22, this.t('race.legend.automaton'), AUTOMATON);
-    this.text(x0 + width / 2, y0 - 22, this.t('race.legend.bruto'), BRUTO);
+    // Each runner's name after a dot of its curve's colour, drawn: the pixel font has no ●.
+    const legend = [
+      [x0 - 2, 'race.legend.automaton', AUTOMATON],
+      [x0 + width / 2, 'race.legend.bruto', BRUTO],
+    ] as const;
+    for (const [x, key, colour] of legend) {
+      const label = this.text(x + LEGEND_DOT_ROOM, y0 - 22, this.t(key), colour);
+      g.fillStyle(colour, 1).fillCircle(x + 2, y0 - 22 + label.height / 2, 2);
+    }
     this.text(x0 + 3, y0 - 11, this.t('race.axis.steps'), PALETTE.darkVine);
     this.text(x0 + width - 30, y0 + height + 10, this.t('race.axis.sprouts'), PALETTE.darkVine);
     for (const { n, x } of chart.sizes) {
@@ -140,6 +177,11 @@ export class RaceView {
   private counterText(runner: 'automaton' | 'bruto', counter: CounterPicture): string {
     const { key, params } = raceCounterText(runner, counter);
     return this.t(key, params);
+  }
+
+  /** A runner's counter, wrapping before the chart. */
+  private counter(y: number, colour: number): Phaser.GameObjects.Text {
+    return this.text(RACE_COUNTERS.x, y, '', colour).setWordWrapWidth(RACE_COUNTERS.width);
   }
 
   /** A line of text on the panel. */

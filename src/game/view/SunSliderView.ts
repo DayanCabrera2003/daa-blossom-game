@@ -1,18 +1,20 @@
 import type Phaser from 'phaser';
+import { SUN_ICON } from '../picture/buttonIcon';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 
 /**
- * The sun of the top bar (GDD 0.5): a slider over the day. Dragging the sun, or pressing anywhere on
- * its track, moves through the history; the scene turns the position into a step (`systems/sun.ts`)
- * and seeks the session. While the script waits for the sun, a ring pulses around it. Before the
+ * The sun of the top bar (GDD 0.5): a slider over the day, its handle the sun icon of the pack.
+ * Dragging the sun, or pressing anywhere on its track, moves through the history; the scene turns
+ * the position into a step (`systems/sun.ts`) and seeks the session. While the script waits for the sun, a ring pulses around it. Before the
  * level where it unlocks, neither the track nor the sun is shown.
  */
 export class SunSliderView {
   private readonly track: Phaser.GameObjects.Graphics;
   /** The track's touch area: a press anywhere on it moves the sun there. */
   private readonly hitArea: Phaser.GameObjects.Zone;
-  private readonly knob: Phaser.GameObjects.Arc;
+  /** The sun of the pack (`Sun.png`), or a disc while its picture is not loaded. */
+  private readonly knob: Phaser.GameObjects.Image | Phaser.GameObjects.Arc;
   /** A ring that pulses around the sun while the script waits for it to move. */
   private readonly call: Phaser.GameObjects.Arc;
   private readonly pulse: Phaser.Tweens.Tween;
@@ -47,8 +49,12 @@ export class SunSliderView {
       repeat: -1,
       paused: true,
     });
-    this.knob = scene.add
-      .circle(x1, y, 6, PALETTE.sun)
+    const { texture, scale } = SUN_ICON;
+    this.knob = (
+      scene.textures.exists(texture)
+        ? scene.add.image(x1, y, texture).setScale(scale)
+        : scene.add.circle(x1, y, 6, PALETTE.sun)
+    )
       .setDepth(102)
       .setInteractive({ useHandCursor: true });
     scene.input.setDraggable(this.knob);

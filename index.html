@@ -5,10 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Florecer</title>
     <style>
+      /* The pixel font of the game (monogram extended, CC0); the game starts once it is loaded. */
+      @font-face {
+        font-family: 'monogram';
+        src: url('/assets/fonts/monogram-extended.ttf') format('truetype');
+        font-display: block;
+      }
       html,
       body {
         margin: 0;
-        background: #1d2433;
+        background: #141b1b;
+      }
+      /* A block, so no text baseline makes the page taller than a canvas that fits the window. */
+      canvas {
+        display: block;
       }
     </style>
   </head>

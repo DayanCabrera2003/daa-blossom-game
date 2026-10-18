@@ -7,7 +7,7 @@ import type { GardenState } from '@core/rules/state';
 import { itemAt } from '@core/shared/itemAt';
 import type { SproutKind } from '@levels/fields';
 import { chainGain } from '../input/dragChain';
-import { flowerOutline } from '../input/flowerShape';
+import { centroid, flowerOutline } from '../input/flowerShape';
 import { FLOWER_PADDING } from '../input/HitTest';
 import { NO_SELECTION, type Selection } from '../input/selection';
 import type { Point } from '../input/target';
@@ -47,6 +47,10 @@ export interface FlowerPicture {
   readonly id: number;
   readonly depth: number;
   readonly outline: readonly Point[];
+  /** How many petals it shows: one per member of its cycle, a nested flower counting as one. */
+  readonly petals: number;
+  /** The middle of the sprouts it folds, where its petals are drawn. */
+  readonly centre: Point;
 }
 
 /** Everything drawn in the garden at one moment. */
@@ -97,15 +101,35 @@ export function flowerPictures(
   const flowers: FlowerPicture[] = [];
   const walk = (node: GardenNode, depth: number): void => {
     if (node.kind !== 'blossom') return;
+    const points = members(node).map(at);
     flowers.push({
       id: node.id,
       depth,
-      outline: flowerOutline(members(node).map(at), nestedPadding(depth)),
+      outline: flowerOutline(points, nestedPadding(depth)),
+      petals: node.cycle.length,
+      centre: centroid(points),
     });
     for (const child of node.cycle) walk(child, depth + 1);
   };
   for (const node of nodes) walk(node, 0);
   return flowers;
+}
+
+/**
+ * With stones lifted, the outline of each odd group they leave, round its sprouts drawn at `at`.
+ * In the fog the groups would tell which vines join whom before they are inspected, so, like the
+ * Council's count, they are only drawn once the certificate is presented with "Terminé" (7.5).
+ */
+export function oddGroupPictures(
+  state: GardenState,
+  at: (v: VertexId) => Point,
+): (readonly Point[])[] {
+  const groupsHidden = state.revealed !== null && !state.declaredDone;
+  return state.stones.length === 0 || groupsHidden
+    ? []
+    : oddComponents(state.graph, state.stones).map((group) =>
+        flowerOutline(group.map(at), GROUP_PADDING),
+      );
 }
 
 /**
@@ -166,21 +190,11 @@ export function gardenPicture(
 
   const flowers = flowerPictures(layer.nodes, at);
 
-  // In the fog the groups would tell which vines join whom before they are inspected, so, like the
-  // Council's count, they are only drawn once the certificate is presented with "Terminé" (7.5).
-  const groupsHidden = revealed !== null && !state.declaredDone;
-  const oddGroups =
-    state.stones.length === 0 || groupsHidden
-      ? []
-      : oddComponents(state.graph, state.stones).map((group) =>
-          flowerOutline(group.map(at), GROUP_PADDING),
-        );
-
   return {
     sprouts,
     vines,
     flowers,
-    oddGroups,
+    oddGroups: oddGroupPictures(state, at),
     fog: revealed === null ? null : { revealed },
     chain:
       extras.chain === null

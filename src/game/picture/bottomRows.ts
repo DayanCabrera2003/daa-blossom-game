@@ -1,4 +1,5 @@
 import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { PIXEL_FONT } from './pixelFont';
 
 /**
  * The two bottom rows of the level HUD on the 480×270 canvas: the tools, left to right from the
@@ -15,11 +16,8 @@ export const BOTTOM_ROWS = {
   padding: 4,
 } as const;
 
-/**
- * How far one letter of the greybox face advances: a monospace face 8 px high is 0.6 em wide per
- * letter in the common faces (4.8 px), rounded up so an estimate never falls short.
- */
-export const CHAR_ADVANCE = 5;
+/** How far one letter advances: the pixel font is monospaced, 6 px per character cell. */
+export const CHAR_ADVANCE = PIXEL_FONT.advance;
 
 /** The HUD buttons, in the order they are laid out from the right edge. */
 export const HUD_BUTTONS = [

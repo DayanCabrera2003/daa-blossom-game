@@ -18,6 +18,7 @@ import {
   type StageTurn,
 } from '../systems/presentation';
 import type { Question, QuestionOption } from '../systems/question';
+import type { SpokenLine } from '../systems/speaker';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
 import type { DialogueView } from '../view/DialogueView';
@@ -81,6 +82,10 @@ export interface PresenterHooks {
   readonly card: (card: CardId) => ShownCard;
   /** The player closed a mechanic card: it is seen. */
   readonly cardClosed: (card: CardId) => void;
+  /** The replayed day stepped on from `from` to `to`, for the sound of that step. */
+  readonly replayed?: (from: GardenState, to: GardenState) => void;
+  /** The race of script step `step` started on screen, for the sounds of that race. */
+  readonly raceStarted?: (step: number) => void;
 }
 
 /**
@@ -153,7 +158,7 @@ export class Presenter {
    * Shows the lines of a hint: beside an open question at once, otherwise in turn. `option` is the
    * option a grade-3 hint points at, marked on the question panel.
    */
-  hint(lines: readonly string[], option: number | null): void {
+  hint(lines: readonly SpokenLine[], option: number | null): void {
     if (hintsShowBeside(this.stage)) this.views.dialogue.say(lines);
     else this.present({ kind: 'lines', lines });
     if (option !== null) this.views.question.mark(option);
@@ -207,6 +212,7 @@ export class Presenter {
           startedAt: this.scene.time.now,
           duration: start.duration,
         };
+        this.hooks.raceStarted?.(start.step);
         break;
       case 'counterexample':
         this.hooks.counterexample(start.question, start.option);
@@ -281,6 +287,12 @@ export class Presenter {
     const replaying = this.replaying;
     if (replaying === null) return;
     const elapsed = time - replaying.startedAt;
+    // The step to dusk is heard too, though dusk then shows the player's own day again.
+    const reached = replayAt(replaying.plan, elapsed);
+    if (reached > replaying.cursor) {
+      const from = itemAt(replaying.day, replaying.cursor);
+      this.hooks.replayed?.(from, itemAt(replaying.day, reached));
+    }
     if (elapsed >= replaying.plan.duration) {
       this.replaying = null;
       if (replaying.light) this.hooks.searched();
@@ -288,7 +300,7 @@ export class Presenter {
       this.start(finishShowing(this.stage));
       return;
     }
-    replaying.cursor = replayAt(replaying.plan, elapsed);
+    replaying.cursor = reached;
     this.hooks.showDay(itemAt(replaying.day, replaying.cursor));
   }
 }

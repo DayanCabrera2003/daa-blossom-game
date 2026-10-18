@@ -1,0 +1,1268 @@
+{
+  "packs": {
+    "ninja": {
+      "name": "Ninja Adventure Asset Pack",
+      "version": null,
+      "author": "Pixel-boy and AAA",
+      "license": "CC0-1.0",
+      "url": "https://pixel-boy.itch.io/ninja-adventure-asset-pack"
+    },
+    "monogram": {
+      "name": "monogram",
+      "version": null,
+      "author": "Vinícius Menézio (datagoblin)",
+      "license": "CC0-1.0",
+      "url": "https://datagoblin.itch.io/monogram"
+    },
+    "tinyTown": {
+      "name": "Tiny Town",
+      "version": "1.1",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "url": "https://kenney.nl/assets/tiny-town"
+    },
+    "uiPixel": {
+      "name": "UI Pack - Pixel Adventure",
+      "version": "2.0",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "url": "https://kenney.nl/assets/ui-pack-pixel-adventure"
+    },
+    "musicJingles": {
+      "name": "Music Jingles",
+      "version": null,
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "url": "https://kenney.nl/assets/music-jingles"
+    },
+    "interfaceSounds": {
+      "name": "Interface Sounds",
+      "version": "1.0",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "url": "https://kenney.nl/assets/interface-sounds"
+    },
+    "rpgAudio": {
+      "name": "RPG Audio",
+      "version": null,
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "url": "https://kenney.nl/assets/rpg-audio"
+    },
+    "own": {
+      "name": "Original work",
+      "version": null,
+      "author": "Dayan Cabrera",
+      "license": "MIT",
+      "url": "https://github.com/DayanCabrera2003/daa-blossom-game"
+    }
+  },
+  "assets": {
+    "image.palette": {
+      "path": "assets/images/palette.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Palette.png",
+      "bytes": 341,
+      "sha256": "769f5ae6be86f4e8c5f811d4f10f5a7ea4fe9e649316b3fcced2e0aa843437f9",
+      "image": {
+        "width": 10,
+        "height": 9
+      }
+    },
+    "font.monogram": {
+      "path": "assets/fonts/monogram-extended.ttf",
+      "kind": "font",
+      "group": "boot",
+      "pack": "monogram",
+      "source": "ttf/monogram-extended.ttf",
+      "bytes": 59008,
+      "sha256": "68648b5c939c4935d8ec7b3a0614c8e7dc3ba23caa11070456a154600e4d2171"
+    },
+    "tiles.floor": {
+      "path": "assets/images/tiles/floor.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Tilesets/TilesetFloor.png",
+      "bytes": 29615,
+      "sha256": "e111065065edf806e7e893330086e68efc8755175d92f14d087b42d40a331e16",
+      "image": {
+        "width": 352,
+        "height": 417
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "tiles.floorDetail": {
+      "path": "assets/images/tiles/floor-detail.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Tilesets/TilesetFloorDetail.png",
+      "bytes": 5446,
+      "sha256": "eab91fc2a1d10191e3c26a6e936175a2492b6ef481c4ba7d984b717954bf1c01",
+      "image": {
+        "width": 256,
+        "height": 80
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "tiles.nature": {
+      "path": "assets/images/tiles/nature.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Tilesets/TilesetNature.png",
+      "bytes": 43359,
+      "sha256": "51eedd957ad4ac88988d170aa83a42404ef8fdebff9e6753b6fe80841ab3d5bb",
+      "image": {
+        "width": 384,
+        "height": 336
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "tiles.water": {
+      "path": "assets/images/tiles/water.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Tilesets/TilesetWater.png",
+      "bytes": 23565,
+      "sha256": "927e1fa1e793bb0398fdaad40cea22792c20f66703cdba80fb9462df7cbc275c",
+      "image": {
+        "width": 448,
+        "height": 272
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "tiles.house": {
+      "path": "assets/images/tiles/house.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Tilesets/TilesetHouse.png",
+      "bytes": 58356,
+      "sha256": "acdec09ff389883a48af18ebd344cac4081db0388154d4d13be0089cd376d508",
+      "image": {
+        "width": 528,
+        "height": 368
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "tiles.element": {
+      "path": "assets/images/tiles/element.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Tilesets/TilesetElement.png",
+      "bytes": 13884,
+      "sha256": "63d64985697d77033372256b9304ea85db7061f0fc19aafd0714492a9b57140e",
+      "image": {
+        "width": 256,
+        "height": 240
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "tiles.interiorFloor": {
+      "path": "assets/images/tiles/interior-floor.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Tilesets/Interior/TilesetInteriorFloor.png",
+      "bytes": 13012,
+      "sha256": "e281598e2d90f43b31fd557b94c2d2abb00d307758a053b7df301575bf535e3a",
+      "image": {
+        "width": 352,
+        "height": 272
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "portrait.sauce": {
+      "path": "assets/images/portraits/sauce.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Character/OldMan3/Faceset.png",
+      "bytes": 812,
+      "sha256": "3e1a6a95088e3a4742765e59dd542d40c776a8619bec59a66380b7ca8b543bb3",
+      "image": {
+        "width": 38,
+        "height": 38
+      }
+    },
+    "portrait.bruto": {
+      "path": "assets/images/portraits/bruto.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Character/OldMan2/Faceset.png",
+      "bytes": 3382,
+      "sha256": "481800606ed3a6be2853d29d1fd1a611db3122e64f8221066fc207d21ee34505",
+      "image": {
+        "width": 38,
+        "height": 38
+      }
+    },
+    "ui.facesetBox": {
+      "path": "assets/images/ui/faceset-box.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Dialog/FacesetBox.png",
+      "bytes": 2997,
+      "sha256": "751497f65313c6e4c7b819f9687f2248f75b6fb139241772a0a5e24177d7689e",
+      "image": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    "actor.lantern": {
+      "path": "assets/images/actors/lantern.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Actor/Monster/LanternRed/SpriteSheet.png",
+      "bytes": 923,
+      "sha256": "835ba536895ac67d0a008f6266840d698ed3a428f5ab47c0330a5820bc0061e8",
+      "image": {
+        "width": 64,
+        "height": 64
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "anim.flower": {
+      "path": "assets/images/animated/flower.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Animated/Flower/SpriteSheet16x16.png",
+      "bytes": 155,
+      "sha256": "a9b10d5432661ee437006ffeac897927dbf0cf9f3856deeee7c30106fcb90560",
+      "image": {
+        "width": 20,
+        "height": 8
+      },
+      "frame": {
+        "width": 10,
+        "height": 8
+      }
+    },
+    "anim.waterRipples": {
+      "path": "assets/images/animated/water-ripples.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Animated/Water Ripples/SpriteSheet16x16.png",
+      "bytes": 251,
+      "sha256": "6c4aa7b642943130efc10b9f18047d57e6fa9fb883c5e6896cba8f2dbea2aa0e",
+      "image": {
+        "width": 64,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "fx.fog": {
+      "path": "assets/images/fx/fog.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "FX/Environment/Fog.png",
+      "bytes": 1976,
+      "sha256": "1d3a5a678b53e0e89926f1fa38cda5429b0a8905e637b8413b2066ecd96480a9",
+      "image": {
+        "width": 320,
+        "height": 180
+      }
+    },
+    "fx.smoke": {
+      "path": "assets/images/fx/smoke.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "FX/Smoke/Smoke/SpriteSheet.png",
+      "bytes": 1446,
+      "sha256": "33b2fc9c855a3dfc620f3bc5e494ab08e559b29737d72ea0b80283b779e5023d",
+      "image": {
+        "width": 192,
+        "height": 32
+      },
+      "frame": {
+        "width": 32,
+        "height": 32
+      }
+    },
+    "fx.spark": {
+      "path": "assets/images/fx/spark.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "FX/Particle/Spark.png",
+      "bytes": 208,
+      "sha256": "b2f32126ee225f68aabb04f4c1a37471be2219e2745bbfa5f5bdefa4fb9d64c5",
+      "image": {
+        "width": 70,
+        "height": 8
+      },
+      "frame": {
+        "width": 10,
+        "height": 8
+      }
+    },
+    "fx.leafPink": {
+      "path": "assets/images/fx/leaf-pink.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "FX/Particle/LeafPink.png",
+      "bytes": 293,
+      "sha256": "183bff25f633d8964fd433646a86c165539881c81c08c11c4a5c5a258fc1e871",
+      "image": {
+        "width": 72,
+        "height": 7
+      },
+      "frame": {
+        "width": 12,
+        "height": 7
+      }
+    },
+    "anim.flagRed": {
+      "path": "assets/images/animated/flag-red.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Animated/Flag/FlagRed16x16.png",
+      "bytes": 419,
+      "sha256": "7ed0d290d0c6c96a8247bd5fef79321155b383e8233d2045e8548534579de8c3",
+      "image": {
+        "width": 64,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "anim.flagYellow": {
+      "path": "assets/images/animated/flag-yellow.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Animated/Flag/FlagYellow16x16.png",
+      "bytes": 420,
+      "sha256": "9e7dcc1d071239bf73be6f751a924857c0abf1643534cfa156d5a4ec918e9596",
+      "image": {
+        "width": 64,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "anim.flagBlue": {
+      "path": "assets/images/animated/flag-blue.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Animated/Flag/FlagBlue16x16.png",
+      "bytes": 420,
+      "sha256": "40d6c6d47b7121d80ae1c3e57843444aae14433b7b1bd1ebb2212ec8b3c249aa",
+      "image": {
+        "width": 64,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "anim.flagGreen": {
+      "path": "assets/images/animated/flag-green.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Backgrounds/Animated/Flag/FlagGreen16x16.png",
+      "bytes": 419,
+      "sha256": "2e553036d17e28c211f9c50de67c9c34042ceaba83025085c8f51e1dc1f9ba15",
+      "image": {
+        "width": 64,
+        "height": 16
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "fx.leaf": {
+      "path": "assets/images/fx/leaf.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "FX/Particle/Leaf.png",
+      "bytes": 287,
+      "sha256": "4c46d476572fe8ce8d1f29fade6e1aa25e9c4550ff45b195f67fb344dd16a95c",
+      "image": {
+        "width": 72,
+        "height": 7
+      }
+    },
+    "fx.snow": {
+      "path": "assets/images/fx/snow.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "FX/Particle/Snow.png",
+      "bytes": 163,
+      "sha256": "0b0c8b81de3ee0902b6834551d37c0c5283a9212820f9b3de51ff3b2dd8bcf47",
+      "image": {
+        "width": 56,
+        "height": 8
+      }
+    },
+    "kenney.town": {
+      "path": "assets/images/kenney/tiny-town.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "tinyTown",
+      "source": "Tilemap/tilemap_packed.png",
+      "bytes": 5042,
+      "sha256": "3a54d99ecde790d4fdea207a3644cf130fc56fa838f1beb1507c185a95b8e902",
+      "image": {
+        "width": 192,
+        "height": 176
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "ui.dialogBox": {
+      "path": "assets/images/ui/dialog-box.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Dialog/DialogBox.png",
+      "bytes": 571,
+      "sha256": "302b7b80502cb4241364f1ec8de7fe06925fca6b6ef57b70cd0d8b749f38038c",
+      "image": {
+        "width": 300,
+        "height": 58
+      }
+    },
+    "wood.panel": {
+      "path": "assets/images/ui/wood/panel.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/nine_path_panel.png",
+      "bytes": 238,
+      "sha256": "5f3ba8ee42700fc366c3ebdf2f9b478cf35d47d6d3e6e8266ca181aa30cebda1",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "wood.buttonHover": {
+      "path": "assets/images/ui/wood/button-hover.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/button_hover.png",
+      "bytes": 179,
+      "sha256": "079b878c143fbda9d1c0bd8125ab64e0d27e3706e00db951d2ffe772a0fe74bc",
+      "image": {
+        "width": 16,
+        "height": 8
+      }
+    },
+    "wood.buttonPressed": {
+      "path": "assets/images/ui/wood/button-pressed.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/button_pressed.png",
+      "bytes": 164,
+      "sha256": "cc27c1ad10d5cfad572d867f2a00bb0cc39bb2f933b96be8aad3922c68585242",
+      "image": {
+        "width": 16,
+        "height": 8
+      }
+    },
+    "wood.buttonDisabled": {
+      "path": "assets/images/ui/wood/button-disabled.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/button_disabled.png",
+      "bytes": 175,
+      "sha256": "273103b342c12702ebdd8f5714c98d32b20814e5e999bc2a97a85888691f98fc",
+      "image": {
+        "width": 16,
+        "height": 8
+      }
+    },
+    "wood.sliderGrabber": {
+      "path": "assets/images/ui/wood/slider-grabber.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/h_slidder_grabber.png",
+      "bytes": 186,
+      "sha256": "9b3de9abbbcc059982f133720bd54305bc550ce3c0601043ae5b447fbe91b8a4",
+      "image": {
+        "width": 13,
+        "height": 11
+      }
+    },
+    "wood.sliderGrabberHover": {
+      "path": "assets/images/ui/wood/slider-grabber-hover.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/h_slidder_grabber_hover.png",
+      "bytes": 185,
+      "sha256": "315b924642346509ba15ebf75dafbd0850c9e2bf8e46d1d10442494612e37d64",
+      "image": {
+        "width": 13,
+        "height": 11
+      }
+    },
+    "wood.sliderGrabberDisabled": {
+      "path": "assets/images/ui/wood/slider-grabber-disabled.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/h_slidder_grabber_disabled.png",
+      "bytes": 183,
+      "sha256": "e9c54c2d23f5332805d70305d26bc159aa91d06cc5611a271b915b83ccefb291",
+      "image": {
+        "width": 13,
+        "height": 11
+      }
+    },
+    "wood.sliderProgress": {
+      "path": "assets/images/ui/wood/slider-progress.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/slider_progress.png",
+      "bytes": 180,
+      "sha256": "afe1b411c866348a743715e2534de734609188a30a49d26bcb065da2902bf4fe",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "wood.sliderProgressHover": {
+      "path": "assets/images/ui/wood/slider-progress-hover.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/slider_progress_hover.png",
+      "bytes": 176,
+      "sha256": "02951bbe24f4d19a478fc8363f306184ab5fcff2555cb59c21c93f5d9676fedc",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "wood.checked": {
+      "path": "assets/images/ui/wood/checked.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/checked.png",
+      "bytes": 315,
+      "sha256": "571c7d044de5bb025db028786b02d80f482af2c2d86c7c360e1a1ba41a051aab",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "wood.unchecked": {
+      "path": "assets/images/ui/wood/unchecked.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Theme/Theme Wood/unchecked.png",
+      "bytes": 187,
+      "sha256": "60ea6fafacbc9a07b4b82932b0a2074d7ec475297fdb16de4d0f74be0e11f729",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "icon.sun": {
+      "path": "assets/images/ui/icons/sun.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Ui/Skill Icon/Meteo/Sun.png",
+      "bytes": 422,
+      "sha256": "a48466770239fa5a135ec0f06ac11870861adef35c0f6a9199ae26cd3ab6fb61",
+      "image": {
+        "width": 24,
+        "height": 24
+      }
+    },
+    "icon.water": {
+      "path": "assets/images/ui/icons/water.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Items/Resource/Water.png",
+      "bytes": 324,
+      "sha256": "99004af5dd21dd9b93826938f2812109d393c906f61016dfe0aae9e29bb6e087",
+      "image": {
+        "width": 14,
+        "height": 14
+      }
+    },
+    "icon.rock": {
+      "path": "assets/images/ui/icons/rock.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Items/Resource/Rock.png",
+      "bytes": 314,
+      "sha256": "c86c7f19f5f6b909337c2ecdd6fe0bbb789266a953dfbc2635b04896936f6ed7",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "icon.book": {
+      "path": "assets/images/ui/icons/book.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Items/Object/Book.png",
+      "bytes": 307,
+      "sha256": "28b0cf86c3281cd7e3efa216c0dd7e342960ee4f1cc1e88e58333686ee68dc35",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "icon.seed": {
+      "path": "assets/images/ui/icons/seed.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Items/Food/Seed1.png",
+      "bytes": 157,
+      "sha256": "ab715a9ea53be68a983811dfd58bd89a7c40947067be27c94d0cecf35e3eff01",
+      "image": {
+        "width": 8,
+        "height": 8
+      }
+    },
+    "icon.hourglass": {
+      "path": "assets/images/ui/icons/hourglass.png",
+      "kind": "image",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Items/Object/Hourglass.png",
+      "bytes": 312,
+      "sha256": "1d1a3f0cb17ab3205772aa11ea787865ec09130d4d5c7f40bd4f59b64604d957",
+      "image": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "kenney.ui": {
+      "path": "assets/images/kenney/ui-pixel.png",
+      "kind": "sheet",
+      "group": "boot",
+      "pack": "uiPixel",
+      "source": "Tilesheets/Small tiles/Thick outline/tilemap_packed.png",
+      "bytes": 3762,
+      "sha256": "ee750f85cc1418deb76e30b01dd36a01dd5eead911d2575e26d846b06a888a3b",
+      "image": {
+        "width": 368,
+        "height": 112
+      },
+      "frame": {
+        "width": 16,
+        "height": 16
+      }
+    },
+    "music.hub": {
+      "path": "assets/audio/music/hub.ogg",
+      "kind": "music",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Musics/4 - Village.ogg",
+      "bytes": 1049153,
+      "sha256": "2b121eb7cf1de26caa54f620259835959ba121a07b66b91c2ea00eda5c1ec96b"
+    },
+    "music.ch1": {
+      "path": "assets/audio/music/ch1.ogg",
+      "kind": "music",
+      "group": "ch1",
+      "pack": "ninja",
+      "source": "Audio/Musics/31 - Sunny.ogg",
+      "bytes": 1698467,
+      "sha256": "c0086cef505a0f9c9b027524be3d7afa028d4c85fb62e55043be849327255c3c"
+    },
+    "music.ch2": {
+      "path": "assets/audio/music/ch2.ogg",
+      "kind": "music",
+      "group": "ch2",
+      "pack": "ninja",
+      "source": "Audio/Musics/39 - Boat.ogg",
+      "bytes": 2333552,
+      "sha256": "6e4d3c55fce77bf83902ef9138c789cbbc7609b65fb509749b155c1305d6d5dd"
+    },
+    "music.ch3": {
+      "path": "assets/audio/music/ch3.ogg",
+      "kind": "music",
+      "group": "ch3",
+      "pack": "ninja",
+      "source": "Audio/Musics/22 - Dream.ogg",
+      "bytes": 2333929,
+      "sha256": "a3baf1b0a7da883334caf20ba9b09f72e65d6459b6888b2905cdf1905034ced9"
+    },
+    "music.ch4": {
+      "path": "assets/audio/music/ch4.ogg",
+      "kind": "music",
+      "group": "ch4",
+      "pack": "ninja",
+      "source": "Audio/Musics/20 - Good Time.ogg",
+      "bytes": 1557193,
+      "sha256": "da0030605748c682ce3e89e7b260f48390f33b181666da5c563c4025c5355a04"
+    },
+    "music.ch5": {
+      "path": "assets/audio/music/ch5.ogg",
+      "kind": "music",
+      "group": "ch5",
+      "pack": "ninja",
+      "source": "Audio/Musics/11 - Clearing.ogg",
+      "bytes": 1382053,
+      "sha256": "16200b1a8f1d17aa45cf92b12db9c56bf03257dde1285435dbb1857edd5350f2"
+    },
+    "music.ch6": {
+      "path": "assets/audio/music/ch6.ogg",
+      "kind": "music",
+      "group": "ch6",
+      "pack": "ninja",
+      "source": "Audio/Musics/27 - Chill.ogg",
+      "bytes": 1169040,
+      "sha256": "655bb2ea668af8438ac95bcb89ea8c63738948cda9bc1148867fb141953e20f1"
+    },
+    "music.ch6Race": {
+      "path": "assets/audio/music/ch6-race.ogg",
+      "kind": "music",
+      "group": "ch6",
+      "pack": "ninja",
+      "source": "Audio/Musics/23 - Road.ogg",
+      "bytes": 1080204,
+      "sha256": "db2ab7d26668e5737779289d400da443ac574a0caeb34bea21d4754cdbd947c7"
+    },
+    "music.ch7": {
+      "path": "assets/audio/music/ch7.ogg",
+      "kind": "music",
+      "group": "ch7",
+      "pack": "ninja",
+      "source": "Audio/Musics/12 - Temple.ogg",
+      "bytes": 1081913,
+      "sha256": "192890815e29be68e89242c705924482c10d0e29353d174f2fdd3a514ed83eb1"
+    },
+    "music.credits": {
+      "path": "assets/audio/music/credits.ogg",
+      "kind": "music",
+      "group": "credits",
+      "pack": "ninja",
+      "source": "Audio/Musics/15 - Credit Theme.ogg",
+      "bytes": 1374007,
+      "sha256": "bc26046f7e3b5b6ccb2370e6ee0b4c8287755a251fa48134db99e9767de4099a"
+    },
+    "jingle.victory": {
+      "path": "assets/audio/jingles/victory.ogg",
+      "kind": "jingle",
+      "group": "boot",
+      "pack": "musicJingles",
+      "source": "Pizzicato jingles/jingles_PIZZI01.ogg",
+      "bytes": 16579,
+      "sha256": "3f8f2534a297d19386c233a7ee4fa8737cc40870dd206010263760e1983dde46"
+    },
+    "jingle.unlock": {
+      "path": "assets/audio/jingles/unlock.wav",
+      "kind": "jingle",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Jingles/LevelUp1.wav",
+      "bytes": 52088,
+      "sha256": "23d2e1384a98d6d11fa86d6def0c19f2d312b5771124c2e06c0fc5ca9384e4a7"
+    },
+    "jingle.betWon": {
+      "path": "assets/audio/jingles/bet-won.wav",
+      "kind": "jingle",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Bonus/Coin.wav",
+      "bytes": 12870,
+      "sha256": "8a49fd097c698e8d2d3e470d32ddfefa60e48d9aea98386b3de2a81ad40c85a6"
+    },
+    "sfx.putOut": {
+      "path": "assets/audio/sfx/put-out.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "drop_002.ogg",
+      "bytes": 6411,
+      "sha256": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218"
+    },
+    "sfx.markSun": {
+      "path": "assets/audio/sfx/mark-sun.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "pluck_002.ogg",
+      "bytes": 6941,
+      "sha256": "c977fe249ff42d1c93a552b33abc13a8399df3879fa510475426e5c4bbac1da9"
+    },
+    "sfx.markMoon": {
+      "path": "assets/audio/sfx/mark-moon.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "pluck_001.ogg",
+      "bytes": 6317,
+      "sha256": "be97ec4893a02d6eccfb678daa76c83e34cb2583b834ec2593d2641def739fa4"
+    },
+    "sfx.conflict": {
+      "path": "assets/audio/sfx/conflict.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "question_001.ogg",
+      "bytes": 11700,
+      "sha256": "abb8f9e4eb2071491b0b15f84ee302386b1847609310c1b000ae174639a6cc5a"
+    },
+    "sfx.inspect": {
+      "path": "assets/audio/sfx/inspect.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Whoosh & Slash/Whoosh2.wav",
+      "bytes": 19574,
+      "sha256": "6580dddd031abdc8f6f29041e92d195cf58ea6af7c86e145e906500dcc9d9eea"
+    },
+    "sfx.waterDrop": {
+      "path": "assets/audio/sfx/water-drop.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Elemental/WaterDrop.wav",
+      "bytes": 13174,
+      "sha256": "22db23cf6ab840581cffe3f16da5cda9f899fa825b4aff2f59c665982f1ce43d"
+    },
+    "sfx.chainFound": {
+      "path": "assets/audio/sfx/chain-found.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "glass_004.ogg",
+      "bytes": 8323,
+      "sha256": "2379b58f953e3d86982aa8cddcae763022c6258e9820171bf905ce58b4e97766"
+    },
+    "sfx.searchCleared": {
+      "path": "assets/audio/sfx/search-cleared.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "minimize_001.ogg",
+      "bytes": 11924,
+      "sha256": "8481912bc7fa5828924a00ef15b6cd613b994956e0817bd3122065c9b2896d2d"
+    },
+    "sfx.stone": {
+      "path": "assets/audio/sfx/stone.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "bong_001.ogg",
+      "bytes": 4848,
+      "sha256": "d21d0f0b782445db579d11e2506b24cd1ac9d664ee33aeaf807761aa7b6fd710"
+    },
+    "sfx.scarecrow": {
+      "path": "assets/audio/sfx/scarecrow.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "rpgAudio",
+      "source": "cloth2.ogg",
+      "bytes": 11787,
+      "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201"
+    },
+    "sfx.reject": {
+      "path": "assets/audio/sfx/reject.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "back_002.ogg",
+      "bytes": 7029,
+      "sha256": "61581c58194e3f19f531072edabbc344204c7e0a2887b8ededce4357bcf09195"
+    },
+    "sfx.button": {
+      "path": "assets/audio/sfx/button.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "click_001.ogg",
+      "bytes": 4876,
+      "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+    },
+    "sfx.advance": {
+      "path": "assets/audio/sfx/advance.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "select_001.ogg",
+      "bytes": 5468,
+      "sha256": "aec0c31ea934a35936ae0d2ab8fac8123c93aa5647f935853a58dbaf90278b7a"
+    },
+    "sfx.panelOpen": {
+      "path": "assets/audio/sfx/panel-open.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "open_002.ogg",
+      "bytes": 14975,
+      "sha256": "24ff224fe2c09c6aed1b41249825382dc74cf324b887ff279d8494912ce2beee"
+    },
+    "sfx.panelClose": {
+      "path": "assets/audio/sfx/panel-close.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "close_002.ogg",
+      "bytes": 14752,
+      "sha256": "bc4279d2bb2bf86592473eab6a8eab55e51b54a8619315000dbd780a83b102d8"
+    },
+    "sfx.bookOpen": {
+      "path": "assets/audio/sfx/book-open.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "rpgAudio",
+      "source": "bookOpen.ogg",
+      "bytes": 8273,
+      "sha256": "953390534377222bee89ac8cd9e60a58fdc037c71a4d7c18c43cd647c7f34ba8"
+    },
+    "sfx.bookFlip1": {
+      "path": "assets/audio/sfx/book-flip1.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "rpgAudio",
+      "source": "bookFlip1.ogg",
+      "bytes": 18248,
+      "sha256": "fa81ac2fedc8c641661b87e349630a36c9800e795e0c800e029214efdbe26a7d"
+    },
+    "sfx.bookFlip2": {
+      "path": "assets/audio/sfx/book-flip2.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "rpgAudio",
+      "source": "bookFlip2.ogg",
+      "bytes": 12393,
+      "sha256": "3409042acbfaebc24c1a6327dc073e36f9250841712e96c5040da566a97df73c"
+    },
+    "sfx.bookFlip3": {
+      "path": "assets/audio/sfx/book-flip3.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "rpgAudio",
+      "source": "bookFlip3.ogg",
+      "bytes": 9077,
+      "sha256": "c85db5dceb3f1df073e960630277eaa88a5afda0477c1ddd68dad707621767be"
+    },
+    "sfx.bookClose": {
+      "path": "assets/audio/sfx/book-close.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "rpgAudio",
+      "source": "bookClose.ogg",
+      "bytes": 9292,
+      "sha256": "81e976532565f4372abd14e83d2684195fa548d0a28d345de221e56052454f32"
+    },
+    "sfx.card": {
+      "path": "assets/audio/sfx/card.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "maximize_002.ogg",
+      "bytes": 9915,
+      "sha256": "cc51162cb4506158b953b121bf479aad070056533ade5c5cd2f980183127ceb4"
+    },
+    "sfx.brutoSleeps": {
+      "path": "assets/audio/sfx/bruto-sleeps.ogg",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "interfaceSounds",
+      "source": "minimize_005.ogg",
+      "bytes": 19501,
+      "sha256": "4e6792a98c75d3ff187c0c55561c38c569e02c64757ebebb98831cfe84e3e172"
+    },
+    "voice.1": {
+      "path": "assets/audio/voice/voice1.wav",
+      "kind": "voice",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Voice/Voice1.wav",
+      "bytes": 15870,
+      "sha256": "88faa9c1426c170547beead31e3ff001bf422aa2d507f0034050b6427dcfb2a3"
+    },
+    "voice.2": {
+      "path": "assets/audio/voice/voice2.wav",
+      "kind": "voice",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Voice/Voice2.wav",
+      "bytes": 9216,
+      "sha256": "55b1e6ea884a716de696aae0b779b7ee474612244d7b1c3a293ddf3f3d873f58"
+    },
+    "voice.3": {
+      "path": "assets/audio/voice/voice3.wav",
+      "kind": "voice",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Voice/Voice3.wav",
+      "bytes": 7302,
+      "sha256": "2f837fcc2be527aec37d02977acdc2c4ef77a4b58de69ec142da9126a4360dc5"
+    },
+    "voice.4": {
+      "path": "assets/audio/voice/voice4.wav",
+      "kind": "voice",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Voice/Voice4.wav",
+      "bytes": 4822,
+      "sha256": "8c9d4c11265fe4fd09ac88c7a105f2a0666792bb4dfff5090856fb5b165e50c6"
+    },
+    "voice.6": {
+      "path": "assets/audio/voice/voice6.wav",
+      "kind": "voice",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Voice/Voice6.wav",
+      "bytes": 14410,
+      "sha256": "18327d6ff93bd54eac93616b19aa3c4855be29e5efc12e8b39fee33f6de1acc5"
+    },
+    "voice.7": {
+      "path": "assets/audio/voice/voice7.wav",
+      "kind": "voice",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Voice/Voice7.wav",
+      "bytes": 13060,
+      "sha256": "ac206d6b42bb1b51468fa5f1e5f6e1dd736dffeef2df1a1bf5e364ec2836f7f3"
+    },
+    "voice.10": {
+      "path": "assets/audio/voice/voice10.wav",
+      "kind": "voice",
+      "group": "boot",
+      "pack": "ninja",
+      "source": "Audio/Sounds/Voice/Voice10.wav",
+      "bytes": 12674,
+      "sha256": "6998938bca52a85f8408c4413084b238acdaba72232f4f2c5a32fe8760eafc0d"
+    },
+    "sfx.chime1": {
+      "path": "assets/audio/sfx/chime-01.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 1 (C5)",
+      "bytes": 35324,
+      "sha256": "44eff882289f280aee8e2cf19ef828e5f0e1167f05c7c76e71ffed97a2fd3913"
+    },
+    "sfx.chime2": {
+      "path": "assets/audio/sfx/chime-02.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 2 (D5)",
+      "bytes": 35324,
+      "sha256": "d29850773539a6c0ea4d40cc01581cfee0b6d44d1528142737b3478ec612388e"
+    },
+    "sfx.chime3": {
+      "path": "assets/audio/sfx/chime-03.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 3 (E5)",
+      "bytes": 35324,
+      "sha256": "711976ee5a3f368390aa55713f92d58a11acc7521f6368c1ce8cd0dd29fafa9a"
+    },
+    "sfx.chime4": {
+      "path": "assets/audio/sfx/chime-04.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 4 (G5)",
+      "bytes": 35324,
+      "sha256": "81333c095290ea3d6008e3499877f8334afc8099e2ccc4f419be93d3ee555b47"
+    },
+    "sfx.chime5": {
+      "path": "assets/audio/sfx/chime-05.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 5 (A5)",
+      "bytes": 35324,
+      "sha256": "78e1b8eac599a700e2a4a6c67d2553882c2adf4d44e99a7a6534b866fe1fab55"
+    },
+    "sfx.chime6": {
+      "path": "assets/audio/sfx/chime-06.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 6 (C6)",
+      "bytes": 35324,
+      "sha256": "92212aead3823ab828a597695ebd362d821929d781291957283383fa98a44797"
+    },
+    "sfx.chime7": {
+      "path": "assets/audio/sfx/chime-07.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 7 (D6)",
+      "bytes": 35324,
+      "sha256": "a20e04dabf753155fc43e34da1164f676ae79866a500d82559aeba635facf380"
+    },
+    "sfx.chime8": {
+      "path": "assets/audio/sfx/chime-08.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 8 (E6)",
+      "bytes": 35324,
+      "sha256": "a31c634455247350e647b73c709ba39eca1908f825219f4ef7eb00f08cf515c5"
+    },
+    "sfx.chime9": {
+      "path": "assets/audio/sfx/chime-09.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 9 (G6)",
+      "bytes": 35324,
+      "sha256": "eb8bde5296da0b8fcbc2dc127d3a56f8a3846a22467074eb30047e5506ff0267"
+    },
+    "sfx.chime10": {
+      "path": "assets/audio/sfx/chime-10.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 10 (A6)",
+      "bytes": 35324,
+      "sha256": "58b8fed4f0eb8464e60cd33c68c7abd0623a378c8e3b609b390614a83904dadc"
+    },
+    "sfx.chime11": {
+      "path": "assets/audio/sfx/chime-11.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 11 (C7)",
+      "bytes": 35324,
+      "sha256": "5edb28fb71faa84ff4b6ea050f70c2a95fd5a81976450c893f86d426f4d7c636"
+    },
+    "sfx.chime12": {
+      "path": "assets/audio/sfx/chime-12.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 12 (D7)",
+      "bytes": 35324,
+      "sha256": "4adb4fe7f63cd771f290b91a5dcee1c2cfc5aca09caa99ad23af1f373146b634"
+    },
+    "sfx.chime13": {
+      "path": "assets/audio/sfx/chime-13.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 13 (E7)",
+      "bytes": 35324,
+      "sha256": "b844c56d8225671eaa19b4ec03a8be35c344e65fd66e401e9d899813f5c4bd68"
+    },
+    "sfx.chime14": {
+      "path": "assets/audio/sfx/chime-14.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 14 (G7)",
+      "bytes": 35324,
+      "sha256": "128527bfcdb916b5169d66183e2953633d8d8236fb213470206d6ca52832cc96"
+    },
+    "sfx.chime15": {
+      "path": "assets/audio/sfx/chime-15.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "chime 15 (A7)",
+      "bytes": 35324,
+      "sha256": "93bcc9551627e9e80d3b06edef2bd2711de751b467aac367b54156964e6689a6"
+    },
+    "sfx.sparkle": {
+      "path": "assets/audio/sfx/sparkle.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "sparkle (E7, G7, A7)",
+      "bytes": 41498,
+      "sha256": "efc18d6c57d1130ae7caa169020a0d8b6149f7138d03febe7827870f90ee7c57"
+    },
+    "sfx.fold": {
+      "path": "assets/audio/sfx/fold.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "fold chord (C5, E5, G5)",
+      "bytes": 48554,
+      "sha256": "40c75bb6707d1412fd7752b17c02ecc9bde957b4b8f7c11d5df59a2374dab396"
+    },
+    "sfx.unfold": {
+      "path": "assets/audio/sfx/unfold.wav",
+      "kind": "sfx",
+      "group": "boot",
+      "pack": "own",
+      "source": "unfold arpeggio (G5, E5, C5)",
+      "bytes": 56492,
+      "sha256": "5317889cd268c64fc95cc98389a31e2a5a0621638d973adff407939c37f103e2"
+    },
+    "music.ch0": {
+      "path": "assets/audio/music/ch0-night.wav",
+      "kind": "music",
+      "group": "ch0",
+      "pack": "own",
+      "source": "crickets of the prologue night",
+      "bytes": 352844,
+      "sha256": "9c48c6698606f2bf608a38ec0daf03ad701ce839da90a09b168c0685b449bc8c"
+    }
+  }
+}

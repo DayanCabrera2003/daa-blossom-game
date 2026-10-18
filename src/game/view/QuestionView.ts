@@ -1,9 +1,14 @@
 import type Phaser from 'phaser';
+import { playUiSound } from '../audio/uiSound';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
+import { itemAt } from '@core/shared/itemAt';
+import { innerWidth, QUESTION_PANEL, questionLayout } from '../picture/panelLayout';
+import { WOOD_PANEL } from '../picture/wood';
 import { LAYOUT } from './layout';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
+import { WoodFrame } from './WoodFrame';
 
 /** One option as the panel shows it: what choosing it gives, and its text. */
 export interface ShownOption {
@@ -19,15 +24,12 @@ export interface ShownQuestion {
   readonly options: readonly ShownOption[];
 }
 
-/** Space between buttons, and around the panel's contents, in canvas pixels. */
-const GAP = 4;
-const PAD = 6;
 /** Depths: the blocker over the garden, then the panel, its text and its buttons. */
 const BLOCKER_DEPTH = 150;
 const PANEL_DEPTH = 250;
 
 /**
- * The panel of a question or a bet (plan 03, phase 4): the prompt, one button per option, and a
+ * The wooden panel of a question or a bet (plan 03, phase 4; laid out by `picture/panelLayout.ts`): the prompt, one button per option, and a
  * dim layer over the garden that takes every touch meant for it, so no lantern moves while the
  * question is open. The top bar and the dialogue box stay usable (a hint, going back). Options
  * flow left to right and wrap, so a row of numbers and a column of written answers both fit.
@@ -43,52 +45,54 @@ export class QuestionView {
     return this.parts.length > 0;
   }
 
-  /** Opens the panel; `onAnswer` gets the value of the option the player touches. */
+  /**
+   * Opens the panel; `onAnswer` gets the value of the option the player touches. A panel opening
+   * sounds its wood (plan 06, section 1.8); one already open just shows the new question.
+   */
   show(question: ShownQuestion, onAnswer: (value: number) => void): void {
-    this.close();
+    const reopening = this.open;
+    this.clear();
     const { scene } = this;
-    const { x, y, width } = LAYOUT.question;
+    if (!reopening) playUiSound(scene, 'sfx.panelOpen');
+    const { x, y, width } = QUESTION_PANEL;
     const blocker = scene.add
       .rectangle(0, LAYOUT.garden.y, CANVAS_WIDTH, LAYOUT.garden.height, PALETTE.fog, 0.3)
       .setOrigin(0, 0)
       .setDepth(BLOCKER_DEPTH)
       .setInteractive();
+    const ink = PALETTE[WOOD_PANEL.text];
     const prompt = scene.add
-      .text(x + PAD, y + PAD, question.prompt, {
-        ...textStyle(8),
-        wordWrap: { width: width - 2 * PAD },
+      .text(0, 0, question.prompt, {
+        ...textStyle(8, ink),
+        wordWrap: { width: innerWidth(width) },
       })
       .setDepth(PANEL_DEPTH + 1);
-    this.parts.push(blocker, prompt);
-
-    // Buttons flow left to right from under the prompt, wrapping at the panel's edge.
-    let bx = x + PAD;
-    let by = y + PAD + prompt.height + GAP + 1;
-    let rowHeight = 0;
-    for (const option of question.options) {
+    const buttons = question.options.map((option) => {
       const button = new Button(scene, 0, 0, option.label, () => onAnswer(option.value));
-      button.setDepth(PANEL_DEPTH + 2);
-      if (bx > x + PAD && bx + button.width > x + width - PAD) {
-        bx = x + PAD;
-        by += rowHeight + GAP;
-      }
-      button.moveTo(bx, by);
-      bx += button.width + GAP;
-      rowHeight = Math.max(rowHeight, button.height);
-      this.buttons.set(option.value, button);
-      this.parts.push(button);
-    }
+      this.buttons.set(option.value, button.setDepth(PANEL_DEPTH + 2));
+      return button;
+    });
+    // Laid out once every text is measured: the options flow and wrap under the prompt.
+    const layout = questionLayout(
+      prompt.height,
+      buttons.map((button) => button.width),
+    );
+    prompt.setPosition(layout.prompt.x, layout.prompt.y);
+    buttons.forEach((button, i) => {
+      const at = itemAt(layout.buttons, i);
+      button.moveTo(at.x, at.y + 1);
+    });
     const footer = scene.add
-      .text(x + PAD, by + rowHeight + GAP, question.footer, textStyle(8, PALETTE.darkVine))
+      .text(layout.footer.x, layout.footer.y, question.footer, textStyle(8, ink))
       .setDepth(PANEL_DEPTH + 1);
-    // The panel is drawn last, once its height is known; depth keeps it under its contents.
-    const panel = scene.add
-      .rectangle(x, y, width, footer.y + footer.height + PAD - y, PALETTE.panel, 0.97)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, PALETTE.panelEdge)
-      .setDepth(PANEL_DEPTH)
-      .setInteractive();
-    this.parts.push(footer, panel);
+    const panel = new WoodFrame(
+      scene,
+      WOOD_PANEL,
+      { x, y, width, height: layout.height },
+      PANEL_DEPTH,
+    );
+    panel.zone.setInteractive();
+    this.parts.push(blocker, prompt, ...buttons, footer, panel);
   }
 
   /** Marks an option as the one the mentor points at (a grade-3 hint). */
@@ -96,8 +100,14 @@ export class QuestionView {
     this.buttons.get(value)?.setActive(true);
   }
 
-  /** Takes the panel and its blocker away. */
+  /** Takes the panel and its blocker away, sounding its wood if it was open. */
   close(): void {
+    if (this.open) playUiSound(this.scene, 'sfx.panelClose');
+    this.clear();
+  }
+
+  /** Takes the panel and its blocker away, silently. */
+  private clear(): void {
     for (const part of this.parts) part.destroy();
     this.parts = [];
     this.buttons.clear();

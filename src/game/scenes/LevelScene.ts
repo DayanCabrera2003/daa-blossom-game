@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
 import type { Level } from '@levels/build';
-import { visibleLevels } from '@services/progress';
+import { unlockedLevels, visibleLevels } from '@services/progress';
 import { recordCompletion, recordNotebook, writeSave } from '@services/save';
+import type { AssetKey } from '../assets/keys';
+import { levelKeys, loadRequests } from '../assets/loadPlan';
 import {
   handle,
   openController,
@@ -9,10 +11,16 @@ import {
   type Effect,
   type UiEvent,
 } from '../systems/levelController';
+import { cardJingle, levelScreen, trackFor, victoryJingle } from '../systems/musicFor';
 import { playtestEntries } from '../systems/playtestEntries';
+import { raceCues } from '../systems/raceCues';
+import { replayCues } from '../systems/replayCues';
+import { effectCues } from '../systems/soundCues';
 import type { StarResult } from '../systems/stars';
 import { startCards, stepCard } from '../systems/tutorials';
+import { SfxPlayer } from '../audio/SfxPlayer';
 import { fitCamera } from '../view/fitCamera';
+import { LAYOUT } from '../view/layout';
 import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
@@ -22,6 +30,8 @@ import { bindLevelInput } from './level/levelInput';
 import { showEffect, type EffectStage } from './level/levelEffects';
 import { buildLevelViews, buildPresenterViews, type LevelViews } from './level/levelViews';
 import { Presenter } from './presenter';
+import { queueLoads } from './queueLoads';
+import { addSettings } from './settingsPanel';
 
 /**
  * A level being played. The scene takes no decision and draws nothing itself: it builds the screen
@@ -46,6 +56,10 @@ export class LevelScene extends Phaser.Scene {
   private cards!: LevelCards;
   /** Where the controller's effects are shown (`level/levelEffects.ts`). */
   private stage!: EffectStage;
+  /** Plays the sounds of moves, refusals and replays on the effects channel. */
+  private sfx!: SfxPlayer;
+  /** The jingle of the win, rung when the victory panel shows. */
+  private winJingle: AssetKey = 'jingle.victory';
   /**
    * Whether create() built the level. Phaser reuses this scene object for every level, so the flag
    * is reset on each create(); it stays false when the level id is unknown and the scene is
@@ -55,6 +69,16 @@ export class LevelScene extends Phaser.Scene {
 
   constructor() {
     super('level');
+  }
+
+  /**
+   * Loads the music of the level's chapter (its race variant too, in chapter 6) unless an earlier
+   * level of the chapter already did; the boot group is loaded by then.
+   */
+  preload(): void {
+    const { levelId } = this.sys.settings.data as { levelId: string };
+    const missing = levelKeys(levelId, (key) => this.cache.audio.exists(key));
+    queueLoads(this.load, loadRequests(missing));
   }
 
   create(data: { levelId: string }): void {
@@ -67,6 +91,9 @@ export class LevelScene extends Phaser.Scene {
       return;
     }
     this.level = level;
+    // The chapter's track (its race variant in a level of races); a level of the same chapter as
+    // the one before goes on with it.
+    this.context.music.play(trackFor(levelScreen(level)));
     this.labels = level.data.sprouts.map((sprout) => sprout.label);
     const opened = openController(level, this.time.now);
     this.controller = opened.controller;
@@ -74,6 +101,7 @@ export class LevelScene extends Phaser.Scene {
       { kind: 'levelStart', at: this.context.clock(), level: level.data.id },
     ]);
     const { t } = this.context;
+    this.sfx = new SfxPlayer(this, this.context.audio);
     this.views = buildLevelViews(this, t, {
       dispatch: (event) => this.dispatch(event),
       back: () => this.leave(),
@@ -99,14 +127,24 @@ export class LevelScene extends Phaser.Scene {
             : this.painter.renderReplayed(state, this.time.now),
         searched: () => this.forward({ kind: 'searched' }),
         raced: () => this.forward({ kind: 'raced' }),
-        stopAnimation: () => this.views.animation.finish(),
+        stopAnimation: () => {
+          this.views.animation.finish();
+          this.sfx.cancel();
+        },
+        replayed: (from, to) => this.sfx.schedule(replayCues(from, to)),
+        raceStarted: (step) => this.sfx.schedule(raceCues(level.flow, step)),
         victory: (stars) => this.offerNext(stars),
         answer: (question, value) =>
           this.dispatch(
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
         counterexample: (question, option) => this.openCounterexample(question, option),
-        card: (card) => this.cards.shown(card),
+        card: (card) => {
+          // A tool shown for the first time rings the unlock.
+          const jingle = cardJingle(card, new Set(this.context.save.tutorialsSeen));
+          if (jingle !== null) this.context.music.jingle(jingle);
+          return this.cards.shown(card);
+        },
         cardClosed: (card) => this.cards.closed(card),
       },
       { t, line: this.context.line },
@@ -124,11 +162,16 @@ export class LevelScene extends Phaser.Scene {
       presenter: this.presenter,
       win: (stars) => this.win(stars),
       writeNotebook: () => this.writeNotebook(),
+      jingle: (key) => this.context.music.jingle(key),
     };
+    // The settings, at the bottom left, clear of the buttons laid out from the right.
+    const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 });
     bindLevelInput(this, {
       dispatch: (event) => this.dispatch(event),
       leave: () => this.leave(),
       insideLayer: () => this.controller.layers.length > 0,
+      settingsOpen: settings.open,
+      closeSettings: settings.close,
       dialogueOpen: () => this.views.dialogue.open,
       drawing: () => this.controller.pointer.chain !== null,
     });
@@ -161,7 +204,10 @@ export class LevelScene extends Phaser.Scene {
    * the end of the light's own search, which the presenter reports while its day is on screen.
    */
   private forward(event: UiEvent): void {
-    if (event.kind !== 'move') this.views.animation.finish();
+    if (event.kind !== 'move') {
+      this.views.animation.finish();
+      this.sfx.cancel();
+    }
     const step = handle(this.controller, event, this.time.now);
     this.context.playtest.record(
       playtestEntries(this.controller, event, step, this.context.clock()),
@@ -176,6 +222,7 @@ export class LevelScene extends Phaser.Scene {
     const card = stepCard(effect.kind, this.cards.seen);
     if (card !== null) this.cards.offer([card]);
     showEffect(effect, this.stage);
+    this.sfx.schedule(effectCues(effect));
   }
 
   /** Back to the hub; a level left unwon is logged as left. */
@@ -219,17 +266,28 @@ export class LevelScene extends Phaser.Scene {
     this.scene.sleep();
   }
 
-  /** Records the win at once; the victory panel waits its turn behind any lines or replay. */
+  /**
+   * Records the win at once; the victory panel waits its turn behind any lines or replay, and so
+   * does its jingle, chosen now from the levels the win opens.
+   */
   private win(stars: StarResult): void {
     const id = this.level.data.id;
+    const { catalog, teacherMode } = this.context;
+    const shown = visibleLevels(
+      catalog.map((level) => ({ id: level.data.id, draft: level.data.draft })),
+      teacherMode,
+    );
+    const before = unlockedLevels(shown, this.context.save, teacherMode);
     this.context.save = recordCompletion(this.context.save, id, stars.total);
     writeSave(this.context.storage, this.context.save);
+    this.winJingle = victoryJingle(before, unlockedLevels(shown, this.context.save, teacherMode));
     this.presenter.present({ kind: 'victory', stars });
   }
 
   /** Shows the victory panel, offering the next level (if any) or the hub. */
   private offerNext(stars: StarResult): void {
     const id = this.level.data.id;
+    this.context.music.jingle(this.winJingle);
     // The next level the player can see: outside teacher mode, drafts are skipped.
     const { catalog, teacherMode } = this.context;
     const shown = visibleLevels(

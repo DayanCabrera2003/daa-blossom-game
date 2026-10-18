@@ -3,10 +3,14 @@ import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
 import type { ToolId } from '../input/tools';
 import { toolbarRow } from '../picture/bottomRows';
+import { TOOL_ICONS } from '../picture/buttonIcon';
 import { Button } from './Button';
 import { LAYOUT } from './layout';
 
-/** The tools unlocked so far, in their own row above the buttons; the one in hand is lit. */
+/**
+ * The tools unlocked so far, in their own row above the buttons, on wooden buttons (the marks with
+ * the sun of the pack, the stones with its rock); the one in hand is sunken.
+ */
 export class ToolbarView {
   private buttons: { tool: ToolId; button: Button }[] = [];
   private shown = '';
@@ -23,8 +27,13 @@ export class ToolbarView {
       for (const { button } of this.buttons) button.destroy();
       this.buttons = tools.map((tool) => ({
         tool,
-        button: new Button(this.scene, 0, LAYOUT.toolbarY, this.t(`tool.${tool}`), () =>
-          this.choose(tool),
+        button: new Button(
+          this.scene,
+          0,
+          LAYOUT.toolbarY,
+          this.t(`tool.${tool}`),
+          () => this.choose(tool),
+          TOOL_ICONS[tool] ?? [],
         ),
       }));
       const lefts = toolbarRow(this.buttons.map(({ button }) => button.width));
