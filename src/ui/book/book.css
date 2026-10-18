@@ -123,10 +123,10 @@
 }
 
 /*
- * The heading of the page on one line: its main title, then a second one (the formal title of an
- * entry once earned), set apart by a stroke of the wood. The pixel font has one sharp size, so the
- * second is told apart by the stroke and by giving way first: it is the one cut short with an
- * ellipsis.
+ * The heading of the page on one line: its main title (the garden title of an entry), then a
+ * second one (the formal title once earned), set apart by a stroke of the wood. The pixel font has
+ * one sharp size, so the second is told apart by the stroke and by giving way alone: the main title
+ * never shrinks, and only the second is cut short with an ellipsis.
  */
 .book-heading {
   display: flex;
@@ -139,15 +139,12 @@
 }
 
 .book-main-title {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: none;
   color: var(--ink);
 }
 
 .book-sub-title {
-  flex: 0 1000 auto;
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
