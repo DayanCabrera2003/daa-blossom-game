@@ -369,9 +369,11 @@
   "teacher.dayHelp": "Sigue al sol del jardín: cada paso es una jugada y sus efectos.",
   "teacher.dawn": "Amanecer: los faroles con los que empieza el nivel.",
   "teacher.edmonds": "Edmonds desde aquí",
-  "teacher.edmondsHelp": "La receta completa desde los faroles del paso que muestra el sol. Toca una línea o usa las flechas para recorrerla.",
+  "teacher.edmondsHelp": "La receta completa desde los faroles del paso que muestra el sol. Toca una línea o usa las flechas para recorrerla. Las líneas «se examina» cuentan el costo: puedes ocultarlas y cada paso conserva su número.",
   "teacher.certificate": "Certificado de Tutte–Berge",
   "teacher.shown.day": "Tu día, paso {step} de {count}",
   "teacher.shown.edmonds": "Edmonds, paso {step} de {count}",
-  "teacher.edmondsStart": "Los faroles del paso que muestra el sol, antes de la primera fase."
+  "teacher.edmondsStart": "Los faroles del paso que muestra el sol, antes de la primera fase.",
+  "teacher.scans.hide": "Ocultar las líneas «se examina»",
+  "teacher.scans.show": "Mostrar las líneas «se examina»"
 }

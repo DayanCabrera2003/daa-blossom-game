@@ -7,7 +7,13 @@ import type { Translate } from '@services/i18n';
 import { diagramGarden, type DiagramGarden } from '@ui/model/diagramGarden';
 import { fitGarden, miniGarden, type MiniLayout, type MiniMoment } from '@ui/model/miniGarden';
 import { walkTo, type PanelState } from '@ui/model/teacherPanel';
-import { dayMoment, edmondsMoment, teacherTrace, type TeacherTrace } from '@ui/model/teacherTrace';
+import {
+  dayMoment,
+  edmondsMoment,
+  edmondsRows,
+  teacherTrace,
+  type TeacherTrace,
+} from '@ui/model/teacherTrace';
 import { LOOK_ONLY, drawGarden, gardenSvg } from '../diagram/GardenSvg';
 import { diagramButton, part } from '../diagram/parts';
 import { stepControls } from '../diagram/stepControls';
@@ -24,7 +30,8 @@ import './teacher.css';
  * Codex, with the step the sun shows marked and followed as the sun moves, and a press on a row
  * moving the game's sun to it (`teacher.sun`); "Edmonds from here",
  * the core's run from the lanterns of that step, walked with its own sun, a press on a row or the
- * arrows; and the certificate that closes it. What it shows is decided in `ui/model/teacherTrace`
+ * arrows, its vines examined (the cost) shown until a button hides them, each line keeping its
+ * step; and the certificate that closes it. What it shows is decided in `ui/model/teacherTrace`
  * and `ui/model/teacherPanel`; this module only builds the DOM.
  */
 
@@ -93,6 +100,18 @@ export function mountTeacherPanel(
   let edmondsList: TraceList | null = null;
   let sun: ReturnType<typeof stepControls> | null = null;
   let chosen: Chosen = { list: 'day', step: 0 };
+  // Whether "Edmonds from here" lists the vines examined; kept from feed to feed.
+  let scans = true;
+  const scansButton = diagramButton(page, '', () => {
+    scans = !scans;
+    writeEdmonds();
+    choose(chosen);
+  });
+  /** The scans button says what a press on it will do, and whether the lines are shown. */
+  const labelScans = (): void => {
+    scansButton.textContent = t(scans ? 'teacher.scans.hide' : 'teacher.scans.show');
+    scansButton.setAttribute('aria-pressed', String(scans));
+  };
 
   /** Shows `next` in the small garden and marks it on its list. */
   const choose = (next: Chosen): void => {
@@ -110,6 +129,32 @@ export function mountTeacherPanel(
     sun?.show(run, t('teacher.shown.edmonds', { step: run, count: trace.trace.length }));
   };
 
+  /** Writes "Edmonds from here" of the trace shown: its sun, the scans button and its lines. */
+  const writeEdmonds = (): void => {
+    if (trace === null) return;
+    const focused = page.activeElement === edmondsList?.element;
+    edmondsList = traceList(
+      page,
+      t('teacher.edmonds'),
+      t('teacher.edmondsStart'),
+      edmondsRows(trace, scans).map(({ step, tex }) => ({ step, lines: [tex] })),
+      (step) => choose({ list: 'edmonds', step }),
+      fold,
+    );
+    sun = stepControls(page, t, 0, trace.trace.length, (step) => choose({ list: 'edmonds', step }));
+    labelScans();
+    // The run's sun and the scans button, in the wood and colours of the Codex's controls.
+    const controls = part(page, 'div', 'codex-diagram teacher-controls');
+    controls.append(...sun.rows, scansButton);
+    edmondsSection.replaceChildren(
+      part(page, 'h3', 'teacher-heading', t('teacher.edmonds')),
+      part(page, 'p', 'teacher-help', t('teacher.edmondsHelp')),
+      controls,
+      edmondsList.element,
+    );
+    if (focused) edmondsList.element.focus();
+  };
+
   /** Chooses step `step` of the day, and asks the game's sun to show it too. */
   const chooseDay = (step: number): void => {
     choose({ list: 'day', step });
@@ -118,10 +163,9 @@ export function mountTeacherPanel(
 
   /** Writes the two traces of a new feed; the small garden follows the sun. */
   const write = (feed: TeacherFeed): void => {
-    // A list walked with the keys keeps the keyboard once it is written anew.
-    const focused = page.activeElement;
-    const refocus =
-      focused === dayList?.element ? 'day' : focused === edmondsList?.element ? 'edmonds' : null;
+    // A list walked with the keys keeps the keyboard once it is written anew (`writeEdmonds`
+    // keeps its own).
+    const dayFocused = page.activeElement === dayList?.element;
     if (garden === null || fed?.level !== feed.level) {
       garden = gardenOf(feed.level);
       layout = garden === null ? null : fitGarden(garden.positions);
@@ -135,21 +179,7 @@ export function mountTeacherPanel(
       part(page, 'p', 'teacher-help', t('teacher.dayHelp')),
       dayList.element,
     );
-    edmondsList = traceList(
-      page,
-      t('teacher.edmonds'),
-      t('teacher.edmondsStart'),
-      trace.edmonds.map(({ step, tex }) => ({ step, lines: [tex] })),
-      (step) => choose({ list: 'edmonds', step }),
-      fold,
-    );
-    sun = stepControls(page, t, 0, trace.trace.length, (step) => choose({ list: 'edmonds', step }));
-    edmondsSection.replaceChildren(
-      part(page, 'h3', 'teacher-heading', t('teacher.edmonds')),
-      part(page, 'p', 'teacher-help', t('teacher.edmondsHelp')),
-      ...sun.rows,
-      edmondsList.element,
-    );
+    writeEdmonds();
     const proof = part(page, 'ul', 'teacher-proof');
     proof.append(
       ...trace.certificate.map((tex) => {
@@ -163,8 +193,7 @@ export function mountTeacherPanel(
       proof,
     );
     choose({ list: 'day', step: feed.cursor });
-    if (refocus === 'day') dayList.element.focus();
-    if (refocus === 'edmonds') edmondsList.element.focus();
+    if (dayFocused) dayList.element.focus();
   };
 
   return {

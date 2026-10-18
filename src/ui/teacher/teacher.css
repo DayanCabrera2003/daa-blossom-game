@@ -91,6 +91,14 @@
   color: var(--sun);
 }
 
+/* The run's sun and the button that hides or shows the vines examined. */
+.teacher-controls {
+  display: grid;
+  justify-items: center;
+  gap: calc(2 * var(--px));
+  margin: calc(2 * var(--px)) 0;
+}
+
 /* A trace: one row per step, its number apart from its formulas. */
 .teacher-list,
 .teacher-proof {

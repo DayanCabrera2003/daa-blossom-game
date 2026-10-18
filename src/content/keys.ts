@@ -179,6 +179,8 @@ const UI = {
   'teacher.edmonds': [],
   'teacher.edmondsHelp': [],
   'teacher.edmondsStart': [],
+  'teacher.scans.hide': [],
+  'teacher.scans.show': [],
   'teacher.certificate': [],
   'teacher.shown.day': ['step', 'count'],
   'teacher.shown.edmonds': ['step', 'count'],
