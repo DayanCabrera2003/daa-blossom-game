@@ -20,6 +20,7 @@ import { LINE_HEIGHT } from '../../picture/textWrap';
 import { Button } from '../../view/Button';
 import { GEAR_SIZE } from '../../view/GearButton';
 import { css, PALETTE } from '../../view/palette';
+import { OutlinedText } from '../../view/OutlinedText';
 import { drawStars } from '../../view/StarIcons';
 import { textStyle } from '../../view/textStyle';
 import { contextOf } from '../context';
@@ -47,14 +48,16 @@ export interface HubTopLineParts {
 export function addHubTopLine(scene: Phaser.Scene): HubTopLineParts {
   const { catalog, t, saves, teacherMode, bus } = contextOf(scene);
   const save = saves.get();
-  const heading = scene.add.text(0, 0, t('hub.title'), textStyle(12, PALETTE.lit));
+  // Written straight on the hub's grass, the title, the badge and the counter wear the outline of
+  // the sprouts' names, which makes them read on it (`picture/textContrast.ts`).
+  const heading = new OutlinedText(scene, 0, 0, t('hub.title'), textStyle(12, PALETTE.lit));
   // In teacher mode the hub says so, after its title: every level, page and sign is open.
   const badge = teacherMode
-    ? scene.add.text(0, 0, t('teacher.badge'), textStyle(8, PALETTE.sun))
+    ? new OutlinedText(scene, 0, 0, t('teacher.badge'), textStyle(8, PALETTE.sun))
     : null;
   const seedWidth = assetEntry(SEED_ICON).image?.width ?? 0;
   const counter = hubCounter(totalStars(catalogEntries(catalog), save), seeds(save), seedWidth);
-  const count = scene.add.text(0, 0, counter.text, textStyle(8));
+  const count = new OutlinedText(scene, 0, 0, counter.text, textStyle(8));
 
   // The signs, right to left from the gear: the Códex, the Cuaderno, then the free mode.
   const signs: Button[] = [];

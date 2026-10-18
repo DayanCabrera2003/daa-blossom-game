@@ -14,6 +14,7 @@ import { paintSprout, SPROUT_RADIUS } from './paintSprout';
 import { css, PALETTE } from './palette';
 import { ensurePieceTextures } from './pieceTextures';
 import { SproutCrowns } from './SproutCrowns';
+import { OutlinedName } from './OutlinedName';
 import { textStyle } from './textStyle';
 
 /** Under the garden's vines, so the flower's outline and the cut never hide a sprout. */
@@ -41,7 +42,8 @@ export class SideBySideView {
   private readonly crowns: SproutCrowns;
   private readonly lanterns: LanternSprites;
   private readonly highlights: Phaser.GameObjects.Graphics;
-  private readonly labels: Phaser.GameObjects.Text[] = [];
+  /** The folded sprouts' names, outlined as the garden's are, on the ground. */
+  private readonly labels: OutlinedName[] = [];
   private readonly caption: Phaser.GameObjects.Text;
 
   constructor(
@@ -134,15 +136,12 @@ export class SideBySideView {
     }
     this.crowns.render(crowns);
     while (this.labels.length < picture.nodes.length) {
-      this.labels.push(
-        this.scene.add.text(0, 0, '', textStyle(8)).setOrigin(0.5, 0).setDepth(OVER_DEPTH),
-      );
+      this.labels.push(new OutlinedName(this.scene, OVER_DEPTH));
     }
     this.labels.forEach((label, i) => {
       const node = picture.nodes[i];
       label.setVisible(node !== undefined);
-      if (node !== undefined)
-        label.setText(node.label).setPosition(node.at.x, node.at.y + SPROUT_RADIUS + 1);
+      if (node !== undefined) label.show(node.label, node.at.x, node.at.y + SPROUT_RADIUS + 1);
     });
   }
 

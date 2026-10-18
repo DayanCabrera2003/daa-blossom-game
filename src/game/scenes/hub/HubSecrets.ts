@@ -19,6 +19,7 @@ import { css, PALETTE } from '../../view/palette';
 import { cutFrame } from '../../view/sheetCuts';
 import { drawStars } from '../../view/StarIcons';
 import { addFocusable, type Focusable } from '../../view/focusables';
+import { OutlinedText } from '../../view/OutlinedText';
 import { textStyle } from '../../view/textStyle';
 import { contextOf } from '../context';
 import type { FocusController } from '../focus/FocusController';
@@ -213,9 +214,10 @@ function paint(scene: Phaser.Scene, picture: FlowerPicture): void {
     } else if (piece.kind === 'star') {
       drawStars(scene, piece.x, piece.y, [{ x: 0, earned: piece.earned }], FLOWER_DEPTH);
     } else if (piece.kind === 'count') {
-      scene.add
-        .text(piece.x, piece.y - DIGIT_DROP, piece.text, textStyle(8))
-        .setDepth(FLOWER_DEPTH);
+      // On the hub's grass, outlined as the sprouts' names are (`picture/textContrast.ts`).
+      new OutlinedText(scene, piece.x, piece.y - DIGIT_DROP, piece.text, textStyle(8)).setDepth(
+        FLOWER_DEPTH,
+      );
     } else if (piece.kind === 'bud') {
       const frame = cutFrame(scene.textures, BUD_CUT);
       if (frame === null) continue;

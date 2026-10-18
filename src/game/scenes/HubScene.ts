@@ -4,6 +4,7 @@ import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progres
 import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
+import { OutlinedText } from '../view/OutlinedText';
 import { chapterTitle } from '../picture/chapterTitle';
 import {
   finishedChapters,
@@ -94,7 +95,8 @@ export class HubScene extends Phaser.Scene {
     );
     const titles = chapters.map((chapter) => {
       const title = chapterTitle(chapter);
-      return this.add.text(TITLE_X, 0, t(title.key, title.params), textStyle(8));
+      // On the hub's grass, outlined as the sprouts' names are (`picture/textContrast.ts`).
+      return new OutlinedText(this, TITLE_X, 0, t(title.key, title.params), textStyle(8));
     });
     const height = rows[0]?.[0]?.button.height ?? 0;
     // Each title is laid out with its flower's column and its signpost before it.

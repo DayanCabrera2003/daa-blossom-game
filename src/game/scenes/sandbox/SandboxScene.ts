@@ -62,6 +62,7 @@ import { DesignBar } from './DesignBar';
 import { GenerateMenu } from './GenerateMenu';
 import { FocusController } from '../focus/FocusController';
 import { sayAloud } from '../sayAloud';
+import { OutlinedText } from '../../view/OutlinedText';
 
 /**
  * The free mode's last design, opened the first time the editor is (with this chunk, so its reading
@@ -110,8 +111,8 @@ export class SandboxScene extends Phaser.Scene {
   private menu!: GenerateMenu;
   private toast!: ToastView;
   private tutorial!: TutorialView;
-  private count!: Phaser.GameObjects.Text;
-  private prompt!: Phaser.GameObjects.Text;
+  private count!: OutlinedText;
+  private prompt!: OutlinedText;
 
   constructor() {
     super(SANDBOX_SCENE);
@@ -139,9 +140,14 @@ export class SandboxScene extends Phaser.Scene {
     this.cardOpen = false;
 
     const { margin, titleY, promptY } = DESIGN_HEADER;
-    this.add.text(margin, titleY, t('sandbox.title'), textStyle(8, PALETTE.lit));
-    this.count = this.add.text(CANVAS_WIDTH - margin, titleY, '', textStyle(8)).setOrigin(1, 0);
-    this.prompt = this.add.text(margin, promptY, '', textStyle(8));
+    // On the hub's grass, the header's lines are outlined as the sprouts' names are
+    // (`picture/textContrast.ts`).
+    new OutlinedText(this, margin, titleY, t('sandbox.title'), textStyle(8, PALETTE.lit));
+    this.count = new OutlinedText(this, CANVAS_WIDTH - margin, titleY, '', textStyle(8)).setOrigin(
+      1,
+      0,
+    );
+    this.prompt = new OutlinedText(this, margin, promptY, '', textStyle(8));
     this.garden = new GardenView(this);
     this.bar = new DesignBar(this, t, (button) => this.press(button));
     this.menu = new GenerateMenu(this, t, {

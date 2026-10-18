@@ -75,21 +75,21 @@ export const TEXTS: readonly TextOnSurface[] = [
     what: 'title',
     text: 'lit',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'scenes/hub/HubTopLine.ts',
     what: 'teacher badge',
     text: 'sun',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'scenes/hub/HubTopLine.ts',
     what: 'counter',
     text: 'label',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'scenes/hub/HubTopLine.ts',
@@ -103,7 +103,7 @@ export const TEXTS: readonly TextOnSurface[] = [
     what: 'chapter title',
     text: 'label',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'scenes/hub/HubSecrets.ts',
@@ -117,7 +117,7 @@ export const TEXTS: readonly TextOnSurface[] = [
     what: 'stars still missing',
     text: 'label',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   // The free mode's editor, on the hub's grass.
   {
@@ -125,21 +125,21 @@ export const TEXTS: readonly TextOnSurface[] = [
     what: 'title',
     text: 'lit',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'scenes/sandbox/SandboxScene.ts',
     what: 'counts',
     text: 'label',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   {
     file: 'scenes/sandbox/SandboxScene.ts',
     what: 'prompt',
     text: 'label',
     surface: backdrop('hub'),
-    outlined: false,
+    outlined: true,
   },
   onPanel('scenes/sandbox/GenerateMenu.ts', 'size'),
   // A level's HUD, on its season's ground.
@@ -159,7 +159,7 @@ export const TEXTS: readonly TextOnSurface[] = [
   },
   {
     file: 'view/OutlinedName.ts',
-    what: "a sprout's name",
+    what: "a sprout's name, in the garden and folded beside it",
     text: 'label',
     surface: backdrop('levels'),
     outlined: true,
@@ -176,13 +176,6 @@ export const TEXTS: readonly TextOnSurface[] = [
     what: 'caption',
     text: 'highlight',
     surface: fill('background', 0.8),
-    outlined: false,
-  },
-  {
-    file: 'view/SideBySideView.ts',
-    what: 'folded names',
-    text: 'label',
-    surface: backdrop('levels'),
     outlined: false,
   },
   // A counterexample's own screen, on the bare canvas.
