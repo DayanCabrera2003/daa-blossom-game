@@ -273,6 +273,8 @@ Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y e
 
 Puzles opcionales difíciles escondidos en el hub: una por capítulo, del Prado al Consejo (siete; el Huerto no tiene). No enseñan nada nuevo, exigen combinar, y solo usan las acciones de su capítulo. Ejemplos en 7.9.
 
+Cada una florece en el poste del cartel de su capítulo. No aparece hasta terminar el capítulo; entonces es un capullo que se abre con estrellas de ese capítulo: las de completarlo todo más la mitad (redondeada hacia arriba) de sus estrellas extra posibles. Tocar el capullo dice cuántas faltan. Nada depende de ellas: no cuentan para terminar el capítulo ni abren otro nivel, y al ganarlas se vuelve al hub. En modo profesor están todas abiertas.
+
 
 ### 5.11 Tarjetas de mecánica
 
