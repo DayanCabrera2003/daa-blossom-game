@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import type { Point } from '../input/target';
 import type { FlowerPicture } from './garden';
 import {
-  closingPetals,
   FLOWER_HEART,
   FLOWER_REACH,
   flowerLooks,
+  foldPetals,
   INNER_REACH,
   petalRing,
 } from './petals';
@@ -85,31 +85,27 @@ describe('the petals of a folded flower', () => {
   });
 });
 
-describe('the petals closing as a flower folds (GDD §4.1, key animation 2)', () => {
+describe('the petals of a flower folding or opening (GDD §4.1, key animation 2)', () => {
   const middle: Point = { x: 100, y: 100 };
-  const open: Point[] = [
-    { x: 100, y: 60 },
-    { x: 130, y: 120 },
-    { x: 70, y: 120 },
-  ];
 
-  it('reaches out to the farthest sprout while open, one petal per sprout', () => {
-    const petals = closingPetals(middle, open, 0);
-    expect(petals).toHaveLength(3);
-    for (const petal of petals) expect(distance(petal.tip, middle)).toBeCloseTo(40);
-  });
+  it.each([3, 5, 7])(
+    'a flower of %i petals folds at the size the garden then draws it, never wider',
+    (k) => {
+      const folding = foldPetals({ centre: middle, petals: k, inner: null });
+      const [drawn] = flowerLooks([flower(0, 0, k, middle)]);
+      expect(folding.petals).toEqual(drawn?.petals);
+      expect(folding.inner).toBeNull();
+      for (const petal of folding.petals)
+        expect(distance(petal.tip, middle)).toBeCloseTo(FLOWER_REACH);
+    },
+  );
 
-  it('closes down onto the flower the garden draws, shorter at every frame', () => {
-    expect(closingPetals(middle, open, 1)).toEqual(
-      petalRing(middle, 3, FLOWER_REACH, FLOWER_HEART),
-    );
-    const reach = (closed: number): number =>
-      distance(closingPetals(middle, open, closed)[0]?.tip ?? middle, middle);
-    for (let k = 1; k <= 7; k++) expect(reach(k / 7)).toBeLessThan(reach((k - 1) / 7));
-  });
-
-  it('never opens wider than a flower for sprouts already close to the middle', () => {
-    const near = closingPetals(middle, [middle, middle, middle], 0);
-    for (const petal of near) expect(distance(petal.tip, middle)).toBeCloseTo(FLOWER_REACH);
+  it('a flower folding over one nested in it shows that one small in its middle, as drawn', () => {
+    const folding = foldPetals({ centre: middle, petals: 5, inner: 3 });
+    const [drawn] = flowerLooks([flower(1, 0, 5, middle), flower(0, 1, 3, middle)]);
+    expect(folding.petals).toEqual(drawn?.petals);
+    expect(folding.inner).toEqual(drawn?.inner);
+    for (const petal of folding.inner ?? [])
+      expect(distance(petal.tip, middle)).toBeCloseTo(INNER_REACH);
   });
 });

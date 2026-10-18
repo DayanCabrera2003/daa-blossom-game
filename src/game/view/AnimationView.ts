@@ -9,7 +9,7 @@ import type { AnimationGarden } from '../picture/animationGarden';
 import { BURST_MS, burstAt } from '../picture/burst';
 import { conflictBlink } from '../picture/conflictBlink';
 import { foldFrameAt, foldFrames, unfoldFrames } from '../picture/foldFrames';
-import { closingPetals } from '../picture/petals';
+import { foldPetals } from '../picture/petals';
 import { hopPose } from '../picture/squash';
 import { groupsApart } from '../picture/stoneSplit';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
@@ -198,7 +198,8 @@ export class AnimationView {
 
   /**
    * A flower folding or opening in its eight frames (`picture/foldFrames.ts`): the sprouts of its
-   * cycle drift to its middle as its petals close down onto it, or the other way round. A flower
+   * cycle drift to its middle as its petals, at the size of the flower drawn once folded, fade in,
+   * or the other way round. A flower
    * whose shape is unknown just washes the garden in its pink.
    */
   private fold(
@@ -217,8 +218,8 @@ export class AnimationView {
     g.fillStyle(PALETTE.flower, 0.8 * (1 - frame.closed));
     for (const sprout of frame.positions)
       g.fillCircle(sprout.x, sprout.y, SPROUT_RADIUS * (1 - 0.5 * frame.closed));
-    const petals = closingPetals(shape.centre, shape.open, frame.closed);
-    paintFlower(g, shape.centre, petals, null, 0.35 + 0.5 * frame.closed);
+    const { petals, inner } = foldPetals(shape);
+    paintFlower(g, shape.centre, petals, inner, 0.35 + 0.5 * frame.closed);
   }
 
   /** The odd groups parting for a moment round a stone just set down (`picture/stoneSplit.ts`). */
