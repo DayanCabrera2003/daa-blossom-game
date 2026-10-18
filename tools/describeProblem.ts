@@ -1,5 +1,6 @@
 // Turns level problems into one-line messages for the check-levels report.
 import type { WalkthroughProblem } from '@game/systems/walkthrough';
+import type { CodexProblem } from '@levels/codexChecks';
 import type { IntegrityProblem } from '@levels/integrity';
 import type { LoadError } from '@levels/loader';
 
@@ -106,6 +107,18 @@ export function describeWalkthroughProblem(problem: WalkthroughProblem): string 
       return `walkthrough entry ${problem.entry + 1} is an input the script is not waiting for`;
     case 'unfinished':
       return `the walkthrough ends with the script still waiting at step ${problem.step + 1}`;
+  }
+}
+
+/** One readable line for a problem of how the catalog opens the Codex. */
+export function describeCodexProblem(problem: CodexProblem): string {
+  switch (problem.code) {
+    case 'codexNeverWhole':
+      return `Codex entry ${problem.entry} never opens whole in a playable level`;
+    case 'codexPartAfterWhole':
+      return `level ${problem.level} opens only some tabs of Codex entry ${problem.entry}, already whole before`;
+    case 'notebookLinkBehind':
+      return `level ${problem.level}: notebook question ${problem.question + 1} links to ${problem.entry}, already open since ${problem.opensAt}`;
   }
 }
 
