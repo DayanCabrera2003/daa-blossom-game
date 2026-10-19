@@ -31,6 +31,8 @@ export type RejectReason =
   | { readonly code: 'notSunsOfOneTree'; readonly u: VertexId; readonly v: VertexId }
   | { readonly code: 'searchInProgress' }
   | { readonly code: 'notAFlower'; readonly error: BlossomError }
+  /** A loop folded by hand whose base has a lantern: folding it could hide a chain (C8). */
+  | { readonly code: 'baseNotDark' }
   | { readonly code: 'noSuchFlower'; readonly blossom: number }
   | { readonly code: 'alreadyPlaced'; readonly vertex: VertexId }
   | { readonly code: 'notPlaced'; readonly vertex: VertexId }

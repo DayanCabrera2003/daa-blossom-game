@@ -87,6 +87,7 @@ const REASONS = {
   twoSilver: ['vertex'],
   chainNotSeen: [],
   flowerClosed: [],
+  baseNotDark: [],
   lightAtFlower: ['u', 'v'],
   lightFound: [],
   lightDone: [],

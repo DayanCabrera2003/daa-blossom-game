@@ -21,6 +21,7 @@
   "reason.notSunsOfOneTree": "Solo se pliega donde se tocan dos soles del mismo árbol, y {u}–{v} no es ese sitio.",
   "reason.searchInProgress": "Con una búsqueda en marcha, las flores se pliegan donde chocan dos soles.",
   "reason.notAFlower": "Ese bucle no es una flor.",
+  "reason.baseNotDark": "A mano solo se pliega una flor con la base a oscuras: gira antes su tallo. Así plegar no esconde ninguna cadena.",
   "reason.noSuchFlower": "Esa flor no está cerrada.",
   "reason.alreadyPlaced": "{vertex} ya tiene uno.",
   "reason.notPlaced": "{vertex} no tiene nada que quitar.",

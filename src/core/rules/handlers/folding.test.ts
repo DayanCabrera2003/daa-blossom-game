@@ -93,10 +93,25 @@ describe('fold at the conflict (level 4.4)', () => {
   });
 });
 
-describe('fold a chosen loop', () => {
-  it('folds a valid flower when no search is going on', () => {
-    const outcome = fold(festival, { type: 'fold', loop: [3, 4, 2] });
+/** Level 4.4's garden with a=b put out: the triangle's base b is in the dark. */
+const darkBase = createGardenState({
+  graph: festivalGraph,
+  matching: unwrap(createMatching(festivalGraph, [[3, 4]])),
+  allowed: ['fold'],
+});
+
+describe('fold a chosen loop (free mode, «Plegar a mano»)', () => {
+  it('folds a valid flower whose base is in the dark when no search is going on', () => {
+    const outcome = fold(darkBase, { type: 'fold', loop: [3, 4, 2] });
     expect(outcome.ok && outcome.state.layer.nodes.length).toBe(4);
+  });
+
+  it('refuses a flower whose base has a lantern: folding it could hide a chain (C8, 8.4)', () => {
+    // b's lantern goes to a, outside the loop: R–a=b–d=c–e is a chain that the fold would hide.
+    expect(fold(festival, { type: 'fold', loop: [3, 4, 2] })).toEqual({
+      ok: false,
+      reason: { code: 'baseNotDark' },
+    });
   });
 
   it('says why a loop is not a flower', () => {
