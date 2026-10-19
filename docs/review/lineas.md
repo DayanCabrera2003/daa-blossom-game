@@ -400,7 +400,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 4.12
 
 - [ ] `ch4.12.sauce.00` · **Sauce** · plan: El último jardín del Festival, y con niebla. Enciende todos los faroles que puedas, cuida el agua y, cuando estés seguro, pulsa «Terminé».
-- [ ] `ch4.12.sauce.01` · **Sauce** · plan: ¿Quién sigue a oscuras? Busca desde ahí.
+- [ ] `ch4.12.sauce.01` · **Sauce** · plan: Avanza tu luz. Si se para ante un brote en la niebla, inspecciónalo y sigue.
 - [ ] `ch4.12.sauce.02` · **Sauce** · plan: Cuatro rincones a oscuras. Si dos soles se tocan, ya sabes qué hacer.
 - [ ] `ch4.12.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás, hasta el final, es tuyo.
 - [ ] `ch4.12.sauce.04` · **Sauce** · plan: Dos flores, dos rondas, y no quedó ninguna cadena. El Festival termina con el jardín lleno de luz.
