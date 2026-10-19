@@ -652,7 +652,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.6.oaks.06` · **Los Robles** · plan: El Consejo se inclina dos veces.
 - [ ] `ch7.6.sauce.07` · **Sauce** · plan: Una prueba no es la única. Las lunas de una búsqueda te dan una, pero puede haber otras, y cualquiera basta.
 - [ ] `ch7.6.sauce.08` · **Sauce** · plan: Cada grupo con un número impar de brotes deja a alguien a oscuras. ¿Quién sigue a oscuras?
-- [ ] `ch7.6.sauce.09` · **Sauce** · plan: Estos dos están a oscuras, y se tocan.
+- [ ] `ch7.6.sauce.09` · **Sauce** · plan: En este lado, ¿quiénes siguen a oscuras y se tocan?
 - [ ] `ch7.6.sauce.10` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 
 ## Textos de la página y avisos

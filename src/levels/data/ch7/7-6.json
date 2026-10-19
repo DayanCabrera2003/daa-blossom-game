@@ -81,10 +81,7 @@
     {
       "line": "ch7.6.sauce.08"
     },
-    {
-      "line": "ch7.6.sauce.09",
-      "highlight": ["r", "M"]
-    },
+    { "line": "ch7.6.sauce.09", "highlight": ["p", "q", "r", "M", "s", "t", "o"] },
     {
       "line": "ch7.6.sauce.10"
     }
