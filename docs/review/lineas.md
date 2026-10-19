@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 504 líneas, 60 están tal cual en el GDD y 444 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 504 líneas, 61 están tal cual en el GDD y 443 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -474,7 +474,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.2.sauce.02` · **Sauce** · plan: Cuando la flor grande esté plegada, mira por este lado. ¿Dónde se tocan dos soles?
 - [ ] `ch5.2.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.2.sauce.04` · **Sauce** · plan: Se abren de fuera hacia dentro: la flor grande, luego la mediana, luego la pequeña. Y la cadena las cruzó las tres.
-- [ ] `ch5.2.sauce.05` · **Sauce** · plan: Para desplegar, abriste primero la flor grande. ¿Por qué no una de las de dentro?
+- [ ] `ch5.2.sauce.05` · **Sauce** · GDD: Para desplegar, abriste primero la flor grande. ¿Por qué no una de las de dentro?
 - [ ] `ch5.2.gardener.06` · **Tú** · plan: Sí se podía: el orden da igual.
 - [ ] `ch5.2.sauce.07` · **Sauce** · plan: No se podía: tocar una flor de dentro con la grande plegada no abre nada. Mientras la grande esté plegada, las de dentro son parte de sus pétalos.
 - [ ] `ch5.2.gardener.08` · **Tú** · plan: Plegada la grande, las de dentro son parte de sus pétalos.

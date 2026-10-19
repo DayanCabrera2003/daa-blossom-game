@@ -499,7 +499,7 @@ Tú: 5 faroles. Reflejo: 6.
 
 #### 2.3 El hilo ganador
 - **Enseña:** el hilo donde el reflejo gana **empieza y termina con farol plateado**, así que sus extremos (1 y 6) están a oscuras en tu jardín: es una cadena tuya. El jugador la usa. Ahora empatas a 6. El reflejo se disuelve.
-- **Guion:** tras usar la cadena, Sauce pregunta: "¿Podría la punta de un hilo que gana el agua tener un farol tuyo?" (a) "No: si lo tuviera, el hilo seguiría por ese farol y ya no acabaría ahí" ✔ (b) "Sí, a veces: depende del jardín" ✘ (Sauce lo explica y vuelve a preguntar). Su respuesta al acierto es el resumen: "Cuando alguien puede hacerlo mejor que tú, te ha dejado una cadena tirada en el suelo. Siempre."
+- **Guion:** tras usar la cadena, Sauce pregunta: "¿Podría la punta de un hilo que gana el agua tener un farol tuyo?" (a) "No: si lo tuviera, el hilo seguiría por él" ✔ (b) "Sí, a veces: depende del jardín" ✘ (Sauce lo explica y vuelve a preguntar). Su respuesta al acierto es el resumen: "Cuando alguien puede hacerlo mejor que tú, te ha dejado una cadena tirada en el suelo. Siempre."
 - **Victoria:** usar la cadena y empatar.
 
 #### 2.4 Reto del espejo (adversario)
@@ -543,7 +543,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Jardín:** dos brotes solitarios, R1 (abeja) y R2 (flor), cuyas búsquedas crecen a la vez; una enredadera apagada une un sol del árbol de R1 con un sol del árbol de R2.
 - **Enseña:** cada solitario lanza su luz; cuando dos luces se tocan por una enredadera apagada, sol con sol de **árboles distintos**, hay cadena de raíz a raíz.
 - **Por qué aquí:** establece el bosque (varias raíces) y el caso "sol–sol entre árboles distintos = cadena", que en el capítulo 4 se contrasta con "sol–sol en el mismo árbol = problema".
-- **Pregunta** (tras la cadena, antes de que Sauce la nombre): "Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?" (a) "Una cadena que va de un brote a oscuras al otro" ✔ (b) "Un bucle que vuelve al mismo brote" ✘ (cada camino acaba en su propio brote a oscuras) (c) "Nada: hay que seguir buscando" ✘. La respuesta al acierto es la línea de Sauce que la nombra.
+- **Pregunta** (tras la cadena, antes de que Sauce la nombre): "Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?" (a) "Una cadena de un brote a oscuras al otro" ✔ (b) "Un bucle que vuelve al mismo brote" ✘ (cada camino acaba en su propio brote a oscuras) (c) "Nada: hay que seguir buscando" ✘. La respuesta al acierto es la línea de Sauce que la nombra.
 - **Victoria:** cadena.
 
 #### 3.5 Agua justa
@@ -570,7 +570,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Jardín:** `1–2=3–4=5` (1 libre), y una segunda componente con la misma estructura ramificada. Diseñado para que la búsqueda alcance a todos los brotes.
 - **Enseña:** tras la búsqueda fallida, el mentor dice "pon espantapájaros en todas las lunas". Cada luna tiene exactamente un farol (con un sol), así que hay tantos espantapájaros como faroles, y vigilan todo: cada enredadera toca una luna (porque de un sol solo salen lunas y no hay sol–sol en abejas y flores). **La búsqueda que fracasó te regala la prueba.**
 - **Por qué aquí:** es el ensayo general del capítulo 7. La idea "el bosque fallido es el certificado" se ve primero en el caso bipartito donde es transparente.
-- **Pregunta** (tras la búsqueda, antes de que Sauce explique por qué las lunas lo vigilan todo): "Entre abejas y tréboles, ¿pueden tocarse dos soles del mismo árbol?" (a) "No: los soles de un árbol son todos de la misma especie, y una enredadera nunca une dos de la misma" ✔ (b) "Sí, en un corro pueden tocarse" ✘ contraejemplo: un corro de abejas y tréboles donde el jugador busca y nunca consigue que dos soles se toquen. Las preguntas de Sauce refutan igual que el Cuaderno: con una respuesta o con un jardín que se toca, y la pregunta vuelve al salir.
+- **Pregunta** (tras la búsqueda, antes de que Sauce explique por qué las lunas lo vigilan todo): "Entre abejas y tréboles, ¿pueden tocarse dos soles del mismo árbol?" (a) "No: todos sus soles son de la misma especie" ✔ (la respuesta de Sauce añade que una enredadera nunca une dos de la misma especie, y que dos soles de árboles distintos serían una cadena) (b) "Sí, en un corro pueden tocarse" ✘ contraejemplo: un corro de abejas y tréboles donde el jugador busca y nunca consigue que dos soles se toquen. Las preguntas de Sauce refutan igual que el Cuaderno: con una respuesta o con un jardín que se toca, y la pregunta vuelve al salir.
 - **Cuaderno:** "Si k espantapájaros vigilan todas las enredaderas…" (a) "…no puede haber más de k faroles" ✔ (b) "…hay exactamente k faroles" ✘ contraejemplo: un espantapájaros de más (c) "…siempre puedo poner los espantapájaros en las lunas" ✘ contraejemplo: un jardín de abejas y tréboles donde la búsqueda acaba sin llegar a todos (una pareja con farol cuelga solo de una luna); los espantapájaros en las lunas dejan su enredadera sin vigilar. Es la idea de la flor secreta 3.10 en un nivel obligatorio; el Códex C5 la precisa.
 - **Desbloquea:** Códex **C4 La búsqueda** y **C5 Abejas, flores y espantapájaros (König)**.
 
@@ -695,7 +695,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 #### 5.2 Capas
 - **Jardín:** tres flores anidadas construidas del mismo modo.
 - **Enseña:** la vista de capas: zoom para entrar en una flor, otro zoom para la interior. Al desplegar se resuelve de fuera hacia dentro.
-- **Pregunta** (tras la cadena; el resumen de Sauce, "se abren de fuera hacia dentro", es la respuesta al acierto): "Para desplegar, abriste primero la flor grande. ¿Por qué no la pequeña?" (a) "Con la grande plegada, la pequeña es solo uno de sus pétalos: todavía no tiene enredaderas propias" ✔ (b) "Sí se podía: el orden da igual" ✘ (c) "Porque la cadena entra antes en la pequeña" ✘ (la pequeña está dentro de la grande). Va después de jugar, no antes de desplegar: el guion no se para a mitad de un paso de juego.
+- **Pregunta** (tras la cadena; el resumen de Sauce, "se abren de fuera hacia dentro", es la respuesta al acierto): "Para desplegar, abriste primero la flor grande. ¿Por qué no una de las de dentro?" (a) "Plegada la grande, las de dentro son parte de sus pétalos" ✔ (b) "Sí se podía: el orden da igual" ✘ (c) "Porque la cadena entra antes en las de dentro" ✘ (están dentro de la grande). Va después de jugar, no antes de desplegar: el guion no se para a mitad de un paso de juego.
 - **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en cada una de las tres flores hasta plegarla). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 - **Desbloquea:** Capas.
 
@@ -795,7 +795,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 #### 7.4 El regalo de la búsqueda II
 - **Jardín:** el de 4.9 (`R–a=b`, triángulo `b–c=d–b`), más otra componente parecida.
 - **Enseña:** la búsqueda termina sin cadena, con lunas {a, …} y soles {R, flor, …}. Sauce no dice qué levantar ("lo que dejó la búsqueda ya guarda tus piedras"); las pistas llevan hacia las lunas. Al levantar a, quedan {R} (grupo de 1, impar) y {b, c, d} (grupo de 3, impar): 2 grupos impares, 1 piedra, al menos 1 a oscuras. Tienes exactamente 1. **La búsqueda que fracasó te entrega las piedras.** Y siempre pasa: de un sol solo salen lunas (si saliera a otro sol sería cadena o flor, y a un brote sin marca ya lo habrías marcado), así que al quitar las lunas cada sol o flor queda aislado, y una flor siempre es impar.
-- **Pregunta** (tras la cuenta, antes de la explicación): "Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?" (a) "Solo con los de su propia flor, si está en una: de un sol solo se sale hacia lunas" ✔ (b) "Con soles de otro árbol" ✘ (sería una cadena, y la búsqueda acabó sin ninguna) (c) "Con brotes sin marca" ✘ (la búsqueda los habría marcado). La explicación de Sauce ("la búsqueda que fracasó te entrega las piedras…") es la respuesta al acierto, nunca antes.
+- **Pregunta** (tras la cuenta, antes de la explicación): "Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?" (a) "Solo con los de su flor: de un sol solo se sale a lunas" ✔ (b) "Con soles de otro árbol" ✘ (sería una cadena, y la búsqueda acabó sin ninguna) (c) "Con brotes sin marca" ✘ (la búsqueda los habría marcado). La explicación de Sauce ("la búsqueda que fracasó te entrega las piedras…") es la respuesta al acierto, nunca antes.
 - **Por qué aquí:** cierre del círculo. El algoritmo no solo se rinde: demuestra que tenía razón. Es la misma idea de 3.8 en el caso general.
 - **Victoria:** certificado válido a partir de las lunas.
 - **Desbloquea:** Códex **C12 Las piedras (Tutte–Berge)**.
