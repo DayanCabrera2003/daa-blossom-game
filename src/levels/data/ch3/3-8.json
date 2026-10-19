@@ -97,6 +97,46 @@
   "flow": [
     { "step": "say", "lines": ["ch3.8.sauce.00", "ch3.8.sauce.01"] },
     { "step": "play" },
+    {
+      "step": "ask",
+      "prompt": "ch3.8.sauce.14",
+      "options": [
+        {
+          "line": "ch3.8.gardener.15",
+          "correct": false,
+          "counterexample": {
+            "mode": "play",
+            "line": "ch3.8.sauce.16",
+            "sprouts": [
+              { "label": "R", "x": 170, "y": 140, "kind": "bee" },
+              { "label": "a", "x": 205, "y": 85, "kind": "flower" },
+              { "label": "b", "x": 275, "y": 85, "kind": "bee" },
+              { "label": "c", "x": 310, "y": 140, "kind": "flower" },
+              { "label": "d", "x": 275, "y": 195, "kind": "bee" },
+              { "label": "e", "x": 205, "y": 195, "kind": "flower" },
+              { "label": "f", "x": 130, "y": 220, "kind": "bee" }
+            ],
+            "vines": [
+              ["R", "a"],
+              ["a", "b"],
+              ["b", "c"],
+              ["c", "d"],
+              ["d", "e"],
+              ["e", "R"],
+              ["e", "f"]
+            ],
+            "lanterns": [
+              ["a", "b"],
+              ["c", "d"],
+              ["e", "f"]
+            ],
+            "actions": ["markRoot", "markMoon"]
+          }
+        },
+        { "line": "ch3.8.gardener.17", "correct": true, "reply": "ch3.8.sauce.18" }
+      ],
+      "retry": true
+    },
     { "step": "say", "lines": ["ch3.8.sauce.05", "ch3.8.sauce.06"] },
     { "step": "notebook" }
   ],
@@ -115,6 +155,7 @@
     { "type": "placeScarecrow", "vertex": "c" },
     { "type": "placeScarecrow", "vertex": "e" },
     { "type": "declareDone" },
+    { "type": "answer", "option": 1 },
     { "type": "answer", "option": 0 }
   ]
 }

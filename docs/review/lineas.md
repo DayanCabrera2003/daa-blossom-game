@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 477 líneas, 56 están tal cual en el GDD y 421 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 482 líneas, 57 están tal cual en el GDD y 425 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -271,6 +271,11 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.8.sauce.11` · **Sauce** · plan: Eso es. Cada farol necesita un espantapájaros propio, así que nunca hay más faroles que espantapájaros.
 - [ ] `ch3.8.sauce.12` · **Sauce** · plan: Pon un espantapájaros en A y otro en C: entre los dos lo vigilan todo. ¿Caben dos faroles?
 - [ ] `ch3.8.sauce.13` · **Sauce** · plan: Busca aquí desde quien esté a oscuras hasta que no quede nada por mirar, y pon espantapájaros solo en las lunas. ¿Lo vigilan todo?
+- [ ] `ch3.8.sauce.14` · **Sauce** · GDD: Entre abejas y tréboles, ¿pueden tocarse dos soles del mismo árbol?
+- [ ] `ch3.8.gardener.15` · **Tú** · plan: Sí, en un corro pueden tocarse.
+- [ ] `ch3.8.sauce.16` · **Sauce** · plan: Aquí tienes un corro de abejas y tréboles. Busca desde R: ¿consigues que dos soles se toquen?
+- [ ] `ch3.8.gardener.17` · **Tú** · plan: No: todos sus soles son de la misma especie.
+- [ ] `ch3.8.sauce.18` · **Sauce** · plan: Eso es: son de la especie del brote a oscuras de donde salió el árbol, y una enredadera nunca une dos de la misma. Y dos soles de árboles distintos que se tocan serían una cadena, que tu búsqueda no encontró.
 
 ### 3.9
 

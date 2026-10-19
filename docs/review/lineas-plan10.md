@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-90 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
+95 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -116,6 +116,16 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.8.sauce.13` · **Sauce** · cambiada
   - Antes: Solo si la búsqueda llegó a todos los brotes. Al que se queda sin marca también hay que vigilarlo.
   - Después: Busca aquí desde quien esté a oscuras hasta que no quede nada por mirar, y pon espantapájaros solo en las lunas. ¿Lo vigilan todo?
+- [ ] `ch3.8.sauce.14` · **Sauce** · nueva
+  - Después: Entre abejas y tréboles, ¿pueden tocarse dos soles del mismo árbol?
+- [ ] `ch3.8.gardener.15` · **Tú** · nueva
+  - Después: Sí, en un corro pueden tocarse.
+- [ ] `ch3.8.sauce.16` · **Sauce** · nueva
+  - Después: Aquí tienes un corro de abejas y tréboles. Busca desde R: ¿consigues que dos soles se toquen?
+- [ ] `ch3.8.gardener.17` · **Tú** · nueva
+  - Después: No: todos sus soles son de la misma especie.
+- [ ] `ch3.8.sauce.18` · **Sauce** · nueva
+  - Después: Eso es: son de la especie del brote a oscuras de donde salió el árbol, y una enredadera nunca une dos de la misma. Y dos soles de árboles distintos que se tocan serían una cadena, que tu búsqueda no encontró.
 
 ### 3.9
 
