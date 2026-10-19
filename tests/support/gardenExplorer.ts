@@ -1,5 +1,6 @@
 import type { VertexId } from '@core/graph/types';
-import { isExposed, isMatchedEdge } from '@core/matching/queries';
+import { everyChain } from '@core/matching/everyChain';
+import { isExposed } from '@core/matching/queries';
 import type { Action, ActionType } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
@@ -47,31 +48,6 @@ const keyOf = (state: GardenState): string =>
     state.chainSeen,
   ]);
 
-/**
- * Every simple alternating path from a sprout in the dark with at least one vine that ends either in
- * the dark (a chain that lights a lantern) or after a lit vine (a chain of gain 0): every chain the
- * player could drag.
- */
-export function everyChain(state: GardenState): VertexId[][] {
-  const { graph, matching } = state;
-  const found: VertexId[][] = [];
-  const extend = (path: VertexId[]): void => {
-    const last = path[path.length - 1] as VertexId;
-    if (path.length > 1 && (path.length % 2 === 1 || isExposed(matching, last))) {
-      found.push(path);
-    }
-    // Vines alternate dark, lit, dark…: the next one is lit exactly when the path has an even
-    // number of sprouts.
-    const nextLit = path.length % 2 === 0;
-    for (const next of graph.adjacency[last] ?? []) {
-      if (path.includes(next) || isMatchedEdge(matching, last, next) !== nextLit) continue;
-      extend([...path, next]);
-    }
-  };
-  for (let v = 0; v < graph.n; v++) if (isExposed(matching, v)) extend([v]);
-  return found;
-}
-
 /** Every move worth trying in a garden, before the rules judge it. */
 function candidates(state: GardenState): Action[] {
   const moves: Action[] = [];
@@ -85,7 +61,7 @@ function candidates(state: GardenState): Action[] {
     }
   }
   for (let vertex = 0; vertex < state.graph.n; vertex++) moves.push({ type: 'markRoot', vertex });
-  for (const path of everyChain(state)) {
+  for (const path of everyChain(state.graph, state.matching)) {
     moves.push({ type: 'chain', path });
     if (path.length % 2 === 1 && !isExposed(state.matching, path[path.length - 1] as VertexId)) {
       moves.push({ type: 'rotateStem', stem: path });
