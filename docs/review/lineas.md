@@ -438,7 +438,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch5.3.sauce.00` · **Sauce** · plan: Otra flor dentro de otra. Avanza tu luz desde R, pliega las dos donde se pare y, al abrirlas, fíjate por dónde entra la cadena en la flor pequeña.
 - [ ] `ch5.3.sauce.01` · **Sauce** · plan: ¿Dónde se tocan dos soles del mismo árbol?
-- [ ] `ch5.3.sauce.02` · **Sauce** · plan: Mira esta enredadera: une la flor pequeña con g.
+- [ ] `ch5.3.sauce.02` · **Sauce** · plan: La flor pequeña ya es un brote más. ¿Con quién se toca por este lado?
 - [ ] `ch5.3.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.3.sauce.04` · **Sauce** · plan: Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba. Escríbelo en tu Cuaderno.
 - [ ] `ch5.3.notebook.05` · **Cuaderno** · GDD: Al desplegar una flor que está dentro de otra…
