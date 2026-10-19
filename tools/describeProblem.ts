@@ -3,6 +3,7 @@ import type { WalkthroughProblem } from '@game/systems/walkthrough';
 import type { CodexProblem } from '@levels/codexChecks';
 import type { IntegrityProblem } from '@levels/integrity';
 import type { LoadError } from '@levels/loader';
+import type { NotebookEchoProblem } from '@levels/notebookEcho';
 import type { SecretProblem } from '@levels/secretChecks';
 
 /** A reason's code followed by its details, e.g. `notAdjacent {"u":0,"v":2}`. */
@@ -132,6 +133,11 @@ export function describeProblem(problem: IntegrityProblem): string {
 /** Where a notebook statement is, counted from 1: its question, then the statement itself. */
 const statementAt = (problem: { readonly question: number; readonly option: number }): string =>
   `notebook question ${problem.question + 1}, statement ${problem.option + 1}`;
+
+/** One readable line for a notebook whose right statement repeats a line heard before it. */
+export function describeEchoProblem(problem: NotebookEchoProblem): string {
+  return `${statementAt(problem)} repeats "${problem.words}" of ${problem.echoes}, said before it: word it otherwise, or say that line after the notebook`;
+}
 
 /** One readable line for a walkthrough that does not play through the interface. */
 export function describeWalkthroughProblem(problem: WalkthroughProblem): string {

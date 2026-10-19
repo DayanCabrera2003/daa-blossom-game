@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   describeCodexProblem,
+  describeEchoProblem,
   describeLoadError,
   describeProblem,
   describeSecretProblem,
@@ -158,6 +159,20 @@ describe('readable level problems', () => {
       },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
+  });
+
+  it('explains a notebook that asks back a line just heard', () => {
+    expect(
+      describeEchoProblem({
+        code: 'notebookEcho',
+        question: 0,
+        option: 0,
+        echoes: 'ch4.11.sauce.06',
+        words: 'crea ni destruye',
+      }),
+    ).toBe(
+      'notebook question 1, statement 1 repeats "crea ni destruye" of ch4.11.sauce.06, said before it: word it otherwise, or say that line after the notebook',
+    );
   });
 
   it('explains why a file did not load', () => {
