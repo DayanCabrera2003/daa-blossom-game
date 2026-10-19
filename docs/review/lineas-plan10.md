@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-111 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
+117 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -366,10 +366,22 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch7.4.sauce.03` · **Sauce** · cambiada
   - Antes: Levanta las lunas como piedras y preséntalas con «Terminé».
-  - Después: Levanta las lunas como piedras y pulsa «Presentar».
+  - Después: Lo que dejó la búsqueda ya guarda tus piedras. Levántalas y pulsa «Presentar».
 - [ ] `ch7.4.sauce.05` · **Sauce** · cambiada
   - Antes: Esos dos, los que brillan.
   - Después: Mira este árbol. ¿Qué te dejó la búsqueda en cada brote?
+- [ ] `ch7.4.sauce.10` · **Sauce** · nueva
+  - Después: Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?
+- [ ] `ch7.4.gardener.11` · **Tú** · nueva
+  - Después: Con soles de otro árbol.
+- [ ] `ch7.4.sauce.12` · **Sauce** · nueva
+  - Después: No: dos soles de árboles distintos que se tocan son una cadena, y la búsqueda terminó sin ninguna.
+- [ ] `ch7.4.gardener.13` · **Tú** · nueva
+  - Después: Solo con los de su flor: de un sol solo se sale a lunas.
+- [ ] `ch7.4.gardener.14` · **Tú** · nueva
+  - Después: Con brotes sin marca.
+- [ ] `ch7.4.sauce.15` · **Sauce** · nueva
+  - Después: No: si un sol tocara un brote sin marca, a la búsqueda aún le quedaría algo que mirar.
 
 ### 7.5
 

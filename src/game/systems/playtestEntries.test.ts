@@ -417,8 +417,8 @@ describe('playtest entries of the stone certificates', () => {
         proves: true,
         counts: true,
       },
-      { kind: 'levelEnd', at: 6, level: '7.4', outcome: 'won', stars: expect.any(Number) },
     ]);
+    // The level ends only once the mentor's question after the count is answered (plan 10, F7).
   });
 
   it('stones that prove the lanterns but are not the moons do not count in 7.4', () => {

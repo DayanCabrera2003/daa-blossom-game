@@ -47,12 +47,24 @@
     { "step": "automaton" },
     { "step": "say", "lines": ["ch7.4.sauce.02", "ch7.4.sauce.03"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch7.4.sauce.07", "ch7.4.sauce.08", "ch7.4.oaks.09"] }
+    { "step": "say", "lines": ["ch7.4.sauce.07"] },
+    {
+      "step": "ask",
+      "prompt": "ch7.4.sauce.10",
+      "options": [
+        { "line": "ch7.4.gardener.11", "correct": false, "reply": "ch7.4.sauce.12" },
+        { "line": "ch7.4.gardener.13", "correct": true, "reply": "ch7.4.sauce.08" },
+        { "line": "ch7.4.gardener.14", "correct": false, "reply": "ch7.4.sauce.15" }
+      ],
+      "retry": true
+    },
+    { "step": "say", "lines": ["ch7.4.oaks.09"] }
   ],
   "unlocks": { "codex": ["C12"] },
   "solution": [
     { "type": "liftStone", "vertex": "a" },
     { "type": "liftStone", "vertex": "a2" },
-    { "type": "declareDone" }
+    { "type": "declareDone" },
+    { "type": "answer", "option": 1 }
   ]
 }

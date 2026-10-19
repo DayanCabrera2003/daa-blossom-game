@@ -9,6 +9,7 @@ import { refutationAt, type Refutation } from '@levels/counterexample';
 import type { LevelStep } from '@levels/flow';
 import { stepLines } from '@levels/lines';
 import { describe, expect, it } from 'vitest';
+import lines from '../src/content/es/lines.json';
 
 /**
  * The whys asked (GDD §7, plan 10, phase 7): what the mentor or the Codex used to tell is now a
@@ -77,6 +78,7 @@ describe('the mentor tells why after the player answers, as the reply to the rig
     ['2.3', 'ch2.3.sauce.02'],
     ['3.4', 'ch3.4.sauce.04'],
     ['5.2', 'ch5.2.sauce.04'],
+    ['7.4', 'ch7.4.sauce.08'],
   ])('%s asks after playing, again until right, and says %s only then', (id, why) => {
     const level = levelOf(id);
     const { at, ask } = askOf(level);
@@ -126,5 +128,13 @@ describe('3.8: between bees and clovers, two suns of one tree never touch', () =
         : state.search.label.flatMap((label, vertex) => (label === 'none' ? [] : [vertex]));
     const most = Math.max(...gardens.map((state) => marked(state).length));
     expect(most).toBe(counterexample.start.graph.n);
+  });
+});
+
+describe('7.4: the mentor no longer tells which stones to lift', () => {
+  it('the line before playing names no moons; the search left them, and the hints lead there', () => {
+    const said: Record<string, string> = lines;
+    expect(said['ch7.4.sauce.03']).toBeDefined();
+    expect(said['ch7.4.sauce.03']).not.toMatch(/luna/i);
   });
 });

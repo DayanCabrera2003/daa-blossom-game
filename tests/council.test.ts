@@ -217,7 +217,8 @@ describe('7.4: the gift of the search II', () => {
   });
 
   it('is searched by the automaton, which folds where the light of 4.1 would not', () => {
-    expect(stepsOf(level)).toEqual(['say', 'automaton', 'say', 'play', 'say']);
+    // After the count, the mentor asks why the moons are the stones (plan 10, phase 7).
+    expect(stepsOf(level)).toEqual(['say', 'automaton', 'say', 'play', 'say', 'ask', 'say']);
     expect(stepOf(level, 'automaton').missing).toBeUndefined();
     const run = runRecipe(level.start, { fold: true });
     expect(run.filter((move) => move.type === 'foldAt')).toHaveLength(2);

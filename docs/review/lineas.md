@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 498 líneas, 59 están tal cual en el GDD y 439 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 504 líneas, 60 están tal cual en el GDD y 444 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -671,13 +671,19 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.4.oaks.00` · **Los Robles** · plan: Otra vez: ¿cómo sabes que no caben más faroles?
 - [ ] `ch7.4.sauce.01` · **Sauce** · plan: Esta vez no busques tú. Que el jardinero mecánico siga la receta hasta el final.
 - [ ] `ch7.4.sauce.02` · **Sauce** · plan: La búsqueda terminó sin cadena. Mira dónde quedaron las lunas.
-- [ ] `ch7.4.sauce.03` · **Sauce** · plan: Levanta las lunas como piedras y pulsa «Presentar».
+- [ ] `ch7.4.sauce.03` · **Sauce** · plan: Lo que dejó la búsqueda ya guarda tus piedras. Levántalas y pulsa «Presentar».
 - [ ] `ch7.4.sauce.04` · **Sauce** · plan: ¿Qué brotes llevan luna?
 - [ ] `ch7.4.sauce.05` · **Sauce** · plan: Mira este árbol. ¿Qué te dejó la búsqueda en cada brote?
 - [ ] `ch7.4.sauce.06` · **Sauce** · plan: Te enseño la primera piedra. La otra es tuya.
 - [ ] `ch7.4.sauce.07` · **Sauce** · plan: Mira la cuenta: R sola y la flor b, c, d; al otro lado, lo mismo. Cuatro grupos impares, dos piedras: al menos dos a oscuras. Tienes dos.
 - [ ] `ch7.4.sauce.08` · **Sauce** · plan: La búsqueda que fracasó te entrega las piedras. Y siempre pasa: de un sol solo se llega a lunas, así que al quitar las lunas cada sol y cada flor quedan solos, y una flor siempre tiene un número impar de brotes.
 - [ ] `ch7.4.oaks.09` · **Los Robles** · plan: Demostrado. Ni una prueba de más.
+- [ ] `ch7.4.sauce.10` · **Sauce** · GDD: Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?
+- [ ] `ch7.4.gardener.11` · **Tú** · plan: Con soles de otro árbol.
+- [ ] `ch7.4.sauce.12` · **Sauce** · plan: No: dos soles de árboles distintos que se tocan son una cadena, y la búsqueda terminó sin ninguna.
+- [ ] `ch7.4.gardener.13` · **Tú** · plan: Solo con los de su flor: de un sol solo se sale a lunas.
+- [ ] `ch7.4.gardener.14` · **Tú** · plan: Con brotes sin marca.
+- [ ] `ch7.4.sauce.15` · **Sauce** · plan: No: si un sol tocara un brote sin marca, a la búsqueda aún le quedaría algo que mirar.
 
 ### 7.5
 
