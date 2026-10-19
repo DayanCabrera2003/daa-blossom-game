@@ -766,6 +766,38 @@
     ]
   },
   {
+    "id": "foldLoop",
+    "sprouts": [
+      {
+        "label": "a",
+        "x": 30,
+        "y": 42
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "label": "c",
+        "x": 90,
+        "y": 42
+      }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"],
+      ["c", "a"]
+    ],
+    "lanterns": [["b", "c"]],
+    "steps": [
+      {
+        "type": "fold",
+        "loop": ["a", "b", "c"]
+      }
+    ]
+  },
+  {
     "id": "unfold",
     "sprouts": [
       {

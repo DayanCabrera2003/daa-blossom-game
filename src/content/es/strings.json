@@ -458,6 +458,8 @@
   "tutorial.scarecrows.body": "Con Espantapájaros, toca un brote para ponerle uno. Tócalo otra vez para quitarlo.",
   "tutorial.fold.title": "Plegar flores",
   "tutorial.fold.body": "Con Marcas, toca la enredadera donde se tocan dos soles del mismo árbol: el bucle se pliega en una flor.",
+  "tutorial.foldLoop.title": "Plegar a mano",
+  "tutorial.foldLoop.body": "Con Plegar, toca en orden los brotes de un bucle. Si es una flor y su base está a oscuras, se pliega.",
   "tutorial.unfold.title": "Desplegar flores",
   "tutorial.unfold.body": "Con Marcas, toca una flor cerrada para abrirla. El trozo de cadena que encontró tu luz sigue dibujado: arrastra solo el tramo de dentro de la flor para completarlo.",
   "tutorial.layers.title": "Capas",

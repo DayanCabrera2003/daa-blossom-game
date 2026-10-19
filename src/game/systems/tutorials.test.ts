@@ -1,9 +1,11 @@
-import { UNLOCKED_AT } from '@core/rules/permissions';
+import { actionsUnlockedBy, UNLOCKED_AT } from '@core/rules/permissions';
 import type { ActionType } from '@core/rules/actions';
 import { invariant } from '@core/shared/invariant';
+import { unwrap } from '@core/shared/result';
 import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
+import { toPlayable } from '@levels/sandbox/toLevel';
 import { describe, expect, it } from 'vitest';
 import {
   betrayalLevel,
@@ -216,6 +218,26 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       'layers',
     ]);
     expect(CARD_IDS.filter((card) => !reachable.has(card))).toEqual([]);
+  });
+
+  it('folding by hand («Plegar a mano») has a card of its own, which only the free mode shows', () => {
+    expect(ACTION_CARD.fold).toBe('foldLoop');
+    const triangle = {
+      sprouts: [
+        { label: 'A', x: 100, y: 150 },
+        { label: 'B', x: 150, y: 80 },
+        { label: 'C', x: 200, y: 150 },
+      ],
+      vines: [
+        ['A', 'B'],
+        ['B', 'C'],
+        ['C', 'A'],
+      ] as [string, string][],
+      lanterns: [],
+    };
+    const free = unwrap(toPlayable(triangle, actionsUnlockedBy('4.4')));
+    expect(levelCards(free, '4.4')).toEqual(expect.arrayContaining(['fold', 'foldLoop']));
+    for (const level of levels) expect(levelCards(level), level.data.id).not.toContain('foldLoop');
   });
 
   it('steps that ask no new gesture show no card', () => {

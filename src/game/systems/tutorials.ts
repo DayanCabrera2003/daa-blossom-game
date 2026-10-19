@@ -14,7 +14,11 @@ import { isUiUnlocked } from '@levels/uiUnlocks';
  * Pure: the scene asks what to show and the save remembers what was closed.
  */
 
-/** The card that teaches each action. Actions done with one gesture share it. */
+/**
+ * The card that teaches each action. Actions done with one gesture share it. Folding a loop by hand
+ * («Plegar a mano») is a gesture of its own, and only the free mode has it, so only there its card
+ * shows; levels fold where two suns meet, which the card of folding teaches.
+ */
 export const ACTION_CARD: Readonly<Record<ActionType, CardId>> = {
   join: 'lanterns',
   split: 'lanterns',
@@ -26,7 +30,7 @@ export const ACTION_CARD: Readonly<Record<ActionType, CardId>> = {
   markMoon: 'marks',
   placeScarecrow: 'scarecrows',
   removeScarecrow: 'scarecrows',
-  fold: 'fold',
+  fold: 'foldLoop',
   stepLight: 'light',
   foldAt: 'fold',
   unfold: 'unfold',

@@ -31,6 +31,7 @@ export const CARD_IDS = [
   'flowerChallenge',
   'scarecrows',
   'fold',
+  'foldLoop',
   'unfold',
   'layers',
   'rotateStem',
