@@ -70,7 +70,8 @@ describe('the picture of the HUD', () => {
     const hud = hudPicture(startSession(closedFlowerLevel(), 0), initialPointer('marks'), 0);
     expect(hud.goal).toEqual({ key: 'hud.goalHidden', params: {} });
     expect(hud.canDeclareDone).toBe(true);
-    expect(hud.tools).toEqual(['lanterns', 'marks', 'foldLoop', 'inspect', 'scarecrows']);
+    // No level folds a loop by hand: «Plegar a mano» is the free mode's alone.
+    expect(hud.tools).toEqual(['lanterns', 'marks', 'inspect', 'scarecrows']);
   });
 
   it('offers "Avanzar la luz" only where the light searches by itself', () => {

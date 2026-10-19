@@ -129,6 +129,13 @@ describe('a design to play', () => {
     expect(level.start.chains).toEqual({ rule: 'any' });
   });
 
+  it('gives folding by hand («Plegar a mano»), which no level has, once learnt in 4.4', () => {
+    expect(unwrap(toPlayable(PATH, actionsUnlockedBy('4.4'))).start.allowed.has('fold')).toBe(true);
+    expect(unwrap(toPlayable(PATH, actionsUnlockedBy('4.3'))).start.allowed.has('fold')).toBe(
+      false,
+    );
+  });
+
   it('never allows inspecting: a garden of the free mode has no fog to lift', () => {
     for (const allowed of [ALL, actionsUnlockedBy('3.1'), actionsUnlockedBy('1.7')]) {
       const level = unwrap(toPlayable(PATH, allowed));

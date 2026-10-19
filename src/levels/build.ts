@@ -15,7 +15,7 @@ import { buildGarden, type GardenError } from './garden';
 import { toLevelStep, toSprouts, toWalkthroughEntry } from './translate';
 
 /** The moves a level where the light searches by itself keeps closed: the search is the light's. */
-const BY_HAND: readonly ActionType[] = ['markRoot', 'markMoon', 'fold'];
+const BY_HAND: readonly ActionType[] = ['markRoot', 'markMoon'];
 
 /** One entry of a walkthrough: a garden move, or an input the script asks for. */
 export type WalkthroughEntry = Action | FlowInput;
@@ -55,7 +55,9 @@ export type BuildError =
  * Builds the playable level from its validated file: labels, garden, starting lanterns, the
  * reflection (a valid set of lanterns of the same garden), the actions it allows (those unlocked by
  * its id, minus `forbid`, which it keeps as closed for the day), its chain rule, the roots a search
- * may start from, the petals of its flower and its solution with ids.
+ * may start from, the petals of its flower and its solution with ids. No level folds a loop chosen
+ * by hand (`fold`): in a level, folding is touching where two suns meet (`foldAt`), and only the
+ * free mode gives «Plegar a mano» back (`sandbox/toLevel.ts`).
  */
 export function buildLevel(data: LevelData): Result<Level, BuildError> {
   const built = buildGarden({
@@ -125,8 +127,8 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     chains = { rule: 'seen' };
   }
 
-  // Where the light searches by itself, its step is given, and marks and folds by hand are closed
-  // for the day: the light owns the search, and folding is touching where it stops.
+  // Where the light searches by itself, its step is given, and marks by hand are closed for the
+  // day: the light owns the search, and folding is touching where it stops.
   const closed: ActionType[] = data.light ? [...data.forbid, ...BY_HAND] : [...data.forbid];
   const forbidden = new Set(closed);
   const start = createGardenState({
@@ -136,7 +138,8 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     ...(roots === undefined ? {} : { roots }),
     chains,
     allowed: actionsUnlockedBy(data.id).filter(
-      (action) => !forbidden.has(action) && (action !== 'stepLight' || data.light),
+      (action) =>
+        !forbidden.has(action) && action !== 'fold' && (action !== 'stepLight' || data.light),
     ),
     closed,
   });

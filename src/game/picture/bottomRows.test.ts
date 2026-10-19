@@ -230,6 +230,14 @@ describe('the two bottom rows of the level HUD', () => {
     );
   });
 
+  it('no toolbar of the catalog offers «Plegar a mano»: levels fold where two suns meet', () => {
+    const chapter4 = catalog().filter((level) => level.data.id.startsWith('4.'));
+    expect(chapter4.map((level) => level.data.id)).toContain('4.4');
+    for (const level of catalog()) {
+      expect(availableTools(level.start.allowed), level.data.id).not.toContain('foldLoop');
+    }
+  });
+
   it("the teacher's trace button ends the tools' row, clear of the tools of every level", () => {
     const trace = estimatedButtonWidth(label('hud.trace'));
     const left = traceButtonLeft(trace);

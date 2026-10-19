@@ -55,10 +55,18 @@ describe('building a level', () => {
     expect(allowed.has('stepLight')).toBe(false);
   });
 
-  it('where the light searches by itself, gives its step and closes marks and folds by hand', () => {
+  it('never allows folding a loop chosen by hand: a level folds where two suns meet', () => {
+    const { allowed, closed } = unwrapLevel({ ...rotate, forbid: [] }).start;
+    expect(allowed.has('fold')).toBe(false);
+    expect(allowed.has('foldAt')).toBe(true);
+    // Not a move closed for the day: no level has it («Plegar a mano» is the free mode's).
+    expect(closed.has('fold')).toBe(false);
+  });
+
+  it('where the light searches by itself, gives its step and closes marks by hand', () => {
     const { allowed, closed } = unwrapLevel({ ...rotate, light: true }).start;
     expect(allowed.has('stepLight')).toBe(true);
-    for (const action of ['markRoot', 'markMoon', 'fold'] as const) {
+    for (const action of ['markRoot', 'markMoon'] as const) {
       expect(allowed.has(action)).toBe(false);
       expect(closed.has(action)).toBe(true);
     }
