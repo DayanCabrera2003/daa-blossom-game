@@ -3,7 +3,7 @@ import type { NotebookData } from './notebook';
 import type { LevelData } from './schema';
 
 /** The lines one step of the script may say: its own lines, questions, answers and reactions. */
-function stepLines(step: FlowStep): string[] {
+export function stepLines(step: FlowStep): string[] {
   switch (step.step) {
     case 'say':
       return [...step.lines];
