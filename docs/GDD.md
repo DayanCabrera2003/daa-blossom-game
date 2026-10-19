@@ -84,7 +84,7 @@ El jardín pasa por las cuatro estaciones a lo largo del juego. Cada estación e
 | **Bruto** (gnomo de la fuerza bruta) | Alivio cómico. Propone siempre "probar todas las combinaciones". Cada capítulo va más lento. Personifica el costo exponencial y las "recetas rotas". | Balbuceo agudo y atropellado |
 | **El Consejo de los Robles** | Exigen certificados: "¿Cómo sabes que nadie más puede tener farol?" Personifican la demostración de optimalidad. | Balbuceo grave, lento y en coro |
 | **Los brotes** | Los vértices. Tienen caritas: dormidos y tristes a oscuras, felices con farol. | Sonidos, sin voz |
-| **Abejas y flores** (Invernadero) | La forma natural de que un jardín sea bipartito sin decir la palabra. | — |
+| **Abejas y tréboles** (Invernadero) | La forma natural de que un jardín sea bipartito sin decir la palabra. | — |
 
 ### 3.3 Glosario jardín ↔ matemáticas
 
@@ -106,7 +106,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 | Caminar de noche con luz | Búsqueda de camino aumentante (BFS alternante) |
 | Marca de sol / de luna | Vértice exterior (outer, par) / interior (inner, impar) |
 | Cada brote solitario lanza su luz | Bosque alternante con raíces en los vértices libres |
-| Abejas y flores | Grafo bipartito |
+| Abejas y tréboles | Grafo bipartito |
 | Espantapájaros | Cobertura por vértices (König) |
 | Un brote que debe ser sol y luna | Arista exterior–exterior en el mismo árbol: ciclo impar |
 | Flor | Blossom (ciclo impar alternante con un tallo) |
@@ -146,7 +146,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 - **Niebla:** capa semitransparente con dithering; se disuelve en círculo alrededor de cada brote inspeccionado.
 - **Espejo del estanque:** el jardín se refleja en el agua con ondas; los faroles del reflejo son azul plateado.
 - **Piedras:** el brote levantado se convierte en piedra gris; el hueco deja ver la separación del jardín en grupos, cada grupo con su contorno.
-- **Ciclo día/noche:** el sol en la barra superior es el slider de tiempo. Arrastrarlo tiñe la escena (amanecer → día → atardecer → noche) y reproduce los movimientos en orden.
+- **Ciclo día/noche:** el día, en la barra superior, es el slider de tiempo; su asa es un sol, el día que pasa. Arrastrarlo tiñe la escena (amanecer → día → atardecer → noche) y reproduce los movimientos en orden.
 - **Animaciones clave (las que tienen que ser perfectas):**
   1. Pasar el farol: el farol salta con squash & stretch de un brote al siguiente, con una campanita que sube de tono en cada salto. Al terminar una cadena ganadora, el último farol aparece con un destello y confeti de pétalos.
   2. Plegar/desplegar la flor.
@@ -214,8 +214,8 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | **Juntar** | Tocas dos brotes conectados sin farol; aparece un farol entre ellos. | 0.1 |
 | **Separar / deshacer** | Tocas un farol; se apaga. Deshacer y rehacer ilimitados. | 0.1 |
 | **Pasar el farol** | Un brote solitario toca a un vecino con farol: el vecino se lo da y su antigua pareja queda solitaria. Se puede encadenar a mano. | 1.1 (emerge de las reglas) |
-| **Cadena** | Arrastras desde un brote solitario a lo largo de enredaderas; el juego solo permite alternar (apagada, farol, apagada…). Al soltar en un brote solitario, todos los faroles se deslizan y se enciende uno nuevo (+1). Si sueltas en un brote con farol, se aplica igual pero con ganancia 0 (el juego lo marca en gris). Mientras arrastras, el trazo dice en los capítulos 0–2 lo que ganarías (+1 dorado, 0 en gris, ilegal); desde el capítulo 3 (y en sus flores secretas) solo dice si es legal, con un único color neutro, y la ganancia se ve al soltar, con la cadena aplicada (el gris de 1.4 sigue). El modo libre conserva la ganancia en el trazo: es una herramienta, no un nivel. | 1.3 |
-| **El sol (tiempo)** | Slider en la barra superior: rebobina y reproduce los movimientos propios o los del jardinero mecánico. | 0.5 |
+| **Cadena** | Arrastras desde un brote solitario a lo largo de enredaderas; el juego solo permite alternar (apagada, farol, apagada…). Al soltar en un brote solitario, todos los faroles se deslizan y se enciende uno nuevo (+1). Si sueltas en un brote con farol, se aplica igual pero con ganancia 0 (el juego lo marca en gris). Mientras arrastras, el trazo dice en los capítulos 0–2 lo que ganarías (+1 dorado, 0 en gris, ilegal); desde el capítulo 3 (y en sus jardines secretos) solo dice si es legal, con un único color neutro, y la ganancia se ve al soltar, con la cadena aplicada (el gris de 1.4 sigue). El modo libre conserva la ganancia en el trazo: es una herramienta, no un nivel. | 1.3 |
+| **El día (tiempo)** | Slider en la barra superior: rebobina y reproduce los movimientos propios o los del jardinero mecánico. Su asa es un sol, pero se llama «el día» («Arrastra el día»): «sol» es solo la marca de la búsqueda, y «flor», solo la flor que se pliega. | 0.5 |
 | **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da una semilla, la primera vez (también cada apuesta de las carreras de 6.5; la pregunta informal de 0.4, no). Cada semilla planta una planta en el hub. | 1.6 |
 | **Inspeccionar** | En niebla, revela las enredaderas de un brote. Cuesta una gota de agua. | 3.1 |
 | **Marcas sol / luna** | Colocas la marca sobre un brote; el juego solo acepta marcas coherentes con las reglas. | 3.1 |
@@ -253,7 +253,7 @@ Del Prado en adelante cada nivel escribe sus pistas (1.5–1.9 también, con sus
 
 ### 5.4 Estrellas
 
-Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas (no haber abierto ninguna en el nivel, ofrecida o pedida), dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y las flores secretas. Nunca bloquean el avance.
+Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas (no haber abierto ninguna en el nivel, ofrecida o pedida), dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y los jardines secretos. Nunca bloquean el avance.
 
 Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se pierden: no hay tienda ni nada que gastar. Al llegar, un aviso en el hub los anuncia una sola vez. En modo profesor se ven todos.
 
@@ -267,7 +267,7 @@ Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se 
 | 110 | Luciérnagas sobre el jardín |
 | 130 | El brillo de un farol encendido en cada poste de capítulo |
 
-Todos salen de Ninja Adventure o se dibujan por código. Cada uno vive y se mueve en un hueco propio del hub, libre de todo lo que se lee o se pulsa (carteles, títulos, botones, flores secretas) y de los demás, así que nunca tapan nada ni se mueven cuando llega otro; si el sistema pide menos movimiento, se quedan quietos.
+Todos salen de Ninja Adventure o se dibujan por código. Cada uno vive y se mueve en un hueco propio del hub, libre de todo lo que se lee o se pulsa (carteles, títulos, botones, jardines secretos) y de los demás, así que nunca tapan nada ni se mueven cuando llega otro; si el sistema pide menos movimiento, se quedan quietos.
 
 Junto al título del hub, un contador con las estrellas totales y las semillas. Para dejarle sitio (y al cartel del modo libre), el botón "Exportar registro de prueba" pasa de la línea superior del hub al panel de ajustes.
 
@@ -288,13 +288,13 @@ Las entradas se desbloquean con el juego, pero en modo profesor están todas abi
 
 ### 5.7 Modo libre (sandbox)
 
-Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y puedes: jugarlo, pedirle al jardinero mecánico que lo resuelva con el sol como slider, ver el bosque, las flores y el certificado final. Exporta un código de jardín para compartir.
+Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y puedes: jugarlo, pedirle al jardinero mecánico que lo resuelva con el día como slider, ver el bosque, las flores y el certificado final. Exporta un código de jardín para compartir.
 
 Se abre al terminar el capítulo 1 (un cartel en el hub), con las acciones que el jugador ya ha ganado; en modo profesor y desde el epílogo, siempre. Jugar en él nunca guarda progreso. Con Plegar ganado (4.4), el modo libre ofrece también «Plegar a mano» (§5.1), solo con la base a oscuras y con su propia tarjeta de mecánica; ningún nivel lo tiene.
 
-Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredaderas, con los brotes a 18 px o más unos de otros y un farol por brote; sin niebla. El editor rechaza con un aviso amable lo que taparía el nombre de un brote, y los jardines generados o abiertos de un código se disponen de modo que todos los nombres se lean. Los jardines generados salen del núcleo, deterministas por semilla (hilera, corro, estrella, todos con todos, al azar, abejas y flores, flor de tallo largo, flores anidadas, hélice, muchas flores); si uno pasaría de los límites, se encoge hasta caber y lo dice.
+Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredaderas, con los brotes a 18 px o más unos de otros y un farol por brote; sin niebla. El editor rechaza con un aviso amable lo que taparía el nombre de un brote, y los jardines generados o abiertos de un código se disponen de modo que todos los nombres se lean. Los jardines generados salen del núcleo, deterministas por semilla (hilera, corro, estrella, todos con todos, al azar, abejas y tréboles, flor de tallo largo, flores anidadas, hélice, muchas flores); si uno pasaría de los límites, se encoge hasta caber y lo dice.
 
-El jardinero mecánico aparece tras 6.2 y usa todas sus herramientas aunque el jugador aún no las tenga (no se las da). El certificado a demanda sale del bosque de la última búsqueda sin cadena: piedras en las lunas (tras 7.4) y, si el jardín es de abejas y flores, espantapájaros (tras 3.8). No hay carrera contra Bruto en el modo libre. Que el jardinero lo resuelva no gana el jardín: «Terminé» sigue siendo del jugador, y ganar un jardín libre no da estrellas (el panel de victoria dice una línea propia).
+El jardinero mecánico aparece tras 6.2 y usa todas sus herramientas aunque el jugador aún no las tenga (no se las da). El certificado a demanda sale del bosque de la última búsqueda sin cadena: piedras en las lunas (tras 7.4) y, si el jardín es de abejas y tréboles, espantapájaros (tras 3.8). No hay carrera contra Bruto en el modo libre. Que el jardinero lo resuelva no gana el jardín: «Terminé» sigue siendo del jugador, y ganar un jardín libre no da estrellas (el panel de victoria dice una línea propia).
 
 Compartir da el código de jardín corto (brotes, enredaderas y faroles, sin posiciones: al importarlo se dispone solo), un enlace `?garden=<código>` que abre el modo libre con ese jardín, y el mismo JSON de los niveles (con posiciones y nombres, válido para el catálogo una vez se le da su id). Importar acepta un código o un JSON, pegado o desde un archivo, y lo valida todo antes de usarlo.
 
@@ -306,11 +306,11 @@ Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, pa
 
 Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y explica la teoría en cada uno. Es el entregable "video" del profesor y el tráiler didáctico del juego. Guion en sección 9.
 
-### 5.10 Flores secretas
+### 5.10 Jardines secretos
 
-Puzles opcionales difíciles escondidos en el hub: una por capítulo, del Prado al Consejo (siete; el Huerto no tiene). No enseñan nada nuevo, exigen combinar, y solo usan las acciones de su capítulo. Ejemplos en 7.9.
+Puzles opcionales difíciles escondidos en el hub: uno por capítulo, del Prado al Consejo (siete; el Huerto no tiene). No enseñan nada nuevo, exigen combinar, y solo usan las acciones de su capítulo. Ejemplos en 7.9.
 
-Cada una florece junto al poste del cartel de su capítulo, en un hueco reservado a su lado que nunca tapa un botón. No aparece hasta terminar el capítulo; entonces es un capullo que se abre con estrellas de ese capítulo: las de completarlo todo más la mitad (redondeada hacia arriba) de sus estrellas extra posibles. Tocar el capullo dice cuántas faltan. Nada depende de ellas: no cuentan para terminar el capítulo ni abren otro nivel, y al ganarlas se vuelve al hub. En modo profesor están todas abiertas.
+Cada uno crece junto al poste del cartel de su capítulo, en un hueco reservado a su lado que nunca tapa un botón. No aparece hasta terminar el capítulo; entonces es un capullo que se abre con estrellas de ese capítulo: las de completarlo todo más la mitad (redondeada hacia arriba) de sus estrellas extra posibles. Tocar el capullo dice cuántas faltan. Nada depende de ellos: no cuentan para terminar el capítulo ni abren otro nivel, y al ganarlos se vuelve al hub. En modo profesor están todos abiertos. El dibujo del hub (el capullo y su roseta dorada) no cambia: el nombre es «jardín secreto» porque «flor» es solo la flor que se pliega.
 
 
 ### 5.11 Tarjetas de mecánica
@@ -325,7 +325,7 @@ Las tarjetas explican el gesto, **nunca la idea**: "arrastra desde un brote a os
 
 | Cap. | Estación / lugar | Idea central | Niveles | Duración estimada |
 |---|---|---|---|---|
-| 0 | Prólogo, El Huerto | Emparejar; exclusividad; el sol como tiempo | 5 | 10 min |
+| 0 | Prólogo, El Huerto | Emparejar; exclusividad; el día como tiempo | 5 | 10 min |
 | 1 | Primavera, El Prado | Maximal ≠ máximo; pasar el farol; cadenas | 9 | 30 min |
 | 2 | El Estanque | Lema de Berge (jugado) | 4 | 20 min |
 | 3 | El Invernadero | Búsqueda sistemática; costo; König | 9 | 35 min |
@@ -386,12 +386,12 @@ Tarde de verano tardío. Sin música todavía, solo grillos. Tutorial silencioso
 - **Guion:** Sauce: "Hortensia tiene muchos amigos. ¿Cuántos faroles crees que se encienden esta noche?"
 - **Victoria:** 1 farol.
 
-#### 0.5 El sol
+#### 0.5 El día
 - **Jardín:** `A–B–C–D–E`.
 - **Objetivo:** visible, 2.
-- **Enseña:** el slider de tiempo. Tras resolver, el mentor pide arrastrar el sol hacia atrás y ver los movimientos deshacerse y rehacerse.
-- **Guion:** Sauce: "Un jardinero mira el día que pasó. Arrastra el sol."
-- **Victoria:** 2 faroles y haber movido el sol al menos una vez.
+- **Enseña:** el slider de tiempo. Tras resolver, el mentor pide arrastrar el día hacia atrás y ver los movimientos deshacerse y rehacerse.
+- **Guion:** Sauce: "Un jardinero mira el día que pasó. Arrastra el día."
+- **Victoria:** 2 faroles y haber movido el día al menos una vez.
 - **Desbloquea:** Códex **C1 Emparejamiento** (solo la pestaña Intuición; la Formal se abre al terminar el capítulo 1). Hub: el huerto florece.
 
 ---
@@ -405,7 +405,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 2.
 - **Enseña:** maximal ≠ máximo. Quien junta B–C obtiene 1 y no puede añadir nada. Tiene que deshacer y rehacer: A–B y C–D.
 - **Por qué aquí:** es el problema entero en cuatro brotes. La solución "deshacer una pareja para hacer dos" *es* pasar el farol. El jugador lo hace sin saberlo.
-- **Guion:** al lograrlo, el sol rebobina solo y Sauce: "Mira lo que hiciste. Beto le dio su farol a Ana, y Cleo tuvo que buscar a Dani. **Pasaste el farol.**"
+- **Guion:** al lograrlo, el día se rebobina solo y Sauce: "Mira lo que hiciste. Beto le dio su farol a Ana, y Cleo tuvo que buscar a Dani. **Pasaste el farol.**"
 - **Pistas:** (1) "¿Ana puede hablar con alguien?" (2) A y D brillan. (3) el mentor apaga B–C.
 - **Victoria:** 2 faroles.
 - **Desbloquea:** la acción **Pasar el farol** (tocar un brote solitario y luego un vecino con farol lo roba; la antigua pareja queda solitaria).
@@ -517,7 +517,7 @@ Tú: 5 faroles. Reflejo: 6.
 
 ### Capítulo 3 — El Invernadero (búsqueda sistemática, costo, König)
 
-Un invernadero con niebla matinal. Viven **abejas y flores**: una abeja solo se junta con una flor. Nadie dice "bipartito". Aquí "¿queda alguna cadena?" se convierte en un procedimiento.
+Un invernadero con niebla matinal. Viven **abejas y tréboles**: una abeja solo se junta con un trébol. Nadie dice "bipartito". Aquí "¿queda alguna cadena?" se convierte en un procedimiento.
 
 Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**. Cada inspección cuesta una gota de agua. Marcas: **sol** (llegaste "con la mano libre") y **luna** (llegaste pidiendo). Reglas que el jugador descubre y el juego impone:
 - Un brote solitario desde el que empiezas es **sol**.
@@ -526,7 +526,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - Un brote ya marcado no se vuelve a marcar.
 
 #### 3.1 Niebla
-- **Jardín:** `R–a=b–c=d–T` en niebla. R libre (abeja), T libre (flor).
+- **Jardín:** `R–a=b–c=d–T` en niebla. R libre (abeja), T libre (trébol).
 - **Enseña:** inspeccionar y marcar. R sol, a luna, b sol, c luna, d sol, T luna y solitaria → cadena.
 - **Guion:** Sauce: "De noche no se ve el jardín entero. Se ve lo que tu luz alcanza. Sal de alguien a oscuras y camina."
 - **Pistas:** (1) "¿Dónde empieza siempre una cadena?" (2) R brilla. (3) el mentor inspecciona R y marca sol.
@@ -545,7 +545,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Victoria:** completar la búsqueda con el mínimo de agua (presupuesto amable).
 
 #### 3.4 Dos jardineros
-- **Jardín:** dos brotes solitarios, R1 (abeja) y R2 (flor), cuyas búsquedas crecen a la vez; una enredadera apagada une un sol del árbol de R1 con un sol del árbol de R2.
+- **Jardín:** dos brotes solitarios, R1 (abeja) y R2 (trébol), cuyas búsquedas crecen a la vez; una enredadera apagada une un sol del árbol de R1 con un sol del árbol de R2.
 - **Enseña:** cada solitario lanza su luz; cuando dos luces se tocan por una enredadera apagada, sol con sol de **árboles distintos**, hay cadena de raíz a raíz.
 - **Por qué aquí:** establece el bosque (varias raíces) y el caso "sol–sol entre árboles distintos = cadena", que en el capítulo 4 se contrasta con "sol–sol en el mismo árbol = problema".
 - **Pregunta** (tras la cadena, antes de que Sauce la nombre): "Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?" (a) "Una cadena de un brote a oscuras al otro" ✔ (b) "Un bucle que vuelve al mismo brote" ✘ (cada camino acaba en su propio brote a oscuras) (c) "Nada: hay que seguir buscando" ✘. La respuesta al acierto es la línea de Sauce que la nombra.
@@ -573,11 +573,11 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 
 #### 3.8 El regalo de la búsqueda
 - **Jardín:** `1–2=3–4=5` (1 libre), y una segunda componente con la misma estructura ramificada. Diseñado para que la búsqueda alcance a todos los brotes.
-- **Enseña:** tras la búsqueda fallida, el mentor dice "pon espantapájaros en todas las lunas". Cada luna tiene exactamente un farol (con un sol), así que hay tantos espantapájaros como faroles, y vigilan todo: cada enredadera toca una luna (porque de un sol solo salen lunas y no hay sol–sol en abejas y flores). **La búsqueda que fracasó te regala la prueba.**
+- **Enseña:** tras la búsqueda fallida, el mentor dice "pon espantapájaros en todas las lunas". Cada luna tiene exactamente un farol (con un sol), así que hay tantos espantapájaros como faroles, y vigilan todo: cada enredadera toca una luna (porque de un sol solo salen lunas y no hay sol–sol en abejas y tréboles). **La búsqueda que fracasó te regala la prueba.**
 - **Por qué aquí:** es el ensayo general del capítulo 7. La idea "el bosque fallido es el certificado" se ve primero en el caso bipartito donde es transparente.
 - **Pregunta** (tras la búsqueda, antes de que Sauce explique por qué las lunas lo vigilan todo): "Entre abejas y tréboles, ¿pueden tocarse dos soles del mismo árbol?" (a) "No: todos sus soles son de la misma especie" ✔ (la respuesta de Sauce añade que una enredadera nunca une dos de la misma especie, y que dos soles de árboles distintos serían una cadena) (b) "Sí, en un corro pueden tocarse" ✘ contraejemplo: un corro de abejas y tréboles donde el jugador busca y nunca consigue que dos soles se toquen. Las preguntas de Sauce refutan igual que el Cuaderno: con una respuesta o con un jardín que se toca, y la pregunta vuelve al salir.
 - **Cuaderno:** "Si k espantapájaros vigilan todas las enredaderas…" (a) "…no puede haber más de k faroles" ✔ (b) "…hay exactamente k faroles" ✘ contraejemplo: un espantapájaros de más (c) "…siempre puedo poner los espantapájaros en las lunas" ✘ contraejemplo: un jardín de abejas y tréboles donde la búsqueda acaba sin llegar a todos (una pareja con farol cuelga solo de una luna); los espantapájaros en las lunas dejan su enredadera sin vigilar. Es la idea de la flor secreta 3.10 en un nivel obligatorio; el Códex C5 la precisa.
-- **Desbloquea:** Códex **C4 La búsqueda** y **C5 Abejas, flores y espantapájaros (König)**.
+- **Desbloquea:** Códex **C4 La búsqueda** y **C5 Abejas, tréboles y espantapájaros (König)**.
 
 #### 3.9 Maestría del Invernadero
 - **Jardín:** 20 brotes bipartitos en niebla, faroles iniciales mal puestos, dos cadenas, después certificado.
@@ -742,7 +742,7 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 
 #### 6.2 El autómata
 - **Jardín:** un jardín del Prado.
-- **Enseña:** el jardinero mecánico sigue la receta del jugador. El sol es el slider. Funciona.
+- **Enseña:** el jardinero mecánico sigue la receta del jugador. El día es el slider. Funciona.
 - **Victoria:** ver la ejecución completa.
 
 #### 6.3 La receta rota
@@ -778,7 +778,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 #### 7.1 Los espantapájaros no bastan
 - **Jardín:** ciclo de 5 brotes. Máximo: 2 faroles.
-- **Enseña:** el jugador intenta certificar con espantapájaros: necesita 3 para vigilar todas las enredaderas, pero solo hay 2 faroles. El certificado del invernadero **no cierra** aquí. Sauce: "Con abejas y flores bastaba. En el Festival hace falta otra cosa."
+- **Enseña:** el jugador intenta certificar con espantapájaros: necesita 3 para vigilar todas las enredaderas, pero solo hay 2 faroles. El certificado del invernadero **no cierra** aquí. Sauce: "Con abejas y tréboles bastaba. En el Festival hace falta otra cosa."
 - **Por qué aquí:** motiva el certificado general mostrando que el bipartito era un caso especial.
 - **Victoria:** intentarlo y aceptar que no cierra.
 
@@ -820,7 +820,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 ---
 
-### 7.9 Flores secretas (opcionales)
+### 7.9 Jardines secretos (opcionales)
 
 - **Prado:** una cadena de longitud 11 escondida entre 12 callejones.
 - **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de separar la maraña (la maraña ya es la superposición; la tentación es restar los faroles).
@@ -840,7 +840,7 @@ Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Fo
 - **C2 La cadena.** Camino alternante y camino aumentante. Intercambiar a lo largo de un camino aumentante da un emparejamiento de tamaño |M| + 1; a lo largo de uno alternante par, del mismo tamaño. Diagrama: la brigada de 1.3.
 - **C3 Lema de Berge (1957).** Enunciado y demostración completa: M ⊕ M\* tiene grado ≤ 2 en cada vértice, luego es unión de caminos y ciclos alternantes; los ciclos aportan igual; si |M\*| > |M| algún camino tiene más aristas de M\* que de M, empieza y termina con aristas de M\*, sus extremos están expuestos en M: es aumentante para M. Diagrama: el estanque de 2.1–2.3, manipulable.
 - **C4 La búsqueda.** Bosque alternante: raíces en vértices expuestos, vértices exteriores (sol, distancia par) e interiores (luna, impar). Reglas de crecimiento. Arista exterior–exterior entre árboles distintos ⇒ camino aumentante. Cada vértice se etiqueta una vez ⇒ O(m) por búsqueda en bipartitos.
-- **C5 Abejas, flores y espantapájaros (König, 1931).** Grafo bipartito. Cobertura por vértices. Cota trivial ν ≤ τ. Igualdad en bipartitos: a partir del bosque final, cover = interiores ∪ (no alcanzados de un lado). Por qué no hay sol–sol en bipartitos (paridad). Diagrama: 3.8.
+- **C5 Abejas, tréboles y espantapájaros (König, 1931).** Grafo bipartito. Cobertura por vértices. Cota trivial ν ≤ τ. Igualdad en bipartitos: a partir del bosque final, cover = interiores ∪ (no alcanzados de un lado). Por qué no hay sol–sol en bipartitos (paridad). Diagrama: 3.8.
 - **C6 Bucles impares.** Un grafo es bipartito ⇔ no tiene ciclos impares. Por qué una arista exterior–exterior en el mismo árbol cierra un ciclo impar (par + par + 1). Por qué la búsqueda ingenua falla: el vértice tendría las dos paridades. Diagrama: 4.1–4.2.
 - **C7 La flor.** Definición de blossom (ciclo alternante de longitud impar 2k+1 con k aristas de M), base, tallo. Contracción G/B, M/B. Todo vértice del blossom es alcanzable desde la base por un camino alternante par (recorriendo el ciclo en el sentido adecuado), y por eso el blossom contraído se trata como exterior. Diagrama: 4.4–4.6 con desplegado paso a paso.
 - **C8 Lema de la flor (Edmonds, 1965).** Hipótesis explícita: B es un blossom **con tallo**, como el que encuentra la búsqueda. Enunciado: G tiene camino M-aumentante ⇔ G/B tiene camino M/B-aumentante; por tanto, M es máximo en G ⇔ M/B es máximo en G/B. Sin tallo la parte (ii) puede fallar, y la entrada da el contraejemplo. Demostración en dos partes: (i) un camino aumentante en G/B se levanta a G (si atraviesa B, se entra por un pétalo y se sale por la base recorriendo el ciclo en el sentido que alterna; siempre existe uno); (ii) suponiendo, sin pérdida de generalidad, la base expuesta (girar el tallo no cambia |M|), todo camino aumentante en G tiene un extremo fuera de B, y su prefijo hasta el primer vértice de B es un camino aumentante en G/B. Diagrama: 4.11 manipulable.
@@ -889,11 +889,11 @@ Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Fo
 7. **Códex** (texto formal revisado) y Cuaderno.
 8. **Voz:** balbuceo por personaje (sonidos CC0 procesados en el motor) y subtítulos.
 9. **Música y efectos.**
-10. **Modo libre, modo profesor, flores secretas.**
+10. **Modo libre, modo profesor, jardines secretos.**
 11. **Paseo guiado** (grabación del video).
 12. **Pulido y despliegue web.**
 
-Si hubiera que recortar, el orden de recorte es: flores secretas → modo libre → capítulo 5 reducido a 3 niveles → animaciones secundarias. **Nunca se recortan** los capítulos 2, 4.11, 6.6 ni 7.4: son la demostración.
+Si hubiera que recortar, el orden de recorte es: jardines secretos → modo libre → capítulo 5 reducido a 3 niveles → animaciones secundarias. **Nunca se recortan** los capítulos 2, 4.11, 6.6 ni 7.4: son la demostración.
 
 ---
 
