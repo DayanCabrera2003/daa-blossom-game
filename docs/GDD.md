@@ -230,7 +230,7 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 
 **Regla de cadena de cada nivel.** Por defecto, cualquier cadena legal vale. Un jardín puede apretarla, y lo dice su archivo de nivel. Con la regla `seen` («por donde llegó tu luz»), los faroles solo cambian por la cadena que alcanzaron tus marcas (en cualquier sentido) y las de ganancia 0 no valen; **juntar es una cadena de una enredadera** (dos brotes a oscuras: un camino aumentante de longitud 1) y obedece la misma regla. Con la regla `fromBase`, la flor del nivel está **cerrada**: una jugada que mueve faroles por uno de sus pétalos (una cadena, una unión, pasar el farol) tiene que salir de su base o acabar en ella; la usa 4.10. Una acción que el nivel cierra se rechaza con «hoy no se puede», distinto de una que todavía no se sabe.
 
-**La luz busca (niveles de flor).** En 4.4–4.8, 4.12, 4.13 y 5.1–5.6 la búsqueda no la hace el jugador: con marcas libres, quien marca siguiendo una cadena nunca cierra un bucle impar, así que ninguna regla obligaría a plegar. Allí **la luz busca en un orden fijo, como el algoritmo** (el de 4.1 y 4.2: los soles ya marcados primero, de menor a mayor; luego las raíces del nivel, en su orden), y el jugador la **avanza** marca a marca con «Avanzar la luz». Cuando la luz encuentra dos soles del mismo árbol, se para y la enredadera brilla: la única forma de seguir es **plegar** ese bucle tocando el choque; después la luz sigue en el jardín plegado. Cuando ve la cadena, el jugador la enciende (regla `seen`) y la despliega por la flor. Las marcas a mano y Plegar con la herramienta están cerradas en esos niveles; separar, pasar el farol y girar el tallo, también (cambian los faroles sin la luz). En la niebla, la luz se para ante un sol cuyas enredaderas no se ven todavía: hay que inspeccionarlo. **En la niebla**, una cadena (y una unión, pasar el farol o girar el tallo) solo pasa por enredaderas visibles, con un extremo inspeccionado: el arrastre no palpa lo que la niebla tapa.
+**La luz busca (niveles de flor).** En 4.4–4.8, 4.12 y 5.1–5.6 la búsqueda no la hace el jugador: con marcas libres, quien marca siguiendo una cadena nunca cierra un bucle impar, así que ninguna regla obligaría a plegar. Allí **la luz busca en un orden fijo, como el algoritmo** (el de 4.1 y 4.2: los soles ya marcados primero, de menor a mayor; luego las raíces del nivel, en su orden), y el jugador la **avanza** marca a marca con «Avanzar la luz». Cuando la luz encuentra dos soles del mismo árbol, se para y la enredadera brilla: la única forma de seguir es **plegar** ese bucle tocando el choque; después la luz sigue en el jardín plegado. Cuando ve la cadena, el jugador la enciende (regla `seen`) y la despliega por la flor. Las marcas a mano y Plegar con la herramienta están cerradas en esos niveles; separar, pasar el farol y girar el tallo, también (cambian los faroles sin la luz). En la niebla, la luz se para ante un sol cuyas enredaderas no se ven todavía: hay que inspeccionarlo. **En la niebla**, una cadena (y una unión, pasar el farol o girar el tallo) solo pasa por enredaderas visibles, con un extremo inspeccionado: el arrastre no palpa lo que la niebla tapa.
 
 ### 5.2 Objetivo visible y objetivo oculto
 
@@ -679,8 +679,9 @@ Hojas cayendo, maleza. Los ciclos se enredan.
   Camino final: `t–a=b–d=c–g=h–R`.
 - **Por qué aquí:** la flor plegada es un brote como cualquier otro y puede formar parte de otro bucle impar. Y al desplegar, la flor interior se atraviesa por un lado que depende de por dónde se entra y se sale.
 - **Guion:** Sauce: "Una flor es un brote más. Y los brotes forman bucles."
-- **Pistas:** (1) "¿Quién es sol dos veces?" (2) `h–R` brilla. (3) el mentor pliega F2.
-- **Victoria:** cadena aplicada, 4 faroles: la que encontró la luz desde R, que se para en `d–b` y luego en `h–R` hasta que el jugador pliega. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
+- **La luz:** mira primero desde R, así que llega a h por `R–h` (h luna, g sol) y cierra F2 en `c–g`: la misma flor F2, encontrada por el otro lado.
+- **Pistas:** (1) "¿Quién es sol dos veces?" (2) `c–g` brilla. (3) el mentor pliega F2.
+- **Victoria:** cadena aplicada, 4 faroles: la que encontró la luz desde R, que se para en `d–b` y luego en `c–g` hasta que el jugador pliega. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.2 Capas
 - **Jardín:** tres flores anidadas construidas del mismo modo.
@@ -808,7 +809,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 - **Prado:** una cadena de longitud 11 escondida entre 12 callejones.
 - **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de separar la maraña (la maraña ya es la superposición; la tentación es restar los faroles).
 - **Invernadero:** certificar con espantapájaros un jardín donde la búsqueda no llega a todos los brotes (obliga a añadir los no visitados de un lado; enlaza con C5).
-- **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa). La luz busca desde R y pliega en su orden (§5.1).
+- **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa). Aquí las marcas siguen siendo del jugador: la luz de los niveles de flor (§5.1), en su orden fijo, solo se encuentra con dos de las tres flores y no deja elegir el orden.
 - **Salvaje:** cuatro flores anidadas. La luz busca desde R y se para en cada una hasta plegarla (§5.1).
 - **Invierno:** un jardín donde Bruto gana (muy pequeño) y la pregunta "¿cuándo compensa pensar?".
 - **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín. Tras el primer certificado, un paso nuevo del guion ("otro certificado") solo termina con piedras distintas de las ya presentadas; repetir uno se contesta con amabilidad.
