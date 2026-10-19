@@ -4,13 +4,25 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-135 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
+137 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
 - [ ] `ch0.5.sauce.00` · **Sauce** · cambiada
   - Antes: Un jardinero mira el día que pasó. Arrastra el sol.
   - Después: Un jardinero mira el día que pasó. Arrastra el día.
+
+### 1.1
+
+- [ ] `ch1.1.sauce.00` · **Sauce** · cambiada
+  - Antes: Mira lo que hiciste. Beto le dio su farol a Ana, y Cleo tuvo que buscar a Dani. Pasaste el farol.
+  - Después: Mira otra forma de ver lo que pasó: si Beto le da su farol a Ana, Cleo puede buscar a Dani. Eso es pasar el farol.
+
+### 1.2
+
+- [ ] `ch1.2.sauce.00` · **Sauce** · cambiada
+  - Antes: Uno, dos, tres pases, y al final había sitio para uno más. Eso es una cadena.
+  - Después: Mira otra forma de verlo: uno, dos, tres pases, y al final había sitio para uno más. Eso es una cadena.
 
 ### 1.3
 

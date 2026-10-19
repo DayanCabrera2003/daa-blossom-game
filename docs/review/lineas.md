@@ -35,14 +35,14 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 1.1
 
-- [ ] `ch1.1.sauce.00` · **Sauce** · GDD: Mira lo que hiciste. Beto le dio su farol a Ana, y Cleo tuvo que buscar a Dani. Pasaste el farol.
+- [ ] `ch1.1.sauce.00` · **Sauce** · GDD: Mira otra forma de ver lo que pasó: si Beto le da su farol a Ana, Cleo puede buscar a Dani. Eso es pasar el farol.
 - [ ] `ch1.1.sauce.01` · **Sauce** · GDD: ¿Ana puede hablar con alguien?
 - [ ] `ch1.1.sauce.02` · **Sauce** · plan: Mira a Ana y a Dani, ahí en las esquinas.
 - [ ] `ch1.1.sauce.03` · **Sauce** · plan: Te ayudo. A veces hay que apagar un farol para encender dos.
 
 ### 1.2
 
-- [ ] `ch1.2.sauce.00` · **Sauce** · GDD: Uno, dos, tres pases, y al final había sitio para uno más. Eso es una cadena.
+- [ ] `ch1.2.sauce.00` · **Sauce** · GDD: Mira otra forma de verlo: uno, dos, tres pases, y al final había sitio para uno más. Eso es una cadena.
 - [ ] `ch1.2.sauce.01` · **Sauce** · GDD: ¿Quién está a oscuras? ¿Quién tiene el farol más cercano?
 - [ ] `ch1.2.sauce.02` · **Sauce** · plan: Empieza por Ana.
 - [ ] `ch1.2.sauce.03` · **Sauce** · plan: Mira, yo hago el primer pase.
