@@ -121,7 +121,7 @@ CI (GitHub Actions) runs lint, format check, typecheck, coverage, check-levels, 
 npm run solve -- 4.6  # readable trace, result and proof for a level id or a garden code
 npm run bench         # steps of the recipe, the fast version and Bruto per garden size
 npm run save -- after-ch4  # a synthetic save, and the line to paste in the browser's console
-npm run lines         # write the review sheet of the Spanish lines (docs/review/lineas.md)
+npm run lines         # write the review sheets of the Spanish lines (docs/review/lineas.md, lineas-plan10.md)
 ```
 
 ### Art, music and sound
@@ -147,6 +147,7 @@ The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600
 - [Playtest kit](docs/playtest/kit.md): one page to prepare, run and close each session, with the protocols [A](docs/playtest/A.md) (chapters 0–2), [B](docs/playtest/B.md) (3–4) and [C](docs/playtest/C.md) (5–7).
 - [Recording script of the guided walk](docs/video/guion.md): the ten parts of the video, with what to load for each.
 - [Review sheet of the Spanish lines](docs/review/lineas.md), written by `npm run lines`.
+- [Sheet of the lines changed since 1.0.1](docs/review/lineas-plan10.md), written by the same command: every new or changed line, before and after, to review before a release.
 - [Rigour review of the Códex](docs/codex-review.md), for a classmate to check the proofs.
 - Synthetic saves to start halfway: `npm run save -- <point>` (`fresh`, `after-ch2`, `after-ch4`, `after-ch6`, `after-ch7`, `all-stars`, `hub-flowers`).
 
