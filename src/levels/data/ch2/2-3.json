@@ -43,7 +43,7 @@
   ],
   "goal": { "visible": true, "value": 6 },
   "victory": { "type": "matchingSize", "value": 6 },
-  "hints": [{ "line": "ch2.3.sauce.03" }, { "line": "ch2.3.sauce.04", "highlight": ["1", "6"] }],
+  "hints": [{ "line": "ch2.3.sauce.03" }, { "line": "ch2.3.sauce.04", "highlight": ["1"] }],
   "flow": [
     { "step": "mirror" },
     { "step": "say", "lines": ["ch2.3.sauce.00", "ch2.3.sauce.01"] },

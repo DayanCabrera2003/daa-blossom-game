@@ -135,7 +135,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch2.3.sauce.01` · **Sauce** · plan: Con farol plateado en las dos puntas. ¿Y esas dos puntas, cómo duermen en tu jardín?
 - [ ] `ch2.3.sauce.02` · **Sauce** · GDD: Cuando alguien puede hacerlo mejor que tú, te ha dejado una cadena tirada en el suelo. Siempre.
 - [ ] `ch2.3.sauce.03` · **Sauce** · plan: ¿Quién está a oscuras en tu jardín?
-- [ ] `ch2.3.sauce.04` · **Sauce** · plan: De una punta a la otra del hilo. Ya sabes andar ese camino.
+- [ ] `ch2.3.sauce.04` · **Sauce** · plan: Empieza por esta punta del hilo. ¿Dónde acaba?
 
 ### 2.4
 
