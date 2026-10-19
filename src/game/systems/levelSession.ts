@@ -191,7 +191,12 @@ function advance(
   const { flow, effects } = advanceFlow(session.flow, signal);
   if (flow.index === session.flow.index) return { session: { ...session, flow }, effects };
   const hints = afterAccepted(session.hints, garden(session), now);
-  return { session: { ...session, flow, hints, won: starsAt(session, flow) }, effects };
+  // A mirror challenge that begins starts from a clean drawing (2.4 holds two of them).
+  const challenge =
+    currentStep(flow)?.step === 'draw'
+      ? startChallenge(session.level.start.graph)
+      : session.challenge;
+  return { session: { ...session, flow, hints, challenge, won: starsAt(session, flow) }, effects };
 }
 
 /** A session at the start of `level`, at time `now` (milliseconds), with what its script opens with. */
@@ -405,6 +410,8 @@ export const seekSession = (session: LevelSession, step: number): LevelSession =
 /** Whether the step now takes hints: playing, answering, drawing… never while the day replays. */
 const takesHints = (session: LevelSession): boolean => {
   const step = stepNow(session);
+  // A mirror challenge nobody can win (2.4, second phase) has nothing to find.
+  if (step?.step === 'draw' && !step.beatable) return false;
   return step !== null && HINT_STEPS.has(step.step);
 };
 
@@ -431,7 +438,7 @@ export function askHint(
   now: number,
 ): { session: LevelSession; hint: HintContent } | null {
   const current = stepNow(session);
-  if (current === null || !HINT_STEPS.has(current.step)) return null;
+  if (current === null || !takesHints(session)) return null;
   // Asked for, the hint opens whether it was on offer or not.
   const opened = openHint(session.hints, now);
   if (opened === null) return null;
@@ -524,8 +531,10 @@ export function checkDrawnMirror(
   session: LevelSession,
   now: number,
 ): { session: LevelSession; check: MirrorCheck | null; effects: FlowEffect[] } {
-  if (stepNow(session)?.step !== 'draw') return { session, check: null, effects: [] };
-  const { challenge, check } = checkMirror(session.challenge, garden(session).matching);
+  const step = stepNow(session);
+  if (step?.step !== 'draw') return { session, check: null, effects: [] };
+  const { matching } = garden(session);
+  const { challenge, check } = checkMirror(session.challenge, matching, step.beatable);
   const signal: FlowSignal =
     check.kind === 'better'
       ? { type: 'mirrorChecked', better: check.fresh }
