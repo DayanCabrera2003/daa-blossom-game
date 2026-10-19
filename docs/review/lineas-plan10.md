@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-121 líneas de diálogo y 30 textos de interfaz distintos de la versión 1.0.1.
+121 líneas de diálogo y 31 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -446,6 +446,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Esas piedras no son las lunas de tu búsqueda.
 - [ ] `action.stepLight` · nueva
   - Después: avanzar la luz
+- [ ] `hud.prompt.draw` · cambiada
+  - Antes: Toca enredaderas para dibujar tu reflejo y pulsa Comprobar
+  - Después: Dibuja tu reflejo tocando enredaderas y pulsa Comprobar
 - [ ] `hud.present` · nueva
   - Después: Presentar
 - [ ] `hud.stepLight` · nueva

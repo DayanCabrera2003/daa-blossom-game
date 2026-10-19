@@ -74,7 +74,7 @@
   "hud.prompt.sun": "Arrastra el sol de arriba a la derecha",
   "hud.prompt.explore": "Toca un brote para ver sus hilos",
   "hud.prompt.separate": "Toca el jardín para separar la maraña",
-  "hud.prompt.draw": "Toca enredaderas para dibujar tu reflejo y pulsa Comprobar",
+  "hud.prompt.draw": "Dibuja tu reflejo tocando enredaderas y pulsa Comprobar",
   "hud.goalHidden": "¿Cuántos faroles caben?",
   "hud.bet": "Apostaste {count}",
   "hud.mirror": "Tú: {yours} — Reflejo: {mirror}",
