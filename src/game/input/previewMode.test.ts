@@ -17,7 +17,7 @@ const levelById = (id: string): Level => {
  * a legal chain of +1, dragged where the level is really played.
  */
 function beforeLastChain(level: Level): { state: GardenState; path: readonly number[] } {
-  const last = level.solution.findLastIndex((action) => action.type === 'chain');
+  const last = level.solution.map((action) => action.type).lastIndexOf('chain');
   const chain = level.solution[last] as Extract<Action, { type: 'chain' }>;
   const state = level.solution.slice(0, last).reduce((garden, action) => {
     const outcome = applyAction(garden, action);
