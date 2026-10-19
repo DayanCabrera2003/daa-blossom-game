@@ -198,7 +198,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.1
 
-- [ ] `ch3.1.sauce.00` · **Sauce** · plan: Bienvenido al invernadero. Aquí viven abejas y flores, y una abeja solo se junta con una flor.
+- [ ] `ch3.1.sauce.00` · **Sauce** · plan: Bienvenido al invernadero. Aquí viven abejas y tréboles, y una abeja solo se junta con un trébol.
 - [ ] `ch3.1.sauce.01` · **Sauce** · GDD: De noche no se ve el jardín entero. Se ve lo que tu luz alcanza. Sal de alguien a oscuras y camina.
 - [ ] `ch3.1.sauce.02` · **Sauce** · GDD: ¿Dónde empieza siempre una cadena?
 - [ ] `ch3.1.sauce.03` · **Sauce** · plan: R lleva toda la noche a oscuras. Empieza por él.
@@ -630,7 +630,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.1.sauce.04` · **Sauce** · plan: Te enseño el siguiente espantapájaros. Los demás, tú.
 - [ ] `ch7.1.sauce.05` · **Sauce** · plan: Todas vigiladas. Ahora cuenta espantapájaros y faroles. ¿Cierra la prueba?
 - [ ] `ch7.1.gardener.06` · **Tú** · plan: No: hacen falta tres espantapájaros y solo hay dos faroles.
-- [ ] `ch7.1.sauce.07` · **Sauce** · plan: Eso es. Tres espantapájaros solo dicen que no caben más de tres. Con abejas y flores bastaba. En el Festival hace falta otra cosa.
+- [ ] `ch7.1.sauce.07` · **Sauce** · plan: Eso es. Tres espantapájaros solo dicen que no caben más de tres. Con abejas y tréboles bastaba. En el Festival hace falta otra cosa.
 - [ ] `ch7.1.gardener.08` · **Tú** · plan: Sí: no queda ninguna enredadera sin vigilar.
 - [ ] `ch7.1.sauce.09` · **Sauce** · plan: Vigiladas, sí. Pero cuenta: tres espantapájaros prueban que caben como mucho tres faroles, y tienes dos.
 - [ ] `ch7.1.gardener.10` · **Tú** · plan: Sí, si quito uno de los espantapájaros.

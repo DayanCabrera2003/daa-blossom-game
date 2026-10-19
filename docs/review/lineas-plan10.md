@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-124 líneas de diálogo y 38 textos de interfaz distintos de la versión 1.0.1.
+126 líneas de diálogo y 40 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -107,6 +107,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch2.5.sauce.05` · **Sauce** · cambiada
   - Antes: De una punta a la otra de este hilo.
   - Después: Mira este hilo desde esta punta. ¿Dónde acaba?
+
+### 3.1
+
+- [ ] `ch3.1.sauce.00` · **Sauce** · cambiada
+  - Antes: Bienvenido al invernadero. Aquí viven abejas y flores, y una abeja solo se junta con una flor.
+  - Después: Bienvenido al invernadero. Aquí viven abejas y tréboles, y una abeja solo se junta con un trébol.
 
 ### 3.4
 
@@ -377,6 +383,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch7.1.sauce.03` · **Sauce** · cambiada
   - Antes: Estos dos vigilan mucho. Pero mira lo que queda entre ellos.
   - Después: Cinco enredaderas en corro. ¿Cuántas vigila cada espantapájaros? ¿Cuántos hacen falta?
+- [ ] `ch7.1.sauce.07` · **Sauce** · cambiada
+  - Antes: Eso es. Tres espantapájaros solo dicen que no caben más de tres. Con abejas y flores bastaba. En el Festival hace falta otra cosa.
+  - Después: Eso es. Tres espantapájaros solo dicen que no caben más de tres. Con abejas y tréboles bastaba. En el Festival hace falta otra cosa.
 
 ### 7.2
 
@@ -490,6 +499,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `recipe.wrong.moonToSun` · cambiada
   - Antes: Una luna ya tiene su camino hasta la raíz: no necesita otro, y cambiarla a sol no la ayuda.
   - Después: Una luna ya tiene su camino hasta el brote a oscuras de su árbol: no necesita otro, y cambiarla a sol no la ayuda.
+- [ ] `sandbox.gen.beesFlowers` · cambiada
+  - Antes: Abejas y flores
+  - Después: Abejas y tréboles
+- [ ] `sandbox.certify.notBees` · cambiada
+  - Antes: Los espantapájaros solo prueban jardines de abejas y flores.
+  - Después: Los espantapájaros solo prueban jardines de abejas y tréboles.
 - [ ] `tutorial.present.title` · nueva
   - Después: Presentar
 - [ ] `tutorial.present.body` · nueva
