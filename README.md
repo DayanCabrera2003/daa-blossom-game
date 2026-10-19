@@ -18,9 +18,20 @@ Every night the sprouts of a garden want a lantern, and a lantern is for two nei
 
 ## How to play
 
-The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the day (the sun at the top right) to watch it again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit, and each level has three hints.
+The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the day (the sun at the top right) to watch it again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit. Each level has three hints behind the **Pista** button, which is always at hand and glows when the game offers one (after 90 seconds without real progress, or three refusals in a row); the first two point where to look, never at the answer.
 
 Every panel over the garden (a question, the notebook, a card, the recipe, the dialogue box, a message) opens where it hides least of the garden, never over what it asks about, and can be **dragged by its frame** wherever the player likes; it opens there again for the rest of the session, and a double touch on its frame sends it back.
+
+### New in 1.1.0
+
+What changed for the player since 1.0.1, after an independent review of how the game teaches:
+
+- **The light searches in the flower levels.** In 4.4–4.8, 4.12 and all of chapter 5, the player no longer places the suns and moons: the **Avanzar la luz** button moves the search one mark at a time, in the order the algorithm uses, and the light stops where two suns of one tree meet. The vine there glows, and the only way on is to **fold** that loop by touching it; the lanterns then move only along the chain the light found. So every flower level asks for the gesture it teaches. 4.10 closes the flower instead (a chain only goes round it from its base, once the stem is turned), and the secret garden 4.13 keeps the marks by hand, since its lesson is that the order of folding is the player's.
+- **Lifting a chain.** After unfolding, the stretches of the chain the light found stay drawn, and the player drags only the stretch inside the flower; the wrong side is refused at once. From chapter 3 on, a chain being dragged says only whether it is legal; what it gains shows on release.
+- **«Presentar».** In the levels won by a proof (scarecrows, stones) the button says *Presentar*; elsewhere it still says *Terminé*. Either one, pressed too soon, now gets a gentle answer that never says where the chain is.
+- **Hints at hand.** The *Pista* button is always there; only real progress restarts the wait for an offer, and no grade-2 hint lights up the answer.
+- **Thinking first.** The notebooks open before the mentor sums up, and five levels ask *why* (2.3, 3.4, 3.8, 5.2, 7.4), some with a garden to try the wrong answer. 2.4 is played in two phases, the recipe lost a card it never used, and the last level of each chapter invites to its page of the Códex.
+- **One word, one meaning.** The bipartite pair is now *abejas y tréboles*, the optional puzzles are the *jardines secretos*, and the time slider is *el día*: the sun is only the mark of the search, and a flower is only the folded loop.
 
 Menus, panels, questions and dialogue also work with the **keyboard** (the garden itself does not). The settings' gear shows the same table as a card (*Teclas*).
 
