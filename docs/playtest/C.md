@@ -36,7 +36,7 @@ Los umbrales numéricos son **propuesta** del protocolo; el autor los confirma o
 | Tiempo | Mediana por nivel de 8 minutos como mucho; 5.4, 5.5, 6.1 y 7.5 hasta 15 | **propuesta** |
 | Atascos | Ninguna persona abandona un nivel (vuelve al hub sin ganarlo) más de dos veces | **propuesta** |
 
-Las apuestas de 6.5 no son un criterio: el capítulo enseña a medir antes de razonar, y fallar la primera apuesta es parte de la lección. Sí es una señal (§6) que la última apuesta sobre Bruto siga fallando.
+Las apuestas de 6.5 no son un criterio: el capítulo enseña a medir antes de razonar, y fallar la primera apuesta es parte de la lección. Sí es una señal (§6) que la última apuesta sobre la receta siga fallando: para entonces ya vio dos veces que su cociente se mantiene. Sobre Bruto solo se apuesta en la primera carrera.
 
 ---
 
@@ -182,13 +182,13 @@ En `log`, cada `stoneCertificate` lleva `stones` (los nombres de los brotes leva
 | 6.3: ¿reparada a la primera? | Resumen de `"6.3"`: `recipeChecks.wrong` = 0 |
 | 7.5: ¿certificado en 3 intentos? | Resumen de `"7.5"`: `stoneCertificates.counted` ≥ 1 y `stoneCertificates.provingOther` + `.failing` ≤ 2 |
 
-Señales complementarias: en 6.1, la misma `card` fallando una y otra vez indica una tarjeta que no se entiende; en 6.5, `raceBet` de Bruto con `right: false` en la última carrera indica que la gráfica no transmite el crecimiento; en 7.3 y 7.5, `failing` alto indica que no se entiende la regla de los grupos impares; en 7.4, `provingOther` indica que demostró los faroles pero no tomó las lunas (leer junto con la explicación). En 5.3, 6.6 y 7.3, `notebookRightFirstTry` y `notebookWrong` se leen como en el Hito B. `timeMs` y las entradas `left` se leen como en el Hito A.
+Señales complementarias: en 6.1, la misma `card` fallando una y otra vez indica una tarjeta que no se entiende; en 6.5, `raceBet` de la receta (`automaton`) con `right: false` en la última carrera indica que la gráfica no transmite que el cociente se mantiene al duplicar; en 7.3 y 7.5, `failing` alto indica que no se entiende la regla de los grupos impares; en 7.4, `provingOther` indica que demostró los faroles pero no tomó las lunas (leer junto con la explicación). En 5.3, 6.6 y 7.3, `notebookRightFirstTry` y `notebookWrong` se leen como en el Hito B. `timeMs` y las entradas `left` se leen como en el Hito A.
 
 ---
 
 ## 7. Plantilla por persona
 
-Copiar una vez por persona. Tiempo en minutos, redondeado. La columna "Registro" solo aplica donde hay una medida de §6: recetas comprobadas (6.1, 6.3), apuestas acertadas de 8 (6.5), intentos de certificado (7.2–7.5).
+Copiar una vez por persona. Tiempo en minutos, redondeado. La columna "Registro" solo aplica donde hay una medida de §6: recetas comprobadas (6.1, 6.3), apuestas acertadas de 4 (6.5), intentos de certificado (7.2–7.5).
 
 **Persona:** P_ — **Fecha:** — **Duración:** — **¿Del playtest B?:** — **Perfil (sin datos personales):**
 
