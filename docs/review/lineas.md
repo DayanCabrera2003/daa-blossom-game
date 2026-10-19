@@ -452,8 +452,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 5.4
 
 - [ ] `ch5.4.sauce.00` · **Sauce** · plan: El jardín salvaje creció, y aquí hay más de una flor dentro de otra. Enciende todos los faroles que puedas y pulsa «Terminé».
-- [ ] `ch5.4.sauce.01` · **Sauce** · plan: Busca desde un brote a oscuras cada vez. Cuando dos soles del mismo árbol se toquen, pliega.
-- [ ] `ch5.4.sauce.02` · **Sauce** · plan: Prueba a buscar desde estos brotes.
+- [ ] `ch5.4.sauce.01` · **Sauce** · plan: Avanza tu luz: busca sola desde cada brote a oscuras. Cuando se pare donde dos soles se tocan, pliega.
+- [ ] `ch5.4.sauce.02` · **Sauce** · plan: Tu luz empieza por estos brotes, uno tras otro.
 - [ ] `ch5.4.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.4.sauce.04` · **Sauce** · plan: Tres rondas, y en dos de ellas una flor dentro de otra. Pero no se anidaban igual: junto a U, la flor pequeña guardaba la base de la grande.
 

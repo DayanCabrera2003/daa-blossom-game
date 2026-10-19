@@ -316,8 +316,14 @@ describe('5.4: wild garden', () => {
   });
 
   it('two of the rounds fold a flower inside another, each nesting in its own way', () => {
-    const [first, second] = lastFolds(level);
-    if (first == null || second == null) throw new Error('a round folds nothing');
+    // The light lights the chain from x before the one from U, so the nested rounds are not the
+    // first two: they are told by the flower inside the last one they fold.
+    const nested = lastFolds(level).filter(
+      (flower): flower is Blossom => flower !== null && innerFlowers(flower).length > 0,
+    );
+    expect(nested).toHaveLength(2);
+    const [first, second] = nested;
+    if (first === undefined || second === undefined) throw new Error('a round folds nothing');
     const [firstInner] = innerFlowers(first);
     const [secondInner] = innerFlowers(second);
     if (firstInner === undefined || secondInner === undefined) throw new Error('no nesting');
