@@ -34,7 +34,7 @@
       "prompt": "ch4.10.notebook.06",
       "codex": "C8",
       "options": [
-        { "line": "ch4.10.notebook.07", "correct": true, "reply": "ch4.10.sauce.10" },
+        { "line": "ch4.10.notebook.07", "correct": true, "reply": "ch4.10.sauce.05" },
         {
           "line": "ch4.10.notebook.08",
           "correct": false,
@@ -67,14 +67,46 @@
             "actions": ["rotateStem"]
           }
         },
-        { "line": "ch4.10.notebook.09", "correct": false, "reply": "ch4.10.sauce.12" }
+        { "line": "ch4.10.notebook.09", "correct": false, "reply": "ch4.10.sauce.12" },
+        {
+          "line": "ch4.10.notebook.14",
+          "correct": false,
+          "counterexample": {
+            "mode": "play",
+            "line": "ch4.10.sauce.15",
+            "sprouts": [
+              { "label": "R", "x": 50, "y": 135 },
+              { "label": "a", "x": 110, "y": 135 },
+              { "label": "b", "x": 170, "y": 135 },
+              { "label": "c", "x": 230, "y": 135 },
+              { "label": "d", "x": 290, "y": 135 },
+              { "label": "e", "x": 360, "y": 85 },
+              { "label": "f", "x": 360, "y": 185 }
+            ],
+            "vines": [
+              ["R", "a"],
+              ["a", "b"],
+              ["b", "c"],
+              ["c", "d"],
+              ["d", "e"],
+              ["e", "f"],
+              ["f", "d"]
+            ],
+            "lanterns": [
+              ["a", "b"],
+              ["c", "d"],
+              ["e", "f"]
+            ],
+            "actions": ["rotateStem"]
+          }
+        }
       ]
     }
   ],
   "flow": [
     { "step": "say", "lines": ["ch4.10.sauce.00", "ch4.10.sauce.01"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch4.10.sauce.05"] },
+    { "step": "say", "lines": ["ch4.10.sauce.13"] },
     { "step": "notebook" }
   ],
   "unlocks": { "actions": ["rotateStem"] },

@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 472 líneas, 57 están tal cual en el GDD y 415 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 474 líneas, 57 están tal cual en el GDD y 417 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -394,14 +394,16 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.10.sauce.02` · **Sauce** · plan: ¿Puedes dejar a b a oscuras sin perder ningún farol?
 - [ ] `ch4.10.sauce.03` · **Sauce** · plan: ¿Qué brote tendría que quedar a oscuras?
 - [ ] `ch4.10.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
-- [ ] `ch4.10.sauce.05` · **Sauce** · plan: Los mismos faroles que antes, y la base quedó a oscuras. Desde ahí, la cadena era directa. Escríbelo en tu Cuaderno.
+- [ ] `ch4.10.sauce.05` · **Sauce** · plan: Eso es. Los mismos faroles que antes, y la base quedó a oscuras. Desde ahí, la cadena era directa.
 - [ ] `ch4.10.notebook.06` · **Cuaderno** · GDD: Si giro el tallo hasta la base de una flor…
-- [ ] `ch4.10.notebook.07` · **Cuaderno** · plan: …tengo los mismos faroles y la base queda a oscuras.
+- [ ] `ch4.10.notebook.07` · **Cuaderno** · plan: …no gano ni pierdo, y la oscuridad pasa a la base.
 - [ ] `ch4.10.notebook.08` · **Cuaderno** · plan: …gano un farol.
 - [ ] `ch4.10.notebook.09` · **Cuaderno** · plan: …pierdo un farol.
-- [ ] `ch4.10.sauce.10` · **Sauce** · plan: Eso es. Girar el tallo no gana ni pierde: solo lleva la oscuridad a la base.
 - [ ] `ch4.10.sauce.11` · **Sauce** · plan: Gira el tallo de esta flor, desde R hasta su base, y cuenta los faroles antes y después.
 - [ ] `ch4.10.sauce.12` · **Sauce** · plan: Cuéntalos otra vez: los que tenías antes de girar el tallo son los que tienes después. Los faroles solo cambiaron de sitio.
+- [ ] `ch4.10.sauce.13` · **Sauce** · plan: Tres faroles, y la flor sin plegar. Antes de que te lo cuente, escribe tú en tu Cuaderno qué hace girar el tallo.
+- [ ] `ch4.10.notebook.14` · **Cuaderno** · plan: …tengo los mismos faroles, y la base gana uno.
+- [ ] `ch4.10.sauce.15` · **Sauce** · plan: Gira el tallo de esta flor desde R hasta su base, y mira la base al final: ¿tiene farol?
 
 ### 4.11
 

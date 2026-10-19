@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-65 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+71 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -169,6 +169,20 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.10.sauce.03` · **Sauce** · cambiada
   - Antes: Gira el tallo: desde R hasta b.
   - Después: ¿Qué brote tendría que quedar a oscuras?
+- [ ] `ch4.10.sauce.05` · **Sauce** · cambiada
+  - Antes: Los mismos faroles que antes, y la base quedó a oscuras. Desde ahí, la cadena era directa. Escríbelo en tu Cuaderno.
+  - Después: Eso es. Los mismos faroles que antes, y la base quedó a oscuras. Desde ahí, la cadena era directa.
+- [ ] `ch4.10.notebook.07` · **Cuaderno** · cambiada
+  - Antes: …tengo los mismos faroles y la base queda a oscuras.
+  - Después: …no gano ni pierdo, y la oscuridad pasa a la base.
+- [ ] `ch4.10.sauce.10` · **Sauce** · retirada
+  - Antes: Eso es. Girar el tallo no gana ni pierde: solo lleva la oscuridad a la base.
+- [ ] `ch4.10.sauce.13` · **Sauce** · nueva
+  - Después: Tres faroles, y la flor sin plegar. Antes de que te lo cuente, escribe tú en tu Cuaderno qué hace girar el tallo.
+- [ ] `ch4.10.notebook.14` · **Cuaderno** · nueva
+  - Después: …tengo los mismos faroles, y la base gana uno.
+- [ ] `ch4.10.sauce.15` · **Sauce** · nueva
+  - Después: Gira el tallo de esta flor desde R hasta su base, y mira la base al final: ¿tiene farol?
 
 ### 4.12
 
