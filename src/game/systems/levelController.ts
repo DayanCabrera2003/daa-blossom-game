@@ -29,6 +29,7 @@ import {
   type LayerPath,
   type LayerView,
 } from '../picture/layers';
+import type { ClaimVerdict } from './claimVerdict';
 import type { FlowEffect } from './flow';
 import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
@@ -154,6 +155,8 @@ export type Effect =
       readonly events: readonly TraceEvent[];
     }
   | { readonly kind: 'hint'; readonly content: HintContent }
+  /** A "Terminé" that did not win, and why it falls short (`claimVerdict.ts`), to tell gently. */
+  | { readonly kind: 'claimRefused'; readonly verdict: ClaimVerdict }
   /** A touch on the drawn reflection was refused (no move of the rules: no action to name). */
   | { readonly kind: 'drawRefused'; readonly reason: Refusal }
   /** The drawn reflection was checked: what the check found, to show over the garden. */
@@ -233,10 +236,11 @@ function travel(controller: Controller, session: LevelSession, now: number): Ste
 /**
  * Tries a move: refused, it is reported (where the light stops at a flower, its vine glows until
  * the next move); accepted, it is animated, puts out hint glows, and may win the play step, which
- * moves the script on.
+ * moves the script on. A "Terminé" that does not win is told why after its animation, and a vine
+ * nobody guards glows until the next move.
  */
 function apply(controller: Controller, action: Action, now: number): Step {
-  const { session, outcome, effects: flowEffects } = act(controller.session, action, now);
+  const { session, outcome, effects: flowEffects, claim } = act(controller.session, action, now);
   if (!outcome.ok) {
     const { reason } = outcome;
     const vineGlow: Edge | null =
@@ -248,9 +252,11 @@ function apply(controller: Controller, action: Action, now: number): Step {
   }
   const effects: Effect[] = [
     { kind: 'animate', action, events: outcome.events },
+    ...(claim === null ? [] : [{ kind: 'claimRefused', verdict: claim } as const]),
     ...shown(session, flowEffects),
   ];
-  return { controller: { ...controller, session, highlight: [], vineGlow: null }, effects };
+  const vineGlow = claim?.code === 'unguarded' ? claim.vine : null;
+  return { controller: { ...controller, session, highlight: [], vineGlow }, effects };
 }
 
 /** A touch on the vine u–v of the reflection drawn in the mirror challenge. */
