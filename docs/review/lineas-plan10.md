@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-121 líneas de diálogo y 33 textos de interfaz distintos de la versión 1.0.1.
+122 líneas de diálogo y 36 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -354,6 +354,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Antes: Mira esta enredadera, la que cierra la última vuelta.
   - Después: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
 
+### 6.1
+
+- [ ] `ch6.1.sauce.02` · **Sauce** · cambiada
+  - Antes: Cada tarjeta de caso habla de un vecino distinto: a oscuras, con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
+  - Después: Cada tarjeta de caso habla de un vecino distinto: con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
+
 ### 7.1
 
 - [ ] `ch7.1.sauce.01` · **Sauce** · cambiada
@@ -464,6 +470,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `mirror.spared` · cambiada
   - Antes: Calma: ganarle a tu jardín no es fácil. Y quien lo consigue siempre te deja una cadena.
   - Después: Sigamos. Para ganarte, un reflejo necesita más faroles plateados que los tuyos.
+- [ ] `recipe.cases` · cambiada
+  - Antes: 2. Mientras quede una sol–x apagada sin explorar (los casos no van en orden):
+  - Después: 2. Mientras algún sol tenga una enredadera apagada sin mirar (x es el brote del otro lado):
+- [ ] `recipe.card.chainRootToRoot` · cambiada
+  - Antes: Si x es sol de otro árbol: cadena de raíz a raíz.
+  - Después: Si x es sol de otro árbol: cadena de un brote a oscuras a otro. Pasa los faroles y vuelve al paso 1.
+- [ ] `recipe.wrong.moonToSun` · cambiada
+  - Antes: Una luna ya tiene su camino hasta la raíz: no necesita otro, y cambiarla a sol no la ayuda.
+  - Después: Una luna ya tiene su camino hasta el brote a oscuras de su árbol: no necesita otro, y cambiarla a sol no la ayuda.
 - [ ] `tutorial.present.title` · nueva
   - Después: Presentar
 - [ ] `tutorial.present.body` · nueva

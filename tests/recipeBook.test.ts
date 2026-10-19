@@ -1,10 +1,12 @@
 import lines from '@content/es/lines.json';
+import strings from '@content/es/strings.json';
 import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
 import { size } from '@core/matching/queries';
 import { checkRecipe } from '@core/recipe/check';
 import {
   EMPTY_RECIPE,
   placeCard,
+  RECIPE_CARDS,
   RIGHT_RECIPE,
   type Recipe,
   type RecipeCardId,
@@ -17,7 +19,7 @@ import { createGardenState, type GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
 import { counterexampleAt } from '@levels/counterexample';
-import { TAUGHT_IN } from '@levels/recipeCards';
+import { cardTextKey, TAUGHT_IN } from '@levels/recipeCards';
 import { describe, expect, it } from 'vitest';
 import { chainLookMarks } from './support/chainLooks';
 
@@ -29,6 +31,7 @@ import { chainLookMarks } from './support/chainLooks';
  */
 
 const lineTable: Record<string, string> = lines;
+const stringTable: Record<string, string> = strings;
 
 const levelOf = (id: string): Level => {
   const level = catalog().find((candidate) => candidate.data.id === id);
@@ -87,6 +90,28 @@ describe('6.1: cards', () => {
     if (tempted?.right !== false) throw new Error('the first recipe is not tempted');
     expect(compareLevelIds(TAUGHT_IN[tempted.failure.case], level.data.id)).toBeLessThan(0);
     expect(rest.at(-1)).toEqual({ right: true });
+  });
+
+  it('its cards and what the mentor says of them never say «raíz», a word no line has given', () => {
+    const texts = Object.entries(stringTable).filter(([key]) => key.startsWith('recipe.'));
+    expect(texts.map(([key]) => key)).toEqual(
+      expect.arrayContaining(RECIPE_CARDS.map((card) => cardTextKey(card.id))),
+    );
+    for (const [key, text] of texts) expect(text, key).not.toMatch(/raíz|raíces/i);
+    for (const text of Object.values(lineTable)) expect(text).not.toMatch(/raíz|raíces/i);
+  });
+
+  it('names x as the sprout across the vine, and the chain card starts the search again', () => {
+    expect(stringTable['recipe.cases']).toContain('x es el brote del otro lado');
+    expect(stringTable[cardTextKey('chainRootToRoot')]).toContain('vuelve al paso 1');
+  });
+
+  it('the mentor lists the neighbours the case cards answer, and no other', () => {
+    const neighbours = said('ch6.1.sauce.02') ?? '';
+    expect(neighbours).not.toContain('a oscuras');
+    for (const name of ['con farol', 'sol de otro árbol', 'sol del mismo árbol', 'luna']) {
+      expect(neighbours).toContain(name);
+    }
   });
 
   it('the right recipe, run by the core in its garden, lights the most lanterns', () => {

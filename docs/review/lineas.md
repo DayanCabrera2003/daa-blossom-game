@@ -530,7 +530,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch6.1.sauce.00` · **Sauce** · plan: Fuera nieva. Ya sabes buscar con las manos; ahora escríbelo en tarjetas, para que otro lo haga sin ti.
 - [ ] `ch6.1.sauce.01` · **Sauce** · plan: ¿Qué hacías primero, antes de mirar ninguna enredadera?
-- [ ] `ch6.1.sauce.02` · **Sauce** · plan: Cada tarjeta de caso habla de un vecino distinto: a oscuras, con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
+- [ ] `ch6.1.sauce.02` · **Sauce** · plan: Cada tarjeta de caso habla de un vecino distinto: con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
 - [ ] `ch6.1.sauce.03` · **Sauce** · plan: Pongo una tarjeta por ti. Las demás son tuyas.
 - [ ] `ch6.1.sauce.04` · **Sauce** · plan: Esa es tu receta. Cada tarjeta es algo que ya hiciste con las manos. Ahora puede seguirla alguien que no piensa.
 
