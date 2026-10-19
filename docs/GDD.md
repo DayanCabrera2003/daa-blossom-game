@@ -275,6 +275,8 @@ Junto al título del hub, un contador con las estrellas totales y las semillas. 
 
 Tras dominar una idea, el mentor pide "escríbelo". El jugador elige entre 3–4 enunciados. Los falsos son plausibles y **se refutan con un mini-jardín contraejemplo que el jugador puede tocar**. Al elegir el correcto, se guarda en el Cuaderno con las palabras del jardín; el Códex lo traduce después.
 
+El Cuaderno pide pensar, no recordar. Llega **antes** de que Sauce resuma la idea del nivel: la frase que la resume pasa a ser su respuesta al acierto. La opción correcta dice la idea **con otras palabras** que las que el jugador acaba de oír (un check de integridad lo comprueba: no comparte con ninguna línea anterior del nivel tres palabras seguidas con al menos dos que digan algo), y entre las falsas hay una que copia a medias lo que dijo Sauce, para quien elige por cómo suena y no por lo que dice.
+
 ### 5.6 El Códex
 
 Libro accesible desde el botón de libro del HUD (en cuanto alguna página está abierta) y desde el hub. Cada entrada tiene tres pestañas:
@@ -444,7 +446,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Enseña:** repetir. Cada cadena gana exactamente uno. Después de una cadena, el jardín cambia y hay que volver a mirar.
 - **Guion:** Sauce: "Cada cadena, un farol. Ni dos ni medio. Uno."
 - **Victoria:** todos con farol (perfecto).
-- **Cuaderno:** "Una cadena que empieza y termina en brotes a oscuras…" (a) "…enciende exactamente un farol nuevo" ✔ (b) "…enciende tantos faroles como brotes toca" ✘ contraejemplo: cadena de 6 brotes gana 1 (c) "…solo funciona si es corta" ✘ contraejemplo: cadena de 10.
+- **Cuaderno:** "Una cadena que empieza y termina en brotes a oscuras…" (a) "…gana uno, ni más ni menos, por larga que sea" ✔ (b) "…enciende un farol por cada brote a oscuras que toca" ✘ contraejemplo: cadena de 6 brotes, toca dos a oscuras y gana 1 (c) "…solo funciona si es corta" ✘ contraejemplo: cadena de 10. La reacción de Sauce a los cuatro faroles se queda; la opción correcta no la repite.
 
 #### 1.6 Apuesta
 - **Jardín:** 8 brotes, un ciclo de 6 con dos colgantes. Valor real: 4.
@@ -501,9 +503,9 @@ Tú: 5 faroles. Reflejo: 6.
 - **Victoria:** usar la cadena y empatar.
 
 #### 2.4 Reto del espejo (adversario)
-- **Enseña:** ahora el jugador es el reflejo. Se le da un jardín con tu emparejamiento M (7 faroles) y debe **dibujar un emparejamiento mejor que no deje ninguna cadena para M**. Cada intento: el juego superpone, separa y señala el hilo ganador, que resulta ser una cadena. Tras tres intentos, Sauce cierra: "No se puede. Si no tienes cadena, nadie te gana."
+- **Enseña:** ahora el jugador es el reflejo. Se le da un jardín con tu emparejamiento M (7 faroles) y debe **dibujar un emparejamiento mejor que no deje ninguna cadena para M**. Cada intento: el juego superpone, separa y señala el hilo ganador, que resulta ser una cadena. Tras tres intentos, Sauce dice "No se puede" y abre el Cuaderno; "Sin cadena, nadie te gana" es su respuesta al acierto.
 - **Por qué aquí:** el jugador experimenta la imposibilidad, que es la dirección difícil de Berge, y ya vio el mecanismo en 2.1–2.3.
-- **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…nadie puede encender más faroles que yo" ✔ (b) "…es porque lo probé todo" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ contraejemplo: cadena escondida larga.
+- **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…cualquier otra disposición encenderá como mucho los mismos" ✔ (b) "…nadie gana mientras busque bien" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ contraejemplo: cadena escondida larga.
 - **Desbloquea:** Códex **C3 Lema de Berge**. Hub: el estanque.
 
 ---
@@ -567,7 +569,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Jardín:** `1–2=3–4=5` (1 libre), y una segunda componente con la misma estructura ramificada. Diseñado para que la búsqueda alcance a todos los brotes.
 - **Enseña:** tras la búsqueda fallida, el mentor dice "pon espantapájaros en todas las lunas". Cada luna tiene exactamente un farol (con un sol), así que hay tantos espantapájaros como faroles, y vigilan todo: cada enredadera toca una luna (porque de un sol solo salen lunas y no hay sol–sol en abejas y flores). **La búsqueda que fracasó te regala la prueba.**
 - **Por qué aquí:** es el ensayo general del capítulo 7. La idea "el bosque fallido es el certificado" se ve primero en el caso bipartito donde es transparente.
-- **Cuaderno:** "Si k espantapájaros vigilan todas las enredaderas…" (a) "…no puede haber más de k faroles" ✔ (b) "…hay exactamente k faroles" ✘ contraejemplo: un espantapájaros de más (c) "…siempre puedo poner los espantapájaros en las lunas" ✘ (solo si la búsqueda llegó a todos; el Códex C5 lo precisa).
+- **Cuaderno:** "Si k espantapájaros vigilan todas las enredaderas…" (a) "…no puede haber más de k faroles" ✔ (b) "…hay exactamente k faroles" ✘ contraejemplo: un espantapájaros de más (c) "…siempre puedo poner los espantapájaros en las lunas" ✘ contraejemplo: un jardín de abejas y tréboles donde la búsqueda acaba sin llegar a todos (una pareja con farol cuelga solo de una luna); los espantapájaros en las lunas dejan su enredadera sin vigilar. Es la idea de la flor secreta 3.10 en un nivel obligatorio; el Códex C5 la precisa.
 - **Desbloquea:** Códex **C4 La búsqueda** y **C5 Abejas, flores y espantapájaros (König)**.
 
 #### 3.9 Maestría del Invernadero
@@ -629,7 +631,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 #### 4.7 Flor con tallo largo
 - **Jardín:** `R–a=b–c=d` (tallo de longitud 4) y triángulo `d–e=f–d`, con salida `e–T`, T libre.
 - **Enseña:** la **base** es el pétalo cuyo farol sale de la flor (d, con `c=d`), y el **tallo** es el camino desde el solitario hasta la base. La cadena pasa por el tallo entero, entra por e, sale por la base.
-- **Cuaderno:** "La base de una flor es…" (a) "…el pétalo cuyo farol va hacia afuera de la flor (o que está a oscuras)" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "La base de una flor es…" (a) "…el único pétalo por el que la luz de la flor sale hacia afuera (o el que está a oscuras)" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia (d) "…el pétalo cuyo farol va a otro pétalo de la flor" ✘ (dentro de la flor los faroles van de pétalo a pétalo; la base es la que se queda sin pareja dentro).
 - **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en `d–f` hasta plegar). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 4.8 Dos flores
@@ -649,7 +651,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 - **Enseña:** una cadena de ganancia 0 (aprendida en 1.4) desde R hasta b: `R–a=b` se convierte en `R=a–b`. Mismo número de faroles, pero ahora **la base b está a oscuras**. Desde b, la cadena `b–d=c–e` es directa, sin flor.
 - **Por qué aquí:** es la herramienta de la demostración difícil. Establece que se puede suponer, sin perder nada, que la base de una flor está solitaria.
 - **Guion:** Sauce: "Cuando una flor te estorba, mueve la oscuridad hasta su base. No pierdes nada."
-- **Cuaderno:** "Si giro el tallo hasta la base de una flor…" (a) "…tengo los mismos faroles y la base queda a oscuras" ✔ (b) "…gano un farol" ✘ (c) "…pierdo un farol" ✘.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "Si giro el tallo hasta la base de una flor…" (a) "…no gano ni pierdo, y la oscuridad pasa a la base" ✔ (b) "…gano un farol" ✘ (c) "…pierdo un farol" ✘ (d) "…tengo los mismos faroles, y la base gana uno" ✘ contraejemplo: girar y mirar la base.
 - **Victoria:** 3 faroles sin plegar, con la flor `b, c, d` cerrada (regla `fromBase`, §5.1): toda jugada que mueve faroles por uno de sus pétalos (una cadena, una unión, pasar el farol) tiene que salir de la base b o acabar en ella. La cadena de 4.1, `R–a=b–d=c–e`, se rechaza ("la flor está cerrada por hoy"); girar el tallo `R–a=b` (o pasar el farol de R a a) y luego `b–d=c–e`, sí.
 - **Desbloquea:** Girar el tallo (que es simplemente Cadena de ganancia 0, ahora con nombre).
 
@@ -662,7 +664,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
   Tras dos o tres intentos, Sauce: "Da igual la que dibujes: siempre le sobra un trozo que llega a la flor. Plegar no esconde cadenas."
   Y el otro sentido ya lo vivió en 4.5–4.7: una cadena en el plegado se despliega siempre. **Plegar no crea ni destruye cadenas.**
 - **Por qué aquí:** cierra la corrección del algoritmo: buscar-con-flores dice "no hay cadena" ⇒ no la hay ⇒ por Berge, es máximo. Es la parte más densa del juego y va guiada, con el jugador manipulando y comprobando, no leyendo.
-- **Cuaderno:** "Plegar una flor…" (a) "…no crea ni destruye cadenas" ✔ (b) "…puede esconder una cadena" ✘ (el juego repite el reto) (c) "…solo sirve si la flor tiene 3 pétalos" ✘.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto; después, "por eso puedes fiarte de la flor"): "Plegar una flor…" (a) "…deja el jardín con cadena justo cuando ya la tenía" ✔ (b) "…no crea cadenas, pero puede esconder alguna" ✘ (el juego repite el reto) (c) "…solo sirve si la flor tiene 3 pétalos" ✘.
 - **Victoria:** tres cadenas dibujadas y "cortadas"; elegir la opción correcta.
 - **Desbloquea:** Códex **C6 Bucles impares**, **C7 La flor** y **C8 Lema de la flor**.
 
@@ -697,7 +699,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 #### 5.3 El pétalo equivocado
 - **Jardín:** anidamiento donde el punto de entrada a la flor interior no es su base (uno de los dos puntos de cruce siempre lo es: el único farol que sale de una flor es el de su base); el lado correcto interior es el largo.
 - **Enseña:** en una flor interior puede que entres por un pétalo y salgas por otro, y hay que ir de uno a otro alternando; sigue habiendo exactamente un lado válido.
-- **Cuaderno:** "Al desplegar una flor que está dentro de otra…" (a) "…entro por un pétalo, salgo por otro y solo un lado del bucle alterna bien" ✔ (b) "…siempre salgo por la base" ✘ contraejemplo (c) "…los dos lados sirven" ✘.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "Al desplegar una flor que está dentro de otra…" (a) "…la entrada y la salida deciden un único lado bueno" ✔ (b) "…siempre salgo por la base" ✘ contraejemplo (c) "…los dos lados sirven" ✘ (d) "…solo alterna el lado corto" ✘ (aquí alternó el largo).
 - **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en las dos flores hasta plegarlas). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.4 Jardín salvaje
