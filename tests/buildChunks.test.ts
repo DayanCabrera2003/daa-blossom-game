@@ -61,8 +61,38 @@ const WITH_FREE_MODE = parseViteManifest({
   '_code.js': { file: 'assets/code.js', imports: ['_shared.js'] },
 });
 
+/**
+ * The synthetic manifest with the level screen too: the entry loads it on demand, and so does the
+ * free mode, which plays its gardens on it; the level screen imports a chunk of its own and the
+ * views it shares with the free mode.
+ */
+const WITH_LEVEL = parseViteManifest({
+  ...WITH_FREE_MODE,
+  'index.html': {
+    ...WITH_FREE_MODE['index.html'],
+    file: 'assets/index.js',
+    dynamicImports: ['src/ui/books.ts', 'src/levels/sandbox/entry.ts', 'src/game/level.ts'],
+  },
+  'src/levels/sandbox/entry.ts': {
+    ...WITH_FREE_MODE['src/levels/sandbox/entry.ts'],
+    file: 'assets/sandbox.js',
+    imports: ['_shared.js', '_design.js', '_code.js', '_views.js'],
+    dynamicImports: ['src/game/level.ts'],
+  },
+  'src/game/level.ts': {
+    file: 'assets/level.js',
+    isDynamicEntry: true,
+    imports: ['_shared.js', '_cards.js', '_views.js'],
+  },
+  '_cards.js': { file: 'assets/cards.js' },
+  '_views.js': { file: 'assets/views.js' },
+});
+
 /** Whether a chunk's key names a source of the free mode. */
 const freeMode = (key: string): boolean => key.startsWith('src/levels/sandbox/');
+
+/** Whether a chunk's key names the level screen's entry. */
+const level = (key: string): boolean => key === 'src/game/level.ts';
 
 describe('buildFiles', () => {
   it('counts as initial the entry and everything it imports statically, transitively', () => {
@@ -126,5 +156,26 @@ describe('buildFiles', () => {
     expect(buildFiles(WITH_FREE_MODE).freeMode).toEqual([]);
     expect(buildFiles(MANIFEST, freeMode).freeMode).toEqual([]);
     expect(buildFiles(WITH_FREE_MODE).deferred).toContain('assets/sandbox.js');
+  });
+
+  it('weighs the level screen apart: what its own entry loads, the first screen less', () => {
+    const files = buildFiles(WITH_LEVEL, freeMode, level);
+    expect(files.level).toEqual(['assets/cards.js', 'assets/level.js', 'assets/views.js']);
+    expect(files.deferred).not.toContain('assets/level.js');
+  });
+
+  it("stops the free mode's weight at the level screen it opens, but counts their shared views", () => {
+    const files = buildFiles(WITH_LEVEL, freeMode, level);
+    expect(files.freeMode).toEqual([
+      'assets/code.js',
+      'assets/design.js',
+      'assets/sandbox.js',
+      'assets/views.js',
+    ]);
+  });
+
+  it('leaves the level screen empty when no chunk is said to be of it', () => {
+    expect(buildFiles(WITH_LEVEL, freeMode).level).toEqual([]);
+    expect(buildFiles(WITH_LEVEL, freeMode).deferred).toContain('assets/level.js');
   });
 });
