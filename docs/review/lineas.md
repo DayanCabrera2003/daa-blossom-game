@@ -360,7 +360,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch4.9.sauce.00` · **Sauce** · plan: Busca desde R. Pliega lo que haga falta y, cuando no quede nada por mirar, pulsa «Terminé».
 - [ ] `ch4.9.sauce.01` · **Sauce** · plan: ¿Queda algún sol con enredaderas sin mirar?
-- [ ] `ch4.9.sauce.02` · **Sauce** · plan: Aquí se tocan dos soles. Pliega y sigue mirando desde la flor.
+- [ ] `ch4.9.sauce.02` · **Sauce** · plan: Mira este bucle. Si dos soles se tocan aquí, pliega y sigue mirando desde la flor.
 - [ ] `ch4.9.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás, hasta el final, es tuyo.
 - [ ] `ch4.9.sauce.04` · **Sauce** · GDD: Ahora la luz no miente. Pero, ¿por qué te fías de la flor?
 
