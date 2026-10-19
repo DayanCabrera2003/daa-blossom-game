@@ -459,7 +459,7 @@ describe('the script engine', () => {
   });
 
   it('the mirror challenge ends after its attempts at better reflections', () => {
-    const { flow, effects } = start([{ step: 'draw', attempts: 2 }]);
+    const { flow, effects } = start([{ step: 'draw', attempts: 2, beatable: true }]);
     expect(effects).toEqual([{ kind: 'draw', attempts: 2 }]);
     const tried = send(flow, [
       { type: 'mirrorChecked', better: true },
@@ -472,8 +472,19 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('a mirror challenge nobody can win ends after its attempts at checks, none of them better', () => {
+    const { flow } = start([{ step: 'draw', attempts: 2, beatable: false }, say('ch0.1.sauce.00')]);
+    const tried = advanceFlow(flow, { type: 'mirrorChecked', better: false });
+    expect(tried.flow.attempts).toBe(1);
+    expect(tried.effects).toEqual([]);
+    expect(advanceFlow(tried.flow, { type: 'mirrorChecked', better: false }).effects).toEqual([
+      { kind: 'say', lines: ['ch0.1.sauce.00'] },
+      { kind: 'finished' },
+    ]);
+  });
+
   it('the mirror challenge also ends when the player is spared, whatever the attempts', () => {
-    const { flow } = start([{ step: 'draw', attempts: 3 }, say('ch0.1.sauce.00')]);
+    const { flow } = start([{ step: 'draw', attempts: 3, beatable: true }, say('ch0.1.sauce.00')]);
     const tried = advanceFlow(flow, { type: 'mirrorChecked', better: true }).flow;
     expect(advanceFlow(tried, { type: 'mirrorSpared' }).effects).toEqual([
       { kind: 'say', lines: ['ch0.1.sauce.00'] },

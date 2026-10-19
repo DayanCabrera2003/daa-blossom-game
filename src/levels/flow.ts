@@ -130,8 +130,16 @@ const flowStep = z.discriminatedUnion('step', [
    * It needs nothing from the player and is over once it has been shown.
    */
   z.strictObject({ step: z.literal('autoSearch') }),
-  /** The mirror challenge (2.4): draw a better reflection, `attempts` times. */
-  z.strictObject({ step: z.literal('draw'), attempts: z.number().int().min(1) }),
+  /**
+   * The mirror challenge (2.4): draw a better reflection, `attempts` times. With `beatable: false`
+   * (its second phase, plan 10, phase 8) the lanterns already hold the most: no reflection can beat
+   * them, and the step is over after `attempts` checks, none of which wins.
+   */
+  z.strictObject({
+    step: z.literal('draw'),
+    attempts: z.number().int().min(1),
+    beatable: z.boolean().default(true),
+  }),
   /**
    * The flower challenge (4.11): the player draws chains in the open garden, which are shown cut at
    * the level's `flower` and never applied, until `attempts` of them are chains.

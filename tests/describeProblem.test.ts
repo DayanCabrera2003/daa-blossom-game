@@ -126,6 +126,7 @@ describe('readable level problems', () => {
       { code: 'certifyAgainBeforePlay', step: 0 },
       { code: 'sameCertificate', step: 1 },
       { code: 'drawUnbeatable', step: 5 },
+      { code: 'drawBeatable', step: 5 },
       { code: 'noConflict', step: 1 },
       { code: 'counterexampleLocked', question: 0, option: 1, action: 'fold' },
       { code: 'counterexampleUnbeatable', question: 0, option: 2 },

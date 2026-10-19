@@ -456,7 +456,9 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     }
     case 'draw': {
       if (signal.type === 'mirrorSpared') return enter(flow, flow.index + 1, []);
-      if (signal.type !== 'mirrorChecked' || !signal.better) return unchanged;
+      // Where nobody can win (2.4, second phase), every check is an attempt; elsewhere, only a
+      // better reflection not checked before.
+      if (signal.type !== 'mirrorChecked' || (step.beatable && !signal.better)) return unchanged;
       const attempts = flow.attempts + 1;
       return attempts >= step.attempts
         ? enter(flow, flow.index + 1, [])

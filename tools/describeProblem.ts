@@ -57,6 +57,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
     case 'drawUnbeatable':
       return `script step ${problem.step + 1} asks for a better reflection, but the lanterns already hold the most`;
+    case 'drawBeatable':
+      return `script step ${problem.step + 1} is a mirror challenge nobody should win, but the lanterns leave a chain`;
     case 'flowerMissing':
       return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
     case 'noChainToDraw':

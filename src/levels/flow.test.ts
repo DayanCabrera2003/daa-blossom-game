@@ -49,6 +49,13 @@ describe('the script of a level (flow)', () => {
       informal: false,
     });
     expect(flow[6]).toMatchObject({ step: 'ask', retry: true });
+    expect(flow[11]).toEqual({ step: 'draw', attempts: 3, beatable: true });
+  });
+
+  it('a mirror challenge may be one nobody can win (2.4, its second phase)', () => {
+    expect(parse([{ step: 'draw', attempts: 3, beatable: false }])).toEqual([
+      { step: 'draw', attempts: 3, beatable: false },
+    ]);
   });
 
   it('asks only once unless the level says to retry', () => {
