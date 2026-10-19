@@ -166,11 +166,11 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch2.4.sauce.03` · **Sauce** · plan: Esto merece quedar escrito. Abre tu Cuaderno y elige lo que es verdad.
 - [ ] `ch2.4.notebook.04` · **Cuaderno** · GDD: Si en mi jardín no queda ninguna cadena…
 - [ ] `ch2.4.notebook.05` · **Cuaderno** · plan: …cualquier otra disposición encenderá como mucho los mismos.
-- [ ] `ch2.4.notebook.06` · **Cuaderno** · plan: …nadie gana mientras busque bien.
+- [ ] `ch2.4.notebook.06` · **Cuaderno** · plan: …nadie gana, salvo el agua.
 - [ ] `ch2.4.notebook.07` · **Cuaderno** · plan: …puede que alguien lo haga mejor con otra disposición.
 - [ ] `ch2.4.notebook.08` · **Cuaderno** · plan: …si busco tres veces y no la encuentro, terminé.
 - [ ] `ch2.4.sauce.09` · **Sauce** · plan: Eso es. Sin cadena, nadie te gana. Ni el agua.
-- [ ] `ch2.4.sauce.10` · **Sauce** · plan: Buscar bien no tiene nada que ver: si no queda ninguna cadena, nadie te gana, busque quien busque.
+- [ ] `ch2.4.sauce.10` · **Sauce** · plan: Ni el agua: su reflejo es otra disposición más. Si no queda ninguna cadena, ninguna te gana.
 - [ ] `ch2.4.sauce.11` · **Sauce** · plan: ¿Otra disposición mejor? Búscala: dibújala en plateado sobre este jardín y compruébala.
 - [ ] `ch2.4.sauce.12` · **Sauce** · plan: Ahí la tienes: quien te gana te deja una cadena. Sin cadena, no hay disposición mejor.
 - [ ] `ch2.4.sauce.13` · **Sauce** · plan: Aquí se esconde una cadena larga. Tres callejones te dirán que no hay. Síguela hasta el final.

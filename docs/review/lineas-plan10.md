@@ -79,10 +79,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: …cualquier otra disposición encenderá como mucho los mismos.
 - [ ] `ch2.4.notebook.06` · **Cuaderno** · cambiada
   - Antes: …es porque lo probé todo.
-  - Después: …nadie gana mientras busque bien.
+  - Después: …nadie gana, salvo el agua.
 - [ ] `ch2.4.sauce.10` · **Sauce** · cambiada
   - Antes: No hace falta probarlo todo. Basta con saber que no queda ninguna cadena.
-  - Después: Buscar bien no tiene nada que ver: si no queda ninguna cadena, nadie te gana, busque quien busque.
+  - Después: Ni el agua: su reflejo es otra disposición más. Si no queda ninguna cadena, ninguna te gana.
 
 ### 2.5
 
