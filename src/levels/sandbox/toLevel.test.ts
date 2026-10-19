@@ -116,7 +116,8 @@ describe('a design to play', () => {
   it('allows the actions given, and hides the goal behind "Terminé"', () => {
     const allowed = actionsUnlockedBy('4.5');
     const level = unwrap(toPlayable(PATH, allowed));
-    const fogless = allowed.filter((action) => action !== 'inspect');
+    // No fog to inspect, and no light that searches by itself: that is a level's, not a design's.
+    const fogless = allowed.filter((action) => action !== 'inspect' && action !== 'stepLight');
     expect([...level.start.allowed].sort()).toEqual([...fogless].sort());
     expect(level.data.goal).toEqual({ visible: false });
     expect(level.data.victory).toEqual({ type: 'maximum' });

@@ -44,10 +44,11 @@ describe('tools of the gardener', () => {
     expect(TOOL_ACTIONS.layers).toEqual([]);
   });
 
-  it('every action except "Terminé" belongs to exactly one tool', () => {
+  it('every action except "Terminé" and "Avanzar la luz" belongs to exactly one tool', () => {
+    // Those two are buttons of the HUD, pressed, never a touch on the garden.
     const grouped = Object.values(TOOL_ACTIONS).flat();
     const everyAction = (Object.keys(UNLOCKED_AT) as ActionType[]).filter(
-      (a) => a !== 'declareDone',
+      (a) => a !== 'declareDone' && a !== 'stepLight',
     );
     expect([...grouped].sort()).toEqual([...everyAction].sort());
   });

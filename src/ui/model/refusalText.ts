@@ -40,6 +40,7 @@ export function refusalText(
     case 'litVine':
     case 'sunMeetsSun':
     case 'notSunsOfOneTree':
+    case 'lightAtFlower':
       return t(`reason.${reason.code}`, { u: name(reason.u), v: name(reason.v) });
     case 'alreadyLit':
     case 'notInTheDark':

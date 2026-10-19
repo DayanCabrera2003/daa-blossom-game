@@ -87,6 +87,9 @@ const REASONS = {
   twoSilver: ['vertex'],
   chainNotSeen: [],
   flowerClosed: [],
+  lightAtFlower: ['u', 'v'],
+  lightFound: [],
+  lightDone: [],
 } as const satisfies Record<RefusalCode, Params>;
 
 /** Where a dragged chain goes wrong (`core/matching/paths.ts`), named by the sprouts involved. */
@@ -125,6 +128,7 @@ const ACTIONS = {
   removeScarecrow: [],
   fold: [],
   foldAt: [],
+  stepLight: [],
   unfold: [],
   rotateStem: [],
   liftStone: [],
@@ -153,6 +157,7 @@ const UI = {
   'hud.back': [],
   'hud.help': [],
   'hud.leaveLayer': [],
+  'hud.stepLight': [],
   'hud.layer': ['depth'],
   'hud.council': ['groups', 'stones', 'atLeast', 'dark'],
   'hud.councilHidden': [],

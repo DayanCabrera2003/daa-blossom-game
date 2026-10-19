@@ -37,7 +37,13 @@ export type RejectReason =
   /** The level only lets lanterns move along the chain the marks reached (`chainRule.ts`). */
   | { readonly code: 'chainNotSeen' }
   /** The level's flower is closed: a chain only goes round it from its base (`chainRule.ts`). */
-  | { readonly code: 'flowerClosed' };
+  | { readonly code: 'flowerClosed' }
+  /** The light stopped where two suns of one tree meet, along `u`–`v`: fold to go on. */
+  | { readonly code: 'lightAtFlower'; readonly u: VertexId; readonly v: VertexId }
+  /** The light has seen a chain, which waits to be lit. */
+  | { readonly code: 'lightFound' }
+  /** The light has nothing left to look at. */
+  | { readonly code: 'lightDone' };
 
 /** The stable code of a rejection. */
 export type RejectCode = RejectReason['code'];

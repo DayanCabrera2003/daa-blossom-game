@@ -27,6 +27,7 @@ export const ACTION_CARD: Readonly<Record<ActionType, CardId>> = {
   placeScarecrow: 'scarecrows',
   removeScarecrow: 'scarecrows',
   fold: 'fold',
+  stepLight: 'light',
   foldAt: 'fold',
   unfold: 'unfold',
   rotateStem: 'rotateStem',

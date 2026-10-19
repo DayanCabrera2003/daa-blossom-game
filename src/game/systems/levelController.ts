@@ -108,6 +108,8 @@ export type UiEvent =
   | { readonly kind: 'press' | 'move' | 'release'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
   | { readonly kind: 'undo' | 'redo' | 'hint' | 'done' }
+  /** "Avanzar la luz": the light that searches by itself makes its next mark (flower levels). */
+  | { readonly kind: 'light' }
   /** Out of the innermost flower entered, back to the layer before (5.2). */
   | { readonly kind: 'leaveLayer' }
   | { readonly kind: 'seek'; readonly fraction: number }
@@ -465,6 +467,8 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       return checkRecipe(controller, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
+    case 'light':
+      return apply(controller, { type: 'stepLight' }, now);
     case 'solve':
     case 'certify':
       return order(controller, event.kind);

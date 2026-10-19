@@ -51,6 +51,8 @@ describe('building a level', () => {
     expect(allowed.has('unfold')).toBe(true);
     expect(allowed.has('fold')).toBe(false);
     expect(allowed.has('liftStone')).toBe(false);
+    // Learnt in 4.4, the light's step is given only where the light searches by itself.
+    expect(allowed.has('stepLight')).toBe(false);
   });
 
   it('keeps the actions it closes as closed for the day, apart from those not learnt yet', () => {

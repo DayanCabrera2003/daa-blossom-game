@@ -11,6 +11,7 @@ import { passLantern } from './handlers/passLantern';
 import { rotateStem } from './handlers/rotateStem';
 import { placeScarecrow, removeScarecrow } from './handlers/scarecrows';
 import { split } from './handlers/split';
+import { stepLight } from './handlers/stepLight';
 import { dropStone, liftStone } from './handlers/stones';
 import { unfold } from './handlers/unfold';
 import { reject, type ActionOutcome } from './outcome';
@@ -56,6 +57,8 @@ function dispatch(state: GardenState, action: Action): ActionOutcome {
       return markRoot(state, action);
     case 'markMoon':
       return markMoon(state, action);
+    case 'stepLight':
+      return stepLight(state);
     case 'foldAt':
       return foldAt(state, action);
     case 'fold':

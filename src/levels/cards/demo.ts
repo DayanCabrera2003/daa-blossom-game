@@ -19,7 +19,7 @@ import { toWalkthroughEntry } from '../translate';
 import type { CardData, CardId } from './schema';
 
 /** A button of the HUD a demo shows being pressed. */
-export type DemoButton = 'undo' | 'redo' | 'done' | 'check' | 'leaveLayer';
+export type DemoButton = 'undo' | 'redo' | 'done' | 'check' | 'leaveLayer' | 'light';
 
 /** What the player's hand does on a frame of a demo, drawn over the tiny garden. */
 export type DemoGesture =
@@ -120,6 +120,8 @@ function gestureOf(state: GardenState, action: Action): DemoGesture {
     }
     case 'declareDone':
       return { kind: 'press', button: 'done' };
+    case 'stepLight':
+      return { kind: 'press', button: 'light' };
     default:
       return { kind: 'touch', sprouts: [action.vertex] };
   }

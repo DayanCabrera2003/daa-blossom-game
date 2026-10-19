@@ -4,7 +4,8 @@ import type { ActionType } from './actions';
 /**
  * The level where each action is unlocked (GDD §5.1; "Terminé" from §5.2), as `chapter.level`.
  * A level allows what it has unlocked, possibly narrowed by its own JSON (4.10 closes folding for
- * the day). Listed in order of unlocking, which is the order `actionsUnlockedBy` returns.
+ * the day). "Avanzar la luz" is learnt in 4.4 but only the levels where the light searches by
+ * itself give it (`levels/build.ts`). Listed in order of unlocking, which is the order `actionsUnlockedBy` returns.
  */
 export const UNLOCKED_AT: Readonly<Record<ActionType, string>> = {
   join: '0.1',
@@ -19,6 +20,7 @@ export const UNLOCKED_AT: Readonly<Record<ActionType, string>> = {
   removeScarecrow: '3.7',
   fold: '4.4',
   foldAt: '4.4',
+  stepLight: '4.4',
   unfold: '4.5',
   rotateStem: '4.10',
   liftStone: '7.2',

@@ -163,8 +163,8 @@ describe('the level controller', () => {
         const events: UiEvent[] =
           gesture.kind === 'tool'
             ? [{ kind: 'tool', tool: gesture.tool }]
-            : gesture.kind === 'done'
-              ? [{ kind: 'done' }]
+            : gesture.kind === 'done' || gesture.kind === 'light'
+              ? [{ kind: gesture.kind }]
               : [
                   { kind: 'press', point: gesture.points[0] as Point },
                   ...gesture.points.slice(1).map((point) => ({ kind: 'move', point }) as UiEvent),
@@ -488,8 +488,8 @@ describe('reactions during play (1.4)', () => {
       (gesture): UiEvent[] =>
         gesture.kind === 'tool'
           ? [{ kind: 'tool', tool: gesture.tool }]
-          : gesture.kind === 'done'
-            ? [{ kind: 'done' }]
+          : gesture.kind === 'done' || gesture.kind === 'light'
+            ? [{ kind: gesture.kind }]
             : [
                 { kind: 'press', point: gesture.points[0] as Point },
                 ...gesture.points.slice(1).map((point): UiEvent => ({ kind: 'move', point })),

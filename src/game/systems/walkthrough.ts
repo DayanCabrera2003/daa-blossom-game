@@ -49,10 +49,14 @@ export interface WalkthroughResult {
   readonly problem: WalkthroughProblem | null;
 }
 
-/** The interface events of one gesture: a tool, "Terminé", or a press dragged through points. */
+/**
+ * The interface events of one gesture: a tool, "Terminé", "Avanzar la luz", or a press dragged
+ * through points.
+ */
 function gestureEvents(gesture: Gesture): UiEvent[] {
   if (gesture.kind === 'tool') return [{ kind: 'tool', tool: gesture.tool }];
   if (gesture.kind === 'done') return [{ kind: 'done' }];
+  if (gesture.kind === 'light') return [{ kind: 'light' }];
   const { points } = gesture;
   return [
     { kind: 'press', point: itemAt(points, 0) },

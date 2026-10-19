@@ -129,7 +129,10 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     fog: data.fog,
     ...(roots === undefined ? {} : { roots }),
     chains,
-    allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
+    // The light's step belongs to the levels where the light searches by itself.
+    allowed: actionsUnlockedBy(data.id).filter(
+      (action) => !forbidden.has(action) && action !== 'stepLight',
+    ),
     closed: data.forbid,
   });
   return ok({
