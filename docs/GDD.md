@@ -728,14 +728,14 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 #### 6.1 Tarjetas
 - **Enseña:** ordenar tarjetas para formar la receta. Tarjetas correctas:
   1. Marca sol a todos los brotes a oscuras.
-  2. Mientras haya soles con enredaderas apagadas sin explorar, toma una `sol–x`:
-     - si x no tiene marca y está a oscuras: **cadena** (pasa los faroles, vuelve al paso 1);
+  2. Mientras algún sol tenga una enredadera apagada sin mirar (x es el brote del otro lado):
      - si x no tiene marca y tiene farol: marca x luna y a su pareja sol;
-     - si x es sol de otro árbol: **cadena** de raíz a raíz;
+     - si x es sol de otro árbol: **cadena** de un brote a oscuras a otro (pasa los faroles y vuelve al paso 1);
      - si x es sol del mismo árbol: **pliega la flor**;
      - si x es luna: nada.
   3. Si no queda nada que explorar: **terminaste** (y guarda las lunas para el Consejo).
   Tarjetas distractoras: "si x es luna, cámbiala a sol", "si hay bucle, pliega", "repite hasta que no queden brotes a oscuras" (falsa: puede quedar alguno para siempre).
+  No hay tarjeta para "x sin marca y a oscuras": tras el paso 1 todo brote a oscuras ya es sol, así que ese caso no ocurre nunca (un test del núcleo lo comprueba en miles de jardines). Por eso «vuelve al paso 1» va en la única tarjeta de cadena, la de otro árbol, y las tarjetas no dicen «raíz».
 - **Por qué aquí:** el jugador ha ejecutado esto decenas de veces. Ahora lo formaliza. Cada tarjeta corresponde a un nivel que ya jugó, y el juego lo recuerda ("esto lo hiciste en 3.4").
 - **Victoria:** receta correcta.
 - **Desbloquea:** Tarjetas.
@@ -760,7 +760,7 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 
 #### 6.5 La carrera II
 - **Jardín:** 16, 32, 64 brotes (vista alejada, brotes en miniatura).
-- **Enseña:** antes de cada carrera, **apuesta**: "si el jardín se duplica, ¿cuántos pasos más dará tu receta? ¿Y Bruto?" Una gráfica se dibuja punto a punto: la del autómata sube como una curva suave, la de Bruto se sale de la pantalla y Bruto se duerme.
+- **Enseña:** antes de cada carrera, **apuesta**: "si el jardín se duplica, ¿cuántos pasos más dará tu receta?" Tres respuestas: «≈ el doble», «≈ 3 a 5 veces», «Muchísimo más, o se duerme» (la receta mide de ×3,7 a ×4,5). Bruto apuesta solo en la primera ronda ("¿Y Bruto?"); en la siguiente se duerme y ya no hay nada que apostar por él. Las apuestas de la receta siguen en las tres rondas, y en la segunda y la tercera preguntan si se repite lo de antes: que el cociente **se mantenga** al duplicar es la lección. Cuatro apuestas en total. Una gráfica se dibuja punto a punto: la del autómata sube como una curva suave, la de Bruto se sale de la pantalla y Bruto se duerme.
 - **Por qué aquí:** medir antes de razonar. La intuición del costo viene de datos que el jugador vio dibujarse.
 - **Victoria:** completar las carreras y las apuestas.
 
