@@ -324,6 +324,39 @@ describe('a level session follows its script', () => {
     expect(right.session.won).not.toBeNull();
   });
 
+  it('a question opens the garden of a false answer, then asks again (plan 10, phase 7)', () => {
+    const refuting = {
+      ...question,
+      options: [
+        {
+          line: 'ch2.9.sauce.02',
+          correct: false,
+          counterexample: {
+            mode: 'play',
+            line: 'ch2.9.sauce.05',
+            sprouts: [
+              { label: 'a', x: 100, y: 100 },
+              { label: 'b', x: 200, y: 100 },
+            ],
+            vines: [['a', 'b']],
+            actions: ['join'],
+          },
+        },
+        { line: 'ch2.9.sauce.04', correct: true },
+      ],
+    };
+    const opened = openSession(scripted([refuting]), 0);
+    const refuted = respond(opened.session, { type: 'answer', option: 0 }, 0);
+    expect(refuted.effects).toContainEqual({ kind: 'counterexample', step: 0, option: 0 });
+    expect(refuted.effects.map((effect) => effect.kind)).toEqual([
+      'answered',
+      'counterexample',
+      'ask',
+    ]);
+    const right = respond(refuted.session, { type: 'answer', option: 1 }, 0);
+    expect(right.effects.map((effect) => effect.kind)).toEqual(['answered', 'finished']);
+  });
+
   it('outside the play step, moves are refused with notNow and change nothing', () => {
     const level = scripted([question, { step: 'play' }]);
     const session = startSession(level, 0);
