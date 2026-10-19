@@ -90,6 +90,8 @@ describe('the picture of a mechanic card demo', () => {
   it('a pressed button is named by its interface text', () => {
     expect(picture('undo', 1).press).toBe('hud.undo');
     expect(picture('declareDone', 1).press).toBe('hud.done');
+    // The card that teaches presenting a certificate presses the button as it says there.
+    expect(picture('present', 1).press).toBe('hud.present');
     expect(picture('draw', 2).press).toBe('hud.checkMirror');
     expect(picture('lanterns', 0).press).toBeNull();
   });

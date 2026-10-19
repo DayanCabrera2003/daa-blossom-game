@@ -19,7 +19,7 @@ import { toWalkthroughEntry } from '../translate';
 import type { CardData, CardId } from './schema';
 
 /** A button of the HUD a demo shows being pressed. */
-export type DemoButton = 'undo' | 'redo' | 'done' | 'check' | 'leaveLayer' | 'light';
+export type DemoButton = 'undo' | 'redo' | 'done' | 'present' | 'check' | 'leaveLayer' | 'light';
 
 /** What the player's hand does on a frame of a demo, drawn over the tiny garden. */
 export type DemoGesture =
@@ -92,8 +92,11 @@ export type DemoError =
   | { readonly code: 'refused'; readonly step: number; readonly reason: RejectReason }
   | { readonly code: 'badStep'; readonly step: number; readonly why: DemoStepProblem };
 
-/** The gesture that makes a move, as a player would do it on the garden `state`. */
-function gestureOf(state: GardenState, action: Action): DemoGesture {
+/**
+ * The gesture that makes a move, as a player would do it on the garden `state`; "Terminé" is
+ * pressed on the button `done`, which says «Presentar» on the card that teaches presenting.
+ */
+function gestureOf(state: GardenState, action: Action, done: DemoButton): DemoGesture {
   switch (action.type) {
     case 'join':
       return { kind: 'touch', sprouts: [action.u, action.v] };
@@ -119,7 +122,7 @@ function gestureOf(state: GardenState, action: Action): DemoGesture {
       return { kind: 'touch', sprouts: members(flower) };
     }
     case 'declareDone':
-      return { kind: 'press', button: 'done' };
+      return { kind: 'press', button: done };
     case 'stepLight':
       return { kind: 'press', button: 'light' };
     default:
@@ -304,7 +307,8 @@ function playInput(
     default: {
       const outcome = applyAction(state, entry);
       if (!outcome.ok) return { kind: 'refused', reason: outcome.reason };
-      frame(card.alone ? { kind: 'none' } : gestureOf(state, entry));
+      const done = card.id === 'present' ? 'present' : 'done';
+      frame(card.alone ? { kind: 'none' } : gestureOf(state, entry, done));
       // A new move forgets what could have been redone, as the level's own history does.
       day.states = [...day.states.slice(0, day.cursor + 1), outcome.state];
       day.cursor = day.states.length - 1;

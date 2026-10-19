@@ -30,6 +30,7 @@ export const CARD_IDS = [
   'pickVine',
   'flowerChallenge',
   'scarecrows',
+  'present',
   'fold',
   'foldLoop',
   'unfold',

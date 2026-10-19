@@ -724,6 +724,40 @@
     ]
   },
   {
+    "id": "present",
+    "sprouts": [
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"]
+    ],
+    "lanterns": [["a", "b"]],
+    "steps": [
+      {
+        "type": "placeScarecrow",
+        "vertex": "b"
+      },
+      {
+        "type": "declareDone"
+      }
+    ]
+  },
+  {
     "id": "fold",
     "sprouts": [
       {

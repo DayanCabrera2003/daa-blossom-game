@@ -32,6 +32,7 @@ const BUTTON_TEXT: Readonly<Record<DemoButton, string>> = {
   undo: 'hud.undo',
   redo: 'hud.redo',
   done: 'hud.done',
+  present: 'hud.present',
   check: 'hud.checkMirror',
   leaveLayer: 'hud.leaveLayer',
   light: 'hud.stepLight',

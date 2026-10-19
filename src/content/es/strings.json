@@ -444,6 +444,8 @@
   "tutorial.notebook.body": "Lee la frase y toca el final que creas verdadero. Si eliges otro, se abre un jardín para mirarlo; luego vuelves al Cuaderno.",
   "tutorial.declareDone.title": "Terminé",
   "tutorial.declareDone.body": "Cuando creas que tu jardín ya no puede encender más faroles, pulsa Terminé.",
+  "tutorial.present.title": "Presentar",
+  "tutorial.present.body": "Cuando tu prueba esté puesta en el jardín, pulsa Presentar.",
   "tutorial.reflection.title": "El reflejo",
   "tutorial.reflection.body": "Sobre tu jardín aparecen faroles plateados: los del reflejo. Cuando se te pida, toca un brote para ver sus hilos, o toca el jardín para separar la maraña.",
   "tutorial.count.title": "Contar",
