@@ -226,22 +226,26 @@ function travel(controller: Controller, session: LevelSession, now: number): Ste
 }
 
 /**
- * Tries a move: refused, it is reported; accepted, it is animated, puts out hint glows, and may win
- * the play step, which moves the script on.
+ * Tries a move: refused, it is reported (where the light stops at a flower, its vine glows until
+ * the next move); accepted, it is animated, puts out hint glows, and may win the play step, which
+ * moves the script on.
  */
 function apply(controller: Controller, action: Action, now: number): Step {
   const { session, outcome, effects: flowEffects } = act(controller.session, action, now);
   if (!outcome.ok) {
+    const { reason } = outcome;
+    const vineGlow: Edge | null =
+      reason.code === 'lightAtFlower' ? [reason.u, reason.v] : controller.vineGlow;
     return {
-      controller: { ...controller, session },
-      effects: [{ kind: 'rejected', reason: outcome.reason, action }],
+      controller: { ...controller, session, vineGlow },
+      effects: [{ kind: 'rejected', reason, action }],
     };
   }
   const effects: Effect[] = [
     { kind: 'animate', action, events: outcome.events },
     ...shown(session, flowEffects),
   ];
-  return { controller: { ...controller, session, highlight: [] }, effects };
+  return { controller: { ...controller, session, highlight: [], vineGlow: null }, effects };
 }
 
 /** A touch on the vine u–v of the reflection drawn in the mirror challenge. */

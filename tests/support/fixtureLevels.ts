@@ -605,6 +605,31 @@ const SECRET_FLOWER = {
   flow: [{ step: 'play' }],
 };
 
+/**
+ * The garden of the festival as 4.5 plays it (plan 10, section 2.4): the light searches from R by
+ * itself, the player advances it and folds where it stops, and only the chain it saw is lit.
+ */
+const FOLDING_LIGHT = {
+  ...FESTIVAL,
+  id: '4.5',
+  roots: ['R'],
+  light: true,
+  chains: { rule: 'seen' },
+  forbid: ['split', 'passLantern'],
+  solution: [
+    { type: 'stepLight' },
+    { type: 'stepLight' },
+    { type: 'stepLight' },
+    { type: 'foldAt', from: 'b', to: 'd' },
+    { type: 'stepLight' },
+    { type: 'unfold', blossom: 0 },
+    { type: 'chain', path: ['R', 'a', 'b', 'd', 'c', 'e'] },
+  ],
+};
+
+/** The level built from `FOLDING_LIGHT`. */
+export const foldingLightLevel = (): Level => load(FOLDING_LIGHT);
+
 /** The level built from `BLOOM`. */
 export const bloomLevel = (): Level => load(BLOOM);
 
