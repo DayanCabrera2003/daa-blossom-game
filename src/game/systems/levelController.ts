@@ -16,8 +16,10 @@ import {
   pressStart,
   type PointerState,
 } from '../input/pointer';
+import { NO_SELECTION } from '../input/selection';
 import type { Point } from '../input/target';
 import { availableTools, type ToolId } from '../input/tools';
+import { extendLift, NO_FILLS, releaseLift, startsLift, type LiftFills } from '../input/liftDrag';
 import { triedChain } from '../input/triedChain';
 import {
   enterFlower,
@@ -31,6 +33,7 @@ import {
 import type { FlowEffect } from './flow';
 import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
+import { foundChain, type FoundChain } from './liftGaps';
 import {
   act,
   askHint,
@@ -101,6 +104,8 @@ export interface Controller {
   readonly layers: LayerPath;
   /** The free mode's orders, for a garden of the free mode; null for a level of the catalog. */
   readonly orders: FreeOrders | null;
+  /** The gaps of the found chain filled so far by the gesture of lifting (`input/liftDrag.ts`). */
+  readonly lift: LiftFills;
 }
 
 /** What the player did on the level screen, as the scene reports it. */
@@ -197,6 +202,7 @@ export function openController(level: Level, now: number, orders: FreeOrders | n
       positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
       layers: OUTSIDE,
       orders,
+      lift: NO_FILLS,
     },
     effects: shown(session, effects),
   };
@@ -334,6 +340,75 @@ function enter(controller: Controller, view: LayerView, point: Point): Step {
   return { controller: { ...controller, layers }, effects: [] };
 }
 
+/** The chain the light found at the moment shown, with its gaps; null where there is none. */
+const foundNow = (controller: Controller): FoundChain | null =>
+  foundChain(controller.session.history.states, controller.session.history.cursor);
+
+/**
+ * A press of the lanterns tool on a lit end of an open gap of the found chain starts a drag into
+ * that gap (the gesture of lifting); null when the press is not one.
+ */
+function pressLift(controller: Controller, view: LayerView, point: Point): PointerState | null {
+  const { pointer } = controller;
+  const state = garden(controller.session);
+  const target = hitTest(state, view.positions, point, view);
+  if (pointer.tool !== 'lanterns' || target.kind !== 'sprout') return null;
+  return startsLift(foundNow(controller), state, target.vertex)
+    ? { ...pointer, chain: [target.vertex] }
+    : null;
+}
+
+/**
+ * A move while dragging into a gap (a drag that started on a lit sprout): it follows the petals of
+ * the gap's flower, and a wrong side is refused at once with the sprouts it tried.
+ */
+function moveLift(controller: Controller, view: LayerView, point: Point): Step | null {
+  const { pointer } = controller;
+  const state = garden(controller.session);
+  const found = foundNow(controller);
+  const start = pointer.chain?.[0];
+  if (found === null || pointer.chain === null || start === undefined) return null;
+  if (!startsLift(found, state, start)) return null;
+  const target = hitTest(state, view.positions, point, view);
+  if (target.kind !== 'sprout') return { controller, effects: [] };
+  const step = extendLift(found, state, pointer.chain, target.vertex);
+  const next = { ...controller, pointer: { ...pointer, chain: step.path } };
+  if (step.rejection === null) return { controller: next, effects: [] };
+  const action: Action = { type: 'chain', path: step.tried };
+  return { controller: next, effects: [{ kind: 'rejected', reason: step.rejection, action }] };
+}
+
+/**
+ * Letting go of a drag where the found chain has gaps: a fill is kept, the last one sends the whole
+ * chain composed, a wrong one is refused; a drag into a gap that fills nothing is let go. Null when
+ * it is no lift, and the drag is a chain as always.
+ */
+function releaseLiftNow(controller: Controller, now: number): Step | null {
+  const { pointer } = controller;
+  const chain = pointer.chain;
+  if (chain === null || chain.length < 2) return null;
+  const state = garden(controller.session);
+  const found = foundNow(controller);
+  const released = releaseLift(found, state, controller.lift, chain);
+  const letGo = { ...controller, pointer: { ...pointer, selection: NO_SELECTION, chain: null } };
+  switch (released.kind) {
+    case 'notLift': {
+      const start = chain[0];
+      const lifting = start !== undefined && startsLift(found, state, start);
+      return lifting ? { controller: letGo, effects: [] } : null;
+    }
+    case 'filled':
+      return { controller: { ...letGo, lift: released.fills }, effects: [] };
+    case 'composed':
+      return apply(letGo, released.action, now);
+    case 'refused':
+      return {
+        controller: letGo,
+        effects: [{ kind: 'rejected', reason: released.reason, action: released.action }],
+      };
+  }
+}
+
 /**
  * Handles one event of the level screen at time `now` (milliseconds). Pure. Whatever the event did
  * to the garden, the layers then settle on the nearest flower entered that is still folded.
@@ -389,10 +464,14 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
         return same({ pointer: { ...sketching, tool: pointer.tool } });
       }
       return same({
-        pointer: pressStart(controller.pointer, state, positions, event.point, view),
+        pointer:
+          pressLift(controller, view, event.point) ??
+          pressStart(controller.pointer, state, positions, event.point, view),
       });
     }
     case 'move': {
+      const lifted = moveLift(controller, view, event.point);
+      if (lifted !== null) return lifted;
       const moved = pressMove(controller.pointer, state, positions, event.point, view);
       if (moved.rejection === null) return same({ pointer: moved.pointer });
       const action = triedChain(
@@ -426,6 +505,8 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       }
       // The layers tool makes no move: its touch only enters a flower.
       if (controller.pointer.tool === 'layers') return enter(controller, view, event.point);
+      const lifted = releaseLiftNow(controller, now);
+      if (lifted !== null) return lifted;
       const released = pressEnd(controller.pointer, state, positions, event.point, view);
       const next = { ...controller, pointer: released.pointer };
       return released.action === null
