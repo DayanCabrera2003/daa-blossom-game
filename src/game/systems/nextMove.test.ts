@@ -382,6 +382,30 @@ describe("the mentor's next step, where the light searches by itself", () => {
     expect(moves).toContainEqual({ type: 'foldAt', from: 2, to: 4 });
   });
 
+  it('has no move to offer for a chain once the light has looked everywhere and seen none', () => {
+    // 4.9's garden, its light folding the flower and then finding no way out.
+    const level = closedFlowerLevel();
+    const closed = new Set<ActionType>(['markRoot', 'markMoon']);
+    let start: GardenState = {
+      ...level.start,
+      roots: [0],
+      allowed: new Set(
+        [...level.start.allowed, 'stepLight' as const].filter((type) => !closed.has(type)),
+      ),
+    };
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'chainFound' } };
+    for (let move = nextMove(goal, start); move !== null; move = nextMove(goal, start)) {
+      const outcome = applyAction(start, move);
+      if (!outcome.ok) throw new Error(`refused ${move.type}: ${outcome.reason.code}`);
+      start = outcome.state;
+    }
+    expect(start.layer.nodes.some((node) => node.kind === 'blossom')).toBe(true);
+    expect(applyAction(start, { type: 'stepLight' })).toEqual({
+      ok: false,
+      reason: { code: 'lightDone' },
+    });
+  });
+
   it('inspects the sun the light waits for in the fog', () => {
     const level = foldingLightLevel();
     const start: GardenState = {
