@@ -269,6 +269,7 @@
   "hub.sandbox": "Modo libre",
   "hud.book": "Códex",
   "counterexample.back": "Volver al Cuaderno",
+  "counterexample.backToQuestion": "Volver a la pregunta",
   "pond.strands": "Hilos: {count}",
   "mirror.notBetter": "Tu reflejo enciende {drawn} y tu jardín {yours}: ese no te gana.",
   "mirror.chain": "Mira el hilo que brilla: empieza y termina a oscuras en tu jardín. ¡Es una cadena!",

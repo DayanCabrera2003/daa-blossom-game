@@ -237,8 +237,8 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       // Nothing to draw: the sun is already on the top bar, and moving it ends the step.
       break;
     case 'counterexample': {
-      const { question, option } = effect;
-      stage.presenter.present({ kind: 'counterexample', question, option });
+      const { step, option } = effect;
+      stage.presenter.present({ kind: 'counterexample', step, option });
       break;
     }
     case 'written':

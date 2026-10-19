@@ -87,7 +87,7 @@ describe('the order the player sees things in', () => {
   });
 
   it('a counterexample waits its turn, and the notebook opens again once the player is back', () => {
-    const refuting: Presentation = { kind: 'counterexample', question: 0, option: 1 };
+    const refuting: Presentation = { kind: 'counterexample', step: 3, option: 1 };
     const noting: Presentation = { kind: 'question', question: { ...question, kind: 'notebook' } };
     let turn = present(emptyStage, [lines('a'), refuting, noting]);
     turn = finishShowing(turn.stage);

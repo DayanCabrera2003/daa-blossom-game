@@ -347,6 +347,7 @@ const UI = {
   'hub.sandbox': [],
   'hud.book': [],
   'counterexample.back': [],
+  'counterexample.backToQuestion': [],
   'pond.strands': ['count'],
   'mirror.notBetter': ['drawn', 'yours'],
   'mirror.chain': [],

@@ -48,10 +48,10 @@ export type Presentation =
    */
   | { readonly kind: 'race'; readonly step: number; readonly duration: number }
   /**
-   * The garden that refutes a false statement (`option`) of the notebook question `question`, in a
-   * screen of its own; over when the player goes back to the notebook.
+   * The garden that refutes a false answer (`option`) of the question asked at script step `step`
+   * (the notebook or an `ask`), in a screen of its own; over when the player goes back to it.
    */
-  | { readonly kind: 'counterexample'; readonly question: number; readonly option: number }
+  | { readonly kind: 'counterexample'; readonly step: number; readonly option: number }
   /** The victory panel; the level ends with it, so nothing after it ever shows. */
   | { readonly kind: 'victory'; readonly stars: StarResult };
 

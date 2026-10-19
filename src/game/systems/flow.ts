@@ -168,15 +168,10 @@ export type FlowEffect =
   /** The notebook question of the level, opened (again, after a false statement). */
   | { readonly kind: 'notebook'; readonly step: number }
   /**
-   * A false statement (`option`) of the notebook question `question` is refuted by its garden,
-   * which opens.
+   * A false answer (`option`) of the question asked at script step `step`, a notebook question or
+   * an `ask`, is refuted by its garden, which opens.
    */
-  | {
-      readonly kind: 'counterexample';
-      readonly step: number;
-      readonly question: number;
-      readonly option: number;
-    }
+  | { readonly kind: 'counterexample'; readonly step: number; readonly option: number }
   /** The right statement was chosen: it is written in the player's notebook. */
   | { readonly kind: 'written' }
   /** The last step is over: the level is complete. */
@@ -406,6 +401,11 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
       const given = answered(flow, signal.option, option.correct);
       if (option.reply !== undefined) given.effects.push({ kind: 'say', lines: [option.reply] });
       if (option.correct || !step.retry) return next(given);
+      // A false answer refuted by a garden opens it, as in the notebook (plan 10, phase 7); the
+      // schema lets only a question asked again carry one.
+      if (option.counterexample !== undefined) {
+        given.effects.push({ kind: 'counterexample', step: flow.index, option: signal.option });
+      }
       given.effects.push(opening(step, flow.index));
       return given;
     }
@@ -442,13 +442,7 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
         return next(given);
       }
       if (statement.refuted) {
-        const { question } = step;
-        given.effects.push({
-          kind: 'counterexample',
-          step: flow.index,
-          question,
-          option: signal.option,
-        });
+        given.effects.push({ kind: 'counterexample', step: flow.index, option: signal.option });
       }
       given.effects.push(opening(step, flow.index));
       return given;

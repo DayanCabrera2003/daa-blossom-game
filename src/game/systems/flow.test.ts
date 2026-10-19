@@ -102,6 +102,39 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('a wrong answer refuted by a garden opens it after the reply, then asks again', () => {
+    const garden = {
+      mode: 'play' as const,
+      line: 'ch1.8.sauce.05',
+      sprouts: [{ label: 'a', x: 100, y: 100 }],
+      vines: [],
+      lanterns: [],
+      actions: ['join' as const],
+    };
+    const refuting: LevelStep = {
+      step: 'ask',
+      prompt: 'ch1.8.sauce.01',
+      options: [
+        { line: 'ch1.8.sauce.02', correct: false, reply: 'ch1.8.sauce.03', counterexample: garden },
+        { line: 'ch1.8.sauce.04', correct: true },
+      ],
+      retry: true,
+    };
+    const asked = start([play, refuting]);
+    const asking = advanceFlow(asked.flow, { type: 'won' }).flow;
+    expect(advanceFlow(asking, { type: 'answer', option: 0, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 0, correct: false },
+      { kind: 'say', lines: ['ch1.8.sauce.03'] },
+      { kind: 'counterexample', step: 1, option: 0 },
+      {
+        kind: 'ask',
+        step: 1,
+        prompt: 'ch1.8.sauce.01',
+        options: ['ch1.8.sauce.02', 'ch1.8.sauce.04'],
+      },
+    ]);
+  });
+
   it('without retry, any answer ends the question', () => {
     const { flow } = start([ask(false), play]);
     const wrong = advanceFlow(flow, { type: 'answer', option: 0, right: null });
@@ -383,7 +416,7 @@ describe('the script engine', () => {
     const refuted = advanceFlow(noting, { type: 'answer', option: 1, right: null });
     expect(refuted.effects).toEqual([
       { kind: 'answered', step: 1, value: 1, correct: false },
-      { kind: 'counterexample', step: 1, question: 0, option: 1 },
+      { kind: 'counterexample', step: 1, option: 1 },
       { kind: 'notebook', step: 1 },
     ]);
     expect(advanceFlow(refuted.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([
@@ -415,7 +448,7 @@ describe('the script engine', () => {
     ]);
     expect(advanceFlow(asked.flow, { type: 'answer', option: 1, right: null }).effects).toEqual([
       { kind: 'answered', step: 1, value: 1, correct: false },
-      { kind: 'counterexample', step: 1, question: 1, option: 1 },
+      { kind: 'counterexample', step: 1, option: 1 },
       { kind: 'notebook', step: 1 },
     ]);
     expect(advanceFlow(asked.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([

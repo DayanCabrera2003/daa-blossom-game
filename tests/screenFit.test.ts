@@ -192,22 +192,25 @@ describe("the HUD's two lines of text", () => {
 });
 
 describe("the counterexample's bottom row", () => {
-  it('lays its buttons right to left and keeps them clear of the count of lanterns', () => {
-    const labels = [t('counterexample.back'), t('hud.redo'), t('hud.undo'), t('hud.checkMirror')];
-    const widths = labels.map((label) => estimatedButtonWidth(label));
-    const lefts = hudRow(widths);
-    // No button touches the next.
-    lefts.forEach((left, i) => {
-      const next = lefts[i + 1];
-      if (next !== undefined) expect(next + (widths[i + 1] ?? 0)).toBeLessThanOrEqual(left);
-    });
-    // The count at the left, the widest it can be with two digits, ends before the last button.
-    const count = widest([
-      t('hud.lanterns', { count: 99 }),
-      t('hud.mirror', { yours: 99, mirror: 99 }),
-    ]);
-    expect(LAYOUT.margin + count + AIR).toBeLessThanOrEqual(Math.min(...lefts));
-  });
+  it.each(['counterexample.back', 'counterexample.backToQuestion'] as const)(
+    'lays its buttons right to left and keeps them clear of the count of lanterns (%s)',
+    (way) => {
+      const labels = [t(way), t('hud.redo'), t('hud.undo'), t('hud.checkMirror')];
+      const widths = labels.map((label) => estimatedButtonWidth(label));
+      const lefts = hudRow(widths);
+      // No button touches the next.
+      lefts.forEach((left, i) => {
+        const next = lefts[i + 1];
+        if (next !== undefined) expect(next + (widths[i + 1] ?? 0)).toBeLessThanOrEqual(left);
+      });
+      // The count at the left, the widest it can be with two digits, ends before the last button.
+      const count = widest([
+        t('hud.lanterns', { count: 99 }),
+        t('hud.mirror', { yours: 99, mirror: 99 }),
+      ]);
+      expect(LAYOUT.margin + count + AIR).toBeLessThanOrEqual(Math.min(...lefts));
+    },
+  );
 });
 
 /** The top of the free mode's generate drawer, with the real words, the size at its widest. */

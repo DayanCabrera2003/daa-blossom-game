@@ -192,7 +192,7 @@ export class LevelScene extends Phaser.Scene {
           this.dispatch(
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
-        counterexample: (question, option) => this.openCounterexample(question, option),
+        counterexample: (step, option) => this.openCounterexample(step, option),
         card: (card) => {
           // A tool shown for the first time rings the unlock.
           const jingle = cardJingle(card, new Set(this.context.saves.get().tutorialsSeen));
@@ -361,13 +361,14 @@ export class LevelScene extends Phaser.Scene {
   }
 
   /**
-   * Opens the garden that refutes the false statement `option` of notebook question `question` in
-   * its own screen, while this one sleeps as it is; coming back wakes it and the notebook asks again.
+   * Opens the garden that refutes the false answer `option` of the question asked at script step
+   * `step` (the notebook or an `ask`) in its own screen, while this one sleeps as it is; coming back
+   * wakes it and the question is asked again.
    */
-  private openCounterexample(question: number, option: number): void {
+  private openCounterexample(step: number, option: number): void {
     const data: CounterexampleSceneData = {
       levelId: this.level.data.id,
-      question,
+      step,
       option,
       back: () => {
         this.scene.wake();
