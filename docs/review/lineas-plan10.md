@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-117 líneas de diálogo y 30 textos de interfaz distintos de la versión 1.0.1.
+121 líneas de diálogo y 30 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -79,9 +79,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 2.4
 
+- [ ] `ch2.4.sauce.00` · **Sauce** · cambiada
+  - Antes: Estos siete faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo con más faroles que no le deje a tu jardín ninguna cadena.
+  - Después: Estos faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo que encienda más faroles que tu jardín.
 - [ ] `ch2.4.sauce.02` · **Sauce** · cambiada
   - Antes: No se puede. Si no tienes cadena, nadie te gana.
-  - Después: No se puede: cada reflejo que te gana te deja una cadena.
+  - Después: Quien te gana te deja una cadena. Úsala.
 - [ ] `ch2.4.notebook.05` · **Cuaderno** · cambiada
   - Antes: …nadie puede encender más faroles que yo.
   - Después: …cualquier otra disposición encenderá como mucho los mismos.
@@ -91,6 +94,13 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch2.4.sauce.10` · **Sauce** · cambiada
   - Antes: No hace falta probarlo todo. Basta con saber que no queda ninguna cadena.
   - Después: Ni el agua: su reflejo es otra disposición más. Si no queda ninguna cadena, ninguna te gana.
+- [ ] `ch2.4.sauce.14` · **Sauce** · cambiada
+  - Antes: Dibuja ocho faroles plateados, sin que ningún brote cargue dos.
+  - Después: Dibuja siete faroles plateados, sin que ningún brote cargue dos.
+- [ ] `ch2.4.sauce.16` · **Sauce** · nueva
+  - Después: Ahora tu jardín no tiene ninguna cadena. Intenta ganarle otra vez.
+- [ ] `ch2.4.sauce.17` · **Sauce** · nueva
+  - Después: No se puede. Si no tienes cadena, nadie te gana.
 
 ### 2.5
 

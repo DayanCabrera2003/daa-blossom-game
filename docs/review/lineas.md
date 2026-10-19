@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 504 líneas, 62 están tal cual en el GDD y 442 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 506 líneas, 65 están tal cual en el GDD y 441 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -164,9 +164,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 2.4
 
-- [ ] `ch2.4.sauce.00` · **Sauce** · plan: Estos siete faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo con más faroles que no le deje a tu jardín ninguna cadena.
+- [ ] `ch2.4.sauce.00` · **Sauce** · plan: Estos faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo que encienda más faroles que tu jardín.
 - [ ] `ch2.4.sauce.01` · **Sauce** · plan: Toca una enredadera para ponerle un farol plateado. Cuando lo tengas, pulsa «Comprobar».
-- [ ] `ch2.4.sauce.02` · **Sauce** · plan: No se puede: cada reflejo que te gana te deja una cadena.
+- [ ] `ch2.4.sauce.02` · **Sauce** · GDD: Quien te gana te deja una cadena. Úsala.
 - [ ] `ch2.4.sauce.03` · **Sauce** · plan: Esto merece quedar escrito. Abre tu Cuaderno y elige lo que es verdad.
 - [ ] `ch2.4.notebook.04` · **Cuaderno** · GDD: Si en mi jardín no queda ninguna cadena…
 - [ ] `ch2.4.notebook.05` · **Cuaderno** · plan: …cualquier otra disposición encenderá como mucho los mismos.
@@ -178,8 +178,10 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch2.4.sauce.11` · **Sauce** · plan: ¿Otra disposición mejor? Búscala: dibújala en plateado sobre este jardín y compruébala.
 - [ ] `ch2.4.sauce.12` · **Sauce** · plan: Ahí la tienes: quien te gana te deja una cadena. Sin cadena, no hay disposición mejor.
 - [ ] `ch2.4.sauce.13` · **Sauce** · plan: Aquí se esconde una cadena larga. Tres callejones te dirán que no hay. Síguela hasta el final.
-- [ ] `ch2.4.sauce.14` · **Sauce** · plan: Dibuja ocho faroles plateados, sin que ningún brote cargue dos.
+- [ ] `ch2.4.sauce.14` · **Sauce** · GDD: Dibuja siete faroles plateados, sin que ningún brote cargue dos.
 - [ ] `ch2.4.sauce.15` · **Sauce** · GDD: Mira dónde gana el agua.
+- [ ] `ch2.4.sauce.16` · **Sauce** · plan: Ahora tu jardín no tiene ninguna cadena. Intenta ganarle otra vez.
+- [ ] `ch2.4.sauce.17` · **Sauce** · GDD: No se puede. Si no tienes cadena, nadie te gana.
 
 ### 2.5
 
