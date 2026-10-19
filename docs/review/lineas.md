@@ -329,7 +329,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch4.6.sauce.00` · **Sauce** · plan: Cinco pétalos. Avanza tu luz desde R, pliega donde se pare y abre la flor para encender la cadena.
 - [ ] `ch4.6.sauce.01` · **Sauce** · plan: ¿Dónde se tocan dos soles del mismo árbol?
-- [ ] `ch4.6.sauce.02` · **Sauce** · plan: Aquí. Pliega los cinco.
+- [ ] `ch4.6.sauce.02` · **Sauce** · plan: Mira este bucle de cinco. ¿Qué enredadera une dos soles?
 - [ ] `ch4.6.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.6.sauce.04` · **Sauce** · plan: A veces el lado que funciona da la vuelta casi entera. Largo o corto, solo hay uno.
 
