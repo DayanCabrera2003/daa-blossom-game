@@ -8,7 +8,8 @@ import type { GardenState } from '@core/rules/state';
 /**
  * An exhaustive walk over every garden a level lets the player reach (plan 10, section 2.3): a
  * breadth-first search whose moves are generated here from the garden itself (every join, split and
- * pass, every chain along any simple alternating path, every mark, fold and unfold…) and judged by
+ * pass, every chain along any simple alternating path, every mark, the light's next one, every fold
+ * and unfold…) and judged by
  * the real rules (`applyAction`), so "the level cannot be won without the gesture" is a fact about
  * the rules, not about the reference solution.
  *
@@ -50,7 +51,7 @@ const keyOf = (state: GardenState): string =>
 
 /** Every move worth trying in a garden, before the rules judge it. */
 function candidates(state: GardenState): Action[] {
-  const moves: Action[] = [];
+  const moves: Action[] = [{ type: 'stepLight' }];
   for (const [u, v] of state.graph.edges) {
     moves.push({ type: 'join', u, v }, { type: 'split', u, v }, { type: 'foldAt', from: u, to: v });
     for (const [from, to] of [
