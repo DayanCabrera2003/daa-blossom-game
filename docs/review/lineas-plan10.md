@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-89 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+90 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -113,6 +113,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.8.sauce.03` · **Sauce** · cambiada
   - Antes: Cada uno de estos brotes recibió una visita pidiendo. Ahí van los espantapájaros.
   - Después: Mira este grupo cuando acabe la búsqueda. ¿Qué brotes recibieron una visita pidiendo?
+- [ ] `ch3.8.sauce.13` · **Sauce** · cambiada
+  - Antes: Solo si la búsqueda llegó a todos los brotes. Al que se queda sin marca también hay que vigilarlo.
+  - Después: Busca aquí desde quien esté a oscuras hasta que no quede nada por mirar, y pon espantapájaros solo en las lunas. ¿Lo vigilan todo?
 
 ### 3.9
 

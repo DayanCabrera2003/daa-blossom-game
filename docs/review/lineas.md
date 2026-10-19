@@ -270,7 +270,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.8.notebook.10` · **Cuaderno** · plan: …siempre puedo poner los espantapájaros en las lunas.
 - [ ] `ch3.8.sauce.11` · **Sauce** · plan: Eso es. Cada farol necesita un espantapájaros propio, así que nunca hay más faroles que espantapájaros.
 - [ ] `ch3.8.sauce.12` · **Sauce** · plan: Pon un espantapájaros en A y otro en C: entre los dos lo vigilan todo. ¿Caben dos faroles?
-- [ ] `ch3.8.sauce.13` · **Sauce** · plan: Solo si la búsqueda llegó a todos los brotes. Al que se queda sin marca también hay que vigilarlo.
+- [ ] `ch3.8.sauce.13` · **Sauce** · plan: Busca aquí desde quien esté a oscuras hasta que no quede nada por mirar, y pon espantapájaros solo en las lunas. ¿Lo vigilan todo?
 
 ### 3.9
 

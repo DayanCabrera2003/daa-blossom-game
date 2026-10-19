@@ -65,7 +65,32 @@
             "actions": ["join", "split", "placeScarecrow", "removeScarecrow"]
           }
         },
-        { "line": "ch3.8.notebook.10", "correct": false, "reply": "ch3.8.sauce.13" }
+        {
+          "line": "ch3.8.notebook.10",
+          "correct": false,
+          "counterexample": {
+            "mode": "play",
+            "line": "ch3.8.sauce.13",
+            "sprouts": [
+              { "label": "S", "x": 120, "y": 100, "kind": "bee" },
+              { "label": "a", "x": 200, "y": 100, "kind": "flower" },
+              { "label": "b", "x": 280, "y": 100, "kind": "bee" },
+              { "label": "c", "x": 280, "y": 180, "kind": "bee" },
+              { "label": "d", "x": 360, "y": 180, "kind": "flower" }
+            ],
+            "vines": [
+              ["S", "a"],
+              ["a", "b"],
+              ["a", "c"],
+              ["c", "d"]
+            ],
+            "lanterns": [
+              ["a", "b"],
+              ["c", "d"]
+            ],
+            "actions": ["markRoot", "markMoon", "placeScarecrow", "removeScarecrow"]
+          }
+        }
       ]
     }
   ],
