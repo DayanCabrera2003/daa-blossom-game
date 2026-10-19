@@ -61,7 +61,7 @@ If the browser will not store (a private window, storage blocked or full), the g
 
 ## Teacher mode
 
-Add `?teacher` to the address to open every chapter, every secret garden and every page of the Códex, and to see every reward of the hub. In a level, `T` (or the trace button) opens a panel beside the garden with the trace in the Códex's notation: the player's day, a run of Edmonds from the lanterns the sun shows, and its Tutte–Berge certificate. `PageUp` and `PageDown` jump to the level before or after.
+Add `?teacher` to the address to open every chapter, every secret garden and every page of the Códex, and to see every reward of the hub. In a level, `T` (or the trace button) opens a panel beside the garden with the trace in the Códex's notation: the player's day, a run of Edmonds from the lanterns the day shows, and its Tutte–Berge certificate. `PageUp` and `PageDown` jump to the level before or after.
 
 - `?teacher&level=4.6` starts straight in a level (an unknown id is ignored).
 - `?teacher&codex=C8` opens the Códex at an entry, and `?teacher&codex=C8&tab=formal` at one of its tabs (`intuition`, `formal`, `bridge`).
@@ -71,7 +71,7 @@ Add `?teacher` to the address to open every chapter, every secret garden and eve
 
 ## Free mode
 
-The **Modo libre** sign appears in the hub once chapter 1 is finished (always in teacher mode), and the epilogue offers it too. There you design a garden by hand (sprouts, vines and lanterns, up to 24 sprouts and 40 vines) or grow one from a generator (a row, a ring, a star, all with all, at random, bees and clovers, a long-stemmed flower, nested flowers, a helix, many flowers), and play it with the actions already won (all of them in teacher mode). Once met in the story, the **mechanical gardener** solves the garden from where you left it, with the sun to replay each step, and the **certificate** places its proof: the Council's stones, and the scarecrows when the garden is one of bees and clovers. Nothing played there touches the progress; the last design is kept apart in the browser.
+The **Modo libre** sign appears in the hub once chapter 1 is finished (always in teacher mode), and the epilogue offers it too. There you design a garden by hand (sprouts, vines and lanterns, up to 24 sprouts and 40 vines) or grow one from a generator (a row, a ring, a star, all with all, at random, bees and clovers, a long-stemmed flower, nested flowers, a helix, many flowers), and play it with the actions already won (all of them in teacher mode). Once met in the story, the **mechanical gardener** solves the garden from where you left it, with the day to replay each step, and the **certificate** places its proof: the Council's stones, and the scarecrows when the garden is one of bees and clovers. Nothing played there touches the progress; the last design is kept apart in the browser.
 
 **Compartir** shows the garden's short code, a link that opens it, and its level file as JSON; the same sheet opens a garden from a pasted code or JSON, or from a chosen file. A link has the form `?garden=<code>` and works for every player (`?level=` wins when both are given). A code carries no positions, so an opened code is laid out again; the JSON keeps names and positions. The JSON is a valid level with id `9.1` and `"draft": true`: to make it a real level, give it its own id when copying it into `src/levels/data/`, and `npm run check-levels` will hold it to every rule.
 
