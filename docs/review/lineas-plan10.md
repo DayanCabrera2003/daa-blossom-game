@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-83 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+85 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -14,6 +14,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 1.5
 
+- [ ] `ch1.5.notebook.01` · **Cuaderno** · cambiada
+  - Antes: …enciende exactamente un farol nuevo.
+  - Después: …gana un farol, ni más ni menos, por larga que sea.
+- [ ] `ch1.5.notebook.02` · **Cuaderno** · cambiada
+  - Antes: …enciende tantos faroles como brotes toca.
+  - Después: …enciende un farol por cada brote a oscuras que toca.
 - [ ] `ch1.5.sauce.05` · **Sauce** · nueva
   - Después: ¿Quiénes siguen a oscuras? Cada cadena empieza en uno y acaba en otro.
 - [ ] `ch1.5.sauce.06` · **Sauce** · nueva

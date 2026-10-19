@@ -10,9 +10,9 @@ import { describe, expect, it } from 'vitest';
 
 /**
  * The notebook of 1.5 (GDD §7, 1.5): "a chain that starts and ends at sprouts in the dark…" (a)
- * "…lights exactly one new lantern" is true; (b) "…lights as many lanterns as sprouts it touches"
- * and (c) "…only works if it is short" are refuted by gardens the player can touch. What the
- * gardens show is checked here with the core, never with the view.
+ * "…gains one lantern, no more and no less, however long" is true; (b) "…lights one lantern for
+ * each sprout in the dark it touches" and (c) "…only works if it is short" are refuted by gardens
+ * the player can touch. What the gardens show is checked here with the core, never with the view.
  */
 
 const level15 = (): Level => {
@@ -48,7 +48,7 @@ describe('the notebook of 1.5', () => {
     ]);
   });
 
-  it('(b): a chain through 6 sprouts, from the dark to the dark, lights exactly one lantern', () => {
+  it('(b): a chain through 6 sprouts touches two in the dark, and lights exactly one lantern', () => {
     const counterexample = counterexampleOf(1);
     expect(counterexample.mode).toBe('play');
     const { path, outcome } = chainThroughRow(counterexample);
@@ -56,6 +56,7 @@ describe('the notebook of 1.5', () => {
     const { matching } = counterexample.start;
     expect(isExposed(matching, itemAt(path, 0))).toBe(true);
     expect(isExposed(matching, itemAt(path, 5))).toBe(true);
+    expect(path.filter((sprout) => isExposed(matching, sprout))).toHaveLength(2);
     if (!outcome.ok) throw new Error(`the chain is refused: ${JSON.stringify(outcome.reason)}`);
     expect(size(outcome.state.matching) - size(matching)).toBe(1);
   });

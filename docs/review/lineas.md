@@ -64,9 +64,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch1.5.notebook.00` · **Cuaderno** · GDD: Una cadena que empieza y termina en brotes a oscuras…
 - [ ] `ch1.5.sauce.00` · **Sauce** · GDD: Cada cadena, un farol. Ni dos ni medio. Uno.
-- [ ] `ch1.5.notebook.01` · **Cuaderno** · plan: …enciende exactamente un farol nuevo.
+- [ ] `ch1.5.notebook.01` · **Cuaderno** · plan: …gana un farol, ni más ni menos, por larga que sea.
 - [ ] `ch1.5.sauce.01` · **Sauce** · plan: Esto merece quedar escrito. Abre tu Cuaderno y elige lo que es verdad.
-- [ ] `ch1.5.notebook.02` · **Cuaderno** · plan: …enciende tantos faroles como brotes toca.
+- [ ] `ch1.5.notebook.02` · **Cuaderno** · plan: …enciende un farol por cada brote a oscuras que toca.
 - [ ] `ch1.5.sauce.02` · **Sauce** · plan: Seis brotes en fila, y solo los de las puntas a oscuras. Llévales una cadena de punta a punta y cuenta los faroles nuevos.
 - [ ] `ch1.5.notebook.03` · **Cuaderno** · plan: …solo funciona si es corta.
 - [ ] `ch1.5.sauce.03` · **Sauce** · plan: Diez brotes, una fila larga. ¿Llega la cadena de punta a punta? Pruébalo.
