@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-126 líneas de diálogo y 40 textos de interfaz distintos de la versión 1.0.1.
+133 líneas de diálogo y 44 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -63,6 +63,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch1.9.sauce.02` · **Sauce** · nueva
   - Después: Te enseño el siguiente paso. Lo demás es tuyo.
 
+### 1.10
+
+- [ ] `ch1.10.sauce.00` · **Sauce** · cambiada
+  - Antes: Una flor escondida, solo para ti. Esta noche caben diez faroles. Antes de tirar de una cadena, míralo bien: casi todas se quedan por el camino.
+  - Después: Un jardín secreto, solo para ti. Esta noche caben diez faroles. Antes de tirar de una cadena, míralo bien: casi todas se quedan por el camino.
+- [ ] `ch1.10.sauce.05` · **Sauce** · cambiada
+  - Antes: Doce rincones sin salida y una sola cadena de punta a punta. La encontraste tú. Esta flor es tuya.
+  - Después: Doce rincones sin salida y una sola cadena de punta a punta. La encontraste tú. Este jardín secreto es tuyo.
+
 ### 2.3
 
 - [ ] `ch2.3.sauce.04` · **Sauce** · cambiada
@@ -104,6 +113,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 2.5
 
+- [ ] `ch2.5.sauce.00` · **Sauce** · cambiada
+  - Antes: Una flor escondida del Estanque. El agua vuelve a presumir, y esta vez solo te saca un farol.
+  - Después: Un jardín secreto del Estanque. El agua vuelve a presumir, y esta vez solo te saca un farol.
 - [ ] `ch2.5.sauce.05` · **Sauce** · cambiada
   - Antes: De una punta a la otra de este hilo.
   - Después: Mira este hilo desde esta punta. ¿Dónde acaba?
@@ -173,7 +185,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch3.10.sauce.00` · **Sauce** · cambiada
   - Antes: Otra flor escondida en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Terminé».
-  - Después: Otra flor escondida en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Presentar».
+  - Después: Otro jardín secreto en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Presentar».
+- [ ] `ch3.10.sauce.05` · **Sauce** · cambiada
+  - Antes: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Esta flor es tuya.
+  - Después: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Este jardín secreto es tuyo.
 
 ### 4.4
 
@@ -280,6 +295,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Antes: ¿Quién sigue a oscuras? Busca desde ahí.
   - Después: Avanza tu luz. Si se para ante un brote en la niebla, inspecciónalo y sigue.
 
+### 4.13
+
+- [ ] `ch4.13.sauce.00` · **Sauce** · cambiada
+  - Antes: Una flor escondida del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta Teo. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
+  - Después: Un jardín secreto del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta Teo. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
+
 ### 5.1
 
 - [ ] `ch5.1.sauce.00` · **Sauce** · cambiada
@@ -355,10 +376,13 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch5.6.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Busca desde R, pliégalas todas y, cuando estés seguro, pulsa «Terminé».
-  - Después: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Avanza tu luz desde R, pliégalas todas donde se pare y, cuando estés seguro, pulsa «Terminé».
+  - Después: Un jardín secreto en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Avanza tu luz desde R, pliégalas todas donde se pare y, cuando estés seguro, pulsa «Terminé».
 - [ ] `ch5.6.sauce.02` · **Sauce** · cambiada
   - Antes: Mira esta enredadera, la que cierra la última vuelta.
   - Después: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
+- [ ] `ch5.6.sauce.04` · **Sauce** · cambiada
+  - Antes: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Esta flor es tuya.
+  - Después: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Este jardín secreto es tuyo.
 
 ### 6.1
 
@@ -374,6 +398,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch6.5.sauce.09` · **Sauce** · cambiada
   - Antes: La última: de 32 a 64 brotes. ¿Cuántos pasos más dará tu receta?
   - Después: La última: de 32 a 64 brotes. ¿Otra vez lo de antes? ¿Cuántos pasos más dará tu receta?
+
+### 6.7
+
+- [ ] `ch6.7.sauce.00` · **Sauce** · cambiada
+  - Antes: Una flor escondida del Recetario. Bruto pide la revancha, y esta vez elige él los jardines.
+  - Después: Un jardín secreto del Recetario. Bruto pide la revancha, y esta vez elige él los jardines.
 
 ### 7.1
 
@@ -499,6 +529,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `recipe.wrong.moonToSun` · cambiada
   - Antes: Una luna ya tiene su camino hasta la raíz: no necesita otro, y cambiarla a sol no la ayuda.
   - Después: Una luna ya tiene su camino hasta el brote a oscuras de su árbol: no necesita otro, y cambiarla a sol no la ayuda.
+- [ ] `hub.secret.bud` · cambiada
+  - Antes: Esta flor se abre con {need} estrellas de este capítulo. Tienes {have}.
+  - Después: Este jardín secreto se abre con {need} estrellas de este capítulo. Tienes {have}.
+- [ ] `hub.secret.openTip` · cambiada
+  - Antes: Flor secreta: tócala para entrar
+  - Después: Jardín secreto: tócalo para entrar
+- [ ] `hub.secret.wonTip` · cambiada
+  - Antes: Flor secreta ganada. Estrellas: {stars}
+  - Después: Jardín secreto ganado. Estrellas: {stars}
 - [ ] `sandbox.gen.beesFlowers` · cambiada
   - Antes: Abejas y flores
   - Después: Abejas y tréboles
@@ -523,6 +562,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `tutorial.unfold.body` · cambiada
   - Antes: Con Marcas, toca una flor cerrada para abrirla y ver otra vez sus brotes.
   - Después: Con Marcas, toca una flor cerrada para abrirla. El trozo de cadena que encontró tu luz sigue dibujado: arrastra solo el tramo de dentro de la flor para completarlo.
+- [ ] `keys.flowers` · cambiada
+  - Antes: F y Mayús+F: de una flor secreta a otra
+  - Después: F y Mayús+F: de un jardín secreto a otro
 - [ ] `notice.part.level` · nueva
   - Después: el jardín
 - [ ] `raceBet.answer.fourToEight` · retirada

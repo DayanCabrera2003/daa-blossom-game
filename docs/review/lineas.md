@@ -108,12 +108,12 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 1.10
 
-- [ ] `ch1.10.sauce.00` · **Sauce** · plan: Una flor escondida, solo para ti. Esta noche caben diez faroles. Antes de tirar de una cadena, míralo bien: casi todas se quedan por el camino.
+- [ ] `ch1.10.sauce.00` · **Sauce** · plan: Un jardín secreto, solo para ti. Esta noche caben diez faroles. Antes de tirar de una cadena, míralo bien: casi todas se quedan por el camino.
 - [ ] `ch1.10.sauce.01` · **Sauce** · plan: Ese farol acabó en un rincón sin salida. No pasa nada: prueba por otra rama.
 - [ ] `ch1.10.sauce.02` · **Sauce** · plan: Doce caminos se rinden. Uno llega.
 - [ ] `ch1.10.sauce.03` · **Sauce** · plan: Mira a Teo, al final de todo. Él también espera su farol.
 - [ ] `ch1.10.sauce.04` · **Sauce** · plan: Mira, te enseño por dónde va.
-- [ ] `ch1.10.sauce.05` · **Sauce** · plan: Doce rincones sin salida y una sola cadena de punta a punta. La encontraste tú. Esta flor es tuya.
+- [ ] `ch1.10.sauce.05` · **Sauce** · plan: Doce rincones sin salida y una sola cadena de punta a punta. La encontraste tú. Este jardín secreto es tuyo.
 
 ## Capítulo 2
 
@@ -185,7 +185,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 2.5
 
-- [ ] `ch2.5.sauce.00` · **Sauce** · plan: Una flor escondida del Estanque. El agua vuelve a presumir, y esta vez solo te saca un farol.
+- [ ] `ch2.5.sauce.00` · **Sauce** · plan: Un jardín secreto del Estanque. El agua vuelve a presumir, y esta vez solo te saca un farol.
 - [ ] `ch2.5.sauce.01` · **Sauce** · plan: Antes de separar la maraña: ¿en cuántos hilos te gana el agua?
 - [ ] `ch2.5.sauce.02` · **Sauce** · plan: En dos. Un farol de diferencia no quiere decir un solo hilo: uno de los hilos lo ganas tú. Toca el agua para separar la maraña y míralo.
 - [ ] `ch2.5.sauce.03` · **Sauce** · plan: Enciende lo que te enseñan los dos hilos del agua y pulsa «Terminé» cuando no quepa más.
@@ -300,12 +300,12 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.10
 
-- [ ] `ch3.10.sauce.00` · **Sauce** · plan: Otra flor escondida en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Presentar».
+- [ ] `ch3.10.sauce.00` · **Sauce** · plan: Otro jardín secreto en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Presentar».
 - [ ] `ch3.10.sauce.01` · **Sauce** · plan: ¿Quién sigue a oscuras? Sal a buscar desde ahí.
 - [ ] `ch3.10.sauce.02` · **Sauce** · plan: Hasta aquí no llega ninguna búsqueda. Pero estas enredaderas también necesitan quien las vigile.
 - [ ] `ch3.10.sauce.03` · **Sauce** · plan: Empiezo yo. Lo demás ya sabes hacerlo.
 - [ ] `ch3.10.sauce.04` · **Sauce** · plan: Las lunas vigilaban lo que la luz tocó. Lo que no tocó también había que vigilarlo, y lo viste tú solo.
-- [ ] `ch3.10.sauce.05` · **Sauce** · plan: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Esta flor es tuya.
+- [ ] `ch3.10.sauce.05` · **Sauce** · plan: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Este jardín secreto es tuyo.
 
 ## Capítulo 4
 
@@ -450,7 +450,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.13
 
-- [ ] `ch4.13.sauce.00` · **Sauce** · plan: Una flor escondida del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta Teo. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
+- [ ] `ch4.13.sauce.00` · **Sauce** · plan: Un jardín secreto del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta Teo. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
 - [ ] `ch4.13.sauce.01` · **Sauce** · plan: Hay quien jura que, si pliegas en otro orden, se rompe todo.
 - [ ] `ch4.13.sauce.02` · **Sauce** · plan: No me creas a mí: pruébalo tú.
 - [ ] `ch4.13.sauce.03` · **Sauce** · plan: Pliega cada flor cuando aparezca, empezando por la que quieras. ¿Cuál toca a Teo?
@@ -518,11 +518,11 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 5.6
 
-- [ ] `ch5.6.sauce.00` · **Sauce** · plan: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Avanza tu luz desde R, pliégalas todas donde se pare y, cuando estés seguro, pulsa «Terminé».
+- [ ] `ch5.6.sauce.00` · **Sauce** · plan: Un jardín secreto en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Avanza tu luz desde R, pliégalas todas donde se pare y, cuando estés seguro, pulsa «Terminé».
 - [ ] `ch5.6.sauce.01` · **Sauce** · plan: Cada flor que pliegas se porta como un brote más. ¿Con quién cierra ahora un bucle?
 - [ ] `ch5.6.sauce.02` · **Sauce** · plan: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
 - [ ] `ch5.6.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
-- [ ] `ch5.6.sauce.04` · **Sauce** · plan: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Esta flor es tuya.
+- [ ] `ch5.6.sauce.04` · **Sauce** · plan: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Este jardín secreto es tuyo.
 
 ## Capítulo 6
 
@@ -605,7 +605,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 6.7
 
-- [ ] `ch6.7.sauce.00` · **Sauce** · plan: Una flor escondida del Recetario. Bruto pide la revancha, y esta vez elige él los jardines.
+- [ ] `ch6.7.sauce.00` · **Sauce** · plan: Un jardín secreto del Recetario. Bruto pide la revancha, y esta vez elige él los jardines.
 - [ ] `ch6.7.bruto.01` · **Bruto** · plan: ¡Jardines pequeñitos! ¡Ahí no hay receta que valga!
 - [ ] `ch6.7.bruto.02` · **Bruto** · plan: ¡Gané! ¡Y sin pensar nada!
 - [ ] `ch6.7.bruto.03` · **Bruto** · plan: ¡Otra vez yo! ¡Pensar es perder el tiempo!

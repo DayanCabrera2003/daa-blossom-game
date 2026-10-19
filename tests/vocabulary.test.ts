@@ -33,6 +33,8 @@ const RETIRED: readonly { readonly now: string; readonly pattern: RegExp }[] = [
   // The other species of the greenhouse: bees and clovers, never bees and flowers.
   { now: 'abejas y tréboles', pattern: /abejas,? (y )?flores/i },
   { now: 'un trébol', pattern: /abejas?\b[^.?!:;\n]*\bflor(es)?\b/i },
+  // The optional puzzles of the hub: secret gardens, never hidden or secret flowers.
+  { now: 'un jardín secreto', pattern: /\bflor(es)? (secreta|escondida)s?\b/i },
 ];
 
 /** The places where a text uses a retired expression. */
@@ -45,4 +47,22 @@ describe('retired words (plan 10, phase 10)', () => {
       expect(offending(pattern)).toEqual([]);
     });
   }
+});
+
+describe('«flor» is only the flower that folds', () => {
+  const FLOWER = /\bflor(es)?\b/i;
+
+  it('no line of chapters 0 to 3 says it: no flower folds there yet', () => {
+    const early = Object.entries(lines as Record<string, string>)
+      .filter(([id, text]) => /^ch[0-3]\./.test(id) && FLOWER.test(text))
+      .map(([id]) => id);
+    expect(early).toEqual([]);
+  });
+
+  it('no text of the hub says it: its signposts, buds and keys name no flower level', () => {
+    const hub = Object.entries(strings as Record<string, string>)
+      .filter(([key, text]) => /^(hub|keys)\./.test(key) && FLOWER.test(text))
+      .map(([key]) => key);
+    expect(hub).toEqual([]);
+  });
 });
