@@ -65,6 +65,14 @@
   font-size: 0.75em;
 }
 
+/* The file names of the core witnesses keep the pixel font and its size, in the link's colour, and
+   break anywhere: a long path would otherwise widen the page. */
+.book-text code {
+  font: inherit;
+  color: var(--link);
+  overflow-wrap: anywhere;
+}
+
 /* A formula and the word or punctuation that hugs it ("$M$-aumentante", "$G/B$,") share a line. */
 .book-text .math-nowrap {
   white-space: nowrap;
