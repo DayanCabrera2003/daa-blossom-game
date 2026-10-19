@@ -13,8 +13,11 @@ import { HUB } from './hubLayout';
 /** The side of a frame of the plant's sheet. */
 export const SEEDLING_SIZE = 16;
 
-/** The most plants there can be: one for each bet of the game (the one of 1.6 and six of 6.5). */
-export const MAX_SEEDLINGS = 7;
+/**
+ * The most plants there can be: one for each bet of the game (the one of 1.6 and four of 6.5). A
+ * save from before 6.5 lost two of its bets may keep more bets won; it still shows this many.
+ */
+export const MAX_SEEDLINGS = 5;
 
 /** The front strip of the hub's bed, along the bottom of the canvas, where the plants grow. */
 export const SEEDLING_BAND: Rect = {
