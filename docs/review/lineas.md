@@ -704,8 +704,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.5.sauce.04` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch7.5.oaks.05` · **Los Robles** · plan: Los faroles y las piedras cuadran. Nadie más puede tener farol.
 - [ ] `ch7.5.oaks.06` · **Los Robles** · plan: El Consejo se inclina ante ti, jardinero.
-- [ ] `ch7.5.sauce.07` · **Sauce** · plan: Mira: los robles florecen. Amanece.
-- [ ] `ch7.5.sauce.08` · **Sauce** · GDD: En el Códex esto tiene nombre: lee «Las piedras».
+- [ ] `ch7.5.sauce.07` · **Sauce** · GDD: En el Códex esto tiene nombre: lee «Las piedras».
+- [ ] `ch7.5.sauce.08` · **Sauce** · plan: Mira: los robles florecen. Amanece.
 
 ### 7.6
 

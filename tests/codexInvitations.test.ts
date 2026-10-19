@@ -6,8 +6,9 @@ import { describe, expect, it } from 'vitest';
 
 /**
  * The invitation to the Codex at the end of each chapter (plan 10, phase 11, answer 6; GDD §5.6):
- * the last thing Sauce says in the last regular level of a chapter (never a secret garden) is a
- * short line that names, by their garden titles, pages of the Codex that the chapter opened.
+ * in the closing words of the last regular level of a chapter (never a secret garden), Sauce says
+ * a short line that names, by their garden titles, pages of the Codex that the chapter opened. It
+ * may come just before the chapter's last image (7.5 ends at dawn).
  */
 
 const TABLE: Readonly<Record<string, string>> = lines;
@@ -47,10 +48,11 @@ describe('the invitation to the Codex at the end of each chapter', () => {
     const opened = titlesOpenedIn(chapter);
     expect(opened.length).toBeGreaterThan(0);
 
-    const said = saidIn(last.data.id);
-    const invitation = said.at(-1) ?? '';
+    const closing = last.data.flow.at(-1);
+    expect(closing?.step).toBe('say');
+    const words = closing?.step === 'say' ? closing.lines.slice(-2) : [];
+    const invitation = words.find((line) => /Códex/.test(TABLE[line] ?? '')) ?? '';
     expect(invitation).toMatch(new RegExp(`^ch${last.data.id.replace('.', '\\.')}\\.sauce\\.`));
-    expect(last.data.flow.at(-1)?.step).toBe('say');
 
     const text = TABLE[invitation] ?? '';
     expect(text).toMatch(/Códex/);
