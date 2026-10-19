@@ -103,6 +103,8 @@ describe('notebookEcho: the right statement never repeats a line just heard (pla
     expect(notebookEchoProblems(silent as unknown as LevelData, text)).toEqual([]);
     const level = levelAsking([{ step: 'say', lines: ['ch9.1.sauce.09'] }]);
     expect(notebookEchoProblems(level, () => undefined)).toEqual([]);
+    const missing = { ...level, flow: [{ step: 'notebook', question: 3 }] } as LevelData;
+    expect(notebookEchoProblems(missing, text)).toEqual([]);
     expect(notebookEchoProblems(level, text)).toEqual([]);
   });
 
