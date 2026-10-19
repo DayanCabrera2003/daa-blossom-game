@@ -165,7 +165,7 @@ El JSON exportado tiene tres partes: `exportedAt` (fecha de la exportación), `s
 | `counterexamples` | Jardines contraejemplo abiertos desde el Cuaderno |
 | `mirrorChecks.beating` / `.notBeating` | En 2.4, reflejos dibujados que superaban al jardín, y los que no |
 
-En `log`, las entradas `levelEnd` con `outcome: "left"` indican que se volvió al hub sin ganar, y las `history` (`undo`, `redo`, `seek`) cuánto se usó deshacer y el sol.
+En `log`, las entradas `levelEnd` con `outcome: "left"` indican que se volvió al hub sin ganar, y las `history` (`undo`, `redo`, `seek`) cuánto se usó deshacer y el día.
 
 ### Qué campo responde a cada medida del Hito A
 

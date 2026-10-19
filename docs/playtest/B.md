@@ -107,7 +107,7 @@ El papel del observador es el del playtest A: sin tocar ni señalar, sin pistas,
 
 ### Capítulo 3 (3.1–3.9)
 
-- Si distingue abejas de flores por la forma y deja de intentar juntar dos iguales.
+- Si distingue abejas de tréboles por la forma y deja de intentar juntar dos iguales.
 - Si usa las marcas de sol y luna con método o al azar; si riega (inspecciona) antes de marcar.
 - En 3.3 y 3.8, cómo lee el Cuaderno; en 3.7, qué dice del espantapájaros.
 

@@ -96,7 +96,7 @@ El papel del observador es el del playtest A: sin tocar ni señalar, sin pistas,
 ### Capítulo 6 (6.1–6.6)
 
 - 6.1: cómo ordena las tarjetas; si reconoce cada caso como algo que ya hizo a mano; qué tarjetas distractoras elige y qué dice al ver la que falla.
-- 6.2: si sigue al jardinero mecánico con el sol o lo deja correr.
+- 6.2: si sigue al jardinero mecánico con el día o lo deja correr.
 - 6.3: su reacción cuando el autómata sigue la receta de Bruto y declara "terminé" con 3 faroles (Sauce le recuerda que él encendió 4): ¿sabe qué tarjeta falta y por qué, antes de comprobar?
 - 6.4 y 6.5: si mira los contadores y la gráfica; qué dice cuando Bruto se duerme. En las apuestas de 6.5, si cambia de respuesta de una carrera a otra a la vista de los datos.
 - 6.6: si las dos preguntas del Cuaderno le parecen obvias o si duda; qué contraejemplos abre.
