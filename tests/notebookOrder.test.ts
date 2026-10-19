@@ -39,6 +39,7 @@ describe('the mentor sums up after the notebook, as the reply to the right state
   it.each([
     ['4.7', 'ch4.7.sauce.04'],
     ['4.10', 'ch4.10.sauce.05'],
+    ['4.11', 'ch4.11.sauce.06'],
   ])('%s: the summary %s answers the right statement and is not said before', (id, summary) => {
     const { data } = levelOf(id);
     const at = data.flow.findIndex((step) => step.step === 'notebook');

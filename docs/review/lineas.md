@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 474 líneas, 57 están tal cual en el GDD y 417 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 475 líneas, 56 están tal cual en el GDD y 419 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -412,15 +412,16 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.11.sauce.02` · **Sauce** · plan: Una cadena empieza en un brote a oscuras y termina en otro.
 - [ ] `ch4.11.sauce.03` · **Sauce** · plan: Prueba a salir desde Elo.
 - [ ] `ch4.11.sauce.04` · **Sauce** · plan: Te dibujo una. Mira dónde se corta.
-- [ ] `ch4.11.sauce.05` · **Sauce** · GDD: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor. Plegar no esconde cadenas.
-- [ ] `ch4.11.sauce.06` · **Sauce** · plan: Y al revés ya lo viviste: una cadena del jardín plegado siempre se puede desplegar. Plegar no crea ni destruye cadenas. Escríbelo en tu Cuaderno.
+- [ ] `ch4.11.sauce.05` · **Sauce** · plan: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor.
+- [ ] `ch4.11.sauce.06` · **Sauce** · plan: Eso es. Plegar no esconde cadenas, y al revés ya lo viviste: una cadena del jardín plegado siempre se puede desplegar. Plegar no crea ni destruye cadenas.
 - [ ] `ch4.11.notebook.07` · **Cuaderno** · GDD: Plegar una flor…
-- [ ] `ch4.11.notebook.08` · **Cuaderno** · plan: …no crea ni destruye cadenas.
-- [ ] `ch4.11.notebook.09` · **Cuaderno** · plan: …puede esconder una cadena.
+- [ ] `ch4.11.notebook.08` · **Cuaderno** · plan: …deja el jardín con cadena justo cuando ya la tenía.
+- [ ] `ch4.11.notebook.09` · **Cuaderno** · plan: …no crea cadenas, pero puede esconder alguna.
 - [ ] `ch4.11.notebook.10` · **Cuaderno** · plan: …solo sirve si la flor tiene 3 pétalos.
-- [ ] `ch4.11.sauce.11` · **Sauce** · plan: Eso es. Por eso puedes fiarte de la flor: si la luz con flores dice que no hay cadena, no la hay.
+- [ ] `ch4.11.sauce.11` · **Sauce** · plan: Por eso puedes fiarte de la flor: si la luz con flores dice que no hay cadena, no la hay.
 - [ ] `ch4.11.sauce.12` · **Sauce** · plan: Lo intentaste tres veces, y cada cadena dejó un trozo que llegaba a la flor plegada. Prueba con otra si quieres: pasará lo mismo.
 - [ ] `ch4.11.sauce.13` · **Sauce** · plan: Esta flor tiene cinco pétalos. Busca desde R, pliégala y encuentra la cadena a través de ella.
+- [ ] `ch4.11.sauce.14` · **Sauce** · plan: Antes de que te lo cuente, escribe tú en tu Cuaderno qué hace plegar.
 
 ### 4.12
 

@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-71 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+77 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -183,6 +183,26 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: …tengo los mismos faroles, y la base gana uno.
 - [ ] `ch4.10.sauce.15` · **Sauce** · nueva
   - Después: Gira el tallo de esta flor desde R hasta su base, y mira la base al final: ¿tiene farol?
+
+### 4.11
+
+- [ ] `ch4.11.sauce.05` · **Sauce** · cambiada
+  - Antes: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor. Plegar no esconde cadenas.
+  - Después: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor.
+- [ ] `ch4.11.sauce.06` · **Sauce** · cambiada
+  - Antes: Y al revés ya lo viviste: una cadena del jardín plegado siempre se puede desplegar. Plegar no crea ni destruye cadenas. Escríbelo en tu Cuaderno.
+  - Después: Eso es. Plegar no esconde cadenas, y al revés ya lo viviste: una cadena del jardín plegado siempre se puede desplegar. Plegar no crea ni destruye cadenas.
+- [ ] `ch4.11.notebook.08` · **Cuaderno** · cambiada
+  - Antes: …no crea ni destruye cadenas.
+  - Después: …deja el jardín con cadena justo cuando ya la tenía.
+- [ ] `ch4.11.notebook.09` · **Cuaderno** · cambiada
+  - Antes: …puede esconder una cadena.
+  - Después: …no crea cadenas, pero puede esconder alguna.
+- [ ] `ch4.11.sauce.11` · **Sauce** · cambiada
+  - Antes: Eso es. Por eso puedes fiarte de la flor: si la luz con flores dice que no hay cadena, no la hay.
+  - Después: Por eso puedes fiarte de la flor: si la luz con flores dice que no hay cadena, no la hay.
+- [ ] `ch4.11.sauce.14` · **Sauce** · nueva
+  - Después: Antes de que te lo cuente, escribe tú en tu Cuaderno qué hace plegar.
 
 ### 4.12
 

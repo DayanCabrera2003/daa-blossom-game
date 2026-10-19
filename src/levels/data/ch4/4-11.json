@@ -45,7 +45,7 @@
       "prompt": "ch4.11.notebook.07",
       "codex": "C8",
       "options": [
-        { "line": "ch4.11.notebook.08", "correct": true, "reply": "ch4.11.sauce.11" },
+        { "line": "ch4.11.notebook.08", "correct": true, "reply": "ch4.11.sauce.06" },
         { "line": "ch4.11.notebook.09", "correct": false, "reply": "ch4.11.sauce.12" },
         {
           "line": "ch4.11.notebook.10",
@@ -87,8 +87,9 @@
   "flow": [
     { "step": "say", "lines": ["ch4.11.sauce.00", "ch4.11.sauce.01"] },
     { "step": "flowerChallenge", "attempts": 3 },
-    { "step": "say", "lines": ["ch4.11.sauce.05", "ch4.11.sauce.06"] },
-    { "step": "notebook" }
+    { "step": "say", "lines": ["ch4.11.sauce.05", "ch4.11.sauce.14"] },
+    { "step": "notebook" },
+    { "step": "say", "lines": ["ch4.11.sauce.11"] }
   ],
   "unlocks": { "codex": ["C6", "C7", "C8"] },
   "solution": [
