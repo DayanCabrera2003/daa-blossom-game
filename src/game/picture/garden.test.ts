@@ -104,7 +104,11 @@ describe('the picture of the garden', () => {
     expect(sprouts.filter((s) => s.selected).map((s) => s.vertex)).toEqual([2, 3]);
     expect(sprouts.filter((s) => s.highlighted).map((s) => s.vertex)).toEqual([5]);
     expect(sprouts.filter((s) => s.inChain).map((s) => s.vertex)).toEqual([0, 1, 2]);
-    expect(chain).toEqual({ points: placesOf(festival).slice(0, 3), gain: 0 });
+    expect(chain).toEqual({ points: placesOf(festival).slice(0, 3), preview: 'gain0' });
+    // From chapter 3 on the same chain only says that it is legal (GDD §5.1, Cadena).
+    expect(picture(festival.start, { ...extras, previewMode: 'legality' }).chain?.preview).toBe(
+      'legal',
+    );
     expect(
       picture(festival.start, { ...extras, selection: { kind: 'sprout', vertex: 4 } }).sprouts[4]
         ?.selected,

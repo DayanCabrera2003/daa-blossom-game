@@ -6,6 +6,7 @@ import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
 import { historyKey, keyAction, pressOf } from '../input/keyBindings';
+import { previewModeOf } from '../input/previewMode';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { animationGarden } from '../picture/animationGarden';
@@ -292,7 +293,13 @@ export class CounterexampleScene extends Phaser.Scene {
       state,
       controller.positions,
       this.labels,
-      { selection: pointer.selection, highlight: [], chain: pointer.chain },
+      {
+        selection: pointer.selection,
+        highlight: [],
+        chain: pointer.chain,
+        // The chain tells as much as the level the counterexample belongs to (GDD §5.1, Cadena).
+        previewMode: previewModeOf(this.levelId),
+      },
       this.kinds,
     );
     this.views.fog.render(picture);

@@ -36,7 +36,7 @@ describe('the picture of a mechanic card demo', () => {
         { x: 76, y: 27 },
         { x: 108, y: 27 },
       ],
-      gain: 1,
+      preview: 'gain1',
     });
     const choosing = picture('unfold', 0).garden.sprouts;
     expect(choosing.map((sprout) => sprout.selected)).toEqual([true, true, true]);

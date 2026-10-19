@@ -8,7 +8,7 @@ import { restingLook } from '../picture/sproutLook';
 import { paintBadge } from './paintBadge';
 import { paintFlower } from './paintFlower';
 import { paintSprout } from './paintSprout';
-import { PALETTE } from './palette';
+import { CHAIN_COLOURS, PALETTE } from './palette';
 import { textStyle } from './textStyle';
 
 /** Radius of a sprout in the tiny garden, about half of a real one. */
@@ -124,12 +124,7 @@ export class CardDemoView {
       this.lantern(g, { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 + 2 }, PALETTE.mirror, PALETTE.moon);
     }
     if (garden.chain !== null && garden.chain.points.length > 1) {
-      const colour =
-        garden.chain.gain === null
-          ? PALETTE.chainWrong
-          : garden.chain.gain === 1
-            ? PALETTE.chainGain
-            : PALETTE.chainNone;
+      const colour = CHAIN_COLOURS[garden.chain.preview];
       g.lineStyle(2, colour, 0.8).strokePoints(
         garden.chain.points.map(at) as Phaser.Types.Math.Vector2Like[],
         false,

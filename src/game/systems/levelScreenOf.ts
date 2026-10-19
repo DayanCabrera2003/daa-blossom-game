@@ -1,6 +1,7 @@
 import type { Level } from '@levels/build';
 import type { SandboxAccess } from '@services/sandboxAccess';
 import type { FreeOrders } from './levelController';
+import { previewModeOf, type PreviewMode } from '../input/previewMode';
 import { HUD_BUTTONS, type HudButton } from '../picture/bottomRows';
 import { chapterOfLevel } from '../picture/seasons';
 import { levelScreen, type MusicScreen } from './musicFor';
@@ -62,6 +63,11 @@ export interface LevelScreen {
    * orders end that row, the bottom row beside the Códex.
    */
   readonly traceRow: 'tools' | 'buttons';
+  /**
+   * How much a dragged chain tells (GDD §5.1, Cadena): its gain in chapters 0–2, only whether it is
+   * legal from chapter 3 on; the free mode, a tool, keeps the gain.
+   */
+  readonly chainPreview: PreviewMode;
 }
 
 /**
@@ -92,6 +98,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
       teacherJumps: true,
       hudButtons: HUD_BUTTONS,
       traceRow: 'tools',
+      chainPreview: previewModeOf(level.data.id),
     };
   }
   return {
@@ -107,6 +114,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
     teacherJumps: false,
     hudButtons: FREE_BUTTONS,
     traceRow: 'buttons',
+    chainPreview: 'gain',
   };
 }
 

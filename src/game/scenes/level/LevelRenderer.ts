@@ -1,5 +1,6 @@
 import type { GardenState } from '@core/rules/state';
 import type { SproutKind } from '@levels/fields';
+import type { PreviewMode } from '../../input/previewMode';
 import { backdropPicture, seedOf, siteOf } from '../../picture/backdrop';
 import { backdropTint } from '../../picture/dayTint';
 import { NO_EXTRAS, type PointingExtras } from '../../picture/garden';
@@ -32,6 +33,8 @@ export interface LevelLook {
   readonly season: string;
   /** The level whose pieces of the interface the HUD shows (the sun, the layers, the Council). */
   readonly interfaceAt: string;
+  /** How much a dragged chain tells: its gain, or only whether it is legal (chapter 3 on). */
+  readonly chainPreview: PreviewMode;
 }
 
 /** What the renderer reads every time it paints: the controller now and the replayed sun. */
@@ -101,7 +104,13 @@ export class LevelRenderer {
     const highlight = [...new Set([...controller.highlight, ...moons])];
     this.renderGarden(
       state,
-      { selection: pointer.selection, highlight, chain: pointer.chain, vineGlow },
+      {
+        selection: pointer.selection,
+        highlight,
+        chain: pointer.chain,
+        vineGlow,
+        previewMode: this.look.chainPreview,
+      },
       splitBadges(session),
     );
     const pond = pondPicture(session, controller.positions, this.look.labels);

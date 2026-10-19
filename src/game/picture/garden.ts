@@ -6,9 +6,9 @@ import { isExposed, isMatchedEdge } from '@core/matching/queries';
 import type { GardenState } from '@core/rules/state';
 import { itemAt } from '@core/shared/itemAt';
 import type { SproutKind } from '@levels/fields';
-import { chainGain } from '../input/dragChain';
 import { centroid, flowerOutline } from '../input/flowerShape';
 import { FLOWER_PADDING } from '../input/HitTest';
+import { chainPreview, type ChainPreview, type PreviewMode } from '../input/previewMode';
 import { NO_SELECTION, type Selection } from '../input/selection';
 import type { Point } from '../input/target';
 
@@ -65,8 +65,11 @@ export interface GardenPicture {
    */
   readonly oddGroups: readonly (readonly Point[])[];
   readonly fog: { readonly revealed: readonly boolean[] } | null;
-  /** The chain being dragged, with what letting go would gain (+1, 0 in grey, or not legal). */
-  readonly chain: { readonly points: readonly Point[]; readonly gain: 1 | 0 | null } | null;
+  /**
+   * The chain being dragged, with what it says: what letting go would gain (+1, 0 in grey), or only
+   * that it is legal (from chapter 3 on), or that it is not.
+   */
+  readonly chain: { readonly points: readonly Point[]; readonly preview: ChainPreview } | null;
 }
 
 /** What the player is pointing at, on top of the garden itself. */
@@ -76,6 +79,8 @@ export interface PointingExtras {
   readonly chain: readonly VertexId[] | null;
   /** The vine a hint makes glow, if any; screens without such hints leave it out. */
   readonly vineGlow?: Edge | null;
+  /** How much the dragged chain tells (`input/previewMode.ts`); its gain when left out. */
+  readonly previewMode?: PreviewMode;
 }
 
 /** Nothing selected, glowing or dragged. */
@@ -199,6 +204,9 @@ export function gardenPicture(
     chain:
       extras.chain === null
         ? null
-        : { points: extras.chain.map(at), gain: chainGain(state, extras.chain) },
+        : {
+            points: extras.chain.map(at),
+            preview: chainPreview(state, extras.chain, extras.previewMode ?? 'gain'),
+          },
   };
 }

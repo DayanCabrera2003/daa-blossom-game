@@ -69,6 +69,7 @@ describe('the screen of a level of the catalog', () => {
         teacherJumps: true,
         hudButtons: HUD_BUTTONS,
         traceRow: 'tools',
+        chainPreview: Number(id.split('.')[0]) <= 2 ? 'gain' : 'legality',
       });
     }
   });
@@ -106,6 +107,10 @@ describe('the screen of a garden of the free mode', () => {
     );
     // The tools' row ends with the free mode's orders instead.
     expect(screen.traceRow).toBe('buttons');
+  });
+
+  it('keeps the gain of a dragged chain: it is a tool, not a level', () => {
+    expect(levelScreenOf(played, AT_1_8).chainPreview).toBe('gain');
   });
 
   it("takes no teacher's jumps to the levels around it: it is no level of the catalog", () => {

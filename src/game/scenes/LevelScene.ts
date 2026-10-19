@@ -160,6 +160,7 @@ export class LevelScene extends Phaser.Scene {
         kinds,
         season: screen.season,
         interfaceAt: screen.interfaceAt,
+        chainPreview: screen.chainPreview,
       },
       {
         controller: () => this.controller,
