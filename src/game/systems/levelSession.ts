@@ -15,6 +15,7 @@ import type { LevelStep } from '@levels/flow';
 import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
 import { automatonRun } from './automaton';
 import { judgeVictory } from './certifyAgain';
+import { claimVerdict, type ClaimVerdict } from './claimVerdict';
 import {
   advanceFlow,
   betRight,
@@ -262,14 +263,24 @@ function react(
  * (dropping any undone future) and counts as progress for the hints; while playing, the mentor may
  * react to it, and it may win the play step, which is checked after every accepted move. What the
  * mentor says to the move comes before whatever winning brings.
+ *
+ * A "Terminé" that does not win the step is recorded too (the claim is the player's), but it is no
+ * progress: it counts towards offering a hint like a refusal, and `claim` says why it falls short
+ * (`claimVerdict.ts`), for a gentle answer. Null for every other move, and for a claim that wins,
+ * that repeats stones the council knows, or that comes once the script is over.
  */
 export function act(
   session: LevelSession,
   action: Action,
   now: number,
-): { session: LevelSession; outcome: MoveOutcome; effects: FlowEffect[] } {
+): {
+  session: LevelSession;
+  outcome: MoveOutcome;
+  effects: FlowEffect[];
+  claim: ClaimVerdict | null;
+} {
   if (!takesMoves(session)) {
-    return { session, outcome: { ok: false, reason: NOT_NOW }, effects: [] };
+    return { session, outcome: { ok: false, reason: NOT_NOW }, effects: [], claim: null };
   }
   const before = garden(session);
   const outcome = applyAction(before, action);
@@ -282,6 +293,7 @@ export function act(
       },
       outcome,
       effects: [],
+      claim: null,
     };
   }
   const after = outcome.state;
@@ -293,30 +305,32 @@ export function act(
         : { ...session.claims, wrong: session.claims.wrong + 1 };
   const waterSpent = session.waterSpent + Math.max(0, after.waterUsed - before.waterUsed);
   const reacted = react(session, action, before, after);
+  // The victory belongs to the play step (integrity requires one exactly when there is a play
+  // step), and to the council's call for another certificate, which only new stones answer.
+  const step = stepNow(session);
+  const { victory } = session.level.data;
+  const judged = judgeVictory(step, session.certificates, after, victory);
+  const claim =
+    action.type === 'declareDone' && step !== null && judged.kind === 'none'
+      ? claimVerdict(after, victory)
+      : null;
   const moved: LevelSession = {
     ...reacted.session,
     history: push(session.history, after),
     dayEvents: [...session.dayEvents.slice(0, session.history.cursor + 1), outcome.events],
-    hints: afterAccepted(session.hints, now),
+    hints: claim === null ? afterAccepted(session.hints, now) : afterRejected(session.hints),
     claims,
     waterSpent,
   };
-  // The victory belongs to the play step (integrity requires one exactly when there is a play
-  // step), and to the council's call for another certificate, which only new stones answer.
-  const judged = judgeVictory(
-    stepNow(session),
-    session.certificates,
-    after,
-    session.level.data.victory,
-  );
-  if (judged.kind === 'none') return { session: moved, outcome, effects: reacted.effects };
+  if (judged.kind === 'none') return { session: moved, outcome, effects: reacted.effects, claim };
   if (judged.kind === 'repeated') {
     const sameStones = { kind: 'sameStones', line: judged.line } as const;
-    return { session: moved, outcome, effects: [...reacted.effects, sameStones] };
+    return { session: moved, outcome, effects: [...reacted.effects, sameStones], claim };
   }
   const { certificates } = judged;
   const advanced = advance({ ...moved, certificates }, { type: 'won' }, now);
-  return { session: advanced.session, outcome, effects: [...reacted.effects, ...advanced.effects] };
+  const effects = [...reacted.effects, ...advanced.effects];
+  return { session: advanced.session, outcome, effects, claim };
 }
 
 /**
