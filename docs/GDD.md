@@ -286,7 +286,7 @@ Libro accesible desde el botón de libro del HUD (en cuanto alguna página está
 
 Las entradas se desbloquean con el juego, pero en modo profesor están todas abiertas. Sección 8 detalla cada entrada.
 
-**Invitación al final de cada capítulo.** En el último nivel de cada capítulo (no en los jardines secretos), la última cosa que dice Sauce es una línea corta que invita a leer las páginas que el capítulo abrió, por su título del jardín: «En el Códex esto tiene nombre: lee «La cadena».». En los capítulos 1, 3 y 4 esas páginas se abrieron un nivel antes (1.8, 3.8, 4.11); en el 7 la invitación nombra «Las piedras» (C12), porque «Más allá del jardín» (C14) la presenta el epílogo. La invitación nunca adelanta la respuesta de un Cuaderno ni de una pregunta.
+**Invitación al final de cada capítulo.** En el último nivel de cada capítulo (no en los jardines secretos), Sauce cierra con una línea corta que invita a leer las páginas que el capítulo abrió, por su título del jardín: «En el Códex esto tiene nombre: lee «La cadena».». En los capítulos 1, 3 y 4 esas páginas se abrieron un nivel antes (1.8, 3.8, 4.11); en el 7 la invitación nombra «Las piedras» (C12), porque «Más allá del jardín» (C14) la presenta el epílogo, y va justo antes de la última imagen del capítulo («Mira: los robles florecen. Amanece.»). La invitación nunca adelanta la respuesta de un Cuaderno ni de una pregunta.
 
 ### 5.7 Modo libre (sandbox)
 
