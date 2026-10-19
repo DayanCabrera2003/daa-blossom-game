@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-59 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+65 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -137,6 +137,20 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.7.sauce.02` · **Sauce** · cambiada
   - Antes: Aquí se cierra la flor.
   - Después: La flor está en este bucle. ¿Qué enredadera une dos soles?
+- [ ] `ch4.7.sauce.04` · **Sauce** · cambiada
+  - Antes: La cadena recorrió el tallo entero y entró en la flor por d, el pétalo cuyo farol salía de la flor. Esa es la base. Escríbelo en tu Cuaderno.
+  - Después: Eso es. La cadena recorrió el tallo entero y entró en la flor por d, el pétalo cuyo farol salía de la flor: la base. Por la base entra el tallo, y por la base sale la luz.
+- [ ] `ch4.7.notebook.06` · **Cuaderno** · cambiada
+  - Antes: …el pétalo cuyo farol va hacia afuera de la flor (o que está a oscuras).
+  - Después: …el pétalo por donde la luz sale, o el que está a oscuras.
+- [ ] `ch4.7.sauce.09` · **Sauce** · retirada
+  - Antes: Eso es. Por la base entra el tallo, y por la base sale la luz.
+- [ ] `ch4.7.sauce.12` · **Sauce** · nueva
+  - Después: Antes de que te lo cuente, escribe tú en tu Cuaderno qué es la base.
+- [ ] `ch4.7.notebook.13` · **Cuaderno** · nueva
+  - Después: …el pétalo cuyo farol va a otro pétalo.
+- [ ] `ch4.7.sauce.14` · **Sauce** · nueva
+  - Después: Dentro de la flor, los faroles unen pétalos de dos en dos. La base es la única que no tiene pareja dentro.
 
 ### 4.8
 

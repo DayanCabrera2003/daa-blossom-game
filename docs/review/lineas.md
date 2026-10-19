@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 470 líneas, 58 están tal cual en el GDD y 412 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 472 líneas, 57 están tal cual en el GDD y 415 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -162,7 +162,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch2.4.sauce.00` · **Sauce** · plan: Estos siete faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo con más faroles que no le deje a tu jardín ninguna cadena.
 - [ ] `ch2.4.sauce.01` · **Sauce** · plan: Toca una enredadera para ponerle un farol plateado. Cuando lo tengas, pulsa «Comprobar».
-- [ ] `ch2.4.sauce.02` · **Sauce** · GDD: No se puede. Si no tienes cadena, nadie te gana.
+- [ ] `ch2.4.sauce.02` · **Sauce** · plan: No se puede. Si no tienes cadena, nadie te gana.
 - [ ] `ch2.4.sauce.03` · **Sauce** · plan: Esto merece quedar escrito. Abre tu Cuaderno y elige lo que es verdad.
 - [ ] `ch2.4.notebook.04` · **Cuaderno** · GDD: Si en mi jardín no queda ninguna cadena…
 - [ ] `ch2.4.notebook.05` · **Cuaderno** · plan: …nadie puede encender más faroles que yo.
@@ -360,14 +360,16 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.7.sauce.01` · **Sauce** · plan: Sigue el tallo desde R. ¿Dónde se tocan dos soles?
 - [ ] `ch4.7.sauce.02` · **Sauce** · plan: La flor está en este bucle. ¿Qué enredadera une dos soles?
 - [ ] `ch4.7.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
-- [ ] `ch4.7.sauce.04` · **Sauce** · plan: La cadena recorrió el tallo entero y entró en la flor por d, el pétalo cuyo farol salía de la flor. Esa es la base. Escríbelo en tu Cuaderno.
+- [ ] `ch4.7.sauce.04` · **Sauce** · plan: Eso es. La cadena recorrió el tallo entero y entró en la flor por d, el pétalo cuyo farol salía de la flor: la base. Por la base entra el tallo, y por la base sale la luz.
 - [ ] `ch4.7.notebook.05` · **Cuaderno** · GDD: La base de una flor es…
-- [ ] `ch4.7.notebook.06` · **Cuaderno** · plan: …el pétalo cuyo farol va hacia afuera de la flor (o que está a oscuras).
+- [ ] `ch4.7.notebook.06` · **Cuaderno** · plan: …el pétalo por donde la luz sale, o el que está a oscuras.
 - [ ] `ch4.7.notebook.07` · **Cuaderno** · plan: …el pétalo más cercano a mí.
 - [ ] `ch4.7.notebook.08` · **Cuaderno** · plan: …cualquier pétalo.
-- [ ] `ch4.7.sauce.09` · **Sauce** · plan: Eso es. Por la base entra el tallo, y por la base sale la luz.
 - [ ] `ch4.7.sauce.10` · **Sauce** · plan: En la flor de cinco pétalos, el más cercano a Elo era Cleo, y la luz salía por b. Cerca no quiere decir base.
 - [ ] `ch4.7.sauce.11` · **Sauce** · plan: Aquí la base es b: su farol sale hacia a. Pliega la flor, ábrela y traza la cadena como si la base fuera otro pétalo. Verás que no alterna.
+- [ ] `ch4.7.sauce.12` · **Sauce** · plan: Antes de que te lo cuente, escribe tú en tu Cuaderno qué es la base.
+- [ ] `ch4.7.notebook.13` · **Cuaderno** · plan: …el pétalo cuyo farol va a otro pétalo.
+- [ ] `ch4.7.sauce.14` · **Sauce** · plan: Dentro de la flor, los faroles unen pétalos de dos en dos. La base es la única que no tiene pareja dentro.
 
 ### 4.8
 

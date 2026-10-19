@@ -41,7 +41,7 @@
       "prompt": "ch4.7.notebook.05",
       "codex": "C7",
       "options": [
-        { "line": "ch4.7.notebook.06", "correct": true, "reply": "ch4.7.sauce.09" },
+        { "line": "ch4.7.notebook.06", "correct": true, "reply": "ch4.7.sauce.04" },
         { "line": "ch4.7.notebook.07", "correct": false, "reply": "ch4.7.sauce.10" },
         {
           "line": "ch4.7.notebook.08",
@@ -71,14 +71,15 @@
             ],
             "actions": ["markRoot", "markMoon", "foldAt", "unfold", "chain"]
           }
-        }
+        },
+        { "line": "ch4.7.notebook.13", "correct": false, "reply": "ch4.7.sauce.14" }
       ]
     }
   ],
   "flow": [
     { "step": "say", "lines": ["ch4.7.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch4.7.sauce.04"] },
+    { "step": "say", "lines": ["ch4.7.sauce.12"] },
     { "step": "notebook" }
   ],
   "solution": [
