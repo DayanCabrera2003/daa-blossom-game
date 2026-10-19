@@ -98,6 +98,10 @@ describe('dialogue lines (content/es/lines.json)', () => {
     expect(wrong).toEqual([]);
   });
 
+  it("the Council's count, from 7.2 on, waits for «Presentar» too", () => {
+    expect(table['hud.councilHidden']).toContain(`«${table['hud.present'] ?? ''}»`);
+  });
+
   it('no line separates its words with the middle dot, which the pixel font draws raised', () => {
     const offending = Object.entries(lineTable).filter(([, text]) => text.includes('·'));
     expect(offending).toEqual([]);
