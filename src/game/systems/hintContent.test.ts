@@ -51,7 +51,7 @@ describe('what each hint grade shows (GDD §5.3)', () => {
       vine: null,
       card: null,
     });
-    expect(hintContent([], 2, { step }).highlight).toEqual([0, 1, 2, 3, 4, 5]);
+    expect(hintContent([], 2, { step }).highlight).toEqual([0]);
     expect(hintContent([], 3)).toEqual({
       line: 'hint.generic.3',
       generic: true,
@@ -71,10 +71,10 @@ describe('what each hint grade shows (GDD §5.3)', () => {
     expect(hintContent([], 3, { option: 0 }).option).toBe(0);
   });
 
-  it('in the mirror challenge, grade 2 lights the chain and grade 3 draws the better reflection', () => {
+  it('in the mirror challenge, grade 2 lights where the chain starts and grade 3 draws the better reflection', () => {
     const reflection = { lanterns: [[0, 1] as const, [2, 3] as const], chain: [3, 2, 1, 0] };
     expect(hintContent([], 2, { reflection })).toMatchObject({
-      highlight: [0, 1, 2, 3],
+      highlight: [3],
       mirror: null,
     });
     expect(hintContent([], 3, { reflection })).toMatchObject({
@@ -84,10 +84,10 @@ describe('what each hint grade shows (GDD §5.3)', () => {
     expect(hintContent([], 1, { reflection }).highlight).toEqual([]);
   });
 
-  it('in the flower challenge, grade 2 lights the mentor chain and grade 3 draws it', () => {
+  it('in the flower challenge, grade 2 lights where the mentor chain starts and grade 3 draws it', () => {
     const chain = [5, 1, 2, 3, 4, 0];
     expect(hintContent([], 1, { chain })).toMatchObject({ highlight: [], chain: null });
-    expect(hintContent([], 2, { chain })).toMatchObject({ highlight: [0, 1, 2, 3, 4, 5] });
+    expect(hintContent([], 2, { chain })).toMatchObject({ highlight: [5] });
     expect(hintContent([], 3, { chain })).toMatchObject({ move: null, chain });
     expect(hintContent(festivalHints, 2, { chain }).highlight).toEqual([5]);
   });

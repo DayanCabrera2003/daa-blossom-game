@@ -57,9 +57,23 @@ export interface MentorHelp {
 }
 
 /**
+ * Where a grade-2 hint points when the level wrote none: the sprout a chain starts from (the
+ * mentor's, the reflection's or the challenge's), or else the first sprout of the mentor's step.
+ */
+function startOf(
+  step: Action | null,
+  traced: readonly number[] | null,
+  shown: readonly number[],
+): number[] {
+  const start = step?.type === 'chain' ? step.path[0] : step === null ? traced?.[0] : shown[0];
+  return start === undefined ? [] : [start];
+}
+
+/**
  * The content of hint grade `grade` (GDD §5.3: a nudge, a direction, the mentor's first step).
  * The k-th hint written in the level is grade k; when a level has fewer, the generic line of that
- * grade is used, and from grade 2 on the sprouts of the mentor's `step` glow instead. Under a
+ * grade is used, and the mentor's `step` glows instead: at grade 2 only its first sprout (a
+ * direction, never the answer: GDD §5.3), from grade 3 on all its sprouts. Under a
  * question there is no step to take: grade 3 points at `option` instead, when it is given. In the
  * mirror challenge, a `reflection` the mentor offers: from grade 2 its chain glows, and grade 3
  * draws it; in the flower challenge the same goes for a `chain`. When the player points at a vine,
@@ -86,9 +100,11 @@ export function hintContent(
   const highlight =
     written !== undefined && written.highlight.length > 0
       ? written.highlight
-      : grade >= 2
+      : grade >= 3
         ? shown
-        : [];
+        : grade === 2
+          ? startOf(mentorStep, traced, shown)
+          : [];
   return {
     line: written?.line ?? `hint.generic.${grade}`,
     generic: written === undefined,

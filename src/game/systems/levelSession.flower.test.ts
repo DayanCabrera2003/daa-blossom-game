@@ -83,7 +83,7 @@ describe('a level session runs the flower challenge (4.11)', () => {
     expect(respond(over, { type: 'tap' }, 0).effects).toEqual([]);
   });
 
-  it('hints: the level line, then the mentor chain glows, then the mentor draws it', () => {
+  it('hints: the level line, then where the mentor chain starts, then the mentor draws it', () => {
     let session = startSession(level, 0);
     const hints = [];
     for (let k = 1; k <= 3; k++) {
@@ -95,7 +95,7 @@ describe('a level session runs the flower challenge (4.11)', () => {
     }
     const [first, second, third] = hints;
     expect(first).toMatchObject({ line: 'ch4.11.sauce.02', highlight: [5], chain: null });
-    expect(second?.highlight.length).toBeGreaterThan(1);
+    expect(second?.highlight).toHaveLength(1);
     expect(second?.chain).toBeNull();
     const chain = third?.chain ?? [];
     expect(chain.length).toBeGreaterThan(1);
