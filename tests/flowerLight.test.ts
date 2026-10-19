@@ -28,6 +28,7 @@ const FLOWER_LEVELS: Readonly<Record<string, { roots: string[] | null; flowers: 
   '4.12': { roots: null, flowers: ['bcd', '|', 'klmoq', '|'] },
   '5.1': { roots: ['R'], flowers: ['bcd', 'Rabcdgh', '|'] },
   '5.2': { roots: ['R'], flowers: ['def', 'bcdefgh', 'Rabcdefghij', '|'] },
+  '5.3': { roots: ['R'], flowers: ['bcdef', 'Rabcdefgh', '|'] },
 };
 
 const levelById = (id: string): Level => {
