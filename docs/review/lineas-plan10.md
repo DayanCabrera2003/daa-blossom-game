@@ -4,7 +4,13 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-133 líneas de diálogo y 44 textos de interfaz distintos de la versión 1.0.1.
+135 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
+
+### 0.5
+
+- [ ] `ch0.5.sauce.00` · **Sauce** · cambiada
+  - Antes: Un jardinero mira el día que pasó. Arrastra el sol.
+  - Después: Un jardinero mira el día que pasó. Arrastra el día.
 
 ### 1.3
 
@@ -390,6 +396,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Antes: Cada tarjeta de caso habla de un vecino distinto: a oscuras, con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
   - Después: Cada tarjeta de caso habla de un vecino distinto: con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
 
+### 6.2
+
+- [ ] `ch6.2.sauce.01` · **Sauce** · cambiada
+  - Antes: Encendió todos los que caben y dijo «Terminé». Mueve el sol y míralo otra vez, paso a paso.
+  - Después: Encendió todos los que caben y dijo «Terminé». Arrastra el día y míralo otra vez, paso a paso.
+
 ### 6.5
 
 - [ ] `ch6.5.sauce.06` · **Sauce** · cambiada
@@ -500,6 +512,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Esas piedras no son las lunas de tu búsqueda.
 - [ ] `action.stepLight` · nueva
   - Después: avanzar la luz
+- [ ] `hud.prompt.sun` · cambiada
+  - Antes: Arrastra el sol de arriba a la derecha
+  - Después: Arrastra el día, arriba a la derecha
 - [ ] `hud.prompt.draw` · cambiada
   - Antes: Toca enredaderas para dibujar tu reflejo y pulsa Comprobar
   - Después: Dibuja tu reflejo tocando enredaderas y pulsa Comprobar
@@ -512,6 +527,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: La cuenta del Consejo sale al pulsar «Presentar»
 - [ ] `raceBet.answer.threeToFive` · nueva
   - Después: ≈ 3 a 5 veces
+- [ ] `diagram.help.replay` · cambiada
+  - Antes: Mueve el sol, o avanza paso a paso, para ver cómo pasa el día.
+  - Después: Arrastra el día, o avanza paso a paso, para verlo pasar.
+- [ ] `diagram.sun` · cambiada
+  - Antes: El sol
+  - Después: El día
+- [ ] `diagram.help.recipe` · cambiada
+  - Antes: Mueve el sol, o avanza paso a paso: en cada paso se ilumina la tarjeta de la receta que sigue el jardinero mecánico.
+  - Después: Arrastra el día, o avanza paso a paso: en cada paso se ilumina la tarjeta de la receta que sigue el jardinero mecánico.
 - [ ] `diagram.event.declareDone` · cambiada
   - Antes: «Terminé»: el jardín no puede hacerlo mejor.
   - Después: «Terminé»: el jardinero dice que el jardín no puede hacerlo mejor.
@@ -541,9 +565,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `sandbox.gen.beesFlowers` · cambiada
   - Antes: Abejas y flores
   - Después: Abejas y tréboles
+- [ ] `sandbox.solve.done` · cambiada
+  - Antes: El jardinero mecánico ha terminado. Faroles: {count}, y ni uno más cabe. Arrastra el sol para repasar cada paso.
+  - Después: El jardinero mecánico ha terminado. Faroles: {count}, y ni uno más cabe. Arrastra el día para repasar cada paso.
 - [ ] `sandbox.certify.notBees` · cambiada
   - Antes: Los espantapájaros solo prueban jardines de abejas y flores.
   - Después: Los espantapájaros solo prueban jardines de abejas y tréboles.
+- [ ] `tutorial.sun.title` · cambiada
+  - Antes: El sol
+  - Después: El día
+- [ ] `tutorial.sun.body` · cambiada
+  - Antes: Arrastra el sol de arriba a la derecha para ver cómo estaba tu jardín antes. Llévalo hasta el final para volver al presente.
+  - Después: Arrastra el día, arriba a la derecha, para ver cómo estaba tu jardín antes. Llévalo hasta el final para volver al presente.
 - [ ] `tutorial.present.title` · nueva
   - Después: Presentar
 - [ ] `tutorial.present.body` · nueva
@@ -562,6 +595,21 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `tutorial.unfold.body` · cambiada
   - Antes: Con Marcas, toca una flor cerrada para abrirla y ver otra vez sus brotes.
   - Después: Con Marcas, toca una flor cerrada para abrirla. El trozo de cadena que encontró tu luz sigue dibujado: arrastra solo el tramo de dentro de la flor para completarlo.
+- [ ] `tutorial.automaton.body` · cambiada
+  - Antes: Mira cómo trabaja el jardinero mecánico: sigue la receta él solo, paso a paso, y tú no tocas nada. Cuando termine, mueve el sol para repasarlo.
+  - Después: Mira cómo trabaja el jardinero mecánico: sigue la receta él solo, paso a paso, y tú no tocas nada. Cuando termine, arrastra el día para repasarlo.
+- [ ] `teacher.dayHelp` · cambiada
+  - Antes: Sigue al sol del jardín: cada paso es una jugada y sus efectos.
+  - Después: Sigue el día del jardín: cada paso es una jugada y sus efectos.
+- [ ] `teacher.edmondsHelp` · cambiada
+  - Antes: La receta completa desde los faroles del paso que muestra el sol. Toca una línea o usa las flechas para recorrerla. Las líneas «se examina» cuentan el costo: puedes ocultarlas y cada paso conserva su número.
+  - Después: La receta completa desde los faroles del paso en que está el día. Toca una línea o usa las flechas para recorrerla. Las líneas «se examina» cuentan el costo: puedes ocultarlas y cada paso conserva su número.
+- [ ] `teacher.edmondsStart` · cambiada
+  - Antes: Los faroles del paso que muestra el sol, antes de la primera fase.
+  - Después: Los faroles del paso en que está el día, antes de la primera fase.
+- [ ] `keys.slider` · cambiada
+  - Antes: Flechas a los lados: mueven el sol o el volumen
+  - Después: Flechas a los lados: mueven el día o el volumen
 - [ ] `keys.flowers` · cambiada
   - Antes: F y Mayús+F: de una flor secreta a otra
   - Después: F y Mayús+F: de un jardín secreto a otro

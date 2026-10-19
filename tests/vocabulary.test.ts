@@ -35,6 +35,13 @@ const RETIRED: readonly { readonly now: string; readonly pattern: RegExp }[] = [
   { now: 'un trébol', pattern: /abejas?\b[^.?!:;\n]*\bflor(es)?\b/i },
   // The optional puzzles of the hub: secret gardens, never hidden or secret flowers.
   { now: 'un jardín secreto', pattern: /\bflor(es)? (secreta|escondida)s?\b/i },
+  // The time slider: the day, never the sun, which is only the mark of the search.
+  {
+    now: 'el día',
+    pattern: /\b(arrastra\w*|mueve\w*|mover|movido|lleva\w*|sigue)\s+(al|el)\s+sol\b/i,
+  },
+  { now: 'el día', pattern: /\bmuestra el sol\b/i },
+  { now: 'el día', pattern: /^el sol$/i },
 ];
 
 /** The places where a text uses a retired expression. */

@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 506 líneas, 64 están tal cual en el GDD y 442 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 506 líneas, 65 están tal cual en el GDD y 441 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -29,7 +29,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 0.5
 
-- [ ] `ch0.5.sauce.00` · **Sauce** · plan: Un jardinero mira el día que pasó. Arrastra el sol.
+- [ ] `ch0.5.sauce.00` · **Sauce** · GDD: Un jardinero mira el día que pasó. Arrastra el día.
 
 ## Capítulo 1
 
@@ -537,7 +537,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 6.2
 
 - [ ] `ch6.2.sauce.00` · **Sauce** · plan: Este es el jardinero mecánico. No piensa: sigue tu receta, tarjeta por tarjeta. Mira lo que hace en un jardín del Prado.
-- [ ] `ch6.2.sauce.01` · **Sauce** · plan: Encendió todos los que caben y dijo «Terminé». Mueve el sol y míralo otra vez, paso a paso.
+- [ ] `ch6.2.sauce.01` · **Sauce** · plan: Encendió todos los que caben y dijo «Terminé». Arrastra el día y míralo otra vez, paso a paso.
 - [ ] `ch6.2.sauce.02` · **Sauce** · plan: Cada paso que dio es una de tus tarjetas. Lo que tú hacías con las manos, ahora lo hace solo. Funciona.
 
 ### 6.3
