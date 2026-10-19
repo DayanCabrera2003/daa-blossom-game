@@ -76,6 +76,7 @@ describe('the mentor tells why after the player answers, as the reply to the rig
   it.each([
     ['2.3', 'ch2.3.sauce.02'],
     ['3.4', 'ch3.4.sauce.04'],
+    ['5.2', 'ch5.2.sauce.04'],
   ])('%s asks after playing, again until right, and says %s only then', (id, why) => {
     const level = levelOf(id);
     const { at, ask } = askOf(level);

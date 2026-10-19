@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-105 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
+111 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -281,6 +281,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.2.sauce.02` · **Sauce** · cambiada
   - Antes: Mira esta enredadera.
   - Después: Cuando la flor grande esté plegada, mira por este lado. ¿Dónde se tocan dos soles?
+- [ ] `ch5.2.sauce.05` · **Sauce** · nueva
+  - Después: Para desplegar, abriste primero la flor grande. ¿Por qué no una de las de dentro?
+- [ ] `ch5.2.gardener.06` · **Tú** · nueva
+  - Después: Sí se podía: el orden da igual.
+- [ ] `ch5.2.sauce.07` · **Sauce** · nueva
+  - Después: No se podía: tocar una flor de dentro con la grande plegada no abre nada. Mientras la grande esté plegada, las de dentro son parte de sus pétalos.
+- [ ] `ch5.2.gardener.08` · **Tú** · nueva
+  - Después: Plegada la grande, las de dentro son parte de sus pétalos.
+- [ ] `ch5.2.gardener.09` · **Tú** · nueva
+  - Después: Porque la cadena entra antes en las de dentro.
+- [ ] `ch5.2.sauce.10` · **Sauce** · nueva
+  - Después: Al revés: las de dentro están dentro de la grande, así que la cadena siempre entra antes en la grande.
 
 ### 5.3
 

@@ -146,7 +146,8 @@ describe('5.2: layers', () => {
   it('is searched from R alone and opens the layers, whose card shows as it starts', () => {
     expect(level.data.draft).toBe(false);
     expect(level.start.roots).toEqual([id('R')]);
-    expect(stepsOf(level)).toEqual(['say', 'play', 'say']);
+    // After the chain, the mentor asks why the big flower opens first (plan 10, phase 7).
+    expect(stepsOf(level)).toEqual(['say', 'play', 'ask']);
     expect(isUiUnlocked('layers', level.data.id)).toBe(true);
     expect(isUiUnlocked('layers', levelOf('5.1').data.id)).toBe(false);
   });
