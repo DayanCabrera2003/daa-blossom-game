@@ -249,7 +249,7 @@ El botón Pista está **siempre a mano** mientras el paso admite pistas y quedan
 2. **Dirección:** señala una **zona** con un brillo, o un solo brote, y pregunta; **nunca la respuesta**: no brilla justo la enredadera donde hay que plegar, ni la cadena entera o sus dos puntas, ni el tallo que hay que girar, ni dos o más espantapájaros o piedras del certificado final. Lo comprueba un check de integridad (`hintReveals`).
 3. **Solución guiada:** el mentor ejecuta el primer paso y deja el resto.
 
-Todos los niveles de juego del capítulo 1 en adelante tienen sus tres pistas propias (también 1.5–1.9).
+Del Prado en adelante cada nivel escribe sus pistas (1.5–1.9 también, con sus tres grados); el grado que un nivel no escribe lo dice una pista genérica, y desde el grado 2 brilla lo que toca el siguiente paso del mentor.
 
 ### 5.4 Estrellas
 
