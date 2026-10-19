@@ -78,6 +78,26 @@ describe('a level session', () => {
     expect(isHintAvailable(session, 10)).toBe(true);
   });
 
+  it('100 s of joining and splitting in 1.3 bring a hint: going round in circles is no progress', () => {
+    const level = levelById('1.3');
+    let session = startSession(level, 0);
+    for (let t = 0; t < 100; t += 10) {
+      const move: Action =
+        (t / 10) % 2 === 0 ? { type: 'split', u: 3, v: 4 } : { type: 'join', u: 3, v: 4 };
+      session = act(session, move, t * 1000).session;
+    }
+    expect(isHintAvailable(session, 100_000)).toBe(true);
+  });
+
+  it('a lantern beyond the record at 80 s starts the wait again; undo and redo to it do not', () => {
+    const level = levelById('1.9');
+    const chain: Action = { type: 'join', u: 10, v: 11 };
+    const lit = act(startSession(level, 0), chain, 80_000).session;
+    expect(isHintAvailable(lit, 80_000 + HINT_DELAY_MS - 1)).toBe(false);
+    const again = act(undoSession(lit), chain, 120_000).session;
+    expect(isHintAvailable(again, 80_000 + HINT_DELAY_MS)).toBe(true);
+  });
+
   it('a hint opens grade by grade; at grade 3 the mentor makes the next step of the solution', () => {
     const level = festivalLevel();
     let session = startSession(level, 0);

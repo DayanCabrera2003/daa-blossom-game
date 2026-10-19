@@ -36,6 +36,7 @@ import {
 import { hintContent, type HintContent, type MentorReflection } from './hintContent';
 import {
   afterAccepted,
+  afterMoved,
   afterRejected,
   isHintOffered,
   openHint,
@@ -188,7 +189,7 @@ function advance(
 ): { session: LevelSession; effects: FlowEffect[] } {
   const { flow, effects } = advanceFlow(session.flow, signal);
   if (flow.index === session.flow.index) return { session: { ...session, flow }, effects };
-  const hints = afterAccepted(session.hints, now);
+  const hints = afterAccepted(session.hints, garden(session), now);
   return { session: { ...session, flow, hints, won: starsAt(session, flow) }, effects };
 }
 
@@ -210,7 +211,7 @@ export function openSession(
     level,
     history: startHistory(level.start),
     dayEvents: [[]],
-    hints: startHints(now),
+    hints: startHints(now, level.start),
     rejections: 0,
     claims: { right: 0, wrong: 0 },
     waterSpent: 0,
@@ -260,7 +261,8 @@ function react(
  * Tries a move. Outside the play step it is refused with `notNow`, which is no mistake: it neither
  * counts as a refusal nor brings a hint closer. A refusal of the rules changes no garden: it is
  * counted and its reason goes back to the view. An accepted move is recorded in the history
- * (dropping any undone future) and counts as progress for the hints; while playing, the mentor may
+ * (dropping any undone future), and restarts the wait for a hint only when it beats the play's
+ * record (`progress.ts`); while playing, the mentor may
  * react to it, and it may win the play step, which is checked after every accepted move. What the
  * mentor says to the move comes before whatever winning brings.
  *
@@ -318,7 +320,7 @@ export function act(
     ...reacted.session,
     history: push(session.history, after),
     dayEvents: [...session.dayEvents.slice(0, session.history.cursor + 1), outcome.events],
-    hints: claim === null ? afterAccepted(session.hints, now) : afterRejected(session.hints),
+    hints: claim === null ? afterMoved(session.hints, after, now) : afterRejected(session.hints),
     claims,
     waterSpent,
   };
