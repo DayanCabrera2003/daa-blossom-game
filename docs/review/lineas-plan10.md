@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-117 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
+117 líneas de diálogo y 30 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -448,6 +448,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: «Terminé»: el jardinero dice que el jardín no puede hacerlo mejor.
 - [ ] `counterexample.backToQuestion` · nueva
   - Después: Volver a la pregunta
+- [ ] `mirror.spared` · cambiada
+  - Antes: Calma: ganarle a tu jardín no es fácil. Y quien lo consigue siempre te deja una cadena.
+  - Después: Prueba con más faroles plateados que los tuyos.
 - [ ] `tutorial.present.title` · nueva
   - Después: Presentar
 - [ ] `tutorial.present.body` · nueva
