@@ -337,7 +337,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch4.7.sauce.00` · **Sauce** · plan: Un tallo largo esta vez. Avanza tu luz desde R y fíjate por dónde sale la luz de la flor.
 - [ ] `ch4.7.sauce.01` · **Sauce** · plan: Sigue el tallo desde R. ¿Dónde se tocan dos soles?
-- [ ] `ch4.7.sauce.02` · **Sauce** · plan: Aquí se cierra la flor.
+- [ ] `ch4.7.sauce.02` · **Sauce** · plan: La flor está en este bucle. ¿Qué enredadera une dos soles?
 - [ ] `ch4.7.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.7.sauce.04` · **Sauce** · plan: La cadena recorrió el tallo entero y entró en la flor por d, el pétalo cuyo farol salía de la flor. Esa es la base. Escríbelo en tu Cuaderno.
 - [ ] `ch4.7.notebook.05` · **Cuaderno** · GDD: La base de una flor es…
