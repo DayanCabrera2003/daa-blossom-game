@@ -286,6 +286,8 @@ Libro accesible desde el botón de libro del HUD (en cuanto alguna página está
 
 Las entradas se desbloquean con el juego, pero en modo profesor están todas abiertas. Sección 8 detalla cada entrada.
 
+**Invitación al final de cada capítulo.** En el último nivel de cada capítulo (no en los jardines secretos), la última cosa que dice Sauce es una línea corta que invita a leer las páginas que el capítulo abrió, por su título del jardín: «En el Códex esto tiene nombre: lee «La cadena».». En los capítulos 1, 3 y 4 esas páginas se abrieron un nivel antes (1.8, 3.8, 4.11); en el 7 la invitación nombra «Las piedras» (C12), porque «Más allá del jardín» (C14) la presenta el epílogo. La invitación nunca adelanta la respuesta de un Cuaderno ni de una pregunta.
+
 ### 5.7 Modo libre (sandbox)
 
 Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y puedes: jugarlo, pedirle al jardinero mecánico que lo resuelva con el día como slider, ver el bosque, las flores y el certificado final. Exporta un código de jardín para compartir.
@@ -393,6 +395,7 @@ Tarde de verano tardío. Sin música todavía, solo grillos. Tutorial silencioso
 - **Guion:** Sauce: "Un jardinero mira el día que pasó. Arrastra el día."
 - **Victoria:** 2 faroles y haber movido el día al menos una vez.
 - **Desbloquea:** Códex **C1 Emparejamiento** (solo la pestaña Intuición; la Formal se abre al terminar el capítulo 1). Hub: el huerto florece.
+- **Al final:** Sauce: "En el Códex, el libro del jardinero, esto tiene nombre: lee «Un farol para dos»."
 
 ---
 
@@ -405,7 +408,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 2.
 - **Enseña:** maximal ≠ máximo. Quien junta B–C obtiene 1 y no puede añadir nada. Tiene que deshacer y rehacer: A–B y C–D.
 - **Por qué aquí:** es el problema entero en cuatro brotes. La solución "deshacer una pareja para hacer dos" *es* pasar el farol. El jugador lo hace sin saberlo.
-- **Guion:** al lograrlo, el día se rebobina solo y Sauce: "Mira lo que hiciste. Beto le dio su farol a Ana, y Cleo tuvo que buscar a Dani. **Pasaste el farol.**"
+- **Guion:** al lograrlo, el día se rebobina solo y repite el jardín con un pase; Sauce: "Mira otra forma de ver lo que pasó: si Beto le da su farol a Ana, Cleo puede buscar a Dani. Eso es **pasar el farol**." Vale tanto si el jugador cayó en la trampa como si no: no le atribuye una jugada que quizá no hizo.
 - **Pistas:** (1) "¿Ana puede hablar con alguien?" (2) A y D brillan. (3) el mentor apaga B–C.
 - **Victoria:** 2 faroles.
 - **Desbloquea:** la acción **Pasar el farol** (tocar un brote solitario y luego un vecino con farol lo roba; la antigua pareja queda solitaria).
@@ -416,7 +419,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 3.
 - **Enseña:** la reacción en cadena de pases: A roba a B, C queda solo, C roba a D, E queda solo, E junta con F. Tres movimientos, un farol nuevo.
 - **Por qué aquí:** primer nivel que empieza con faroles ya puestos. Todo el algoritmo trabaja así: mejorar una noche ya empezada.
-- **Guion:** Sauce (al terminar, rebobinando): "Uno, dos, tres pases, y al final había sitio para uno más. Eso es una **cadena**."
+- **Guion:** Sauce (al terminar, rebobinando con los pases): "Mira otra forma de verlo: uno, dos, tres pases, y al final había sitio para uno más. Eso es una **cadena**." Como en 1.1, vale lo haya hecho el jugador así o no.
 - **Pistas:** (1) "¿Quién está a oscuras? ¿Quién tiene el farol más cercano?" (2) A brilla. (3) el mentor hace el primer pase.
 - **Victoria:** 3 faroles.
 
@@ -460,6 +463,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 3.
 - **Enseña:** las cadenas pueden dar la vuelta a un bucle. Hay dos cadenas válidas (`1–2=3–4` y `1–6=5–4`). Ambas ganan.
 - **Por qué aquí:** planta la semilla del contraste con el bucle impar del capítulo 4. Aquí el bucle es amable.
+- **Guion:** al ganar, Sauce: "Seis brotes en corro, y la cadena pudo ir por cualquiera de los dos lados. Acuérdate de este bucle." (4.3 lo recuerda).
 - **Victoria:** 3 faroles.
 
 #### 1.8 ¿Terminé?
@@ -474,6 +478,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Jardín:** 14 brotes con faroles iniciales mal puestos, tres cadenas necesarias, una de ellas de longitud 7 con dos callejones.
 - **Objetivo:** visible, 7. Estrella extra: sin pistas.
 - **Victoria:** 7.
+- **Al final:** Sauce: "El Prado es tuyo. En el Códex esto tiene nombre: lee «La cadena»."
 
 ---
 
@@ -512,6 +517,7 @@ Tú: 5 faroles. Reflejo: 6.
 - **Victoria:** usar la cadena (7 faroles) y terminar las dos fases.
 - **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…cualquier otra disposición encenderá como mucho los mismos" ✔ (b) "…nadie gana mientras busque bien" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ contraejemplo: cadena escondida larga.
 - **Desbloquea:** Códex **C3 Lema de Berge**. Hub: el estanque.
+- **Al final** (tras el Cuaderno): Sauce: "En el Códex esto tiene nombre: lee «El hilo ganador»."
 
 ---
 
@@ -583,6 +589,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Jardín:** 20 brotes bipartitos en niebla, faroles iniciales mal puestos, dos cadenas, después certificado.
 - **Objetivo:** oculto. Para terminar hay que encender el máximo **y** colocar los espantapájaros.
 - **Victoria:** certificado válido. Hub: el invernadero.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Caminar de noche» y «Abejas, tréboles y espantapájaros»."
 
 ---
 
@@ -611,6 +618,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
   Enredaderas: `R–a, a=b, b–c, c=d, d–e, e–b, e=f, f–T`.
 - **Enseña:** búsqueda: R sol, a luna, b sol, c luna, d sol, e luna (por `d–e`; `b–e` llega a e luna desde b sol: coherente), f sol, T luna libre → cadena. Sin conflicto. El bucle b–c–d–e tiene 4 brotes. **Solo los bucles impares confunden.**
 - **Por qué aquí:** refuta el distractor (b) del Cuaderno anterior con un jardín real y afina la idea.
+- **Guion:** al empezar, Sauce recuerda el bucle par de 1.7: "¿Te acuerdas del corro del Prado? Otro bucle. Antes de desconfiar de tu luz, busca desde R y cuéntale los brotes."
 - **Victoria:** cadena.
 
 #### 4.4 Plegar
@@ -679,6 +687,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 - **Jardín:** 18 brotes en niebla, presupuesto de agua, faroles iniciales, dos flores necesarias en distintas rondas.
 - **Objetivo:** oculto. Estrella extra: dentro del agua.
 - **Victoria:** máximo y "Terminé" (aún sin certificado general: eso es el capítulo 7). La luz busca desde los brotes a oscuras, en orden, y se para en cada flor y ante cada sol en la niebla. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados. Hub: el festival.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Bucles impares», «La flor» y «Plegar no esconde cadenas»."
 
 ---
 
@@ -718,6 +727,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 - **Jardín:** 20 brotes en niebla con presupuesto de agua.
 - **Victoria:** máximo dentro del agua para la estrella. La luz busca desde los brotes a oscuras, en orden, y se para en cada flor y ante cada sol en la niebla. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 - **Desbloquea:** Códex **C9 Flores anidadas**. Hub: el jardín salvaje.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Flores anidadas»."
 
 ---
 
@@ -769,6 +779,7 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
   - "¿Cuántas veces como máximo puede tu receta encontrar una cadena?" (a) "Como mucho la mitad de los brotes, porque cada cadena enciende un farol y no caben más" ✔ (b) "Tantas como enredaderas" ✘ (c) "Podría no parar nunca" ✘ contraejemplo: el contador de faroles solo sube.
   - "¿Por qué termina cada búsqueda?" (a) "Cada brote se marca como mucho una vez y cada pliegue encoge el jardín" ✔ (b) "Porque se acaba el agua" ✘ (c) "Porque el mentor la para" ✘.
 - **Desbloquea:** Códex **C10 La receta (algoritmo de Edmonds)** y **C11 El costo**. Hub: la cabaña.
+- **Al final:** Sauce: "En el Códex tu receta tiene nombre: lee «La receta» y «El costo»."
 
 ---
 
@@ -809,6 +820,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 - **Jardín:** 22 brotes en niebla, con flores anidadas.
 - **Objetivo:** oculto. Para terminar hay que presentar **los faroles y las piedras**, y la cuenta tiene que cuadrar.
 - **Victoria:** certificado válido. Los Robles se inclinan. Hub: los robles florecen; amanece.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Las piedras»."
 
 ---
 
