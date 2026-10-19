@@ -52,6 +52,9 @@ describe('the gaps of the chain the light found (plan 10, phase 2)', () => {
     expect(eitherWay(result?.gaps[0] ?? '')).toContain('bdc');
     expect(result?.gaps).toHaveLength(1);
     expect(result?.open).toEqual([true]);
+    // A drag into the gap may go over every petal of the flower, its wrong side too.
+    const seen = foundChain(beforeLighting(level), beforeLighting(level).length - 1);
+    expect(names(level, [...(seen?.gaps[0]?.petals ?? [])].sort())).toBe('bcd');
   });
 
   it('in 4.5, while the flower is still folded, the same gap is there but closed', () => {

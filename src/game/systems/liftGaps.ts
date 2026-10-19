@@ -1,3 +1,4 @@
+import { members } from '@core/blossom/hierarchy';
 import type { VertexId } from '@core/graph/types';
 import type { GardenState } from '@core/rules/state';
 import { itemAt } from '@core/shared/itemAt';
@@ -10,6 +11,11 @@ import { itemAt } from '@core/shared/itemAt';
 export interface Gap {
   readonly from: number;
   readonly to: number;
+  /**
+   * Every sprout the flower folded, the petals of flowers nested in it among them: where a drag
+   * into the gap may go, the wrong side of the flower included, so that it is refused with a reason.
+   */
+  readonly petals: readonly VertexId[];
 }
 
 /**
@@ -47,7 +53,9 @@ function gapsIn(state: GardenState, chain: readonly VertexId[]): Gap[] {
     const sameRun =
       i < chain.length && flower !== null && flowerOf(state, itemAt(chain, i)) === flower;
     if (sameRun) continue;
-    if (flower !== null && i - 1 > from) gaps.push({ from, to: i - 1 });
+    if (flower !== null && i - 1 > from) {
+      gaps.push({ from, to: i - 1, petals: members(itemAt(state.layer.nodes, flower)) });
+    }
     from = i;
   }
   return gaps;
