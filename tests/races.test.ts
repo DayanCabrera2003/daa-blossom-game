@@ -1,3 +1,4 @@
+import lines from '@content/es/lines.json';
 import { runOf, type RaceResult } from '@core/cost/benchmark';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
@@ -12,6 +13,11 @@ import { describe, expect, it } from 'vitest';
  * asleep. The gardens are grown from fixed families and seeds, chosen so the races tell this
  * clearly; Bruto's budget keeps every race quick.
  */
+
+const lineTable: Record<string, string> = lines;
+
+/** The text of a line of dialogue. */
+const said = (id: string): string | undefined => lineTable[id];
 
 const levelOf = (id: string): Level => {
   const level = catalog().find((candidate) => candidate.data.id === id);
@@ -88,7 +94,26 @@ describe('6.5, race II: 16, 32 and 64 sprouts, with doubling bets', () => {
     });
     const recipe = { runner: 'automaton', answer: 'threeToFive', clear: true };
     const bruto = { runner: 'bruto', answer: 'farMore', clear: true };
-    expect(answers).toEqual([recipe, bruto, recipe, bruto, recipe, bruto]);
+    expect(answers).toEqual([recipe, bruto, recipe, recipe]);
+  });
+
+  it('Bruto is bet on only in the first round: then he sleeps, and the recipe is bet on in all three', () => {
+    const bets = level.flow.flatMap((step, index) =>
+      step.step === 'raceBet' ? [{ index, runner: step.runner, prompt: step.prompt }] : [],
+    );
+    const firstRace = level.flow.findIndex((step) => step.step === 'race' && step.size === 16);
+    const brutoBets = bets.filter((bet) => bet.runner === 'bruto');
+    expect(brutoBets).toHaveLength(1);
+    expect(brutoBets.every((bet) => bet.index < firstRace)).toBe(true);
+    expect(bets.filter((bet) => bet.runner === 'automaton')).toHaveLength(3);
+  });
+
+  it('after the first round, the recipe bets ask whether what happened before happens again', () => {
+    const prompts = level.flow.flatMap((step) =>
+      step.step === 'raceBet' && step.runner === 'automaton' ? [step.prompt] : [],
+    );
+    expect(prompts).toEqual(['ch6.5.sauce.03', 'ch6.5.sauce.06', 'ch6.5.sauce.09']);
+    for (const prompt of prompts.slice(1)) expect(said(prompt)).toContain('lo de antes');
   });
 
   it('the recipe takes about four times the steps each time the garden doubles, as Sauce says', () => {

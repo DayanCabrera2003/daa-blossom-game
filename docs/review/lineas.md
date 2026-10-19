@@ -576,10 +576,10 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.5.sauce.03` · **Sauce** · plan: Si el jardín se duplica, de 8 a 16 brotes, ¿cuántos pasos más dará tu receta?
 - [ ] `ch6.5.sauce.04` · **Sauce** · GDD: ¿Y Bruto?
 - [ ] `ch6.5.bruto.05` · **Bruto** · plan: ¡Terminé! Me costó, pero terminé.
-- [ ] `ch6.5.sauce.06` · **Sauce** · plan: Se duplica otra vez, de 16 a 32 brotes. ¿Cuántos pasos más dará tu receta?
+- [ ] `ch6.5.sauce.06` · **Sauce** · plan: Se duplica otra vez, de 16 a 32 brotes. ¿Se repetirá lo de antes? ¿Cuántos pasos más dará tu receta?
 - [ ] `ch6.5.bruto.07` · **Bruto** · plan: Zzz…
 - [ ] `ch6.5.sauce.08` · **Sauce** · plan: Bruto se quedó dormido sin terminar. Tu receta, en cambio, llegó al final.
-- [ ] `ch6.5.sauce.09` · **Sauce** · plan: La última: de 32 a 64 brotes. ¿Cuántos pasos más dará tu receta?
+- [ ] `ch6.5.sauce.09` · **Sauce** · plan: La última: de 32 a 64 brotes. ¿Otra vez lo de antes? ¿Cuántos pasos más dará tu receta?
 - [ ] `ch6.5.sauce.10` · **Sauce** · plan: Mira la gráfica. La de tu receta sube como una curva suave: cada vez que el jardín se duplica, da unas cuatro veces más pasos. La de Bruto se salió por arriba, y él se durmió.
 - [ ] `ch6.5.bruto.11` · **Bruto** · plan: Zzz… ¿Ya… ganó alguien?
 

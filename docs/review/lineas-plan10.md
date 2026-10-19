@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-122 líneas de diálogo y 38 textos de interfaz distintos de la versión 1.0.1.
+124 líneas de diálogo y 38 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -359,6 +359,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch6.1.sauce.02` · **Sauce** · cambiada
   - Antes: Cada tarjeta de caso habla de un vecino distinto: a oscuras, con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
   - Después: Cada tarjeta de caso habla de un vecino distinto: con farol, sol de otro árbol, sol del mismo árbol, luna. Una para cada uno.
+
+### 6.5
+
+- [ ] `ch6.5.sauce.06` · **Sauce** · cambiada
+  - Antes: Se duplica otra vez, de 16 a 32 brotes. ¿Cuántos pasos más dará tu receta?
+  - Después: Se duplica otra vez, de 16 a 32 brotes. ¿Se repetirá lo de antes? ¿Cuántos pasos más dará tu receta?
+- [ ] `ch6.5.sauce.09` · **Sauce** · cambiada
+  - Antes: La última: de 32 a 64 brotes. ¿Cuántos pasos más dará tu receta?
+  - Después: La última: de 32 a 64 brotes. ¿Otra vez lo de antes? ¿Cuántos pasos más dará tu receta?
 
 ### 7.1
 

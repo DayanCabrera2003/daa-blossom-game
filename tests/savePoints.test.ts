@@ -66,7 +66,8 @@ describe('the synthetic saves of the author kit', () => {
   it('all-stars gathers the 134 stars, every seed, every cosmetic and the seven flowers won', () => {
     const save = savePoint(levels, 'all-stars');
     expect(totalStars(entries, save)).toBe(134);
-    expect(seeds(save)).toBe(7);
+    // One seed for the bet of 1.6 and one for each of the four doubling bets of 6.5.
+    expect(seeds(save)).toBe(5);
     expect(openCosmetics({ stars: 134, seeds: seeds(save) }, false)).toEqual(
       openCosmetics({ stars: 0, seeds: 0 }, true),
     );
