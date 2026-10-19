@@ -35,3 +35,24 @@ export function requireUnfolded(
   );
   return folded ? { code: 'flowersFolded' } : null;
 }
+
+/**
+ * In the fog (chapter 3) lanterns only move along vines the player can see, those with an inspected
+ * end, as marks only look along them: a chain, a join or a pass never feels out a hidden vine. The
+ * rejection for the first hidden vine of `path`, named by its first sprout, whose inspection would
+ * show it; null without fog or with every vine in sight.
+ */
+export function requireVisibleVines(
+  state: GardenState,
+  path: readonly VertexId[],
+): RejectReason | null {
+  const { revealed } = state;
+  if (revealed === null) return null;
+  for (let index = 0; index + 1 < path.length; index++) {
+    const u = itemAt(path, index);
+    if (revealed[u] !== true && revealed[itemAt(path, index + 1)] !== true) {
+      return { code: 'vineHidden', vertex: u };
+    }
+  }
+  return null;
+}

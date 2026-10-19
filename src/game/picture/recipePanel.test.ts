@@ -25,11 +25,11 @@ describe('the picture of the recipe panel (6.1)', () => {
     const controller = after(startController(recipeLevel(), 0), [
       { kind: 'recipeCard', card: 'moonNothing' },
       { kind: 'recipeCard', card: 'markDarkSuns' },
-      { kind: 'recipeCard', card: 'chainToDark' },
+      { kind: 'recipeCard', card: 'chainRootToRoot' },
     ]);
     const picture = recipePicture(controller.session);
     expect(picture?.mark).toBe('markDarkSuns');
-    expect(picture?.cases).toEqual(['moonNothing', 'chainToDark']);
+    expect(picture?.cases).toEqual(['moonNothing', 'chainRootToRoot']);
     expect(picture?.table).toHaveLength(RECIPE_CARD_IDS.length - 3);
     expect(picture?.table).not.toContain('moonNothing');
   });
@@ -39,7 +39,7 @@ describe('the picture of the recipe panel (6.1)', () => {
     expect(verdict.right).toBe(false);
     if (verdict.right) return;
     expect(checkFeedback(verdict.failure)).toEqual([
-      { key: 'recipe.missing.dark', params: {} },
+      { key: 'recipe.missing.lit', params: {} },
       { key: 'recipe.recall', params: { level: '3.1' } },
     ]);
   });
@@ -47,7 +47,7 @@ describe('the picture of the recipe panel (6.1)', () => {
   it('a distractor is told by its own text', () => {
     const verdict = checkRecipe({
       mark: 'markDarkSuns',
-      cases: ['chainToDark', 'growMoon', 'chainRootToRoot', 'foldAnyLoop'],
+      cases: ['growMoon', 'chainRootToRoot', 'foldAnyLoop'],
       end: null,
     });
     expect(verdict.right ? null : checkFeedback(verdict.failure)[0]).toEqual({
@@ -67,7 +67,6 @@ describe('the picture of the recipe panel (6.1)', () => {
   it('there is no panel outside the recipe step', () => {
     const recipe = [
       'markDarkSuns',
-      'chainToDark',
       'growMoon',
       'chainRootToRoot',
       'foldFlower',

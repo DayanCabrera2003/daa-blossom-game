@@ -1,7 +1,9 @@
 import type { GardenState } from '@core/rules/state';
 import type { SproutKind } from '@levels/fields';
+import type { PreviewMode } from '../../input/previewMode';
 import { backdropPicture, seedOf, siteOf } from '../../picture/backdrop';
 import { backdropTint } from '../../picture/dayTint';
+import { foundTrailPicture } from '../../picture/foundTrail';
 import { NO_EXTRAS, type PointingExtras } from '../../picture/garden';
 import { hudPicture } from '../../picture/hud';
 import { layerPicture } from '../../picture/layerPicture';
@@ -14,6 +16,7 @@ import { splitBadges } from '../../picture/splitBadge';
 import type { FlowerAttempt } from '../../systems/flowerChallenge';
 import { layerOf, type Controller } from '../../systems/levelController';
 import { garden } from '../../systems/levelSession';
+import { foundChain } from '../../systems/liftGaps';
 import { RACE_LAYOUT } from '../../view/RaceView';
 import type { LevelViews } from './levelViews';
 
@@ -32,6 +35,8 @@ export interface LevelLook {
   readonly season: string;
   /** The level whose pieces of the interface the HUD shows (the sun, the layers, the Council). */
   readonly interfaceAt: string;
+  /** How much a dragged chain tells: its gain, or only whether it is legal (chapter 3 on). */
+  readonly chainPreview: PreviewMode;
 }
 
 /** What the renderer reads every time it paints: the controller now and the replayed sun. */
@@ -101,9 +106,20 @@ export class LevelRenderer {
     const highlight = [...new Set([...controller.highlight, ...moons])];
     this.renderGarden(
       state,
-      { selection: pointer.selection, highlight, chain: pointer.chain, vineGlow },
+      {
+        selection: pointer.selection,
+        highlight,
+        chain: pointer.chain,
+        vineGlow,
+        previewMode: this.look.chainPreview,
+      },
       splitBadges(session),
     );
+    // The stretches of the chain the light found stay drawn until the lanterns change.
+    const view = layerOf(controller, state);
+    const found = foundChain(session.history.states, session.history.cursor);
+    const insideLayer = view.path.length > 0;
+    this.views.foundTrail.render(foundTrailPicture(found, state, view.positions, insideLayer));
     const pond = pondPicture(session, controller.positions, this.look.labels);
     this.views.mirror.render(pond, now);
     this.renderSideBySide(now);
@@ -121,6 +137,7 @@ export class LevelRenderer {
   /** Shows one state of a replayed day, with the sun where the replay stands. */
   renderReplayed(state: GardenState, now: number): void {
     this.renderGarden(state, NO_EXTRAS);
+    this.views.foundTrail.render([]);
     this.renderHud(now);
   }
 

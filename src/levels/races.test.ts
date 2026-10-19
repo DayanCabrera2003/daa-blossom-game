@@ -56,6 +56,6 @@ describe('the races of a level script', () => {
   });
 
   it('names the interface text of each answer of a bet', () => {
-    expect(doublingTextKey('fourToEight')).toBe('raceBet.answer.fourToEight');
+    expect(doublingTextKey('threeToFive')).toBe('raceBet.answer.threeToFive');
   });
 });

@@ -2,15 +2,20 @@ import { idOf, toEdges, type Labels } from '@core/graph/labels';
 import type { Graph, VertexId } from '@core/graph/types';
 import { createMatching, type MatchingError } from '@core/matching/createMatching';
 import type { Matching } from '@core/matching/types';
-import type { Action } from '@core/rules/actions';
+import type { Action, ActionType } from '@core/rules/actions';
+import { ANY_CHAIN, type ChainRule } from '@core/rules/chainRule';
 import { actionsUnlockedBy } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
+import { itemAt } from '@core/shared/itemAt';
 import { err, ok, type Result } from '@core/shared/result';
 import type { LevelData } from './schema';
 import type { LevelStep } from './flow';
 import { isFlowInput, type FlowInput } from './flowInput';
 import { buildGarden, type GardenError } from './garden';
 import { toLevelStep, toSprouts, toWalkthroughEntry } from './translate';
+
+/** The moves a level where the light searches by itself keeps closed: the search is the light's. */
+const BY_HAND: readonly ActionType[] = ['markRoot', 'markMoon'];
 
 /** One entry of a walkthrough: a garden move, or an input the script asks for. */
 export type WalkthroughEntry = Action | FlowInput;
@@ -49,8 +54,10 @@ export type BuildError =
 /**
  * Builds the playable level from its validated file: labels, garden, starting lanterns, the
  * reflection (a valid set of lanterns of the same garden), the actions it allows (those unlocked by
- * its id, minus `forbid`), the roots a search may start from, the petals of its flower and its
- * solution with ids.
+ * its id, minus `forbid`, which it keeps as closed for the day), its chain rule, the roots a search
+ * may start from, the petals of its flower and its solution with ids. No level folds a loop chosen
+ * by hand (`fold`): in a level, folding is touching where two suns meet (`foldAt`), and only the
+ * free mode gives «Plegar a mano» back (`sandbox/toLevel.ts`).
  */
 export function buildLevel(data: LevelData): Result<Level, BuildError> {
   const built = buildGarden({
@@ -111,13 +118,30 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     flower = petals.value;
   }
 
-  const forbidden = new Set(data.forbid);
+  let chains: ChainRule = ANY_CHAIN;
+  if (data.chains.rule === 'fromBase') {
+    const petals = toSprouts(labels, data.chains.flower);
+    if (!petals.ok) return err({ code: 'badLabel', error: petals.error });
+    chains = { rule: 'fromBase', base: itemAt(petals.value, 0), petals: petals.value };
+  } else if (data.chains.rule === 'seen') {
+    chains = { rule: 'seen' };
+  }
+
+  // Where the light searches by itself, its step is given, and marks by hand are closed for the
+  // day: the light owns the search, and folding is touching where it stops.
+  const closed: ActionType[] = data.light ? [...data.forbid, ...BY_HAND] : [...data.forbid];
+  const forbidden = new Set(closed);
   const start = createGardenState({
     graph,
     matching,
     fog: data.fog,
     ...(roots === undefined ? {} : { roots }),
-    allowed: actionsUnlockedBy(data.id).filter((action) => !forbidden.has(action)),
+    chains,
+    allowed: actionsUnlockedBy(data.id).filter(
+      (action) =>
+        !forbidden.has(action) && action !== 'fold' && (action !== 'stepLight' || data.light),
+    ),
+    closed,
   });
   return ok({
     data,

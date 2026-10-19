@@ -75,11 +75,11 @@ export interface ServedRow {
 }
 
 /** The built parts of the budget, weighed from their files. */
-export type BuiltPacked = Readonly<Record<'js' | 'codex' | 'sandbox', Packed>>;
+export type BuiltPacked = Readonly<Record<'js' | 'codex' | 'sandbox' | 'level', Packed>>;
 
 /**
  * Every part of `report` as it is sent: the built parts (the initial script, the books, the free
- * mode) by their compressed files; the initial load as the compressed script plus the boot group,
+ * mode, the level screen) by their compressed files; the initial load as the compressed script plus the boot group,
  * sent as it is; every part of assets as it is.
  */
 export function servedWeights(report: readonly BudgetRow[], built: BuiltPacked): ServedRow[] {
@@ -88,6 +88,7 @@ export function servedWeights(report: readonly BudgetRow[], built: BuiltPacked):
       case 'js':
       case 'codex':
       case 'sandbox':
+      case 'level':
         return { part, gzip: built[part].gzip, brotli: built[part].brotli };
       case 'initial': {
         const boot = bytes - built.js.raw;

@@ -7,6 +7,7 @@ import { HINT_DELAY_MS } from './hints';
 import {
   act,
   askHint,
+  canAskHint,
   checkDrawnMirror,
   drawInMirror,
   garden,
@@ -56,6 +57,71 @@ const mirrorLevel = (
   });
   if (!loaded.ok) throw new Error(`fixture does not load: ${JSON.stringify(loaded.error)}`);
   return loaded.value;
+};
+
+/**
+ * The two phases of 2.4 on the rows of `mirrorLevel`: a better reflection, the chain A–B=C–D used,
+ * then F=G turned over too, and a challenge nobody can win over the best lanterns, twice.
+ */
+const twoPhaseLevel = (): Level => {
+  const loaded = loadLevel({
+    id: '2.4',
+    sprouts: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((label, i) => ({
+      label,
+      x: 100 + 60 * (i % 4),
+      y: i < 4 ? 80 : 160,
+    })),
+    vines: [
+      ['A', 'B'],
+      ['B', 'C'],
+      ['C', 'D'],
+      ['E', 'F'],
+      ['F', 'G'],
+      ['G', 'H'],
+    ],
+    lanterns: [
+      ['B', 'C'],
+      ['F', 'G'],
+    ],
+    goal: { visible: false },
+    victory: { type: 'matchingSize', value: 4 },
+    flow: [
+      { step: 'draw', attempts: 1 },
+      { step: 'play' },
+      { step: 'draw', attempts: 2, beatable: false },
+      { step: 'say', lines: ['ch2.4.sauce.01'] },
+    ],
+    solution: [
+      {
+        type: 'drawMirror',
+        lanterns: [
+          ['A', 'B'],
+          ['C', 'D'],
+          ['F', 'G'],
+        ],
+      },
+      { type: 'checkMirror' },
+      { type: 'chain', path: ['A', 'B', 'C', 'D'] },
+      { type: 'chain', path: ['E', 'F', 'G', 'H'] },
+      { type: 'checkMirror' },
+      { type: 'checkMirror' },
+    ],
+  });
+  if (!loaded.ok) throw new Error(`fixture does not load: ${JSON.stringify(loaded.error)}`);
+  return loaded.value;
+};
+
+/** The session of `twoPhaseLevel` at its second, unbeatable, challenge. */
+const secondPhase = (): LevelSession => {
+  // A check that does not beat the garden first: its miss stays behind with the first phase.
+  const missed = checkDrawnMirror(draw(startSession(twoPhaseLevel(), 0), [[0, 1]]), 0).session;
+  const drawn = draw(missed, [
+    [2, 3],
+    [5, 6],
+  ]);
+  let session = checkDrawnMirror(drawn, 0).session;
+  session = act(session, { type: 'chain', path: [0, 1, 2, 3] }, 0).session;
+  return act(session, { type: 'chain', path: [4, 5, 6, 7] }, 0).session;
 };
 
 /** Draws these vines, in order. */
@@ -201,6 +267,38 @@ describe('a level session runs the mirror challenge', () => {
     expect(checkDrawnMirror(done, 0)).toEqual({ session: done, check: null, effects: [] });
     // Answers do not reach the challenge either.
     expect(respond(done, { type: 'tap' }, 0).effects).toEqual([]);
+  });
+
+  it('each challenge starts from a clean drawing, whatever the one before left', () => {
+    const session = secondPhase();
+    expect(stepNow(session)).toMatchObject({ step: 'draw', beatable: false });
+    expect(size(session.challenge.draft)).toBe(0);
+    expect(session.challenge).toMatchObject({ misses: 0, checked: [], shown: null });
+  });
+
+  it('where nobody can win, every check says it does not beat you and counts as an attempt', () => {
+    let session = secondPhase();
+    session = draw(session, [
+      [0, 1],
+      [2, 3],
+      [4, 5],
+      [6, 7],
+    ]);
+    const first = checkDrawnMirror(session, 0);
+    expect(first.check).toMatchObject({ kind: 'notBetter', drawn: 4, yours: 4, spared: false });
+    expect(first.effects).toEqual([]);
+    const second = checkDrawnMirror(first.session, 0);
+    expect(second.effects).toEqual([
+      { kind: 'say', lines: ['ch2.4.sauce.01'] },
+      { kind: 'finished' },
+    ]);
+  });
+
+  it('where nobody can win, no hint is at hand: there is nothing to find', () => {
+    const session = secondPhase();
+    expect(canAskHint(session)).toBe(false);
+    expect(isHintAvailable(session, 10 * HINT_DELAY_MS)).toBe(false);
+    expect(askHint(session, 10 * HINT_DELAY_MS)).toBeNull();
   });
 
   it('the winning threads are counted on the tangle before it is separated: 2, not 9 − 8', () => {

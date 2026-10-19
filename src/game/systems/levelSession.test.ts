@@ -13,6 +13,7 @@ import { HINT_DELAY_MS } from './hints';
 import {
   act,
   askHint,
+  canAskHint,
   garden,
   isHintAvailable,
   openSession,
@@ -78,6 +79,26 @@ describe('a level session', () => {
     expect(isHintAvailable(session, 10)).toBe(true);
   });
 
+  it('100 s of joining and splitting in 1.3 bring a hint: going round in circles is no progress', () => {
+    const level = levelById('1.3');
+    let session = startSession(level, 0);
+    for (let t = 0; t < 100; t += 10) {
+      const move: Action =
+        (t / 10) % 2 === 0 ? { type: 'split', u: 3, v: 4 } : { type: 'join', u: 3, v: 4 };
+      session = act(session, move, t * 1000).session;
+    }
+    expect(isHintAvailable(session, 100_000)).toBe(true);
+  });
+
+  it('a lantern beyond the record at 80 s starts the wait again; undo and redo to it do not', () => {
+    const level = levelById('1.9');
+    const chain: Action = { type: 'join', u: 10, v: 11 };
+    const lit = act(startSession(level, 0), chain, 80_000).session;
+    expect(isHintAvailable(lit, 80_000 + HINT_DELAY_MS - 1)).toBe(false);
+    const again = act(undoSession(lit), chain, 120_000).session;
+    expect(isHintAvailable(again, 80_000 + HINT_DELAY_MS)).toBe(true);
+  });
+
   it('a hint opens grade by grade; at grade 3 the mentor makes the next step of the solution', () => {
     const level = festivalLevel();
     let session = startSession(level, 0);
@@ -96,7 +117,16 @@ describe('a level session', () => {
     expect(grades[1]?.highlight).toEqual([5]);
     expect(grades[2]?.move).toEqual(level.solution[0]);
     expect(session.hints.opened).toBe(3);
-    expect(askHint(startSession(level, 0), 1)).toBeNull();
+  });
+
+  it('the hint button opens grade 1 at 5 s, unoffered, and the star for no hints is lost as ever', () => {
+    const level = levelById('1.1');
+    const asked = askHint(startSession(level, 0), 5_000);
+    expect(isHintAvailable(startSession(level, 0), 5_000)).toBe(false);
+    expect(asked?.hint.line).toBe('ch1.1.sauce.01');
+    const won = playAll(asked?.session ?? startSession(level, 0), level.solution, 6_000);
+    expect(won.won?.noHints).toBe(false);
+    expect(canAskHint(won)).toBe(false);
   });
 
   it('a level without a victory is never won by moves, and its mentor proposes none', () => {
@@ -154,7 +184,12 @@ describe('a level session', () => {
     ]);
     const undone = undoSession(undoSession(looked));
     expect(undone.waterSpent).toBe(2);
-    const won = playAll(undone, [{ type: 'join', u: 0, v: 1 }]);
+    // The fog is back, so the vine is looked at again before the lantern is lit along it.
+    const won = playAll(undone, [
+      { type: 'inspect', vertex: 0 },
+      { type: 'join', u: 0, v: 1 },
+    ]);
+    expect(won.waterSpent).toBe(3);
     expect(won.won).toEqual({ total: 2, noHints: true, withinWater: false });
   });
 });
@@ -287,6 +322,39 @@ describe('a level session follows its script', () => {
     const right = respond(answered.session, { type: 'answer', option: 2 }, 0);
     expect(right.effects.map((effect) => effect.kind)).toEqual(['answered', 'written', 'finished']);
     expect(right.session.won).not.toBeNull();
+  });
+
+  it('a question opens the garden of a false answer, then asks again (plan 10, phase 7)', () => {
+    const refuting = {
+      ...question,
+      options: [
+        {
+          line: 'ch2.9.sauce.02',
+          correct: false,
+          counterexample: {
+            mode: 'play',
+            line: 'ch2.9.sauce.05',
+            sprouts: [
+              { label: 'a', x: 100, y: 100 },
+              { label: 'b', x: 200, y: 100 },
+            ],
+            vines: [['a', 'b']],
+            actions: ['join'],
+          },
+        },
+        { line: 'ch2.9.sauce.04', correct: true },
+      ],
+    };
+    const opened = openSession(scripted([refuting]), 0);
+    const refuted = respond(opened.session, { type: 'answer', option: 0 }, 0);
+    expect(refuted.effects).toContainEqual({ kind: 'counterexample', step: 0, option: 0 });
+    expect(refuted.effects.map((effect) => effect.kind)).toEqual([
+      'answered',
+      'counterexample',
+      'ask',
+    ]);
+    const right = respond(refuted.session, { type: 'answer', option: 1 }, 0);
+    expect(right.effects.map((effect) => effect.kind)).toEqual(['answered', 'finished']);
   });
 
   it('outside the play step, moves are refused with notNow and change nothing', () => {

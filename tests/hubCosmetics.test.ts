@@ -11,14 +11,14 @@ import { openCosmetics } from '../src/services/cosmetics';
 import { hubOf, t } from './support/hubBoxes';
 
 // The cosmetics of the hub find their homes in the hub as the scene lays it out with the real
-// catalog and words (plan 08, phase 7): with every cosmetic and seven seeds, in both modes, with
+// catalog and words (plan 08, phase 7): with every cosmetic and five seeds, in both modes, with
 // and without the sign of the epilogue, and for every set of chapters finished (which plants the
 // pond, and so moves the frog), no home covers the top line, a signpost, a flower's column, a
 // title or a button, nor another home, and every cosmetic finds room. The lanterns' glow stays
 // on each signpost, off the flower's column beside it and the title after it.
 
-/** Every cosmetic, as 134 stars and seven seeds bring them. */
-const ALL = openCosmetics({ stars: 134, seeds: 7 }, false);
+/** Every cosmetic, as 134 stars and five seeds bring them. */
+const ALL = openCosmetics({ stars: 134, seeds: 5 }, false);
 
 /** Every set of chapters 0 to 7 that can be finished. */
 const FINISHED = Array.from(
@@ -87,8 +87,8 @@ describe('the cosmetics in the hub as it is laid out', () => {
             : { x: pond.x, y: pond.y, width: pond.ornament.width, height: pond.ornament.height },
         );
         const boxes = boxesOf(homes);
-        // Six animals, the fireflies and seven plants.
-        expect(boxes).toHaveLength(14);
+        // Six animals, the fireflies and five plants.
+        expect(boxes).toHaveLength(12);
         boxes.forEach((box, i) => {
           for (const other of taken) expect(boxesOverlap(box, other, 0)).toBe(false);
           for (const other of boxes.slice(i + 1)) expect(boxesOverlap(box, other, 0)).toBe(false);

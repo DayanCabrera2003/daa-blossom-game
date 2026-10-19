@@ -2,7 +2,7 @@ import strings from '../../src/content/es/strings.json';
 import {
   bottomRow,
   estimatedButtonWidth,
-  HUD_BUTTONS,
+  ordersRow,
   toolbarRow,
   traceButtonLeft,
 } from '../../src/game/picture/bottomRows';
@@ -10,6 +10,7 @@ import type { Rect } from '../../src/game/picture/boxDistance';
 import { BOOK_ICON, iconRoom, TOOL_ICONS } from '../../src/game/picture/buttonIcon';
 import { BUTTON_HEIGHT } from '../../src/game/picture/panelLayout';
 import { availableTools } from '../../src/game/input/tools';
+import { levelScreenOf } from '../../src/game/systems/levelScreenOf';
 import { GEAR_SIZE } from '../../src/game/view/GearButton';
 import { LAYOUT } from '../../src/game/view/layout';
 import type { catalog } from '../../src/levels/catalog';
@@ -17,9 +18,11 @@ import { isUiUnlocked } from '../../src/levels/uiUnlocks';
 import { createTranslator } from '../../src/services/i18n';
 
 // The buttons of a level's HUD as `HudView`, `ToolbarView` and the settings' gear lay them out,
-// with the real words: the level's tools along the toolbar (and the teacher's trace at its end),
-// and along the bottom row the gear, the Códex and every HUD button (each keeps its place even
-// while hidden). Each button's box is its wood: a pixel above its row, a line of text tall.
+// with the real words: the level's tools along the toolbar (and at its end the teacher's trace and,
+// where the light searches by itself, "Avanzar la luz"),
+// and along the bottom row the gear, the Códex and every HUD button of the level's screen (each
+// keeps its place even while hidden). Each button's box is its wood: a pixel above its row, a line
+// of text tall.
 
 const t = createTranslator(strings);
 
@@ -50,19 +53,30 @@ export function hudBoxes(level: Level, teacher: boolean): HudBox[] {
     id: `tool ${tools[i] ?? ''}`,
     box: wood(left, LAYOUT.toolbarY, toolWidths[i] ?? 0),
   }));
-  if (teacher) {
-    const trace = estimatedButtonWidth(t('hud.trace'));
+  const trace = estimatedButtonWidth(t('hud.trace'));
+  const light = estimatedButtonWidth(t('hud.stepLight'));
+  if (level.start.allowed.has('stepLight')) {
+    const [traceLeft = 0, lightLeft = 0] = ordersRow([trace, light]);
+    boxes.push({ id: 'light', box: wood(lightLeft, LAYOUT.toolbarY, light) });
+    if (teacher) boxes.push({ id: 'trace', box: wood(traceLeft, LAYOUT.toolbarY, trace) });
+  } else if (teacher) {
     boxes.push({ id: 'trace', box: wood(traceButtonLeft(trace), LAYOUT.toolbarY, trace) });
   }
   const book = estimatedButtonWidth(t('hud.book')) + iconRoom([BOOK_ICON]);
-  const buttons = HUD_BUTTONS.map((name) => estimatedButtonWidth(t(`hud.${name}`)));
+  // The buttons of the level's screen: the mirror's check only where its reflection is drawn, and
+  // the button that ends the level saying «Presentar» in the levels of certificates.
+  const screen = levelScreenOf(level, null);
+  const names = screen.hudButtons;
+  const buttons = names.map((name) =>
+    estimatedButtonWidth(t(name === 'done' ? screen.doneLabel : `hud.${name}`)),
+  );
   const row = bottomRow({ gear: GEAR_SIZE, book, trace: null, buttons });
   boxes.push({
     id: 'gear',
     box: { x: LAYOUT.margin, y: LAYOUT.bottomY - 1, width: GEAR_SIZE, height: GEAR_SIZE },
   });
   boxes.push({ id: 'book', box: wood(row.book, LAYOUT.bottomY, book) });
-  HUD_BUTTONS.forEach((name, i) => {
+  names.forEach((name, i) => {
     boxes.push({ id: name, box: wood(row.buttons[i] ?? 0, LAYOUT.bottomY, buttons[i] ?? 0) });
   });
   return boxes;

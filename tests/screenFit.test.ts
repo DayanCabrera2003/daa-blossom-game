@@ -4,7 +4,7 @@ import { MAX_SPROUTS } from '../src/levels/sandbox/limits';
 import { catalog } from '../src/levels/catalog';
 import { isUiUnlocked } from '../src/levels/uiUnlocks';
 import { CHAR_ADVANCE, estimatedButtonWidth, hudRow } from '../src/game/picture/bottomRows';
-import { statusEnd, statusLine } from '../src/game/picture/statusLine';
+import { STATUS_LINE, statusEnd, statusLine } from '../src/game/picture/statusLine';
 import { generateDrawer } from '../src/game/picture/generateDrawer';
 import { charsIn, LINE_HEIGHT, wrappedLines } from '../src/game/picture/textWrap';
 import { TOAST, toastBox } from '../src/game/picture/toastBox';
@@ -170,10 +170,10 @@ describe("the HUD's two lines of text", () => {
                 : LAYOUT.margin + lanterns;
           const left: Span = { x0: LAYOUT.margin, x1: end };
           const right = CANVAS_WIDTH - LAYOUT.margin;
+          // The prompt keeps at least a letter of air from the left part, as the parts keep
+          // between them, so the count never reads as the start of the prompt.
           if (p > 0)
-            expect(apart(left, { x0: (CANVAS_WIDTH - p) / 2, x1: (CANVAS_WIDTH + p) / 2 })).toBe(
-              true,
-            );
+            expect(left.x1 + STATUS_LINE.minGap).toBeLessThanOrEqual((CANVAS_WIDTH - p) / 2);
           if (c > 0) expect(apart(left, { x0: right - c, x1: right })).toBe(true);
           expect(end).toBeLessThanOrEqual(right);
         }
@@ -192,22 +192,25 @@ describe("the HUD's two lines of text", () => {
 });
 
 describe("the counterexample's bottom row", () => {
-  it('lays its buttons right to left and keeps them clear of the count of lanterns', () => {
-    const labels = [t('counterexample.back'), t('hud.redo'), t('hud.undo'), t('hud.checkMirror')];
-    const widths = labels.map((label) => estimatedButtonWidth(label));
-    const lefts = hudRow(widths);
-    // No button touches the next.
-    lefts.forEach((left, i) => {
-      const next = lefts[i + 1];
-      if (next !== undefined) expect(next + (widths[i + 1] ?? 0)).toBeLessThanOrEqual(left);
-    });
-    // The count at the left, the widest it can be with two digits, ends before the last button.
-    const count = widest([
-      t('hud.lanterns', { count: 99 }),
-      t('hud.mirror', { yours: 99, mirror: 99 }),
-    ]);
-    expect(LAYOUT.margin + count + AIR).toBeLessThanOrEqual(Math.min(...lefts));
-  });
+  it.each(['counterexample.back', 'counterexample.backToQuestion'] as const)(
+    'lays its buttons right to left and keeps them clear of the count of lanterns (%s)',
+    (way) => {
+      const labels = [t(way), t('hud.redo'), t('hud.undo'), t('hud.checkMirror')];
+      const widths = labels.map((label) => estimatedButtonWidth(label));
+      const lefts = hudRow(widths);
+      // No button touches the next.
+      lefts.forEach((left, i) => {
+        const next = lefts[i + 1];
+        if (next !== undefined) expect(next + (widths[i + 1] ?? 0)).toBeLessThanOrEqual(left);
+      });
+      // The count at the left, the widest it can be with two digits, ends before the last button.
+      const count = widest([
+        t('hud.lanterns', { count: 99 }),
+        t('hud.mirror', { yours: 99, mirror: 99 }),
+      ]);
+      expect(LAYOUT.margin + count + AIR).toBeLessThanOrEqual(Math.min(...lefts));
+    },
+  );
 });
 
 /** The top of the free mode's generate drawer, with the real words, the size at its widest. */
@@ -233,11 +236,15 @@ describe('the toasts', () => {
       params[name ?? ''] = name === 'action' ? longestAction : 'XX';
     return t(key, params);
   };
-  /** Everything a toast says: refusals, the mirror's check, the free mode's notices. */
+  /**
+   * Everything a toast says: refusals, why a claim falls short, the mirror's check, the free mode's
+   * notices.
+   */
   const messages = Object.keys(strings)
     .filter(
       (key) =>
         key.startsWith('reason.') ||
+        key.startsWith('claim.') ||
         key.startsWith('sandbox.reason.') ||
         key.startsWith('sandbox.opened.') ||
         [

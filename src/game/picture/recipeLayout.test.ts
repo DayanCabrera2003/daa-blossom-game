@@ -16,15 +16,7 @@ const OPENING: RecipePanelPicture = { mark: null, cases: [], end: null, table: T
 /** A recipe with every case card, distractors too, in it: the fullest recipe column. */
 const FULL: RecipePanelPicture = {
   mark: 'markDarkSuns',
-  cases: [
-    'chainToDark',
-    'growMoon',
-    'chainRootToRoot',
-    'foldFlower',
-    'moonNothing',
-    'moonToSun',
-    'foldAnyLoop',
-  ],
+  cases: ['growMoon', 'chainRootToRoot', 'foldFlower', 'moonNothing', 'moonToSun', 'foldAnyLoop'],
   end: 'finishKeepMoons',
   table: ['untilNoneDark'],
 };
@@ -101,7 +93,7 @@ describe('the layout of the recipe panel (plan 09, decision on phase 10)', () =>
   });
 
   it('finds the page that shows a card, in the column it lies in', () => {
-    const last = TABLE_ORDER[TABLE_ORDER.length - 1] ?? 'chainToDark';
+    const last = TABLE_ORDER[TABLE_ORDER.length - 1] ?? 'growMoon';
     expect(pageOfCard(OPENING, t, last)).toEqual({
       side: 'right',
       page: recipeLayout(OPENING, t).right.pages - 1,

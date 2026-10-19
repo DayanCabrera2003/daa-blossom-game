@@ -116,10 +116,24 @@ describe('a design to play', () => {
   it('allows the actions given, and hides the goal behind "Terminé"', () => {
     const allowed = actionsUnlockedBy('4.5');
     const level = unwrap(toPlayable(PATH, allowed));
-    const fogless = allowed.filter((action) => action !== 'inspect');
+    // No fog to inspect, and no light that searches by itself: that is a level's, not a design's.
+    const fogless = allowed.filter((action) => action !== 'inspect' && action !== 'stepLight');
     expect([...level.start.allowed].sort()).toEqual([...fogless].sort());
     expect(level.data.goal).toEqual({ visible: false });
     expect(level.data.victory).toEqual({ type: 'maximum' });
+  });
+
+  it('closes nothing for the day: a move not at hand is one not learnt yet, and any chain goes', () => {
+    const level = unwrap(toPlayable(PATH, actionsUnlockedBy('3.1')));
+    expect(level.start.closed).toEqual(new Set());
+    expect(level.start.chains).toEqual({ rule: 'any' });
+  });
+
+  it('gives folding by hand («Plegar a mano»), which no level has, once learnt in 4.4', () => {
+    expect(unwrap(toPlayable(PATH, actionsUnlockedBy('4.4'))).start.allowed.has('fold')).toBe(true);
+    expect(unwrap(toPlayable(PATH, actionsUnlockedBy('4.3'))).start.allowed.has('fold')).toBe(
+      false,
+    );
   });
 
   it('never allows inspecting: a garden of the free mode has no fog to lift', () => {

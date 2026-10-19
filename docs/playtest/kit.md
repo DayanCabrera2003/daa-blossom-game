@@ -29,7 +29,7 @@ Lo que el registro no ve; el detalle está en §4 de cada protocolo.
 | Hito | Medida clave | Dónde |
 |---|---|---|
 | A | ¿Describe la cadena con sus palabras al acabar el capítulo 1? ¿Pulsa "Terminé" sin razón en 1.8? | `A.md` §4 |
-| B | 4.1: ¿encuentra la cadena sin la pista 3? 4.2: ¿señala `d–b`? 4.11: ¿elige bien en el Cuaderno a la primera? | `B.md` §4 |
+| B | 4.1: ¿encuentra la cadena sin la pista 3? 4.2: ¿señala `d–b`? 4.11: ¿elige bien en el Cuaderno a la primera? Y, al acabar 4.11, la pregunta en voz alta | `B.md` §4 |
 | C | 7.4: ¿explica en voz alta por qué las lunas son las piedras? 6.1 / 6.3: ¿ordena y repara la receta? 7.5: ¿presenta un certificado que cuenta? | `C.md` §4 |
 
 Siempre: dónde duda, qué dice en voz alta, qué pistas abre, cuándo vuelve al hub sin ganar. Anotar la hora junto a cada nota, para cruzarla con el registro.

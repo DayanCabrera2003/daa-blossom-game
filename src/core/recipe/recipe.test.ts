@@ -24,6 +24,13 @@ describe('the recipe cards', () => {
     }
   });
 
+  it('answer the start, four cases of a vine and the end: never x unmarked in the dark', () => {
+    // After the first card every dark sprout is a sun, so a look never reaches one unmarked in
+    // the dark (proved on runs in run.test.ts): the recipe has no card for it.
+    expect(RECIPE_CASES).toEqual(['start', 'lit', 'otherTree', 'sameTree', 'moon', 'end']);
+    expect(RECIPE_CARDS.map((card) => card.id)).not.toContain('chainToDark');
+  });
+
   it('list the three distractors of the GDD, each against a case', () => {
     const distractors = RECIPE_CARDS.filter((card) => !card.right).map((card) => card.id);
     expect(distractors).toEqual(['moonToSun', 'foldAnyLoop', 'untilNoneDark']);
@@ -78,7 +85,7 @@ describe('building a recipe', () => {
     const broken = withoutCases(RIGHT_RECIPE, ['sameTree', 'start']);
     expect(broken.mark).toBeNull();
     expect(broken.cases).not.toContain('foldFlower');
-    expect(broken.cases).toHaveLength(4);
+    expect(broken.cases).toHaveLength(3);
     expect(broken.end).toBe('finishKeepMoons');
     expect(withoutCases(RIGHT_RECIPE, ['end']).end).toBeNull();
   });

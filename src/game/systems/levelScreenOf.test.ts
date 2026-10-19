@@ -63,13 +63,24 @@ describe('the screen of a level of the catalog', () => {
         logsPlaytest: true,
         back: 'hub',
         backLabel: 'hud.back',
+        doneLabel: id === '7.5' ? 'hud.present' : 'hud.done',
         interfaceAt: id,
         ownGarden: false,
         showsStars: true,
         teacherJumps: true,
-        hudButtons: HUD_BUTTONS,
+        hudButtons: HUD_BUTTONS.filter((name) => name !== 'checkMirror'),
         traceRow: 'tools',
+        chainPreview: Number(id.split('.')[0]) <= 2 ? 'gain' : 'legality',
       });
+    }
+  });
+});
+
+describe('the bottom row of a level of the catalog', () => {
+  it("keeps the mirror's check only where the mirror challenge is drawn (2.4)", () => {
+    expect(levelScreenOf(levelById('2.4'), null).hudButtons).toEqual(HUD_BUTTONS);
+    for (const id of ['2.3', '3.7', '7.5']) {
+      expect(levelScreenOf(levelById(id), null).hudButtons, id).not.toContain('checkMirror');
     }
   });
 });
@@ -81,6 +92,10 @@ describe('the screen of a garden of the free mode', () => {
     expect(screen.season).toBe('0');
     expect(screen.keepsProgress).toBe(false);
     expect(screen.logsPlaytest).toBe(false);
+  });
+
+  it('ends its garden with "Terminé": it presents no certificate', () => {
+    expect(levelScreenOf(played, AT_1_8).doneLabel).toBe('hud.done');
   });
 
   it('goes back to the editor, and its back button says so', () => {
@@ -106,6 +121,10 @@ describe('the screen of a garden of the free mode', () => {
     );
     // The tools' row ends with the free mode's orders instead.
     expect(screen.traceRow).toBe('buttons');
+  });
+
+  it('keeps the gain of a dragged chain: it is a tool, not a level', () => {
+    expect(levelScreenOf(played, AT_1_8).chainPreview).toBe('gain');
   });
 
   it("takes no teacher's jumps to the levels around it: it is no level of the catalog", () => {

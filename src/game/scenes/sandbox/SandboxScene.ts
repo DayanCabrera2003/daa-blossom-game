@@ -61,6 +61,7 @@ import { ToastView } from '../../view/ToastView';
 import { keepGardenClear } from '../../view/touchZone';
 import { TutorialView } from '../../view/TutorialView';
 import { contextOf, type GameContext } from '../context';
+import { openLevel } from '../LevelGate';
 import { SANDBOX_SCENE, type SandboxSceneData } from '../SandboxGate';
 import { DesignBar } from './DesignBar';
 import { GenerateMenu } from './GenerateMenu';
@@ -419,7 +420,7 @@ export class SandboxScene extends Phaser.Scene {
     played = this.history;
     // The free mode's orders go with the garden, built here so their code stays in this chunk.
     const data: LevelSceneData = { sandbox: { level: playable.value, orders: freeOrders(access) } };
-    this.scene.start('level', data);
+    openLevel(this, data);
   }
 
   private leave(): void {

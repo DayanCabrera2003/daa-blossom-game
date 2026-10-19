@@ -23,6 +23,8 @@ describe('a garden at the start of a level', () => {
       declaredDone: false,
       allowed: new Set(['join', 'split']),
       roots: null,
+      chains: { rule: 'any' },
+      closed: new Set(),
     });
   });
 
@@ -36,6 +38,17 @@ describe('a garden at the start of a level', () => {
   it('keeps the only sprouts a search may start from, when the level names them (4.1)', () => {
     const state = createGardenState({ graph: path, roots: [0], allowed: ['markRoot'] });
     expect(state.roots).toEqual([0]);
+  });
+
+  it('keeps the chain rule and the actions the level closes for the day (4.5, 4.10)', () => {
+    const state = createGardenState({
+      graph: path,
+      chains: { rule: 'seen' },
+      closed: ['split'],
+      allowed: ['join'],
+    });
+    expect(state.chains).toEqual({ rule: 'seen' });
+    expect(state.closed).toEqual(new Set(['split']));
   });
 
   it('in the fog nothing is revealed yet (chapter 3)', () => {

@@ -28,7 +28,6 @@
       "type": "recipe",
       "cards": [
         "markDarkSuns",
-        "chainToDark",
         "growMoon",
         "chainRootToRoot",
         "foldFlower",
@@ -44,7 +43,6 @@
         "foldFlower",
         "chainRootToRoot",
         "growMoon",
-        "chainToDark",
         "finishKeepMoons"
       ]
     }

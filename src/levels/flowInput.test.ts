@@ -20,7 +20,7 @@ describe('the inputs a walkthrough gives the script', () => {
       { type: 'drawChain', path: ['e', 'c', 'b'] },
       { type: 'recipe', cards: ['markDarkSuns', 'foldFlower'] },
       { type: 'recipe', cards: [] },
-      { type: 'raceBet', answer: 'fourToEight' },
+      { type: 'raceBet', answer: 'threeToFive' },
     ]) {
       expect(accepts(input)).toBe(true);
     }

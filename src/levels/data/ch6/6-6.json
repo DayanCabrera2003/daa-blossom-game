@@ -72,7 +72,7 @@
     { "step": "notebook", "question": 0 },
     { "step": "say", "lines": ["ch6.6.sauce.08"] },
     { "step": "notebook", "question": 1 },
-    { "step": "say", "lines": ["ch6.6.sauce.16"] }
+    { "step": "say", "lines": ["ch6.6.sauce.16", "ch6.6.sauce.17"] }
   ],
   "unlocks": { "codex": ["C10", "C11"] },
   "solution": [

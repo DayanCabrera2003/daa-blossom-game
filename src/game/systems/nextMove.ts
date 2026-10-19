@@ -5,13 +5,16 @@ import { runPhase } from '@core/edmonds/phase';
 import { isMaximum } from '@core/edmonds/fast/maximum';
 import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
-import { size } from '@core/matching/queries';
+import { everyChain } from '@core/matching/everyChain';
+import { isExposed, size } from '@core/matching/queries';
 import { shortestChain } from '@core/matching/shortestChain';
 import type { Action } from '@core/rules/actions';
+import type { ChainRule } from '@core/rules/chainRule';
 import { applyAction } from '@core/rules/applyAction';
 import { sameGarden } from '@core/rules/sameGarden';
 import type { GardenState } from '@core/rules/state';
 import { isVictory, type VictoryCondition } from '@core/rules/victory';
+import { lightStep } from '@core/rules/lightStep';
 import { itemAt } from '@core/shared/itemAt';
 import { bipartiteMatching } from '@core/search/bipartiteMatching';
 import { searchStatus } from '@core/search/searchStatus';
@@ -49,23 +52,85 @@ function chainToLight(state: GardenState): VertexId[] | null {
 }
 
 /**
+ * The move itself, or in the fog the look it needs first: lanterns only move along vines in sight,
+ * so a move refused for a hidden vine becomes the inspection of the sprout that shows it.
+ */
+function throughTheFog(state: GardenState, move: Action): Action {
+  const outcome = applyAction(state, move);
+  if (outcome.ok || outcome.reason.code !== 'vineHidden' || !state.allowed.has('inspect')) {
+    return move;
+  }
+  return { type: 'inspect', vertex: outcome.reason.vertex };
+}
+
+/**
  * Lighting the most lanterns. Flowers are opened first (lanterns only move in the open garden).
- * With chains unlocked, the whole chain at once. Before that (chapter 1), along a shortest chain:
- * two neighbors in the dark are joined; otherwise its first lantern is passed along, which leaves a
- * chain two vines shorter behind, until a join finishes it.
+ * With chains unlocked, the whole chain at once, its vines looked at first in the fog. Before that
+ * (chapter 1), along a shortest chain: two neighbors in the dark are joined; otherwise its first
+ * lantern is passed along, which leaves a chain two vines shorter behind, until a join finishes it.
  */
 function lightMore(state: GardenState): Action | null {
+  if (state.chains.rule === 'seen') return lightSeen(state);
   const flower = state.layer.nodes.find((node) => node.kind === 'blossom');
   if (flower?.kind === 'blossom') return { type: 'unfold', blossom: flower.id };
+  if (state.allowed.has('chain') && state.chains.rule === 'fromBase') {
+    return lightFromBase(state, state.chains);
+  }
   if (state.allowed.has('chain')) {
     const chain = chainToLight(state);
-    return chain === null ? null : { type: 'chain', path: chain };
+    return chain === null ? null : throughTheFog(state, { type: 'chain', path: chain });
   }
   // Lanterns are passed along a shortest chain: any other one may be undone by the next found.
   const chain = shortestChain(state.graph, state.matching);
   if (chain === null) return null;
   if (chain.length === 2) return { type: 'join', u: itemAt(chain, 0), v: itemAt(chain, 1) };
   return { type: 'passLantern', from: itemAt(chain, 0), to: itemAt(chain, 1) };
+}
+
+/**
+ * Lighting more where only the chain the marks reached moves lanterns (`seen`): the search first,
+ * folding where two suns meet, until it sees a chain; then the flowers that chain crosses are
+ * opened, outer ones first, and the very chain the light found is lit. Opening a flower keeps the
+ * chain seen, so the search is never undone by the opening.
+ */
+function lightSeen(state: GardenState): Action | null {
+  const seen = state.chainSeen;
+  if (seen === null) return searchStep(state);
+  for (const sprout of seen) {
+    const node = itemAt(state.layer.nodes, itemAt(state.layer.nodeOf, sprout));
+    if (node.kind === 'blossom') return { type: 'unfold', blossom: node.id };
+  }
+  return throughTheFog(state, { type: 'chain', path: [...seen] });
+}
+
+/**
+ * Lighting more where the level's flower is closed (`fromBase`, 4.10): a chain the rule lets
+ * through, if there is one; otherwise the stem is rotated to the base (a chain of gain 0 ending
+ * there), which leaves the base in the dark so a chain can leave from it. Chains are tried in a
+ * fixed order (`everyChain`), so the mentor always offers the same move in the same garden.
+ */
+function lightFromBase(
+  state: GardenState,
+  rule: Extract<ChainRule, { rule: 'fromBase' }>,
+): Action | null {
+  // Chains are judged in the clear: in the fog, the vine still hidden is looked at first.
+  const clear: GardenState = { ...state, revealed: null };
+  const chains = everyChain(state.graph, state.matching);
+  const lights = chains.find(
+    (path) =>
+      isExposed(state.matching, itemAt(path, path.length - 1)) &&
+      accepted(clear, { type: 'chain', path }),
+  );
+  if (lights !== undefined) return throughTheFog(state, { type: 'chain', path: lights });
+  const stem = chains.find(
+    (path) =>
+      itemAt(path, path.length - 1) === rule.base && accepted(clear, { type: 'chain', path }),
+  );
+  if (stem === undefined) return null;
+  const rotate: Action = state.allowed.has('rotateStem')
+    ? { type: 'rotateStem', stem }
+    : { type: 'chain', path: stem };
+  return throughTheFog(state, rotate);
 }
 
 /** Moving placed objects towards `target`: take away extras first, then add what is missing. */
@@ -82,11 +147,32 @@ function placeTowards(
 }
 
 /**
+ * The next step of the light that searches by itself (the flower levels): advancing it, or, where
+ * it stops, folding the loop it met or inspecting the sun it waits for in the fog (`lightStep`).
+ * Null once it has seen a chain or has nothing left to look at.
+ */
+function lightOn(state: GardenState): Action | null {
+  const step = lightStep(state);
+  switch (step.kind) {
+    case 'move':
+      return { type: 'stepLight' };
+    case 'flower':
+      return { type: 'foldAt', from: step.from, to: step.to };
+    case 'fog':
+      return { type: 'inspect', vertex: step.vertex };
+    default:
+      return null;
+  }
+}
+
+/**
  * The next mark of a search that looks for a chain: roots first (only those the level allows, which
  * `markRoot` checks), then looks from suns, folding when suns meet. In the fog only suns are
  * inspected, since only a sun looks along its vines: no drop of water is spent on anyone else.
+ * Where the light searches by itself, the light is moved on instead (`lightOn`).
  */
 function searchStep(state: GardenState): Action | null {
+  if (state.allowed.has('stepLight')) return lightOn(state);
   const sprouts = [...Array(state.graph.n).keys()];
   const root = sprouts.find((v) => accepted(state, { type: 'markRoot', vertex: v }));
   if (root !== undefined) return { type: 'markRoot', vertex: root };
@@ -163,7 +249,8 @@ function guardTheRest(state: GardenState): Action {
 
 /**
  * The step the mentor takes for the player at hint grade 3 (GDD §5.3). It is always a move the
- * rules accept and that brings the level closer to its victory, or null once the level is won:
+ * rules accept, the level's chain rule among them, and that brings the level closer to its victory,
+ * or null once the level is won:
  * on the reference solution, its next step; otherwise a step computed by the core for the
  * level's victory (a search for `chainFound` and `searchComplete`, a search to its end and then
  * "Terminé" for `searchExhausted`; the most lanterns, then "Terminé" or the right stones or

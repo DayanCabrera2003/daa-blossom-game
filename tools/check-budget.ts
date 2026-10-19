@@ -1,8 +1,8 @@
 // check-budget: weighs the built game against its budget (plan 06, phase 11): the built files of
 // dist/, which only a build knows, with the assets of the manifest. The build manifest tells the
 // initial script from the books loaded on demand (plan 07, phase 2) and from the free mode, also
-// loaded on demand and weighed in its own part (plan 08, phase 9); KaTeX and marked must be in the
-// books only. Each part is also reported as it is sent, gzipped (as GitHub Pages serves text) and
+// loaded on demand and weighed in its own part (plan 08, phase 9), and from the level screen, loaded
+// behind its gate and weighed in its own part too; KaTeX and marked must be in the books only. Each part is also reported as it is sent, gzipped (as GitHub Pages serves text) and
 // brotli-compressed (plan 09, phase 9): reported, not limited.
 // Usage: npm run build && npm run budget. Exits with code 1 if any part is over its limit, or if
 // the initial script bundles KaTeX or marked.
@@ -17,6 +17,7 @@ import { budgetReport, manifestSizes } from './assets/budget';
 import { packedSize, servedWeights } from './assets/compressed';
 import { buildFiles, parseViteManifest } from './assets/buildChunks';
 import { isFreeMode } from './assets/freeMode';
+import { isLevelScreen } from './assets/levelScreen';
 import { librariesIn } from './assets/deferredLibraries';
 import { formatTable } from './formatTable';
 
@@ -28,6 +29,7 @@ if (!existsSync(BUILD_MANIFEST)) throw new Error('no dist/.vite/manifest.json: r
 const files = buildFiles(
   parseViteManifest(JSON.parse(readFileSync(BUILD_MANIFEST, 'utf8'))),
   isFreeMode,
+  isLevelScreen,
 );
 
 /** The bytes of some built files. */
@@ -41,6 +43,7 @@ const report = budgetReport({
   js: weigh(files.initial),
   codex: weigh(files.deferred),
   sandbox: weigh(files.freeMode),
+  level: weigh(files.level),
 });
 
 /** Some built files with their bytes, to weigh them compressed. */
@@ -50,6 +53,7 @@ const served = servedWeights(report, {
   js: packedSize(read(files.initial)),
   codex: packedSize(read(files.deferred)),
   sandbox: packedSize(read(files.freeMode)),
+  level: packedSize(read(files.level)),
 });
 
 /** A size in kilobytes, decimal like the budget. */

@@ -16,7 +16,8 @@ import { pondPieces, type Piece } from './pond';
  *
  * Nobody is left stuck: a grade-3 hint draws a better reflection (your lanterns turned over along a
  * chain the core finds), and after `MISSES_BEFORE_SPARED` checks that do not win, the step is over
- * anyway, with a word from the mentor.
+ * anyway, with a word from the mentor. Its second phase (plan 10, phase 8) is a challenge nobody
+ * can win, over lanterns that already hold the most: every check says "ese no te gana".
  */
 
 /** Checks that do not beat the garden before the step is over anyway. */
@@ -84,10 +85,16 @@ export const drawReflection = (challenge: MirrorChallenge, draft: Matching): Mir
 /** The same lanterns read the same, however they were drawn. */
 const keyOf = (draft: Matching): string => JSON.stringify(drawnPairs(draft));
 
-/** Checks the drawing against your lanterns `yours`; the check stays shown until the next touch. */
+/**
+ * Checks the drawing against your lanterns `yours`; the check stays shown until the next touch.
+ * Where the challenge is one nobody can win (`beatable` false: 2.4, second phase, over lanterns
+ * that already hold the most), every check is one that does not beat you, and none spares the
+ * player: there the script counts the checks themselves.
+ */
 export function checkMirror(
   challenge: MirrorChallenge,
   yours: Matching,
+  beatable = true,
 ): { challenge: MirrorChallenge; check: MirrorCheck } {
   const drawn = size(challenge.draft);
   if (drawn <= size(yours)) {
@@ -96,7 +103,7 @@ export function checkMirror(
       kind: 'notBetter',
       drawn,
       yours: size(yours),
-      spared: misses === MISSES_BEFORE_SPARED,
+      spared: beatable && misses === MISSES_BEFORE_SPARED,
     };
     return { challenge: { ...challenge, misses, shown: check }, check };
   }

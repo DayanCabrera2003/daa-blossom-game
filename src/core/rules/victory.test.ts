@@ -6,7 +6,7 @@ import { unwrap } from '../shared/result';
 import type { Action } from './actions';
 import { applyAction } from './applyAction';
 import { createGardenState, type GardenState } from './state';
-import { isVictory } from './victory';
+import { isCertificate, isVictory, type VictoryCondition } from './victory';
 
 // Level 3.7, part I: 1–2–3–4–5 as 0..4, with its maximum of two lanterns.
 const path = pathGraph(5);
@@ -289,5 +289,25 @@ describe('the stones handed over by the search as a victory (7.4)', () => {
     const half = play(twice, [...searchHalf(0), ...lift(1)]);
     expect(isVictory(half, { type: 'tutteBergeCertificate' })).toBe(true);
     expect(isVictory(half, { type: 'moonCertificate' })).toBe(false);
+  });
+});
+
+describe('which victories are certificates to present', () => {
+  it('scarecrows and stones are presented; lanterns, chains and searches are claimed', () => {
+    const presented: VictoryCondition[] = [
+      { type: 'coverCertificate' },
+      { type: 'coverComplete' },
+      { type: 'tutteBergeCertificate' },
+      { type: 'moonCertificate' },
+    ];
+    const claimed: VictoryCondition[] = [
+      { type: 'matchingSize', value: 2 },
+      { type: 'maximum' },
+      { type: 'chainFound' },
+      { type: 'searchComplete' },
+      { type: 'searchExhausted' },
+    ];
+    for (const victory of presented) expect(isCertificate(victory), victory.type).toBe(true);
+    for (const victory of claimed) expect(isCertificate(victory), victory.type).toBe(false);
   });
 });

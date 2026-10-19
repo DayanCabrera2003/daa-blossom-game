@@ -3,7 +3,7 @@ import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
-import { isMatchedEdge } from '@core/matching/queries';
+import { isMatchedEdge, size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
@@ -18,7 +18,8 @@ import { describe, expect, it } from 'vitest';
  * The lessons of the greenhouse (GDD §7, chapter 3) that its gardens must really hold, checked with
  * the core: in 3.3 a moon is reached from two suns and the false statement "a marked sprout means a
  * chain" is refuted by a garden without one; in 3.8 the failed search reaches every sprout, so its
- * moons are König's scarecrows, and "k scarecrows, exactly k lanterns" is refuted by a spare one.
+ * moons are König's scarecrows, "k scarecrows, exactly k lanterns" is refuted by a spare one, and
+ * "the scarecrows can always go on the moons" by a garden its search does not reach whole.
  */
 
 const levelOf = (id: string): Level => {
@@ -118,6 +119,31 @@ describe('3.8: the gift of the search', () => {
     expect([...placed].sort((a, b) => a - b)).toEqual(marked(end, 'inner'));
     expect(koenigCover(end.graph, end.search)).toEqual(marked(end, 'inner'));
     expect(checkVertexCover(end.graph, placed).ok).toBe(true);
+  });
+
+  it('(c): where the search misses some sprouts, scarecrows on its moons leave a vine unguarded', () => {
+    const counterexample = counterexampleOf('3.8', 2);
+    const id = (name: string): VertexId => sproutOf(counterexample, name);
+    const { start } = counterexample;
+    expect(start.allowed.has('placeScarecrow')).toBe(true);
+    const searched = play(start, [
+      { type: 'markRoot', vertex: id('S') },
+      { type: 'markMoon', from: id('S'), to: id('a') },
+    ]);
+    // The search ends without a chain: the lanterns lit are the most the garden holds.
+    expect(statusOf(searched)).toBe('exhausted');
+    expect(maximumSize(searched.graph)).toBe(size(searched.matching));
+    const unmarked = [...Array(searched.graph.n).keys()].filter(
+      (v) => searched.search?.label[itemAt(searched.layer.nodeOf, v)] === 'none',
+    );
+    expect(unmarked).toEqual([id('c'), id('d')]);
+    const moons = marked(searched, 'inner');
+    const guarded = play(
+      searched,
+      moons.map((vertex) => ({ type: 'placeScarecrow', vertex })),
+    );
+    expect(checkVertexCover(guarded.graph, moons)).toMatchObject({ ok: false });
+    expect(moons.length).toBeLessThan(size(searched.matching));
   });
 
   it('(b): two scarecrows guard every vine, and still only one lantern fits', () => {

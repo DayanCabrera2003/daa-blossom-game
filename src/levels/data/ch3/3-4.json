@@ -35,13 +35,22 @@
   "victory": { "type": "matchingSize", "value": 5 },
   "hints": [
     { "line": "ch3.4.sauce.01" },
-    { "line": "ch3.4.sauce.02", "highlight": ["R1", "R2"] },
+    { "line": "ch3.4.sauce.02", "highlight": ["R1"] },
     { "line": "ch3.4.sauce.03" }
   ],
   "flow": [
     { "step": "say", "lines": ["ch3.4.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch3.4.sauce.04"] }
+    {
+      "step": "ask",
+      "prompt": "ch3.4.sauce.05",
+      "options": [
+        { "line": "ch3.4.gardener.06", "correct": false, "reply": "ch3.4.sauce.07" },
+        { "line": "ch3.4.gardener.08", "correct": true, "reply": "ch3.4.sauce.04" },
+        { "line": "ch3.4.gardener.09", "correct": false, "reply": "ch3.4.sauce.10" }
+      ],
+      "retry": true
+    }
   ],
   "solution": [
     { "type": "inspect", "vertex": "R1" },
@@ -54,6 +63,8 @@
     { "type": "markMoon", "from": "R2", "to": "g" },
     { "type": "inspect", "vertex": "b" },
     { "type": "markMoon", "from": "b", "to": "d" },
-    { "type": "chain", "path": ["R1", "a", "b", "d", "c", "R2"] }
+    { "type": "inspect", "vertex": "d" },
+    { "type": "chain", "path": ["R1", "a", "b", "d", "c", "R2"] },
+    { "type": "answer", "option": 1 }
   ]
 }

@@ -12,13 +12,14 @@ import { TOOL_ACTIONS, type ToolId } from './tools';
 
 /**
  * What a player does with hand and mouse: take a tool, press and drag through some points (a
- * single point is a touch), or press "Terminé". Used to prove that every move of the rules can be
+ * single point is a touch), or press "Terminé" or "Avanzar la luz". Used to prove that every move of the rules can be
  * made on the canvas, through the very same pointer the level scene uses.
  */
 export type Gesture =
   | { readonly kind: 'tool'; readonly tool: ToolId }
   | { readonly kind: 'press'; readonly points: readonly Point[] }
-  | { readonly kind: 'done' };
+  | { readonly kind: 'done' }
+  | { readonly kind: 'light' };
 
 const toolOf = (action: Action): ToolId => {
   const tool = (Object.keys(TOOL_ACTIONS) as ToolId[]).find((t) =>
@@ -71,6 +72,7 @@ export function gesturesFor(
   action: Action,
 ): Gesture[] {
   if (action.type === 'declareDone') return [{ kind: 'done' }];
+  if (action.type === 'stepLight') return [{ kind: 'light' }];
   const at = (v: VertexId): Point => itemAt(positions, v);
   const touch = (point: Point): Gesture => ({ kind: 'press', points: [point] });
   const tool: Gesture = { kind: 'tool', tool: toolOf(action) };
@@ -116,6 +118,8 @@ export function perform(
       pointer = chooseTool(pointer, gesture.tool);
     } else if (gesture.kind === 'done') {
       actions.push({ type: 'declareDone' });
+    } else if (gesture.kind === 'light') {
+      actions.push({ type: 'stepLight' });
     } else {
       const [first, ...rest] = gesture.points as [Point, ...Point[]];
       pointer = pressStart(pointer, state, positions, first);

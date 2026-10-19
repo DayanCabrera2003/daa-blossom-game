@@ -239,6 +239,11 @@
       "step": "notebook"
     }
   ],
+  "hints": [
+    { "line": "ch1.5.sauce.05" },
+    { "line": "ch1.5.sauce.06", "highlight": ["P"] },
+    { "line": "ch1.5.sauce.07" }
+  ],
   "solution": [
     {
       "type": "chain",

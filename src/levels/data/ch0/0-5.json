@@ -15,7 +15,12 @@
   ],
   "goal": { "visible": true, "value": 2 },
   "victory": { "type": "matchingSize", "value": 2 },
-  "flow": [{ "step": "play" }, { "step": "say", "lines": ["ch0.5.sauce.00"] }, { "step": "sun" }],
+  "flow": [
+    { "step": "play" },
+    { "step": "say", "lines": ["ch0.5.sauce.00"] },
+    { "step": "sun" },
+    { "step": "say", "lines": ["ch0.5.sauce.01"] }
+  ],
   "unlocks": { "codex": [{ "entry": "C1", "tabs": ["intuition"] }] },
   "solution": [
     { "type": "join", "u": "A", "v": "B" },

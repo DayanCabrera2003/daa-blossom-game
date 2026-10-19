@@ -7,6 +7,7 @@ import {
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
+  foldingLightLevel,
   lightLevel,
   nestedFlowersLevel,
 } from '../../../tests/support/fixtureLevels';
@@ -46,6 +47,27 @@ const touch = (point: { x: number; y: number }): UiEvent[] => [
   { kind: 'press', point },
   { kind: 'release', point },
 ];
+
+describe('the light that searches by itself (plan 10, section 2.4)', () => {
+  it('"Avanzar la luz" makes its next mark; where it stops, the vine of the flower glows', () => {
+    const level = foldingLightLevel();
+    const lit = feed(startController(level, 0), [{ kind: 'light' }, { kind: 'light' }]);
+    expect(lit.effects.map((effect) => effect.kind)).toEqual(['animate', 'animate']);
+    const stopped = feed(lit.controller, [{ kind: 'light' }, { kind: 'light' }]);
+    expect(stopped.effects.at(-1)).toMatchObject({
+      kind: 'rejected',
+      reason: { code: 'lightAtFlower', u: 2, v: 4 },
+    });
+    expect(stopped.controller.vineGlow).toEqual([2, 4]);
+    // Folding there is the way on, and puts the glow out.
+    const folded = feed(stopped.controller, [
+      { kind: 'tool', tool: 'marks' },
+      ...touch(vinePoint(garden(stopped.controller.session), placesOf(level), 2, 4)),
+    ]);
+    expect(folded.effects.map((effect) => effect.kind)).toEqual(['animate']);
+    expect(folded.controller.vineGlow).toBeNull();
+  });
+});
 
 describe('the level controller', () => {
   const trap = levelById('1.1');
@@ -124,7 +146,9 @@ describe('the level controller', () => {
     expect(shown[2]?.map((effect) => effect.kind)).toEqual(['hint', 'animate']);
     expect(controller.highlight).toEqual([0, 1, 2, 4]);
     expect(garden(controller.session).search?.label[0]).toBe('outer');
-    expect(handle(startController(festival, 0), { kind: 'hint' }, 1).effects).toEqual([]);
+    // Asked for at once, a hint opens unoffered; once the three grades are open, nothing more.
+    expect(handle(startController(festival, 0), { kind: 'hint' }, 1).effects).toHaveLength(1);
+    expect(handle(controller, { kind: 'hint' }, 4 * HINT_DELAY_MS).effects).toEqual([]);
   });
 
   it('the next accepted move puts the glow out', () => {
@@ -163,8 +187,8 @@ describe('the level controller', () => {
         const events: UiEvent[] =
           gesture.kind === 'tool'
             ? [{ kind: 'tool', tool: gesture.tool }]
-            : gesture.kind === 'done'
-              ? [{ kind: 'done' }]
+            : gesture.kind === 'done' || gesture.kind === 'light'
+              ? [{ kind: gesture.kind }]
               : [
                   { kind: 'press', point: gesture.points[0] as Point },
                   ...gesture.points.slice(1).map((point) => ({ kind: 'move', point }) as UiEvent),
@@ -488,8 +512,8 @@ describe('reactions during play (1.4)', () => {
       (gesture): UiEvent[] =>
         gesture.kind === 'tool'
           ? [{ kind: 'tool', tool: gesture.tool }]
-          : gesture.kind === 'done'
-            ? [{ kind: 'done' }]
+          : gesture.kind === 'done' || gesture.kind === 'light'
+            ? [{ kind: gesture.kind }]
             : [
                 { kind: 'press', point: gesture.points[0] as Point },
                 ...gesture.points.slice(1).map((point): UiEvent => ({ kind: 'move', point })),

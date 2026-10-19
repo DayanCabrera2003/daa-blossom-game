@@ -34,8 +34,11 @@ export const counterexampleSchema = z.discriminatedUnion('mode', [
   z.strictObject({ mode: z.literal('mirrorDraw'), ...miniGarden, found: lineId }),
 ]);
 
-/** One statement on offer; `reply` is what the mentor says when it is chosen. */
-const option = z
+/**
+ * One statement on offer; `reply` is what the mentor says when it is chosen. Shared by the notebook
+ * and the questions of a script (`ask`, plan 10, phase 7), which refute a false answer alike.
+ */
+export const statementSchema = z
   .strictObject({
     line: lineId,
     correct: z.boolean(),
@@ -55,7 +58,7 @@ export const notebookSchema = z.strictObject({
   prompt: lineId,
   codex: codexEntry,
   options: z
-    .array(option)
+    .array(statementSchema)
     .min(2)
     .refine((options) => options.some((option) => option.correct), 'no option is correct'),
 });

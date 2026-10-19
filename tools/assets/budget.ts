@@ -1,5 +1,5 @@
 // The weight budget of the shipped game (plan 06, phase 11; the deferred books, plan 07, phase 2;
-// the deferred free mode, plan 08, phase 9): how many bytes each part may take, and how the parts
+// the deferred free mode, plan 08, phase 9; the deferred level screen): how many bytes each part may take, and how the parts
 // are weighed from the asset manifest and the built files.
 import type { Fallbacks } from '../../src/game/assets/fallbackSchema';
 import type { AssetKind, Manifest } from '../../src/game/assets/manifestSchema';
@@ -10,7 +10,7 @@ const MB = 1000 * KB;
 
 /** A part of the budget: the JavaScript, the assets by kind, and what the first screen waits for. */
 export type BudgetPart =
-  'js' | 'images' | 'fonts' | 'sounds' | 'initial' | 'music' | 'codex' | 'sandbox';
+  'js' | 'images' | 'fonts' | 'sounds' | 'initial' | 'music' | 'codex' | 'sandbox' | 'level';
 
 /** The most bytes each part may take. */
 export const BUDGET: Readonly<Record<BudgetPart, number>> = {
@@ -36,6 +36,11 @@ export const BUDGET: Readonly<Record<BudgetPart, number>> = {
   // the close of plan 08, when it all weighed 50 KB (35 the editor, 5 the sheet, 10 shared): a
   // fifth to spare for the polish pass, no more.
   sandbox: 60 * KB,
+  // The level screen, loaded behind its thin gate the first time a level opens, so the initial
+  // script keeps room for the levels still to come: the level scene with its views, its cards, its
+  // presenter and the mechanic cards' catalog. Settled when it left the initial script, when it
+  // weighed 72 KB: room for the code of plan 10's later phases, which lands mostly here.
+  level: 100 * KB,
 };
 
 /** The asset kinds weighed under each part of the budget that the manifest alone decides. */
@@ -97,13 +102,14 @@ export interface BudgetRow {
 }
 
 /**
- * What the build weighs, as `buildFiles` sorts it: the initial script, the deferred books and the
- * deferred free mode.
+ * What the build weighs, as `buildFiles` sorts it: the initial script, the deferred books, the
+ * deferred free mode and the deferred level screen.
  */
 export interface BuildSizes {
   readonly js: number;
   readonly codex: number;
   readonly sandbox: number;
+  readonly level: number;
 }
 
 /** Every part of the budget, weighed from the manifest's sizes and the built files. */
@@ -117,6 +123,7 @@ export function budgetReport(sizes: Omit<ManifestSizes, 'deployed'> & BuildSizes
     music: sizes.music,
     codex: sizes.codex,
     sandbox: sizes.sandbox,
+    level: sizes.level,
   };
   return (Object.keys(BUDGET) as BudgetPart[]).map((part) => ({
     part,

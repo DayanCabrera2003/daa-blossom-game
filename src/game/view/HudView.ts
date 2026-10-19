@@ -1,7 +1,13 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
-import { bottomRow, HUD_BUTTONS, traceButtonLeft, type HudButton } from '../picture/bottomRows';
+import {
+  bottomRow,
+  HUD_BUTTONS,
+  ordersRow,
+  traceButtonLeft,
+  type HudButton,
+} from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -34,12 +40,16 @@ export interface HudActions {
   readonly book: () => void;
   /** Opens or folds the teacher's trace panel (teacher mode only). */
   readonly trace: () => void;
+  /** Moves the light that searches by itself on by one mark (the flower levels). */
+  readonly light: () => void;
 }
 
 /** How a screen lays its HUD out (`systems/levelScreenOf.ts`). */
 export interface HudLayout {
   /** The text key of the back button: "Volver", or "Diseñar" in the free mode. */
   readonly backLabel: string;
+  /** The text key of the button that ends the level: "Terminé", or «Presentar» for a certificate. */
+  readonly doneLabel: string;
   /** The buttons of the bottom row, in `HUD_BUTTONS` order. */
   readonly buttons: readonly HudButton[];
   /** Where the teacher's trace button sits: the end of the tools' row, or beside the Códex. */
@@ -47,15 +57,26 @@ export interface HudLayout {
 }
 
 /** The HUD of a level of the catalog. */
-const LEVEL_HUD: HudLayout = { backLabel: 'hud.back', buttons: HUD_BUTTONS, traceRow: 'tools' };
+const LEVEL_HUD: HudLayout = {
+  backLabel: 'hud.back',
+  doneLabel: 'hud.done',
+  buttons: HUD_BUTTONS,
+  traceRow: 'tools',
+};
+
+/** The text key of a HUD button, as the screen's layout names it. */
+const buttonLabel = (name: HudButton, layout: HudLayout): string =>
+  name === 'back' ? layout.backLabel : name === 'done' ? layout.doneLabel : `hud.${name}`;
 
 /**
  * The HUD: the goal (or the question, when it is hidden), lanterns lit and water spent (after the
- * drop of the pack) on top; on wooden buttons, "Terminé", undo, redo, hint, "?" (the mechanic
- * cards again) and back at the bottom right, switched off when not available, "Comprobar" beside them in the mirror challenge, and the way out
+ * drop of the pack) on top; on wooden buttons, "Terminé" (or «Presentar» in the levels of
+ * certificates), undo, redo, hint, "?" (the mechanic cards again) and back at the bottom right,
+ * switched off when not available, "Comprobar" beside them in the mirror challenge, and the way out
  * of a flower entered with the layers, whose depth the status line tells (5.2), and from 7.2 the
- * Council's count on the right of the status line. In teacher mode, the trace button ends the
- * tools' row.
+ * Council's count on the right of the status line. Where the light searches by itself,
+ * "Avanzar la luz" ends the tools' row; in teacher mode, the trace button ends it (just before the
+ * light's, when both are there).
  */
 export class HudView {
   private readonly goal: OutlinedText;
@@ -75,6 +96,12 @@ export class HudView {
   private readonly book: Button;
   /** The teacher's trace panel, at the right end of the tools' row, in teacher mode only. */
   private readonly trace: Button;
+  /** "Avanzar la luz", ending the tools' row where the light searches by itself. */
+  private readonly light: Button;
+  /** Whether the trace sits on the tools' row, where the light's button would push it left. */
+  private readonly traceOnTools: boolean;
+  /** Whether "Avanzar la luz" is shown now. */
+  private lightShown = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -99,14 +126,7 @@ export class HudView {
     this.council = line(CANVAS_WIDTH - LAYOUT.margin, LAYOUT.secondY).setOrigin(1, 0);
     // Every button keeps its place even while hidden, so the row is laid out for all of them.
     const made = layout.buttons.map(
-      (name) =>
-        new Button(
-          scene,
-          0,
-          LAYOUT.bottomY,
-          t(name === 'back' ? layout.backLabel : `hud.${name}`),
-          actions[name],
-        ),
+      (name) => new Button(scene, 0, LAYOUT.bottomY, t(buttonLabel(name, layout)), actions[name]),
     );
     this.book = new Button(scene, 0, LAYOUT.bottomY, t('hud.book'), actions.book, [
       BOOK_ICON,
@@ -114,8 +134,16 @@ export class HudView {
     this.trace = new Button(scene, 0, LAYOUT.toolbarY, t('hud.trace'), actions.trace).setVisible(
       false,
     );
+    this.light = new Button(
+      scene,
+      0,
+      LAYOUT.toolbarY,
+      t('hud.stepLight'),
+      actions.light,
+    ).setVisible(false);
     // In the free mode its orders end the tools' row, so the trace goes beside the Códex.
     const traceBelow = layout.traceRow === 'buttons';
+    this.traceOnTools = !traceBelow;
     // The gear, the Códex (and the trace) from the left, the buttons from the right; the row
     // squeezes its gaps if a wider fallback face would make them meet.
     const row = bottomRow({
@@ -131,12 +159,26 @@ export class HudView {
     } else {
       this.trace.moveTo(row.trace, LAYOUT.bottomY);
     }
+    this.light.moveTo(traceButtonLeft(this.light.width), LAYOUT.toolbarY);
     this.buttons = Object.fromEntries(layout.buttons.map((name, i) => [name, made[i]]));
   }
 
   /** Shows the Códex button when some page of the book is open, and hides it otherwise. */
   showBook(open: boolean): void {
     this.book.setVisible(open);
+  }
+
+  /**
+   * Shows "Avanzar la luz" at the end of the tools' row, the trace (when it shares that row) just
+   * before it, or hides it and gives the end of the row back to the trace.
+   */
+  private showLight(shown: boolean): void {
+    if (this.lightShown === shown) return;
+    this.lightShown = shown;
+    this.light.setVisible(shown);
+    if (!this.traceOnTools) return;
+    const widths = shown ? [this.trace.width, this.light.width] : [this.trace.width];
+    this.trace.moveTo(itemAt(ordersRow(widths), 0), LAYOUT.toolbarY);
   }
 
   /** Shows the trace button, in teacher mode. */
@@ -186,8 +228,10 @@ export class HudView {
     const { undo, redo, hint, done, checkMirror, leaveLayer } = this.buttons;
     undo?.setEnabled(hud.canUndo);
     redo?.setEnabled(hud.canRedo);
-    hint?.setEnabled(hud.hintAvailable);
+    // The hint is always at hand while grades remain; on offer, it glows as the button in hand.
+    hint?.setEnabled(hud.hintAvailable).setActive(hud.hintOffered);
     done?.setVisible(hud.canDeclareDone);
+    this.showLight(hud.canStepLight);
     checkMirror?.setVisible(hud.canCheckMirror);
     leaveLayer?.setVisible(inside);
   }

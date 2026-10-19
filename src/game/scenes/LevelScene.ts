@@ -61,7 +61,9 @@ import { addSettings } from './settingsPanel';
  * presentation queue decides, and the mechanic cards through `level/LevelCards.ts`. What stays here is the wiring, and what outlives the screen: the save
  * and the playtest log. It plays a level of the catalog or a garden of the free mode alike: what
  * differs (music, backdrop, what is kept and logged, the way back, the interface shown) comes from
- * the pure screen descriptor (`systems/levelScreenOf.ts`), asked once as the level opens.
+ * the pure screen descriptor (`systems/levelScreenOf.ts`), asked once as the level opens. It lives
+ * in its own chunk: only the gate's import() reaches it (`LevelGate.ts`), and once added to the game
+ * it starts itself again for the next level or a teacher's jump.
  */
 export class LevelScene extends Phaser.Scene {
   private context!: GameContext;
@@ -145,6 +147,7 @@ export class LevelScene extends Phaser.Scene {
       back: () => this.leave(),
       hud: {
         backLabel: screen.backLabel,
+        doneLabel: screen.doneLabel,
         buttons: screen.hudButtons,
         traceRow: screen.traceRow,
       },
@@ -160,6 +163,7 @@ export class LevelScene extends Phaser.Scene {
         kinds,
         season: screen.season,
         interfaceAt: screen.interfaceAt,
+        chainPreview: screen.chainPreview,
       },
       {
         controller: () => this.controller,
@@ -188,7 +192,7 @@ export class LevelScene extends Phaser.Scene {
           this.dispatch(
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
           ),
-        counterexample: (question, option) => this.openCounterexample(question, option),
+        counterexample: (step, option) => this.openCounterexample(step, option),
         card: (card) => {
           // A tool shown for the first time rings the unlock.
           const jingle = cardJingle(card, new Set(this.context.saves.get().tutorialsSeen));
@@ -357,13 +361,14 @@ export class LevelScene extends Phaser.Scene {
   }
 
   /**
-   * Opens the garden that refutes the false statement `option` of notebook question `question` in
-   * its own screen, while this one sleeps as it is; coming back wakes it and the notebook asks again.
+   * Opens the garden that refutes the false answer `option` of the question asked at script step
+   * `step` (the notebook or an `ask`) in its own screen, while this one sleeps as it is; coming back
+   * wakes it and the question is asked again.
    */
-  private openCounterexample(question: number, option: number): void {
+  private openCounterexample(step: number, option: number): void {
     const data: CounterexampleSceneData = {
       levelId: this.level.data.id,
-      question,
+      step,
       option,
       back: () => {
         this.scene.wake();

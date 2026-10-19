@@ -2,6 +2,7 @@ import type { BlossomError } from '@core/blossom/isBlossom';
 import type { PathError } from '@core/matching/paths';
 import type { ActionType } from '@core/rules/actions';
 import { NAMED_CHAPTERS } from '@game/picture/chapterTitle';
+import type { ClaimVerdictCode } from '@game/systems/claimVerdict';
 import type { RefusalCode } from '@game/systems/refusal';
 import { CARD_IDS } from '@levels/cards/schema';
 import { CODEX_TABS } from '@levels/codex';
@@ -59,6 +60,7 @@ const IMPORT_REASONS = {
 /** Why an action was refused (`core/rules/reasons.ts`, and the game's own in `game/systems/refusal.ts`). */
 const REASONS = {
   actionLocked: ['action'],
+  actionClosed: ['action'],
   vertexOutOfRange: [],
   notAdjacent: ['u', 'v'],
   alreadyLit: ['vertex'],
@@ -84,7 +86,27 @@ const REASONS = {
   notPlaced: ['vertex'],
   notNow: [],
   twoSilver: ['vertex'],
+  chainNotSeen: [],
+  flowerClosed: [],
+  baseNotDark: [],
+  lightAtFlower: ['u', 'v'],
+  lightFound: [],
+  lightDone: [],
 } as const satisfies Record<RefusalCode, Params>;
+
+/**
+ * Why a "Terminé" that does not win falls short (`game/systems/claimVerdict.ts`), with the counts
+ * its text tells; never a sprout's name.
+ */
+const CLAIM_VERDICTS = {
+  chainLeft: [],
+  searchOpen: [],
+  unguarded: [],
+  countMismatch: ['scarecrows', 'lanterns'],
+  countShort: ['atLeast', 'dark'],
+  searchNotOver: [],
+  notTheMoons: [],
+} as const satisfies Record<ClaimVerdictCode, Params>;
 
 /** Where a dragged chain goes wrong (`core/matching/paths.ts`), named by the sprouts involved. */
 const PATH_ERRORS = {
@@ -122,6 +144,7 @@ const ACTIONS = {
   removeScarecrow: [],
   fold: [],
   foldAt: [],
+  stepLight: [],
   unfold: [],
   rotateStem: [],
   liftStone: [],
@@ -144,12 +167,14 @@ const UI = {
   'hud.waterShort': ['used', 'budget'],
   'hud.waterNoBudgetShort': ['used'],
   'hud.done': [],
+  'hud.present': [],
   'hud.undo': [],
   'hud.redo': [],
   'hud.hint': [],
   'hud.back': [],
   'hud.help': [],
   'hud.leaveLayer': [],
+  'hud.stepLight': [],
   'hud.layer': ['depth'],
   'hud.council': ['groups', 'stones', 'atLeast', 'dark'],
   'hud.councilHidden': [],
@@ -322,6 +347,7 @@ const UI = {
   'hub.sandbox': [],
   'hud.book': [],
   'counterexample.back': [],
+  'counterexample.backToQuestion': [],
   'pond.strands': ['count'],
   'mirror.notBetter': ['drawn', 'yours'],
   'mirror.chain': [],
@@ -410,6 +436,7 @@ const prefixed = (prefix: string, table: Readonly<Record<string, Params>>) =>
 export const TEXT_PARAMS: Readonly<Record<string, Params>> = {
   ...prefixed('reason.', REASONS),
   ...prefixed('reason.invalidPath.', PATH_ERRORS),
+  ...prefixed('claim.', CLAIM_VERDICTS),
   ...prefixed('reason.notAFlower.', BLOSSOM_ERRORS),
   ...prefixed('action.', ACTIONS),
   ...UI,

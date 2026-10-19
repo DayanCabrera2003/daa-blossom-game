@@ -39,31 +39,44 @@
   ],
   "goal": { "visible": true, "value": 6 },
   "roots": ["R"],
+  "forbid": ["split", "passLantern", "rotateStem"],
+  "chains": { "rule": "seen" },
+  "light": true,
   "victory": { "type": "matchingSize", "value": 6 },
   "hints": [
     { "line": "ch5.2.sauce.01" },
-    { "line": "ch5.2.sauce.02", "highlight": ["j", "R"] },
+    { "line": "ch5.2.sauce.02", "highlight": ["h", "i", "j", "R"] },
     { "line": "ch5.2.sauce.03" }
   ],
   "flow": [
     { "step": "say", "lines": ["ch5.2.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch5.2.sauce.04"] }
+    {
+      "step": "ask",
+      "prompt": "ch5.2.sauce.05",
+      "options": [
+        { "line": "ch5.2.gardener.06", "correct": false, "reply": "ch5.2.sauce.07" },
+        { "line": "ch5.2.gardener.08", "correct": true, "reply": "ch5.2.sauce.04" },
+        { "line": "ch5.2.gardener.09", "correct": false, "reply": "ch5.2.sauce.10" }
+      ],
+      "retry": true
+    }
   ],
   "solution": [
-    { "type": "markRoot", "vertex": "R" },
-    { "type": "markMoon", "from": "R", "to": "a" },
-    { "type": "markMoon", "from": "b", "to": "c" },
-    { "type": "markMoon", "from": "d", "to": "e" },
-    { "type": "foldAt", "from": "f", "to": "d" },
-    { "type": "markMoon", "from": "e", "to": "g" },
-    { "type": "foldAt", "from": "h", "to": "b" },
-    { "type": "markMoon", "from": "h", "to": "i" },
-    { "type": "foldAt", "from": "j", "to": "R" },
-    { "type": "markMoon", "from": "a", "to": "t" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "foldAt", "from": "d", "to": "f" },
+    { "type": "foldAt", "from": "e", "to": "g" },
+    { "type": "foldAt", "from": "h", "to": "i" },
+    { "type": "stepLight" },
     { "type": "unfold", "blossom": 2 },
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
-    { "type": "chain", "path": ["t", "a", "b", "c", "d", "f", "e", "g", "h", "i", "j", "R"] }
+    { "type": "chain", "path": ["t", "a", "b", "c", "d", "f", "e", "g", "h", "i", "j", "R"] },
+    { "type": "answer", "option": 1 }
   ]
 }

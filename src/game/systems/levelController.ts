@@ -18,6 +18,7 @@ import {
 } from '../input/pointer';
 import type { Point } from '../input/target';
 import { availableTools, type ToolId } from '../input/tools';
+import { NO_FILLS, type LiftFills } from '../input/liftDrag';
 import { triedChain } from '../input/triedChain';
 import {
   enterFlower,
@@ -28,9 +29,11 @@ import {
   type LayerPath,
   type LayerView,
 } from '../picture/layers';
+import type { ClaimVerdict } from './claimVerdict';
 import type { FlowEffect } from './flow';
 import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
+import { letGoLift, moveLift, pressLift, type LiftScreen } from './liftInput';
 import {
   act,
   askHint,
@@ -101,6 +104,8 @@ export interface Controller {
   readonly layers: LayerPath;
   /** The free mode's orders, for a garden of the free mode; null for a level of the catalog. */
   readonly orders: FreeOrders | null;
+  /** The gaps of the found chain filled so far by the gesture of lifting (`input/liftDrag.ts`). */
+  readonly lift: LiftFills;
 }
 
 /** What the player did on the level screen, as the scene reports it. */
@@ -108,6 +113,8 @@ export type UiEvent =
   | { readonly kind: 'press' | 'move' | 'release'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
   | { readonly kind: 'undo' | 'redo' | 'hint' | 'done' }
+  /** "Avanzar la luz": the light that searches by itself makes its next mark (flower levels). */
+  | { readonly kind: 'light' }
   /** Out of the innermost flower entered, back to the layer before (5.2). */
   | { readonly kind: 'leaveLayer' }
   | { readonly kind: 'seek'; readonly fraction: number }
@@ -148,6 +155,8 @@ export type Effect =
       readonly events: readonly TraceEvent[];
     }
   | { readonly kind: 'hint'; readonly content: HintContent }
+  /** A "Terminé" that did not win, and why it falls short (`claimVerdict.ts`), to tell gently. */
+  | { readonly kind: 'claimRefused'; readonly verdict: ClaimVerdict }
   /** A touch on the drawn reflection was refused (no move of the rules: no action to name). */
   | { readonly kind: 'drawRefused'; readonly reason: Refusal }
   /** The drawn reflection was checked: what the check found, to show over the garden. */
@@ -195,6 +204,7 @@ export function openController(level: Level, now: number, orders: FreeOrders | n
       positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
       layers: OUTSIDE,
       orders,
+      lift: NO_FILLS,
     },
     effects: shown(session, effects),
   };
@@ -224,22 +234,29 @@ function travel(controller: Controller, session: LevelSession, now: number): Ste
 }
 
 /**
- * Tries a move: refused, it is reported; accepted, it is animated, puts out hint glows, and may win
- * the play step, which moves the script on.
+ * Tries a move: refused, it is reported (where the light stops at a flower, its vine glows until
+ * the next move); accepted, it is animated, puts out hint glows, and may win the play step, which
+ * moves the script on. A "Terminé" that does not win is told why after its animation, and a vine
+ * nobody guards glows until the next move.
  */
 function apply(controller: Controller, action: Action, now: number): Step {
-  const { session, outcome, effects: flowEffects } = act(controller.session, action, now);
+  const { session, outcome, effects: flowEffects, claim } = act(controller.session, action, now);
   if (!outcome.ok) {
+    const { reason } = outcome;
+    const vineGlow: Edge | null =
+      reason.code === 'lightAtFlower' ? [reason.u, reason.v] : controller.vineGlow;
     return {
-      controller: { ...controller, session },
-      effects: [{ kind: 'rejected', reason: outcome.reason, action }],
+      controller: { ...controller, session, vineGlow },
+      effects: [{ kind: 'rejected', reason, action }],
     };
   }
   const effects: Effect[] = [
     { kind: 'animate', action, events: outcome.events },
+    ...(claim === null ? [] : [{ kind: 'claimRefused', verdict: claim } as const]),
     ...shown(session, flowEffects),
   ];
-  return { controller: { ...controller, session, highlight: [] }, effects };
+  const vineGlow = claim?.code === 'unguarded' ? claim.vine : null;
+  return { controller: { ...controller, session, highlight: [], vineGlow }, effects };
 }
 
 /** A touch on the vine u–v of the reflection drawn in the mirror challenge. */
@@ -328,6 +345,30 @@ function enter(controller: Controller, view: LayerView, point: Point): Step {
   return { controller: { ...controller, layers }, effects: [] };
 }
 
+/** What the gesture of lifting reads of the level screen (`liftInput.ts`). */
+const liftScreen = (controller: Controller, view: LayerView): LiftScreen => ({
+  pointer: controller.pointer,
+  history: controller.session.history,
+  lift: controller.lift,
+  view,
+});
+
+/** Letting go of a drag into a gap: the fills kept, and the chain applied or a fill refused. */
+function letGo(controller: Controller, view: LayerView, now: number): Step | null {
+  const released = letGoLift(liftScreen(controller, view));
+  if (released === null) return null;
+  const next = { ...controller, pointer: released.pointer, lift: released.lift };
+  if (released.kind === 'apply') return apply(next, released.action, now);
+  const { kind } = released;
+  return {
+    controller: next,
+    effects:
+      kind === 'refuse'
+        ? [{ kind: 'rejected', reason: released.reason, action: released.action }]
+        : [],
+  };
+}
+
 /**
  * Handles one event of the level screen at time `now` (milliseconds). Pure. Whatever the event did
  * to the garden, the layers then settle on the nearest flower entered that is still folded.
@@ -383,10 +424,20 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
         return same({ pointer: { ...sketching, tool: pointer.tool } });
       }
       return same({
-        pointer: pressStart(controller.pointer, state, positions, event.point, view),
+        pointer:
+          pressLift(liftScreen(controller, view), event.point) ??
+          pressStart(controller.pointer, state, positions, event.point, view),
       });
     }
     case 'move': {
+      const lifted = moveLift(liftScreen(controller, view), event.point);
+      if (lifted !== null) {
+        const next = { ...controller, pointer: lifted.pointer };
+        return {
+          controller: next,
+          effects: lifted.refusal === null ? [] : [{ kind: 'rejected', ...lifted.refusal }],
+        };
+      }
       const moved = pressMove(controller.pointer, state, positions, event.point, view);
       if (moved.rejection === null) return same({ pointer: moved.pointer });
       const action = triedChain(
@@ -420,6 +471,8 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       }
       // The layers tool makes no move: its touch only enters a flower.
       if (controller.pointer.tool === 'layers') return enter(controller, view, event.point);
+      const lifted = letGo(controller, view, now);
+      if (lifted !== null) return lifted;
       const released = pressEnd(controller.pointer, state, positions, event.point, view);
       const next = { ...controller, pointer: released.pointer };
       return released.action === null
@@ -465,6 +518,8 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       return checkRecipe(controller, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
+    case 'light':
+      return apply(controller, { type: 'stepLight' }, now);
     case 'solve':
     case 'certify':
       return order(controller, event.kind);

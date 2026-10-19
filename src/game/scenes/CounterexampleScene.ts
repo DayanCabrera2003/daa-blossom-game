@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 import { size } from '@core/matching/queries';
 import { invariant } from '@core/shared/invariant';
-import { counterexampleAt } from '@levels/counterexample';
+import { refutationAt, type Refutation } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
 import { historyKey, keyAction, pressOf } from '../input/keyBindings';
+import { previewModeOf } from '../input/previewMode';
 import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { animationGarden } from '../picture/animationGarden';
@@ -55,26 +56,27 @@ import { contextOf, type GameContext } from './context';
 /** What the level scene gives the counterexample screen when it opens it. */
 export interface CounterexampleSceneData {
   readonly levelId: string;
-  /** The notebook question of the level, by its index, whose false statement is refuted. */
-  readonly question: number;
-  /** The false statement of that question whose garden opens. */
+  /** The step of the level's script that asks the question (the notebook or an `ask`). */
+  readonly step: number;
+  /** The false answer of that question whose garden opens. */
   readonly option: number;
-  /** Called once the player goes back to the notebook. */
+  /** Called once the player goes back to the question. */
   readonly back: () => void;
 }
 
 /**
- * The garden that refutes a false notebook statement (GDD §5.5, plan 03, phase 6), opened over the
- * sleeping level screen. The statement stays on top, the mentor presents the garden, and the player
- * moves lanterns with the counterexample's tools under the core's rules, with no victory, until
- * "Volver al Cuaderno" takes them back to the question. In a `mirrorDraw` garden (2.4 c) the player
+ * The garden that refutes a false notebook statement (GDD §5.5, plan 03, phase 6), or a false
+ * answer to a question of the script (plan 10, phase 7), opened over the sleeping level screen. The
+ * statement stays on top, the mentor presents the garden, and the player moves lanterns with the
+ * counterexample's tools under the core's rules, with no victory, until "Volver al Cuaderno" (or
+ * "Volver a la pregunta") takes them back to the question. In a `mirrorDraw` garden (2.4 c) the player
  * draws a reflection instead, checks it with "Comprobar", and sees the chain it leaves. Every decision is the pure controller's
  * (`systems/counterexampleController.ts`); this scene forwards touches and draws what it answers.
  */
 export class CounterexampleScene extends Phaser.Scene {
   private context!: GameContext;
   private controller!: CounterexampleController;
-  /** The level whose notebook opened this garden, for the playtest log. */
+  /** The level whose question opened this garden, for the playtest log. */
   private levelId = '';
   private labels: readonly string[] = [];
   /** Which sprouts are bees or flowers; empty in a garden that has none. */
@@ -113,14 +115,9 @@ export class CounterexampleScene extends Phaser.Scene {
     this.sfx = new SfxPlayer(this, this.context.audio);
     const { t, line } = this.context;
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
-    const asked = level?.data.notebook?.[data.question];
-    const statement = asked?.options[data.option];
-    const counterexample =
-      level === undefined ? null : counterexampleAt(level, data.question, data.option);
-    invariant(
-      asked !== undefined && statement !== undefined && counterexample !== null,
-      'the level opens only the counterexamples of its own notebook',
-    );
+    const refuted = level === undefined ? null : refutationAt(level, data.step, data.option);
+    invariant(refuted !== null, 'the level opens only the counterexamples of its own questions');
+    const { counterexample } = refuted;
     this.controller = openCounterexample(counterexample);
     this.levelId = data.levelId;
     this.labels = counterexample.data.sprouts.map((sprout) => sprout.label);
@@ -130,7 +127,7 @@ export class CounterexampleScene extends Phaser.Scene {
     setPanelAvoidance(this, () => this.avoid);
 
     // The false statement stays on top, so the player knows what the garden answers.
-    const said = `${line(asked.prompt)} ${line(statement.line)}`;
+    const said = `${line(refuted.prompt)} ${line(refuted.statement)}`;
     this.add
       .text(LAYOUT.margin, LAYOUT.topY, said, {
         ...textStyle(8, PALETTE.lit),
@@ -149,7 +146,7 @@ export class CounterexampleScene extends Phaser.Scene {
       toast: new ToastView(this, sayAloud(this)),
       dialogue: new DialogueView(this, t, voiceLine, sayLineAloud(this)),
       lanterns: this.add.text(LAYOUT.margin, LAYOUT.bottomY, '', textStyle(8)).setDepth(100),
-      ...this.buttons(data.back),
+      ...this.buttons(refuted.asker, data.back),
     };
     this.listen(data.back);
     this.views.dialogue.say([spokenLine(counterexample.line, line)]);
@@ -165,11 +162,13 @@ export class CounterexampleScene extends Phaser.Scene {
    * Undo, redo and the way back, at the bottom right as on the level screen; "Comprobar" for a
    * drawn reflection, shown only in a `mirrorDraw` garden.
    */
-  private buttons(back: () => void): { undo: Button; redo: Button; check: Button } {
+  private buttons(
+    asker: Refutation['asker'],
+    back: () => void,
+  ): { undo: Button; redo: Button; check: Button } {
     const { t } = this.context;
-    const leave = new Button(this, 0, LAYOUT.bottomY, t('counterexample.back'), () =>
-      this.leave(back),
-    );
+    const way = asker === 'notebook' ? 'counterexample.back' : 'counterexample.backToQuestion';
+    const leave = new Button(this, 0, LAYOUT.bottomY, t(way), () => this.leave(back));
     const redo = new Button(this, 0, LAYOUT.bottomY, t('hud.redo'), () =>
       this.dispatch({ kind: 'redo' }),
     );
@@ -274,7 +273,7 @@ export class CounterexampleScene extends Phaser.Scene {
     }
   }
 
-  /** Back to the notebook: this screen closes and the level screen asks again. */
+  /** Back to the question: this screen closes and the level screen asks again. */
   private leave(back: () => void): void {
     this.scene.stop();
     back();
@@ -292,7 +291,13 @@ export class CounterexampleScene extends Phaser.Scene {
       state,
       controller.positions,
       this.labels,
-      { selection: pointer.selection, highlight: [], chain: pointer.chain },
+      {
+        selection: pointer.selection,
+        highlight: [],
+        chain: pointer.chain,
+        // The chain tells as much as the level the counterexample belongs to (GDD §5.1, Cadena).
+        previewMode: previewModeOf(this.levelId),
+      },
       this.kinds,
     );
     this.views.fog.render(picture);

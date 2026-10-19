@@ -26,6 +26,11 @@
     { "step": "bet", "prompt": "ch1.6.sauce.00", "range": 6, "preview": 3000 },
     { "step": "play" }
   ],
+  "hints": [
+    { "line": "ch1.6.sauce.01" },
+    { "line": "ch1.6.sauce.02", "highlight": ["G", "H"] },
+    { "line": "ch1.6.sauce.03" }
+  ],
   "solution": [
     { "type": "bet", "value": 4 },
     { "type": "join", "u": "G", "v": "A" },

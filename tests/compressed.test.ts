@@ -63,11 +63,18 @@ describe('packedSize', () => {
 
 describe('servedWeights', () => {
   const sizes = { images: 300, fonts: 30, sounds: 18, music: 7000, boot: 1348 };
-  const report: BudgetRow[] = budgetReport({ ...sizes, js: 500, codex: 900, sandbox: 70 });
+  const report: BudgetRow[] = budgetReport({
+    ...sizes,
+    js: 500,
+    codex: 900,
+    sandbox: 70,
+    level: 80,
+  });
   const built = {
     js: { raw: 500, gzip: 150, brotli: 120 },
     codex: { raw: 900, gzip: 400, brotli: 350 },
     sandbox: { raw: 70, gzip: 20, brotli: 18 },
+    level: { raw: 80, gzip: 30, brotli: 25 },
   };
   const served = servedWeights(report, built);
   const row = (part: BudgetRow['part']) => served.find((one) => one.part === part);
@@ -76,6 +83,7 @@ describe('servedWeights', () => {
     expect(row('js')).toEqual({ part: 'js', gzip: 150, brotli: 120 });
     expect(row('codex')).toEqual({ part: 'codex', gzip: 400, brotli: 350 });
     expect(row('sandbox')).toEqual({ part: 'sandbox', gzip: 20, brotli: 18 });
+    expect(row('level')).toEqual({ part: 'level', gzip: 30, brotli: 25 });
   });
 
   it('weighs the initial load as the compressed script plus the boot group as it is', () => {

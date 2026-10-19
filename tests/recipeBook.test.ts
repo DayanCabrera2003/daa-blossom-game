@@ -1,10 +1,12 @@
 import lines from '@content/es/lines.json';
+import strings from '@content/es/strings.json';
 import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
 import { size } from '@core/matching/queries';
 import { checkRecipe } from '@core/recipe/check';
 import {
   EMPTY_RECIPE,
   placeCard,
+  RECIPE_CARDS,
   RIGHT_RECIPE,
   type Recipe,
   type RecipeCardId,
@@ -13,12 +15,13 @@ import {
 import { AUTOMATON_MOVES, runRecipe } from '@core/recipe/run';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
-import type { GardenState } from '@core/rules/state';
+import { createGardenState, type GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
 import { counterexampleAt } from '@levels/counterexample';
-import { TAUGHT_IN } from '@levels/recipeCards';
+import { cardTextKey, TAUGHT_IN } from '@levels/recipeCards';
 import { describe, expect, it } from 'vitest';
+import { chainLookMarks } from './support/chainLooks';
 
 /**
  * The lessons of the recipe book (GDD §7, chapter 6) that its levels must really hold, checked with
@@ -28,6 +31,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 const lineTable: Record<string, string> = lines;
+const stringTable: Record<string, string> = strings;
 
 const levelOf = (id: string): Level => {
   const level = catalog().find((candidate) => candidate.data.id === id);
@@ -88,10 +92,51 @@ describe('6.1: cards', () => {
     expect(rest.at(-1)).toEqual({ right: true });
   });
 
+  it('its cards and what the mentor says of them never say «raíz», a word no line has given', () => {
+    const texts = Object.entries(stringTable).filter(([key]) => key.startsWith('recipe.'));
+    expect(texts.map(([key]) => key)).toEqual(
+      expect.arrayContaining(RECIPE_CARDS.map((card) => cardTextKey(card.id))),
+    );
+    for (const [key, text] of texts) expect(text, key).not.toMatch(/raíz|raíces/i);
+    for (const text of Object.values(lineTable)) expect(text).not.toMatch(/raíz|raíces/i);
+  });
+
+  it('names x as the sprout across the vine, and the chain card starts the search again', () => {
+    expect(stringTable['recipe.cases']).toContain('x es el brote del otro lado');
+    expect(stringTable[cardTextKey('chainRootToRoot')]).toContain('vuelve al paso 1');
+  });
+
+  it('the mentor lists the neighbours the case cards answer, and no other', () => {
+    const neighbours = said('ch6.1.sauce.02') ?? '';
+    expect(neighbours).not.toContain('a oscuras');
+    for (const name of ['con farol', 'sol de otro árbol', 'sol del mismo árbol', 'luna']) {
+      expect(neighbours).toContain(name);
+    }
+  });
+
   it('the right recipe, run by the core in its garden, lights the most lanterns', () => {
     const start = { ...level.start, allowed: new Set(AUTOMATON_MOVES) };
     const ran = play(start, runRecipe(start, { fold: true }));
     expect(size(ran.matching)).toBe(maximumSize(level.graph));
+  });
+});
+
+describe('the recipe in every garden of the catalog', () => {
+  it('never meets a sprout unmarked in the dark: every chain it finds ends on a sun', () => {
+    for (const level of catalog()) {
+      const start = createGardenState({
+        graph: level.graph,
+        matching: level.start.matching,
+        allowed: AUTOMATON_MOVES,
+      });
+      for (const fold of [true, false]) {
+        const marks = chainLookMarks(start, runRecipe(start, { fold }));
+        expect(
+          marks.filter((mark) => mark !== 'outer'),
+          level.data.id,
+        ).toEqual([]);
+      }
+    }
   });
 });
 

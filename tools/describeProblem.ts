@@ -3,6 +3,7 @@ import type { WalkthroughProblem } from '@game/systems/walkthrough';
 import type { CodexProblem } from '@levels/codexChecks';
 import type { IntegrityProblem } from '@levels/integrity';
 import type { LoadError } from '@levels/loader';
+import type { NotebookEchoProblem } from '@levels/notebookEcho';
 import type { SecretProblem } from '@levels/secretChecks';
 
 /** A reason's code followed by its details, e.g. `notAdjacent {"u":0,"v":2}`. */
@@ -56,6 +57,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
     case 'drawUnbeatable':
       return `script step ${problem.step + 1} asks for a better reflection, but the lanterns already hold the most`;
+    case 'drawBeatable':
+      return `script step ${problem.step + 1} is a mirror challenge nobody should win, but the lanterns leave a chain`;
     case 'flowerMissing':
       return `script step ${problem.step + 1} is a flower challenge, but the level declares no flower`;
     case 'noChainToDraw':
@@ -86,6 +89,14 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1}: move ${problem.move + 1} of the automaton's run is refused by the rules: ${withDetails(problem.reason)}`;
     case 'recipeCannotRun':
       return `script step ${problem.step + 1} runs a recipe the automaton cannot run: only the fold card may be missing`;
+    case 'seenRuleOpen':
+      return `only the chain seen may move lanterns here, but "${problem.action}" moves them without the light: forbid it`;
+    case 'hintReveals':
+      return `the grade-2 hint ${problem.line} lights up the answer (${problem.reveals}): point at a wider zone, a single sprout, or ask`;
+    case 'lightBypassed':
+      return `the light searches by itself here, but "${problem.action}" moves lanterns without it: forbid it (or let only the chain seen light one)`;
+    case 'badChainFlower':
+      return `the closed flower ${problem.petals.join(', ')} is no flower of the starting lanterns written base first`;
     case 'notAFlower':
       return `the declared flower is no flower of the starting lanterns: ${withDetails(problem.error)}`;
     case 'flowerBaseLit':
@@ -102,6 +113,10 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `${statementAt(problem)}: its lanterns already hold the most, so no better reflection can be drawn`;
     case 'counterexampleSameKindVine':
       return `${statementAt(problem)}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
+    case 'statementUnrefuted':
+      return `${statementAt(problem)} is false, but neither a reply nor a garden refutes it`;
+    case 'counterexampleLayout':
+      return `${statementAt(problem)}: its garden reads badly: ${describeProblem(problem.problem)}`;
     case 'vinesCross':
       return `the vines ${problem.vines[0].join('–')} and ${problem.vines[1].join('–')} cross`;
     case 'labelOnSprout':
@@ -117,9 +132,27 @@ export function describeProblem(problem: IntegrityProblem): string {
   }
 }
 
-/** Where a notebook statement is, counted from 1: its question, then the statement itself. */
-const statementAt = (problem: { readonly question: number; readonly option: number }): string =>
-  `notebook question ${problem.question + 1}, statement ${problem.option + 1}`;
+/**
+ * Where a statement is, counted from 1: its notebook question or the script step that asks it, then
+ * the statement itself.
+ */
+const statementAt = (
+  problem:
+    | { readonly question: number; readonly option: number }
+    | { readonly step: number; readonly option: number },
+): string =>
+  'step' in problem
+    ? `script step ${problem.step + 1}, answer ${problem.option + 1}`
+    : `notebook question ${problem.question + 1}, statement ${problem.option + 1}`;
+
+/**
+ * One readable line for a notebook, or a question of the script, whose right answer repeats a line
+ * heard before it.
+ */
+export function describeEchoProblem(problem: NotebookEchoProblem): string {
+  const asker = problem.code === 'notebookEcho' ? 'the notebook' : 'the question';
+  return `${statementAt(problem)} repeats "${problem.words}" of ${problem.echoes}, said before it: word it otherwise, or say that line after ${asker}`;
+}
 
 /** One readable line for a walkthrough that does not play through the interface. */
 export function describeWalkthroughProblem(problem: WalkthroughProblem): string {

@@ -479,7 +479,6 @@ const RECIPE = {
       type: 'recipe',
       cards: [
         'markDarkSuns',
-        'chainToDark',
         'growMoon',
         'chainRootToRoot',
         'foldFlower',
@@ -495,7 +494,6 @@ const RECIPE = {
         'foldFlower',
         'chainRootToRoot',
         'growMoon',
-        'chainToDark',
         'finishKeepMoons',
       ],
     },
@@ -515,7 +513,6 @@ const BROKEN_RECIPE = {
       type: 'recipe',
       cards: [
         'markDarkSuns',
-        'chainToDark',
         'growMoon',
         'chainRootToRoot',
         'foldFlower',
@@ -529,7 +526,6 @@ const BROKEN_RECIPE = {
 /** Every right card of the recipe, as a walkthrough places them. */
 const RIGHT_CARDS = [
   'markDarkSuns',
-  'chainToDark',
   'growMoon',
   'chainRootToRoot',
   'foldFlower',
@@ -576,7 +572,7 @@ const RACES = {
     { step: 'race', family: 'half', size: 16, seed: 26, budget: 1_000 },
   ],
   solution: [
-    { type: 'raceBet', answer: 'fourToEight' },
+    { type: 'raceBet', answer: 'threeToFive' },
     { type: 'raceBet', answer: 'double' },
   ],
 };
@@ -604,6 +600,31 @@ const SECRET_FLOWER = {
   hints: [],
   flow: [{ step: 'play' }],
 };
+
+/**
+ * The garden of the festival as 4.5 plays it (plan 10, section 2.4): the light searches from R by
+ * itself, the player advances it and folds where it stops, and only the chain it saw is lit.
+ */
+const FOLDING_LIGHT = {
+  ...FESTIVAL,
+  id: '4.5',
+  roots: ['R'],
+  light: true,
+  chains: { rule: 'seen' },
+  forbid: ['split', 'passLantern'],
+  solution: [
+    { type: 'stepLight' },
+    { type: 'stepLight' },
+    { type: 'stepLight' },
+    { type: 'foldAt', from: 'b', to: 'd' },
+    { type: 'stepLight' },
+    { type: 'unfold', blossom: 0 },
+    { type: 'chain', path: ['R', 'a', 'b', 'd', 'c', 'e'] },
+  ],
+};
+
+/** The level built from `FOLDING_LIGHT`. */
+export const foldingLightLevel = (): Level => load(FOLDING_LIGHT);
 
 /** The level built from `BLOOM`. */
 export const bloomLevel = (): Level => load(BLOOM);

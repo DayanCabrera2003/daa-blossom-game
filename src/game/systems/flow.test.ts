@@ -102,6 +102,39 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('a wrong answer refuted by a garden opens it after the reply, then asks again', () => {
+    const garden = {
+      mode: 'play' as const,
+      line: 'ch1.8.sauce.05',
+      sprouts: [{ label: 'a', x: 100, y: 100 }],
+      vines: [],
+      lanterns: [],
+      actions: ['join' as const],
+    };
+    const refuting: LevelStep = {
+      step: 'ask',
+      prompt: 'ch1.8.sauce.01',
+      options: [
+        { line: 'ch1.8.sauce.02', correct: false, reply: 'ch1.8.sauce.03', counterexample: garden },
+        { line: 'ch1.8.sauce.04', correct: true },
+      ],
+      retry: true,
+    };
+    const asked = start([play, refuting]);
+    const asking = advanceFlow(asked.flow, { type: 'won' }).flow;
+    expect(advanceFlow(asking, { type: 'answer', option: 0, right: null }).effects).toEqual([
+      { kind: 'answered', step: 1, value: 0, correct: false },
+      { kind: 'say', lines: ['ch1.8.sauce.03'] },
+      { kind: 'counterexample', step: 1, option: 0 },
+      {
+        kind: 'ask',
+        step: 1,
+        prompt: 'ch1.8.sauce.01',
+        options: ['ch1.8.sauce.02', 'ch1.8.sauce.04'],
+      },
+    ]);
+  });
+
   it('without retry, any answer ends the question', () => {
     const { flow } = start([ask(false), play]);
     const wrong = advanceFlow(flow, { type: 'answer', option: 0, right: null });
@@ -383,7 +416,7 @@ describe('the script engine', () => {
     const refuted = advanceFlow(noting, { type: 'answer', option: 1, right: null });
     expect(refuted.effects).toEqual([
       { kind: 'answered', step: 1, value: 1, correct: false },
-      { kind: 'counterexample', step: 1, question: 0, option: 1 },
+      { kind: 'counterexample', step: 1, option: 1 },
       { kind: 'notebook', step: 1 },
     ]);
     expect(advanceFlow(refuted.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([
@@ -415,7 +448,7 @@ describe('the script engine', () => {
     ]);
     expect(advanceFlow(asked.flow, { type: 'answer', option: 1, right: null }).effects).toEqual([
       { kind: 'answered', step: 1, value: 1, correct: false },
-      { kind: 'counterexample', step: 1, question: 1, option: 1 },
+      { kind: 'counterexample', step: 1, option: 1 },
       { kind: 'notebook', step: 1 },
     ]);
     expect(advanceFlow(asked.flow, { type: 'answer', option: 2, right: null }).effects).toEqual([
@@ -426,7 +459,7 @@ describe('the script engine', () => {
   });
 
   it('the mirror challenge ends after its attempts at better reflections', () => {
-    const { flow, effects } = start([{ step: 'draw', attempts: 2 }]);
+    const { flow, effects } = start([{ step: 'draw', attempts: 2, beatable: true }]);
     expect(effects).toEqual([{ kind: 'draw', attempts: 2 }]);
     const tried = send(flow, [
       { type: 'mirrorChecked', better: true },
@@ -439,8 +472,19 @@ describe('the script engine', () => {
     ]);
   });
 
+  it('a mirror challenge nobody can win ends after its attempts at checks, none of them better', () => {
+    const { flow } = start([{ step: 'draw', attempts: 2, beatable: false }, say('ch0.1.sauce.00')]);
+    const tried = advanceFlow(flow, { type: 'mirrorChecked', better: false });
+    expect(tried.flow.attempts).toBe(1);
+    expect(tried.effects).toEqual([]);
+    expect(advanceFlow(tried.flow, { type: 'mirrorChecked', better: false }).effects).toEqual([
+      { kind: 'say', lines: ['ch0.1.sauce.00'] },
+      { kind: 'finished' },
+    ]);
+  });
+
   it('the mirror challenge also ends when the player is spared, whatever the attempts', () => {
-    const { flow } = start([{ step: 'draw', attempts: 3 }, say('ch0.1.sauce.00')]);
+    const { flow } = start([{ step: 'draw', attempts: 3, beatable: true }, say('ch0.1.sauce.00')]);
     const tried = advanceFlow(flow, { type: 'mirrorChecked', better: true }).flow;
     expect(advanceFlow(tried, { type: 'mirrorSpared' }).effects).toEqual([
       { kind: 'say', lines: ['ch0.1.sauce.00'] },

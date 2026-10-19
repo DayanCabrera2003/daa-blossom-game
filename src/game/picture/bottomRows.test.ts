@@ -22,6 +22,7 @@ import {
   estimatedButtonWidth,
   HUD_BUTTONS,
   hudRow,
+  type HudButton,
   ordersRow,
   toolbarRow,
   traceButtonLeft,
@@ -129,6 +130,30 @@ describe('the two bottom rows of the level HUD', () => {
     expect(fitsOnCanvas(hudRow(widths), widths)).toBe(true);
   });
 
+  it.each(catalog().map((level) => [level.data.id, level] as const))(
+    'the bottom row of %s fits with its own labels, «Presentar» included',
+    (_, level) => {
+      const screen = levelScreenOf(level, null);
+      const key = (name: HudButton): string => (name === 'done' ? screen.doneLabel : `hud.${name}`);
+      // In the game's face, the whole row: the gear, the Códex and the buttons.
+      const widths = {
+        gear: GEAR_SIZE,
+        book: estimatedButtonWidth(label('hud.book')) + iconRoom([BOOK_ICON]),
+        trace: null,
+        buttons: screen.hudButtons.map((name) => estimatedButtonWidth(label(key(name)))),
+      };
+      const row = bottomRow(widths);
+      const lefts = [BOTTOM_ROWS.margin, row.book, ...row.buttons];
+      const all = [widths.gear, widths.book, ...widths.buttons];
+      expect(fitsOnCanvas(lefts, all, row.gap)).toBe(true);
+      // In the wider fallback face, the buttons still fit in their row.
+      const wide = screen.hudButtons.map((name) =>
+        estimatedButtonWidth(label(key(name)), CHAR_ADVANCE + 1),
+      );
+      expect(fitsOnCanvas(hudRow(wide), wide)).toBe(true);
+    },
+  );
+
   it('a garden of the free mode fits: its buttons, the Códex and the trace below, its tools and orders above', () => {
     const screen = levelScreenOf(unwrap(toPlayable(PAIR, ALL_ACTIONS)), TEACHER);
     const names = screen.hudButtons.map((name) =>
@@ -228,6 +253,14 @@ describe('the two bottom rows of the level HUD', () => {
         }
       }),
     );
+  });
+
+  it('no toolbar of the catalog offers «Plegar a mano»: levels fold where two suns meet', () => {
+    const chapter4 = catalog().filter((level) => level.data.id.startsWith('4.'));
+    expect(chapter4.map((level) => level.data.id)).toContain('4.4');
+    for (const level of catalog()) {
+      expect(availableTools(level.start.allowed), level.data.id).not.toContain('foldLoop');
+    }
   });
 
   it("the teacher's trace button ends the tools' row, clear of the tools of every level", () => {

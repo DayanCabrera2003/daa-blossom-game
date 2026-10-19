@@ -23,7 +23,7 @@ describe('the events between the game and the overlays', () => {
     expectTypeOf<BusEvents['capabilities']['sandbox']>().toEqualTypeOf<boolean>();
     expectTypeOf<BusEvents['sandbox.open']>().toEqualTypeOf<undefined>();
     expectTypeOf<BusEvents['load.failed']['part']>().toEqualTypeOf<
-      'books' | 'share' | 'credits' | 'sandbox'
+      'books' | 'share' | 'credits' | 'sandbox' | 'level'
     >();
     expectTypeOf<BusEvents['teacher.feed']['cursor']>().toEqualTypeOf<number>();
     expectTypeOf<BusEvents['teacher.leave']>().toEqualTypeOf<undefined>();

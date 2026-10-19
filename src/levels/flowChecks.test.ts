@@ -264,6 +264,21 @@ describe('the checks of a level script', () => {
     ).toEqual([{ code: 'drawUnbeatable', step: 0 }]);
   });
 
+  it('a mirror challenge nobody can win needs lanterns that already hold the most', () => {
+    // Read the other way round: the pond's lanterns leave a chain, so a better reflection exists.
+    const unbeatable = { step: 'draw', attempts: 3, beatable: false };
+    expect(flowProblemsOf({ ...pond, flow: [unbeatable] })).toEqual([
+      { code: 'drawBeatable', step: 0 },
+    ]);
+    const full = [
+      ['A', 'B'],
+      ['C', 'D'],
+      ['E', 'F'],
+      ['G', 'H'],
+    ];
+    expect(flowProblemsOf({ ...pond, lanterns: full, flow: [unbeatable] })).toEqual([]);
+  });
+
   it('a bet offers the most lanterns the garden holds among its numbers, 1 to its range', () => {
     // The pond holds 4 lanterns: three on the path A…F and G=H.
     const bet = (range: number) => ({ step: 'bet', prompt: 'ch2.1.sauce.01', range });
@@ -342,7 +357,7 @@ describe('the checks of a level script', () => {
   it('the automaton runs a recipe it can run, with the moves the level allows', () => {
     expect(flowProblemsOf(AUTOMATON)).toEqual([]);
     // Only the fold card may be missing: a recipe without its chains would not be the search.
-    const chainless = { ...AUTOMATON, flow: [{ step: 'automaton', missing: ['dark'] }] };
+    const chainless = { ...AUTOMATON, flow: [{ step: 'automaton', missing: ['otherTree'] }] };
     expect(flowProblemsOf({ ...chainless, solution: [{ type: 'tapGarden' }] })).toEqual([
       { code: 'recipeCannotRun', step: 0 },
     ]);

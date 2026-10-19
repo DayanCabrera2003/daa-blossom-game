@@ -40,10 +40,10 @@ describe('the bets a won session won', () => {
     expect(betsWon(right)).toEqual([]);
   });
 
-  it('each doubling bet of 6.5 answered right: four of six give four', () => {
+  it('each doubling bet of 6.5 answered right: two of four give two', () => {
     const bets = stepsOf('6.5', 'raceBet');
-    expect(bets).toHaveLength(6);
-    const wrong = new Set([bets[1], bets[4]]);
+    expect(bets).toHaveLength(4);
+    const wrong = new Set([bets[1], bets[3]]);
     const session = played('6.5', (step) =>
       bets.includes(step) ? { step, value: 0, correct: !wrong.has(step) } : null,
     );

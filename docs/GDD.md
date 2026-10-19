@@ -84,7 +84,7 @@ El jardín pasa por las cuatro estaciones a lo largo del juego. Cada estación e
 | **Bruto** (gnomo de la fuerza bruta) | Alivio cómico. Propone siempre "probar todas las combinaciones". Cada capítulo va más lento. Personifica el costo exponencial y las "recetas rotas". | Balbuceo agudo y atropellado |
 | **El Consejo de los Robles** | Exigen certificados: "¿Cómo sabes que nadie más puede tener farol?" Personifican la demostración de optimalidad. | Balbuceo grave, lento y en coro |
 | **Los brotes** | Los vértices. Tienen caritas: dormidos y tristes a oscuras, felices con farol. | Sonidos, sin voz |
-| **Abejas y flores** (Invernadero) | La forma natural de que un jardín sea bipartito sin decir la palabra. | — |
+| **Abejas y tréboles** (Invernadero) | La forma natural de que un jardín sea bipartito sin decir la palabra. | — |
 
 ### 3.3 Glosario jardín ↔ matemáticas
 
@@ -106,7 +106,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 | Caminar de noche con luz | Búsqueda de camino aumentante (BFS alternante) |
 | Marca de sol / de luna | Vértice exterior (outer, par) / interior (inner, impar) |
 | Cada brote solitario lanza su luz | Bosque alternante con raíces en los vértices libres |
-| Abejas y flores | Grafo bipartito |
+| Abejas y tréboles | Grafo bipartito |
 | Espantapájaros | Cobertura por vértices (König) |
 | Un brote que debe ser sol y luna | Arista exterior–exterior en el mismo árbol: ciclo impar |
 | Flor | Blossom (ciclo impar alternante con un tallo) |
@@ -146,7 +146,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 - **Niebla:** capa semitransparente con dithering; se disuelve en círculo alrededor de cada brote inspeccionado.
 - **Espejo del estanque:** el jardín se refleja en el agua con ondas; los faroles del reflejo son azul plateado.
 - **Piedras:** el brote levantado se convierte en piedra gris; el hueco deja ver la separación del jardín en grupos, cada grupo con su contorno.
-- **Ciclo día/noche:** el sol en la barra superior es el slider de tiempo. Arrastrarlo tiñe la escena (amanecer → día → atardecer → noche) y reproduce los movimientos en orden.
+- **Ciclo día/noche:** el día, en la barra superior, es el slider de tiempo; su asa es un sol, el día que pasa. Arrastrarlo tiñe la escena (amanecer → día → atardecer → noche) y reproduce los movimientos en orden.
 - **Animaciones clave (las que tienen que ser perfectas):**
   1. Pasar el farol: el farol salta con squash & stretch de un brote al siguiente, con una campanita que sube de tono en cada salto. Al terminar una cadena ganadora, el último farol aparece con un destello y confeti de pétalos.
   2. Plegar/desplegar la flor.
@@ -214,36 +214,46 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | **Juntar** | Tocas dos brotes conectados sin farol; aparece un farol entre ellos. | 0.1 |
 | **Separar / deshacer** | Tocas un farol; se apaga. Deshacer y rehacer ilimitados. | 0.1 |
 | **Pasar el farol** | Un brote solitario toca a un vecino con farol: el vecino se lo da y su antigua pareja queda solitaria. Se puede encadenar a mano. | 1.1 (emerge de las reglas) |
-| **Cadena** | Arrastras desde un brote solitario a lo largo de enredaderas; el juego solo permite alternar (apagada, farol, apagada…). Al soltar en un brote solitario, todos los faroles se deslizan y se enciende uno nuevo (+1). Si sueltas en un brote con farol, se aplica igual pero con ganancia 0 (el juego lo marca en gris). | 1.3 |
-| **El sol (tiempo)** | Slider en la barra superior: rebobina y reproduce los movimientos propios o los del jardinero mecánico. | 0.5 |
+| **Cadena** | Arrastras desde un brote solitario a lo largo de enredaderas; el juego solo permite alternar (apagada, farol, apagada…). Al soltar en un brote solitario, todos los faroles se deslizan y se enciende uno nuevo (+1). Si sueltas en un brote con farol, se aplica igual pero con ganancia 0 (el juego lo marca en gris). Mientras arrastras, el trazo dice en los capítulos 0–2 lo que ganarías (+1 dorado, 0 en gris, ilegal); desde el capítulo 3 (y en sus jardines secretos) solo dice si es legal, con un único color neutro, y la ganancia se ve al soltar, con la cadena aplicada (el gris de 1.4 sigue). El modo libre conserva la ganancia en el trazo: es una herramienta, no un nivel. | 1.3 |
+| **El día (tiempo)** | Slider en la barra superior: rebobina y reproduce los movimientos propios o los del jardinero mecánico. Su asa es un sol, pero se llama «el día» («Arrastra el día»): «sol» es solo la marca de la búsqueda, y «flor», solo la flor que se pliega. | 0.5 |
 | **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da una semilla, la primera vez (también cada apuesta de las carreras de 6.5; la pregunta informal de 0.4, no). Cada semilla planta una planta en el hub. | 1.6 |
 | **Inspeccionar** | En niebla, revela las enredaderas de un brote. Cuesta una gota de agua. | 3.1 |
 | **Marcas sol / luna** | Colocas la marca sobre un brote; el juego solo acepta marcas coherentes con las reglas. | 3.1 |
 | **Espantapájaros** | Colocas uno sobre un brote; cubre todas sus enredaderas. | 3.7 |
-| **Plegar (Florecer)** | Seleccionas un ciclo impar válido (o tocas el conflicto sol–sol): se contrae en una flor. | 4.4 |
-| **Desplegar** | Tocas una flor: se abre para trazar el camino por dentro. | 4.5 |
+| **Avanzar la luz** | En los niveles de flor, la luz busca por ti en un orden fijo: cada toque del botón pone una marca suya. Se para donde se tocan dos soles del mismo árbol, ante un sol en la niebla, al ver una cadena o al no quedarle nada que mirar. | 4.4 |
+| **Plegar (Florecer)** | En una búsqueda, tocas la enredadera donde se tocan dos soles del mismo árbol (el choque sol–sol): su bucle se contrae en una flor. En los niveles es la única forma de plegar. El modo libre tiene además **«Plegar a mano»**: tocas en orden los brotes de un bucle impar que sea flor y se pliega, solo si su base está a oscuras; si no, se rechaza con un motivo que lo explica (con la base a oscuras, plegar no crea ni destruye cadenas; con farol podría esconder una, Observación 8.4 de C8). | 4.4 |
+| **Desplegar** | Tocas una flor: se abre para trazar el camino por dentro. **El gesto de levantar:** en los jardines donde los faroles solo cambian por donde llegó tu luz, desde que la luz ve la cadena sus **tramos hallados** (lo que queda fuera de las flores plegadas) se quedan dibujados, en dorado punteado, hasta que los faroles cambian; con la flor cerrada el tramo pasa por la flor, y al abrirla queda un **hueco** (uno por flor cruzada). El jugador arrastra solo el tramo de dentro, desde un extremo del hueco (el pétalo de entrada o la base), y elige así el lado; con todos los huecos rellenos se enciende la cadena entera. El lado equivocado se rechaza al instante con el motivo de siempre. Arrastrar la cadena entera desde una punta sigue valiendo. | 4.5 |
 | **Girar el tallo** | Cadena de ganancia 0 hasta la base de una flor. | 4.10 |
 | **Capas** | Zoom para entrar y salir de flores anidadas. | 5.2 |
 | **Tarjetas de receta** | Ordenas bloques de pseudocódigo. | 6.1 |
 | **Piedras** | Levantas brotes; el jardín se parte en grupos y se muestra la cuenta. | 7.2 |
 
+**Regla de cadena de cada nivel.** Por defecto, cualquier cadena legal vale. Un jardín puede apretarla, y lo dice su archivo de nivel. Con la regla `seen` («por donde llegó tu luz»), los faroles solo cambian por la cadena que alcanzaron tus marcas (en cualquier sentido) y las de ganancia 0 no valen; **juntar es una cadena de una enredadera** (dos brotes a oscuras: un camino aumentante de longitud 1) y obedece la misma regla. Con la regla `fromBase`, la flor del nivel está **cerrada**: una jugada que mueve faroles por uno de sus pétalos (una cadena, una unión, pasar el farol) tiene que salir de su base o acabar en ella; la usa 4.10. Una acción que el nivel cierra se rechaza con «hoy no se puede», distinto de una que todavía no se sabe.
+
+**La luz busca (niveles de flor).** En 4.4–4.8, 4.12 y 5.1–5.6 la búsqueda no la hace el jugador: con marcas libres, quien marca siguiendo una cadena nunca cierra un bucle impar, así que ninguna regla obligaría a plegar. Allí **la luz busca en un orden fijo, como el algoritmo** (el de 4.1 y 4.2: los soles ya marcados primero, de menor a mayor; luego las raíces del nivel, en su orden), y el jugador la **avanza** marca a marca con «Avanzar la luz». Cuando la luz encuentra dos soles del mismo árbol, se para y la enredadera brilla: la única forma de seguir es **plegar** ese bucle tocando el choque; después la luz sigue en el jardín plegado. Cuando ve la cadena, el jugador la enciende (regla `seen`) y la despliega por la flor. Las marcas a mano están cerradas en esos niveles (y «Plegar a mano» no existe en ningún nivel); separar, pasar el farol y girar el tallo, también (cambian los faroles sin la luz). En la niebla, la luz se para ante un sol cuyas enredaderas no se ven todavía: hay que inspeccionarlo. **En la niebla**, una cadena (y una unión, pasar el farol o girar el tallo) solo pasa por enredaderas visibles, con un extremo inspeccionado: el arrastre no palpa lo que la niebla tapa.
+
 ### 5.2 Objetivo visible y objetivo oculto
 
 - Capítulos 0–1: el nivel muestra "este jardín puede encender N faroles". El jugador sabe cuándo terminó.
 - Desde 1.8: el objetivo se oculta en algunos niveles y el jugador declara "Terminé". El mentor pregunta "¿cómo lo sabes?". La respuesta honesta al principio es "no lo sé", y toda la teoría del juego es la respuesta a esa pregunta.
-- Capítulo 7: para terminar hay que **presentar un certificado**.
+- Un "Terminé" que no gana nunca se queda sin respuesta: un aviso suave dice por qué todavía no basta (queda una cadena, la búsqueda aún tiene enredaderas por mirar, una enredadera sin vigilar, la cuenta no cuadra, esas piedras no son las lunas), **sin decir dónde está la cadena**; en un certificado de espantapájaros brilla una enredadera sin vigilar. Cuenta como un intento fallido para las pistas (§5.3), no como progreso.
+- En los niveles de certificado (3.7–3.10 y el capítulo 7) el botón dice **«Presentar»**: para terminar hay que **presentar un certificado** (espantapájaros o piedras). En el resto sigue diciendo "Terminé".
 
 ### 5.3 Pistas (tres grados, siempre con voz)
 
-Las pistas se ofrecen tras 90 segundos sin progreso o tras tres intentos fallidos. Nunca se imponen. No quitan estrellas.
+El botón Pista está **siempre a mano** mientras el paso admite pistas y quedan grados: el jugador puede pedir una cuando quiera. Tras 90 segundos sin progreso o tras tres intentos fallidos seguidos (jugadas rechazadas, «Terminé» equivocados), el juego la **ofrece**: el botón brilla. Nunca se imponen. No quitan estrellas ya ganadas, pero abrir alguna en un nivel pierde su estrella "sin pistas" (§5.4).
+
+**Progreso** no es cualquier jugada aceptada, sino una señal que importa: más faroles que nunca en esta partida; con estos faroles, más brotes marcados en la búsqueda (también las marcas de la luz), más flores plegadas o la cadena vista; más brotes inspeccionados; más enredaderas vigiladas; o la cuenta del Consejo más cerca de los que duermen a oscuras. Juntar y separar en bucle, o marcar y deshacer, no superan nada, así que no aplazan la oferta; tampoco rompen la racha de intentos fallidos.
 
 1. **Empujón:** una pregunta que reorienta ("¿Quién sigue a oscuras? ¿Con quién podría hablar?").
-2. **Dirección:** señala la zona o el brote clave con un brillo.
+2. **Dirección:** señala una **zona** con un brillo, o un solo brote, y pregunta; **nunca la respuesta**: no brilla justo la enredadera donde hay que plegar, ni la cadena entera o sus dos puntas, ni el tallo que hay que girar, ni dos o más espantapájaros o piedras del certificado final. Lo comprueba un check de integridad (`hintReveals`).
 3. **Solución guiada:** el mentor ejecuta el primer paso y deja el resto.
+
+Del Prado en adelante cada nivel escribe sus pistas (1.5–1.9 también, con sus tres grados); el grado que un nivel no escribe lo dice una pista genérica, y desde el grado 2 brilla lo que toca el siguiente paso del mentor.
 
 ### 5.4 Estrellas
 
-Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas, dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y las flores secretas. Nunca bloquean el avance.
+Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas (no haber abierto ninguna en el nivel, ofrecida o pedida), dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y los jardines secretos. Nunca bloquean el avance.
 
 Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se pierden: no hay tienda ni nada que gastar. Al llegar, un aviso en el hub los anuncia una sola vez. En modo profesor se ven todos.
 
@@ -257,7 +267,7 @@ Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se 
 | 110 | Luciérnagas sobre el jardín |
 | 130 | El brillo de un farol encendido en cada poste de capítulo |
 
-Todos salen de Ninja Adventure o se dibujan por código. Cada uno vive y se mueve en un hueco propio del hub, libre de todo lo que se lee o se pulsa (carteles, títulos, botones, flores secretas) y de los demás, así que nunca tapan nada ni se mueven cuando llega otro; si el sistema pide menos movimiento, se quedan quietos.
+Todos salen de Ninja Adventure o se dibujan por código. Cada uno vive y se mueve en un hueco propio del hub, libre de todo lo que se lee o se pulsa (carteles, títulos, botones, jardines secretos) y de los demás, así que nunca tapan nada ni se mueven cuando llega otro; si el sistema pide menos movimiento, se quedan quietos.
 
 Junto al título del hub, un contador con las estrellas totales y las semillas. Para dejarle sitio (y al cartel del modo libre), el botón "Exportar registro de prueba" pasa de la línea superior del hub al panel de ajustes.
 
@@ -265,24 +275,28 @@ Junto al título del hub, un contador con las estrellas totales y las semillas. 
 
 Tras dominar una idea, el mentor pide "escríbelo". El jugador elige entre 3–4 enunciados. Los falsos son plausibles y **se refutan con un mini-jardín contraejemplo que el jugador puede tocar**. Al elegir el correcto, se guarda en el Cuaderno con las palabras del jardín; el Códex lo traduce después.
 
+El Cuaderno pide pensar, no recordar. Llega **antes** de que Sauce resuma la idea del nivel: la frase que la resume pasa a ser su respuesta al acierto. La opción correcta dice la idea **con otras palabras** que las que el jugador acaba de oír (un check de integridad lo comprueba: no comparte con ninguna línea anterior del nivel tres palabras seguidas con al menos dos que digan algo), y entre las falsas hay una que copia a medias lo que dijo Sauce, para quien elige por cómo suena y no por lo que dice.
+
 ### 5.6 El Códex
 
 Libro accesible desde el botón de libro del HUD (en cuanto alguna página está abierta) y desde el hub. Cada entrada tiene tres pestañas:
 - **Intuición:** la explicación con las palabras del jardín y un diagrama interactivo (el mismo motor del juego, en pequeño).
 - **Formal:** definiciones, enunciados y demostraciones con notación matemática (KaTeX), escritas en el nivel de un buen curso de DAA.
-- **Puente:** la tabla de traducción de ese concepto y una nota histórica.
+- **Puente:** la tabla de traducción de ese concepto, una nota histórica y, al final, bajo su título, los **testigos del núcleo**: qué tests del código comprueban cada resultado de la página. Las rutas de archivo (`src/core/…`) solo aparecen ahí, nunca en las pestañas Intuición ni Formal.
 
 Las entradas se desbloquean con el juego, pero en modo profesor están todas abiertas. Sección 8 detalla cada entrada.
 
+**Invitación al final de cada capítulo.** En el último nivel de cada capítulo (no en los jardines secretos), Sauce cierra con una línea corta que invita a leer las páginas que el capítulo abrió, por su título del jardín: «En el Códex esto tiene nombre: lee «La cadena».». En los capítulos 1, 3 y 4 esas páginas se abrieron un nivel antes (1.8, 3.8, 4.11); en el 7 la invitación nombra «Las piedras» (C12), porque «Más allá del jardín» (C14) la presenta el epílogo, y va justo antes de la última imagen del capítulo («Mira: los robles florecen. Amanece.»). La invitación nunca adelanta la respuesta de un Cuaderno ni de una pregunta.
+
 ### 5.7 Modo libre (sandbox)
 
-Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y puedes: jugarlo, pedirle al jardinero mecánico que lo resuelva con el sol como slider, ver el bosque, las flores y el certificado final. Exporta un código de jardín para compartir.
+Diseñas tu jardín (colocas brotes y enredaderas, o generas uno aleatorio), y puedes: jugarlo, pedirle al jardinero mecánico que lo resuelva con el día como slider, ver el bosque, las flores y el certificado final. Exporta un código de jardín para compartir.
 
-Se abre al terminar el capítulo 1 (un cartel en el hub), con las acciones que el jugador ya ha ganado; en modo profesor y desde el epílogo, siempre. Jugar en él nunca guarda progreso.
+Se abre al terminar el capítulo 1 (un cartel en el hub), con las acciones que el jugador ya ha ganado; en modo profesor y desde el epílogo, siempre. Jugar en él nunca guarda progreso. Con Plegar ganado (4.4), el modo libre ofrece también «Plegar a mano» (§5.1), solo con la base a oscuras y con su propia tarjeta de mecánica; ningún nivel lo tiene.
 
-Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredaderas, con los brotes a 18 px o más unos de otros y un farol por brote; sin niebla. El editor rechaza con un aviso amable lo que taparía el nombre de un brote, y los jardines generados o abiertos de un código se disponen de modo que todos los nombres se lean. Los jardines generados salen del núcleo, deterministas por semilla (hilera, corro, estrella, todos con todos, al azar, abejas y flores, flor de tallo largo, flores anidadas, hélice, muchas flores); si uno pasaría de los límites, se encoge hasta caber y lo dice.
+Para que todo jardín se lea, el editor admite como mucho 24 brotes y 40 enredaderas, con los brotes a 18 px o más unos de otros y un farol por brote; sin niebla. El editor rechaza con un aviso amable lo que taparía el nombre de un brote, y los jardines generados o abiertos de un código se disponen de modo que todos los nombres se lean. Los jardines generados salen del núcleo, deterministas por semilla (hilera, corro, estrella, todos con todos, al azar, abejas y tréboles, flor de tallo largo, flores anidadas, hélice, muchas flores); si uno pasaría de los límites, se encoge hasta caber y lo dice.
 
-El jardinero mecánico aparece tras 6.2 y usa todas sus herramientas aunque el jugador aún no las tenga (no se las da). El certificado a demanda sale del bosque de la última búsqueda sin cadena: piedras en las lunas (tras 7.4) y, si el jardín es de abejas y flores, espantapájaros (tras 3.8). No hay carrera contra Bruto en el modo libre. Que el jardinero lo resuelva no gana el jardín: «Terminé» sigue siendo del jugador, y ganar un jardín libre no da estrellas (el panel de victoria dice una línea propia).
+El jardinero mecánico aparece tras 6.2 y usa todas sus herramientas aunque el jugador aún no las tenga (no se las da). El certificado a demanda sale del bosque de la última búsqueda sin cadena: piedras en las lunas (tras 7.4) y, si el jardín es de abejas y tréboles, espantapájaros (tras 3.8). No hay carrera contra Bruto en el modo libre. Que el jardinero lo resuelva no gana el jardín: «Terminé» sigue siendo del jugador, y ganar un jardín libre no da estrellas (el panel de victoria dice una línea propia).
 
 Compartir da el código de jardín corto (brotes, enredaderas y faroles, sin posiciones: al importarlo se dispone solo), un enlace `?garden=<código>` que abre el modo libre con ese jardín, y el mismo JSON de los niveles (con posiciones y nombres, válido para el catálogo una vez se le da su id). Importar acepta un código o un JSON, pegado o desde un archivo, y lo valida todo antes de usarlo.
 
@@ -294,11 +308,11 @@ Todos los capítulos y el Códex abiertos, saltos directos a cualquier nivel, pa
 
 Video de 20–30 minutos narrado por el autor, que recorre los niveles clave y explica la teoría en cada uno. Es el entregable "video" del profesor y el tráiler didáctico del juego. Guion en sección 9.
 
-### 5.10 Flores secretas
+### 5.10 Jardines secretos
 
-Puzles opcionales difíciles escondidos en el hub: una por capítulo, del Prado al Consejo (siete; el Huerto no tiene). No enseñan nada nuevo, exigen combinar, y solo usan las acciones de su capítulo. Ejemplos en 7.9.
+Puzles opcionales difíciles escondidos en el hub: uno por capítulo, del Prado al Consejo (siete; el Huerto no tiene). No enseñan nada nuevo, exigen combinar, y solo usan las acciones de su capítulo. Ejemplos en 7.9.
 
-Cada una florece junto al poste del cartel de su capítulo, en un hueco reservado a su lado que nunca tapa un botón. No aparece hasta terminar el capítulo; entonces es un capullo que se abre con estrellas de ese capítulo: las de completarlo todo más la mitad (redondeada hacia arriba) de sus estrellas extra posibles. Tocar el capullo dice cuántas faltan. Nada depende de ellas: no cuentan para terminar el capítulo ni abren otro nivel, y al ganarlas se vuelve al hub. En modo profesor están todas abiertas.
+Cada uno crece junto al poste del cartel de su capítulo, en un hueco reservado a su lado que nunca tapa un botón. No aparece hasta terminar el capítulo; entonces es un capullo que se abre con estrellas de ese capítulo: las de completarlo todo más la mitad (redondeada hacia arriba) de sus estrellas extra posibles. Tocar el capullo dice cuántas faltan. Nada depende de ellos: no cuentan para terminar el capítulo ni abren otro nivel, y al ganarlos se vuelve al hub. En modo profesor están todos abiertos. El dibujo del hub (el capullo y su roseta dorada) no cambia: el nombre es «jardín secreto» porque «flor» es solo la flor que se pliega.
 
 
 ### 5.11 Tarjetas de mecánica
@@ -313,7 +327,7 @@ Las tarjetas explican el gesto, **nunca la idea**: "arrastra desde un brote a os
 
 | Cap. | Estación / lugar | Idea central | Niveles | Duración estimada |
 |---|---|---|---|---|
-| 0 | Prólogo, El Huerto | Emparejar; exclusividad; el sol como tiempo | 5 | 10 min |
+| 0 | Prólogo, El Huerto | Emparejar; exclusividad; el día como tiempo | 5 | 10 min |
 | 1 | Primavera, El Prado | Maximal ≠ máximo; pasar el farol; cadenas | 9 | 30 min |
 | 2 | El Estanque | Lema de Berge (jugado) | 4 | 20 min |
 | 3 | El Invernadero | Búsqueda sistemática; costo; König | 9 | 35 min |
@@ -374,13 +388,14 @@ Tarde de verano tardío. Sin música todavía, solo grillos. Tutorial silencioso
 - **Guion:** Sauce: "Hortensia tiene muchos amigos. ¿Cuántos faroles crees que se encienden esta noche?"
 - **Victoria:** 1 farol.
 
-#### 0.5 El sol
+#### 0.5 El día
 - **Jardín:** `A–B–C–D–E`.
 - **Objetivo:** visible, 2.
-- **Enseña:** el slider de tiempo. Tras resolver, el mentor pide arrastrar el sol hacia atrás y ver los movimientos deshacerse y rehacerse.
-- **Guion:** Sauce: "Un jardinero mira el día que pasó. Arrastra el sol."
-- **Victoria:** 2 faroles y haber movido el sol al menos una vez.
+- **Enseña:** el slider de tiempo. Tras resolver, el mentor pide arrastrar el día hacia atrás y ver los movimientos deshacerse y rehacerse.
+- **Guion:** Sauce: "Un jardinero mira el día que pasó. Arrastra el día."
+- **Victoria:** 2 faroles y haber movido el día al menos una vez.
 - **Desbloquea:** Códex **C1 Emparejamiento** (solo la pestaña Intuición; la Formal se abre al terminar el capítulo 1). Hub: el huerto florece.
+- **Al final:** Sauce: "En el Códex, el libro del jardinero, esto tiene nombre: lee «Un farol para dos»."
 
 ---
 
@@ -393,7 +408,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 2.
 - **Enseña:** maximal ≠ máximo. Quien junta B–C obtiene 1 y no puede añadir nada. Tiene que deshacer y rehacer: A–B y C–D.
 - **Por qué aquí:** es el problema entero en cuatro brotes. La solución "deshacer una pareja para hacer dos" *es* pasar el farol. El jugador lo hace sin saberlo.
-- **Guion:** al lograrlo, el sol rebobina solo y Sauce: "Mira lo que hiciste. Beto le dio su farol a Ana, y Cleo tuvo que buscar a Dani. **Pasaste el farol.**"
+- **Guion:** al lograrlo, el día se rebobina solo y repite el jardín con un pase; Sauce: "Mira otra forma de ver lo que pasó: si Beto le da su farol a Ana, Cleo puede buscar a Dani. Eso es **pasar el farol**." Vale tanto si el jugador cayó en la trampa como si no: no le atribuye una jugada que quizá no hizo.
 - **Pistas:** (1) "¿Ana puede hablar con alguien?" (2) A y D brillan. (3) el mentor apaga B–C.
 - **Victoria:** 2 faroles.
 - **Desbloquea:** la acción **Pasar el farol** (tocar un brote solitario y luego un vecino con farol lo roba; la antigua pareja queda solitaria).
@@ -404,7 +419,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 3.
 - **Enseña:** la reacción en cadena de pases: A roba a B, C queda solo, C roba a D, E queda solo, E junta con F. Tres movimientos, un farol nuevo.
 - **Por qué aquí:** primer nivel que empieza con faroles ya puestos. Todo el algoritmo trabaja así: mejorar una noche ya empezada.
-- **Guion:** Sauce (al terminar, rebobinando): "Uno, dos, tres pases, y al final había sitio para uno más. Eso es una **cadena**."
+- **Guion:** Sauce (al terminar, rebobinando con los pases): "Mira otra forma de verlo: uno, dos, tres pases, y al final había sitio para uno más. Eso es una **cadena**." Como en 1.1, vale lo haya hecho el jugador así o no.
 - **Pistas:** (1) "¿Quién está a oscuras? ¿Quién tiene el farol más cercano?" (2) A brilla. (3) el mentor hace el primer pase.
 - **Victoria:** 3 faroles.
 
@@ -415,7 +430,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Enseña:** la acción **Cadena**: arrastrar desde S por `S–a`, `a=b`, `b–c`, `c=d`, `d–T`. Al soltar, cascada automática. El distractor `c–z` es una trampa para quien cree que cualquier camino sirve: la herramienta no deja pasar de `b–c` a `c–z` porque serían dos enredaderas apagadas seguidas ("Cleo ya tiene farol: tiene que dárselo a alguien antes de pedir otro").
 - **Por qué aquí:** convierte la cadena manual en herramienta. La regla de alternancia no se explica: la impone la física del jardín.
 - **Guion:** Sauce: "Arrastra desde alguien a oscuras. Los faroles saben deslizarse solos."
-- **Pistas:** (1) "Empieza por Sami." (2) el camino correcto se insinúa. (3) el mentor traza hasta la mitad.
+- **Pistas:** (1) "Empieza por Sami." (2) brilla Teo: "Sami no es el único a oscuras. ¿Hasta quién puede llegar la luz?" (3) el mentor traza la cadena.
 - **Victoria:** 4 faroles.
 - **Desbloquea:** acción **Cadena**.
 
@@ -434,7 +449,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Enseña:** repetir. Cada cadena gana exactamente uno. Después de una cadena, el jardín cambia y hay que volver a mirar.
 - **Guion:** Sauce: "Cada cadena, un farol. Ni dos ni medio. Uno."
 - **Victoria:** todos con farol (perfecto).
-- **Cuaderno:** "Una cadena que empieza y termina en brotes a oscuras…" (a) "…enciende exactamente un farol nuevo" ✔ (b) "…enciende tantos faroles como brotes toca" ✘ contraejemplo: cadena de 6 brotes gana 1 (c) "…solo funciona si es corta" ✘ contraejemplo: cadena de 10.
+- **Cuaderno:** "Una cadena que empieza y termina en brotes a oscuras…" (a) "…gana uno, ni más ni menos, por larga que sea" ✔ (b) "…enciende un farol por cada brote a oscuras que toca" ✘ contraejemplo: cadena de 6 brotes, toca dos a oscuras y gana 1 (c) "…solo funciona si es corta" ✘ contraejemplo: cadena de 10. La reacción de Sauce a los cuatro faroles se queda; la opción correcta no la repite.
 
 #### 1.6 Apuesta
 - **Jardín:** 8 brotes, un ciclo de 6 con dos colgantes. Valor real: 4.
@@ -448,6 +463,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 3.
 - **Enseña:** las cadenas pueden dar la vuelta a un bucle. Hay dos cadenas válidas (`1–2=3–4` y `1–6=5–4`). Ambas ganan.
 - **Por qué aquí:** planta la semilla del contraste con el bucle impar del capítulo 4. Aquí el bucle es amable.
+- **Guion:** al ganar, Sauce: "Seis brotes en corro, y la cadena pudo ir por cualquiera de los dos lados. Acuérdate de este bucle." (4.3 lo recuerda).
 - **Victoria:** 3 faroles.
 
 #### 1.8 ¿Terminé?
@@ -462,6 +478,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Jardín:** 14 brotes con faroles iniciales mal puestos, tres cadenas necesarias, una de ellas de longitud 7 con dos callejones.
 - **Objetivo:** visible, 7. Estrella extra: sin pistas.
 - **Victoria:** 7.
+- **Al final:** Sauce: "El Prado es tuyo. En el Códex esto tiene nombre: lee «La cadena»."
 
 ---
 
@@ -487,20 +504,26 @@ Tú: 5 faroles. Reflejo: 6.
 
 #### 2.3 El hilo ganador
 - **Enseña:** el hilo donde el reflejo gana **empieza y termina con farol plateado**, así que sus extremos (1 y 6) están a oscuras en tu jardín: es una cadena tuya. El jugador la usa. Ahora empatas a 6. El reflejo se disuelve.
-- **Guion:** Sauce: "Cuando alguien puede hacerlo mejor que tú, te ha dejado una cadena tirada en el suelo. Siempre."
+- **Guion:** tras usar la cadena, Sauce pregunta: "¿Podría la punta de un hilo que gana el agua tener un farol tuyo?" (a) "No: si lo tuviera, el hilo seguiría por él" ✔ (b) "Sí, a veces: depende del jardín" ✘ (Sauce lo explica y vuelve a preguntar). Su respuesta al acierto es el resumen: "Cuando alguien puede hacerlo mejor que tú, te ha dejado una cadena tirada en el suelo. Siempre."
 - **Victoria:** usar la cadena y empatar.
 
 #### 2.4 Reto del espejo (adversario)
-- **Enseña:** ahora el jugador es el reflejo. Se le da un jardín con tu emparejamiento M (7 faroles) y debe **dibujar un emparejamiento mejor que no deje ninguna cadena para M**. Cada intento: el juego superpone, separa y señala el hilo ganador, que resulta ser una cadena. Tras tres intentos, Sauce cierra: "No se puede. Si no tienes cadena, nadie te gana."
-- **Por qué aquí:** el jugador experimenta la imposibilidad, que es la dirección difícil de Berge, y ya vio el mecanismo en 2.1–2.3.
-- **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…nadie puede encender más faroles que yo" ✔ (b) "…es porque lo probé todo" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ contraejemplo: cadena escondida larga.
+- **Jardín:** una cuadrícula de 4 × 4 brotes (A–D, E–H, I–L, M–P) con tres enredaderas de menos: A no toca a E, y C no toca ni a D ni a G, así que A y C solo cuelgan de B. Tuyo: `A=B, F=J, G=H, I=M, K=L, N=O` (6 faroles; C, D, E y P a oscuras). El máximo es 7 y deja **dos brotes a oscuras** (A o C, que se disputan el farol de B, y uno más): ganarle al jardín final no es imposible "por contar" (16 brotes dan para 8 faroles), lo es porque ya no queda cadena.
+- **Enseña, en dos fases:**
+  - **(a) Ganarle a tu jardín.** Ahora el jugador es el reflejo: "Juega a ser el agua: dibuja un reflejo que encienda más faroles que tu jardín." Cada reflejo mejor que comprueba: el juego superpone, separa y señala el hilo ganador, que resulta ser una cadena de tu jardín (dos reflejos mejores distintos). Sauce: "Quien te gana te deja una cadena. Úsala." El jugador la usa (7 faroles).
+  - **(b) Intentarlo sin cadena.** En el mismo jardín, ya sin ninguna cadena: "Intenta ganarle otra vez." Cada comprobación dice "ese no te gana"; tras tres, Sauce: "No se puede. Si no tienes cadena, nadie te gana." y abre el Cuaderno.
+- **Por qué aquí:** el jugador vive las dos direcciones de Berge con sus manos: quien gana deja una cadena (ya visto en 2.1–2.3, ahora como autor del reflejo) y, sin cadena, la imposibilidad, que es la dirección difícil.
+- **Pistas:** (1) "Dibuja siete faroles plateados, sin que ningún brote cargue dos." (2) "Mira dónde gana el agua." (3) el mentor dibuja un reflejo mejor (en la fase (a)) o da el primer paso de la cadena. En la fase (b) no hay pistas: no hay nada que encontrar, y el paso termina tras tres comprobaciones.
+- **Victoria:** usar la cadena (7 faroles) y terminar las dos fases.
+- **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…cualquier otra disposición encenderá como mucho los mismos" ✔ (b) "…nadie gana mientras busque bien" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ contraejemplo: cadena escondida larga.
 - **Desbloquea:** Códex **C3 Lema de Berge**. Hub: el estanque.
+- **Al final** (tras el Cuaderno): Sauce: "En el Códex esto tiene nombre: lee «El hilo ganador»."
 
 ---
 
 ### Capítulo 3 — El Invernadero (búsqueda sistemática, costo, König)
 
-Un invernadero con niebla matinal. Viven **abejas y flores**: una abeja solo se junta con una flor. Nadie dice "bipartito". Aquí "¿queda alguna cadena?" se convierte en un procedimiento.
+Un invernadero con niebla matinal. Viven **abejas y tréboles**: una abeja solo se junta con un trébol. Nadie dice "bipartito". Aquí "¿queda alguna cadena?" se convierte en un procedimiento.
 
 Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**. Cada inspección cuesta una gota de agua. Marcas: **sol** (llegaste "con la mano libre") y **luna** (llegaste pidiendo). Reglas que el jugador descubre y el juego impone:
 - Un brote solitario desde el que empiezas es **sol**.
@@ -509,7 +532,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - Un brote ya marcado no se vuelve a marcar.
 
 #### 3.1 Niebla
-- **Jardín:** `R–a=b–c=d–T` en niebla. R libre (abeja), T libre (flor).
+- **Jardín:** `R–a=b–c=d–T` en niebla. R libre (abeja), T libre (trébol).
 - **Enseña:** inspeccionar y marcar. R sol, a luna, b sol, c luna, d sol, T luna y solitaria → cadena.
 - **Guion:** Sauce: "De noche no se ve el jardín entero. Se ve lo que tu luz alcanza. Sal de alguien a oscuras y camina."
 - **Pistas:** (1) "¿Dónde empieza siempre una cadena?" (2) R brilla. (3) el mentor inspecciona R y marca sol.
@@ -528,9 +551,10 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Victoria:** completar la búsqueda con el mínimo de agua (presupuesto amable).
 
 #### 3.4 Dos jardineros
-- **Jardín:** dos brotes solitarios, R1 (abeja) y R2 (flor), cuyas búsquedas crecen a la vez; una enredadera apagada une un sol del árbol de R1 con un sol del árbol de R2.
+- **Jardín:** dos brotes solitarios, R1 (abeja) y R2 (trébol), cuyas búsquedas crecen a la vez; una enredadera apagada une un sol del árbol de R1 con un sol del árbol de R2.
 - **Enseña:** cada solitario lanza su luz; cuando dos luces se tocan por una enredadera apagada, sol con sol de **árboles distintos**, hay cadena de raíz a raíz.
 - **Por qué aquí:** establece el bosque (varias raíces) y el caso "sol–sol entre árboles distintos = cadena", que en el capítulo 4 se contrasta con "sol–sol en el mismo árbol = problema".
+- **Pregunta** (tras la cadena, antes de que Sauce la nombre): "Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?" (a) "Una cadena de un brote a oscuras al otro" ✔ (b) "Un bucle que vuelve al mismo brote" ✘ (cada camino acaba en su propio brote a oscuras) (c) "Nada: hay que seguir buscando" ✘. La respuesta al acierto es la línea de Sauce que la nombra.
 - **Victoria:** cadena.
 
 #### 3.5 Agua justa
@@ -549,21 +573,23 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Enseña:** un espantapájaros vigila todas las enredaderas de su brote. Si k espantapájaros vigilan **todas** las enredaderas del jardín, no puede haber más de k faroles (cada farol está en una enredadera vigilada, y cada espantapájaros vigila como mucho un farol). En parte I, espantapájaros en 2 y 4; en parte II, en H. Coinciden con los faroles: **está demostrado**.
 - **Por qué aquí:** primer certificado, con objeto físico, en el caso fácil. El jugador aprende qué es "una prueba corta de que no se puede más".
 - **Guion:** Sauce: "El Consejo no quiere que pruebes todo. Quiere una razón que se vea."
-- **Pistas:** (1) "¿Qué brote toca más enredaderas?" (2) el 2 y el 4 brillan. (3) —
+- **Pistas:** (1) "¿Qué brote toca más enredaderas?" (2) brilla la fila entera: "En esta fila, ¿qué brotes tocan dos enredaderas a la vez?" (3) el mentor pone un espantapájaros.
 - **Victoria:** cobertura completa con exactamente tantos espantapájaros como faroles.
 - **Desbloquea:** Espantapájaros.
 
 #### 3.8 El regalo de la búsqueda
 - **Jardín:** `1–2=3–4=5` (1 libre), y una segunda componente con la misma estructura ramificada. Diseñado para que la búsqueda alcance a todos los brotes.
-- **Enseña:** tras la búsqueda fallida, el mentor dice "pon espantapájaros en todas las lunas". Cada luna tiene exactamente un farol (con un sol), así que hay tantos espantapájaros como faroles, y vigilan todo: cada enredadera toca una luna (porque de un sol solo salen lunas y no hay sol–sol en abejas y flores). **La búsqueda que fracasó te regala la prueba.**
+- **Enseña:** tras la búsqueda fallida, el mentor dice "pon espantapájaros en todas las lunas". Cada luna tiene exactamente un farol (con un sol), así que hay tantos espantapájaros como faroles, y vigilan todo: cada enredadera toca una luna (porque de un sol solo salen lunas y no hay sol–sol en abejas y tréboles). **La búsqueda que fracasó te regala la prueba.**
 - **Por qué aquí:** es el ensayo general del capítulo 7. La idea "el bosque fallido es el certificado" se ve primero en el caso bipartito donde es transparente.
-- **Cuaderno:** "Si k espantapájaros vigilan todas las enredaderas…" (a) "…no puede haber más de k faroles" ✔ (b) "…hay exactamente k faroles" ✘ contraejemplo: un espantapájaros de más (c) "…siempre puedo poner los espantapájaros en las lunas" ✘ (solo si la búsqueda llegó a todos; el Códex C5 lo precisa).
-- **Desbloquea:** Códex **C4 La búsqueda** y **C5 Abejas, flores y espantapájaros (König)**.
+- **Pregunta** (tras la búsqueda, antes de que Sauce explique por qué las lunas lo vigilan todo): "Entre abejas y tréboles, ¿pueden tocarse dos soles del mismo árbol?" (a) "No: todos sus soles son de la misma especie" ✔ (la respuesta de Sauce añade que una enredadera nunca une dos de la misma especie, y que dos soles de árboles distintos serían una cadena) (b) "Sí, en un corro pueden tocarse" ✘ contraejemplo: un corro de abejas y tréboles donde el jugador busca y nunca consigue que dos soles se toquen. Las preguntas de Sauce refutan igual que el Cuaderno: con una respuesta o con un jardín que se toca, y la pregunta vuelve al salir.
+- **Cuaderno:** "Si k espantapájaros vigilan todas las enredaderas…" (a) "…no puede haber más de k faroles" ✔ (b) "…hay exactamente k faroles" ✘ contraejemplo: un espantapájaros de más (c) "…siempre puedo poner los espantapájaros en las lunas" ✘ contraejemplo: un jardín de abejas y tréboles donde la búsqueda acaba sin llegar a todos (una pareja con farol cuelga solo de una luna); los espantapájaros en las lunas dejan su enredadera sin vigilar. Es la idea de la flor secreta 3.10 en un nivel obligatorio; el Códex C5 la precisa.
+- **Desbloquea:** Códex **C4 La búsqueda** y **C5 Abejas, tréboles y espantapájaros (König)**.
 
 #### 3.9 Maestría del Invernadero
 - **Jardín:** 20 brotes bipartitos en niebla, faroles iniciales mal puestos, dos cadenas, después certificado.
 - **Objetivo:** oculto. Para terminar hay que encender el máximo **y** colocar los espantapájaros.
 - **Victoria:** certificado válido. Hub: el invernadero.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Caminar de noche» y «Abejas, tréboles y espantapájaros»."
 
 ---
 
@@ -592,21 +618,22 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
   Enredaderas: `R–a, a=b, b–c, c=d, d–e, e–b, e=f, f–T`.
 - **Enseña:** búsqueda: R sol, a luna, b sol, c luna, d sol, e luna (por `d–e`; `b–e` llega a e luna desde b sol: coherente), f sol, T luna libre → cadena. Sin conflicto. El bucle b–c–d–e tiene 4 brotes. **Solo los bucles impares confunden.**
 - **Por qué aquí:** refuta el distractor (b) del Cuaderno anterior con un jardín real y afina la idea.
+- **Guion:** al empezar, Sauce recuerda el bucle par de 1.7: "¿Te acuerdas del corro del Prado? Otro bucle. Antes de desconfiar de tu luz, busca desde R y cuéntale los brotes."
 - **Victoria:** cadena.
 
 #### 4.4 Plegar
 - **Jardín:** el de 4.1.
 - **Enseña:** al tocar el conflicto `d–b`, el triángulo `b, c, d` **se pliega en una flor** con tres pétalos, marcada sol. Ahora, desde la flor, todas las enredaderas apagadas de cualquier pétalo cuentan: `c–e` se explora, e es luna y solitaria → **cadena a través de la flor**.
 - **Guion:** Sauce: "Si todos pueden ser sol, trátalos como un solo sol grande. Ciérralos como una flor."
-- **Victoria:** plegar y encontrar la cadena (aún sin aplicarla: eso es 4.5).
-- **Desbloquea:** Plegar.
+- **Victoria:** plegar y encontrar la cadena (aún sin aplicarla: eso es 4.5). La luz busca desde R (§5.1, «La luz busca»): el jugador la avanza, la luz se para en `d–b` y solo sigue tras plegar. Hoy no se mueve ningún farol: juntar, separar, pasar el farol y cadena están cerrados.
+- **Desbloquea:** Plegar y «Avanzar la luz».
 
 #### 4.5 Desplegar
 - **Jardín:** el mismo, con la cadena `R–a=Flor–e` encontrada.
-- **Enseña:** para pasar los faroles hay que abrir la flor y trazar el camino por dentro. Entras por c (desde e, enredadera apagada). Desde c hay dos lados: `c–b` (apagada) y `c=d` (farol). Como llegaste pidiendo, c tiene que dar su farol: **solo puedes salir por `c=d`**. Luego `d–b`, y b es la base: su farol va afuera (`b=a`). Camino completo: `R–a=b–d=c–e`. El jugador prueba el lado `c–b` y el juego lo rechaza: "Cleo ya tiene farol, no puede pedir otro".
+- **Enseña:** para pasar los faroles hay que abrir la flor y trazar el camino por dentro. Entras por c (desde e, enredadera apagada). Desde c hay dos lados: `c–b` (apagada) y `c=d` (farol). Como llegaste pidiendo, c tiene que dar su farol: **solo puedes salir por `c=d`**. Luego `d–b`, y b es la base: su farol va afuera (`b=a`). Camino completo: `R–a=b–d=c–e`. El jugador prueba el lado `c–b` y el juego lo rechaza: "Cleo ya tiene farol, no puede pedir otro". Cuando la luz ve la cadena, sus tramos hallados `R–a=b` y `c–e` se quedan dibujados; al desplegar la flor queda el hueco entre b y c, y el jugador lo rellena arrastrando solo el tramo de dentro (`b–d=c`, o desde c), con lo que se enciende la cadena entera (§5.1, «El gesto de levantar»).
 - **Por qué aquí:** la alternancia decide el lado. El jugador aprende que dentro de una flor siempre hay exactamente un lado que funciona, y por qué.
 - **Pistas:** (1) "Llegaste a Cleo pidiendo. ¿Qué tiene que hacer Cleo?" (2) `c=d` brilla.
-- **Victoria:** cadena aplicada, 3 faroles.
+- **Victoria:** cadena aplicada, 3 faroles: la que encontró la luz, que busca desde R y se para en `d–b` hasta que el jugador pliega (§5.1). Los faroles solo cambian por donde llegó tu luz (regla `seen`): separar, pasar el farol y girar el tallo están cerrados.
 - **Desbloquea:** Desplegar.
 
 #### 4.6 Cinco pétalos
@@ -614,33 +641,33 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
   Enredaderas: `R–a, a=b, b–c, c=d, d–f, f=g, g–b, c–e`.
 - **Enseña:** búsqueda: R sol, a luna, b sol, c luna, d sol, g luna, f sol; `d–f` es sol–sol mismo árbol → plegar los cinco. Desde la flor: `c–e`, e luna libre → cadena. Desplegar entrando por c: `c=d, d–f, f=g, g–b`, base b. Camino: `R–a=b–g=f–d=c–e` (7 brotes). El otro lado (`c–b`) se rechaza.
 - **Por qué aquí:** el primer bucle de 5. El jugador ve que "un lado" puede ser largo, y que da la vuelta casi entera.
-- **Victoria:** cadena aplicada.
+- **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en `d–f` hasta plegar). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 4.7 Flor con tallo largo
 - **Jardín:** `R–a=b–c=d` (tallo de longitud 4) y triángulo `d–e=f–d`, con salida `e–T`, T libre.
 - **Enseña:** la **base** es el pétalo cuyo farol sale de la flor (d, con `c=d`), y el **tallo** es el camino desde el solitario hasta la base. La cadena pasa por el tallo entero, entra por e, sale por la base.
-- **Cuaderno:** "La base de una flor es…" (a) "…el pétalo cuyo farol va hacia afuera de la flor (o que está a oscuras)" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia.
-- **Victoria:** cadena aplicada.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "La base de una flor es…" (a) "…el único pétalo por el que la luz de la flor sale hacia afuera (o el que está a oscuras)" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia (d) "…el pétalo cuyo farol va a otro pétalo de la flor" ✘ (dentro de la flor los faroles van de pétalo a pétalo; la base es la que se queda sin pareja dentro).
+- **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en `d–f` hasta plegar). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 4.8 Dos flores
 - **Jardín:** un árbol de búsqueda con dos ciclos impares disjuntos en ramas distintas; la cadena pasa por uno solo de ellos.
 - **Enseña:** puede haber varias flores en una búsqueda; se pliegan a medida que aparecen; a mano solo se despliegan las que la cadena atraviesa. Al aplicar la cadena, el jardín se abre entero, como al terminar una ronda.
-- **Victoria:** cadena aplicada.
+- **Victoria:** cadena aplicada, la que encontró la luz desde R, que se para en cada flor hasta que el jugador la pliega. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 4.9 Flor sin cadena
 - **Jardín:** `R–a=b`, triángulo `b–c=d–b`, sin salida. (5 brotes, 2 faroles, R a oscuras.)
 - **Objetivo:** oculto. Valor real: 2 (ya alcanzado).
 - **Enseña:** la búsqueda pliega la flor y **aun así no encuentra cadena**. Termina. Sauce: "Ahora la luz no miente. Pero, ¿por qué te fías de la flor?" El jugador pulsa "Terminé". Se abre la pregunta que responden 4.10 y 4.11.
 - **Por qué aquí:** el jugador tiene que sentir la duda legítima: la búsqueda con flores dice "no hay cadena", pero antes ya mintió una vez.
-- **Victoria:** pulsar "Terminé".
+- **Victoria:** pulsar "Terminé". Juntar, separar, pasar el farol y cadena están cerrados: los faroles ya son los máximos, y moverlos solo serviría para que la búsqueda acabe sin encontrarse la flor.
 
 #### 4.10 Girar el tallo
 - **Jardín:** `R–a=b`, triángulo `b–c=d–b`, más una salida `c–e` con e libre, pero el jugador **no puede usar Plegar** en este nivel (la flor está "cerrada por hoy").
 - **Enseña:** una cadena de ganancia 0 (aprendida en 1.4) desde R hasta b: `R–a=b` se convierte en `R=a–b`. Mismo número de faroles, pero ahora **la base b está a oscuras**. Desde b, la cadena `b–d=c–e` es directa, sin flor.
 - **Por qué aquí:** es la herramienta de la demostración difícil. Establece que se puede suponer, sin perder nada, que la base de una flor está solitaria.
 - **Guion:** Sauce: "Cuando una flor te estorba, mueve la oscuridad hasta su base. No pierdes nada."
-- **Cuaderno:** "Si giro el tallo hasta la base de una flor…" (a) "…tengo los mismos faroles y la base queda a oscuras" ✔ (b) "…gano un farol" ✘ (c) "…pierdo un farol" ✘.
-- **Victoria:** 3 faroles sin plegar.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "Si giro el tallo hasta la base de una flor…" (a) "…no gano ni pierdo, y la oscuridad pasa a la base" ✔ (b) "…gano un farol" ✘ (c) "…pierdo un farol" ✘ (d) "…tengo los mismos faroles, y la base gana uno" ✘ contraejemplo: girar y mirar la base.
+- **Victoria:** 3 faroles sin plegar, con la flor `b, c, d` cerrada (regla `fromBase`, §5.1): toda jugada que mueve faroles por uno de sus pétalos (una cadena, una unión, pasar el farol) tiene que salir de la base b o acabar en ella. La cadena de 4.1, `R–a=b–d=c–e`, se rechaza ("la flor está cerrada por hoy"); girar el tallo `R–a=b` (o pasar el farol de R a a) y luego `b–d=c–e`, sí.
 - **Desbloquea:** Girar el tallo (que es simplemente Cadena de ganancia 0, ahora con nombre).
 
 #### 4.11 Reto de la flor (adversario, argumento guiado)
@@ -652,14 +679,15 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
   Tras dos o tres intentos, Sauce: "Da igual la que dibujes: siempre le sobra un trozo que llega a la flor. Plegar no esconde cadenas."
   Y el otro sentido ya lo vivió en 4.5–4.7: una cadena en el plegado se despliega siempre. **Plegar no crea ni destruye cadenas.**
 - **Por qué aquí:** cierra la corrección del algoritmo: buscar-con-flores dice "no hay cadena" ⇒ no la hay ⇒ por Berge, es máximo. Es la parte más densa del juego y va guiada, con el jugador manipulando y comprobando, no leyendo.
-- **Cuaderno:** "Plegar una flor…" (a) "…no crea ni destruye cadenas" ✔ (b) "…puede esconder una cadena" ✘ (el juego repite el reto) (c) "…solo sirve si la flor tiene 3 pétalos" ✘.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto; después, "por eso puedes fiarte de la flor"): "Plegar una flor…" (a) "…deja el jardín con cadena justo cuando ya la tenía" ✔ (b) "…no crea cadenas, pero puede esconder alguna" ✘ (el juego repite el reto) (c) "…solo sirve si la flor tiene 3 pétalos" ✘.
 - **Victoria:** tres cadenas dibujadas y "cortadas"; elegir la opción correcta.
 - **Desbloquea:** Códex **C6 Bucles impares**, **C7 La flor** y **C8 Lema de la flor**.
 
 #### 4.12 Maestría del Festival
 - **Jardín:** 18 brotes en niebla, presupuesto de agua, faroles iniciales, dos flores necesarias en distintas rondas.
 - **Objetivo:** oculto. Estrella extra: dentro del agua.
-- **Victoria:** máximo y "Terminé" (aún sin certificado general: eso es el capítulo 7). Hub: el festival.
+- **Victoria:** máximo y "Terminé" (aún sin certificado general: eso es el capítulo 7). La luz busca desde los brotes a oscuras, en orden, y se para en cada flor y ante cada sol en la niebla. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados. Hub: el festival.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Bucles impares», «La flor» y «Plegar no esconde cadenas»."
 
 ---
 
@@ -674,29 +702,32 @@ Hojas cayendo, maleza. Los ciclos se enredan.
   Camino final: `t–a=b–d=c–g=h–R`.
 - **Por qué aquí:** la flor plegada es un brote como cualquier otro y puede formar parte de otro bucle impar. Y al desplegar, la flor interior se atraviesa por un lado que depende de por dónde se entra y se sale.
 - **Guion:** Sauce: "Una flor es un brote más. Y los brotes forman bucles."
-- **Pistas:** (1) "¿Quién es sol dos veces?" (2) `h–R` brilla. (3) el mentor pliega F2.
-- **Victoria:** cadena aplicada, 4 faroles.
+- **La luz:** mira primero desde R, así que llega a h por `R–h` (h luna, g sol) y cierra F2 en `c–g`: la misma flor F2, encontrada por el otro lado.
+- **Pistas:** (1) "¿Quién es sol dos veces?" (2) brilla el bucle grande (R, a, la flor pequeña, g, h): "La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?" (3) el mentor da el siguiente paso.
+- **Victoria:** cadena aplicada, 4 faroles: la que encontró la luz desde R, que se para en `d–b` y luego en `c–g` hasta que el jugador pliega. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.2 Capas
 - **Jardín:** tres flores anidadas construidas del mismo modo.
 - **Enseña:** la vista de capas: zoom para entrar en una flor, otro zoom para la interior. Al desplegar se resuelve de fuera hacia dentro.
-- **Victoria:** cadena aplicada.
+- **Pregunta** (tras la cadena; el resumen de Sauce, "se abren de fuera hacia dentro", es la respuesta al acierto): "Para desplegar, abriste primero la flor grande. ¿Por qué no una de las de dentro?" (a) "Plegada la grande, las de dentro son parte de sus pétalos" ✔ (b) "Sí se podía: el orden da igual" ✘ (c) "Porque la cadena entra antes en las de dentro" ✘ (están dentro de la grande). Va después de jugar, no antes de desplegar: el guion no se para a mitad de un paso de juego.
+- **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en cada una de las tres flores hasta plegarla). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 - **Desbloquea:** Capas.
 
 #### 5.3 El pétalo equivocado
 - **Jardín:** anidamiento donde el punto de entrada a la flor interior no es su base (uno de los dos puntos de cruce siempre lo es: el único farol que sale de una flor es el de su base); el lado correcto interior es el largo.
 - **Enseña:** en una flor interior puede que entres por un pétalo y salgas por otro, y hay que ir de uno a otro alternando; sigue habiendo exactamente un lado válido.
-- **Cuaderno:** "Al desplegar una flor que está dentro de otra…" (a) "…entro por un pétalo, salgo por otro y solo un lado del bucle alterna bien" ✔ (b) "…siempre salgo por la base" ✘ contraejemplo (c) "…los dos lados sirven" ✘.
-- **Victoria:** cadena aplicada.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "Al desplegar una flor que está dentro de otra…" (a) "…la entrada y la salida deciden un único lado bueno" ✔ (b) "…siempre salgo por la base" ✘ contraejemplo (c) "…los dos lados sirven" ✘ (d) "…solo alterna el lado corto" ✘ (aquí alternó el largo).
+- **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en las dos flores hasta plegarlas). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.4 Jardín salvaje
 - **Jardín:** 16 brotes, dos anidamientos distintos, tres rondas de cadena.
-- **Victoria:** máximo.
+- **Victoria:** máximo. La luz busca desde los brotes a oscuras, en orden, y pliega en cada ronda. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.5 Maestría del Jardín Salvaje
 - **Jardín:** 20 brotes en niebla con presupuesto de agua.
-- **Victoria:** máximo dentro del agua para la estrella.
+- **Victoria:** máximo dentro del agua para la estrella. La luz busca desde los brotes a oscuras, en orden, y se para en cada flor y ante cada sol en la niebla. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 - **Desbloquea:** Códex **C9 Flores anidadas**. Hub: el jardín salvaje.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Flores anidadas»."
 
 ---
 
@@ -707,21 +738,21 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 #### 6.1 Tarjetas
 - **Enseña:** ordenar tarjetas para formar la receta. Tarjetas correctas:
   1. Marca sol a todos los brotes a oscuras.
-  2. Mientras haya soles con enredaderas apagadas sin explorar, toma una `sol–x`:
-     - si x no tiene marca y está a oscuras: **cadena** (pasa los faroles, vuelve al paso 1);
+  2. Mientras algún sol tenga una enredadera apagada sin mirar (x es el brote del otro lado):
      - si x no tiene marca y tiene farol: marca x luna y a su pareja sol;
-     - si x es sol de otro árbol: **cadena** de raíz a raíz;
+     - si x es sol de otro árbol: **cadena** de un brote a oscuras a otro (pasa los faroles y vuelve al paso 1);
      - si x es sol del mismo árbol: **pliega la flor**;
      - si x es luna: nada.
   3. Si no queda nada que explorar: **terminaste** (y guarda las lunas para el Consejo).
   Tarjetas distractoras: "si x es luna, cámbiala a sol", "si hay bucle, pliega", "repite hasta que no queden brotes a oscuras" (falsa: puede quedar alguno para siempre).
+  No hay tarjeta para "x sin marca y a oscuras": tras el paso 1 todo brote a oscuras ya es sol, así que ese caso no ocurre nunca (un test del núcleo lo comprueba en miles de jardines). Por eso «vuelve al paso 1» va en la única tarjeta de cadena, la de otro árbol, y las tarjetas no dicen «raíz».
 - **Por qué aquí:** el jugador ha ejecutado esto decenas de veces. Ahora lo formaliza. Cada tarjeta corresponde a un nivel que ya jugó, y el juego lo recuerda ("esto lo hiciste en 3.4").
 - **Victoria:** receta correcta.
 - **Desbloquea:** Tarjetas.
 
 #### 6.2 El autómata
 - **Jardín:** un jardín del Prado.
-- **Enseña:** el jardinero mecánico sigue la receta del jugador. El sol es el slider. Funciona.
+- **Enseña:** el jardinero mecánico sigue la receta del jugador. El día es el slider. Funciona.
 - **Victoria:** ver la ejecución completa.
 
 #### 6.3 La receta rota
@@ -739,7 +770,7 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 
 #### 6.5 La carrera II
 - **Jardín:** 16, 32, 64 brotes (vista alejada, brotes en miniatura).
-- **Enseña:** antes de cada carrera, **apuesta**: "si el jardín se duplica, ¿cuántos pasos más dará tu receta? ¿Y Bruto?" Una gráfica se dibuja punto a punto: la del autómata sube como una curva suave, la de Bruto se sale de la pantalla y Bruto se duerme.
+- **Enseña:** antes de cada carrera, **apuesta**: "si el jardín se duplica, ¿cuántos pasos más dará tu receta?" Tres respuestas: «≈ el doble», «≈ 3 a 5 veces», «Muchísimo más, o se duerme» (la receta mide de ×3,7 a ×4,5). Bruto apuesta solo en la primera ronda ("¿Y Bruto?"); en la siguiente se duerme y ya no hay nada que apostar por él. Las apuestas de la receta siguen en las tres rondas, y en la segunda y la tercera preguntan si se repite lo de antes: que el cociente **se mantenga** al duplicar es la lección. Cuatro apuestas en total. Una gráfica se dibuja punto a punto: la del autómata sube como una curva suave, la de Bruto se sale de la pantalla y Bruto se duerme.
 - **Por qué aquí:** medir antes de razonar. La intuición del costo viene de datos que el jugador vio dibujarse.
 - **Victoria:** completar las carreras y las apuestas.
 
@@ -748,6 +779,7 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
   - "¿Cuántas veces como máximo puede tu receta encontrar una cadena?" (a) "Como mucho la mitad de los brotes, porque cada cadena enciende un farol y no caben más" ✔ (b) "Tantas como enredaderas" ✘ (c) "Podría no parar nunca" ✘ contraejemplo: el contador de faroles solo sube.
   - "¿Por qué termina cada búsqueda?" (a) "Cada brote se marca como mucho una vez y cada pliegue encoge el jardín" ✔ (b) "Porque se acaba el agua" ✘ (c) "Porque el mentor la para" ✘.
 - **Desbloquea:** Códex **C10 La receta (algoritmo de Edmonds)** y **C11 El costo**. Hub: la cabaña.
+- **Al final:** Sauce: "En el Códex tu receta tiene nombre: lee «La receta» y «El costo»."
 
 ---
 
@@ -757,7 +789,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 #### 7.1 Los espantapájaros no bastan
 - **Jardín:** ciclo de 5 brotes. Máximo: 2 faroles.
-- **Enseña:** el jugador intenta certificar con espantapájaros: necesita 3 para vigilar todas las enredaderas, pero solo hay 2 faroles. El certificado del invernadero **no cierra** aquí. Sauce: "Con abejas y flores bastaba. En el Festival hace falta otra cosa."
+- **Enseña:** el jugador intenta certificar con espantapájaros: necesita 3 para vigilar todas las enredaderas, pero solo hay 2 faroles. El certificado del invernadero **no cierra** aquí. Sauce: "Con abejas y tréboles bastaba. En el Festival hace falta otra cosa."
 - **Por qué aquí:** motiva el certificado general mostrando que el bipartito era un caso especial.
 - **Victoria:** intentarlo y aceptar que no cierra.
 
@@ -778,7 +810,8 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 #### 7.4 El regalo de la búsqueda II
 - **Jardín:** el de 4.9 (`R–a=b`, triángulo `b–c=d–b`), más otra componente parecida.
-- **Enseña:** la búsqueda termina sin cadena, con lunas {a, …} y soles {R, flor, …}. Sauce: "Levanta las lunas." Al levantar a, quedan {R} (grupo de 1, impar) y {b, c, d} (grupo de 3, impar): 2 grupos impares, 1 piedra, al menos 1 a oscuras. Tienes exactamente 1. **La búsqueda que fracasó te entrega las piedras.** Y siempre pasa: de un sol solo salen lunas (si saliera a otro sol sería cadena o flor, y a un brote sin marca ya lo habrías marcado), así que al quitar las lunas cada sol o flor queda aislado, y una flor siempre es impar.
+- **Enseña:** la búsqueda termina sin cadena, con lunas {a, …} y soles {R, flor, …}. Sauce no dice qué levantar ("lo que dejó la búsqueda ya guarda tus piedras"); las pistas llevan hacia las lunas. Al levantar a, quedan {R} (grupo de 1, impar) y {b, c, d} (grupo de 3, impar): 2 grupos impares, 1 piedra, al menos 1 a oscuras. Tienes exactamente 1. **La búsqueda que fracasó te entrega las piedras.** Y siempre pasa: de un sol solo salen lunas (si saliera a otro sol sería cadena o flor, y a un brote sin marca ya lo habrías marcado), así que al quitar las lunas cada sol o flor queda aislado, y una flor siempre es impar.
+- **Pregunta** (tras la cuenta, antes de la explicación): "Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?" (a) "Solo con los de su flor: de un sol solo se sale a lunas" ✔ (b) "Con soles de otro árbol" ✘ (sería una cadena, y la búsqueda acabó sin ninguna) (c) "Con brotes sin marca" ✘ (la búsqueda los habría marcado). La explicación de Sauce ("la búsqueda que fracasó te entrega las piedras…") es la respuesta al acierto, nunca antes.
 - **Por qué aquí:** cierre del círculo. El algoritmo no solo se rinde: demuestra que tenía razón. Es la misma idea de 3.8 en el caso general.
 - **Victoria:** certificado válido a partir de las lunas.
 - **Desbloquea:** Códex **C12 Las piedras (Tutte–Berge)**.
@@ -787,6 +820,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 - **Jardín:** 22 brotes en niebla, con flores anidadas.
 - **Objetivo:** oculto. Para terminar hay que presentar **los faroles y las piedras**, y la cuenta tiene que cuadrar.
 - **Victoria:** certificado válido. Los Robles se inclinan. Hub: los robles florecen; amanece.
+- **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Las piedras»."
 
 ---
 
@@ -798,13 +832,13 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 ---
 
-### 7.9 Flores secretas (opcionales)
+### 7.9 Jardines secretos (opcionales)
 
 - **Prado:** una cadena de longitud 11 escondida entre 12 callejones.
 - **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de separar la maraña (la maraña ya es la superposición; la tentación es restar los faroles).
 - **Invernadero:** certificar con espantapájaros un jardín donde la búsqueda no llega a todos los brotes (obliga a añadir los no visitados de un lado; enlaza con C5).
-- **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa).
-- **Salvaje:** cuatro flores anidadas.
+- **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa). Aquí las marcas siguen siendo del jugador: la luz de los niveles de flor (§5.1), en su orden fijo, solo se encuentra con dos de las tres flores y no deja elegir el orden.
+- **Salvaje:** cuatro flores anidadas. La luz busca desde R y se para en cada una hasta plegarla (§5.1).
 - **Invierno:** un jardín donde Bruto gana (muy pequeño) y la pregunta "¿cuándo compensa pensar?".
 - **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín. Tras el primer certificado, un paso nuevo del guion ("otro certificado") solo termina con piedras distintas de las ya presentadas; repetir uno se contesta con amabilidad.
 
@@ -812,13 +846,13 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 ## 8. El Códex (entradas)
 
-Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Formal** (KaTeX), **Puente** (traducción y nota histórica). Se resume aquí el contenido de cada una; los textos completos se redactan en producción y se revisan contra un texto de referencia (Lovász–Plummer, *Matching Theory*; Korte–Vygen, *Combinatorial Optimization*; Tarjan, *Data Structures and Network Algorithms*).
+Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Formal** (KaTeX), **Puente** (traducción, nota histórica y testigos del núcleo). Se resume aquí el contenido de cada una; los textos completos se redactan en producción y se revisan contra un texto de referencia (Lovász–Plummer, *Matching Theory*; Korte–Vygen, *Combinatorial Optimization*; Tarjan, *Data Structures and Network Algorithms*).
 
 - **C1 Emparejamiento.** Grafo, emparejamiento, vértice cubierto/expuesto. Maximal vs máximo, con el jardín de 1.1 como diagrama. ν(G).
 - **C2 La cadena.** Camino alternante y camino aumentante. Intercambiar a lo largo de un camino aumentante da un emparejamiento de tamaño |M| + 1; a lo largo de uno alternante par, del mismo tamaño. Diagrama: la brigada de 1.3.
 - **C3 Lema de Berge (1957).** Enunciado y demostración completa: M ⊕ M\* tiene grado ≤ 2 en cada vértice, luego es unión de caminos y ciclos alternantes; los ciclos aportan igual; si |M\*| > |M| algún camino tiene más aristas de M\* que de M, empieza y termina con aristas de M\*, sus extremos están expuestos en M: es aumentante para M. Diagrama: el estanque de 2.1–2.3, manipulable.
 - **C4 La búsqueda.** Bosque alternante: raíces en vértices expuestos, vértices exteriores (sol, distancia par) e interiores (luna, impar). Reglas de crecimiento. Arista exterior–exterior entre árboles distintos ⇒ camino aumentante. Cada vértice se etiqueta una vez ⇒ O(m) por búsqueda en bipartitos.
-- **C5 Abejas, flores y espantapájaros (König, 1931).** Grafo bipartito. Cobertura por vértices. Cota trivial ν ≤ τ. Igualdad en bipartitos: a partir del bosque final, cover = interiores ∪ (no alcanzados de un lado). Por qué no hay sol–sol en bipartitos (paridad). Diagrama: 3.8.
+- **C5 Abejas, tréboles y espantapájaros (König, 1931).** Grafo bipartito. Cobertura por vértices. Cota trivial ν ≤ τ. Igualdad en bipartitos: a partir del bosque final, cover = interiores ∪ (no alcanzados de un lado). Por qué no hay sol–sol en bipartitos (paridad). Diagrama: 3.8.
 - **C6 Bucles impares.** Un grafo es bipartito ⇔ no tiene ciclos impares. Por qué una arista exterior–exterior en el mismo árbol cierra un ciclo impar (par + par + 1). Por qué la búsqueda ingenua falla: el vértice tendría las dos paridades. Diagrama: 4.1–4.2.
 - **C7 La flor.** Definición de blossom (ciclo alternante de longitud impar 2k+1 con k aristas de M), base, tallo. Contracción G/B, M/B. Todo vértice del blossom es alcanzable desde la base por un camino alternante par (recorriendo el ciclo en el sentido adecuado), y por eso el blossom contraído se trata como exterior. Diagrama: 4.4–4.6 con desplegado paso a paso.
 - **C8 Lema de la flor (Edmonds, 1965).** Hipótesis explícita: B es un blossom **con tallo**, como el que encuentra la búsqueda. Enunciado: G tiene camino M-aumentante ⇔ G/B tiene camino M/B-aumentante; por tanto, M es máximo en G ⇔ M/B es máximo en G/B. Sin tallo la parte (ii) puede fallar, y la entrada da el contraejemplo. Demostración en dos partes: (i) un camino aumentante en G/B se levanta a G (si atraviesa B, se entra por un pétalo y se sale por la base recorriendo el ciclo en el sentido que alterna; siempre existe uno); (ii) suponiendo, sin pérdida de generalidad, la base expuesta (girar el tallo no cambia |M|), todo camino aumentante en G tiene un extremo fuera de B, y su prefijo hasta el primer vértice de B es un camino aumentante en G/B. Diagrama: 4.11 manipulable.
@@ -867,11 +901,11 @@ Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Fo
 7. **Códex** (texto formal revisado) y Cuaderno.
 8. **Voz:** balbuceo por personaje (sonidos CC0 procesados en el motor) y subtítulos.
 9. **Música y efectos.**
-10. **Modo libre, modo profesor, flores secretas.**
+10. **Modo libre, modo profesor, jardines secretos.**
 11. **Paseo guiado** (grabación del video).
 12. **Pulido y despliegue web.**
 
-Si hubiera que recortar, el orden de recorte es: flores secretas → modo libre → capítulo 5 reducido a 3 niveles → animaciones secundarias. **Nunca se recortan** los capítulos 2, 4.11, 6.6 ni 7.4: son la demostración.
+Si hubiera que recortar, el orden de recorte es: jardines secretos → modo libre → capítulo 5 reducido a 3 niveles → animaciones secundarias. **Nunca se recortan** los capítulos 2, 4.11, 6.6 ni 7.4: son la demostración.
 
 ---
 

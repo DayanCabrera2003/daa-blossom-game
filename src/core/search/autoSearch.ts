@@ -9,7 +9,7 @@ import { plantForest, type AlternatingForest } from './forest';
 import { growStep } from './growForest';
 
 /** The moves the light makes: a sun on a sprout in the dark, or a look along a dark vine. */
-type LightMove = Extract<Action, { readonly type: 'markRoot' | 'markMoon' }>;
+export type LightMove = Extract<Action, { readonly type: 'markRoot' | 'markMoon' }>;
 
 /**
  * The dark vines a sun (the node `sun` of the layer) may look along, as original vines

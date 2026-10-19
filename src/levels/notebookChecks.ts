@@ -4,39 +4,62 @@ import type { Level } from './build';
 import { buildCounterexample } from './counterexample';
 import type { GardenError } from './garden';
 import { sameKindVines, type KindClash } from './kinds';
+import { checkLayout, vineCrossings, type LayoutProblem } from './layoutChecks';
+import type { NotebookData } from './notebook';
 
-/** Where a statement is: the index of its question in the level's list, and its own index. */
-interface StatementAt {
-  readonly question: number;
-  readonly option: number;
-}
+/**
+ * Where a statement is: in a notebook question, by the question's index in the level's list, or in
+ * a question of the script (`ask`), by the index of its step; and its own index among the options.
+ */
+type StatementAt =
+  | { readonly question: number; readonly option: number }
+  | { readonly step: number; readonly option: number };
 
 /** Something wrong with the notebook of a level, at one of its statements. */
 export type NotebookProblem =
+  /** A false statement with neither a reply nor a garden: choosing it would teach nothing. */
+  | ({ readonly code: 'statementUnrefuted' } & StatementAt)
   /** The counterexample does not describe a garden. */
   | ({ readonly code: 'badCounterexample' } & StatementAt & { readonly error: GardenError })
-  /** The counterexample is touched with an action the level does not give the player. */
+  /** The counterexample is touched with an action the player has not met by this level. */
   | ({ readonly code: 'counterexampleLocked' } & StatementAt & { readonly action: ActionType })
   /** A garden to draw a better reflection on whose lanterns nobody can beat. */
   | ({ readonly code: 'counterexampleUnbeatable' } & StatementAt)
   /** A vine of a garden of bees and flowers joins two of a kind. */
-  | ({ readonly code: 'counterexampleSameKindVine' } & StatementAt & KindClash);
+  | ({ readonly code: 'counterexampleSameKindVine' } & StatementAt & KindClash)
+  /** The counterexample's garden is hard to read: a name drawn over something, or vines crossing. */
+  | ({ readonly code: 'counterexampleLayout' } & StatementAt & { readonly problem: LayoutProblem });
 
 /**
  * The checks of a level's notebook (plan 03, phase 6) that the schema cannot see, over every one of
- * its questions: each counterexample is a garden under the core's rules, it is played with tools the level already
- * gives (a counterexample never teaches a new move), and a `mirrorDraw` one leaves a better
+ * its questions and every question of its script (`ask`, which refutes a false answer alike, plan
+ * 10, phase 7): every false statement is refuted, by the mentor's reply or by a garden; each
+ * counterexample is a garden under the core's rules, it is played with tools the
+ * level already gives or knows and closes for the day in its own garden (a counterexample never
+ * teaches a new move: 4.7 closes marks by hand, since its light searches by itself, yet its
+ * counterexample is marked by hand), and a `mirrorDraw` one leaves a better
  * reflection to find, or its search would never show the chain it promises. A garden of bees and
- * flowers joins only a bee and a flower, as a level's does. Its lines belonging to
+ * flowers joins only a bee and a flower, as a level's does, and every garden reads as well as a
+ * secret flower's: no name drawn over anything and no crossing vines. Its lines belonging to
  * the level is checked with every other line of the level.
  */
 export function checkNotebook(level: Level): NotebookProblem[] {
   const problems: NotebookProblem[] = [];
-  const statements = (level.data.notebook ?? []).flatMap((asked, question) =>
-    asked.options.map((statement, option) => ({ at: { question, option }, statement })),
-  );
+  const statements: { at: StatementAt; statement: NotebookData['options'][number] }[] = [
+    ...(level.data.notebook ?? []).flatMap((asked, question) =>
+      asked.options.map((statement, option) => ({ at: { question, option }, statement })),
+    ),
+    ...level.data.flow.flatMap((asked, step) =>
+      asked.step === 'ask'
+        ? asked.options.map((statement, option) => ({ at: { step, option }, statement }))
+        : [],
+    ),
+  ];
   for (const { at, statement } of statements) {
     const { counterexample } = statement;
+    if (!statement.correct && statement.reply === undefined && counterexample === undefined) {
+      problems.push({ code: 'statementUnrefuted', ...at });
+    }
     if (counterexample === undefined) continue;
     const built = buildCounterexample(counterexample);
     if (!built.ok) {
@@ -45,7 +68,7 @@ export function checkNotebook(level: Level): NotebookProblem[] {
     }
     const { start } = built.value;
     for (const action of start.allowed) {
-      if (!level.start.allowed.has(action)) {
+      if (!level.start.allowed.has(action) && !level.start.closed.has(action)) {
         problems.push({ code: 'counterexampleLocked', ...at, action });
       }
     }
@@ -54,6 +77,9 @@ export function checkNotebook(level: Level): NotebookProblem[] {
     }
     for (const clash of sameKindVines(counterexample.sprouts, counterexample.vines)) {
       problems.push({ code: 'counterexampleSameKindVine', ...at, ...clash });
+    }
+    for (const problem of [...vineCrossings(counterexample), ...checkLayout(counterexample)]) {
+      problems.push({ code: 'counterexampleLayout', ...at, problem });
     }
   }
   return problems;

@@ -155,10 +155,7 @@
     {
       "line": "ch2.5.sauce.04"
     },
-    {
-      "line": "ch2.5.sauce.05",
-      "highlight": ["1", "6"]
-    },
+    { "line": "ch2.5.sauce.05", "highlight": ["1"] },
     {
       "line": "ch2.5.sauce.06"
     }

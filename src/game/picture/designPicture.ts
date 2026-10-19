@@ -81,7 +81,7 @@ export function designPicture(design: Design, pointing: DesignPointing): GardenP
     flowers: [],
     oddGroups: [],
     fog: null,
-    chain: chain === null ? null : { points: chain.points, gain: chain.gain },
+    chain: chain === null ? null : { points: chain.points, preview: chain.preview },
   };
 }
 
@@ -92,7 +92,7 @@ export function designPicture(design: Design, pointing: DesignPointing): GardenP
 function drawnVine(
   design: Design,
   pointing: DesignPointing,
-): { points: Point[]; gain: 0 | 1; ends: string[] } | null {
+): { points: Point[]; preview: 'gain0' | 'gain1'; ends: string[] } | null {
   const { press, tool } = pointing;
   if (tool !== 'vine' || press === null || !press.dragging || press.target.kind !== 'sprout') {
     return null;
@@ -107,6 +107,6 @@ function drawnVine(
       : undefined;
   const origin = { x: start.x, y: start.y };
   return end === undefined
-    ? { points: [origin, press.at], gain: 0, ends: [from] }
-    : { points: [origin, { x: end.x, y: end.y }], gain: 1, ends: [from, end.label] };
+    ? { points: [origin, press.at], preview: 'gain0', ends: [from] }
+    : { points: [origin, { x: end.x, y: end.y }], preview: 'gain1', ends: [from, end.label] };
 }

@@ -4,6 +4,14 @@ Capítulos 0–2 en greybox (círculos y líneas, sin arte ni voz). Lo dirige el
 
 > **Hoy (plan 09):** el protocolo se escribió para el greybox; el juego ya tiene arte, música, efectos y balbuceo. Lo que cambia en la preparación está en §3; los umbrales y criterios no cambian (Apéndice A del plan 09, preguntas 10 y 11, pendientes del autor). La hoja de una página para cada sesión es [`kit.md`](kit.md).
 
+> **Hoy (plan 10, versión 1.1.0):** lo que cambió en los capítulos 0–2 y se ve en la sesión o en el registro. Los umbrales y criterios de §1 **no cambian**.
+> - Un «Terminé» que no gana ya **recibe respuesta**: un aviso suave que no dice dónde está la cadena. En el registro, su entrada `claim` lleva `verdict` (en estos capítulos, `chainLeft`), y cuenta como un rechazo para ofrecer pistas.
+> - El botón **Pista** está **siempre a mano** mientras queden grados; el juego lo hace brillar tras 90 s sin progreso real (más faroles, una búsqueda que crece…; juntar y separar en bucle no cuenta) o tras tres rechazos seguidos. Abrir una pista sin oferta cuesta la estrella "sin pistas" igual que antes. De 1.5 a 1.9 los niveles tienen tres pistas propias, y ninguna de grado 2 señala la respuesta.
+> - Los Cuadernos de 1.5 y 2.4 se abren **antes** de que Sauce resuma la idea; la opción correcta no repite su frase.
+> - 2.3 termina con una pregunta («¿Podría la punta de un hilo que gana el agua tener un farol tuyo?»); su respuesta queda en `log` como una entrada `answer` y una equivocada suma en `wrongAnswers`.
+> - 2.4 se juega en **dos fases** sobre un jardín nuevo: primero dibuja dos reflejos que le ganan y usa la cadena que le dejan; luego, ya sin cadena, intenta ganarle tres veces y no puede (ver §6).
+> - 1.1 y 1.2 dicen «Mira otra forma de ver lo que pasó…»; 1.7 tiene una línea al ganar; el último nivel de cada capítulo invita a leer su página del Códex.
+
 ---
 
 ## 1. Objetivo del Hito A
@@ -98,7 +106,7 @@ Se recomienda el build de producción o Pages: es lo que verá un jugador real.
 - Sentarse detrás o al lado, sin tocar el ratón ni señalar la pantalla.
 - No intervenir salvo un fallo técnico (el juego se cuelga, la página no carga).
 - Si la persona se queda en silencio, recordar una sola vez: "¿Qué estás pensando?"
-- Las pistas son parte del juego: él mismo las ofrece tras 90 segundos sin avanzar o tres intentos rechazados. El observador no las menciona; si la persona pregunta, se responde como a cualquier otra pregunta ("¿Qué crees tú?").
+- Las pistas son parte del juego: el botón Pista está siempre a mano, y el juego lo hace brillar tras 90 segundos sin progreso real o tres rechazos seguidos (un «Terminé» que no gana cuenta como rechazo). El observador no las menciona; si la persona pregunta, se responde como a cualquier otra pregunta ("¿Qué crees tú?").
 
 ### Qué anotar a mano (el registro no lo ve)
 
@@ -109,8 +117,9 @@ Se recomienda el build de producción o Pages: es lo que verá un jugador real.
 | Dónde mira | Lee el texto de Sauce o lo salta; mira el contador de faroles; busca botones |
 | Hipótesis en voz alta | "Creo que hay que encender todos" |
 | Momentos de descubrimiento | Cuándo entiende pasar el farol, cuándo usa la cadena sin dudar |
-| Sorpresas en el estanque | Qué dice al ver el reflejo, al separar hilos, al no poder ganar en 2.4 |
-| Lectura del Cuaderno | Si lee las opciones enteras o elige rápido; qué dice ante el contraejemplo |
+| Sorpresas en el estanque | Qué dice al ver el reflejo, al separar hilos; en 2.4, al usar la cadena que le deja el reflejo y al no poder ganar en la segunda fase |
+| Tras un «Terminé» que no gana | Qué hace al leer el aviso: si vuelve a buscar o cree que el juego falló |
+| Lectura del Cuaderno | Si lee las opciones enteras o elige rápido; qué dice ante el contraejemplo. El Cuaderno llega antes de que Sauce resuma: lo que elija no lo acaba de oír |
 
 Anotar la hora junto a cada nota para cruzarla después con el registro.
 
@@ -135,7 +144,7 @@ Anotar la hora junto a cada nota para cruzarla después con el registro.
    - ¿Hubo algún nivel en el que no supieras qué se te pedía?
    - En 1.8, cuando pulsaste "Terminé", ¿cómo sabías que habías terminado?
    - El estanque: ¿qué crees que te estaba enseñando el reflejo?
-   - En el reto del espejo (2.4), ¿por qué crees que no podías ganar?
+   - En el reto del espejo (2.4), en la segunda parte, ¿por qué crees que no podías ganar?
    - El Cuaderno: ¿te ayudaron los jardines que refutaban las frases falsas?
    - ¿Volverías a jugar el siguiente capítulo?
 4. Borrar los datos del sitio (o cerrar el perfil) antes de la siguiente persona.
@@ -158,14 +167,14 @@ El JSON exportado tiene tres partes: `exportedAt` (fecha de la exportación), `s
 | `moves` | Movimientos aceptados (juntar, separar, pasar, cadena…) |
 | `refusals` | Movimientos que el jardín rechazó; en `log` cada uno lleva su código de razón |
 | `hints` | Pistas pedidas; en `log` cada una lleva su grado (1, 2 o 3) |
-| `claims.right` / `claims.wrong` | "Terminé" pulsado con el máximo de faroles (`right`) o sin razón (`wrong`) |
-| `wrongAnswers` | Respuestas incorrectas a preguntas del mentor o a conteos |
+| `claims.right` / `claims.wrong` | "Terminé" pulsado con el máximo de faroles (`right`) o sin razón (`wrong`). En `log`, cada `claim` que no gana lleva `verdict`, el aviso que vio (`chainLeft`: el jardín aún guarda una cadena) |
+| `wrongAnswers` | Respuestas incorrectas a preguntas del mentor (también la de 2.3) o a conteos |
 | `bets.made` / `bets.right` | Apuestas hechas y acertadas (incluidas las informales de 0.4) |
 | `notebookWrong` | Frases falsas elegidas en el Cuaderno (1.5, 2.4) |
-| `counterexamples` | Jardines contraejemplo abiertos desde el Cuaderno |
-| `mirrorChecks.beating` / `.notBeating` | En 2.4, reflejos dibujados que superaban al jardín, y los que no |
+| `counterexamples` | Jardines contraejemplo abiertos desde el Cuaderno o desde una pregunta |
+| `mirrorChecks.beating` / `.notBeating` | En 2.4, reflejos dibujados que superaban al jardín, y los que no. La segunda fase no se puede ganar: cada partida que la acaba suma tres `notBeating` por diseño |
 
-En `log`, las entradas `levelEnd` con `outcome: "left"` indican que se volvió al hub sin ganar, y las `history` (`undo`, `redo`, `seek`) cuánto se usó deshacer y el sol.
+En `log`, las entradas `levelEnd` con `outcome: "left"` indican que se volvió al hub sin ganar, y las `history` (`undo`, `redo`, `seek`) cuánto se usó deshacer y el día.
 
 ### Qué campo responde a cada medida del Hito A
 
@@ -176,7 +185,7 @@ En `log`, las entradas `levelEnd` con `outcome: "left"` indican que se volvió a
 | "Terminé" sin razón | `claims.wrong` por nivel (el botón aparece en 1.8) |
 | Descripción de la cadena | No está en el registro: notas a mano de §5 |
 
-Señales complementarias: `refusals` alto indica una regla que no se entiende (mirar los códigos); `wrongAnswers` en 2.1–2.2 indica que el conteo de hilos no queda claro; `notebookWrong` sin `counterexamples` indica que no se abrieron los jardines que refutan; `mirrorChecks.notBeating` alto en 2.4 indica que no se entiende qué se pide dibujar.
+Señales complementarias: `refusals` alto indica una regla que no se entiende (mirar los códigos); `wrongAnswers` en 2.1–2.2 indica que el conteo de hilos no queda claro; `notebookWrong` sin `counterexamples` indica que no se abrieron los jardines que refutan; `mirrorChecks.notBeating` alto en 2.4 (más de los tres de la segunda fase por partida; en `log`, los `mirrorCheck` de antes del primer `move` del nivel son de la primera) indica que no se entiende qué se pide dibujar.
 
 ---
 
@@ -204,7 +213,7 @@ Copiar una vez por persona. Tiempo en minutos, redondeado.
 | 1.9 | | | — | — | |
 | 2.1 | | | — | | |
 | 2.2 | | | — | | |
-| 2.3 | | | — | — | |
+| 2.3 | | | — | | |
 | 2.4 | | | — | | |
 
 "Respuestas incorrectas" suma `wrongAnswers`, apuestas falladas y `notebookWrong`. Un guion (—) marca los niveles donde esa medida no aplica.

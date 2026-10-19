@@ -22,6 +22,8 @@ export type Action =
   | { readonly type: 'markRoot'; readonly vertex: VertexId }
   /** Look from a sun along a dark vine: the sprout reached gets a moon, its partner a sun (3.1). */
   | { readonly type: 'markMoon'; readonly from: VertexId; readonly to: VertexId }
+  /** Move the light that searches by itself on by one mark, in the flower levels (4.4). */
+  | { readonly type: 'stepLight' }
   /** Touch the vine where two suns of one tree meet: their loop folds into a flower (4.4). */
   | { readonly type: 'foldAt'; readonly from: VertexId; readonly to: VertexId }
   /** Select an odd loop and fold it into a flower, outside any search (4.4). */

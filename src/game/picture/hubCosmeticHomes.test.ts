@@ -50,8 +50,8 @@ describe('the homes of the cosmetics in the hub', () => {
     for (const taken of [[], [SIGN]]) {
       const homes = hubCosmeticHomes(ALL, 7, taken, null);
       const boxes = boxesOf(homes);
-      // Six animals, the fireflies and seven plants: everything finds room.
-      expect(boxes).toHaveLength(6 + 1 + 7);
+      // Six animals, the fireflies and five plants: everything finds room.
+      expect(boxes).toHaveLength(6 + 1 + 5);
       boxes.forEach((box, i) => {
         expect(box.x).toBeGreaterThanOrEqual(HUB.margin);
         expect(box.x + box.width).toBeLessThanOrEqual(CANVAS_WIDTH - HUB.margin);

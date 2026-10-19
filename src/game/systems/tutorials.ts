@@ -1,4 +1,5 @@
 import type { ActionType } from '@core/rules/actions';
+import { isCertificate } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import { compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
@@ -14,7 +15,11 @@ import { isUiUnlocked } from '@levels/uiUnlocks';
  * Pure: the scene asks what to show and the save remembers what was closed.
  */
 
-/** The card that teaches each action. Actions done with one gesture share it. */
+/**
+ * The card that teaches each action. Actions done with one gesture share it. Folding a loop by hand
+ * («Plegar a mano») is a gesture of its own, and only the free mode has it, so only there its card
+ * shows; levels fold where two suns meet, which the card of folding teaches.
+ */
 export const ACTION_CARD: Readonly<Record<ActionType, CardId>> = {
   join: 'lanterns',
   split: 'lanterns',
@@ -26,7 +31,8 @@ export const ACTION_CARD: Readonly<Record<ActionType, CardId>> = {
   markMoon: 'marks',
   placeScarecrow: 'scarecrows',
   removeScarecrow: 'scarecrows',
-  fold: 'fold',
+  fold: 'foldLoop',
+  stepLight: 'light',
   foldAt: 'fold',
   unfold: 'unfold',
   rotateStem: 'rotateStem',
@@ -70,13 +76,18 @@ const inOrder = (cards: Iterable<CardId>): CardId[] => {
 };
 
 /**
- * The cards of what a level has open from its start: its tools, undo, the sun, the layers. Undo,
+ * The cards of what a level has open from its start: its tools (with «Presentar» for "Terminé"
+ * where a certificate ends the level), undo, the sun, the layers. Undo,
  * the sun and the layers are there as from level `interfaceAt`: the level itself, but for a garden
  * of the free mode, which shows the interface the player has met.
  */
 export function levelCards(level: Level, interfaceAt: string = level.data.id): CardId[] {
   const id = interfaceAt;
-  const tools = [...level.start.allowed].map((action) => ACTION_CARD[action]);
+  // Where a certificate ends the level, its button says «Presentar», and its card teaches that.
+  const presents = level.data.victory !== undefined && isCertificate(level.data.victory);
+  const tools = [...level.start.allowed].map((action) =>
+    action === 'declareDone' && presents ? 'present' : ACTION_CARD[action],
+  );
   const undo: CardId[] = compareLevelIds(id, UNDO_CARD_FROM) >= 0 ? ['undo'] : [];
   const sun: CardId[] = isUiUnlocked('sun', id) ? ['sun'] : [];
   const layers: CardId[] = isUiUnlocked('layers', id) ? ['layers'] : [];

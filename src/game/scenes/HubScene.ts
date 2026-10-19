@@ -33,6 +33,7 @@ import { addHubCosmetics } from './hub/HubCosmetics';
 import { bindHubKeys } from './hub/hubKeys';
 import { addHubSecrets, type FlowerPlace } from './hub/HubSecrets';
 import { addHubTopLine } from './hub/HubTopLine';
+import { openLevel } from './LevelGate';
 import { addSettings } from './settingsPanel';
 import { loadBehind } from './loadBehind';
 
@@ -94,9 +95,7 @@ export class HubScene extends Phaser.Scene {
         .map(({ id }) => {
           // The pixel font has no star: the label leaves blank cells where its stars are drawn.
           const { text, room } = levelButtonLabel(id, open.has(id), save.levels[id]?.stars ?? 0);
-          const button = new Button(this, 0, 0, text, () =>
-            this.scene.start('level', { levelId: id }),
-          );
+          const button = new Button(this, 0, 0, text, () => openLevel(this, { levelId: id }));
           return { button: button.setEnabled(open.has(id)), room };
         }),
     );

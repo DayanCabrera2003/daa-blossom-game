@@ -175,7 +175,8 @@ describe('the recipe panel fits with the real words (plan 09, phase 10)', () => 
             ];
       }),
     );
-    expect(told.size).toBeGreaterThanOrEqual(10);
+    // Every verdict there is: one per case left unanswered (six) and one per distractor (three).
+    expect(told.size).toBe(9);
     for (const text of told) {
       expect(text).not.toContain('‹');
       const chars = charsIn(TOAST.wrap);

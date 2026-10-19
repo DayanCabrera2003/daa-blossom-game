@@ -1,10 +1,12 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { graphWithMatchingArb } from '../../../tests/support/arbitraries';
+import { explore } from '../../../tests/support/gardenExplorer';
 import {
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
+  foldingLightLevel,
   helixLevel,
   twoComponentsLevel,
 } from '../../../tests/support/fixtureLevels';
@@ -329,6 +331,93 @@ const visitedTwice = (): GardenState => {
     allowed: actionsUnlockedBy('3.3'),
   });
 };
+
+/** Every garden a level lets the player reach from `start`, the start among them. */
+const reachable = (start: GardenState): GardenState[] => {
+  const states: GardenState[] = [];
+  explore(start, {
+    goal: (state) => {
+      states.push(state);
+      return false;
+    },
+  });
+  return states;
+};
+
+describe("the mentor's next step, under a level's chain rule", () => {
+  it('wins 4.10, the flower closed, from every garden the level can reach', () => {
+    const level = levelById('4.10');
+    const goal = goalOf(level);
+    const gardens = reachable(level.start);
+    expect(gardens.length).toBeGreaterThan(100);
+    for (const garden of gardens) mentorPlays(goal, garden);
+  });
+
+  it.each(['4.5', '5.1'])(
+    'wins %s played where only the chain seen moves lanterns, from every garden it can reach',
+    (id) => {
+      const level = levelById(id);
+      const closed = new Set<ActionType>(['split', 'passLantern', 'rotateStem']);
+      const start: GardenState = {
+        ...level.start,
+        chains: { rule: 'seen' },
+        allowed: new Set([...level.start.allowed].filter((action) => !closed.has(action))),
+      };
+      const goal: MentorGoal = { ...goalOf(level), start };
+      for (const garden of reachable(start)) mentorPlays(goal, garden);
+    },
+  );
+});
+
+describe("the mentor's next step, where the light searches by itself", () => {
+  it('advances the light, folds where it stops and lights the chain it saw, from every garden', () => {
+    const level = foldingLightLevel();
+    // Off the reference solution everywhere: every step is the mentor's own.
+    const goal: MentorGoal = { ...goalOf(level), solution: [] };
+    const gardens = reachable(level.start);
+    expect(gardens.length).toBeGreaterThan(5);
+    for (const garden of gardens) mentorPlays(goal, garden);
+    const { moves } = mentorFinishes(goal, level.start);
+    expect(moves).toContainEqual({ type: 'stepLight' });
+    expect(moves).toContainEqual({ type: 'foldAt', from: 2, to: 4 });
+  });
+
+  it('has no move to offer for a chain once the light has looked everywhere and seen none', () => {
+    // 4.9's garden, its light folding the flower and then finding no way out.
+    const level = closedFlowerLevel();
+    const closed = new Set<ActionType>(['markRoot', 'markMoon']);
+    let start: GardenState = {
+      ...level.start,
+      roots: [0],
+      allowed: new Set(
+        [...level.start.allowed, 'stepLight' as const].filter((type) => !closed.has(type)),
+      ),
+    };
+    const goal: MentorGoal = { start, solution: [], victory: { type: 'chainFound' } };
+    for (let move = nextMove(goal, start); move !== null; move = nextMove(goal, start)) {
+      const outcome = applyAction(start, move);
+      if (!outcome.ok) throw new Error(`refused ${move.type}: ${outcome.reason.code}`);
+      start = outcome.state;
+    }
+    expect(start.layer.nodes.some((node) => node.kind === 'blossom')).toBe(true);
+    expect(applyAction(start, { type: 'stepLight' })).toEqual({
+      ok: false,
+      reason: { code: 'lightDone' },
+    });
+  });
+
+  it('inspects the sun the light waits for in the fog', () => {
+    const level = foldingLightLevel();
+    const start: GardenState = {
+      ...level.start,
+      revealed: new Array<boolean>(level.graph.n).fill(false),
+      allowed: new Set([...level.start.allowed, 'inspect']),
+    };
+    const goal: MentorGoal = { ...goalOf(level), start, solution: [] };
+    const { moves } = mentorFinishes(goal, start);
+    expect(moves.slice(0, 2)).toEqual([{ type: 'stepLight' }, { type: 'inspect', vertex: 0 }]);
+  });
+});
 
 describe("the mentor's next step, when the level is won by the search itself", () => {
   it('completes a search by itself, inspecting only the suns it looks from (3.3)', () => {

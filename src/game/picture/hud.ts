@@ -3,7 +3,13 @@ import { isUiUnlocked } from '@levels/uiUnlocks';
 import type { PointerState } from '../input/pointer';
 import { availableTools, type ToolId } from '../input/tools';
 import { canRedo, canUndo } from '../systems/history';
-import { garden, isHintAvailable, stepNow, type LevelSession } from '../systems/levelSession';
+import {
+  canAskHint,
+  garden,
+  isHintAvailable,
+  stepNow,
+  type LevelSession,
+} from '../systems/levelSession';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
 import { councilCount } from './council';
@@ -28,7 +34,12 @@ export interface HudPicture {
   readonly canUndo: boolean;
   readonly canRedo: boolean;
   readonly canDeclareDone: boolean;
+  /** Whether "Avanzar la luz" is at hand: in the levels where the light searches by itself. */
+  readonly canStepLight: boolean;
+  /** Whether the hint button is at hand: in the steps that take hints, while grades remain. */
   readonly hintAvailable: boolean;
+  /** Whether a hint is on offer (90 s without progress, three refusals): the button glows. */
+  readonly hintOffered: boolean;
   /**
    * The sun on its slider, how many states the day has, and whether it calls for the player (the
    * script waits for the sun to move); null before it unlocks (0.5).
@@ -122,7 +133,9 @@ export function hudPicture(
     canUndo: canUndo(history),
     canRedo: canRedo(history),
     canDeclareDone: state.allowed.has('declareDone'),
-    hintAvailable: isHintAvailable(session, now),
+    canStepLight: state.allowed.has('stepLight'),
+    hintAvailable: canAskHint(session),
+    hintOffered: isHintAvailable(session, now),
     sun: isUiUnlocked('sun', interfaceAt)
       ? {
           fraction: fractionOfStep(history.cursor, history.states.length),

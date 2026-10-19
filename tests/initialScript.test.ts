@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { CREDITS_MODULES, isCredits } from '../tools/assets/credits';
 import { FREE_MODE_MODULES, isFreeMode } from '../tools/assets/freeMode';
+import { LEVEL_SCENE_SOURCE } from '../tools/assets/levelScreen';
 
 // What the initial script holds, read from the sources (plan 08, phase 8): the modules the entry
 // reaches through static imports, as the bundler follows them; `import()` starts a deferred chunk
@@ -43,10 +44,10 @@ function resolveSpecifier(specifier: string, from: string): string | null {
   return found;
 }
 
-/** Every module the entry reaches through static imports, as paths from the project root. */
-function initialModules(): Set<string> {
+/** Every module `entry` reaches through static imports, as paths from the project root. */
+function modulesFrom(entry: string): Set<string> {
   const seen = new Set<string>();
-  const pending = [ENTRY];
+  const pending = [entry];
   for (let file = pending.pop(); file !== undefined; file = pending.pop()) {
     const path = relative(ROOT, file);
     if (seen.has(path)) continue;
@@ -61,7 +62,9 @@ function initialModules(): Set<string> {
 }
 
 describe('the initial script', () => {
-  const modules = initialModules();
+  const modules = modulesFrom(ENTRY);
+  // What the level scene's chunk reaches: loaded behind its gate, never with the free mode's code.
+  const levelModules = modulesFrom(join(ROOT, LEVEL_SCENE_SOURCE));
 
   it('is read the way the bundler reads it: static imports in, import() out', () => {
     expect(modules.has('src/main.ts')).toBe(true);
@@ -75,6 +78,10 @@ describe('the initial script', () => {
     // So is the credits' gate; the credits' scene loads later.
     expect(modules.has('src/game/scenes/CreditsGate.ts')).toBe(true);
     expect(modules.has('src/game/scenes/credits/CreditsScene.ts')).toBe(false);
+    // So is the level's gate; the level scene, its views and its cards load later.
+    expect(modules.has('src/game/scenes/LevelGate.ts')).toBe(true);
+    expect(modules.has(LEVEL_SCENE_SOURCE)).toBe(false);
+    expect(modules.has('src/game/scenes/level/levelViews.ts')).toBe(false);
   });
 
   it("leaves the garden-code decoder to the free mode: a shared link's code is only passed on", () => {
@@ -88,19 +95,20 @@ describe('the initial script', () => {
   });
 
   it("plays a free garden in the level scene without the free mode's code: the editor builds it", () => {
-    expect(modules.has('src/game/scenes/LevelScene.ts')).toBe(true);
-    expect(modules.has('src/game/systems/levelScreenOf.ts')).toBe(true);
-    expect(modules.has('src/levels/sandbox/toLevel.ts')).toBe(false);
+    expect(levelModules.has('src/game/systems/levelScreenOf.ts')).toBe(true);
+    expect(levelModules.has('src/levels/sandbox/toLevel.ts')).toBe(false);
+    expect([...levelModules].filter(isFreeMode)).toEqual([]);
   });
 
   it("shows the free mode's orders on the level screen, but their code comes with the garden", () => {
-    expect(modules.has('src/game/scenes/level/sandboxBar.ts')).toBe(true);
+    expect(levelModules.has('src/game/scenes/level/sandboxBar.ts')).toBe(true);
     for (const module of [
       'src/game/systems/sandboxOrders.ts',
       'src/game/systems/sandboxSolve.ts',
       'src/game/systems/sandboxCertificate.ts',
     ]) {
       expect({ module, initial: modules.has(module) }).toEqual({ module, initial: false });
+      expect({ module, level: levelModules.has(module) }).toEqual({ module, level: false });
       expect(isFreeMode(module)).toBe(true);
     }
   });

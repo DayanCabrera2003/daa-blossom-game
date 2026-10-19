@@ -13,14 +13,25 @@ Every night the sprouts of a garden want a lantern, and a lantern is for two nei
 - **Eight chapters**, 0 to 7, from the Huerto to the Consejo, with the epilogue *Más allá del jardín* on what matching is used for outside the garden.
 - **The Códex**: fourteen entries opened by playing, each with the garden's intuition and a touchable diagram, the formal definitions, statements and proofs, and the bridge between the two.
 - **The Cuaderno**: every statement the player writes down links to the entry that translates it.
-- **The free mode**, the **secret flowers** and the hub's rewards (below).
+- **The free mode**, the **secret gardens** and the hub's rewards (below).
 - Art, music and sound from CC0 packs, plus a few sounds synthesized by the game; the characters speak in babble.
 
 ## How to play
 
-The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the sun to watch the day again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit, and each level has three hints.
+The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the day (the sun at the top right) to watch it again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit. Each level has three hints behind the **Pista** button, which is always at hand and glows when the game offers one (after 90 seconds without real progress, or three refusals in a row); the first two point where to look, never at the answer.
 
 Every panel over the garden (a question, the notebook, a card, the recipe, the dialogue box, a message) opens where it hides least of the garden, never over what it asks about, and can be **dragged by its frame** wherever the player likes; it opens there again for the rest of the session, and a double touch on its frame sends it back.
+
+### New in 1.1.0
+
+What changed for the player since 1.0.1, after an independent review of how the game teaches:
+
+- **The light searches in the flower levels.** In 4.4–4.8, 4.12 and all of chapter 5, the player no longer places the suns and moons: the **Avanzar la luz** button moves the search one mark at a time, in the order the algorithm uses, and the light stops where two suns of one tree meet. The vine there glows, and the only way on is to **fold** that loop by touching it; the lanterns then move only along the chain the light found. So every flower level asks for the gesture it teaches. 4.10 closes the flower instead (a chain only goes round it from its base, once the stem is turned), and the secret garden 4.13 keeps the marks by hand, since its lesson is that the order of folding is the player's.
+- **Lifting a chain.** After unfolding, the stretches of the chain the light found stay drawn, and the player drags only the stretch inside the flower; the wrong side is refused at once. From chapter 3 on, a chain being dragged says only whether it is legal; what it gains shows on release.
+- **«Presentar».** In the levels won by a proof (scarecrows, stones) the button says *Presentar*; elsewhere it still says *Terminé*. Either one, pressed too soon, now gets a gentle answer that never says where the chain is.
+- **Hints at hand.** The *Pista* button is always there; only real progress restarts the wait for an offer, and no grade-2 hint lights up the answer.
+- **Thinking first.** The notebooks open before the mentor sums up, and five levels ask *why* (2.3, 3.4, 3.8, 5.2, 7.4), some with a garden to try the wrong answer. 2.4 is played in two phases, the recipe lost a card it never used, and the last level of each chapter invites to its page of the Códex.
+- **One word, one meaning.** The bipartite pair is now *abejas y tréboles*, the optional puzzles are the *jardines secretos*, and the time slider is *el día*: the sun is only the mark of the search, and a flower is only the folded loop.
 
 Menus, panels, questions and dialogue also work with the **keyboard** (the garden itself does not). The settings' gear shows the same table as a card (*Teclas*).
 
@@ -28,11 +39,11 @@ Menus, panels, questions and dialogue also work with the **keyboard** (the garde
 |---|---|---|
 | `Tab` / `Shift+Tab` | everywhere | from one button to the next |
 | `ArrowUp` / `ArrowDown` | everywhere | to the button above or below |
-| `ArrowLeft` / `ArrowRight` | everywhere | to the side, or move a slider in focus (the sun, a volume) |
+| `ArrowLeft` / `ArrowRight` | everywhere | to the side, or move a slider in focus (the day, a volume) |
 | `Enter` / `Space` | everywhere | press the button in focus, or go on with the dialogue |
 | `Escape` | everywhere | close what is open, or go back |
 | `M` | hub, levels, settings | mute or unmute |
-| `F` / `Shift+F` | hub | from one secret flower to the next |
+| `F` / `Shift+F` | hub | from one secret garden to the next |
 | `0`–`9` | levels | choose an answer of a question |
 | `Alt+ArrowUp` / `Alt+ArrowDown` / `Alt+ArrowLeft` / `Alt+ArrowRight` | levels, free mode | move the panel open (a question, a card, the dialogue box…) |
 | `Ctrl+Z` | levels, free mode | undo |
@@ -61,25 +72,25 @@ If the browser will not store (a private window, storage blocked or full), the g
 
 ## Teacher mode
 
-Add `?teacher` to the address to open every chapter, every secret flower and every page of the Códex, and to see every reward of the hub. In a level, `T` (or the trace button) opens a panel beside the garden with the trace in the Códex's notation: the player's day, a run of Edmonds from the lanterns the sun shows, and its Tutte–Berge certificate. `PageUp` and `PageDown` jump to the level before or after.
+Add `?teacher` to the address to open every chapter, every secret garden and every page of the Códex, and to see every reward of the hub. In a level, `T` (or the trace button) opens a panel beside the garden with the trace in the Códex's notation: the player's day, a run of Edmonds from the lanterns the day shows, and its Tutte–Berge certificate. `PageUp` and `PageDown` jump to the level before or after.
 
 - `?teacher&level=4.6` starts straight in a level (an unknown id is ignored).
 - `?teacher&codex=C8` opens the Códex at an entry, and `?teacher&codex=C8&tab=formal` at one of its tabs (`intuition`, `formal`, `bridge`).
-- `?teacher&level=1.10` opens a secret flower (`2.5`, `3.10`, `4.13`, `5.6`, `6.7`, `7.6` the others).
+- `?teacher&level=1.10` opens a secret garden (`2.5`, `3.10`, `4.13`, `5.6`, `6.7`, `7.6` the others).
 
 `?level=` and `?codex=` only work together with `?teacher`; players always start at the hub.
 
 ## Free mode
 
-The **Modo libre** sign appears in the hub once chapter 1 is finished (always in teacher mode), and the epilogue offers it too. There you design a garden by hand (sprouts, vines and lanterns, up to 24 sprouts and 40 vines) or grow one from a generator (a row, a ring, a star, all with all, at random, bees and flowers, a long-stemmed flower, nested flowers, a helix, many flowers), and play it with the actions already won (all of them in teacher mode). Once met in the story, the **mechanical gardener** solves the garden from where you left it, with the sun to replay each step, and the **certificate** places its proof: the Council's stones, and the scarecrows when the garden is one of bees and flowers. Nothing played there touches the progress; the last design is kept apart in the browser.
+The **Modo libre** sign appears in the hub once chapter 1 is finished (always in teacher mode), and the epilogue offers it too. There you design a garden by hand (sprouts, vines and lanterns, up to 24 sprouts and 40 vines) or grow one from a generator (a row, a ring, a star, all with all, at random, bees and clovers, a long-stemmed flower, nested flowers, a helix, many flowers), and play it with the actions already won (all of them in teacher mode). Once met in the story, the **mechanical gardener** solves the garden from where you left it, with the day to replay each step, and the **certificate** places its proof: the Council's stones, and the scarecrows when the garden is one of bees and clovers. Nothing played there touches the progress; the last design is kept apart in the browser.
 
 **Compartir** shows the garden's short code, a link that opens it, and its level file as JSON; the same sheet opens a garden from a pasted code or JSON, or from a chosen file. A link has the form `?garden=<code>` and works for every player (`?level=` wins when both are given). A code carries no positions, so an opened code is laid out again; the JSON keeps names and positions. The JSON is a valid level with id `9.1` and `"draft": true`: to make it a real level, give it its own id when copying it into `src/levels/data/`, and `npm run check-levels` will hold it to every rule.
 
-## Secret flowers and the hub's rewards
+## Secret gardens and the hub's rewards
 
-Each chapter from the Prado to the Consejo hides one **secret flower** by the post of its sign in the hub: a closed bud once the chapter is finished, which opens with enough of the chapter's stars (completing it and about half its extra stars; touching the bud says how many are missing). They are optional, teach nothing new and never block anything. `F` / `Shift+F` move between the flowers shown, and `Enter` touches one.
+Each chapter from the Prado to the Consejo hides one **secret garden** by the post of its sign in the hub: a closed bud once the chapter is finished, which opens with enough of the chapter's stars (completing it and about half its extra stars; touching the bud says how many are missing). They are optional, teach nothing new and never block anything. `F` / `Shift+F` move between the secret gardens shown, and `Enter` touches one.
 
-Stars (the best of each level, secret flowers included) and seeds (one per bet won, the first time) show next to the hub's title. They are thresholds, never spent: at 15, 30, 50, 70, 90, 110 and 130 stars a butterfly, a frog, a cat, a blue butterfly, two hens, fireflies and lanterns on the posts come to the hub, and every seed plants a small plant.
+Stars (the best of each level, secret gardens included) and seeds (one per bet won, the first time) show next to the hub's title. They are thresholds, never spent: at 15, 30, 50, 70, 90, 110 and 130 stars a butterfly, a frog, a cat, a blue butterfly, two hens, fireflies and lanterns on the posts come to the hub, and every seed plants a small plant.
 
 ## Credits
 
@@ -121,7 +132,7 @@ CI (GitHub Actions) runs lint, format check, typecheck, coverage, check-levels, 
 npm run solve -- 4.6  # readable trace, result and proof for a level id or a garden code
 npm run bench         # steps of the recipe, the fast version and Bruto per garden size
 npm run save -- after-ch4  # a synthetic save, and the line to paste in the browser's console
-npm run lines         # write the review sheet of the Spanish lines (docs/review/lineas.md)
+npm run lines         # write the review sheets of the Spanish lines (docs/review/lineas.md, lineas-plan10.md)
 ```
 
 ### Art, music and sound
@@ -147,6 +158,7 @@ The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600
 - [Playtest kit](docs/playtest/kit.md): one page to prepare, run and close each session, with the protocols [A](docs/playtest/A.md) (chapters 0–2), [B](docs/playtest/B.md) (3–4) and [C](docs/playtest/C.md) (5–7).
 - [Recording script of the guided walk](docs/video/guion.md): the ten parts of the video, with what to load for each.
 - [Review sheet of the Spanish lines](docs/review/lineas.md), written by `npm run lines`.
+- [Sheet of the lines changed since 1.0.1](docs/review/lineas-plan10.md), written by the same command: every new or changed line, before and after, to review before a release.
 - [Rigour review of the Códex](docs/codex-review.md), for a classmate to check the proofs.
 - Synthetic saves to start halfway: `npm run save -- <point>` (`fresh`, `after-ch2`, `after-ch4`, `after-ch6`, `after-ch7`, `all-stars`, `hub-flowers`).
 

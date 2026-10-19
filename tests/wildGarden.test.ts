@@ -104,7 +104,8 @@ describe('5.1: a flower inside another', () => {
   });
 
   it('from F2, t is a moon in the dark: the chain unfolds as t–a=b–d=c–g=h–R', () => {
-    const seen = after(level, 'markMoon', 4).chainSeen;
+    // The light's fifth mark, from F2, sees the chain.
+    const seen = after(level, 'stepLight', 5).chainSeen;
     const path = [...'tabdcghR'].map(id);
     expect(seen === null ? null : [...seen].reverse()).toEqual(path);
     const opened = after(level, 'unfold', 2);
@@ -145,7 +146,8 @@ describe('5.2: layers', () => {
   it('is searched from R alone and opens the layers, whose card shows as it starts', () => {
     expect(level.data.draft).toBe(false);
     expect(level.start.roots).toEqual([id('R')]);
-    expect(stepsOf(level)).toEqual(['say', 'play', 'say']);
+    // After the chain, the mentor asks why the big flower opens first (plan 10, phase 7).
+    expect(stepsOf(level)).toEqual(['say', 'play', 'ask']);
     expect(isUiUnlocked('layers', level.data.id)).toBe(true);
     expect(isUiUnlocked('layers', levelOf('5.1').data.id)).toBe(false);
   });
@@ -163,7 +165,7 @@ describe('5.2: layers', () => {
     expect(membersOf(outer)).toEqual(sorted('Rabcdefghij'));
     expect(membersOf(middle)).toEqual(sorted('bcdefgh'));
     expect(membersOf(inner)).toEqual(sorted('def'));
-    expect(after(level, 'markMoon', 6).chainSeen).not.toBeNull();
+    expect(after(level, 'stepLight', 7).chainSeen).not.toBeNull();
   });
 
   it('the layers enter one flower at a time, and each shows the next one still folded', () => {
@@ -315,8 +317,14 @@ describe('5.4: wild garden', () => {
   });
 
   it('two of the rounds fold a flower inside another, each nesting in its own way', () => {
-    const [first, second] = lastFolds(level);
-    if (first == null || second == null) throw new Error('a round folds nothing');
+    // The light lights the chain from x before the one from U, so the nested rounds are not the
+    // first two: they are told by the flower inside the last one they fold.
+    const nested = lastFolds(level).filter(
+      (flower): flower is Blossom => flower !== null && innerFlowers(flower).length > 0,
+    );
+    expect(nested).toHaveLength(2);
+    const [first, second] = nested;
+    if (first === undefined || second === undefined) throw new Error('a round folds nothing');
     const [firstInner] = innerFlowers(first);
     const [secondInner] = innerFlowers(second);
     if (firstInner === undefined || secondInner === undefined) throw new Error('no nesting');

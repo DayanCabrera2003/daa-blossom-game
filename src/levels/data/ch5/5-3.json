@@ -33,10 +33,13 @@
   ],
   "goal": { "visible": true, "value": 5 },
   "roots": ["R"],
+  "forbid": ["split", "passLantern", "rotateStem"],
+  "chains": { "rule": "seen" },
+  "light": true,
   "victory": { "type": "matchingSize", "value": 5 },
   "hints": [
     { "line": "ch5.3.sauce.01" },
-    { "line": "ch5.3.sauce.02", "highlight": ["f", "g"] },
+    { "line": "ch5.3.sauce.02", "highlight": ["f", "g", "h"] },
     { "line": "ch5.3.sauce.03" }
   ],
   "notebook": [
@@ -44,7 +47,7 @@
       "prompt": "ch5.3.notebook.05",
       "codex": "C9",
       "options": [
-        { "line": "ch5.3.notebook.06", "correct": true, "reply": "ch5.3.sauce.09" },
+        { "line": "ch5.3.notebook.06", "correct": true, "reply": "ch5.3.sauce.04" },
         {
           "line": "ch5.3.notebook.07",
           "correct": false,
@@ -59,7 +62,7 @@
               { "label": "d", "x": 300, "y": 30 },
               { "label": "g", "x": 230, "y": 200 },
               { "label": "h", "x": 140, "y": 200 },
-              { "label": "t", "x": 140, "y": 30 }
+              { "label": "t", "x": 80, "y": 40 }
             ],
             "vines": [
               ["R", "a"],
@@ -80,25 +83,26 @@
             "actions": ["markRoot", "markMoon", "foldAt", "unfold", "chain"]
           }
         },
-        { "line": "ch5.3.notebook.08", "correct": false, "reply": "ch5.3.sauce.11" }
+        { "line": "ch5.3.notebook.08", "correct": false, "reply": "ch5.3.sauce.11" },
+        { "line": "ch5.3.notebook.13", "correct": false, "reply": "ch5.3.sauce.14" }
       ]
     }
   ],
   "flow": [
     { "step": "say", "lines": ["ch5.3.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch5.3.sauce.04"] },
+    { "step": "say", "lines": ["ch5.3.sauce.12"] },
     { "step": "notebook" }
   ],
   "solution": [
-    { "type": "markRoot", "vertex": "R" },
-    { "type": "markMoon", "from": "R", "to": "a" },
-    { "type": "markMoon", "from": "R", "to": "h" },
-    { "type": "markMoon", "from": "b", "to": "c" },
-    { "type": "markMoon", "from": "b", "to": "f" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
     { "type": "foldAt", "from": "d", "to": "e" },
-    { "type": "foldAt", "from": "g", "to": "f" },
-    { "type": "markMoon", "from": "h", "to": "t" },
+    { "type": "foldAt", "from": "f", "to": "g" },
+    { "type": "stepLight" },
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
     { "type": "chain", "path": ["t", "h", "g", "f", "e", "d", "c", "b", "a", "R"] },

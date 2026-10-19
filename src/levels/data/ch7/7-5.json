@@ -66,13 +66,16 @@
   "victory": { "type": "tutteBergeCertificate" },
   "hints": [
     { "line": "ch7.5.sauce.02" },
-    { "line": "ch7.5.sauce.03", "highlight": ["R", "t"] },
+    { "line": "ch7.5.sauce.03", "highlight": ["R"] },
     { "line": "ch7.5.sauce.04" }
   ],
   "flow": [
     { "step": "say", "lines": ["ch7.5.oaks.00", "ch7.5.sauce.01"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch7.5.oaks.05", "ch7.5.oaks.06", "ch7.5.sauce.07"] }
+    {
+      "step": "say",
+      "lines": ["ch7.5.oaks.05", "ch7.5.oaks.06", "ch7.5.sauce.07", "ch7.5.sauce.08"]
+    }
   ],
   "unlocks": { "codex": ["C14"] },
   "solution": [
@@ -89,6 +92,7 @@
     { "type": "markMoon", "from": "a", "to": "t" },
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
+    { "type": "inspect", "vertex": "g" },
     { "type": "chain", "path": ["t", "a", "b", "d", "c", "g", "h", "R"] },
     { "type": "inspect", "vertex": "S" },
     { "type": "markRoot", "vertex": "S" },

@@ -51,6 +51,49 @@ describe('building a level', () => {
     expect(allowed.has('unfold')).toBe(true);
     expect(allowed.has('fold')).toBe(false);
     expect(allowed.has('liftStone')).toBe(false);
+    // Learnt in 4.4, the light's step is given only where the light searches by itself.
+    expect(allowed.has('stepLight')).toBe(false);
+  });
+
+  it('never allows folding a loop chosen by hand: a level folds where two suns meet', () => {
+    const { allowed, closed } = unwrapLevel({ ...rotate, forbid: [] }).start;
+    expect(allowed.has('fold')).toBe(false);
+    expect(allowed.has('foldAt')).toBe(true);
+    // Not a move closed for the day: no level has it («Plegar a mano» is the free mode's).
+    expect(closed.has('fold')).toBe(false);
+  });
+
+  it('where the light searches by itself, gives its step and closes marks by hand', () => {
+    const { allowed, closed } = unwrapLevel({ ...rotate, light: true }).start;
+    expect(allowed.has('stepLight')).toBe(true);
+    for (const action of ['markRoot', 'markMoon'] as const) {
+      expect(allowed.has(action)).toBe(false);
+      expect(closed.has(action)).toBe(true);
+    }
+    // Folding where the light stops is the way on.
+    expect(unwrapLevel({ ...rotate, light: true, forbid: [] }).start.allowed.has('foldAt')).toBe(
+      true,
+    );
+  });
+
+  it('keeps the actions it closes as closed for the day, apart from those not learnt yet', () => {
+    expect(unwrapLevel(rotate).start.closed).toEqual(new Set(['fold', 'foldAt']));
+  });
+
+  it('turns the chain rule into ids, the closed flower base first; any chain by default', () => {
+    expect(unwrapLevel(rotate).start.chains).toEqual({ rule: 'any' });
+    expect(unwrapLevel({ ...rotate, chains: { rule: 'seen' } }).start.chains).toEqual({
+      rule: 'seen',
+    });
+    const closed: LevelData = { ...rotate, chains: { rule: 'fromBase', flower: ['b', 'c', 'd'] } };
+    expect(unwrapLevel(closed).start.chains).toEqual({
+      rule: 'fromBase',
+      base: 2,
+      petals: [2, 3, 4],
+    });
+    expect(
+      buildLevel({ ...rotate, chains: { rule: 'fromBase', flower: ['b', 'c', 'X'] } }),
+    ).toMatchObject({ error: { code: 'badLabel', error: { name: 'X' } } });
   });
 
   it('carries fog over to the garden', () => {

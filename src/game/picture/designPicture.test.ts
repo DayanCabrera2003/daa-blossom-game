@@ -101,7 +101,7 @@ describe('the picture of a design', () => {
         { x: 160, y: 100 },
         { x: 200, y: 200 },
       ],
-      gain: 0,
+      preview: 'gain0',
     });
     const snapped = designPicture(GARDEN, dragging('vine', { x: 160, y: 100 }, { x: 103, y: 158 }));
     expect(snapped.chain).toEqual({
@@ -109,7 +109,7 @@ describe('the picture of a design', () => {
         { x: 160, y: 100 },
         { x: 100, y: 160 },
       ],
-      gain: 1,
+      preview: 'gain1',
     });
     expect(snapped.sprouts.map((s) => s.inChain)).toEqual([false, true, true]);
   });

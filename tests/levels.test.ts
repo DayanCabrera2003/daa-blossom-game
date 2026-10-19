@@ -80,5 +80,12 @@ describe('level integrity (every level file)', () => {
       expect(path).toBe(expectedPath(level.value.data.id));
       expect(checkIntegrity(level.value)).toEqual([]);
     });
+
+    it('folds only where two suns meet: no loop chosen by hand, in its garden or its walkthrough', () => {
+      const level = loadLevel(json);
+      if (!level.ok) throw new Error(`${path} does not load`);
+      expect(level.value.start.allowed.has('fold')).toBe(false);
+      expect(level.value.solution.some((move) => move.type === 'fold')).toBe(false);
+    });
   });
 });

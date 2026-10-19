@@ -105,12 +105,25 @@ describe('playtest entries of a step', () => {
 
   it('"Terminé" short of the most lanterns is a claim without reason', () => {
     const { entries } = play(startController(festivalLevel(), 0), [{ kind: 'done' }]);
-    expect(entries).toContainEqual({ kind: 'claim', at: 0, level: '4.1', right: false });
+    expect(entries).toContainEqual({
+      kind: 'claim',
+      at: 0,
+      level: '4.1',
+      right: false,
+      verdict: 'chainLeft',
+    });
   });
 
-  it('a hint opened is logged with its grade; one not on offer yet is not', () => {
+  it('a claim that falls short is logged with why, as the toast told it', () => {
+    const { entries } = play(startController(levelById('1.8'), 0), [{ kind: 'done' }], 3);
+    expect(entries).toEqual([
+      { kind: 'move', at: 3, level: '1.8', action: 'declareDone' },
+      { kind: 'claim', at: 3, level: '1.8', right: false, verdict: 'chainLeft' },
+    ]);
+  });
+
+  it('a hint opened is logged with its grade, offered or not', () => {
     const festival = startController(festivalLevel(), 0);
-    expect(play(festival, [{ kind: 'hint' }], 0).entries).toEqual([]);
     expect(play(festival, [{ kind: 'hint' }], HINT_DELAY_MS).entries).toEqual([
       { kind: 'hint', at: HINT_DELAY_MS, level: '4.1', grade: 1 },
     ]);
@@ -270,7 +283,7 @@ describe('playtest entries of bets, counts and the notebook', () => {
         level: '6.5',
         step: 1,
         runner: 'automaton',
-        answer: 'fourToEight',
+        answer: 'threeToFive',
         right: true,
       },
       {
@@ -404,8 +417,8 @@ describe('playtest entries of the stone certificates', () => {
         proves: true,
         counts: true,
       },
-      { kind: 'levelEnd', at: 6, level: '7.4', outcome: 'won', stars: expect.any(Number) },
     ]);
+    // The level ends only once the mentor's question after the count is answered (plan 10, F7).
   });
 
   it('stones that prove the lanterns but are not the moons do not count in 7.4', () => {

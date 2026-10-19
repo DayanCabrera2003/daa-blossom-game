@@ -222,7 +222,7 @@ describe('level integrity', () => {
       codex: 'C2',
       options: [
         { line: 'ch1.1.notebook.01', correct: true },
-        { line: 'ch2.2.notebook.02', correct: false },
+        { line: 'ch2.2.notebook.02', correct: false, reply: 'ch1.1.sauce.03' },
       ],
     };
     expect(problemsOf({ ...trap, notebook: [notebook] })).toEqual([
@@ -286,6 +286,23 @@ describe('level integrity', () => {
     expect(problemsOf(BLOOM)).toEqual([]);
     expect(problemsOf({ ...BLOOM, flower: ['c', 'd', 'f', 'g', 'b'] })).toEqual([
       { code: 'flowerBaseNotFirst', base: 'b' },
+    ]);
+  });
+
+  it('the checks of the chain rule are part of its integrity', () => {
+    const opened = { ...trap, id: '4.5', chains: { rule: 'seen' }, forbid: [], unlocks: undefined };
+    expect(problemsOf(opened)).toContainEqual({ code: 'seenRuleOpen', action: 'split' });
+  });
+
+  it('the checks of the light that searches by itself are part of its integrity', () => {
+    const lit = { ...trap, id: '4.5', light: true, forbid: [], unlocks: undefined };
+    expect(problemsOf(lit)).toContainEqual({ code: 'lightBypassed', action: 'split' });
+  });
+
+  it('the checks of the hints are part of its integrity: grade 2 never lights up the answer', () => {
+    const hints = [{ line: 'ch1.1.sauce.01' }, { line: 'ch1.1.sauce.02', highlight: ['A', 'B'] }];
+    expect(problemsOf({ ...trap, hints })).toEqual([
+      { code: 'hintReveals', line: 'ch1.1.sauce.02', reveals: 'chain' },
     ]);
   });
 

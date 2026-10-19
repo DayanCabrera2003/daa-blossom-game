@@ -24,6 +24,17 @@ const victory = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('moonCertificate') }),
 ]);
 
+/**
+ * Which chains the lanterns may slide along (`core/rules/chainRule.ts`): any legal chain, only the
+ * chain the marks reached (`seen`, the flower levels of 4 and 5), or only from the base of a closed
+ * flower (`fromBase`, 4.10), its petals around the loop with the base first.
+ */
+const chains = z.discriminatedUnion('rule', [
+  z.strictObject({ rule: z.literal('any') }),
+  z.strictObject({ rule: z.literal('seen') }),
+  z.strictObject({ rule: z.literal('fromBase'), flower: z.array(label).min(3) }),
+]);
+
 /** The goal shown to the player: "this garden can light N lanterns", or hidden (GDD §5.2). */
 const goal = z.discriminatedUnion('visible', [
   z.strictObject({ visible: z.literal(true), value: z.number().int().min(0) }),
@@ -68,6 +79,13 @@ export const levelSchema = z.strictObject({
   flower: z.array(label).min(3).optional(),
   /** Actions unlocked by now that this level keeps closed (4.10 closes folding). */
   forbid: z.array(actionType).default([]),
+  /** Which chains the lanterns may slide along; any legal chain when absent. */
+  chains: chains.default({ rule: 'any' }),
+  /**
+   * Whether the light searches by itself and the player advances it, mark by mark, folding where
+   * it stops (the flower levels, plan 10 section 2.4): marks and folds by hand are then closed.
+   */
+  light: z.boolean().default(false),
   /** When the play step is won; required exactly when the script has a play step. */
   victory: victory.optional(),
   /** Hints: a voiced line and the sprouts to highlight (GDD §5.3). */

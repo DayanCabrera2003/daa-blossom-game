@@ -2,58 +2,138 @@
   {
     "id": "lanterns",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
     "steps": [
-      { "type": "join", "u": "a", "v": "b" },
-      { "type": "split", "u": "a", "v": "b" },
-      { "type": "join", "u": "b", "v": "c" }
+      {
+        "type": "join",
+        "u": "a",
+        "v": "b"
+      },
+      {
+        "type": "split",
+        "u": "a",
+        "v": "b"
+      },
+      {
+        "type": "join",
+        "u": "b",
+        "v": "c"
+      }
     ]
   },
   {
     "id": "undo",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
     "steps": [
-      { "type": "join", "u": "b", "v": "c" },
-      { "type": "undo" },
-      { "type": "join", "u": "a", "v": "b" }
+      {
+        "type": "join",
+        "u": "b",
+        "v": "c"
+      },
+      {
+        "type": "undo"
+      },
+      {
+        "type": "join",
+        "u": "a",
+        "v": "b"
+      }
     ]
   },
   {
     "id": "passLantern",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
     "lanterns": [["b", "c"]],
-    "steps": [{ "type": "passLantern", "from": "a", "to": "b" }]
+    "steps": [
+      {
+        "type": "passLantern",
+        "from": "a",
+        "to": "b"
+      }
+    ]
   },
   {
     "id": "chain",
     "sprouts": [
-      { "label": "a", "x": 12, "y": 27 },
-      { "label": "b", "x": 44, "y": 27 },
-      { "label": "c", "x": 76, "y": 27 },
-      { "label": "d", "x": 108, "y": 27 }
+      {
+        "label": "a",
+        "x": 12,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 44,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 76,
+        "y": 27
+      },
+      {
+        "label": "d",
+        "x": 108,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -61,15 +141,36 @@
       ["c", "d"]
     ],
     "lanterns": [["b", "c"]],
-    "steps": [{ "type": "chain", "path": ["a", "b", "c", "d"] }]
+    "steps": [
+      {
+        "type": "chain",
+        "path": ["a", "b", "c", "d"]
+      }
+    ]
   },
   {
     "id": "sun",
     "sprouts": [
-      { "label": "a", "x": 12, "y": 27 },
-      { "label": "b", "x": 44, "y": 27 },
-      { "label": "c", "x": 76, "y": 27 },
-      { "label": "d", "x": 108, "y": 27 }
+      {
+        "label": "a",
+        "x": 12,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 44,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 76,
+        "y": 27
+      },
+      {
+        "label": "d",
+        "x": 108,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -77,71 +178,175 @@
       ["c", "d"]
     ],
     "steps": [
-      { "type": "join", "u": "a", "v": "b" },
-      { "type": "join", "u": "c", "v": "d" },
-      { "type": "seekSun", "fraction": 0 },
-      { "type": "seekSun", "fraction": 1 }
+      {
+        "type": "join",
+        "u": "a",
+        "v": "b"
+      },
+      {
+        "type": "join",
+        "u": "c",
+        "v": "d"
+      },
+      {
+        "type": "seekSun",
+        "fraction": 0
+      },
+      {
+        "type": "seekSun",
+        "fraction": 1
+      }
     ]
   },
   {
     "id": "bet",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
-    "choices": { "count": 4, "kind": "numbers" },
-    "steps": [{ "type": "bet", "value": 1 }]
+    "choices": {
+      "count": 4,
+      "kind": "numbers"
+    },
+    "steps": [
+      {
+        "type": "bet",
+        "value": 1
+      }
+    ]
   },
   {
     "id": "question",
     "sprouts": [
-      { "label": "a", "x": 30, "y": 27 },
-      { "label": "b", "x": 90, "y": 27 }
+      {
+        "label": "a",
+        "x": 30,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 90,
+        "y": 27
+      }
     ],
     "vines": [["a", "b"]],
     "lanterns": [["a", "b"]],
-    "choices": { "count": 3, "kind": "lines" },
-    "steps": [{ "type": "answer", "option": 1 }]
+    "choices": {
+      "count": 3,
+      "kind": "lines"
+    },
+    "steps": [
+      {
+        "type": "answer",
+        "option": 1
+      }
+    ]
   },
   {
     "id": "notebook",
     "sprouts": [
-      { "label": "a", "x": 30, "y": 27 },
-      { "label": "b", "x": 90, "y": 27 }
+      {
+        "label": "a",
+        "x": 30,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 90,
+        "y": 27
+      }
     ],
     "vines": [["a", "b"]],
     "lanterns": [["a", "b"]],
-    "choices": { "count": 3, "kind": "lines" },
+    "choices": {
+      "count": 3,
+      "kind": "lines"
+    },
     "steps": [
-      { "type": "answer", "option": 0 },
-      { "type": "answer", "option": 2 }
+      {
+        "type": "answer",
+        "option": 0
+      },
+      {
+        "type": "answer",
+        "option": 2
+      }
     ]
   },
   {
     "id": "declareDone",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
-    "steps": [{ "type": "join", "u": "a", "v": "b" }, { "type": "declareDone" }]
+    "steps": [
+      {
+        "type": "join",
+        "u": "a",
+        "v": "b"
+      },
+      {
+        "type": "declareDone"
+      }
+    ]
   },
   {
     "id": "reflection",
     "sprouts": [
-      { "label": "a", "x": 12, "y": 27 },
-      { "label": "b", "x": 44, "y": 27 },
-      { "label": "c", "x": 76, "y": 27 },
-      { "label": "d", "x": 108, "y": 27 }
+      {
+        "label": "a",
+        "x": 12,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 44,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 76,
+        "y": 27
+      },
+      {
+        "label": "d",
+        "x": 108,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -153,15 +358,39 @@
       ["a", "b"],
       ["c", "d"]
     ],
-    "steps": [{ "type": "tapSprout", "vertex": "b" }, { "type": "tapGarden" }]
+    "steps": [
+      {
+        "type": "tapSprout",
+        "vertex": "b"
+      },
+      {
+        "type": "tapGarden"
+      }
+    ]
   },
   {
     "id": "count",
     "sprouts": [
-      { "label": "a", "x": 12, "y": 27 },
-      { "label": "b", "x": 44, "y": 27 },
-      { "label": "c", "x": 76, "y": 27 },
-      { "label": "d", "x": 108, "y": 27 }
+      {
+        "label": "a",
+        "x": 12,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 44,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 76,
+        "y": 27
+      },
+      {
+        "label": "d",
+        "x": 108,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -169,16 +398,40 @@
       ["c", "d"]
     ],
     "lanterns": [["b", "c"]],
-    "choices": { "count": 4, "kind": "numbers" },
-    "steps": [{ "type": "answer", "option": 1 }]
+    "choices": {
+      "count": 4,
+      "kind": "numbers"
+    },
+    "steps": [
+      {
+        "type": "answer",
+        "option": 1
+      }
+    ]
   },
   {
     "id": "draw",
     "sprouts": [
-      { "label": "a", "x": 12, "y": 27 },
-      { "label": "b", "x": 44, "y": 27 },
-      { "label": "c", "x": 76, "y": 27 },
-      { "label": "d", "x": 108, "y": 27 }
+      {
+        "label": "a",
+        "x": 12,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 44,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 76,
+        "y": 27
+      },
+      {
+        "label": "d",
+        "x": 108,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -187,7 +440,10 @@
     ],
     "lanterns": [["b", "c"]],
     "steps": [
-      { "type": "drawMirror", "lanterns": [["a", "b"]] },
+      {
+        "type": "drawMirror",
+        "lanterns": [["a", "b"]]
+      },
       {
         "type": "drawMirror",
         "lanterns": [
@@ -195,29 +451,60 @@
           ["c", "d"]
         ]
       },
-      { "type": "checkMirror" }
+      {
+        "type": "checkMirror"
+      }
     ]
   },
   {
     "id": "inspect",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
     "fog": true,
-    "steps": [{ "type": "inspect", "vertex": "b" }]
+    "steps": [
+      {
+        "type": "inspect",
+        "vertex": "b"
+      }
+    ]
   },
   {
     "id": "marks",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 30 },
-      { "label": "b", "x": 60, "y": 30 },
-      { "label": "c", "x": 100, "y": 30 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 30
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 30
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 30
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -225,17 +512,40 @@
     ],
     "lanterns": [["b", "c"]],
     "steps": [
-      { "type": "markRoot", "vertex": "a" },
-      { "type": "markMoon", "from": "a", "to": "b" }
+      {
+        "type": "markRoot",
+        "vertex": "a"
+      },
+      {
+        "type": "markMoon",
+        "from": "a",
+        "to": "b"
+      }
     ]
   },
   {
     "id": "autoSearch",
     "sprouts": [
-      { "label": "a", "x": 12, "y": 30 },
-      { "label": "b", "x": 44, "y": 30 },
-      { "label": "c", "x": 76, "y": 30 },
-      { "label": "d", "x": 108, "y": 30 }
+      {
+        "label": "a",
+        "x": 12,
+        "y": 30
+      },
+      {
+        "label": "b",
+        "x": 44,
+        "y": 30
+      },
+      {
+        "label": "c",
+        "x": 76,
+        "y": 30
+      },
+      {
+        "label": "d",
+        "x": 108,
+        "y": 30
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -244,17 +554,79 @@
     ],
     "lanterns": [["b", "c"]],
     "steps": [
-      { "type": "markRoot", "vertex": "a" },
-      { "type": "markMoon", "from": "a", "to": "b" },
-      { "type": "markMoon", "from": "c", "to": "d" }
+      {
+        "type": "markRoot",
+        "vertex": "a"
+      },
+      {
+        "type": "markMoon",
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "type": "markMoon",
+        "from": "c",
+        "to": "d"
+      }
+    ]
+  },
+  {
+    "id": "light",
+    "sprouts": [
+      {
+        "label": "a",
+        "x": 30,
+        "y": 42
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "label": "c",
+        "x": 90,
+        "y": 42
+      }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"],
+      ["c", "a"]
+    ],
+    "lanterns": [["b", "c"]],
+    "steps": [
+      {
+        "type": "stepLight"
+      },
+      {
+        "type": "stepLight"
+      },
+      {
+        "type": "foldAt",
+        "from": "c",
+        "to": "a"
+      }
     ]
   },
   {
     "id": "pickVine",
     "sprouts": [
-      { "label": "R", "x": 30, "y": 42 },
-      { "label": "a", "x": 60, "y": 14 },
-      { "label": "b", "x": 90, "y": 42 }
+      {
+        "label": "R",
+        "x": 30,
+        "y": 42
+      },
+      {
+        "label": "a",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "label": "b",
+        "x": 90,
+        "y": 42
+      }
     ],
     "vines": [
       ["R", "a"],
@@ -263,18 +635,45 @@
     ],
     "lanterns": [["a", "b"]],
     "steps": [
-      { "type": "markRoot", "vertex": "R" },
-      { "type": "markMoon", "from": "R", "to": "a" },
-      { "type": "pickVine", "u": "b", "v": "R" }
+      {
+        "type": "markRoot",
+        "vertex": "R"
+      },
+      {
+        "type": "markMoon",
+        "from": "R",
+        "to": "a"
+      },
+      {
+        "type": "pickVine",
+        "u": "b",
+        "v": "R"
+      }
     ]
   },
   {
     "id": "flowerChallenge",
     "sprouts": [
-      { "label": "e", "x": 24, "y": 14 },
-      { "label": "c", "x": 62, "y": 14 },
-      { "label": "d", "x": 62, "y": 42 },
-      { "label": "b", "x": 100, "y": 28 }
+      {
+        "label": "e",
+        "x": 24,
+        "y": 14
+      },
+      {
+        "label": "c",
+        "x": 62,
+        "y": 14
+      },
+      {
+        "label": "d",
+        "x": 62,
+        "y": 42
+      },
+      {
+        "label": "b",
+        "x": 100,
+        "y": 28
+      }
     ],
     "vines": [
       ["e", "c"],
@@ -283,30 +682,99 @@
       ["b", "c"]
     ],
     "lanterns": [["c", "d"]],
-    "steps": [{ "type": "drawChain", "path": ["e", "c", "d", "b"] }]
+    "steps": [
+      {
+        "type": "drawChain",
+        "path": ["e", "c", "d", "b"]
+      }
+    ]
   },
   {
     "id": "scarecrows",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
     "steps": [
-      { "type": "placeScarecrow", "vertex": "b" },
-      { "type": "removeScarecrow", "vertex": "b" }
+      {
+        "type": "placeScarecrow",
+        "vertex": "b"
+      },
+      {
+        "type": "removeScarecrow",
+        "vertex": "b"
+      }
+    ]
+  },
+  {
+    "id": "present",
+    "sprouts": [
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"]
+    ],
+    "lanterns": [["a", "b"]],
+    "steps": [
+      {
+        "type": "placeScarecrow",
+        "vertex": "b"
+      },
+      {
+        "type": "declareDone"
+      }
     ]
   },
   {
     "id": "fold",
     "sprouts": [
-      { "label": "a", "x": 30, "y": 42 },
-      { "label": "b", "x": 60, "y": 14 },
-      { "label": "c", "x": 90, "y": 42 }
+      {
+        "label": "a",
+        "x": 30,
+        "y": 42
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "label": "c",
+        "x": 90,
+        "y": 42
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -315,17 +783,72 @@
     ],
     "lanterns": [["b", "c"]],
     "steps": [
-      { "type": "markRoot", "vertex": "a" },
-      { "type": "markMoon", "from": "a", "to": "b" },
-      { "type": "foldAt", "from": "c", "to": "a" }
+      {
+        "type": "markRoot",
+        "vertex": "a"
+      },
+      {
+        "type": "markMoon",
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "type": "foldAt",
+        "from": "c",
+        "to": "a"
+      }
+    ]
+  },
+  {
+    "id": "foldLoop",
+    "sprouts": [
+      {
+        "label": "a",
+        "x": 30,
+        "y": 42
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "label": "c",
+        "x": 90,
+        "y": 42
+      }
+    ],
+    "vines": [
+      ["a", "b"],
+      ["b", "c"],
+      ["c", "a"]
+    ],
+    "lanterns": [["b", "c"]],
+    "steps": [
+      {
+        "type": "fold",
+        "loop": ["a", "b", "c"]
+      }
     ]
   },
   {
     "id": "unfold",
     "sprouts": [
-      { "label": "a", "x": 30, "y": 42 },
-      { "label": "b", "x": 60, "y": 14 },
-      { "label": "c", "x": 90, "y": 42 }
+      {
+        "label": "a",
+        "x": 30,
+        "y": 42
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "label": "c",
+        "x": 90,
+        "y": 42
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -334,18 +857,51 @@
     ],
     "lanterns": [["b", "c"]],
     "steps": [
-      { "type": "fold", "loop": ["a", "b", "c"] },
-      { "type": "unfold", "blossom": 0 }
+      {
+        "type": "stepLight"
+      },
+      {
+        "type": "stepLight"
+      },
+      {
+        "type": "foldAt",
+        "from": "c",
+        "to": "a"
+      },
+      {
+        "type": "unfold",
+        "blossom": 0
+      }
     ]
   },
   {
     "id": "layers",
     "sprouts": [
-      { "label": "x", "x": 36, "y": 42 },
-      { "label": "y", "x": 36, "y": 12 },
-      { "label": "b", "x": 70, "y": 27 },
-      { "label": "c", "x": 100, "y": 18 },
-      { "label": "d", "x": 100, "y": 36 }
+      {
+        "label": "x",
+        "x": 36,
+        "y": 42
+      },
+      {
+        "label": "y",
+        "x": 36,
+        "y": 12
+      },
+      {
+        "label": "b",
+        "x": 70,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 18
+      },
+      {
+        "label": "d",
+        "x": 100,
+        "y": 36
+      }
     ],
     "vines": [
       ["x", "y"],
@@ -360,22 +916,74 @@
       ["c", "d"]
     ],
     "steps": [
-      { "type": "fold", "loop": ["b", "c", "d"] },
-      { "type": "fold", "loop": ["x", "y", "b"] },
-      { "type": "enterLayer", "blossom": 1 },
-      { "type": "enterLayer", "blossom": 0 },
-      { "type": "leaveLayer" },
-      { "type": "leaveLayer" }
+      {
+        "type": "markRoot",
+        "vertex": "x"
+      },
+      {
+        "type": "markMoon",
+        "from": "x",
+        "to": "y"
+      },
+      {
+        "type": "markMoon",
+        "from": "b",
+        "to": "c"
+      },
+      {
+        "type": "foldAt",
+        "from": "d",
+        "to": "b"
+      },
+      {
+        "type": "foldAt",
+        "from": "d",
+        "to": "x"
+      },
+      {
+        "type": "enterLayer",
+        "blossom": 1
+      },
+      {
+        "type": "enterLayer",
+        "blossom": 0
+      },
+      {
+        "type": "leaveLayer"
+      },
+      {
+        "type": "leaveLayer"
+      }
     ]
   },
   {
     "id": "rotateStem",
     "sprouts": [
-      { "label": "R", "x": 10, "y": 27 },
-      { "label": "a", "x": 35, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 95, "y": 12 },
-      { "label": "d", "x": 95, "y": 42 }
+      {
+        "label": "R",
+        "x": 10,
+        "y": 27
+      },
+      {
+        "label": "a",
+        "x": 35,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 95,
+        "y": 12
+      },
+      {
+        "label": "d",
+        "x": 95,
+        "y": 42
+      }
     ],
     "vines": [
       ["R", "a"],
@@ -388,25 +996,62 @@
       ["a", "b"],
       ["c", "d"]
     ],
-    "steps": [{ "type": "rotateStem", "stem": ["R", "a", "b"] }]
+    "steps": [
+      {
+        "type": "rotateStem",
+        "stem": ["R", "a", "b"]
+      }
+    ]
   },
   {
     "id": "recipe",
     "sprouts": [
-      { "label": "a", "x": 30, "y": 27 },
-      { "label": "b", "x": 90, "y": 27 }
+      {
+        "label": "a",
+        "x": 30,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 90,
+        "y": 27
+      }
     ],
     "vines": [["a", "b"]],
-    "choices": { "count": 4, "kind": "lines" },
-    "steps": [{ "type": "recipe", "cards": ["markDarkSuns", "foldFlower", "finishKeepMoons"] }]
+    "choices": {
+      "count": 4,
+      "kind": "lines"
+    },
+    "steps": [
+      {
+        "type": "recipe",
+        "cards": ["markDarkSuns", "foldFlower", "finishKeepMoons"]
+      }
+    ]
   },
   {
     "id": "automaton",
     "sprouts": [
-      { "label": "a", "x": 12, "y": 30 },
-      { "label": "b", "x": 44, "y": 30 },
-      { "label": "c", "x": 76, "y": 30 },
-      { "label": "d", "x": 108, "y": 30 }
+      {
+        "label": "a",
+        "x": 12,
+        "y": 30
+      },
+      {
+        "label": "b",
+        "x": 44,
+        "y": 30
+      },
+      {
+        "label": "c",
+        "x": 76,
+        "y": 30
+      },
+      {
+        "label": "d",
+        "x": 108,
+        "y": 30
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -416,21 +1061,55 @@
     "lanterns": [["b", "c"]],
     "alone": true,
     "steps": [
-      { "type": "markRoot", "vertex": "a" },
-      { "type": "markRoot", "vertex": "d" },
-      { "type": "markMoon", "from": "a", "to": "b" },
-      { "type": "markMoon", "from": "d", "to": "c" },
-      { "type": "chain", "path": ["d", "c", "b", "a"] },
-      { "type": "declareDone" },
-      { "type": "seekSun", "fraction": 0.5 }
+      {
+        "type": "markRoot",
+        "vertex": "a"
+      },
+      {
+        "type": "markRoot",
+        "vertex": "d"
+      },
+      {
+        "type": "markMoon",
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "type": "markMoon",
+        "from": "d",
+        "to": "c"
+      },
+      {
+        "type": "chain",
+        "path": ["d", "c", "b", "a"]
+      },
+      {
+        "type": "declareDone"
+      },
+      {
+        "type": "seekSun",
+        "fraction": 0.5
+      }
     ]
   },
   {
     "id": "race",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 30 },
-      { "label": "b", "x": 60, "y": 30 },
-      { "label": "c", "x": 100, "y": 30 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 30
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 30
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 30
+      }
     ],
     "vines": [
       ["a", "b"],
@@ -438,37 +1117,91 @@
     ],
     "alone": true,
     "steps": [
-      { "type": "join", "u": "a", "v": "b" },
-      { "type": "split", "u": "a", "v": "b" },
-      { "type": "join", "u": "b", "v": "c" },
-      { "type": "split", "u": "b", "v": "c" },
-      { "type": "join", "u": "a", "v": "b" }
+      {
+        "type": "join",
+        "u": "a",
+        "v": "b"
+      },
+      {
+        "type": "split",
+        "u": "a",
+        "v": "b"
+      },
+      {
+        "type": "join",
+        "u": "b",
+        "v": "c"
+      },
+      {
+        "type": "split",
+        "u": "b",
+        "v": "c"
+      },
+      {
+        "type": "join",
+        "u": "a",
+        "v": "b"
+      }
     ]
   },
   {
     "id": "raceBet",
     "sprouts": [
-      { "label": "a", "x": 40, "y": 30 },
-      { "label": "b", "x": 80, "y": 30 }
+      {
+        "label": "a",
+        "x": 40,
+        "y": 30
+      },
+      {
+        "label": "b",
+        "x": 80,
+        "y": 30
+      }
     ],
     "vines": [["a", "b"]],
-    "choices": { "count": 3, "kind": "lines" },
-    "steps": [{ "type": "raceBet", "answer": "fourToEight" }]
+    "choices": {
+      "count": 3,
+      "kind": "lines"
+    },
+    "steps": [
+      {
+        "type": "raceBet",
+        "answer": "threeToFive"
+      }
+    ]
   },
   {
     "id": "stones",
     "sprouts": [
-      { "label": "a", "x": 20, "y": 27 },
-      { "label": "b", "x": 60, "y": 27 },
-      { "label": "c", "x": 100, "y": 27 }
+      {
+        "label": "a",
+        "x": 20,
+        "y": 27
+      },
+      {
+        "label": "b",
+        "x": 60,
+        "y": 27
+      },
+      {
+        "label": "c",
+        "x": 100,
+        "y": 27
+      }
     ],
     "vines": [
       ["a", "b"],
       ["b", "c"]
     ],
     "steps": [
-      { "type": "liftStone", "vertex": "b" },
-      { "type": "dropStone", "vertex": "b" }
+      {
+        "type": "liftStone",
+        "vertex": "b"
+      },
+      {
+        "type": "dropStone",
+        "vertex": "b"
+      }
     ]
   }
 ]

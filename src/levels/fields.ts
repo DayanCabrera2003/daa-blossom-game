@@ -82,6 +82,7 @@ export const levelActionOptions = [
   z.strictObject({ type: z.literal('inspect'), vertex: label }),
   z.strictObject({ type: z.literal('markRoot'), vertex: label }),
   z.strictObject({ type: z.literal('markMoon'), from: label, to: label }),
+  z.strictObject({ type: z.literal('stepLight') }),
   z.strictObject({ type: z.literal('foldAt'), from: label, to: label }),
   z.strictObject({ type: z.literal('fold'), loop: path }),
   z.strictObject({ type: z.literal('unfold'), blossom: z.number().int().min(0) }),

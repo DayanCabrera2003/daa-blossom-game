@@ -93,10 +93,53 @@ describe('fold at the conflict (level 4.4)', () => {
   });
 });
 
-describe('fold a chosen loop', () => {
-  it('folds a valid flower when no search is going on', () => {
-    const outcome = fold(festival, { type: 'fold', loop: [3, 4, 2] });
+/** Level 4.4's garden with a=b put out: the triangle's base b is in the dark. */
+const darkBase = createGardenState({
+  graph: festivalGraph,
+  matching: unwrap(createMatching(festivalGraph, [[3, 4]])),
+  allowed: ['fold'],
+});
+
+describe('fold a chosen loop (free mode, «Plegar a mano»)', () => {
+  it('folds a valid flower whose base is in the dark when no search is going on', () => {
+    const outcome = fold(darkBase, { type: 'fold', loop: [3, 4, 2] });
     expect(outcome.ok && outcome.state.layer.nodes.length).toBe(4);
+  });
+
+  it('refuses a flower whose base has a lantern: folding it could hide a chain (C8, 8.4)', () => {
+    // b's lantern goes to a, outside the loop: R–a=b–d=c–e is a chain that the fold would hide.
+    expect(fold(festival, { type: 'fold', loop: [3, 4, 2] })).toEqual({
+      ok: false,
+      reason: { code: 'baseNotDark' },
+    });
+  });
+
+  it("cannot play C8's Observation 8.4: the stemless triangle that would hide p–c=d–q", () => {
+    // b c d u p q = 0 1 2 3 4 5; vines bc, cd, db, bu, pc, qd; lanterns c=d and b=u.
+    const graph = unwrap(
+      createGraph(6, [
+        [0, 1],
+        [1, 2],
+        [2, 0],
+        [0, 3],
+        [4, 1],
+        [5, 2],
+      ]),
+    );
+    const stemless = createGardenState({
+      graph,
+      matching: unwrap(
+        createMatching(graph, [
+          [1, 2],
+          [0, 3],
+        ]),
+      ),
+      allowed: ['fold'],
+    });
+    expect(fold(stemless, { type: 'fold', loop: [0, 1, 2] })).toEqual({
+      ok: false,
+      reason: { code: 'baseNotDark' },
+    });
   });
 
   it('says why a loop is not a flower', () => {

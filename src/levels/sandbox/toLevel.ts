@@ -4,7 +4,7 @@ import { nameOf } from '@core/graph/labels';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
 import type { ActionType } from '@core/rules/actions';
 import { UNLOCKED_AT } from '@core/rules/permissions';
-import type { Result } from '@core/shared/result';
+import { ok, type Result } from '@core/shared/result';
 import type { z } from 'zod';
 import type { Level } from '../build';
 import { buildGarden } from '../garden';
@@ -97,17 +97,39 @@ export function toPlayable(
   const forbid = ALL_ACTIONS.filter(
     (action) => !allowed.includes(action) || FOG_ACTIONS.includes(action),
   );
-  if (allowed.includes('declareDone')) return loadLevel({ ...file, forbid });
+  if (allowed.includes('declareDone')) return notYetLearnt(loadLevel({ ...file, forbid }), allowed);
   const garden = buildGarden({
     names: design.sprouts.map((sprout) => sprout.label),
     vines: design.vines,
     lanterns: [],
   });
   const optimum = garden.ok ? maximumSize(garden.value.graph) : 0;
-  return loadLevel({
-    ...file,
-    forbid,
-    goal: { visible: true, value: optimum },
-    victory: { type: 'matchingSize', value: optimum },
-  });
+  return notYetLearnt(
+    loadLevel({
+      ...file,
+      forbid,
+      goal: { visible: true, value: optimum },
+      victory: { type: 'matchingSize', value: optimum },
+    }),
+    allowed,
+  );
 }
+
+/**
+ * The free mode forbids every move the player has not learnt yet, and none of them is closed for
+ * the day: a refusal still says "not yet", exactly as before levels could close moves. Folding a
+ * loop by hand («Plegar a mano»), which no level of the catalog allows, is the free mode's own once
+ * learnt (4.4), with `allowed` saying whether it is.
+ */
+const notYetLearnt = (
+  level: Result<Level, LoadError>,
+  allowed: readonly ActionType[],
+): Result<Level, LoadError> => {
+  if (!level.ok) return level;
+  const { start } = level.value;
+  const byHand: ActionType[] = allowed.includes('fold') ? ['fold'] : [];
+  return ok({
+    ...level.value,
+    start: { ...start, allowed: new Set([...start.allowed, ...byHand]), closed: new Set() },
+  });
+};

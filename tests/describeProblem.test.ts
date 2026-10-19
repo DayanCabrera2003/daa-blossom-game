@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   describeCodexProblem,
+  describeEchoProblem,
   describeLoadError,
   describeProblem,
   describeSecretProblem,
@@ -72,6 +73,9 @@ describe('readable level problems', () => {
     ).toBe(
       'notebook question 2, statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
     );
+    expect(describeProblem({ code: 'statementUnrefuted', step: 3, option: 1 })).toBe(
+      'script step 4, answer 2 is false, but neither a reply nor a garden refutes it',
+    );
     expect(describeProblem({ code: 'sameKindVine', u: 'b', v: 'c', kind: 'flower' })).toBe(
       'vine b–c joins two flowers, but a bee only pairs with a flower',
     );
@@ -122,6 +126,7 @@ describe('readable level problems', () => {
       { code: 'certifyAgainBeforePlay', step: 0 },
       { code: 'sameCertificate', step: 1 },
       { code: 'drawUnbeatable', step: 5 },
+      { code: 'drawBeatable', step: 5 },
       { code: 'noConflict', step: 1 },
       { code: 'counterexampleLocked', question: 0, option: 1, action: 'fold' },
       { code: 'counterexampleUnbeatable', question: 0, option: 2 },
@@ -134,6 +139,10 @@ describe('readable level problems', () => {
         v: 'b',
         kind: 'flower',
       },
+      { code: 'seenRuleOpen', action: 'split' },
+      { code: 'lightBypassed', action: 'passLantern' },
+      { code: 'hintReveals', line: 'ch4.4.sauce.03', reveals: 'fold' },
+      { code: 'badChainFlower', petals: ['c', 'd', 'b'] },
       { code: 'notAFlower', error: { code: 'evenLength', length: 4 } },
       { code: 'flowerBaseLit', base: 'b' },
       { code: 'flowerBaseNotFirst', base: 'b' },
@@ -145,8 +154,40 @@ describe('readable level problems', () => {
       { code: 'labelOnSprout', label: 'a', sprout: 'b' },
       { code: 'labelOnLabel', labels: ['a', 'b'] },
       { code: 'labelsDifferByCase', labels: ['c', 'C'] },
+      { code: 'statementUnrefuted', question: 1, option: 0 },
+      {
+        code: 'counterexampleLayout',
+        question: 0,
+        option: 2,
+        problem: { code: 'labelOnLabel', labels: ['a', 'b'] },
+      },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
+  });
+
+  it('explains a notebook that asks back a line just heard', () => {
+    expect(
+      describeEchoProblem({
+        code: 'notebookEcho',
+        question: 0,
+        option: 0,
+        echoes: 'ch4.11.sauce.06',
+        words: 'crea ni destruye',
+      }),
+    ).toBe(
+      'notebook question 1, statement 1 repeats "crea ni destruye" of ch4.11.sauce.06, said before it: word it otherwise, or say that line after the notebook',
+    );
+    expect(
+      describeEchoProblem({
+        code: 'askEcho',
+        step: 2,
+        option: 0,
+        echoes: 'ch2.3.sauce.01',
+        words: 'con farol plateado',
+      }),
+    ).toBe(
+      'script step 3, answer 1 repeats "con farol plateado" of ch2.3.sauce.01, said before it: word it otherwise, or say that line after the question',
+    );
   });
 
   it('explains why a file did not load', () => {

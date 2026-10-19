@@ -1,9 +1,11 @@
-import { UNLOCKED_AT } from '@core/rules/permissions';
+import { actionsUnlockedBy, UNLOCKED_AT } from '@core/rules/permissions';
 import type { ActionType } from '@core/rules/actions';
 import { invariant } from '@core/shared/invariant';
+import { unwrap } from '@core/shared/result';
 import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
+import { toPlayable } from '@levels/sandbox/toLevel';
 import { describe, expect, it } from 'vitest';
 import {
   betrayalLevel,
@@ -84,10 +86,10 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       '2.2': ['count'],
       '2.4': ['draw'],
       '3.1': ['inspect', 'marks'],
-      '3.7': ['scarecrows'],
+      '3.7': ['scarecrows', 'present'],
       '4.1': ['autoSearch'],
       '4.2': ['pickVine'],
-      '4.4': ['fold'],
+      '4.4': ['light', 'fold'],
       '4.5': ['unfold'],
       '4.10': ['rotateStem'],
       '4.11': ['flowerChallenge'],
@@ -153,8 +155,9 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
     expect(later.get('4.1')).toEqual(['inspect', 'marks', 'scarecrows']);
     expect(later.get('4.6')).toEqual(['fold', 'unfold']);
     expect(later.get('4.10')).toEqual(['rotateStem']);
-    // This walk skips chapter 5, so the layers (5.2) are first met in 7.2 too.
-    expect(later.get('7.2')).toEqual(['layers', 'stones']);
+    // This walk skips chapter 5, so the layers (5.2) are first met in 7.2 too, and the
+    // certificates of chapter 3, so «Presentar» is as well.
+    expect(later.get('7.2')).toEqual(['present', 'layers', 'stones']);
   });
 
   it('the first step that points at a vine brings its card (4.2), and only the first', () => {
@@ -214,8 +217,37 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
       'undo',
       'sun',
       'layers',
+      'present',
     ]);
     expect(CARD_IDS.filter((card) => !reachable.has(card))).toEqual([]);
+  });
+
+  it('folding by hand («Plegar a mano») has a card of its own, which only the free mode shows', () => {
+    expect(ACTION_CARD.fold).toBe('foldLoop');
+    const triangle = {
+      sprouts: [
+        { label: 'A', x: 100, y: 150 },
+        { label: 'B', x: 150, y: 80 },
+        { label: 'C', x: 200, y: 150 },
+      ],
+      vines: [
+        ['A', 'B'],
+        ['B', 'C'],
+        ['C', 'A'],
+      ] as [string, string][],
+      lanterns: [],
+    };
+    const free = unwrap(toPlayable(triangle, actionsUnlockedBy('4.4')));
+    expect(levelCards(free, '4.4')).toEqual(expect.arrayContaining(['fold', 'foldLoop']));
+    for (const level of levels) expect(levelCards(level), level.data.id).not.toContain('foldLoop');
+  });
+
+  it("«Presentar» has a card of its own, in place of the claim's where a certificate ends the level", () => {
+    expect(levelCards(levelOf('3.7'))).toContain('present');
+    expect(levelCards(levelOf('3.7'))).not.toContain('declareDone');
+    expect(levelCards(levelOf('7.3'))).toContain('present');
+    expect(levelCards(levelOf('4.9'))).toContain('declareDone');
+    expect(levelCards(levelOf('4.9'))).not.toContain('present');
   });
 
   it('steps that ask no new gesture show no card', () => {

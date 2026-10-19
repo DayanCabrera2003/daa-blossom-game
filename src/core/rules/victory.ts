@@ -53,18 +53,35 @@ export type VictoryCondition =
   | { readonly type: 'moonCertificate' };
 
 /** Where the player's search stands, under the level's roots and with folding if it is allowed. */
-const statusOf = (state: GardenState): SearchStatus =>
+export const statusOf = (state: GardenState): SearchStatus =>
   searchStatus(state.layer, state.search, {
     roots: state.roots,
     foldAllowed: state.allowed.has('foldAt'),
   });
 
 /** Whether the stones lifted are exactly the moons of a search that is over without a chain. */
-function stonesAreTheMoons(state: GardenState): boolean {
+export function stonesAreTheMoons(state: GardenState): boolean {
   if (state.search === null || statusOf(state) !== 'exhausted') return false;
   const moons = stonesFromForest(state.layer, state.search);
   const lifted = [...state.stones].sort((a, b) => a - b);
   return lifted.length === moons.length && lifted.every((stone, i) => stone === moons[i]);
+}
+
+/**
+ * Whether the condition is a certificate the player presents (scarecrows or stones: 3.7–3.10 and
+ * chapter 7), rather than a claim about the lanterns or the search. The button that ends such a
+ * level says «Presentar» instead of "Terminé" (GDD §5.2).
+ */
+export function isCertificate(condition: VictoryCondition): boolean {
+  switch (condition.type) {
+    case 'coverCertificate':
+    case 'coverComplete':
+    case 'tutteBergeCertificate':
+    case 'moonCertificate':
+      return true;
+    default:
+      return false;
+  }
 }
 
 /** Whether the garden meets the condition. */

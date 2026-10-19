@@ -2,6 +2,8 @@ import type { VertexId } from '@core/graph/types';
 import { checkAlternatingPath, checkAugmentingPath, checkStem } from '@core/matching/paths';
 import { isExposed } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
+import { judgeLighting } from '@core/rules/chainRule';
+import { requireVisibleVines } from '@core/rules/checks';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
 
@@ -25,7 +27,8 @@ export function startChain(state: GardenState, vertex: VertexId): DragStep {
 /**
  * Moves the dragged chain onto `vertex`. Going back over the last step takes it back; any other
  * move is checked with the core's own alternation rule, and a wrong one is refused with its reason
- * (shown to the player: "Cleo already has a lantern…", GDD 4.5) while the chain stays put.
+ * (shown to the player: "Cleo already has a lantern…", GDD 4.5) while the chain stays put. In the
+ * fog the chain never goes into a vine the fog hides, as the rules would refuse it (chapter 3).
  */
 export function extendChain(
   state: GardenState,
@@ -35,17 +38,26 @@ export function extendChain(
   if (path.length === 0 || vertex === path[path.length - 1]) return { path, rejection: null };
   if (vertex === path[path.length - 2]) return { path: path.slice(0, -1), rejection: null };
   const candidate = [...path, vertex];
+  const hidden = requireVisibleVines(state, candidate.slice(-2));
+  if (hidden) return { path, rejection: hidden };
   const checked = checkAlternatingPath(state.graph, state.matching, candidate);
   if (!checked.ok) return { path, rejection: { code: 'invalidPath', error: checked.error } };
   return { path: candidate, rejection: null };
 }
 
-/** What letting go would give: +1 lantern, 0 (the darkness only moves), or null (not legal). */
+/**
+ * What letting go would give: +1 lantern, 0 (the darkness only moves), or null (not legal). Legal
+ * means what the rules would accept, the level's chain rule included (`judgeLighting`), so the
+ * drawn chain never promises what letting go would refuse.
+ */
 export function chainGain(state: GardenState, path: readonly VertexId[]): 1 | 0 | null {
-  if (path.length < 2) return null;
-  if (checkAugmentingPath(state.graph, state.matching, path).ok) return 1;
-  if (checkStem(state.graph, state.matching, path).ok) return 0;
-  return null;
+  if (path.length < 2 || requireVisibleVines(state, path) !== null) return null;
+  const gain = checkAugmentingPath(state.graph, state.matching, path).ok
+    ? 1
+    : checkStem(state.graph, state.matching, path).ok
+      ? 0
+      : null;
+  return gain !== null && judgeLighting(state, path) === null ? gain : null;
 }
 
 /**

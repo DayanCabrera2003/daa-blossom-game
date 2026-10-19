@@ -76,7 +76,7 @@ describe('the checks of a notebook', () => {
   });
 
   it('checks the counterexamples of every question, telling which question each one refutes', () => {
-    const level = levelWith(undefined);
+    const level = levelWith({ mode: 'play', ...row, actions: ['chain'] });
     const [first] = level.notebook;
     const folding = { mode: 'play', ...row, actions: ['chain', 'fold'] };
     const second = {
@@ -105,6 +105,12 @@ describe('the checks of a notebook', () => {
     ]);
   });
 
+  it('a counterexample may use a move the level knows but closes for the day in its own garden', () => {
+    // 1.5 closes passing the lantern: a known move, so its counterexample may still use it.
+    const closed = { ...levelWith({ mode: 'play', ...row, actions: ['chain', 'passLantern'] }) };
+    expect(notebookProblemsOf({ ...closed, forbid: ['passLantern'] })).toEqual([]);
+  });
+
   it('a garden to draw a better reflection on must have one to find', () => {
     const full = {
       ...row,
@@ -131,6 +137,111 @@ describe('the checks of a notebook', () => {
         v: 'c',
         kind: 'flower',
       },
+    ]);
+  });
+
+  it('a counterexample reads as well as a level: no name drawn over another, no crossing vines', () => {
+    const crowded = { ...row, sprouts: row.sprouts.map((s, i) => ({ ...s, x: 100 + 4 * i })) };
+    const crossed = {
+      ...row,
+      sprouts: [
+        { label: 'a', x: 100, y: 60 },
+        { label: 'b', x: 200, y: 160 },
+        { label: 'c', x: 200, y: 60 },
+        { label: 'd', x: 100, y: 160 },
+      ],
+      vines: [
+        ['a', 'b'],
+        ['c', 'd'],
+      ],
+      lanterns: [],
+    };
+    const problems = notebookProblemsOf(
+      levelWith({ mode: 'play', ...crowded, actions: ['chain'] }),
+    );
+    expect(problems.length).toBeGreaterThan(0);
+    expect(problems.every((problem) => problem.code === 'counterexampleLayout')).toBe(true);
+    expect(problems).toContainEqual({
+      code: 'counterexampleLayout',
+      question: 0,
+      option: 1,
+      problem: { code: 'labelOnLabel', labels: ['a', 'b'] },
+    });
+    expect(notebookProblemsOf(levelWith({ mode: 'play', ...crossed, actions: ['chain'] }))).toEqual(
+      [
+        {
+          code: 'counterexampleLayout',
+          question: 0,
+          option: 1,
+          problem: {
+            code: 'vinesCross',
+            vines: [
+              ['a', 'b'],
+              ['c', 'd'],
+            ],
+          },
+        },
+      ],
+    );
+  });
+
+  it('every false statement is refuted, by the mentor or by a garden; a true one needs neither', () => {
+    const unrefuted = levelWith(undefined);
+    expect(notebookProblemsOf(unrefuted)).toEqual([
+      { code: 'statementUnrefuted', question: 0, option: 1 },
+    ]);
+    const [question] = unrefuted.notebook;
+    const answered = {
+      ...unrefuted,
+      notebook: [
+        {
+          ...question,
+          options: [
+            { line: 'ch1.5.notebook.01', correct: true },
+            { line: 'ch1.5.notebook.02', correct: false, reply: 'ch1.5.sauce.04' },
+          ],
+        },
+      ],
+    };
+    expect(notebookProblemsOf(answered)).toEqual([]);
+  });
+});
+
+describe('the checks of a question of the script, which refutes as the notebook does', () => {
+  /** Level 1.5 in small, asking after play; its second answer refuted by `refutation`. */
+  const asking = (refutation: object) => ({
+    ...levelWith(undefined),
+    notebook: undefined,
+    flow: [
+      { step: 'play' },
+      {
+        step: 'ask',
+        prompt: 'ch1.5.sauce.05',
+        options: [
+          { line: 'ch1.5.sauce.06', correct: true },
+          { line: 'ch1.5.sauce.07', correct: false, ...refutation },
+        ],
+        retry: true,
+      },
+    ],
+  });
+
+  it('a sound garden, or a reply, refutes a false answer', () => {
+    const counterexample = { mode: 'play', ...row, actions: ['chain'] };
+    expect(notebookProblemsOf(asking({ counterexample }))).toEqual([]);
+    expect(notebookProblemsOf(asking({ reply: 'ch1.5.sauce.08' }))).toEqual([]);
+  });
+
+  it('its garden passes the same checks, told by the step of the script that asks', () => {
+    const counterexample = { mode: 'play', ...row, actions: ['chain', 'fold'] };
+    expect(notebookProblemsOf(asking({ counterexample }))).toEqual([
+      { code: 'counterexampleLocked', step: 1, option: 1, action: 'fold' },
+    ]);
+  });
+
+  it('a false answer with neither a reply nor a garden is unrefuted', () => {
+    expect(notebookProblemsOf(asking({}))).toEqual([
+      { code: 'statementUnrefuted', step: 1, option: 1 },
     ]);
   });
 });

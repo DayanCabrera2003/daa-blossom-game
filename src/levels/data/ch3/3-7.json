@@ -27,7 +27,10 @@
   ],
   "goal": { "visible": true, "value": 3 },
   "victory": { "type": "coverCertificate" },
-  "hints": [{ "line": "ch3.7.sauce.02" }, { "line": "ch3.7.sauce.03", "highlight": ["2", "4"] }],
+  "hints": [
+    { "line": "ch3.7.sauce.02" },
+    { "line": "ch3.7.sauce.03", "highlight": ["1", "2", "3", "4", "5"] }
+  ],
   "flow": [
     { "step": "say", "lines": ["ch3.7.sauce.00", "ch3.7.sauce.01"] },
     { "step": "play" },

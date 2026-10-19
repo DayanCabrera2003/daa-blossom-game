@@ -84,7 +84,7 @@ export const mirrorCheckEntry = (check: MirrorCheck, at: number, level: string):
 
 /**
  * What the playtest log records for one step of a level (GDD §10, Hito A): moves accepted and
- * refused, "Terminé" right or without reason, hints opened, trips through the day, answers, bets
+ * refused, "Terminé" right or without reason (and why it fell short), hints opened, trips through the day, answers, bets
  * and notebook choices, vines pointed at, the counterexamples they open, reflections checked, chains
  * drawn in the flower challenge, recipes checked, doubling bets, stone certificates, and the win.
  * A counterexample is logged when the script opens it: the screen shows it in its turn, after any
@@ -125,7 +125,10 @@ export function playtestEntries(
         entries.push({ kind: 'move', at, level, action: effect.action.type });
         if (effect.action.type === 'declareDone') {
           const right = after.claims.right > before.session.claims.right;
-          entries.push({ kind: 'claim', at, level, right });
+          // A claim that falls short is logged with why, as the toast after it tells.
+          const refused = step.effects.find((told) => told.kind === 'claimRefused');
+          const verdict = refused?.kind === 'claimRefused' ? refused.verdict.code : undefined;
+          entries.push({ kind: 'claim', at, level, right, ...(verdict && { verdict }) });
           const certificate = stoneCertificateEntry(after, at, level);
           if (certificate !== null) entries.push(certificate);
         }

@@ -42,12 +42,14 @@ export function reasonText(
 
   switch (reason.code) {
     case 'actionLocked':
-      return t('reason.actionLocked', { action: t(`action.${reason.action}`) });
+    case 'actionClosed':
+      return t(`reason.${reason.code}`, { action: t(`action.${reason.action}`) });
     case 'notAdjacent':
     case 'notLit':
     case 'litVine':
     case 'sunMeetsSun':
     case 'notSunsOfOneTree':
+    case 'lightAtFlower':
       return t(`reason.${reason.code}`, { u: name(reason.u), v: name(reason.v) });
     case 'alreadyLit':
     case 'notInTheDark':

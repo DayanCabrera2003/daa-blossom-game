@@ -1,7 +1,9 @@
 import type { Level } from '@levels/build';
 import type { SandboxAccess } from '@services/sandboxAccess';
 import type { FreeOrders } from './levelController';
+import { previewModeOf, type PreviewMode } from '../input/previewMode';
 import { HUD_BUTTONS, type HudButton } from '../picture/bottomRows';
+import { doneButton } from '../picture/doneButton';
 import { chapterOfLevel } from '../picture/seasons';
 import { levelScreen, type MusicScreen } from './musicFor';
 
@@ -41,6 +43,11 @@ export interface LevelScreen {
   readonly back: LevelExit;
   /** The text key of the back button. */
   readonly backLabel: string;
+  /**
+   * The text key of the button that ends the level: «Presentar» in the levels of certificates,
+   * "Terminé" elsewhere (`picture/doneButton.ts`).
+   */
+  readonly doneLabel: 'hud.done' | 'hud.present';
   /** The level whose pieces of the interface show (the sun, the layers, the Council's count). */
   readonly interfaceAt: string;
   /** Whether the teacher's panel is fed the garden's sprouts: the catalog does not have them. */
@@ -62,6 +69,11 @@ export interface LevelScreen {
    * orders end that row, the bottom row beside the Códex.
    */
   readonly traceRow: 'tools' | 'buttons';
+  /**
+   * How much a dragged chain tells (GDD §5.1, Cadena): its gain in chapters 0–2, only whether it is
+   * legal from chapter 3 on; the free mode, a tool, keeps the gain.
+   */
+  readonly chainPreview: PreviewMode;
 }
 
 /**
@@ -69,6 +81,16 @@ export interface LevelScreen {
  * challenge (it has no script), which leaves room for its orders above.
  */
 const FREE_BUTTONS = HUD_BUTTONS.filter((name) => name !== 'hint' && name !== 'checkMirror');
+
+/**
+ * The bottom row of a level of the catalog: every button, but the check of the mirror challenge
+ * only where its reflection is drawn (2.4). Elsewhere it never shows, and keeping its place would
+ * leave no room for the wider «Presentar» of the levels of certificates.
+ */
+const levelButtons = (level: Level): readonly HudButton[] =>
+  level.flow.some((step) => step.step === 'draw')
+    ? HUD_BUTTONS
+    : HUD_BUTTONS.filter((name) => name !== 'checkMirror');
 
 /** The chapter of the hub's season, worn by the free mode. */
 const HUB_SEASON = '0';
@@ -86,12 +108,14 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
       logsPlaytest: true,
       back: 'hub',
       backLabel: 'hud.back',
+      doneLabel: doneButton(level.data.victory),
       interfaceAt: level.data.id,
       ownGarden: false,
       showsStars: true,
       teacherJumps: true,
-      hudButtons: HUD_BUTTONS,
+      hudButtons: levelButtons(level),
       traceRow: 'tools',
+      chainPreview: previewModeOf(level.data.id),
     };
   }
   return {
@@ -101,12 +125,14 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
     logsPlaytest: false,
     back: 'editor',
     backLabel: 'sandbox.design',
+    doneLabel: doneButton(level.data.victory),
     interfaceAt: sandbox.interfaceAt,
     ownGarden: true,
     showsStars: false,
     teacherJumps: false,
     hudButtons: FREE_BUTTONS,
     traceRow: 'buttons',
+    chainPreview: 'gain',
   };
 }
 

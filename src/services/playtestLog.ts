@@ -36,8 +36,17 @@ const entrySchema = z.discriminatedUnion('kind', [
     reason: z.string(),
   }),
   z.strictObject({ kind: z.literal('hint'), at, level, grade: z.number().int().min(1) }),
-  /** "Terminé" pressed: right when the lanterns were the most the garden holds. */
-  z.strictObject({ kind: z.literal('claim'), at, level, right: z.boolean() }),
+  /**
+   * "Terminé" pressed: right when the lanterns were the most the garden holds; when it did not win,
+   * why it fell short (a code of `game/systems/claimVerdict.ts`, absent in older logs).
+   */
+  z.strictObject({
+    kind: z.literal('claim'),
+    at,
+    level,
+    right: z.boolean(),
+    verdict: z.string().optional(),
+  }),
   z.strictObject({
     kind: z.literal('history'),
     at,
@@ -125,7 +134,7 @@ const entrySchema = z.discriminatedUnion('kind', [
   }),
   /**
    * A doubling bet answered before a race (6.5): the runner bet on, the answer picked (`double`,
-   * `fourToEight` or `farMore`) and whether the races proved it right.
+   * `threeToFive` or `farMore`) and whether the races proved it right.
    */
   z.strictObject({
     kind: z.literal('raceBet'),

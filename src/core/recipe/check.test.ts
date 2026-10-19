@@ -63,7 +63,7 @@ describe('checkRecipe', () => {
     // The start is missing, a moon is turned into a sun and the end may never come.
     const recipe: Recipe = {
       mark: null,
-      cases: ['moonToSun', 'chainToDark'],
+      cases: ['moonToSun', 'chainRootToRoot'],
       end: 'untilNoneDark',
     };
     expect(checkRecipe(recipe)).toEqual({

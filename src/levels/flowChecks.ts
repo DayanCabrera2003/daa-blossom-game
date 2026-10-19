@@ -43,6 +43,8 @@ export type FlowProblem =
   | { readonly code: 'noConflict'; readonly step: number }
   /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
   | { readonly code: 'drawUnbeatable'; readonly step: number }
+  /** A mirror challenge nobody should win, over lanterns that a better reflection can beat. */
+  | { readonly code: 'drawBeatable'; readonly step: number }
   /** A flower challenge in a level that declares no flower to cut the chains at. */
   | { readonly code: 'flowerMissing'; readonly step: number }
   /** A flower challenge over a garden with no chain: nothing can be drawn. */
@@ -172,8 +174,9 @@ function inTangle(yours: Matching, mirror: Matching, sprout: VertexId): boolean 
  * winning threads comes after the reflection shows and before the tangle is separated and offers
  * its right number, pointing at the conflict and a `count` of its loop come where the search has
  * met a conflict (4.2), a bet offers the right number among its own (a bet nobody can win is no
- * bet), a mirror challenge can be won (a better reflection exists), a flower challenge has a flower
- * and a chain to draw in the garden the level starts with, every demo is accepted by the rules, and
+ * bet), a mirror challenge can be won (a better reflection exists), and one nobody may win cannot
+ * (the lanterns already hold the most), a flower challenge has a flower and a chain to draw in the
+ * garden the level starts with, every demo is accepted by the rules, and
  * so is every move of the light's own search and of the automaton's run (whose recipe must be one
  * it can run), a recipe recalls only levels that come before it, a doubling bet stands between
  * a race and one twice its size, with a clear right answer, and a call for another certificate
@@ -314,11 +317,13 @@ export function checkFlow(level: Level): FlowProblem[] {
         }
         break;
       }
-      case 'draw':
-        if (isMaximum(level.graph, garden.matching)) {
-          problems.push({ code: 'drawUnbeatable', step });
-        }
+      case 'draw': {
+        // A challenge to win needs a chain left; one nobody can win (2.4, second phase), none.
+        const most = isMaximum(level.graph, garden.matching);
+        if (flowStep.beatable && most) problems.push({ code: 'drawUnbeatable', step });
+        if (!flowStep.beatable && !most) problems.push({ code: 'drawBeatable', step });
         break;
+      }
       case 'flowerChallenge':
         // The flower is declared on the starting lanterns, so the challenge comes before any play.
         if (level.flower === null) problems.push({ code: 'flowerMissing', step });

@@ -15,6 +15,7 @@ import type { LevelStep } from '@levels/flow';
 import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
 import { automatonRun } from './automaton';
 import { judgeVictory } from './certifyAgain';
+import { claimVerdict, type ClaimVerdict } from './claimVerdict';
 import {
   advanceFlow,
   betRight,
@@ -35,7 +36,9 @@ import {
 import { hintContent, type HintContent, type MentorReflection } from './hintContent';
 import {
   afterAccepted,
+  afterMoved,
   afterRejected,
+  hasHintsLeft,
   isHintOffered,
   openHint,
   startHints,
@@ -187,8 +190,13 @@ function advance(
 ): { session: LevelSession; effects: FlowEffect[] } {
   const { flow, effects } = advanceFlow(session.flow, signal);
   if (flow.index === session.flow.index) return { session: { ...session, flow }, effects };
-  const hints = afterAccepted(session.hints, now);
-  return { session: { ...session, flow, hints, won: starsAt(session, flow) }, effects };
+  const hints = afterAccepted(session.hints, garden(session), now);
+  // A mirror challenge that begins starts from a clean drawing (2.4 holds two of them).
+  const challenge =
+    currentStep(flow)?.step === 'draw'
+      ? startChallenge(session.level.start.graph)
+      : session.challenge;
+  return { session: { ...session, flow, hints, challenge, won: starsAt(session, flow) }, effects };
 }
 
 /** A session at the start of `level`, at time `now` (milliseconds), with what its script opens with. */
@@ -209,7 +217,7 @@ export function openSession(
     level,
     history: startHistory(level.start),
     dayEvents: [[]],
-    hints: startHints(now),
+    hints: startHints(now, level.start),
     rejections: 0,
     claims: { right: 0, wrong: 0 },
     waterSpent: 0,
@@ -259,17 +267,28 @@ function react(
  * Tries a move. Outside the play step it is refused with `notNow`, which is no mistake: it neither
  * counts as a refusal nor brings a hint closer. A refusal of the rules changes no garden: it is
  * counted and its reason goes back to the view. An accepted move is recorded in the history
- * (dropping any undone future) and counts as progress for the hints; while playing, the mentor may
+ * (dropping any undone future), and restarts the wait for a hint only when it beats the play's
+ * record (`progress.ts`); while playing, the mentor may
  * react to it, and it may win the play step, which is checked after every accepted move. What the
  * mentor says to the move comes before whatever winning brings.
+ *
+ * A "Terminé" that does not win the step is recorded too (the claim is the player's), but it is no
+ * progress: it counts towards offering a hint like a refusal, and `claim` says why it falls short
+ * (`claimVerdict.ts`), for a gentle answer. Null for every other move, and for a claim that wins,
+ * that repeats stones the council knows, or that comes once the script is over.
  */
 export function act(
   session: LevelSession,
   action: Action,
   now: number,
-): { session: LevelSession; outcome: MoveOutcome; effects: FlowEffect[] } {
+): {
+  session: LevelSession;
+  outcome: MoveOutcome;
+  effects: FlowEffect[];
+  claim: ClaimVerdict | null;
+} {
   if (!takesMoves(session)) {
-    return { session, outcome: { ok: false, reason: NOT_NOW }, effects: [] };
+    return { session, outcome: { ok: false, reason: NOT_NOW }, effects: [], claim: null };
   }
   const before = garden(session);
   const outcome = applyAction(before, action);
@@ -282,6 +301,7 @@ export function act(
       },
       outcome,
       effects: [],
+      claim: null,
     };
   }
   const after = outcome.state;
@@ -293,30 +313,32 @@ export function act(
         : { ...session.claims, wrong: session.claims.wrong + 1 };
   const waterSpent = session.waterSpent + Math.max(0, after.waterUsed - before.waterUsed);
   const reacted = react(session, action, before, after);
+  // The victory belongs to the play step (integrity requires one exactly when there is a play
+  // step), and to the council's call for another certificate, which only new stones answer.
+  const step = stepNow(session);
+  const { victory } = session.level.data;
+  const judged = judgeVictory(step, session.certificates, after, victory);
+  const claim =
+    action.type === 'declareDone' && step !== null && judged.kind === 'none'
+      ? claimVerdict(after, victory)
+      : null;
   const moved: LevelSession = {
     ...reacted.session,
     history: push(session.history, after),
     dayEvents: [...session.dayEvents.slice(0, session.history.cursor + 1), outcome.events],
-    hints: afterAccepted(session.hints, now),
+    hints: claim === null ? afterMoved(session.hints, after, now) : afterRejected(session.hints),
     claims,
     waterSpent,
   };
-  // The victory belongs to the play step (integrity requires one exactly when there is a play
-  // step), and to the council's call for another certificate, which only new stones answer.
-  const judged = judgeVictory(
-    stepNow(session),
-    session.certificates,
-    after,
-    session.level.data.victory,
-  );
-  if (judged.kind === 'none') return { session: moved, outcome, effects: reacted.effects };
+  if (judged.kind === 'none') return { session: moved, outcome, effects: reacted.effects, claim };
   if (judged.kind === 'repeated') {
     const sameStones = { kind: 'sameStones', line: judged.line } as const;
-    return { session: moved, outcome, effects: [...reacted.effects, sameStones] };
+    return { session: moved, outcome, effects: [...reacted.effects, sameStones], claim };
   }
   const { certificates } = judged;
   const advanced = advance({ ...moved, certificates }, { type: 'won' }, now);
-  return { session: advanced.session, outcome, effects: [...reacted.effects, ...advanced.effects] };
+  const effects = [...reacted.effects, ...advanced.effects];
+  return { session: advanced.session, outcome, effects, claim };
 }
 
 /**
@@ -385,24 +407,39 @@ export const redoSession = (session: LevelSession): LevelSession =>
 export const seekSession = (session: LevelSession, step: number): LevelSession =>
   takesHistory(session) ? { ...session, history: seek(session.history, step) } : session;
 
-/** Whether a hint is on offer now (GDD §5.3): only in the steps that offer them. */
-export function isHintAvailable(session: LevelSession, now: number): boolean {
+/** Whether the step now takes hints: playing, answering, drawing… never while the day replays. */
+const takesHints = (session: LevelSession): boolean => {
   const step = stepNow(session);
-  return step !== null && HINT_STEPS.has(step.step) && isHintOffered(session.hints, now);
-}
+  // A mirror challenge nobody can win (2.4, second phase) has nothing to find.
+  if (step?.step === 'draw' && !step.beatable) return false;
+  return step !== null && HINT_STEPS.has(step.step);
+};
+
+/**
+ * Whether the hint button is at hand now (GDD §5.3): in the steps that take hints, while some grade
+ * is still closed, offered or not.
+ */
+export const canAskHint = (session: LevelSession): boolean =>
+  takesHints(session) && hasHintsLeft(session.hints);
+
+/** Whether a hint is on offer now, which makes the button glow: only in the steps that take them. */
+export const isHintAvailable = (session: LevelSession, now: number): boolean =>
+  takesHints(session) && isHintOffered(session.hints, now);
 
 /**
  * Opens the hint on offer: the next grade, with the level's own line and sprouts when it has them,
  * and at grade 3 the mentor's step for the garden as it is now, under a question the right option,
  * in the flower challenge a chain to draw, the vine of the conflict to point at, or in the recipe
- * the right card the mentor places. Null if no hint is on offer.
+ * the right card the mentor places. Null outside the steps that take hints, or once all three
+ * grades are open.
  */
 export function askHint(
   session: LevelSession,
   now: number,
 ): { session: LevelSession; hint: HintContent } | null {
   const current = stepNow(session);
-  if (current === null || !HINT_STEPS.has(current.step)) return null;
+  if (current === null || !takesHints(session)) return null;
+  // Asked for, the hint opens whether it was on offer or not.
   const opened = openHint(session.hints, now);
   if (opened === null) return null;
   const { level } = session;
@@ -494,8 +531,10 @@ export function checkDrawnMirror(
   session: LevelSession,
   now: number,
 ): { session: LevelSession; check: MirrorCheck | null; effects: FlowEffect[] } {
-  if (stepNow(session)?.step !== 'draw') return { session, check: null, effects: [] };
-  const { challenge, check } = checkMirror(session.challenge, garden(session).matching);
+  const step = stepNow(session);
+  if (step?.step !== 'draw') return { session, check: null, effects: [] };
+  const { matching } = garden(session);
+  const { challenge, check } = checkMirror(session.challenge, matching, step.beatable);
   const signal: FlowSignal =
     check.kind === 'better'
       ? { type: 'mirrorChecked', better: check.fresh }

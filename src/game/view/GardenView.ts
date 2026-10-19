@@ -8,7 +8,7 @@ import { everyFrame } from './everyFrame';
 import { LanternSprites } from './LanternSprites';
 import { OutlinedName } from './OutlinedName';
 import { paintSprout, SPROUT_RADIUS } from './paintSprout';
-import { PALETTE } from './palette';
+import { CHAIN_COLOURS, PALETTE } from './palette';
 import { ensurePieceTextures } from './pieceTextures';
 import { SproutCrowns } from './SproutCrowns';
 
@@ -145,14 +145,8 @@ export class GardenView {
 
   private drawChain(chain: GardenPicture['chain']): void {
     if (chain === null || chain.points.length < 2) return;
-    const colour =
-      chain.gain === 1
-        ? PALETTE.chainGain
-        : chain.gain === 0
-          ? PALETTE.chainNone
-          : PALETTE.chainWrong;
     this.vines
-      .lineStyle(3, colour, 0.8)
+      .lineStyle(3, CHAIN_COLOURS[chain.preview], 0.8)
       .strokePoints(chain.points as Phaser.Types.Math.Vector2Like[], false);
   }
 

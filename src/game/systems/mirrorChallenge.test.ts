@@ -103,6 +103,21 @@ describe('the mirror challenge', () => {
     expect(spared.filter(Boolean)).toHaveLength(1);
   });
 
+  it('where nobody can win (2.4, second phase), no check spares the player: they all count', () => {
+    const best = unwrap(
+      createMatching(path, [
+        [0, 1],
+        [2, 3],
+      ]),
+    );
+    let challenge = startChallenge(path);
+    for (let k = 0; k < MISSES_BEFORE_SPARED + 1; k++) {
+      const turn = checkMirror(challenge, best, false);
+      challenge = turn.challenge;
+      expect(turn.check).toMatchObject({ kind: 'notBetter', spared: false });
+    }
+  });
+
   it('a reflection drawn whole (by a hint) replaces the drawing and puts the check away', () => {
     const checked = checkMirror(drawing(path, [[0, 1]]), yours).challenge;
     const better = unwrap(

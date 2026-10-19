@@ -45,7 +45,6 @@
       "type": "recipe",
       "cards": [
         "markDarkSuns",
-        "chainToDark",
         "growMoon",
         "chainRootToRoot",
         "foldFlower",

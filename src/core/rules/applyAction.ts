@@ -11,6 +11,7 @@ import { passLantern } from './handlers/passLantern';
 import { rotateStem } from './handlers/rotateStem';
 import { placeScarecrow, removeScarecrow } from './handlers/scarecrows';
 import { split } from './handlers/split';
+import { stepLight } from './handlers/stepLight';
 import { dropStone, liftStone } from './handlers/stones';
 import { unfold } from './handlers/unfold';
 import { reject, type ActionOutcome } from './outcome';
@@ -18,13 +19,15 @@ import type { GardenState } from './state';
 
 /**
  * The rules of the garden: `applyAction(state, action)` is the only way the game changes a garden
- * (GDD §5.1). It checks that the level has unlocked the action and hands it to its handler, which
+ * (GDD §5.1). It checks that the level has unlocked the action (and not closed it for the day) and
+ * hands it to its handler, which
  * validates it with the core's own checks. The logic is instant and pure; the game animates the
  * returned events and keeps old states for undo and the sun slider.
  */
 export function applyAction(state: GardenState, action: Action): ActionOutcome {
   if (!state.allowed.has(action.type)) {
-    return reject({ code: 'actionLocked', action: action.type });
+    const code = state.closed.has(action.type) ? 'actionClosed' : 'actionLocked';
+    return reject({ code, action: action.type });
   }
   const outcome = dispatch(state, action);
   // "Terminé" claims the garden as it is now; any other accepted move withdraws the claim, so it
@@ -54,6 +57,8 @@ function dispatch(state: GardenState, action: Action): ActionOutcome {
       return markRoot(state, action);
     case 'markMoon':
       return markMoon(state, action);
+    case 'stepLight':
+      return stepLight(state);
     case 'foldAt':
       return foldAt(state, action);
     case 'fold':

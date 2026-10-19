@@ -5,8 +5,11 @@ import { UNLOCKED_AT } from '@core/rules/permissions';
 import type { RejectReason } from '@core/rules/reasons';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from './build';
+import { checkChainRule, type ChainProblem } from './chainChecks';
+import { checkLight, type LightProblem } from './lightChecks';
 import { checkFlow, type FlowProblem } from './flowChecks';
 import { checkFlower, type FlowerProblem } from './flowerChecks';
+import { checkHints, type HintProblem } from './hintChecks';
 import { isFlowInput } from './flowInput';
 import { sameKindVines, type KindClash } from './kinds';
 import { checkLayout, type LayoutProblem } from './layoutChecks';
@@ -30,8 +33,11 @@ export type IntegrityProblem =
   | { readonly code: 'foreignLine'; readonly line: string }
   | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string }
   | ({ readonly code: 'sameKindVine' } & KindClash)
+  | ChainProblem
+  | LightProblem
   | FlowProblem
   | FlowerProblem
+  | HintProblem
   | LayoutProblem
   | NotebookProblem;
 
@@ -95,7 +101,14 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     problems.push({ code: 'sameKindVine', ...clash });
   }
 
-  problems.push(...checkFlow(level), ...checkFlower(level), ...checkNotebook(level));
+  problems.push(
+    ...checkChainRule(level),
+    ...checkLight(level),
+    ...checkFlow(level),
+    ...checkFlower(level),
+    ...checkHints(level),
+    ...checkNotebook(level),
+  );
 
   // A garden laid out by hand must read well: no name hidden (by a sprout, a name, a lantern or a
   // vine) or confused with another, and no crossing vines in a secret flower, a puzzle of looking.

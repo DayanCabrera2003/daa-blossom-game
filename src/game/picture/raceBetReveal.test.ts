@@ -9,7 +9,7 @@ describe('what a race tells of the doubling bets it settles (6.5)', () => {
   it('a right bet is told right, with the answer the races gave', () => {
     expect(raceBetReveal(flow, { step: 1, value: 1, correct: true })).toEqual({
       key: 'raceBet.revealRight',
-      params: { runner: 'raceBet.runner.automaton', answer: 'raceBet.answer.fourToEight' },
+      params: { runner: 'raceBet.runner.automaton', answer: 'raceBet.answer.threeToFive' },
     });
   });
 

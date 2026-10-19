@@ -1,3 +1,5 @@
+import type { ChainPreview } from '../input/previewMode';
+
 /**
  * The colours the engine paints, every one taken from the 53 of the Ninja Adventure palette
  * (plan 06, section 1.1; `picture/ninjaPalette.ts`). A sprout in the dark reads cold and dim, a lit
@@ -25,7 +27,11 @@ export const PALETTE = {
   highlight: 0xfce2ca,
   chainGain: 0xef914f,
   chainNone: 0xabc2bc,
+  // A legal chain that does not tell its gain (chapter 3 on): neutral, neither amber nor grey.
+  chainLegal: 0xf2eaf1,
   chainWrong: 0xe0394c,
+  // The stretches of the chain the light found, dotted gold (plan 10, phase 2).
+  foundTrail: 0xf1c471,
   mirror: 0xb8dce5,
   water: 0x2d697b,
   // The wood of panels and buttons.
@@ -38,6 +44,14 @@ export const PALETTE = {
   ink: 0x141b1b,
   moss: 0x345a52,
 } as const;
+
+/** The colour of a dragged chain by what it says (`input/previewMode.ts`). */
+export const CHAIN_COLOURS: Readonly<Record<ChainPreview, number>> = {
+  gain1: PALETTE.chainGain,
+  gain0: PALETTE.chainNone,
+  legal: PALETTE.chainLegal,
+  illegal: PALETTE.chainWrong,
+};
 
 /** A colour as the CSS string Phaser text styles expect. */
 export const css = (colour: number): string => `#${colour.toString(16).padStart(6, '0')}`;

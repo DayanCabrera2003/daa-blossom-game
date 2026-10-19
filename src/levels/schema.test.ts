@@ -112,6 +112,27 @@ describe('level schema', () => {
     expect(levelSchema.safeParse(at(472, 226)).success).toBe(true);
   });
 
+  it('writes the chain rule of a level: any chain by default, the chain seen, or a closed flower', () => {
+    expect(levelSchema.parse(twoSprouts).chains).toEqual({ rule: 'any' });
+    for (const chains of [{ rule: 'seen' }, { rule: 'fromBase', flower: ['b', 'c', 'd'] }]) {
+      expect(levelSchema.parse({ ...twoSprouts, chains }).chains).toEqual(chains);
+    }
+    for (const chains of [
+      { rule: 'eyes' },
+      { rule: 'fromBase' },
+      { rule: 'fromBase', flower: ['b', 'c'] },
+      { rule: 'seen', flower: ['b', 'c', 'd'] },
+    ]) {
+      expect(levelSchema.safeParse({ ...twoSprouts, chains }).success).toBe(false);
+    }
+  });
+
+  it('says whether the light searches by itself, which it does not by default', () => {
+    expect(levelSchema.parse(twoSprouts).light).toBe(false);
+    expect(levelSchema.parse({ ...twoSprouts, light: true }).light).toBe(true);
+    expect(levelSchema.safeParse({ ...twoSprouts, light: 'yes' }).success).toBe(false);
+  });
+
   it('only knows the actions of the game', () => {
     const unknown = { ...twoSprouts, solution: [{ type: 'teleport', vertex: 'A' }] };
     expect(levelSchema.safeParse(unknown).success).toBe(false);

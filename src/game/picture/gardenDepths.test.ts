@@ -10,6 +10,11 @@ describe("the order of a garden's layers", () => {
     expect(sprout).toBeLessThan(objects);
   });
 
+  it('draws the trail of the found chain over the vines and under the lanterns', () => {
+    expect(GARDEN_DEPTHS.foundTrail).toBeGreaterThan(GARDEN_DEPTHS.vine);
+    expect(GARDEN_DEPTHS.foundTrail).toBeLessThan(GARDEN_DEPTHS.lantern);
+  });
+
   it('covers a doubly lit thread on the garden under its lantern, and the strands over it', () => {
     // Plan 09, phase 2: the dark disc of a thread both sides light hid the garden's lantern.
     const pond = pondDepths(false);

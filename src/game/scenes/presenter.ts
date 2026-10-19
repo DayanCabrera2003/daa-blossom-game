@@ -79,8 +79,8 @@ export interface PresenterHooks {
   readonly victory: (stars: StarResult) => void;
   /** The player chose an option (its value) of the question on screen. */
   readonly answer: (question: Question, value: number) => void;
-  /** Opens the garden that refutes the false statement `option` of notebook question `question`. */
-  readonly counterexample: (question: number, option: number) => void;
+  /** Opens the garden that refutes the false answer `option` of the question at script step `step`. */
+  readonly counterexample: (step: number, option: number) => void;
   /** A mechanic card in the player's words, with its demo. */
   readonly card: (card: CardId) => ShownCard;
   /** The player closed a mechanic card: it is seen. */
@@ -168,7 +168,7 @@ export class Presenter {
     this.start(answerShowing(this.stage));
   }
 
-  /** The player came back from a counterexample: the queue moves on (to the notebook, again). */
+  /** The player came back from a counterexample: the queue moves on (to the question, again). */
   counterexampleOver(): void {
     this.start(finishShowing(this.stage));
   }
@@ -234,7 +234,7 @@ export class Presenter {
         this.hooks.raceStarted?.(start.step);
         break;
       case 'counterexample':
-        this.hooks.counterexample(start.question, start.option);
+        this.hooks.counterexample(start.step, start.option);
         break;
       case 'victory':
         this.hooks.victory(start.stars);

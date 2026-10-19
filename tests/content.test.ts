@@ -4,6 +4,8 @@ import strings from '@content/es/strings.json';
 import { catalog } from '@levels/catalog';
 import { CARD_IDS } from '@levels/cards/schema';
 import { speakerOf, type Speaker } from '@game/systems/speaker';
+import { buttonWordProblems } from '@levels/buttonWords';
+import { notebookEchoProblems } from '@levels/notebookEcho';
 import { referencedLines } from '@levels/lines';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -51,6 +53,10 @@ describe('interface text (content/es/strings.json)', () => {
     expect(offending).toEqual([]);
   });
 
+  it('a replayed «Terminé» tells what the gardener says, not a fact about the garden', () => {
+    expect(table['diagram.event.declareDone']).toContain('dice que');
+  });
+
   it('no text separates its words with the middle dot, which the pixel font draws raised', () => {
     const offending = Object.entries(table).filter(([, text]) => text.includes('·'));
     expect(offending).toEqual([]);
@@ -87,6 +93,28 @@ describe('dialogue lines (content/es/lines.json)', () => {
   it('never names the mathematics outside the Codex (GDD §2, principle 2)', () => {
     const offending = Object.entries(lineTable).filter(([, text]) => MATHEMATICS.test(text));
     expect(offending).toEqual([]);
+  });
+
+  it('names the button its level shows: «Presentar» in the levels of certificates (GDD §5.2)', () => {
+    const words = { done: table['hud.done'] ?? '', present: table['hud.present'] ?? '' };
+    const wrong = catalog().flatMap((level) =>
+      buttonWordProblems(level.data, (id) => lineTable[id], words),
+    );
+    expect(wrong).toEqual([]);
+  });
+
+  it('no notebook or question asks back, word for word, a line the player has just heard (GDD §5.5)', () => {
+    const echoes = catalog().flatMap((level) =>
+      notebookEchoProblems(level.data, (id) => lineTable[id]).map((problem) => ({
+        level: level.data.id,
+        ...problem,
+      })),
+    );
+    expect(echoes).toEqual([]);
+  });
+
+  it("the Council's count, from 7.2 on, waits for «Presentar» too", () => {
+    expect(table['hud.councilHidden']).toContain(`«${table['hud.present'] ?? ''}»`);
   });
 
   it('no line separates its words with the middle dot, which the pixel font draws raised', () => {

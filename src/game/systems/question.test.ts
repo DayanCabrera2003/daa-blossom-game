@@ -192,7 +192,7 @@ describe('the questions of a script', () => {
       prompt: 'ch6.5.sauce.02',
       options: [
         { value: 0, line: null, text: 'raceBet.answer.double' },
-        { value: 1, line: null, text: 'raceBet.answer.fourToEight' },
+        { value: 1, line: null, text: 'raceBet.answer.threeToFive' },
         { value: 2, line: null, text: 'raceBet.answer.farMore' },
       ],
       right: [2],

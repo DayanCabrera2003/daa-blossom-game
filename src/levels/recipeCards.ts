@@ -9,14 +9,12 @@ import type { RecipeCardId, RecipeCase } from '@core/recipe/recipe';
 
 /**
  * The level where the player first did what each case asks (GDD chapters 3 and 4): every lonely
- * sprout throws its light (3.4); the lonely moon ends in a chain, and a lit sprout becomes a moon
- * with its partner a sun (3.1); a moon needs no second path (3.3); two suns of different trees
+ * sprout throws its light (3.4); a lit sprout becomes a moon with its partner a sun (3.1); a moon needs no second path (3.3); two suns of different trees
  * meet in a chain from root to root (3.4); two suns of one tree fold into a flower (4.4); the
  * search ends with no chain and keeps its moons (3.6).
  */
 export const TAUGHT_IN: Readonly<Record<RecipeCase, string>> = {
   start: '3.4',
-  dark: '3.1',
   lit: '3.1',
   otherTree: '3.4',
   sameTree: '4.4',

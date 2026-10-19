@@ -30,7 +30,7 @@
   "victory": { "type": "matchingSize", "value": 4 },
   "hints": [
     { "line": "ch1.3.sauce.01" },
-    { "line": "ch1.3.sauce.02", "highlight": ["S", "A", "B", "C", "D", "T"] },
+    { "line": "ch1.3.sauce.02", "highlight": ["T"] },
     { "line": "ch1.3.sauce.03" }
   ],
   "flow": [{ "step": "say", "lines": ["ch1.3.sauce.00"] }, { "step": "play" }],
