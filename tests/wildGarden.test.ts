@@ -164,7 +164,7 @@ describe('5.2: layers', () => {
     expect(membersOf(outer)).toEqual(sorted('Rabcdefghij'));
     expect(membersOf(middle)).toEqual(sorted('bcdefgh'));
     expect(membersOf(inner)).toEqual(sorted('def'));
-    expect(after(level, 'markMoon', 6).chainSeen).not.toBeNull();
+    expect(after(level, 'stepLight', 7).chainSeen).not.toBeNull();
   });
 
   it('the layers enter one flower at a time, and each shows the next one still folded', () => {
