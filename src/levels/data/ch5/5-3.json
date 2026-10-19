@@ -47,7 +47,7 @@
       "prompt": "ch5.3.notebook.05",
       "codex": "C9",
       "options": [
-        { "line": "ch5.3.notebook.06", "correct": true, "reply": "ch5.3.sauce.09" },
+        { "line": "ch5.3.notebook.06", "correct": true, "reply": "ch5.3.sauce.04" },
         {
           "line": "ch5.3.notebook.07",
           "correct": false,
@@ -83,14 +83,15 @@
             "actions": ["markRoot", "markMoon", "foldAt", "unfold", "chain"]
           }
         },
-        { "line": "ch5.3.notebook.08", "correct": false, "reply": "ch5.3.sauce.11" }
+        { "line": "ch5.3.notebook.08", "correct": false, "reply": "ch5.3.sauce.11" },
+        { "line": "ch5.3.notebook.13", "correct": false, "reply": "ch5.3.sauce.14" }
       ]
     }
   ],
   "flow": [
     { "step": "say", "lines": ["ch5.3.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch5.3.sauce.04"] },
+    { "step": "say", "lines": ["ch5.3.sauce.12"] },
     { "step": "notebook" }
   ],
   "solution": [

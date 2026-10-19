@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 475 líneas, 56 están tal cual en el GDD y 419 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 477 líneas, 56 están tal cual en el GDD y 421 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -466,14 +466,16 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.3.sauce.01` · **Sauce** · plan: ¿Dónde se tocan dos soles del mismo árbol?
 - [ ] `ch5.3.sauce.02` · **Sauce** · plan: La flor pequeña ya es un brote más. ¿Con quién se toca por este lado?
 - [ ] `ch5.3.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
-- [ ] `ch5.3.sauce.04` · **Sauce** · plan: Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba. Escríbelo en tu Cuaderno.
+- [ ] `ch5.3.sauce.04` · **Sauce** · plan: Eso es. Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba.
 - [ ] `ch5.3.notebook.05` · **Cuaderno** · GDD: Al desplegar una flor que está dentro de otra…
-- [ ] `ch5.3.notebook.06` · **Cuaderno** · plan: …entro por un pétalo, salgo por otro y solo un lado del bucle alterna bien.
+- [ ] `ch5.3.notebook.06` · **Cuaderno** · plan: …la entrada y la salida deciden un único lado bueno.
 - [ ] `ch5.3.notebook.07` · **Cuaderno** · plan: …siempre salgo por la base.
 - [ ] `ch5.3.notebook.08` · **Cuaderno** · plan: …los dos lados sirven.
-- [ ] `ch5.3.sauce.09` · **Sauce** · plan: Eso es. Por dónde entras y por dónde sales decide el lado, y siempre hay uno solo.
 - [ ] `ch5.3.sauce.10` · **Sauce** · plan: Es el jardín de la flor dentro de otra. Busca desde R, pliega, abre y traza la cadena desde t: de la flor pequeña sales por c, que no es su base.
 - [ ] `ch5.3.sauce.11` · **Sauce** · plan: Prueba el lado corto, de f a b: después de g–f vendría otra enredadera apagada. Solo uno de los dos lados alterna.
+- [ ] `ch5.3.sauce.12` · **Sauce** · plan: Antes de que te lo cuente, escribe tú en tu Cuaderno qué pasa al abrir la flor de dentro.
+- [ ] `ch5.3.notebook.13` · **Cuaderno** · plan: …solo alterna el lado corto.
+- [ ] `ch5.3.sauce.14` · **Sauce** · plan: En esta flor la cadena dio la vuelta larga: por el lado corto no alternaba. Lo corto no decide nada.
 
 ### 5.4
 

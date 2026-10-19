@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-77 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+83 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -236,6 +236,20 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.3.sauce.02` · **Sauce** · cambiada
   - Antes: Mira esta enredadera: une la flor pequeña con g.
   - Después: La flor pequeña ya es un brote más. ¿Con quién se toca por este lado?
+- [ ] `ch5.3.sauce.04` · **Sauce** · cambiada
+  - Antes: Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba. Escríbelo en tu Cuaderno.
+  - Después: Eso es. Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba.
+- [ ] `ch5.3.notebook.06` · **Cuaderno** · cambiada
+  - Antes: …entro por un pétalo, salgo por otro y solo un lado del bucle alterna bien.
+  - Después: …la entrada y la salida deciden un único lado bueno.
+- [ ] `ch5.3.sauce.09` · **Sauce** · retirada
+  - Antes: Eso es. Por dónde entras y por dónde sales decide el lado, y siempre hay uno solo.
+- [ ] `ch5.3.sauce.12` · **Sauce** · nueva
+  - Después: Antes de que te lo cuente, escribe tú en tu Cuaderno qué pasa al abrir la flor de dentro.
+- [ ] `ch5.3.notebook.13` · **Cuaderno** · nueva
+  - Después: …solo alterna el lado corto.
+- [ ] `ch5.3.sauce.14` · **Sauce** · nueva
+  - Después: En esta flor la cadena dio la vuelta larga: por el lado corto no alternaba. Lo corto no decide nada.
 
 ### 5.4
 
