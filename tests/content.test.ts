@@ -5,6 +5,7 @@ import { catalog } from '@levels/catalog';
 import { CARD_IDS } from '@levels/cards/schema';
 import { speakerOf, type Speaker } from '@game/systems/speaker';
 import { buttonWordProblems } from '@levels/buttonWords';
+import { notebookEchoProblems } from '@levels/notebookEcho';
 import { referencedLines } from '@levels/lines';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -100,6 +101,16 @@ describe('dialogue lines (content/es/lines.json)', () => {
       buttonWordProblems(level.data, (id) => lineTable[id], words),
     );
     expect(wrong).toEqual([]);
+  });
+
+  it('no notebook asks back, word for word, a line the player has just heard (GDD §5.5)', () => {
+    const echoes = catalog().flatMap((level) =>
+      notebookEchoProblems(level.data, (id) => lineTable[id]).map((problem) => ({
+        level: level.data.id,
+        ...problem,
+      })),
+    );
+    expect(echoes).toEqual([]);
   });
 
   it("the Council's count, from 7.2 on, waits for «Presentar» too", () => {
