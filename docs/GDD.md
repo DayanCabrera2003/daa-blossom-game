@@ -503,8 +503,13 @@ Tú: 5 faroles. Reflejo: 6.
 - **Victoria:** usar la cadena y empatar.
 
 #### 2.4 Reto del espejo (adversario)
-- **Enseña:** ahora el jugador es el reflejo. Se le da un jardín con tu emparejamiento M (7 faroles) y debe **dibujar un emparejamiento mejor que no deje ninguna cadena para M**. Cada intento: el juego superpone, separa y señala el hilo ganador, que resulta ser una cadena. Tras tres intentos, Sauce dice "No se puede" y abre el Cuaderno; "Sin cadena, nadie te gana" es su respuesta al acierto.
-- **Por qué aquí:** el jugador experimenta la imposibilidad, que es la dirección difícil de Berge, y ya vio el mecanismo en 2.1–2.3.
+- **Jardín:** una cuadrícula de 4 × 4 brotes (A–D, E–H, I–L, M–P) con tres enredaderas de menos: A no toca a E, y C no toca ni a D ni a G, así que A y C solo cuelgan de B. Tuyo: `A=B, F=J, G=H, I=M, K=L, N=O` (6 faroles; C, D, E y P a oscuras). El máximo es 7 y deja **dos brotes a oscuras** (A o C, que se disputan el farol de B, y uno más): ganarle al jardín final no es imposible "por contar" (16 brotes dan para 8 faroles), lo es porque ya no queda cadena.
+- **Enseña, en dos fases:**
+  - **(a) Ganarle a tu jardín.** Ahora el jugador es el reflejo: "Juega a ser el agua: dibuja un reflejo que encienda más faroles que tu jardín." Cada reflejo mejor que comprueba: el juego superpone, separa y señala el hilo ganador, que resulta ser una cadena de tu jardín (dos reflejos mejores distintos). Sauce: "Quien te gana te deja una cadena. Úsala." El jugador la usa (7 faroles).
+  - **(b) Intentarlo sin cadena.** En el mismo jardín, ya sin ninguna cadena: "Intenta ganarle otra vez." Cada comprobación dice "ese no te gana"; tras tres, Sauce: "No se puede. Si no tienes cadena, nadie te gana." y abre el Cuaderno.
+- **Por qué aquí:** el jugador vive las dos direcciones de Berge con sus manos: quien gana deja una cadena (ya visto en 2.1–2.3, ahora como autor del reflejo) y, sin cadena, la imposibilidad, que es la dirección difícil.
+- **Pistas:** (1) "Dibuja siete faroles plateados, sin que ningún brote cargue dos." (2) "Mira dónde gana el agua." (3) el mentor dibuja un reflejo mejor (en la fase (a)) o da el primer paso de la cadena. En la fase (b) no hay pistas: no hay nada que encontrar, y el paso termina tras tres comprobaciones.
+- **Victoria:** usar la cadena (7 faroles) y terminar las dos fases.
 - **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…cualquier otra disposición encenderá como mucho los mismos" ✔ (b) "…nadie gana mientras busque bien" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ contraejemplo: cadena escondida larga.
 - **Desbloquea:** Códex **C3 Lema de Berge**. Hub: el estanque.
 
