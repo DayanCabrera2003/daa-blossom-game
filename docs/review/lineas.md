@@ -163,7 +163,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch2.5.sauce.02` · **Sauce** · plan: En dos. Un farol de diferencia no quiere decir un solo hilo: uno de los hilos lo ganas tú. Toca el agua para separar la maraña y míralo.
 - [ ] `ch2.5.sauce.03` · **Sauce** · plan: Enciende lo que te enseñan los dos hilos del agua y pulsa «Terminé» cuando no quepa más.
 - [ ] `ch2.5.sauce.04` · **Sauce** · plan: ¿Qué hilos gana el agua? Cada uno esconde una cadena.
-- [ ] `ch2.5.sauce.05` · **Sauce** · plan: De una punta a la otra de este hilo.
+- [ ] `ch2.5.sauce.05` · **Sauce** · plan: Mira este hilo desde esta punta. ¿Dónde acaba?
 - [ ] `ch2.5.sauce.06` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch2.5.sauce.07` · **Sauce** · plan: Diez faroles, uno más que el agua. Restar no bastaba: había que mirar cada pieza.
 
