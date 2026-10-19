@@ -67,10 +67,19 @@ describe('the screen of a level of the catalog', () => {
         ownGarden: false,
         showsStars: true,
         teacherJumps: true,
-        hudButtons: HUD_BUTTONS,
+        hudButtons: HUD_BUTTONS.filter((name) => name !== 'checkMirror'),
         traceRow: 'tools',
         chainPreview: Number(id.split('.')[0]) <= 2 ? 'gain' : 'legality',
       });
+    }
+  });
+});
+
+describe('the bottom row of a level of the catalog', () => {
+  it("keeps the mirror's check only where the mirror challenge is drawn (2.4)", () => {
+    expect(levelScreenOf(levelById('2.4'), null).hudButtons).toEqual(HUD_BUTTONS);
+    for (const id of ['2.3', '3.7', '7.5']) {
+      expect(levelScreenOf(levelById(id), null).hudButtons, id).not.toContain('checkMirror');
     }
   });
 });

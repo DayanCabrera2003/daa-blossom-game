@@ -76,6 +76,16 @@ export interface LevelScreen {
  */
 const FREE_BUTTONS = HUD_BUTTONS.filter((name) => name !== 'hint' && name !== 'checkMirror');
 
+/**
+ * The bottom row of a level of the catalog: every button, but the check of the mirror challenge
+ * only where its reflection is drawn (2.4). Elsewhere it never shows, and keeping its place would
+ * leave no room for the wider «Presentar» of the levels of certificates.
+ */
+const levelButtons = (level: Level): readonly HudButton[] =>
+  level.flow.some((step) => step.step === 'draw')
+    ? HUD_BUTTONS
+    : HUD_BUTTONS.filter((name) => name !== 'checkMirror');
+
 /** The chapter of the hub's season, worn by the free mode. */
 const HUB_SEASON = '0';
 
@@ -96,7 +106,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
       ownGarden: false,
       showsStars: true,
       teacherJumps: true,
-      hudButtons: HUD_BUTTONS,
+      hudButtons: levelButtons(level),
       traceRow: 'tools',
       chainPreview: previewModeOf(level.data.id),
     };
