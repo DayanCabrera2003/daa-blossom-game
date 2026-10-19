@@ -15,7 +15,7 @@ interface StatementAt {
 export type NotebookProblem =
   /** The counterexample does not describe a garden. */
   | ({ readonly code: 'badCounterexample' } & StatementAt & { readonly error: GardenError })
-  /** The counterexample is touched with an action the level does not give the player. */
+  /** The counterexample is touched with an action the player has not met by this level. */
   | ({ readonly code: 'counterexampleLocked' } & StatementAt & { readonly action: ActionType })
   /** A garden to draw a better reflection on whose lanterns nobody can beat. */
   | ({ readonly code: 'counterexampleUnbeatable' } & StatementAt)
@@ -24,8 +24,10 @@ export type NotebookProblem =
 
 /**
  * The checks of a level's notebook (plan 03, phase 6) that the schema cannot see, over every one of
- * its questions: each counterexample is a garden under the core's rules, it is played with tools the level already
- * gives (a counterexample never teaches a new move), and a `mirrorDraw` one leaves a better
+ * its questions: each counterexample is a garden under the core's rules, it is played with tools the
+ * level already gives or knows and closes for the day in its own garden (a counterexample never
+ * teaches a new move: 4.7 closes marks by hand, since its light searches by itself, yet its
+ * counterexample is marked by hand), and a `mirrorDraw` one leaves a better
  * reflection to find, or its search would never show the chain it promises. A garden of bees and
  * flowers joins only a bee and a flower, as a level's does. Its lines belonging to
  * the level is checked with every other line of the level.
@@ -45,7 +47,7 @@ export function checkNotebook(level: Level): NotebookProblem[] {
     }
     const { start } = built.value;
     for (const action of start.allowed) {
-      if (!level.start.allowed.has(action)) {
+      if (!level.start.allowed.has(action) && !level.start.closed.has(action)) {
         problems.push({ code: 'counterexampleLocked', ...at, action });
       }
     }

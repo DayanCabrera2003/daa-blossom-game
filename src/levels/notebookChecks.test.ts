@@ -105,6 +105,12 @@ describe('the checks of a notebook', () => {
     ]);
   });
 
+  it('a counterexample may use a move the level knows but closes for the day in its own garden', () => {
+    // 1.5 closes passing the lantern: a known move, so its counterexample may still use it.
+    const closed = { ...levelWith({ mode: 'play', ...row, actions: ['chain', 'passLantern'] }) };
+    expect(notebookProblemsOf({ ...closed, forbid: ['passLantern'] })).toEqual([]);
+  });
+
   it('a garden to draw a better reflection on must have one to find', () => {
     const full = {
       ...row,
