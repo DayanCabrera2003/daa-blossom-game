@@ -229,7 +229,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 3.7
 
 - [ ] `ch3.7.sauce.00` · **Sauce** · GDD: El Consejo no quiere que pruebes todo. Quiere una razón que se vea.
-- [ ] `ch3.7.sauce.01` · **Sauce** · plan: Un espantapájaros vigila todas las enredaderas de su brote. Pon tantos como faroles hay, ni uno más, y que no quede ninguna enredadera sin vigilar. Luego pulsa «Terminé».
+- [ ] `ch3.7.sauce.01` · **Sauce** · plan: Un espantapájaros vigila todas las enredaderas de su brote. Pon tantos como faroles hay, ni uno más, y que no quede ninguna enredadera sin vigilar. Luego pulsa «Presentar».
 - [ ] `ch3.7.sauce.02` · **Sauce** · GDD: ¿Qué brote toca más enredaderas?
 - [ ] `ch3.7.sauce.03` · **Sauce** · plan: Mira el 2 y el 4. Entre los dos tocan toda la fila.
 - [ ] `ch3.7.sauce.04` · **Sauce** · plan: Cada farol está en una enredadera vigilada, y cada espantapájaros vigila como mucho un farol. Tres espantapájaros, tres faroles: no caben más. Está demostrado.
@@ -237,7 +237,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 3.8
 
 - [ ] `ch3.8.sauce.00` · **Sauce** · plan: Busca otra vez desde todos los que estén a oscuras, hasta que no quede nada por mirar.
-- [ ] `ch3.8.sauce.01` · **Sauce** · plan: Cuando la búsqueda se acabe sin cadena, pon espantapájaros en todas las lunas y pulsa «Terminé».
+- [ ] `ch3.8.sauce.01` · **Sauce** · plan: Cuando la búsqueda se acabe sin cadena, pon espantapájaros en todas las lunas y pulsa «Presentar».
 - [ ] `ch3.8.sauce.02` · **Sauce** · plan: ¿Dónde quedaron las lunas?
 - [ ] `ch3.8.sauce.03` · **Sauce** · plan: Cada uno de estos brotes recibió una visita pidiendo. Ahí van los espantapájaros.
 - [ ] `ch3.8.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Sigue buscando hasta el final.
@@ -253,7 +253,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.9
 
-- [ ] `ch3.9.sauce.00` · **Sauce** · plan: Última noche en el invernadero. No te digo cuántos caben: enciende todos los que puedas y demuéstralo con espantapájaros. Luego pulsa «Terminé».
+- [ ] `ch3.9.sauce.00` · **Sauce** · plan: Última noche en el invernadero. No te digo cuántos caben: enciende todos los que puedas y demuéstralo con espantapájaros. Luego pulsa «Presentar».
 - [ ] `ch3.9.sauce.01` · **Sauce** · plan: ¿Quién sigue a oscuras? Sal de ahí y busca.
 - [ ] `ch3.9.sauce.02` · **Sauce** · plan: Estos cuatro pueden encender un farol más. Los otros dos, ya veremos.
 - [ ] `ch3.9.sauce.03` · **Sauce** · plan: Empiezo yo. Lo demás ya sabes hacerlo.
@@ -262,7 +262,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.10
 
-- [ ] `ch3.10.sauce.00` · **Sauce** · plan: Otra flor escondida en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Terminé».
+- [ ] `ch3.10.sauce.00` · **Sauce** · plan: Otra flor escondida en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Presentar».
 - [ ] `ch3.10.sauce.01` · **Sauce** · plan: ¿Quién sigue a oscuras? Sal a buscar desde ahí.
 - [ ] `ch3.10.sauce.02` · **Sauce** · plan: Hasta aquí no llega ninguna búsqueda. Pero estas enredaderas también necesitan quien las vigile.
 - [ ] `ch3.10.sauce.03` · **Sauce** · plan: Empiezo yo. Lo demás ya sabes hacerlo.
@@ -573,7 +573,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 7.1
 
 - [ ] `ch7.1.oaks.00` · **Los Robles** · plan: Dices que dos faroles es lo más que cabe aquí. ¿Cómo lo sabes?
-- [ ] `ch7.1.sauce.01` · **Sauce** · plan: En el Invernadero lo demostraste con espantapájaros. Pon los que hagan falta para vigilar todas las enredaderas y pulsa «Terminé».
+- [ ] `ch7.1.sauce.01` · **Sauce** · plan: En el Invernadero lo demostraste con espantapájaros. Pon los que hagan falta para vigilar todas las enredaderas y pulsa «Presentar».
 - [ ] `ch7.1.sauce.02` · **Sauce** · plan: ¿Queda alguna enredadera sin vigilar?
 - [ ] `ch7.1.sauce.03` · **Sauce** · plan: Estos dos vigilan mucho. Pero mira lo que queda entre ellos.
 - [ ] `ch7.1.sauce.04` · **Sauce** · plan: Te enseño el siguiente espantapájaros. Los demás, tú.
@@ -595,8 +595,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.2.sauce.04` · **Sauce** · plan: Eso diría Bruto. El Consejo no quiere oír que lo probaste todo: quiere una razón.
 - [ ] `ch7.2.gardener.05` · **Tú** · plan: Porque harían falta tres espantapájaros.
 - [ ] `ch7.2.sauce.06` · **Sauce** · plan: Tres espantapájaros solo dirían que caben tres como mucho. Eso no explica por qué no.
-- [ ] `ch7.2.sauce.07` · **Sauce** · plan: Mira la cuenta de arriba: un grupo impar, ninguna piedra, así que al menos uno a oscuras. Y hay uno. Preséntala con «Terminé».
-- [ ] `ch7.2.sauce.08` · **Sauce** · plan: La cuenta ya cuadra. Solo falta presentarla: pulsa «Terminé».
+- [ ] `ch7.2.sauce.07` · **Sauce** · plan: Mira la cuenta de arriba: un grupo impar, ninguna piedra, así que al menos uno a oscuras. Y hay uno. Pulsa «Presentar».
+- [ ] `ch7.2.sauce.08` · **Sauce** · plan: La cuenta ya cuadra. Solo falta presentarla: pulsa «Presentar».
 - [ ] `ch7.2.oaks.09` · **Los Robles** · plan: Demostrado.
 - [ ] `ch7.2.sauce.10` · **Sauce** · plan: Aquí no hizo falta levantar nada. Otras veces hay que levantar algún brote para que el jardín se parta en grupos: esas son las piedras.
 
@@ -622,7 +622,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.4.oaks.00` · **Los Robles** · plan: Otra vez: ¿cómo sabes que no caben más faroles?
 - [ ] `ch7.4.sauce.01` · **Sauce** · plan: Esta vez no busques tú. Que el jardinero mecánico siga la receta hasta el final.
 - [ ] `ch7.4.sauce.02` · **Sauce** · plan: La búsqueda terminó sin cadena. Mira dónde quedaron las lunas.
-- [ ] `ch7.4.sauce.03` · **Sauce** · plan: Levanta las lunas como piedras y preséntalas con «Terminé».
+- [ ] `ch7.4.sauce.03` · **Sauce** · plan: Levanta las lunas como piedras y pulsa «Presentar».
 - [ ] `ch7.4.sauce.04` · **Sauce** · plan: ¿Qué brotes llevan luna?
 - [ ] `ch7.4.sauce.05` · **Sauce** · plan: Esos dos, los que brillan.
 - [ ] `ch7.4.sauce.06` · **Sauce** · plan: Te enseño la primera piedra. La otra es tuya.
@@ -633,7 +633,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 7.5
 
 - [ ] `ch7.5.oaks.00` · **Los Robles** · plan: Último jardín. Niebla, y flores dentro de flores. No te pedimos que lo enciendas: te pedimos la prueba.
-- [ ] `ch7.5.sauce.01` · **Sauce** · plan: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y presenta faroles y piedras con «Terminé». La cuenta del Consejo sale al presentarla.
+- [ ] `ch7.5.sauce.01` · **Sauce** · plan: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
 - [ ] `ch7.5.sauce.02` · **Sauce** · plan: ¿Quién sigue a oscuras? Empieza por ahí.
 - [ ] `ch7.5.sauce.03` · **Sauce** · plan: Estos dos están a oscuras, y entre ellos hay flores.
 - [ ] `ch7.5.sauce.04` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
@@ -644,9 +644,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 7.6
 
 - [ ] `ch7.6.oaks.00` · **Los Robles** · plan: Un jardín pequeño, y la pregunta de siempre: ¿por qué no caben más faroles?
-- [ ] `ch7.6.sauce.01` · **Sauce** · plan: Enciende todo lo que puedas. Luego levanta las piedras que quieras, o ninguna, y presenta la cuenta con «Terminé».
+- [ ] `ch7.6.sauce.01` · **Sauce** · plan: Enciende todo lo que puedas. Luego levanta las piedras que quieras, o ninguna, y pulsa «Presentar».
 - [ ] `ch7.6.oaks.02` · **Los Robles** · plan: Una prueba nos convence. ¿Hay otra?
-- [ ] `ch7.6.sauce.03` · **Sauce** · plan: Busca otra cuenta que también cuadre, con piedras distintas. Cambia las piedras y vuelve a pulsar «Terminé».
+- [ ] `ch7.6.sauce.03` · **Sauce** · plan: Busca otra cuenta que también cuadre, con piedras distintas. Cambia las piedras y vuelve a pulsar «Presentar».
 - [ ] `ch7.6.oaks.04` · **Los Robles** · plan: Esa ya nos la enseñaste. Muéstranos otras piedras.
 - [ ] `ch7.6.oaks.05` · **Los Robles** · plan: Dos pruebas distintas, y las dos cuadran.
 - [ ] `ch7.6.oaks.06` · **Los Robles** · plan: El Consejo se inclina dos veces.

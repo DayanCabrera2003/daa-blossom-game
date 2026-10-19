@@ -4,7 +4,31 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-14 líneas de diálogo y 23 textos de interfaz distintos de la versión 1.0.1.
+25 líneas de diálogo y 23 textos de interfaz distintos de la versión 1.0.1.
+
+### 3.7
+
+- [ ] `ch3.7.sauce.01` · **Sauce** · cambiada
+  - Antes: Un espantapájaros vigila todas las enredaderas de su brote. Pon tantos como faroles hay, ni uno más, y que no quede ninguna enredadera sin vigilar. Luego pulsa «Terminé».
+  - Después: Un espantapájaros vigila todas las enredaderas de su brote. Pon tantos como faroles hay, ni uno más, y que no quede ninguna enredadera sin vigilar. Luego pulsa «Presentar».
+
+### 3.8
+
+- [ ] `ch3.8.sauce.01` · **Sauce** · cambiada
+  - Antes: Cuando la búsqueda se acabe sin cadena, pon espantapájaros en todas las lunas y pulsa «Terminé».
+  - Después: Cuando la búsqueda se acabe sin cadena, pon espantapájaros en todas las lunas y pulsa «Presentar».
+
+### 3.9
+
+- [ ] `ch3.9.sauce.00` · **Sauce** · cambiada
+  - Antes: Última noche en el invernadero. No te digo cuántos caben: enciende todos los que puedas y demuéstralo con espantapájaros. Luego pulsa «Terminé».
+  - Después: Última noche en el invernadero. No te digo cuántos caben: enciende todos los que puedas y demuéstralo con espantapájaros. Luego pulsa «Presentar».
+
+### 3.10
+
+- [ ] `ch3.10.sauce.00` · **Sauce** · cambiada
+  - Antes: Otra flor escondida en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Terminé».
+  - Después: Otra flor escondida en el invernadero. Niebla otra vez, y lo de siempre: enciende todos los que puedas, demuéstralo con espantapájaros y pulsa «Presentar».
 
 ### 4.4
 
@@ -83,6 +107,42 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.6.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Busca desde R, pliégalas todas y, cuando estés seguro, pulsa «Terminé».
   - Después: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Avanza tu luz desde R, pliégalas todas donde se pare y, cuando estés seguro, pulsa «Terminé».
+
+### 7.1
+
+- [ ] `ch7.1.sauce.01` · **Sauce** · cambiada
+  - Antes: En el Invernadero lo demostraste con espantapájaros. Pon los que hagan falta para vigilar todas las enredaderas y pulsa «Terminé».
+  - Después: En el Invernadero lo demostraste con espantapájaros. Pon los que hagan falta para vigilar todas las enredaderas y pulsa «Presentar».
+
+### 7.2
+
+- [ ] `ch7.2.sauce.07` · **Sauce** · cambiada
+  - Antes: Mira la cuenta de arriba: un grupo impar, ninguna piedra, así que al menos uno a oscuras. Y hay uno. Preséntala con «Terminé».
+  - Después: Mira la cuenta de arriba: un grupo impar, ninguna piedra, así que al menos uno a oscuras. Y hay uno. Pulsa «Presentar».
+- [ ] `ch7.2.sauce.08` · **Sauce** · cambiada
+  - Antes: La cuenta ya cuadra. Solo falta presentarla: pulsa «Terminé».
+  - Después: La cuenta ya cuadra. Solo falta presentarla: pulsa «Presentar».
+
+### 7.4
+
+- [ ] `ch7.4.sauce.03` · **Sauce** · cambiada
+  - Antes: Levanta las lunas como piedras y preséntalas con «Terminé».
+  - Después: Levanta las lunas como piedras y pulsa «Presentar».
+
+### 7.5
+
+- [ ] `ch7.5.sauce.01` · **Sauce** · cambiada
+  - Antes: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y presenta faroles y piedras con «Terminé». La cuenta del Consejo sale al presentarla.
+  - Después: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
+
+### 7.6
+
+- [ ] `ch7.6.sauce.01` · **Sauce** · cambiada
+  - Antes: Enciende todo lo que puedas. Luego levanta las piedras que quieras, o ninguna, y presenta la cuenta con «Terminé».
+  - Después: Enciende todo lo que puedas. Luego levanta las piedras que quieras, o ninguna, y pulsa «Presentar».
+- [ ] `ch7.6.sauce.03` · **Sauce** · cambiada
+  - Antes: Busca otra cuenta que también cuadre, con piedras distintas. Cambia las piedras y vuelve a pulsar «Terminé».
+  - Después: Busca otra cuenta que también cuadre, con piedras distintas. Cambia las piedras y vuelve a pulsar «Presentar».
 
 ## Textos de interfaz
 
