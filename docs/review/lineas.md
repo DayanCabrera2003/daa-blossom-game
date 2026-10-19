@@ -335,7 +335,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.7
 
-- [ ] `ch4.7.sauce.00` · **Sauce** · plan: Un tallo largo esta vez. Busca desde R y fíjate por dónde sale la luz de la flor.
+- [ ] `ch4.7.sauce.00` · **Sauce** · plan: Un tallo largo esta vez. Avanza tu luz desde R y fíjate por dónde sale la luz de la flor.
 - [ ] `ch4.7.sauce.01` · **Sauce** · plan: Sigue el tallo desde R. ¿Dónde se tocan dos soles?
 - [ ] `ch4.7.sauce.02` · **Sauce** · plan: Aquí se cierra la flor.
 - [ ] `ch4.7.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
