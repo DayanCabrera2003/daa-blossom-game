@@ -11,9 +11,8 @@ import type { Run } from './benchmark';
  * - `farMore`: far more than that, or the runner fell asleep.
  *
  * The answers are read on a logarithmic scale, where doubling the steps is one unit: each answer
- * covers the ratios nearer to it than to its neighbours (√2 to √8 for double, √8 to √128 for three
- * to five, beyond √128 for far more: "far more" means well past five, so up to about eight times
- * is still read as the middle answer). A ratio within a fixed tolerance of an edge is still given
+ * covers a band of ratios (√2 to √8 for double, the ratio between it and three; √8 to 6 for three
+ * to five, so that what the answer says is what it covers; beyond six times for far more). A ratio within a fixed tolerance of an edge is still given
  * its answer, but is not `clear`: a level must race gardens whose answers are clear, so a player
  * is never told wrong for picking the neighbour of a ratio that sits between two.
  */
@@ -33,7 +32,7 @@ export interface DoublingVerdict {
 /** Where `double` begins and ends, and where `farMore` begins, in doublings of the steps. */
 const DOUBLE_FROM = 0.5;
 const FOUR_FROM = 1.5;
-const FAR_FROM = 3.5;
+const FAR_FROM = Math.log2(6);
 /** How far from every edge a clear ratio lies, in doublings (a factor of 2^¼ ≈ 1.19). */
 const TOLERANCE = 0.25;
 
