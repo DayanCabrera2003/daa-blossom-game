@@ -105,7 +105,21 @@ describe('playtest entries of a step', () => {
 
   it('"Terminé" short of the most lanterns is a claim without reason', () => {
     const { entries } = play(startController(festivalLevel(), 0), [{ kind: 'done' }]);
-    expect(entries).toContainEqual({ kind: 'claim', at: 0, level: '4.1', right: false });
+    expect(entries).toContainEqual({
+      kind: 'claim',
+      at: 0,
+      level: '4.1',
+      right: false,
+      verdict: 'chainLeft',
+    });
+  });
+
+  it('a claim that falls short is logged with why, as the toast told it', () => {
+    const { entries } = play(startController(levelById('1.8'), 0), [{ kind: 'done' }], 3);
+    expect(entries).toEqual([
+      { kind: 'move', at: 3, level: '1.8', action: 'declareDone' },
+      { kind: 'claim', at: 3, level: '1.8', right: false, verdict: 'chainLeft' },
+    ]);
   });
 
   it('a hint opened is logged with its grade; one not on offer yet is not', () => {

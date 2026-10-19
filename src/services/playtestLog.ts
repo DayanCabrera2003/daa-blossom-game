@@ -36,8 +36,17 @@ const entrySchema = z.discriminatedUnion('kind', [
     reason: z.string(),
   }),
   z.strictObject({ kind: z.literal('hint'), at, level, grade: z.number().int().min(1) }),
-  /** "Terminé" pressed: right when the lanterns were the most the garden holds. */
-  z.strictObject({ kind: z.literal('claim'), at, level, right: z.boolean() }),
+  /**
+   * "Terminé" pressed: right when the lanterns were the most the garden holds; when it did not win,
+   * why it fell short (a code of `game/systems/claimVerdict.ts`, absent in older logs).
+   */
+  z.strictObject({
+    kind: z.literal('claim'),
+    at,
+    level,
+    right: z.boolean(),
+    verdict: z.string().optional(),
+  }),
   z.strictObject({
     kind: z.literal('history'),
     at,
