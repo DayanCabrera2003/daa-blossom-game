@@ -149,6 +149,12 @@ describe('readable level problems', () => {
       { code: 'labelOnSprout', label: 'a', sprout: 'b' },
       { code: 'labelOnLabel', labels: ['a', 'b'] },
       { code: 'labelsDifferByCase', labels: ['c', 'C'] },
+      {
+        code: 'counterexampleLayout',
+        question: 0,
+        option: 2,
+        problem: { code: 'labelOnLabel', labels: ['a', 'b'] },
+      },
     ] as const;
     for (const problem of problems) expect(describeProblem(problem)).not.toBe('');
   });

@@ -4,6 +4,7 @@ import type { Level } from './build';
 import { buildCounterexample } from './counterexample';
 import type { GardenError } from './garden';
 import { sameKindVines, type KindClash } from './kinds';
+import { checkLayout, vineCrossings, type LayoutProblem } from './layoutChecks';
 
 /** Where a statement is: the index of its question in the level's list, and its own index. */
 interface StatementAt {
@@ -20,7 +21,9 @@ export type NotebookProblem =
   /** A garden to draw a better reflection on whose lanterns nobody can beat. */
   | ({ readonly code: 'counterexampleUnbeatable' } & StatementAt)
   /** A vine of a garden of bees and flowers joins two of a kind. */
-  | ({ readonly code: 'counterexampleSameKindVine' } & StatementAt & KindClash);
+  | ({ readonly code: 'counterexampleSameKindVine' } & StatementAt & KindClash)
+  /** The counterexample's garden is hard to read: a name drawn over something, or vines crossing. */
+  | ({ readonly code: 'counterexampleLayout' } & StatementAt & { readonly problem: LayoutProblem });
 
 /**
  * The checks of a level's notebook (plan 03, phase 6) that the schema cannot see, over every one of
@@ -29,7 +32,8 @@ export type NotebookProblem =
  * teaches a new move: 4.7 closes marks by hand, since its light searches by itself, yet its
  * counterexample is marked by hand), and a `mirrorDraw` one leaves a better
  * reflection to find, or its search would never show the chain it promises. A garden of bees and
- * flowers joins only a bee and a flower, as a level's does. Its lines belonging to
+ * flowers joins only a bee and a flower, as a level's does, and every garden reads as well as a
+ * secret flower's: no name drawn over anything and no crossing vines. Its lines belonging to
  * the level is checked with every other line of the level.
  */
 export function checkNotebook(level: Level): NotebookProblem[] {
@@ -56,6 +60,9 @@ export function checkNotebook(level: Level): NotebookProblem[] {
     }
     for (const clash of sameKindVines(counterexample.sprouts, counterexample.vines)) {
       problems.push({ code: 'counterexampleSameKindVine', ...at, ...clash });
+    }
+    for (const problem of [...vineCrossings(counterexample), ...checkLayout(counterexample)]) {
+      problems.push({ code: 'counterexampleLayout', ...at, problem });
     }
   }
   return problems;

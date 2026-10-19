@@ -139,4 +139,49 @@ describe('the checks of a notebook', () => {
       },
     ]);
   });
+
+  it('a counterexample reads as well as a level: no name drawn over another, no crossing vines', () => {
+    const crowded = { ...row, sprouts: row.sprouts.map((s, i) => ({ ...s, x: 100 + 4 * i })) };
+    const crossed = {
+      ...row,
+      sprouts: [
+        { label: 'a', x: 100, y: 60 },
+        { label: 'b', x: 200, y: 160 },
+        { label: 'c', x: 200, y: 60 },
+        { label: 'd', x: 100, y: 160 },
+      ],
+      vines: [
+        ['a', 'b'],
+        ['c', 'd'],
+      ],
+      lanterns: [],
+    };
+    const problems = notebookProblemsOf(
+      levelWith({ mode: 'play', ...crowded, actions: ['chain'] }),
+    );
+    expect(problems.length).toBeGreaterThan(0);
+    expect(problems.every((problem) => problem.code === 'counterexampleLayout')).toBe(true);
+    expect(problems).toContainEqual({
+      code: 'counterexampleLayout',
+      question: 0,
+      option: 1,
+      problem: { code: 'labelOnLabel', labels: ['a', 'b'] },
+    });
+    expect(notebookProblemsOf(levelWith({ mode: 'play', ...crossed, actions: ['chain'] }))).toEqual(
+      [
+        {
+          code: 'counterexampleLayout',
+          question: 0,
+          option: 1,
+          problem: {
+            code: 'vinesCross',
+            vines: [
+              ['a', 'b'],
+              ['c', 'd'],
+            ],
+          },
+        },
+      ],
+    );
+  });
 });

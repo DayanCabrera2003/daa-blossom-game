@@ -110,6 +110,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `${statementAt(problem)}: its lanterns already hold the most, so no better reflection can be drawn`;
     case 'counterexampleSameKindVine':
       return `${statementAt(problem)}: its vine ${problem.u}–${problem.v} joins two ${problem.kind}s, but a bee only pairs with a flower`;
+    case 'counterexampleLayout':
+      return `${statementAt(problem)}: its garden reads badly: ${describeProblem(problem.problem)}`;
     case 'vinesCross':
       return `the vines ${problem.vines[0].join('–')} and ${problem.vines[1].join('–')} cross`;
     case 'labelOnSprout':
