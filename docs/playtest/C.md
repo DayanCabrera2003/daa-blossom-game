@@ -164,7 +164,7 @@ El JSON exportado tiene `exportedAt`, `summary` (un resumen por nivel, en el ord
 | Campo | Qué significa |
 |---|---|
 | `recipeChecks.right` / `.wrong` | Recetas comprobadas (6.1, 6.3) que eran correctas, y las que tenían una tarjeta que falla. En `log`, cada `recipeCheck` lleva `card` (la primera tarjeta que falla) y `case` (el caso de la búsqueda al que se refiere), o ambos `null` si la receta era correcta |
-| `raceBets.right` / `.wrong` | Apuestas de 6.5 que las carreras dieron por buenas, y las que no. En `log`, cada `raceBet` lleva `runner` (`automaton` o `bruto`) y `answer` (`double`, `fourToEight` o `farMore`) |
+| `raceBets.right` / `.wrong` | Apuestas de 6.5 que las carreras dieron por buenas, y las que no. En `log`, cada `raceBet` lleva `runner` (`automaton` o `bruto`) y `answer` (`double`, `threeToFive` o `farMore`) |
 | `stoneCertificates.counted` | Piedras presentadas con «Terminé» que son el certificado que pide el nivel |
 | `stoneCertificates.provingOther` | Piedras que demuestran los faroles pero no cuentan: en 7.4, las que no son las lunas de la búsqueda |
 | `stoneCertificates.failing` | Piedras que no demuestran nada (la cuenta no cierra) |
