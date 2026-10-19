@@ -282,7 +282,7 @@ El Cuaderno pide pensar, no recordar. Llega **antes** de que Sauce resuma la ide
 Libro accesible desde el botón de libro del HUD (en cuanto alguna página está abierta) y desde el hub. Cada entrada tiene tres pestañas:
 - **Intuición:** la explicación con las palabras del jardín y un diagrama interactivo (el mismo motor del juego, en pequeño).
 - **Formal:** definiciones, enunciados y demostraciones con notación matemática (KaTeX), escritas en el nivel de un buen curso de DAA.
-- **Puente:** la tabla de traducción de ese concepto y una nota histórica.
+- **Puente:** la tabla de traducción de ese concepto, una nota histórica y, al final, bajo su título, los **testigos del núcleo**: qué tests del código comprueban cada resultado de la página. Las rutas de archivo (`src/core/…`) solo aparecen ahí, nunca en las pestañas Intuición ni Formal.
 
 Las entradas se desbloquean con el juego, pero en modo profesor están todas abiertas. Sección 8 detalla cada entrada.
 
@@ -846,7 +846,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 ## 8. El Códex (entradas)
 
-Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Formal** (KaTeX), **Puente** (traducción y nota histórica). Se resume aquí el contenido de cada una; los textos completos se redactan en producción y se revisan contra un texto de referencia (Lovász–Plummer, *Matching Theory*; Korte–Vygen, *Combinatorial Optimization*; Tarjan, *Data Structures and Network Algorithms*).
+Cada entrada: **Intuición** (palabras del jardín + diagrama interactivo), **Formal** (KaTeX), **Puente** (traducción, nota histórica y testigos del núcleo). Se resume aquí el contenido de cada una; los textos completos se redactan en producción y se revisan contra un texto de referencia (Lovász–Plummer, *Matching Theory*; Korte–Vygen, *Combinatorial Optimization*; Tarjan, *Data Structures and Network Algorithms*).
 
 - **C1 Emparejamiento.** Grafo, emparejamiento, vértice cubierto/expuesto. Maximal vs máximo, con el jardín de 1.1 como diagrama. ν(G).
 - **C2 La cadena.** Camino alternante y camino aumentante. Intercambiar a lo largo de un camino aumentante da un emparejamiento de tamaño |M| + 1; a lo largo de uno alternante par, del mismo tamaño. Diagrama: la brigada de 1.3.
