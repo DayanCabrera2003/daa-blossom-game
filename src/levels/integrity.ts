@@ -6,6 +6,7 @@ import type { RejectReason } from '@core/rules/reasons';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from './build';
 import { checkChainRule, type ChainProblem } from './chainChecks';
+import { checkLight, type LightProblem } from './lightChecks';
 import { checkFlow, type FlowProblem } from './flowChecks';
 import { checkFlower, type FlowerProblem } from './flowerChecks';
 import { isFlowInput } from './flowInput';
@@ -32,6 +33,7 @@ export type IntegrityProblem =
   | { readonly code: 'unlockMismatch'; readonly action: ActionType; readonly unlockedAt: string }
   | ({ readonly code: 'sameKindVine' } & KindClash)
   | ChainProblem
+  | LightProblem
   | FlowProblem
   | FlowerProblem
   | LayoutProblem
@@ -99,6 +101,7 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
 
   problems.push(
     ...checkChainRule(level),
+    ...checkLight(level),
     ...checkFlow(level),
     ...checkFlower(level),
     ...checkNotebook(level),

@@ -88,6 +88,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} runs a recipe the automaton cannot run: only the fold card may be missing`;
     case 'seenRuleOpen':
       return `only the chain seen may move lanterns here, but "${problem.action}" moves them without the light: forbid it`;
+    case 'lightBypassed':
+      return `the light searches by itself here, but "${problem.action}" moves lanterns without it: forbid it (or let only the chain seen light one)`;
     case 'badChainFlower':
       return `the closed flower ${problem.petals.join(', ')} is no flower of the starting lanterns written base first`;
     case 'notAFlower':

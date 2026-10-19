@@ -127,6 +127,12 @@ describe('level schema', () => {
     }
   });
 
+  it('says whether the light searches by itself, which it does not by default', () => {
+    expect(levelSchema.parse(twoSprouts).light).toBe(false);
+    expect(levelSchema.parse({ ...twoSprouts, light: true }).light).toBe(true);
+    expect(levelSchema.safeParse({ ...twoSprouts, light: 'yes' }).success).toBe(false);
+  });
+
   it('only knows the actions of the game', () => {
     const unknown = { ...twoSprouts, solution: [{ type: 'teleport', vertex: 'A' }] };
     expect(levelSchema.safeParse(unknown).success).toBe(false);

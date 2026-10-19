@@ -55,6 +55,19 @@ describe('building a level', () => {
     expect(allowed.has('stepLight')).toBe(false);
   });
 
+  it('where the light searches by itself, gives its step and closes marks and folds by hand', () => {
+    const { allowed, closed } = unwrapLevel({ ...rotate, light: true }).start;
+    expect(allowed.has('stepLight')).toBe(true);
+    for (const action of ['markRoot', 'markMoon', 'fold'] as const) {
+      expect(allowed.has(action)).toBe(false);
+      expect(closed.has(action)).toBe(true);
+    }
+    // Folding where the light stops is the way on.
+    expect(unwrapLevel({ ...rotate, light: true, forbid: [] }).start.allowed.has('foldAt')).toBe(
+      true,
+    );
+  });
+
   it('keeps the actions it closes as closed for the day, apart from those not learnt yet', () => {
     expect(unwrapLevel(rotate).start.closed).toEqual(new Set(['fold', 'foldAt']));
   });

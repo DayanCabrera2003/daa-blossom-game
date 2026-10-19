@@ -294,6 +294,11 @@ describe('level integrity', () => {
     expect(problemsOf(opened)).toContainEqual({ code: 'seenRuleOpen', action: 'split' });
   });
 
+  it('the checks of the light that searches by itself are part of its integrity', () => {
+    const lit = { ...trap, id: '4.5', light: true, forbid: [], unlocks: undefined };
+    expect(problemsOf(lit)).toContainEqual({ code: 'lightBypassed', action: 'split' });
+  });
+
   it('what a level unlocks must match the unlock table of the rules', () => {
     const wrong = { ...trap, unlocks: { actions: ['chain'] } };
     expect(problemsOf(wrong)).toContainEqual({

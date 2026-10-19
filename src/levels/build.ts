@@ -2,7 +2,7 @@ import { idOf, toEdges, type Labels } from '@core/graph/labels';
 import type { Graph, VertexId } from '@core/graph/types';
 import { createMatching, type MatchingError } from '@core/matching/createMatching';
 import type { Matching } from '@core/matching/types';
-import type { Action } from '@core/rules/actions';
+import type { Action, ActionType } from '@core/rules/actions';
 import { ANY_CHAIN, type ChainRule } from '@core/rules/chainRule';
 import { actionsUnlockedBy } from '@core/rules/permissions';
 import { createGardenState, type GardenState } from '@core/rules/state';
@@ -13,6 +13,9 @@ import type { LevelStep } from './flow';
 import { isFlowInput, type FlowInput } from './flowInput';
 import { buildGarden, type GardenError } from './garden';
 import { toLevelStep, toSprouts, toWalkthroughEntry } from './translate';
+
+/** The moves a level where the light searches by itself keeps closed: the search is the light's. */
+const BY_HAND: readonly ActionType[] = ['markRoot', 'markMoon', 'fold'];
 
 /** One entry of a walkthrough: a garden move, or an input the script asks for. */
 export type WalkthroughEntry = Action | FlowInput;
@@ -122,18 +125,20 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     chains = { rule: 'seen' };
   }
 
-  const forbidden = new Set(data.forbid);
+  // Where the light searches by itself, its step is given, and marks and folds by hand are closed
+  // for the day: the light owns the search, and folding is touching where it stops.
+  const closed: ActionType[] = data.light ? [...data.forbid, ...BY_HAND] : [...data.forbid];
+  const forbidden = new Set(closed);
   const start = createGardenState({
     graph,
     matching,
     fog: data.fog,
     ...(roots === undefined ? {} : { roots }),
     chains,
-    // The light's step belongs to the levels where the light searches by itself.
     allowed: actionsUnlockedBy(data.id).filter(
-      (action) => !forbidden.has(action) && action !== 'stepLight',
+      (action) => !forbidden.has(action) && (action !== 'stepLight' || data.light),
     ),
-    closed: data.forbid,
+    closed,
   });
   return ok({
     data,

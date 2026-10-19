@@ -81,6 +81,11 @@ export const levelSchema = z.strictObject({
   forbid: z.array(actionType).default([]),
   /** Which chains the lanterns may slide along; any legal chain when absent. */
   chains: chains.default({ rule: 'any' }),
+  /**
+   * Whether the light searches by itself and the player advances it, mark by mark, folding where
+   * it stops (the flower levels, plan 10 section 2.4): marks and folds by hand are then closed.
+   */
+  light: z.boolean().default(false),
   /** When the play step is won; required exactly when the script has a play step. */
   victory: victory.optional(),
   /** Hints: a voiced line and the sprouts to highlight (GDD §5.3). */
