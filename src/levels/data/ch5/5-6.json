@@ -57,7 +57,7 @@
   "victory": { "type": "maximum" },
   "hints": [
     { "line": "ch5.6.sauce.01" },
-    { "line": "ch5.6.sauce.02", "highlight": ["l", "m"] },
+    { "line": "ch5.6.sauce.02", "highlight": ["l", "m", "n", "R"] },
     { "line": "ch5.6.sauce.03" }
   ],
   "flow": [

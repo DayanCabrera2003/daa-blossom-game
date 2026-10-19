@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-39 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+40 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -167,6 +167,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.6.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Busca desde R, pliégalas todas y, cuando estés seguro, pulsa «Terminé».
   - Después: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Avanza tu luz desde R, pliégalas todas donde se pare y, cuando estés seguro, pulsa «Terminé».
+- [ ] `ch5.6.sauce.02` · **Sauce** · cambiada
+  - Antes: Mira esta enredadera, la que cierra la última vuelta.
+  - Después: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
 
 ### 7.1
 

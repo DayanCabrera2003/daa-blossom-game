@@ -469,7 +469,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch5.6.sauce.00` · **Sauce** · plan: Una flor escondida en lo salvaje. Cuatro flores, cada una dentro de la siguiente. Avanza tu luz desde R, pliégalas todas donde se pare y, cuando estés seguro, pulsa «Terminé».
 - [ ] `ch5.6.sauce.01` · **Sauce** · plan: Cada flor que pliegas se porta como un brote más. ¿Con quién cierra ahora un bucle?
-- [ ] `ch5.6.sauce.02` · **Sauce** · plan: Mira esta enredadera, la que cierra la última vuelta.
+- [ ] `ch5.6.sauce.02` · **Sauce** · plan: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
 - [ ] `ch5.6.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.6.sauce.04` · **Sauce** · plan: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Esta flor es tuya.
 
