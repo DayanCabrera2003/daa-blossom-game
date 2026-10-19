@@ -4,13 +4,15 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-139 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
+147 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
 - [ ] `ch0.5.sauce.00` · **Sauce** · cambiada
   - Antes: Un jardinero mira el día que pasó. Arrastra el sol.
   - Después: Un jardinero mira el día que pasó. Arrastra el día.
+- [ ] `ch0.5.sauce.01` · **Sauce** · nueva
+  - Después: En el Códex, el libro del jardinero, esto tiene nombre: lee «Un farol para dos».
 
 ### 1.1
 
@@ -82,6 +84,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: La cadena larga empieza aquí. Cuidado con los callejones del camino.
 - [ ] `ch1.9.sauce.02` · **Sauce** · nueva
   - Después: Te enseño el siguiente paso. Lo demás es tuyo.
+- [ ] `ch1.9.sauce.03` · **Sauce** · nueva
+  - Después: El Prado es tuyo. En el Códex esto tiene nombre: lee «La cadena».
 
 ### 1.10
 
@@ -130,6 +134,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Ahora tu jardín no tiene ninguna cadena. Intenta ganarle otra vez.
 - [ ] `ch2.4.sauce.17` · **Sauce** · nueva
   - Después: No se puede.
+- [ ] `ch2.4.sauce.18` · **Sauce** · nueva
+  - Después: En el Códex esto tiene nombre: lee «El hilo ganador».
 
 ### 2.5
 
@@ -200,6 +206,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.9.sauce.00` · **Sauce** · cambiada
   - Antes: Última noche en el invernadero. No te digo cuántos caben: enciende todos los que puedas y demuéstralo con espantapájaros. Luego pulsa «Terminé».
   - Después: Última noche en el invernadero. No te digo cuántos caben: enciende todos los que puedas y demuéstralo con espantapájaros. Luego pulsa «Presentar».
+- [ ] `ch3.9.sauce.06` · **Sauce** · nueva
+  - Después: En el Códex esto tiene nombre: lee «Caminar de noche» y «Abejas, tréboles y espantapájaros».
 
 ### 3.10
 
@@ -320,6 +328,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.12.sauce.01` · **Sauce** · cambiada
   - Antes: ¿Quién sigue a oscuras? Busca desde ahí.
   - Después: Avanza tu luz. Si se para ante un brote en la niebla, inspecciónalo y sigue.
+- [ ] `ch4.12.sauce.05` · **Sauce** · nueva
+  - Después: En el Códex esto tiene nombre: lee «Bucles impares», «La flor» y «Plegar no esconde cadenas».
 
 ### 4.13
 
@@ -397,6 +407,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.5.sauce.02` · **Sauce** · cambiada
   - Antes: Estos brotes siguen a oscuras. Busca desde ellos.
   - Después: Estos brotes siguen a oscuras: tu luz empieza por ellos, uno tras otro.
+- [ ] `ch5.5.sauce.05` · **Sauce** · nueva
+  - Después: En el Códex esto tiene nombre: lee «Flores anidadas».
 
 ### 5.6
 
@@ -430,6 +442,11 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch6.5.sauce.09` · **Sauce** · cambiada
   - Antes: La última: de 32 a 64 brotes. ¿Cuántos pasos más dará tu receta?
   - Después: La última: de 32 a 64 brotes. ¿Otra vez lo de antes? ¿Cuántos pasos más dará tu receta?
+
+### 6.6
+
+- [ ] `ch6.6.sauce.17` · **Sauce** · nueva
+  - Después: En el Códex tu receta tiene nombre: lee «La receta» y «El costo».
 
 ### 6.7
 
@@ -487,6 +504,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch7.5.sauce.03` · **Sauce** · cambiada
   - Antes: Estos dos están a oscuras, y entre ellos hay flores.
   - Después: Empieza por aquí. Entre este y el otro que sigue a oscuras hay flores.
+- [ ] `ch7.5.sauce.08` · **Sauce** · nueva
+  - Después: En el Códex esto tiene nombre: lee «Las piedras».
 
 ### 7.6
 

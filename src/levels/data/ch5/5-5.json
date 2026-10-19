@@ -72,7 +72,7 @@
   "flow": [
     { "step": "say", "lines": ["ch5.5.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch5.5.sauce.04"] }
+    { "step": "say", "lines": ["ch5.5.sauce.04", "ch5.5.sauce.05"] }
   ],
   "unlocks": { "codex": ["C9"] },
   "solution": [

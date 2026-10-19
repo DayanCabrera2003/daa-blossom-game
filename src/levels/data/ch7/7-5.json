@@ -72,7 +72,10 @@
   "flow": [
     { "step": "say", "lines": ["ch7.5.oaks.00", "ch7.5.sauce.01"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch7.5.oaks.05", "ch7.5.oaks.06", "ch7.5.sauce.07"] }
+    {
+      "step": "say",
+      "lines": ["ch7.5.oaks.05", "ch7.5.oaks.06", "ch7.5.sauce.07", "ch7.5.sauce.08"]
+    }
   ],
   "unlocks": { "codex": ["C14"] },
   "solution": [

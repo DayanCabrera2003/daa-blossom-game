@@ -44,6 +44,7 @@
     { "line": "ch1.9.sauce.01", "highlight": ["S"] },
     { "line": "ch1.9.sauce.02" }
   ],
+  "flow": [{ "step": "play" }, { "step": "say", "lines": ["ch1.9.sauce.03"] }],
   "solution": [
     { "type": "join", "u": "U", "v": "V" },
     { "type": "join", "u": "W", "v": "X" },

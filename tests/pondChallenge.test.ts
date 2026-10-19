@@ -85,7 +85,8 @@ describe('the mirror challenge of 2.4', () => {
     expect(draws.map((step) => step.beatable)).toEqual([true, false]);
     expect(steps.indexOf('draw')).toBeLessThan(steps.indexOf('play'));
     expect(steps.lastIndexOf('draw')).toBeGreaterThan(steps.indexOf('play'));
-    expect(steps.at(-1)).toBe('notebook');
+    // After the notebook only the invitation to the Codex that closes the chapter (plan 10, F11).
+    expect(steps.slice(-2)).toEqual(['notebook', 'say']);
     expect(isMaximum(level.graph, played().matching)).toBe(true);
   });
 

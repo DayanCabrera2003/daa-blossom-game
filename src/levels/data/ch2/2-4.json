@@ -153,7 +153,8 @@
     { "step": "say", "lines": ["ch2.4.sauce.16"] },
     { "step": "draw", "attempts": 3, "beatable": false },
     { "step": "say", "lines": ["ch2.4.sauce.17", "ch2.4.sauce.03"] },
-    { "step": "notebook" }
+    { "step": "notebook" },
+    { "step": "say", "lines": ["ch2.4.sauce.18"] }
   ],
   "unlocks": { "codex": ["C3"] },
   "solution": [

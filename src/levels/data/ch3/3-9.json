@@ -67,7 +67,7 @@
   "flow": [
     { "step": "say", "lines": ["ch3.9.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch3.9.sauce.04", "ch3.9.sauce.05"] }
+    { "step": "say", "lines": ["ch3.9.sauce.04", "ch3.9.sauce.05", "ch3.9.sauce.06"] }
   ],
   "solution": [
     { "type": "inspect", "vertex": "D" },
