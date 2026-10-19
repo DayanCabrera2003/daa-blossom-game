@@ -6,6 +6,7 @@ import {
   closedFlowerLevel,
   festivalLevel,
   fivePetalsLevel,
+  foldingLightLevel,
   helixLevel,
   twoComponentsLevel,
 } from '../../../tests/support/fixtureLevels';
@@ -366,6 +367,32 @@ describe("the mentor's next step, under a level's chain rule", () => {
       for (const garden of reachable(start)) mentorPlays(goal, garden);
     },
   );
+});
+
+describe("the mentor's next step, where the light searches by itself", () => {
+  it('advances the light, folds where it stops and lights the chain it saw, from every garden', () => {
+    const level = foldingLightLevel();
+    // Off the reference solution everywhere: every step is the mentor's own.
+    const goal: MentorGoal = { ...goalOf(level), solution: [] };
+    const gardens = reachable(level.start);
+    expect(gardens.length).toBeGreaterThan(5);
+    for (const garden of gardens) mentorPlays(goal, garden);
+    const { moves } = mentorFinishes(goal, level.start);
+    expect(moves).toContainEqual({ type: 'stepLight' });
+    expect(moves).toContainEqual({ type: 'foldAt', from: 2, to: 4 });
+  });
+
+  it('inspects the sun the light waits for in the fog', () => {
+    const level = foldingLightLevel();
+    const start: GardenState = {
+      ...level.start,
+      revealed: new Array<boolean>(level.graph.n).fill(false),
+      allowed: new Set([...level.start.allowed, 'inspect']),
+    };
+    const goal: MentorGoal = { ...goalOf(level), start, solution: [] };
+    const { moves } = mentorFinishes(goal, start);
+    expect(moves.slice(0, 2)).toEqual([{ type: 'stepLight' }, { type: 'inspect', vertex: 0 }]);
+  });
 });
 
 describe("the mentor's next step, when the level is won by the search itself", () => {

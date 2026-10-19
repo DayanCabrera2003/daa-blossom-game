@@ -14,6 +14,7 @@ import { applyAction } from '@core/rules/applyAction';
 import { sameGarden } from '@core/rules/sameGarden';
 import type { GardenState } from '@core/rules/state';
 import { isVictory, type VictoryCondition } from '@core/rules/victory';
+import { lightStep } from '@core/rules/lightStep';
 import { itemAt } from '@core/shared/itemAt';
 import { bipartiteMatching } from '@core/search/bipartiteMatching';
 import { searchStatus } from '@core/search/searchStatus';
@@ -146,11 +147,32 @@ function placeTowards(
 }
 
 /**
+ * The next step of the light that searches by itself (the flower levels): advancing it, or, where
+ * it stops, folding the loop it met or inspecting the sun it waits for in the fog (`lightStep`).
+ * Null once it has seen a chain or has nothing left to look at.
+ */
+function lightOn(state: GardenState): Action | null {
+  const step = lightStep(state);
+  switch (step.kind) {
+    case 'move':
+      return { type: 'stepLight' };
+    case 'flower':
+      return { type: 'foldAt', from: step.from, to: step.to };
+    case 'fog':
+      return { type: 'inspect', vertex: step.vertex };
+    default:
+      return null;
+  }
+}
+
+/**
  * The next mark of a search that looks for a chain: roots first (only those the level allows, which
  * `markRoot` checks), then looks from suns, folding when suns meet. In the fog only suns are
  * inspected, since only a sun looks along its vines: no drop of water is spent on anyone else.
+ * Where the light searches by itself, the light is moved on instead (`lightOn`).
  */
 function searchStep(state: GardenState): Action | null {
+  if (state.allowed.has('stepLight')) return lightOn(state);
   const sprouts = [...Array(state.graph.n).keys()];
   const root = sprouts.find((v) => accepted(state, { type: 'markRoot', vertex: v }));
   if (root !== undefined) return { type: 'markRoot', vertex: root };
