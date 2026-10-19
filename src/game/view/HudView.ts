@@ -62,8 +62,9 @@ const LEVEL_HUD: HudLayout = { backLabel: 'hud.back', buttons: HUD_BUTTONS, trac
  * drop of the pack) on top; on wooden buttons, "Terminé", undo, redo, hint, "?" (the mechanic
  * cards again) and back at the bottom right, switched off when not available, "Comprobar" beside them in the mirror challenge, and the way out
  * of a flower entered with the layers, whose depth the status line tells (5.2), and from 7.2 the
- * Council's count on the right of the status line. In teacher mode, the trace button ends the
- * tools' row.
+ * Council's count on the right of the status line. Where the light searches by itself,
+ * "Avanzar la luz" ends the tools' row; in teacher mode, the trace button ends it (just before the
+ * light's, when both are there).
  */
 export class HudView {
   private readonly goal: OutlinedText;
