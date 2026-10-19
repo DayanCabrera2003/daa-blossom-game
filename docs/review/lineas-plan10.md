@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-29 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+30 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -35,6 +35,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.7.sauce.01` · **Sauce** · cambiada
   - Antes: Un espantapájaros vigila todas las enredaderas de su brote. Pon tantos como faroles hay, ni uno más, y que no quede ninguna enredadera sin vigilar. Luego pulsa «Terminé».
   - Después: Un espantapájaros vigila todas las enredaderas de su brote. Pon tantos como faroles hay, ni uno más, y que no quede ninguna enredadera sin vigilar. Luego pulsa «Presentar».
+- [ ] `ch3.7.sauce.03` · **Sauce** · cambiada
+  - Antes: Mira el 2 y el 4. Entre los dos tocan toda la fila.
+  - Después: En esta fila, ¿qué brotes tocan dos enredaderas a la vez?
 
 ### 3.8
 

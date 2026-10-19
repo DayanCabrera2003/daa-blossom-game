@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 455 líneas, 56 están tal cual en el GDD y 399 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 455 líneas, 57 están tal cual en el GDD y 398 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -231,7 +231,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.7.sauce.00` · **Sauce** · GDD: El Consejo no quiere que pruebes todo. Quiere una razón que se vea.
 - [ ] `ch3.7.sauce.01` · **Sauce** · plan: Un espantapájaros vigila todas las enredaderas de su brote. Pon tantos como faroles hay, ni uno más, y que no quede ninguna enredadera sin vigilar. Luego pulsa «Presentar».
 - [ ] `ch3.7.sauce.02` · **Sauce** · GDD: ¿Qué brote toca más enredaderas?
-- [ ] `ch3.7.sauce.03` · **Sauce** · plan: Mira el 2 y el 4. Entre los dos tocan toda la fila.
+- [ ] `ch3.7.sauce.03` · **Sauce** · GDD: En esta fila, ¿qué brotes tocan dos enredaderas a la vez?
 - [ ] `ch3.7.sauce.04` · **Sauce** · plan: Cada farol está en una enredadera vigilada, y cada espantapájaros vigila como mucho un farol. Tres espantapájaros, tres faroles: no caben más. Está demostrado.
 
 ### 3.8
