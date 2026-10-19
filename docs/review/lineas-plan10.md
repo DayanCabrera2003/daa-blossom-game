@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-1 líneas de diálogo y 11 textos de interfaz distintos de la versión 1.0.1.
+2 líneas de diálogo y 11 textos de interfaz distintos de la versión 1.0.1.
 
 ### 4.4
 
@@ -12,12 +12,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Antes: El bucle de tres otra vez. Busca desde R hasta que dos soles se toquen.
   - Después: El bucle de tres otra vez. Hoy tu luz busca sola desde R, y tú la avanzas. Se parará donde dos soles se toquen.
 
+### 4.5
+
+- [ ] `ch4.5.sauce.00` · **Sauce** · cambiada
+  - Antes: Encuentra otra vez la cadena a través de la flor. Luego ábrela y traza el camino por dentro para pasar los faroles.
+  - Después: Avanza tu luz hasta encontrar otra vez la cadena a través de la flor. Luego ábrela y traza el camino por dentro para pasar los faroles.
+
 ## Textos de interfaz
 
 - [ ] `reason.actionClosed` · nueva
   - Después: Hoy no se puede {action} en este jardín.
 - [ ] `reason.chainNotSeen` · nueva
-  - Después: Hoy los faroles solo se mueven por donde llegó tu luz. Busca la cadena con tus marcas.
+  - Después: Hoy los faroles solo se mueven por donde llegó tu luz. Avánzala hasta que encuentre la cadena.
 - [ ] `reason.flowerClosed` · nueva
   - Después: La flor está cerrada por hoy: una cadena solo puede rodearla si sale de su base o llega a ella.
 - [ ] `reason.lightAtFlower` · nueva

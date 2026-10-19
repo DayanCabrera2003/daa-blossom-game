@@ -26,7 +26,7 @@
   "reason.notPlaced": "{vertex} no tiene nada que quitar.",
   "reason.notNow": "Ahora no toca mover faroles: el jardín espera otra cosa.",
   "reason.twoSilver": "{vertex} ya tiene un farol plateado: quítaselo antes de darle otro.",
-  "reason.chainNotSeen": "Hoy los faroles solo se mueven por donde llegó tu luz. Busca la cadena con tus marcas.",
+  "reason.chainNotSeen": "Hoy los faroles solo se mueven por donde llegó tu luz. Avánzala hasta que encuentre la cadena.",
   "reason.flowerClosed": "La flor está cerrada por hoy: una cadena solo puede rodearla si sale de su base o llega a ella.",
   "reason.lightAtFlower": "Tu luz se ha parado: {u} y {v} son soles del mismo árbol. Pliega ese bucle tocando su enredadera con Marcas, y sigue.",
   "reason.lightFound": "Tu luz ya encontró una cadena: abre las flores que cruza y enciéndela.",

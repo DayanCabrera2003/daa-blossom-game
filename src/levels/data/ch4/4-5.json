@@ -22,6 +22,9 @@
   ],
   "goal": { "visible": true, "value": 3 },
   "roots": ["R"],
+  "forbid": ["split", "passLantern"],
+  "chains": { "rule": "seen" },
+  "light": true,
   "victory": { "type": "matchingSize", "value": 3 },
   "hints": [
     { "line": "ch4.5.sauce.01" },
@@ -35,11 +38,11 @@
   ],
   "unlocks": { "actions": ["unfold"] },
   "solution": [
-    { "type": "markRoot", "vertex": "R" },
-    { "type": "markMoon", "from": "R", "to": "a" },
-    { "type": "markMoon", "from": "b", "to": "c" },
-    { "type": "foldAt", "from": "d", "to": "b" },
-    { "type": "markMoon", "from": "c", "to": "e" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "foldAt", "from": "b", "to": "d" },
+    { "type": "stepLight" },
     { "type": "unfold", "blossom": 0 },
     { "type": "chain", "path": ["R", "a", "b", "d", "c", "e"] }
   ]
