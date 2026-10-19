@@ -310,7 +310,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.4
 
-- [ ] `ch4.4.sauce.00` · **Sauce** · plan: El bucle de tres otra vez. Busca desde R hasta que dos soles se toquen.
+- [ ] `ch4.4.sauce.00` · **Sauce** · plan: El bucle de tres otra vez. Hoy tu luz busca sola desde R, y tú la avanzas. Se parará donde dos soles se toquen.
 - [ ] `ch4.4.sauce.01` · **Sauce** · GDD: Si todos pueden ser sol, trátalos como un solo sol grande. Ciérralos como una flor.
 - [ ] `ch4.4.sauce.02` · **Sauce** · plan: ¿Dónde se tocaron dos soles del mismo árbol?
 - [ ] `ch4.4.sauce.03` · **Sauce** · plan: En esa enredadera. Tócala y deja que el bucle se cierre.
@@ -319,7 +319,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.5
 
-- [ ] `ch4.5.sauce.00` · **Sauce** · plan: Encuentra otra vez la cadena a través de la flor. Luego ábrela y traza el camino por dentro para pasar los faroles.
+- [ ] `ch4.5.sauce.00` · **Sauce** · plan: Avanza tu luz hasta encontrar otra vez la cadena a través de la flor. Luego ábrela y traza el camino por dentro para pasar los faroles.
 - [ ] `ch4.5.sauce.01` · **Sauce** · GDD: Llegaste a Cleo pidiendo. ¿Qué tiene que hacer Cleo?
 - [ ] `ch4.5.sauce.02` · **Sauce** · plan: Mira este farol.
 - [ ] `ch4.5.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
@@ -327,7 +327,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.6
 
-- [ ] `ch4.6.sauce.00` · **Sauce** · plan: Cinco pétalos. Busca desde R, pliega cuando dos soles se toquen, y abre la flor para encender la cadena.
+- [ ] `ch4.6.sauce.00` · **Sauce** · plan: Cinco pétalos. Avanza tu luz desde R, pliega donde se pare y abre la flor para encender la cadena.
 - [ ] `ch4.6.sauce.01` · **Sauce** · plan: ¿Dónde se tocan dos soles del mismo árbol?
 - [ ] `ch4.6.sauce.02` · **Sauce** · plan: Aquí. Pliega los cinco.
 - [ ] `ch4.6.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.

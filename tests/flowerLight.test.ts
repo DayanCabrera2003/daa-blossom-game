@@ -22,6 +22,7 @@ import { explore } from './support/gardenExplorer';
 const FLOWER_LEVELS: Readonly<Record<string, { roots: string[] | null; flowers: string[] }>> = {
   '4.4': { roots: ['R'], flowers: ['bcd'] },
   '4.5': { roots: ['R'], flowers: ['bcd', '|'] },
+  '4.6': { roots: ['R'], flowers: ['bcdfg', '|'] },
 };
 
 const levelById = (id: string): Level => {
