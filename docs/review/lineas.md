@@ -624,7 +624,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.4.sauce.02` · **Sauce** · plan: La búsqueda terminó sin cadena. Mira dónde quedaron las lunas.
 - [ ] `ch7.4.sauce.03` · **Sauce** · plan: Levanta las lunas como piedras y pulsa «Presentar».
 - [ ] `ch7.4.sauce.04` · **Sauce** · plan: ¿Qué brotes llevan luna?
-- [ ] `ch7.4.sauce.05` · **Sauce** · plan: Esos dos, los que brillan.
+- [ ] `ch7.4.sauce.05` · **Sauce** · plan: Mira este árbol. ¿Qué te dejó la búsqueda en cada brote?
 - [ ] `ch7.4.sauce.06` · **Sauce** · plan: Te enseño la primera piedra. La otra es tuya.
 - [ ] `ch7.4.sauce.07` · **Sauce** · plan: Mira la cuenta: R sola y la flor b, c, d; al otro lado, lo mismo. Cuatro grupos impares, dos piedras: al menos dos a oscuras. Tienes dos.
 - [ ] `ch7.4.sauce.08` · **Sauce** · plan: La búsqueda que fracasó te entrega las piedras. Y siempre pasa: de un sol solo se llega a lunas, así que al quitar las lunas cada sol y cada flor quedan solos, y una flor siempre tiene un número impar de brotes.

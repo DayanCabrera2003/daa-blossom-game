@@ -39,7 +39,7 @@
   "victory": { "type": "moonCertificate" },
   "hints": [
     { "line": "ch7.4.sauce.04" },
-    { "line": "ch7.4.sauce.05", "highlight": ["a", "a2"] },
+    { "line": "ch7.4.sauce.05", "highlight": ["R", "a", "b", "c", "d"] },
     { "line": "ch7.4.sauce.06" }
   ],
   "flow": [

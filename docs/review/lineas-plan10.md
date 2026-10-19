@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-41 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+42 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -194,6 +194,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch7.4.sauce.03` · **Sauce** · cambiada
   - Antes: Levanta las lunas como piedras y preséntalas con «Terminé».
   - Después: Levanta las lunas como piedras y pulsa «Presentar».
+- [ ] `ch7.4.sauce.05` · **Sauce** · cambiada
+  - Antes: Esos dos, los que brillan.
+  - Después: Mira este árbol. ¿Qué te dejó la búsqueda en cada brote?
 
 ### 7.5
 
