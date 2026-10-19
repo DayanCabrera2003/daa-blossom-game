@@ -9,6 +9,18 @@ Esta hoja es para la **prueba de rigor** del GDD (§10): un compañero con buen 
 - **La casilla 5 sigue abierta en las catorce entradas.** Los tres libros de referencia (LP, KV y T) no estuvieron disponibles al redactar ni al revisar el Códex. Por eso las líneas de `### Referencias` citan el capítulo (y en KV a veces la sección), pero **no** la edición cotejada ni el número de cada resultado, y ninguna demostración se ha comparado todavía con la del libro. Esta hoja es el sitio donde cerrarla.
 - Lo que sí está comprobado por máquina: la estructura de cada demostración (numeración, `*Demostración.*` cerrada con $\blacksquare$, enlaces), que todas las fórmulas se renderizan, que cada testigo nombrado existe, y los propios testigos, que comprueban los enunciados en miles de grafos aleatorios contra la fuerza bruta (`npm test`).
 
+## Cambios del Plan 10 (fase 12)
+
+Después de la revisión del hito G2 cambiaron estas secciones del Códex. Ningún enunciado, numeración ni demostración cambió de contenido; quien ya revisó una entrada solo tiene que releer lo que se lista aquí.
+
+- **C1–C14, pestaña Puente.** Los «Testigos del núcleo» salieron del final de la pestaña Formal y son ahora la última sección de la pestaña Puente, bajo el título `### Testigos del núcleo`. El texto es el mismo, salvo las referencias que dependían del sitio: en C4 «tal como se enuncian aquí» pasa a «en la pestaña formal»; en C11 «la cota de arriba» pasa a «la cota cúbica del Teorema 11.5» y «la tabla» a «la tabla de las carreras»; en C13 «la tabla» pasa a «la tabla de notación» y «el ejemplo» a «el ejemplo del jardín de 1.1». Ni la pestaña Intuición ni la Formal nombran ya archivos del repositorio (lo comprueba `tests/codex.test.ts`).
+- **C10, Formal, «Las tarjetas y las líneas».** Sin la ruta de las tarjetas; la ruta pasa a los testigos.
+- **C11, Formal.** «La implementación del núcleo», el enunciado del Teorema 11.5, el punto 3 de la Proposición 11.6 y el Ejemplo de las carreras ya no nombran archivos («la búsqueda del núcleo», «la versión compacta», «la búsqueda exhaustiva del núcleo», «una semilla fija»); las rutas pasan a los testigos. Lo que dicen los enunciados no cambia.
+- **C3, Intuición.** Un párrafo nuevo al final recuerda las dos partes del reto del espejo (2.4).
+- **C7, Intuición.** Tras «Para desplegar…», un párrafo nuevo describe el gesto de levantar: los tramos que encontró la luz se quedan dibujados y se rellena el de dentro de la flor.
+- **C8, Intuición, «Del abierto al plegado».** Se dice que en 4.10 la flor estaba cerrada hasta que su base quedó a oscuras, y se añade el paso que faltaba: con los mismos faroles, si el jardín abierto podía mejorar, sigue habiendo una cadena (por el estanque).
+- **C12, Intuición, «Las lunas son las piedras».** Remite a la pregunta de 7.4.
+
 ## Cómo usar la hoja
 
 1. Lee cada entrada en el juego, con `?teacher&codex=C8&tab=formal` en la dirección (abre el Códex entero en esa entrada y pestaña), o directamente en `src/content/es/codex/C08.md`.
@@ -33,7 +45,7 @@ Esta hoja es para la **prueba de rigor** del GDD (§10): un compañero con buen 
 4. Notación igual a la de C13 en todas las entradas.
 5. **Cotejada línea a línea con la referencia citada; la línea de referencia nombra capítulo, sección y número de resultado de la edición usada.** ← abierta
 6. Un ejemplo trabajado sobre el jardín del diagrama de Intuición.
-7. Nombra su testigo del núcleo, y el test existe.
+7. Nombra su testigo del núcleo (al final de la pestaña Puente), y el test existe.
 8. Todas sus fórmulas se renderizan.
 
 ---
