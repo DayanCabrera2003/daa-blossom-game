@@ -10,6 +10,7 @@ import { FlowerView } from '../../view/FlowerView';
 import { movesLess } from '../motion';
 import { sayAloud, sayLineAloud } from '../sayAloud';
 import { FogView } from '../../view/FogView';
+import { FoundTrailView } from '../../view/FoundTrailView';
 import { GardenView } from '../../view/GardenView';
 import { HudView, type HudLayout } from '../../view/HudView';
 import { MarksView } from '../../view/MarksView';
@@ -37,6 +38,7 @@ export interface LevelViews {
   readonly flowers: FlowerView;
   readonly objects: ObjectsView;
   readonly garden: GardenView;
+  readonly foundTrail: FoundTrailView;
   readonly marks: MarksView;
   readonly mirror: MirrorView;
   readonly sideBySide: SideBySideView;
@@ -82,6 +84,7 @@ export const buildLevelViews = (
     flowers: new FlowerView(scene),
     objects: new ObjectsView(scene),
     garden: new GardenView(scene),
+    foundTrail: new FoundTrailView(scene),
     marks: new MarksView(scene),
     mirror: new MirrorView(scene, t),
     sideBySide: new SideBySideView(scene, t),
