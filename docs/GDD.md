@@ -236,7 +236,8 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 
 - Capítulos 0–1: el nivel muestra "este jardín puede encender N faroles". El jugador sabe cuándo terminó.
 - Desde 1.8: el objetivo se oculta en algunos niveles y el jugador declara "Terminé". El mentor pregunta "¿cómo lo sabes?". La respuesta honesta al principio es "no lo sé", y toda la teoría del juego es la respuesta a esa pregunta.
-- Capítulo 7: para terminar hay que **presentar un certificado**.
+- Un "Terminé" que no gana nunca se queda sin respuesta: un aviso suave dice por qué todavía no basta (queda una cadena, la búsqueda aún tiene enredaderas por mirar, una enredadera sin vigilar, la cuenta no cuadra, esas piedras no son las lunas), **sin decir dónde está la cadena**; en un certificado de espantapájaros brilla una enredadera sin vigilar. Cuenta como un intento fallido para las pistas (§5.3), no como progreso.
+- En los niveles de certificado (3.7–3.10 y el capítulo 7) el botón dice **«Presentar»**: para terminar hay que **presentar un certificado** (espantapájaros o piedras). En el resto sigue diciendo "Terminé".
 
 ### 5.3 Pistas (tres grados, siempre con voz)
 
