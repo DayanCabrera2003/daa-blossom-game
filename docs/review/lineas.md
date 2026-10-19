@@ -206,7 +206,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch3.4.sauce.00` · **Sauce** · plan: Esta noche hay dos a oscuras. Que cada uno lance su luz, y mira qué pasa cuando se encuentran.
 - [ ] `ch3.4.sauce.01` · **Sauce** · plan: ¿Cuántos siguen a oscuras? Cada uno puede empezar su propia búsqueda.
-- [ ] `ch3.4.sauce.02` · **Sauce** · plan: R1 y R2. Ponle un sol a cada uno.
+- [ ] `ch3.4.sauce.02` · **Sauce** · plan: Empieza aquí, con un sol. ¿Quién más podría empezar su propia búsqueda?
 - [ ] `ch3.4.sauce.03` · **Sauce** · plan: Empiezo yo por R1. El otro es tuyo.
 - [ ] `ch3.4.sauce.04` · **Sauce** · plan: Dos luces se tocaron: sol con sol, y cada uno de un árbol distinto. Eso es una cadena de un solitario al otro.
 
