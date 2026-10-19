@@ -4,6 +4,14 @@ Capítulos 5–7 en greybox (círculos, rombos y líneas, sin arte ni voz). Lo d
 
 > **Hoy (plan 09):** el protocolo se escribió para el greybox; el juego ya tiene arte, música, efectos y balbuceo. Lo que cambia en la preparación está en §3; los umbrales y criterios no cambian (Apéndice A del plan 09, preguntas 10 y 11, pendientes del autor). La hoja de una página para cada sesión es [`kit.md`](kit.md).
 
+> **Hoy (plan 10, versión 1.1.0):** lo que cambió en los capítulos 5–7 y se ve en la sesión o en el registro. Los umbrales y criterios de §1 **no cambian**. Las pistas, los avisos de un «Terminé» que no gana, los Cuadernos, la luz que busca sola y el gesto de levantar funcionan como se cuenta al principio de `A.md` y de `B.md`.
+> - **En 5.1–5.5 (y en el jardín secreto 5.6) la luz busca sola** desde sus raíces, con «Avanzar la luz», y se para en cada flor hasta que se pliega, también cuando la flor está dentro de otra flor plegada. Los faroles solo se mueven por la cadena que encontró (`chainNotSeen`); separar, pasar el farol y girar el tallo están cerrados (`actionClosed`). En la niebla de 5.5, la luz se para ante un sol cuyas enredaderas aún no se ven (`vineHidden` de `stepLight`): hay que regarlo.
+> - 5.2 termina con una pregunta: por qué se abrió primero la flor grande. El Cuaderno de 5.3 se abre antes de que Sauce diga qué lado alternó.
+> - La receta (6.1, 6.3) ya no tiene la tarjeta del vecino sin marca a oscuras, que la búsqueda nunca encuentra, y sus textos nombran x. Las apuestas de 6.5, como se describen en §1 y §6.
+> - En 7.2–7.5 el botón de acabar se llama **«Presentar»**, y una presentación que no gana recibe su aviso: `countShort` (la cuenta del Consejo, con sus números), `searchNotOver` o `notTheMoons` (7.4).
+> - 7.4: Sauce ya no dice «levanta las lunas como piedras»; dice que lo que dejó la búsqueda guarda las piedras. Al ganar hace la cuenta y **pregunta** «Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?»; su explicación (`ch7.4.sauce.08`) es la respuesta al acierto.
+> - El último nivel de cada capítulo invita a leer su página del Códex; 7.5 termina con el amanecer.
+
 ---
 
 ## 1. Objetivo del Hito C
@@ -88,10 +96,11 @@ El papel del observador es el del playtest A: sin tocar ni señalar, sin pistas,
 
 ### Capítulo 5 (5.1–5.5)
 
-- 5.1: si ve que la flor plegada forma parte de otro bucle impar ("¿quién es sol dos veces?") y la pliega sin la pista 3.
-- 5.2: si usa las capas para entrar y salir de las flores, o si las ignora y se pierde.
-- 5.3: si prueba primero el lado corto de la flor interior; cómo lee el Cuaderno ("Al desplegar una flor que está dentro de otra…").
-- 5.5: si gasta el agua mirando al azar o con método.
+- 5.1: cuando la luz se para por segunda vez, si ve que la flor plegada forma parte de otro bucle impar ("¿quién es sol dos veces?") y la pliega sin la pista 3 (rechazos `lightAtFlower` seguidos indican que no).
+- 5.1–5.3: al levantar la cadena, si abre las flores de fuera hacia dentro y arrastra solo el tramo de dentro; los rechazos `invalidPath.*` de `chain` tras desplegar son lados equivocados.
+- 5.2: si usa las capas para entrar y salir de las flores, o si las ignora y se pierde. **La pregunta del final** ("¿Por qué no una de las de dentro?"): qué opción elige primero y qué dice. Si responde algo como "porque la pequeña no se ve", es una restricción de la pantalla, no la idea (la flor plegada es un brote más).
+- 5.3: si prueba primero el lado corto de la flor interior; cómo lee el Cuaderno ("Al desplegar una flor que está dentro de otra…"), que ahora llega antes del resumen de Sauce.
+- 5.5: si gasta el agua mirando al azar o con método: con la luz, el agua se gasta sobre todo donde la luz se para ante la niebla (`vineHidden`).
 
 ### Capítulo 6 (6.1–6.6)
 
@@ -111,7 +120,7 @@ El papel del observador es el del playtest A: sin tocar ni señalar, sin pistas,
 
 ### 4.1 — 7.4: ¿por qué las lunas son las piedras?
 
-El jardinero mecánico busca solo y termina sin cadena; Sauce pide levantar las lunas como piedras y presentarlas con «Terminé». Al ganar, Sauce hace la cuenta y explica por qué siempre pasa (línea `ch7.4.sauce.08`).
+El jardinero mecánico busca solo y termina sin cadena; Sauce dice que lo que dejó la búsqueda ya guarda las piedras y pide levantarlas y pulsar «Presentar» (ya no dice que sean las lunas). Al ganar, Sauce hace la cuenta y pregunta con quién puede seguir unido un sol al quitar las lunas; la explicación de por qué siempre pasa (línea `ch7.4.sauce.08`) llega como respuesta al acierto. La respuesta queda en `log` como una entrada `answer`.
 
 Mientras juega, anotar:
 
@@ -123,7 +132,7 @@ Mientras juega, anotar:
 
 > "Explícame con tus palabras: ¿por qué las lunas sirven como piedras? ¿Pasaría lo mismo en cualquier jardín donde la búsqueda termina sin cadena?"
 
-Anotar la respuesta tal cual. No corregir, no completar, no asentir ante lo correcto; si se queda en blanco, "¿Qué crees tú?" y esperar. La línea final de Sauce acaba de dar la razón: lo que se mide es si la persona la **reconstruye**, no si la recuerda, así que una respuesta que solo repite la frase de Sauce sin poder seguir ("¿y por qué cada sol queda solo?") se anota como repetida.
+Anotar la respuesta tal cual. No corregir, no completar, no asentir ante lo correcto; si se queda en blanco, "¿Qué crees tú?" y esperar. La pregunta del nivel y la respuesta de Sauce acaban de dar la razón: lo que se mide es si la persona la **reconstruye**, no si la recuerda, así que una respuesta que solo repite la frase de Sauce sin poder seguir ("¿y por qué cada sol queda solo?") se anota como repetida.
 
 **Rúbrica** (marcar cada punto que diga con sus palabras, aunque no use estos términos):
 
@@ -165,12 +174,12 @@ El JSON exportado tiene `exportedAt`, `summary` (un resumen por nivel, en el ord
 |---|---|
 | `recipeChecks.right` / `.wrong` | Recetas comprobadas (6.1, 6.3) que eran correctas, y las que tenían una tarjeta que falla. En `log`, cada `recipeCheck` lleva `card` (la primera tarjeta que falla) y `case` (el caso de la búsqueda al que se refiere), o ambos `null` si la receta era correcta |
 | `raceBets.right` / `.wrong` | Apuestas de 6.5 que las carreras dieron por buenas, y las que no. En `log`, cada `raceBet` lleva `runner` (`automaton` o `bruto`) y `answer` (`double`, `threeToFive` o `farMore`) |
-| `stoneCertificates.counted` | Piedras presentadas con «Terminé» que son el certificado que pide el nivel |
+| `stoneCertificates.counted` | Piedras presentadas con «Presentar» que son el certificado que pide el nivel |
 | `stoneCertificates.provingOther` | Piedras que demuestran los faroles pero no cuentan: en 7.4, las que no son las lunas de la búsqueda |
 | `stoneCertificates.failing` | Piedras que no demuestran nada (la cuenta no cierra) |
 | `certificateRightFirstTry` | Si las primeras piedras presentadas en el nivel contaron (`null` si nunca se presentaron) |
 
-En `log`, cada `stoneCertificate` lleva `stones` (los nombres de los brotes levantados), `proves` y `counts`. En 7.2 se presenta sin levantar ninguna piedra: `stones: []` es correcto ahí. Los campos "primera vez" no cambian en partidas posteriores.
+En `log`, cada `stoneCertificate` lleva `stones` (los nombres de los brotes levantados), `proves` y `counts`, y la entrada `claim` de esa misma presentación, si no ganó, su `verdict` (`countShort`, `searchNotOver` o `notTheMoons`). Las preguntas de 5.2 y 7.4 dejan entradas `answer` y suman en `wrongAnswers`. En 7.2 se presenta sin levantar ninguna piedra: `stones: []` es correcto ahí. Los campos "primera vez" no cambian en partidas posteriores.
 
 ### Qué campo responde a cada medida
 
@@ -195,7 +204,7 @@ Copiar una vez por persona. Tiempo en minutos, redondeado. La columna "Registro"
 | Nivel | Tiempo | Pistas (grados) | Respuestas incorrectas | Registro | Notas |
 |---|---|---|---|---|---|
 | 5.1 | | | — | — | |
-| 5.2 | | | — | — | |
+| 5.2 | | | | — | |
 | 5.3 | | | | — | |
 | 5.4 | | | — | — | |
 | 5.5 | | | — | — | |
@@ -208,7 +217,7 @@ Copiar una vez por persona. Tiempo en minutos, redondeado. La columna "Registro"
 | 7.1 | | | | — | |
 | 7.2 | | | | | |
 | 7.3 | | | | | |
-| 7.4 | | | — | | |
+| 7.4 | | | | | |
 | 7.5 | | | — | | |
 
 "Respuestas incorrectas" suma `wrongAnswers` y `notebookWrong`. Un guion (—) marca los niveles donde esa medida no aplica.
@@ -239,7 +248,7 @@ Copiar una vez por persona. Tiempo en minutos, redondeado. La columna "Registro"
 
 1. **Agregar** plantillas y resúmenes en una tabla por nivel (mediana de tiempo, pistas de grado 3, abandonos) y una fila por criterio de §1 (cuántas personas lo cumplen). Marcar lo que falla.
 2. **Clasificar** cada problema como en el playtest A: del nivel (se corrige en su JSON o en `content/es/`, un commit por cambio), de mecánica o de motor (tarea del plan siguiente) o de diseño (se discute y, si cambia, primero se actualiza el GDD en su propio commit).
-3. **Si falla 7.4**, mirar primero qué punto de la rúbrica falta. Si falta el 1, revisar si el final de la búsqueda del autómata deja ver que de cada sol solo salen lunas (el brillo de las lunas, el tiempo que se ve el bosque terminado). Si falta el 2, revisar si 7.3 deja clara la cuenta de los grupos impares y si la flor se ve como un grupo. Si la explicación solo repite a Sauce, plantear (como pregunta de diseño) que la línea `ch7.4.sauce.08` llegue después de una pregunta del propio nivel. Antes de tocar el jardín de 7.4, revisar 4.9 y 3.8, de donde sale.
+3. **Si falla 7.4**, mirar primero qué punto de la rúbrica falta. Si falta el 1, revisar si el final de la búsqueda del autómata deja ver que de cada sol solo salen lunas (el brillo de las lunas, el tiempo que se ve el bosque terminado). Si falta el 2, revisar si 7.3 deja clara la cuenta de los grupos impares y si la flor se ve como un grupo. Desde el plan 10 la línea `ch7.4.sauce.08` ya llega después de una pregunta del propio nivel: si la explicación aún solo repite a Sauce, mirar en `log` qué opciones eligió antes de acertar. Antes de tocar el jardín de 7.4, revisar 4.9 y 3.8, de donde sale.
 4. **Si falla 6.1 o 6.3**, revisar las tarjetas que más fallan (`card` en `log`) y su texto antes de cambiar la receta.
 5. **Volver a probar** cada nivel corregido con al menos una persona nueva.
 6. **Cerrar el hito** cuando se cumplen los criterios de §1. Solo entonces los capítulos 5–7 pueden pasar a arte.
