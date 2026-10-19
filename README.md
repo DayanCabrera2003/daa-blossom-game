@@ -13,12 +13,12 @@ Every night the sprouts of a garden want a lantern, and a lantern is for two nei
 - **Eight chapters**, 0 to 7, from the Huerto to the Consejo, with the epilogue *Más allá del jardín* on what matching is used for outside the garden.
 - **The Códex**: fourteen entries opened by playing, each with the garden's intuition and a touchable diagram, the formal definitions, statements and proofs, and the bridge between the two.
 - **The Cuaderno**: every statement the player writes down links to the entry that translates it.
-- **The free mode**, the **secret flowers** and the hub's rewards (below).
+- **The free mode**, the **secret gardens** and the hub's rewards (below).
 - Art, music and sound from CC0 packs, plus a few sounds synthesized by the game; the characters speak in babble.
 
 ## How to play
 
-The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the sun to watch the day again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit, and each level has three hints.
+The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the day (the sun at the top right) to watch it again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit, and each level has three hints.
 
 Every panel over the garden (a question, the notebook, a card, the recipe, the dialogue box, a message) opens where it hides least of the garden, never over what it asks about, and can be **dragged by its frame** wherever the player likes; it opens there again for the rest of the session, and a double touch on its frame sends it back.
 
@@ -28,11 +28,11 @@ Menus, panels, questions and dialogue also work with the **keyboard** (the garde
 |---|---|---|
 | `Tab` / `Shift+Tab` | everywhere | from one button to the next |
 | `ArrowUp` / `ArrowDown` | everywhere | to the button above or below |
-| `ArrowLeft` / `ArrowRight` | everywhere | to the side, or move a slider in focus (the sun, a volume) |
+| `ArrowLeft` / `ArrowRight` | everywhere | to the side, or move a slider in focus (the day, a volume) |
 | `Enter` / `Space` | everywhere | press the button in focus, or go on with the dialogue |
 | `Escape` | everywhere | close what is open, or go back |
 | `M` | hub, levels, settings | mute or unmute |
-| `F` / `Shift+F` | hub | from one secret flower to the next |
+| `F` / `Shift+F` | hub | from one secret garden to the next |
 | `0`–`9` | levels | choose an answer of a question |
 | `Alt+ArrowUp` / `Alt+ArrowDown` / `Alt+ArrowLeft` / `Alt+ArrowRight` | levels, free mode | move the panel open (a question, a card, the dialogue box…) |
 | `Ctrl+Z` | levels, free mode | undo |
@@ -61,25 +61,25 @@ If the browser will not store (a private window, storage blocked or full), the g
 
 ## Teacher mode
 
-Add `?teacher` to the address to open every chapter, every secret flower and every page of the Códex, and to see every reward of the hub. In a level, `T` (or the trace button) opens a panel beside the garden with the trace in the Códex's notation: the player's day, a run of Edmonds from the lanterns the sun shows, and its Tutte–Berge certificate. `PageUp` and `PageDown` jump to the level before or after.
+Add `?teacher` to the address to open every chapter, every secret garden and every page of the Códex, and to see every reward of the hub. In a level, `T` (or the trace button) opens a panel beside the garden with the trace in the Códex's notation: the player's day, a run of Edmonds from the lanterns the sun shows, and its Tutte–Berge certificate. `PageUp` and `PageDown` jump to the level before or after.
 
 - `?teacher&level=4.6` starts straight in a level (an unknown id is ignored).
 - `?teacher&codex=C8` opens the Códex at an entry, and `?teacher&codex=C8&tab=formal` at one of its tabs (`intuition`, `formal`, `bridge`).
-- `?teacher&level=1.10` opens a secret flower (`2.5`, `3.10`, `4.13`, `5.6`, `6.7`, `7.6` the others).
+- `?teacher&level=1.10` opens a secret garden (`2.5`, `3.10`, `4.13`, `5.6`, `6.7`, `7.6` the others).
 
 `?level=` and `?codex=` only work together with `?teacher`; players always start at the hub.
 
 ## Free mode
 
-The **Modo libre** sign appears in the hub once chapter 1 is finished (always in teacher mode), and the epilogue offers it too. There you design a garden by hand (sprouts, vines and lanterns, up to 24 sprouts and 40 vines) or grow one from a generator (a row, a ring, a star, all with all, at random, bees and flowers, a long-stemmed flower, nested flowers, a helix, many flowers), and play it with the actions already won (all of them in teacher mode). Once met in the story, the **mechanical gardener** solves the garden from where you left it, with the sun to replay each step, and the **certificate** places its proof: the Council's stones, and the scarecrows when the garden is one of bees and flowers. Nothing played there touches the progress; the last design is kept apart in the browser.
+The **Modo libre** sign appears in the hub once chapter 1 is finished (always in teacher mode), and the epilogue offers it too. There you design a garden by hand (sprouts, vines and lanterns, up to 24 sprouts and 40 vines) or grow one from a generator (a row, a ring, a star, all with all, at random, bees and clovers, a long-stemmed flower, nested flowers, a helix, many flowers), and play it with the actions already won (all of them in teacher mode). Once met in the story, the **mechanical gardener** solves the garden from where you left it, with the sun to replay each step, and the **certificate** places its proof: the Council's stones, and the scarecrows when the garden is one of bees and clovers. Nothing played there touches the progress; the last design is kept apart in the browser.
 
 **Compartir** shows the garden's short code, a link that opens it, and its level file as JSON; the same sheet opens a garden from a pasted code or JSON, or from a chosen file. A link has the form `?garden=<code>` and works for every player (`?level=` wins when both are given). A code carries no positions, so an opened code is laid out again; the JSON keeps names and positions. The JSON is a valid level with id `9.1` and `"draft": true`: to make it a real level, give it its own id when copying it into `src/levels/data/`, and `npm run check-levels` will hold it to every rule.
 
-## Secret flowers and the hub's rewards
+## Secret gardens and the hub's rewards
 
-Each chapter from the Prado to the Consejo hides one **secret flower** by the post of its sign in the hub: a closed bud once the chapter is finished, which opens with enough of the chapter's stars (completing it and about half its extra stars; touching the bud says how many are missing). They are optional, teach nothing new and never block anything. `F` / `Shift+F` move between the flowers shown, and `Enter` touches one.
+Each chapter from the Prado to the Consejo hides one **secret garden** by the post of its sign in the hub: a closed bud once the chapter is finished, which opens with enough of the chapter's stars (completing it and about half its extra stars; touching the bud says how many are missing). They are optional, teach nothing new and never block anything. `F` / `Shift+F` move between the secret gardens shown, and `Enter` touches one.
 
-Stars (the best of each level, secret flowers included) and seeds (one per bet won, the first time) show next to the hub's title. They are thresholds, never spent: at 15, 30, 50, 70, 90, 110 and 130 stars a butterfly, a frog, a cat, a blue butterfly, two hens, fireflies and lanterns on the posts come to the hub, and every seed plants a small plant.
+Stars (the best of each level, secret gardens included) and seeds (one per bet won, the first time) show next to the hub's title. They are thresholds, never spent: at 15, 30, 50, 70, 90, 110 and 130 stars a butterfly, a frog, a cat, a blue butterfly, two hens, fireflies and lanterns on the posts come to the hub, and every seed plants a small plant.
 
 ## Credits
 
