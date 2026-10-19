@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-85 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+89 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -68,6 +68,21 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch2.3.sauce.04` · **Sauce** · cambiada
   - Antes: De una punta a la otra del hilo. Ya sabes andar ese camino.
   - Después: Empieza por esta punta del hilo. ¿Dónde acaba?
+
+### 2.4
+
+- [ ] `ch2.4.sauce.02` · **Sauce** · cambiada
+  - Antes: No se puede. Si no tienes cadena, nadie te gana.
+  - Después: No se puede: cada reflejo que te gana te deja una cadena.
+- [ ] `ch2.4.notebook.05` · **Cuaderno** · cambiada
+  - Antes: …nadie puede encender más faroles que yo.
+  - Después: …cualquier otra disposición encenderá como mucho los mismos.
+- [ ] `ch2.4.notebook.06` · **Cuaderno** · cambiada
+  - Antes: …es porque lo probé todo.
+  - Después: …nadie gana mientras busque bien.
+- [ ] `ch2.4.sauce.10` · **Sauce** · cambiada
+  - Antes: No hace falta probarlo todo. Basta con saber que no queda ninguna cadena.
+  - Después: Buscar bien no tiene nada que ver: si no queda ninguna cadena, nadie te gana, busque quien busque.
 
 ### 2.5
 
