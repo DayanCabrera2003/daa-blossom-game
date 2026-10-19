@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 /**
  * The loose lines of the Meadow (plan 10, phase 11): what Sauce says after the day replays a garden
- * the player may have solved another way.
+ * the player may have solved another way, and the even loop of 1.7 that 4.3 recalls.
  */
 
 const TABLE: Readonly<Record<string, string>> = lines;
@@ -38,4 +38,21 @@ describe('the replays of 1.1 and 1.2', () => {
       }
     },
   );
+});
+
+describe('the even loop of 1.7 and its echo in 4.3', () => {
+  it('1.7 closes with a Sauce line about the ring, after the play', () => {
+    const flow = flowOf('1.7');
+    expect(flow.map((step) => step.step)).toEqual(['play', 'say']);
+    const last = flow.at(-1);
+    if (last?.step !== 'say') throw new Error('1.7 does not close with a line');
+    expect(last.lines).toEqual(['ch1.7.sauce.03']);
+    expect(TABLE['ch1.7.sauce.03']).toMatch(/corro/);
+  });
+
+  it('4.3 opens recalling the ring of the Meadow', () => {
+    const first = flowOf('4.3')[0];
+    if (first?.step !== 'say') throw new Error('4.3 does not open with a line');
+    expect(first.lines.map((line) => TABLE[line]).join(' ')).toMatch(/corro del Prado/);
+  });
 });

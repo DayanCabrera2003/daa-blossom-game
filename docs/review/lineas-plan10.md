@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-137 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
+139 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
@@ -62,6 +62,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Sal de aquí. El bucle tiene dos lados: ¿por cuál llegas al otro?
 - [ ] `ch1.7.sauce.02` · **Sauce** · nueva
   - Después: Mira, te enseño por dónde va.
+- [ ] `ch1.7.sauce.03` · **Sauce** · nueva
+  - Después: Seis brotes en corro, y la cadena pudo ir por cualquiera de los dos lados. Acuérdate de este bucle.
 
 ### 1.8
 
@@ -207,6 +209,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.10.sauce.05` · **Sauce** · cambiada
   - Antes: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Esta flor es tuya.
   - Después: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Este jardín secreto es tuyo.
+
+### 4.3
+
+- [ ] `ch4.3.sauce.00` · **Sauce** · cambiada
+  - Antes: Otro bucle. Antes de desconfiar de tu luz, busca desde R y cuéntale los brotes.
+  - Después: ¿Te acuerdas del corro del Prado? Otro bucle. Antes de desconfiar de tu luz, busca desde R y cuéntale los brotes.
 
 ### 4.4
 

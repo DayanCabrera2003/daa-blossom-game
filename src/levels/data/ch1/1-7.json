@@ -27,5 +27,6 @@
     { "line": "ch1.7.sauce.01", "highlight": ["A"] },
     { "line": "ch1.7.sauce.02" }
   ],
+  "flow": [{ "step": "play" }, { "step": "say", "lines": ["ch1.7.sauce.03"] }],
   "solution": [{ "type": "chain", "path": ["A", "B", "C", "D"] }]
 }
