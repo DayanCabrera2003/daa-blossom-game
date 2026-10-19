@@ -420,7 +420,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 5.1
 
-- [ ] `ch5.1.sauce.00` · **Sauce** · plan: Una flor es un brote más. Y los brotes forman bucles. Busca desde R y pliega cada flor que aparezca.
+- [ ] `ch5.1.sauce.00` · **Sauce** · plan: Una flor es un brote más. Y los brotes forman bucles. Avanza tu luz desde R y pliega cada flor donde se pare.
 - [ ] `ch5.1.sauce.01` · **Sauce** · GDD: ¿Quién es sol dos veces?
 - [ ] `ch5.1.sauce.02` · **Sauce** · plan: Esta enredadera brilla. Mira quién está en cada punta.
 - [ ] `ch5.1.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Una flor también cabe dentro de otra.

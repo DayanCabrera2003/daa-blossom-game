@@ -28,10 +28,13 @@
   ],
   "goal": { "visible": true, "value": 4 },
   "roots": ["R"],
+  "forbid": ["split", "passLantern", "rotateStem"],
+  "chains": { "rule": "seen" },
+  "light": true,
   "victory": { "type": "matchingSize", "value": 4 },
   "hints": [
     { "line": "ch5.1.sauce.01" },
-    { "line": "ch5.1.sauce.02", "highlight": ["h", "R"] },
+    { "line": "ch5.1.sauce.02", "highlight": ["c", "g"] },
     { "line": "ch5.1.sauce.03" }
   ],
   "flow": [
@@ -40,15 +43,15 @@
     { "step": "say", "lines": ["ch5.1.sauce.04"] }
   ],
   "solution": [
-    { "type": "markRoot", "vertex": "R" },
-    { "type": "markMoon", "from": "R", "to": "a" },
-    { "type": "markMoon", "from": "b", "to": "c" },
-    { "type": "foldAt", "from": "d", "to": "b" },
-    { "type": "markMoon", "from": "c", "to": "g" },
-    { "type": "foldAt", "from": "h", "to": "R" },
-    { "type": "markMoon", "from": "a", "to": "t" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
+    { "type": "foldAt", "from": "b", "to": "d" },
+    { "type": "foldAt", "from": "c", "to": "g" },
+    { "type": "stepLight" },
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
-    { "type": "chain", "path": ["t", "a", "b", "d", "c", "g", "h", "R"] }
+    { "type": "chain", "path": ["R", "h", "g", "c", "d", "b", "a", "t"] }
   ]
 }

@@ -104,7 +104,8 @@ describe('5.1: a flower inside another', () => {
   });
 
   it('from F2, t is a moon in the dark: the chain unfolds as t–a=b–d=c–g=h–R', () => {
-    const seen = after(level, 'markMoon', 4).chainSeen;
+    // The light's fifth mark, from F2, sees the chain.
+    const seen = after(level, 'stepLight', 5).chainSeen;
     const path = [...'tabdcghR'].map(id);
     expect(seen === null ? null : [...seen].reverse()).toEqual(path);
     const opened = after(level, 'unfold', 2);
