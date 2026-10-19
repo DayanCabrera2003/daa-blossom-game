@@ -460,7 +460,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Volver a la pregunta
 - [ ] `mirror.spared` · cambiada
   - Antes: Calma: ganarle a tu jardín no es fácil. Y quien lo consigue siempre te deja una cadena.
-  - Después: Prueba con más faroles plateados que los tuyos.
+  - Después: Sigamos. Para ganarte, un reflejo necesita más faroles plateados que los tuyos.
 - [ ] `tutorial.present.title` · nueva
   - Después: Presentar
 - [ ] `tutorial.present.body` · nueva
