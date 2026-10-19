@@ -92,6 +92,44 @@ describe('referencedLines', () => {
     ]);
   });
 
+  it('lists what a question of the script says to refute a false answer: its garden too', () => {
+    const asking = levelSchema.parse({
+      ...talkative,
+      notebook: undefined,
+      hints: [],
+      flow: [
+        { step: 'play' },
+        {
+          step: 'ask',
+          prompt: 'ch4.7.sauce.00',
+          options: [
+            { line: 'ch4.7.sauce.01', correct: true },
+            {
+              line: 'ch4.7.sauce.02',
+              correct: false,
+              reply: 'ch4.7.sauce.03',
+              counterexample: {
+                mode: 'play',
+                line: 'ch4.7.sauce.04',
+                sprouts: [{ label: 'a', x: 100, y: 100 }],
+                vines: [],
+                actions: ['join'],
+              },
+            },
+          ],
+          retry: true,
+        },
+      ],
+    });
+    expect(referencedLines(asking)).toEqual([
+      'ch4.7.sauce.00',
+      'ch4.7.sauce.01',
+      'ch4.7.sauce.02',
+      'ch4.7.sauce.03',
+      'ch4.7.sauce.04',
+    ]);
+  });
+
   it('lists the lines of every notebook question, in the order the level writes them', () => {
     const twice = levelSchema.parse({
       ...talkative,

@@ -2,7 +2,10 @@ import type { FlowStep } from './flow';
 import type { NotebookData } from './notebook';
 import type { LevelData } from './schema';
 
-/** The lines one step of the script may say: its own lines, questions, answers and reactions. */
+/**
+ * The lines one step of the script may say: its own lines, questions, answers (with the gardens that
+ * refute them) and reactions.
+ */
 export function stepLines(step: FlowStep): string[] {
   switch (step.step) {
     case 'say':
@@ -10,12 +13,7 @@ export function stepLines(step: FlowStep): string[] {
     case 'play':
       return step.reactions.flatMap((reaction) => reaction.say);
     case 'ask':
-      return [
-        step.prompt,
-        ...step.options.flatMap((option) =>
-          option.reply === undefined ? [option.line] : [option.line, option.reply],
-        ),
-      ];
+      return [step.prompt, ...step.options.flatMap(optionLines)];
     case 'bet':
     case 'count':
     case 'raceBet':
@@ -30,8 +28,9 @@ export function stepLines(step: FlowStep): string[] {
 }
 
 /**
- * The lines of one notebook statement, in the order they may be heard: the statement, the mentor's
- * reply, then its counterexample's presenting line and, when it is drawn on, the line of its chain.
+ * The lines of one statement, of the notebook or of a question of the script, in the order they may
+ * be heard: the statement, the mentor's reply, then its counterexample's presenting line and, when
+ * it is drawn on, the line of its chain.
  */
 function optionLines(option: NotebookData['options'][number]): string[] {
   const { counterexample } = option;
