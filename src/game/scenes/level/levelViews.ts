@@ -96,6 +96,7 @@ export const buildLevelViews = (
       t,
       {
         done: () => dispatch({ kind: 'done' }),
+        light: () => dispatch({ kind: 'light' }),
         undo: () => dispatch({ kind: 'undo' }),
         redo: () => dispatch({ kind: 'redo' }),
         hint: () => dispatch({ kind: 'hint' }),

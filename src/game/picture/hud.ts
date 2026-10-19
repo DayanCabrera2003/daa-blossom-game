@@ -28,6 +28,8 @@ export interface HudPicture {
   readonly canUndo: boolean;
   readonly canRedo: boolean;
   readonly canDeclareDone: boolean;
+  /** Whether "Avanzar la luz" is at hand: in the levels where the light searches by itself. */
+  readonly canStepLight: boolean;
   readonly hintAvailable: boolean;
   /**
    * The sun on its slider, how many states the day has, and whether it calls for the player (the
@@ -122,6 +124,7 @@ export function hudPicture(
     canUndo: canUndo(history),
     canRedo: canRedo(history),
     canDeclareDone: state.allowed.has('declareDone'),
+    canStepLight: state.allowed.has('stepLight'),
     hintAvailable: isHintAvailable(session, now),
     sun: isUiUnlocked('sun', interfaceAt)
       ? {

@@ -1,7 +1,13 @@
 import type Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import type { Translate } from '@services/i18n';
-import { bottomRow, HUD_BUTTONS, traceButtonLeft, type HudButton } from '../picture/bottomRows';
+import {
+  bottomRow,
+  HUD_BUTTONS,
+  ordersRow,
+  traceButtonLeft,
+  type HudButton,
+} from '../picture/bottomRows';
 import type { HudPicture } from '../picture/hud';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { Button } from './Button';
@@ -34,6 +40,8 @@ export interface HudActions {
   readonly book: () => void;
   /** Opens or folds the teacher's trace panel (teacher mode only). */
   readonly trace: () => void;
+  /** Moves the light that searches by itself on by one mark (the flower levels). */
+  readonly light: () => void;
 }
 
 /** How a screen lays its HUD out (`systems/levelScreenOf.ts`). */
@@ -75,6 +83,12 @@ export class HudView {
   private readonly book: Button;
   /** The teacher's trace panel, at the right end of the tools' row, in teacher mode only. */
   private readonly trace: Button;
+  /** "Avanzar la luz", ending the tools' row where the light searches by itself. */
+  private readonly light: Button;
+  /** Whether the trace sits on the tools' row, where the light's button would push it left. */
+  private readonly traceOnTools: boolean;
+  /** Whether "Avanzar la luz" is shown now. */
+  private lightShown = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -114,8 +128,16 @@ export class HudView {
     this.trace = new Button(scene, 0, LAYOUT.toolbarY, t('hud.trace'), actions.trace).setVisible(
       false,
     );
+    this.light = new Button(
+      scene,
+      0,
+      LAYOUT.toolbarY,
+      t('hud.stepLight'),
+      actions.light,
+    ).setVisible(false);
     // In the free mode its orders end the tools' row, so the trace goes beside the Códex.
     const traceBelow = layout.traceRow === 'buttons';
+    this.traceOnTools = !traceBelow;
     // The gear, the Códex (and the trace) from the left, the buttons from the right; the row
     // squeezes its gaps if a wider fallback face would make them meet.
     const row = bottomRow({
@@ -131,12 +153,26 @@ export class HudView {
     } else {
       this.trace.moveTo(row.trace, LAYOUT.bottomY);
     }
+    this.light.moveTo(traceButtonLeft(this.light.width), LAYOUT.toolbarY);
     this.buttons = Object.fromEntries(layout.buttons.map((name, i) => [name, made[i]]));
   }
 
   /** Shows the Códex button when some page of the book is open, and hides it otherwise. */
   showBook(open: boolean): void {
     this.book.setVisible(open);
+  }
+
+  /**
+   * Shows "Avanzar la luz" at the end of the tools' row, the trace (when it shares that row) just
+   * before it, or hides it and gives the end of the row back to the trace.
+   */
+  private showLight(shown: boolean): void {
+    if (this.lightShown === shown) return;
+    this.lightShown = shown;
+    this.light.setVisible(shown);
+    if (!this.traceOnTools) return;
+    const widths = shown ? [this.trace.width, this.light.width] : [this.trace.width];
+    this.trace.moveTo(itemAt(ordersRow(widths), 0), LAYOUT.toolbarY);
   }
 
   /** Shows the trace button, in teacher mode. */
@@ -188,6 +224,7 @@ export class HudView {
     redo?.setEnabled(hud.canRedo);
     hint?.setEnabled(hud.hintAvailable);
     done?.setVisible(hud.canDeclareDone);
+    this.showLight(hud.canStepLight);
     checkMirror?.setVisible(hud.canCheckMirror);
     leaveLayer?.setVisible(inside);
   }

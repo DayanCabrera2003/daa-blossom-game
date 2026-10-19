@@ -32,6 +32,7 @@ describe('the picture of the HUD', () => {
       canUndo: false,
       canRedo: false,
       canDeclareDone: false,
+      canStepLight: false,
       hintAvailable: false,
       sun: { fraction: 1, steps: 1, calling: false },
       tools: ['lanterns'],
@@ -70,6 +71,16 @@ describe('the picture of the HUD', () => {
     expect(hud.goal).toEqual({ key: 'hud.goalHidden', params: {} });
     expect(hud.canDeclareDone).toBe(true);
     expect(hud.tools).toEqual(['lanterns', 'marks', 'foldLoop', 'inspect', 'scarecrows']);
+  });
+
+  it('offers "Avanzar la luz" only where the light searches by itself', () => {
+    const base = closedFlowerLevel();
+    const lit: Level = {
+      ...base,
+      start: { ...base.start, allowed: new Set([...base.start.allowed, 'stepLight']) },
+    };
+    expect(hudPicture(startSession(base, 0), initialPointer('marks'), 0).canStepLight).toBe(false);
+    expect(hudPicture(startSession(lit, 0), initialPointer('marks'), 0).canStepLight).toBe(true);
   });
 
   it('follows the day: undo, redo and the sun position move with the history', () => {
