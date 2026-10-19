@@ -460,8 +460,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 5.5
 
 - [ ] `ch5.5.sauce.00` · **Sauce** · plan: Llegó la niebla al jardín salvaje. Cuida el agua: mira solo lo que necesites, enciende todos los faroles que puedas y pulsa «Terminé».
-- [ ] `ch5.5.sauce.01` · **Sauce** · plan: Una flor plegada es un brote más: también puede quedar dentro de otra. Pliega cada vez que dos soles del mismo árbol se toquen.
-- [ ] `ch5.5.sauce.02` · **Sauce** · plan: Estos brotes siguen a oscuras. Busca desde ellos.
+- [ ] `ch5.5.sauce.01` · **Sauce** · plan: Una flor plegada es un brote más: también puede quedar dentro de otra. Pliega cada vez que tu luz se pare donde dos soles del mismo árbol se tocan.
+- [ ] `ch5.5.sauce.02` · **Sauce** · plan: Estos brotes siguen a oscuras: tu luz empieza por ellos, uno tras otro.
 - [ ] `ch5.5.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.5.sauce.04` · **Sauce** · plan: Tres flores, una dentro de otra, y aun así no te perdiste: se pliegan de dentro hacia fuera y se abren de fuera hacia dentro. El jardín salvaje es tuyo.
 
