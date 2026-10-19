@@ -7,6 +7,7 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { refutationAt, type Refutation } from '@levels/counterexample';
 import type { LevelStep } from '@levels/flow';
+import { stepLines } from '@levels/lines';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -70,6 +71,25 @@ function walkMarks(start: GardenState): { gardens: GardenState[]; refusals: stri
   }
   return { gardens, refusals: [...refusals] };
 }
+
+describe('the mentor tells why after the player answers, as the reply to the right answer', () => {
+  it.each([['2.3', 'ch2.3.sauce.02']])(
+    '%s asks after playing, again until right, and says %s only then',
+    (id, why) => {
+      const level = levelOf(id);
+      const { at, ask } = askOf(level);
+      expect(level.flow.findIndex((step) => step.step === 'play')).toBeLessThan(at);
+      expect(ask.retry).toBe(true);
+      expect(ask.options.find((answer) => answer.correct)?.reply).toBe(why);
+      expect(level.flow.slice(0, at).flatMap(stepLines)).not.toContain(why);
+      expect(level.flow.slice(at + 1).flatMap(stepLines)).not.toContain(why);
+      // Every false answer is refuted: by a reply, or by a garden.
+      for (const answer of ask.options.filter((option) => !option.correct)) {
+        expect(answer.reply !== undefined || answer.counterexample !== undefined).toBe(true);
+      }
+    },
+  );
+});
 
 describe('3.8: between bees and clovers, two suns of one tree never touch', () => {
   const level = levelOf('3.8');

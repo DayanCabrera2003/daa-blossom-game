@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 482 líneas, 57 están tal cual en el GDD y 425 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 486 líneas, 58 están tal cual en el GDD y 428 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -157,6 +157,10 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch2.3.sauce.02` · **Sauce** · GDD: Cuando alguien puede hacerlo mejor que tú, te ha dejado una cadena tirada en el suelo. Siempre.
 - [ ] `ch2.3.sauce.03` · **Sauce** · plan: ¿Quién está a oscuras en tu jardín?
 - [ ] `ch2.3.sauce.04` · **Sauce** · plan: Empieza por esta punta del hilo. ¿Dónde acaba?
+- [ ] `ch2.3.sauce.05` · **Sauce** · GDD: ¿Podría la punta de un hilo que gana el agua tener un farol tuyo?
+- [ ] `ch2.3.gardener.06` · **Tú** · plan: Sí, a veces: depende del jardín.
+- [ ] `ch2.3.sauce.07` · **Sauce** · plan: Nunca. Una punta lleva farol plateado; si también tuviera uno tuyo, el hilo seguiría por él, y ya no sería una punta.
+- [ ] `ch2.3.gardener.08` · **Tú** · plan: No: si lo tuviera, el hilo seguiría por él.
 
 ### 2.4
 

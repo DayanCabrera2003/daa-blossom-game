@@ -48,7 +48,18 @@
     { "step": "mirror" },
     { "step": "say", "lines": ["ch2.3.sauce.00", "ch2.3.sauce.01"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch2.3.sauce.02"] }
+    {
+      "step": "ask",
+      "prompt": "ch2.3.sauce.05",
+      "options": [
+        { "line": "ch2.3.gardener.06", "correct": false, "reply": "ch2.3.sauce.07" },
+        { "line": "ch2.3.gardener.08", "correct": true, "reply": "ch2.3.sauce.02" }
+      ],
+      "retry": true
+    }
   ],
-  "solution": [{ "type": "chain", "path": ["1", "2", "3", "4", "5", "6"] }]
+  "solution": [
+    { "type": "chain", "path": ["1", "2", "3", "4", "5", "6"] },
+    { "type": "answer", "option": 1 }
+  ]
 }
