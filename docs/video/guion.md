@@ -19,8 +19,8 @@ Tiempos aproximados; total, unos 30 minutos.
 
 | # | Tramo | Min. | Cargar | Qué enseñar |
 |---|---|---|---|---|
-| 1 | Apertura | 1 | `npm run save -- all-stars` (línea en la consola), luego https://dayancabrera2003.github.io/daa-blossom-game/ sin `?teacher` | El hub crecido: los faroles, las flores secretas ganadas, los bichos; la pregunta "¿cuántos pueden dormir con luz?" |
-| 2 | El Huerto y la trampa | 3 | `?teacher&level=0.1` (y `?teacher&level=0.5` para el sol), luego `?teacher&level=1.1` y `?teacher&level=1.3` | Juntar dos brotes; 1.1 en directo (la trampa: hay que apagar un farol para encender dos); la cadena de 1.3 y su nombre |
+| 1 | Apertura | 1 | `npm run save -- all-stars` (línea en la consola), luego https://dayancabrera2003.github.io/daa-blossom-game/ sin `?teacher` | El hub crecido: los faroles, los jardines secretos ganados, los bichos; la pregunta "¿cuántos pueden dormir con luz?" |
+| 2 | El Huerto y la trampa | 3 | `?teacher&level=0.1` (y `?teacher&level=0.5` para el día), luego `?teacher&level=1.1` y `?teacher&level=1.3` | Juntar dos brotes; 1.1 en directo (la trampa: hay que apagar un farol para encender dos); la cadena de 1.3 y su nombre |
 | 3 | El Estanque | 4 | `?teacher&level=2.1`, `?teacher&level=2.2`, `?teacher&level=2.3`; luego `?teacher&codex=C3&tab=intuition` y `?teacher&codex=C3&tab=formal` | El reflejo, hilos y bucles, el hilo ganador; Berge en palabras del jardín y luego formal |
 | 4 | El Invernadero | 3 | `?teacher&level=3.1`, `?teacher&level=3.2`, `?teacher&level=3.8`; luego `?teacher&codex=C4` y `?teacher&codex=C5` | La búsqueda en la niebla, el bosque (sol y luna), los espantapájaros como certificado |
 | 5 | La traición | 4 | `?teacher&level=4.1`, `?teacher&level=4.2`; luego `?teacher&codex=C6` | 4.1 en directo y **sin cortes**; el conflicto de 4.2; el bucle impar |
