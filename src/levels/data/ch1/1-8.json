@@ -37,6 +37,11 @@
     }
   ],
   "unlocks": { "actions": ["declareDone"], "codex": ["C1", "C2", "C13"] },
+  "hints": [
+    { "line": "ch1.8.sauce.06" },
+    { "line": "ch1.8.sauce.07", "highlight": ["C", "E", "I"] },
+    { "line": "ch1.8.sauce.08" }
+  ],
   "solution": [
     { "type": "join", "u": "B", "v": "C" },
     { "type": "join", "u": "D", "v": "E" },

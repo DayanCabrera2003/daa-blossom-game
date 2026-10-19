@@ -4,13 +4,58 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-44 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+59 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
 - [ ] `ch1.3.sauce.02` · **Sauce** · cambiada
   - Antes: Sigue la luz, de Sami hasta Teo.
   - Después: Sami no es el único a oscuras. ¿Hasta quién puede llegar la luz?
+
+### 1.5
+
+- [ ] `ch1.5.sauce.05` · **Sauce** · nueva
+  - Después: ¿Quiénes siguen a oscuras? Cada cadena empieza en uno y acaba en otro.
+- [ ] `ch1.5.sauce.06` · **Sauce** · nueva
+  - Después: Empieza por este. ¿Hasta qué otro brote a oscuras llega su cadena sin enredarse?
+- [ ] `ch1.5.sauce.07` · **Sauce** · nueva
+  - Después: Te enseño una cadena. La otra la buscas tú.
+
+### 1.6
+
+- [ ] `ch1.6.sauce.01` · **Sauce** · nueva
+  - Después: ¿Quién tiene un solo vecino? Ese no puede esperar a nadie más.
+- [ ] `ch1.6.sauce.02` · **Sauce** · nueva
+  - Después: Estos dos solo tienen un vecino cada uno. Empieza por ellos.
+- [ ] `ch1.6.sauce.03` · **Sauce** · nueva
+  - Después: Te enseño el primer paso. Lo demás es tuyo.
+
+### 1.7
+
+- [ ] `ch1.7.sauce.00` · **Sauce** · nueva
+  - Después: ¿Quién sigue a oscuras? Hay dos, uno a cada lado del bucle.
+- [ ] `ch1.7.sauce.01` · **Sauce** · nueva
+  - Después: Sal de aquí. El bucle tiene dos lados: ¿por cuál llegas al otro?
+- [ ] `ch1.7.sauce.02` · **Sauce** · nueva
+  - Después: Mira, te enseño por dónde va.
+
+### 1.8
+
+- [ ] `ch1.8.sauce.06` · **Sauce** · nueva
+  - Después: ¿Quién tiene un solo vecino?
+- [ ] `ch1.8.sauce.07` · **Sauce** · nueva
+  - Después: Estas puntas solo tienen un vecino. ¿Con quién puede juntarse cada una?
+- [ ] `ch1.8.sauce.08` · **Sauce** · nueva
+  - Después: Te enseño el siguiente paso. Lo demás es tuyo.
+
+### 1.9
+
+- [ ] `ch1.9.sauce.00` · **Sauce** · nueva
+  - Después: Hay rincones sin ningún farol y una cadena muy larga. ¿Quién sigue a oscuras?
+- [ ] `ch1.9.sauce.01` · **Sauce** · nueva
+  - Después: La cadena larga empieza aquí. Cuidado con los callejones del camino.
+- [ ] `ch1.9.sauce.02` · **Sauce** · nueva
+  - Después: Te enseño el siguiente paso. Lo demás es tuyo.
 
 ### 2.3
 

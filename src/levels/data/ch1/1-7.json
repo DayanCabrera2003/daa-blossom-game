@@ -22,5 +22,10 @@
   ],
   "goal": { "visible": true, "value": 3 },
   "victory": { "type": "matchingSize", "value": 3 },
+  "hints": [
+    { "line": "ch1.7.sauce.00" },
+    { "line": "ch1.7.sauce.01", "highlight": ["A"] },
+    { "line": "ch1.7.sauce.02" }
+  ],
   "solution": [{ "type": "chain", "path": ["A", "B", "C", "D"] }]
 }
