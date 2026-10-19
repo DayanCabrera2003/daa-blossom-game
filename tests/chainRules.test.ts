@@ -76,6 +76,24 @@ describe('4.10: rotate the stem, the flower closed for the day', () => {
     expect(walk).toMatchObject({ reached: false, witness: null });
   });
 
+  it('folding is closed for the day, not "not learnt yet" as in 3.1', () => {
+    expect(applyAction(level.start, { type: 'foldAt', from: 2, to: 4 })).toEqual({
+      ok: false,
+      reason: { code: 'actionClosed', action: 'foldAt' },
+    });
+    expect(applyAction(levelById('3.1').start, { type: 'foldAt', from: 0, to: 1 })).toEqual({
+      ok: false,
+      reason: { code: 'actionLocked', action: 'foldAt' },
+    });
+  });
+
+  it('refuses the chain of 4.1 drawn by heart, as the flower is closed', () => {
+    expect(applyAction(level.start, { type: 'chain', path: [0, 1, 2, 4, 3, 5] })).toEqual({
+      ok: false,
+      reason: { code: 'flowerClosed' },
+    });
+  });
+
   it('once b is in the dark, the chain from the base wins (the solution rotates the stem)', () => {
     expect(uses(level, ['rotateStem'])).toBe(true);
     expect(wins(level)(solved(level))).toBe(true);
