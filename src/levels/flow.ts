@@ -5,6 +5,7 @@ import { RECIPE_CASES } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import { z } from 'zod';
 import { label, levelAction, lineId } from './fields';
+import { statementSchema } from './notebook';
 
 /**
  * The script of a level (plan 03, phase 1): the steps that happen in it, in order, after or instead
@@ -25,9 +26,6 @@ const reaction = z.discriminatedUnion('on', [
     say: z.array(lineId).min(1),
   }),
 ]);
-
-/** A question with written answers; `reply` is what the mentor says after that answer. */
-const option = z.strictObject({ line: lineId, correct: z.boolean(), reply: lineId.optional() });
 
 /** The numbers offered by a numeric question: every whole number from 0 to `range`. */
 const range = z.number().int().min(1);
@@ -56,13 +54,23 @@ const flowStep = z.discriminatedUnion('step', [
   z.strictObject({ step: z.literal('certifyAgain'), repeated: lineId }),
   /** The mentor says these lines; done at once. */
   z.strictObject({ step: z.literal('say'), lines: z.array(lineId).min(1) }),
-  /** A question; with `retry`, a wrong answer asks again. Integrity checks one option is right. */
-  z.strictObject({
-    step: z.literal('ask'),
-    prompt: lineId,
-    options: z.array(option).min(2),
-    retry: z.boolean().default(false),
-  }),
+  /**
+   * A question; with `retry`, a wrong answer asks again. Integrity checks one option is right. A
+   * false option is refuted as in the notebook, by the mentor's `reply` or by a garden to touch
+   * (`counterexample`, plan 10, phase 7); a question with a garden asks again, so the player comes
+   * back from it to the question.
+   */
+  z
+    .strictObject({
+      step: z.literal('ask'),
+      prompt: lineId,
+      options: z.array(statementSchema).min(2),
+      retry: z.boolean().default(false),
+    })
+    .refine(
+      (ask) => ask.retry || ask.options.every((option) => option.counterexample === undefined),
+      'a question that opens a garden asks again',
+    ),
   /**
    * A bet on the number of lanterns, answered by the core. `preview` shows the garden for that many
    * milliseconds and then veils it; an `informal` bet (0.4) earns no star.

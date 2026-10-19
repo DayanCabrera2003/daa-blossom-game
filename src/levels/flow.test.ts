@@ -165,6 +165,45 @@ describe('the script of a level (flow)', () => {
     expect(accepts([{ ...bet, range: 3 }])).toBe(false);
   });
 
+  describe('a question may refute a false answer with a garden, as the notebook does', () => {
+    /** A small garden that refutes, written as a notebook's counterexample. */
+    const garden = {
+      mode: 'play',
+      line: 'ch3.8.sauce.14',
+      sprouts: [
+        { label: 'A', x: 160, y: 127 },
+        { label: 'B', x: 240, y: 127 },
+      ],
+      vines: [['A', 'B']],
+      actions: ['join'],
+    };
+    /** An ask whose options are `right` and `wrong`, asked again after a wrong answer. */
+    const asking = (right: object, wrong: object, retry = true) => [
+      {
+        step: 'ask',
+        prompt: 'ch3.8.sauce.11',
+        options: [
+          { line: 'ch3.8.sauce.12', correct: true, ...right },
+          { line: 'ch3.8.sauce.13', correct: false, ...wrong },
+        ],
+        retry,
+      },
+    ];
+
+    it('reads the garden of a false answer', () => {
+      const [ask] = parse(asking({}, { counterexample: garden }));
+      expect(ask).toMatchObject({ options: [{}, { counterexample: { mode: 'play' } }] });
+    });
+
+    it('never on the right answer', () => {
+      expect(accepts(asking({ counterexample: garden }, {}))).toBe(false);
+    });
+
+    it('only in a question asked again, which the player meets once back from the garden', () => {
+      expect(accepts(asking({}, { counterexample: garden }, false))).toBe(false);
+    });
+  });
+
   it('a question offers at least two options', () => {
     const lonely = {
       step: 'ask',
