@@ -8,7 +8,7 @@ const slept = (steps: number) => ({ steps, asleep: true });
 
 describe('the answer of a doubling bet (level 6.5)', () => {
   it('offers three answers, from the gentlest growth to the wildest', () => {
-    expect(DOUBLING_ANSWERS).toEqual(['double', 'fourToEight', 'farMore']);
+    expect(DOUBLING_ANSWERS).toEqual(['double', 'threeToFive', 'farMore']);
   });
 
   it('twice the steps is about double, clearly', () => {
@@ -16,10 +16,12 @@ describe('the answer of a doubling bet (level 6.5)', () => {
     expect(doublingAnswer(ran(100), ran(170))).toEqual({ answer: 'double', clear: true });
   });
 
-  it('from about four to eight times the steps is the middle answer, ≈ included', () => {
-    for (const steps of [360, 400, 600, 800, 900]) {
-      expect(doublingAnswer(ran(100), ran(steps))).toEqual({ answer: 'fourToEight', clear: true });
+  it('from about three to five times the steps, about four, is the middle answer', () => {
+    for (const steps of [360, 400, 450, 500]) {
+      expect(doublingAnswer(ran(100), ran(steps))).toEqual({ answer: 'threeToFive', clear: true });
     }
+    // Far more starts only well past five: up to about eight times is still nearer to four.
+    expect(doublingAnswer(ran(100), ran(800))).toEqual({ answer: 'threeToFive', clear: true });
   });
 
   it('far more steps, or falling asleep, is the last answer', () => {
@@ -30,10 +32,10 @@ describe('the answer of a doubling bet (level 6.5)', () => {
   });
 
   it('a ratio near the edge of two answers is answered but not clear', () => {
-    // Between double and four (√8 ≈ 2.83), and between eight and sixteen (√128 ≈ 11.3).
+    // Between double and three to five (√8 ≈ 2.83), and well past five (√128 ≈ 11.3).
     expect(doublingAnswer(ran(100), ran(280))).toEqual({ answer: 'double', clear: false });
-    expect(doublingAnswer(ran(100), ran(290))).toEqual({ answer: 'fourToEight', clear: false });
-    expect(doublingAnswer(ran(100), ran(1_100))).toEqual({ answer: 'fourToEight', clear: false });
+    expect(doublingAnswer(ran(100), ran(290))).toEqual({ answer: 'threeToFive', clear: false });
+    expect(doublingAnswer(ran(100), ran(1_100))).toEqual({ answer: 'threeToFive', clear: false });
     expect(doublingAnswer(ran(100), ran(1_200))).toEqual({ answer: 'farMore', clear: false });
   });
 

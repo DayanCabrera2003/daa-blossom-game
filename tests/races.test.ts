@@ -80,13 +80,13 @@ describe('6.5, race II: 16, 32 and 64 sprouts, with doubling bets', () => {
     for (const { race } of racesOf(level.flow)) expect(race.budget).toBeLessThanOrEqual(1_000_000);
   });
 
-  it('each bet has one clear answer: about four to eight times for the recipe, far more for Bruto', () => {
+  it('each bet has one clear answer: about three to five times for the recipe, far more for Bruto', () => {
     const answers = level.flow.flatMap((step, index) => {
       if (step.step !== 'raceBet') return [];
       const verdict = raceBetVerdict(level.flow, index);
       return [{ runner: step.runner, answer: verdict?.answer, clear: verdict?.clear }];
     });
-    const recipe = { runner: 'automaton', answer: 'fourToEight', clear: true };
+    const recipe = { runner: 'automaton', answer: 'threeToFive', clear: true };
     const bruto = { runner: 'bruto', answer: 'farMore', clear: true };
     expect(answers).toEqual([recipe, bruto, recipe, bruto, recipe, bruto]);
   });

@@ -134,7 +134,7 @@ const entrySchema = z.discriminatedUnion('kind', [
   }),
   /**
    * A doubling bet answered before a race (6.5): the runner bet on, the answer picked (`double`,
-   * `fourToEight` or `farMore`) and whether the races proved it right.
+   * `threeToFive` or `farMore`) and whether the races proved it right.
    */
   z.strictObject({
     kind: z.literal('raceBet'),

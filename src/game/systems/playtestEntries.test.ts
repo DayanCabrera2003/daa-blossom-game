@@ -283,7 +283,7 @@ describe('playtest entries of bets, counts and the notebook', () => {
         level: '6.5',
         step: 1,
         runner: 'automaton',
-        answer: 'fourToEight',
+        answer: 'threeToFive',
         right: true,
       },
       {

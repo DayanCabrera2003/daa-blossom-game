@@ -572,7 +572,7 @@ const RACES = {
     { step: 'race', family: 'half', size: 16, seed: 26, budget: 1_000 },
   ],
   solution: [
-    { type: 'raceBet', answer: 'fourToEight' },
+    { type: 'raceBet', answer: 'threeToFive' },
     { type: 'raceBet', answer: 'double' },
   ],
 };

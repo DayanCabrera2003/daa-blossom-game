@@ -23,11 +23,11 @@
     { "step": "say", "lines": ["ch6.5.sauce.10", "ch6.5.bruto.11"] }
   ],
   "solution": [
-    { "type": "raceBet", "answer": "fourToEight" },
+    { "type": "raceBet", "answer": "threeToFive" },
     { "type": "raceBet", "answer": "farMore" },
-    { "type": "raceBet", "answer": "fourToEight" },
+    { "type": "raceBet", "answer": "threeToFive" },
     { "type": "raceBet", "answer": "farMore" },
-    { "type": "raceBet", "answer": "fourToEight" },
+    { "type": "raceBet", "answer": "threeToFive" },
     { "type": "raceBet", "answer": "farMore" }
   ]
 }

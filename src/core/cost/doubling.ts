@@ -6,18 +6,20 @@ import type { Run } from './benchmark';
  * dará tu receta? ¿Y Bruto?". The player never guesses a number, only one of three answers, and
  * the right one comes from the steps measured in the two races, never from theory:
  * - `double`: about twice the steps;
- * - `fourToEight`: from about four to about eight times the steps;
+ * - `threeToFive`: from about three to about five times the steps, about four (the recipe measures
+ *   ×3.7 to ×4.5 in the races of 6.5);
  * - `farMore`: far more than that, or the runner fell asleep.
  *
  * The answers are read on a logarithmic scale, where doubling the steps is one unit: each answer
- * covers the ratios nearer to it than to its neighbours (√2 to √8 for double, √8 to √128 for four
- * to eight, beyond √128 for far more). A ratio within a fixed tolerance of an edge is still given
+ * covers the ratios nearer to it than to its neighbours (√2 to √8 for double, √8 to √128 for three
+ * to five, beyond √128 for far more: "far more" means well past five, so up to about eight times
+ * is still read as the middle answer). A ratio within a fixed tolerance of an edge is still given
  * its answer, but is not `clear`: a level must race gardens whose answers are clear, so a player
  * is never told wrong for picking the neighbour of a ratio that sits between two.
  */
 
 /** The answers of a doubling bet, from the gentlest growth to the wildest. */
-export const DOUBLING_ANSWERS = ['double', 'fourToEight', 'farMore'] as const;
+export const DOUBLING_ANSWERS = ['double', 'threeToFive', 'farMore'] as const;
 
 /** One answer of a doubling bet. */
 export type DoublingAnswer = (typeof DOUBLING_ANSWERS)[number];
@@ -46,7 +48,7 @@ export function doublingAnswer(before: Run, after: Run): DoublingVerdict {
   invariant(before.steps > 0, 'a race of no steps has nothing to compare with');
   const doublings = Math.log2(after.steps / before.steps);
   const answer: DoublingAnswer =
-    doublings < FOUR_FROM ? 'double' : doublings <= FAR_FROM ? 'fourToEight' : 'farMore';
+    doublings < FOUR_FROM ? 'double' : doublings <= FAR_FROM ? 'threeToFive' : 'farMore';
   const edges = [DOUBLE_FROM, FOUR_FROM, FAR_FROM];
   const clear =
     doublings >= DOUBLE_FROM && edges.every((edge) => Math.abs(doublings - edge) >= TOLERANCE);

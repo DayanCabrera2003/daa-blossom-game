@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-122 líneas de diálogo y 36 textos de interfaz distintos de la versión 1.0.1.
+122 líneas de diálogo y 38 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -462,6 +462,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `hud.councilHidden` · cambiada
   - Antes: La cuenta del Consejo sale al pulsar «Terminé»
   - Después: La cuenta del Consejo sale al pulsar «Presentar»
+- [ ] `raceBet.answer.threeToFive` · nueva
+  - Después: ≈ 3 a 5 veces
 - [ ] `diagram.event.declareDone` · cambiada
   - Antes: «Terminé»: el jardín no puede hacerlo mejor.
   - Después: «Terminé»: el jardinero dice que el jardín no puede hacerlo mejor.
@@ -499,6 +501,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Con Marcas, toca una flor cerrada para abrirla. El trozo de cadena que encontró tu luz sigue dibujado: arrastra solo el tramo de dentro de la flor para completarlo.
 - [ ] `notice.part.level` · nueva
   - Después: el jardín
+- [ ] `raceBet.answer.fourToEight` · retirada
+  - Antes: ≈ de 4 a 8 veces
 - [ ] `recipe.card.chainToDark` · retirada
   - Antes: Si x no tiene marca y está a oscuras: cadena. Pasa los faroles y vuelve al paso 1.
 - [ ] `recipe.missing.dark` · retirada
