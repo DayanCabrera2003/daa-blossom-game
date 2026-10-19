@@ -4,6 +4,15 @@ Capítulos 3–4 en greybox (círculos, rombos y líneas, sin arte ni voz). Lo d
 
 > **Hoy (plan 09):** el protocolo se escribió para el greybox; el juego ya tiene arte, música, efectos y balbuceo. Lo que cambia en la preparación está en §3; los umbrales y criterios no cambian (Apéndice A del plan 09, preguntas 10 y 11, pendientes del autor). La hoja de una página para cada sesión es [`kit.md`](kit.md).
 
+> **Hoy (plan 10, versión 1.1.0):** lo que cambió en los capítulos 3–4 y se ve en la sesión o en el registro. Los umbrales y criterios de §1 **no cambian**. Las pistas, los «Terminé» que no ganan y los Cuadernos cambian como en los capítulos 0–2 (nota del principio de `A.md`).
+> - Desde el capítulo 3, el trazo de una cadena solo dice si es legal; cuántos faroles gana se ve al soltar. En la niebla, una cadena solo pasa por enredaderas que ya se ven (rechazo `vineHidden`).
+> - En 3.7–3.10 el botón de acabar se llama **«Presentar»**. Una presentación que no gana recibe su aviso: `unguarded` (la enredadera sin vigilar brilla) o `countMismatch` (espantapájaros y faroles no son los mismos).
+> - 3.4 y 3.8 terminan con una pregunta; en 3.8 la respuesta falsa abre un jardín de abejas y tréboles para intentarlo. La frase falsa (c) del Cuaderno de 3.8 se refuta también con un jardín.
+> - **En 4.4–4.8 y 4.12 la luz busca sola:** el botón «Avanzar la luz» pone una marca por pulsación, en el orden fijo de la búsqueda; donde se tocan dos soles del mismo árbol se para, brilla esa enredadera y solo sigue tras **plegar** tocándola con Marcas. En esos niveles no hay marcas a mano ni botón «Plegar», y los faroles solo se mueven por la cadena que la luz encontró (rechazo `chainNotSeen`); separar y pasar el farol están cerrados por hoy (`actionClosed`). En 4.4, que no enciende nada, también juntar y la cadena.
+> - **Levantar:** tras desplegar, el trozo de cadena que la luz encontró sigue dibujado y se arrastra solo el tramo de dentro de la flor; el lado equivocado se rechaza al momento (`invalidPath.*` de `chain`). Arrastrar la cadena entera sigue valiendo.
+> - 4.9 cierra todo lo que mueve faroles (`actionClosed`); 4.10 cierra plegar (`actionClosed`) y la flor: una cadena solo la rodea saliendo de su base a oscuras (`flowerClosed`) hasta que se gira el tallo. 4.13 sigue con marcas a mano.
+> - El Cuaderno de 4.11 se abre **antes** de que Sauce diga qué hace plegar, y la opción correcta es otra (ver §4).
+
 ---
 
 ## 1. Objetivo del Hito B
@@ -109,7 +118,8 @@ El papel del observador es el del playtest A: sin tocar ni señalar, sin pistas,
 
 - Si distingue abejas de tréboles por la forma y deja de intentar juntar dos iguales.
 - Si usa las marcas de sol y luna con método o al azar; si riega (inspecciona) antes de marcar.
-- En 3.3 y 3.8, cómo lee el Cuaderno; en 3.7, qué dice del espantapájaros.
+- En 3.3 y 3.8, cómo lee el Cuaderno; en 3.7, qué dice del espantapájaros y del aviso si presenta antes de vigilarlo todo.
+- En 3.4 y 3.8, cómo responde la pregunta del final; en 3.8, si intenta de verdad tocar dos soles del mismo árbol en el jardín que abre la respuesta falsa.
 
 ### 4.1 — La luz miente
 
@@ -131,15 +141,23 @@ La luz repite la búsqueda y Sauce pide señalar la enredadera donde se equivoc�
 
 ### 4.3–4.10
 
-- 4.4: si descubre el gesto de plegar a partir de la tarjeta; 4.5: si prueba el lado equivocado de la flor y entiende el rechazo.
-- 4.9: si pulsa "Terminé" con confianza o duda; 4.10: si gira el tallo sin plegar.
+- 4.4: si, cuando la luz se para y la enredadera brilla, la toca para plegar o vuelve a pulsar «Avanzar la luz» (rechazo `lightAtFlower` de `stepLight`); si busca un botón de plegar.
+- 4.5–4.8: si intenta pasar los faroles a ojo antes de avanzar la luz: los rechazos `chainNotSeen` (de `chain` o `join`) antes de su primer `move` `stepLight`, y los `actionClosed` (marcar a mano, separar, pasar el farol). Tras desplegar, si arrastra solo el tramo de dentro o la cadena entera, y si prueba el lado equivocado de la flor y entiende el rechazo (`invalidPath.*`).
+- 4.9: si pulsa "Terminé" con confianza o duda; si lo pulsa con la búsqueda a medias (`verdict: "searchOpen"`).
+- 4.10: si gira el tallo sin plegar; cuántos rechazos `flowerClosed` antes del primer `rotateStem` (o del pase del farol que deja la base a oscuras), y si intenta plegar (`actionClosed`).
 
 ### 4.11 — El reto de la flor
 
 - Si entiende que es el adversario: ¿dibuja cadenas distintas para "ganar" al juego, o repite la misma?
 - Cuántos dibujos rechaza el jardín por no ser cadena, y si entiende por qué.
 - Si mira los tres momentos del argumento (extremo fuera, tramo hasta el primer pétalo, cadena en el jardín plegado) o los salta.
-- **El Cuaderno** ("Plegar una flor…"): si lee las tres opciones y elige "…no crea ni destruye cadenas" a la primera. Mientras el Cuaderno pregunta no se ofrecen pistas, así que "sin pistas" equivale a "a la primera".
+- **El Cuaderno** ("Plegar una flor…"): llega antes de que Sauce diga qué hace plegar. Si lee las tres opciones y elige "…deja el jardín con cadena justo cuando ya la tenía" a la primera; el distractor "…no crea cadenas, pero puede esconder alguna" copia a medias una frase de Sauce. Mientras el Cuaderno pregunta no se ofrecen pistas, así que "sin pistas" equivale a "a la primera".
+
+**La pregunta en voz alta.** El Cuaderno a la primera no basta para saber si se entendió el argumento. Justo después de que termine 4.11 y **antes de abrir 4.12**, el observador dice, sin añadir nada:
+
+> "¿Por qué el trozo de la cadena llega a la flor por una enredadera apagada?"
+
+Anotar la respuesta tal cual, sin corregir ni completar (como la de 7.4 en `C.md`). No es un criterio de §1: se lee junto a `notebookRightFirstTry`.
 
 ### Cuándo parar
 
@@ -175,6 +193,8 @@ El JSON exportado tiene `exportedAt`, `summary` (un resumen por nivel, en el ord
 | `notebookRightFirstTry` | Si la primera frase elegida en el Cuaderno del nivel fue verdadera (`null` si no se respondió) |
 | `flowerChains.counted` / `.refused` | Cadenas dibujadas en el reto de la flor (4.11), y dibujos rechazados por no ser cadena |
 
+Códigos de razón nuevos en las entradas `refused` de `log`: `chainNotSeen` (una cadena o una unión que no es la que encontró la luz), `flowerClosed` (4.10), `actionClosed` (una acción que el jugador ya sabe, cerrada en ese nivel), `lightAtFlower` (pulsar «Avanzar la luz» con la luz parada ante una flor sin plegar), `lightFound` y `lightDone` (pulsarlo cuando la luz ya encontró la cadena o ya no le queda nada que mirar), `vineHidden` también para cadenas y uniones en la niebla. Cada pulsación aceptada de la luz es un `move` con `action: "stepLight"`, y plegar donde se paró, un `move` `foldAt`. Un «Terminé» o «Presentar» que no gana lleva en su `claim` el `verdict` del aviso: `chainLeft`, `searchOpen`, `unguarded` o `countMismatch` en estos capítulos. Las preguntas de 3.4 y 3.8 dejan una entrada `answer` (y suman en `wrongAnswers`); el jardín que abre la respuesta falsa de 3.8, una `counterexample`.
+
 Los campos "primera vez" no cambian en partidas posteriores: quien repite un nivel ya sabe la respuesta.
 
 ### Qué campo responde a cada medida del Hito B
@@ -185,7 +205,7 @@ Los campos "primera vez" no cambian en partidas posteriores: quien repite un niv
 | 4.2: ¿señala la enredadera correcta? | Resumen de `"4.2"`: `firstPickRight`. En `log`, cada entrada `pickVine` lleva `vine` con los nombres de sus extremos (`["d", "b"]` en cualquier orden es la correcta) |
 | 4.11: ¿Cuaderno correcto sin pistas? | Resumen de `"4.11"`: `notebookRightFirstTry`. `notebookWrong` y `counterexamples` dicen cuánto costó después |
 
-Señales complementarias: en 4.1, `refusals` con razón `notARoot` indica que intentó buscar desde otra raíz; en 4.2, `wrongAnswers` es el conteo del bucle fallado; en 4.11, `flowerChains.refused` alto indica que no se entiende qué se pide dibujar, y `counted` igual a 3 con un tiempo muy corto, que se dibujó sin mirar el argumento. `timeMs` y las entradas `left` se leen como en el Hito A.
+Señales complementarias: en 4.1, `refusals` con razón `notARoot` indica que intentó buscar desde otra raíz; en 4.4–4.8, muchos `lightAtFlower` seguidos, que no ve que la enredadera que brilla se toca para plegar, y `chainNotSeen` antes de avanzar la luz, que intenta pasar los faroles a ojo; en 4.10, `flowerClosed` repetido, que no relaciona la flor cerrada con girar el tallo; en 4.2, `wrongAnswers` es el conteo del bucle fallado; en 4.11, `flowerChains.refused` alto indica que no se entiende qué se pide dibujar, y `counted` igual a 3 con un tiempo muy corto, que se dibujó sin mirar el argumento. `timeMs` y las entradas `left` se leen como en el Hito A.
 
 ---
 
@@ -200,7 +220,7 @@ Copiar una vez por persona (segunda sesión). Tiempo en minutos, redondeado. La 
 | 3.1 | | | — | — | |
 | 3.2 | | | — | — | |
 | 3.3 | | | | — | |
-| 3.4 | | | — | — | |
+| 3.4 | | | | — | |
 | 3.5 | | | — | — | |
 | 3.6 | | | — | — | |
 | 3.7 | | | — | — | |
@@ -230,6 +250,16 @@ Copiar una vez por persona (segunda sesión). Tiempo en minutos, redondeado. La 
 | P3 | | | | | |
 | P4 | | | | | |
 | P5 | | | | | |
+
+### 4.11 en voz alta
+
+| Persona | Lo que dijo (literal) | ¿Cuaderno a la primera? |
+|---|---|---|
+| P1 | | |
+| P2 | | |
+| P3 | | |
+| P4 | | |
+| P5 | | |
 
 ---
 
