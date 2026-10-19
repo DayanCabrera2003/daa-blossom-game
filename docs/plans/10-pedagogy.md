@@ -100,6 +100,24 @@ Motivos nuevos y estables (`core/rules/reasons.ts`): `chainNotSeen` («Hoy los f
 
 El test exhaustivo es una búsqueda en anchura sobre estados del jardín (claves de `sameGarden`), con **todas** las jugadas que el nivel permite generadas por el núcleo (uniones, cadenas de todos los caminos alternantes simples, marcas, plegados, despliegues…), sin `foldAt` en la variante "sin el gesto". Los jardines de 4.5–5.3 tienen 6–12 brotes y `roots`; si alguno no cabe en un tiempo razonable (< 2 s), se acota por profundidad y se justifica en el test.
 
+### 2.4 Cómo fue F1 y la decisión del autor (2026-10-18): en los niveles de flor busca la luz
+
+**Lo que F1 dejó hecho.** La regla de cadena por nivel en el núcleo (`chainRule.ts`: `any`, `seen`, `fromBase`), las acciones cerradas por hoy (`actionClosed`, distinto de `actionLocked`), la regla de la niebla para cadenas, uniones, pases y tallos (X2), el campo `chains` del nivel con su check de integridad, 4.10 con la flor cerrada (`fromBase`) y 4.9 con los faroles cerrados, ambos probados con el recorrido exhaustivo (`tests/support/gardenExplorer.ts`), y el jardinero de la pista 3 y el arrastre preguntando a la regla.
+
+**Por qué se paró.** Con las marcas elegidas por el jugador, `seen` no obliga a plegar en ningún jardín: quien marca siguiendo una cadena aumentante (cada brote impar de la cadena, luna; su pareja, sol) nunca cierra un bucle impar, porque todas sus marcas están en un solo camino, y la luz «ve» la cadena sin plegar. Es un hecho general de la búsqueda con marcas libres, no un defecto de estos jardines: ninguna regla sobre cadenas puede forzar el plegado mientras el orden de las miradas sea del jugador. Por eso el GDD se quedó solo con las reglas en uso (`0feab21`).
+
+**La decisión.** En los niveles de flor —4.4, 4.5, 4.6, 4.7, 4.8, 4.12, 4.13 y 5.1–5.6— **la búsqueda la hace la luz, en un orden fijo, como el algoritmo** (como ya hace en 4.1 y 4.2):
+
+- El jugador no elige dónde van los soles y las lunas: **avanza la luz** con el botón «Avanzar la luz» (la acción `stepLight`). Cada toque es una marca de la luz: un sol en un brote a oscuras o una mirada por una enredadera apagada, en el orden de `autoSearch` (los soles ya marcados primero, de menor a mayor; luego las raíces del nivel, en su orden). Las marcas entran en el día como cualquier jugada: se deshacen y el sol las repite.
+- Cuando la luz encuentra **dos soles del mismo árbol**, se para y lo señala (`lightAtFlower`: la enredadera brilla). La única forma de seguir es **plegar** ese bucle (tocar el choque, `foldAt`); después la luz sigue en el jardín plegado.
+- En la niebla, la luz se para ante un sol cuyas enredaderas todavía no se ven (`vineHidden`): hay que inspeccionarlo. Cuando encuentra la cadena (`lightFound`) o ya no le queda nada que mirar (`lightDone`), también se para.
+- Cuando la luz ha visto la cadena, el jugador **la enciende** con la regla `seen` y la despliega por la flor con el gesto que enseña cada nivel (desplegar, capas, de fuera hacia dentro).
+- El dato del nivel es `"light": true`: abre «Avanzar la luz» y cierra las marcas a mano (`markRoot`, `markMoon`) y el plegado a mano (`fold`: durante la búsqueda de la luz no se puede, y fuera de ella plegaría otro bucle que el que la luz señala). Siguen cerrados, como pidió X1, separar, pasar el farol y girar el tallo (con `seen`); en 4.4, que aún no enciende nada, también juntar y cadena.
+- Las raíces de cada nivel son las de su diseño («desde R» donde el jardín lo dice; en 4.12, 5.4 y 5.5, todos los brotes a oscuras en orden). Para cada nivel un test comprueba que la luz, en ese orden, se encuentra con la flor (o las flores) de las que trata, y el recorrido exhaustivo comprueba que **ninguna secuencia de jugadas permitidas gana sin plegar** y que la solución de referencia gana.
+- Consecuencia para 4.13 (el orden de plegado no importa): la luz pliega en su orden; el jugador ve que plegar en el orden de la luz funciona, pero ya no elige el orden. Queda como pregunta para el autor.
+
+Esto sustituye la parte `seen` de F1 para esos niveles (sección 2.3); el resto de F1 y las fases siguientes no cambian (F2 dibuja los tramos hallados igual: la cadena vista es la de la luz).
+
 ---
 
 ## Fase 0 — La hoja de cambios de líneas
