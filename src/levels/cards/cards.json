@@ -792,8 +792,15 @@
     "lanterns": [["b", "c"]],
     "steps": [
       {
-        "type": "fold",
-        "loop": ["a", "b", "c"]
+        "type": "stepLight"
+      },
+      {
+        "type": "stepLight"
+      },
+      {
+        "type": "foldAt",
+        "from": "c",
+        "to": "a"
       },
       {
         "type": "unfold",
@@ -844,12 +851,28 @@
     ],
     "steps": [
       {
-        "type": "fold",
-        "loop": ["b", "c", "d"]
+        "type": "markRoot",
+        "vertex": "x"
       },
       {
-        "type": "fold",
-        "loop": ["x", "y", "b"]
+        "type": "markMoon",
+        "from": "x",
+        "to": "y"
+      },
+      {
+        "type": "markMoon",
+        "from": "b",
+        "to": "c"
+      },
+      {
+        "type": "foldAt",
+        "from": "d",
+        "to": "b"
+      },
+      {
+        "type": "foldAt",
+        "from": "d",
+        "to": "x"
       },
       {
         "type": "enterLayer",

@@ -1,6 +1,8 @@
 import { itemAt } from '@core/shared/itemAt';
+import { unwrap } from '@core/shared/result';
 import { cardDemos } from '@levels/cards/catalog';
-import type { CardId } from '@levels/cards/schema';
+import { buildDemo } from '@levels/cards/demo';
+import { cardsSchema, type CardId } from '@levels/cards/schema';
 import { describe, expect, it } from 'vitest';
 import { cardDemoPicture, demoLoop } from './cardDemo';
 
@@ -38,7 +40,26 @@ describe('the picture of a mechanic card demo', () => {
       ],
       preview: 'gain1',
     });
-    const choosing = picture('unfold', 0).garden.sprouts;
+    // A triangle with its base a in the dark, folded as a loop chosen by hand (the free mode).
+    const [triangle] = cardsSchema.parse([
+      {
+        id: 'fold',
+        sprouts: [
+          { label: 'a', x: 30, y: 42 },
+          { label: 'b', x: 60, y: 14 },
+          { label: 'c', x: 90, y: 42 },
+        ],
+        vines: [
+          ['a', 'b'],
+          ['b', 'c'],
+          ['c', 'a'],
+        ],
+        lanterns: [['b', 'c']],
+        steps: [{ type: 'fold', loop: ['a', 'b', 'c'] }],
+      },
+    ]);
+    if (triangle === undefined) throw new Error('no card parsed');
+    const choosing = cardDemoPicture(unwrap(buildDemo(triangle)), 0).garden.sprouts;
     expect(choosing.map((sprout) => sprout.selected)).toEqual([true, true, true]);
   });
 
@@ -80,10 +101,10 @@ describe('the picture of a mechanic card demo', () => {
   it('the layers card zooms into the flower entered, and the button to leave is pressed', () => {
     const layers = demos.get('layers');
     if (layers === undefined) throw new Error('no layers card');
-    const outside = picture('layers', 2);
+    const outside = picture('layers', 5);
     expect(outside.garden.sprouts).toHaveLength(5);
     expect(outside.garden.flowers.map((flower) => flower.id)).toEqual([1, 0]);
-    const inner = picture('layers', 4);
+    const inner = picture('layers', 7);
     expect(inner.garden.sprouts.map((sprout) => sprout.vertex)).toEqual([2, 3, 4]);
     expect(inner.garden.flowers).toEqual([]);
     expect(inner.press).toBe('hud.leaveLayer');
