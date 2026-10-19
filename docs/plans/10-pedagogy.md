@@ -469,6 +469,46 @@ Las preguntas técnicas siguen con su valor por defecto.
 
 ---
 
+## Cierre del plan
+
+**Hecho (2026-10-19).** Las catorce fases, F0–F13, en su orden (F10 con las respuestas del autor del 2026-10-18). Versión `1.1.0` en `package.json`; el merge a `main` y el tag `v1.1.0` quedan para el autor.
+
+- **F0.** La hoja `docs/review/lineas-plan10.md`, generada por `npm run lines` contra las copias de `v1.0.1`; hoy, 148 líneas de diálogo y 56 textos de interfaz distintos de la 1.0.1.
+- **F1 y la luz.** La regla de cadena por nivel (`any`, `seen`, `fromBase`), las acciones cerradas por hoy (`actionClosed`), la niebla para cadenas, uniones, pases y tallos (X2), 4.9 con los faroles cerrados y 4.10 con la flor cerrada, probados con el recorrido exhaustivo. Como con marcas libres `seen` no obliga a plegar (sección 2.4), en 4.4–4.8, 4.12 y 5.1–5.6 **la luz busca sola** («Avanzar la luz», `stepLight`) y se para en cada flor hasta que se pliega. Decisiones del autor: **4.13 se queda a mano** (su lección es que el orden lo elige el jugador) y **una marca por pulsación**, también en los niveles grandes.
+- **F2.** Desde el capítulo 3 el trazo solo dice si es legal; los tramos hallados se dibujan y, tras desplegar, se arrastra solo el tramo de dentro (gesto de levantar), con el arrastre entero todavía válido.
+- **F3.** En los niveles, plegar es solo tocar el choque (`foldAt`); el modo libre conserva plegar un bucle elegido, solo con la base a oscuras (`baseNotDark`) y con su tarjeta. Decisión de la sesión principal: **el botón del modo libre sigue diciendo «Plegar»** (`tool.foldLoop`); «Plegar a mano» es el nombre del GDD y de la tarjeta.
+- **F4.** Veredicto puro de un «Terminé» que no gana (`claimVerdict.ts`), aviso suave, rechazo para las pistas y `verdict` en el registro; «Presentar» en los niveles de certificado, con su tarjeta; `declareDone` dice lo que el jardinero afirma. La pantalla del nivel pasó a cargarse aparte, con su propio presupuesto.
+- **F5.** El récord de progreso (`progress.ts`) reinicia la espera de la pista; el botón Pista siempre a mano, con brillo cuando se ofrece; `hintReveals` en el check de integridad y 19 pistas de grado 2 reescritas como zona o pregunta; 1.5–1.9 con tres pistas propias. Decisión de la sesión principal: **las pistas de grado 2 genéricas** (un nivel sin resaltado escrito) **señalan donde empieza la jugada**, no la respuesta entera.
+- **F6.** `notebookEcho`; los seis Cuadernos (1.5, 2.4, 4.7, 4.10, 4.11, 5.3) antes del resumen, con la opción correcta en otras palabras y un distractor que copia a medias; 3.8 (c) refutada con un jardín.
+- **F7.** Preguntas `ask` con contraejemplo jugable: 2.3, 3.4, 3.8 (con un jardín de abejas y tréboles), 5.2 y 7.4 (la línea 08 es la respuesta al acierto). La de 5.2 se hace al final del nivel, sobre lo que el jugador ya abrió. Pregunta 8 del Apéndice A del Plan 09, resuelta.
+- **F8.** 2.4 en dos fases (`beatable: false`) sobre un jardín cuyo máximo deja dos brotes a oscuras; `mirror.spared` ya no dice que ganar es difícil.
+- **F9.** La tarjeta muerta fuera de la receta tras probarlo con una propiedad; textos de la receta; 6.5 con Bruto solo en la primera carrera (cuatro apuestas, cinco semillas como mucho en el hub). Respuesta 5: **«≈ 3 a 5 veces» llega hasta ×6**, para cubrir lo que dice. Umbrales de 2.5 y 6.7 sin cambios.
+- **F10.** Abejas y tréboles, jardines secretos y el día (con el sol del asa), en el juego, el Códex, el GDD y los documentos; `tests/vocabulary.test.ts`.
+- **F11.** 1.1 y 1.2 («Mira otra forma…»), la línea de 1.7 y su eco en 4.3, y la invitación al Códex al final de cada capítulo (respuesta 6). Decisión de la sesión principal: **7.5 acaba con el amanecer**, con la invitación justo antes.
+- **F12.** C08 Intuición con la cadena que sigue tras girar el tallo; los testigos del núcleo al final de la pestaña Puente; el Códex al día con 2.4, 4.5, 4.10 y 7.4; `docs/codex-review.md` señala las secciones cambiadas.
+- **F13.** Los protocolos A, B y C (y el kit) con los hechos nuevos, sin tocar umbrales ni criterios: los motivos `chainNotSeen`, `flowerClosed`, `actionClosed`, `lightAtFlower`, `lightFound`, `lightDone`, el `verdict` de los reclamos, los Cuadernos antes del resumen, las preguntas nuevas, qué mirar en 4.4–4.10 y en el capítulo 5 con la luz, y la pregunta oral tras 4.11; el README con lo nuevo de la 1.1.0; versión 1.1.0.
+
+**Suite.** 534 archivos y 6047 tests (5379 en la 1.0.0), cobertura de líneas 99,8 % (sentencias 99,5 %, ramas 98,0 %); `test:explore` (semilla al azar, 2000 casos) verde. Lint, formato, tipos, `check-levels`, `assets:check` y build en verde.
+
+**Presupuesto** (tras el build, KB decimales): JavaScript 1741 de 1800; carga inicial 3097 de 3500; libros 894 de 1000; modo libre 54 de 60; pantalla del nivel 72 de 100; imágenes 226 de 600; sonidos 1071 de 1500; música 15 412 de 20 000.
+
+**Lo que es del autor:**
+
+- Revisar `docs/review/lineas-plan10.md` (pregunta 7, gate de la versión): cada línea nueva o cambiada, con su casilla; los cambios entran en `lines.json` / `strings.json` en commits propios y la hoja se regenera.
+- El hito final en pantalla: 4.1 → 4.11 seguidos y 5.1 → 5.3 con `npm run save -- after-ch3` / `after-ch4`, y el capítulo 1 entero con 1.7 y 1.8.
+- Las preguntas que dejaron abiertas las fases:
+  - El trébol se sigue dibujando con el sprite de una flor: ¿se busca otro en los packs CC0, o se queda?
+  - La apertura de C04 («Arrastra el día y mira la noche…»): ¿suena bien el día junto a la noche?
+  - 0.5 repite «día» («…mira el día que pasó. Arrastra el día.»).
+  - 2.4: la pista de grado 2 (`ch2.4.sauce.15`, «Mira dónde gana el agua») se ofrece también en el paso de jugar entre las dos fases del espejo (usar la cadena), donde quizá no encaja.
+  - 7.5 invita a leer «Las piedras» (C12), aunque lo que abre es C14.
+  - La redacción de las Intuiciones nuevas de C7 y C3.
+  - Un guardado anterior a la 1.1.0 puede tener hasta 8 semillas (6.5 tenía seis apuestas); el hub dibuja como mucho cinco plantas.
+- Con todo visto: merge `develop → main` (con el CI de `develop` en verde), comprobar el despliegue y poner el tag `v1.1.0`.
+- Siguen pendientes las preguntas del Apéndice A del Plan 09 que este plan no tocó, los umbrales de los playtests y los playtests con personas.
+
+---
+
 ## Apéndice A — Borradores de líneas (para la hoja del autor)
 
 Borradores de este plan; las fases los escriben tal cual y el autor los corrige en `docs/review/lineas-plan10.md`. Corchetes = nombre pendiente de las preguntas 1–4.
