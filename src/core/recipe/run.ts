@@ -66,9 +66,9 @@ export function runOptionsOf(recipe: Recipe): RunOptions | null {
  *   the sprouts in ascending order (`looksFrom`, as the light does), and each vine `sun–x` is one
  *   case of `growStep`:
  *   - lit (`growMoon`): `markMoon`, x a moon and its partner a sun, which waits its turn;
- *   - dark, or a sun of another tree (`chainToDark`, `chainRootToRoot`): `markMoon` shows the chain;
- *     the flowers it crosses are opened (`unfold`), outer ones first, and it is lit (`chain`), which
- *     wipes the marks: the next round starts;
+ *   - a sun of another tree (`chainRootToRoot`): `markMoon` shows the chain; the flowers it crosses
+ *     are opened (`unfold`), outer ones first, and it is lit (`chain`), which wipes the marks: the
+ *     next round starts (a sprout unmarked in the dark is never met: the start made it a sun);
  *   - a sun of the same tree (`foldFlower`): `foldAt`, and the flower becomes a sun at the back of
  *     the queue, so every petal's vines are looked along again; without the fold card, nothing;
  *   - a moon (`moonNothing`): nothing;

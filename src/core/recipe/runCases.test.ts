@@ -46,18 +46,20 @@ describe('the card each move of a run follows', () => {
     expect(cases).toEqual(['start', 'start', 'lit', 'otherTree', 'otherTree', 'end']);
   });
 
-  it('a look that reaches a sprout in the dark is a chain, to the dark or root to root', () => {
+  it('a look that reaches a sprout in the dark is a chain root to root, never to the dark', () => {
     const vine = unwrap(createGraph(2, [[0, 1]]));
     const { cases } = casesOf(gardenOf(vine));
     // Both are suns at the start; the look from 0 reaches 1, a sun of another tree.
     expect(cases).toEqual(['start', 'start', 'otherTree', 'otherTree', 'end']);
-    // With only 0 marked, the same look reaches 1 unmarked in the dark: the chain to the dark.
-    const toTheDark = runCases(gardenOf(vine), [
-      { type: 'markRoot', vertex: 0 },
-      { type: 'markMoon', from: 0, to: 1 },
-      { type: 'chain', path: [0, 1] },
-    ]);
-    expect(toTheDark).toEqual(['start', 'dark', 'dark']);
+    // With only 0 marked, the same look would reach 1 unmarked in the dark: no run of a recipe
+    // does that (every dark sprout is a sun from the start), so it is a broken run.
+    const toTheDark = () =>
+      runCases(gardenOf(vine), [
+        { type: 'markRoot', vertex: 0 },
+        { type: 'markMoon', from: 0, to: 1 },
+        { type: 'chain', path: [0, 1] },
+      ]);
+    expect(toTheDark).toThrow();
     const lonely = unwrap(
       createGraph(3, [
         [0, 1],

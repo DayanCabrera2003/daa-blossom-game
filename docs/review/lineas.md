@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 506 líneas, 64 están tal cual en el GDD y 442 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 506 líneas, 65 están tal cual en el GDD y 441 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -574,7 +574,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.5.bruto.01` · **Bruto** · plan: ¡Cuanto más grande, mejor! ¡Más combinaciones que probar!
 - [ ] `ch6.5.sauce.02` · **Sauce** · plan: Primero, uno de 8 brotes, para tener con qué comparar.
 - [ ] `ch6.5.sauce.03` · **Sauce** · plan: Si el jardín se duplica, de 8 a 16 brotes, ¿cuántos pasos más dará tu receta?
-- [ ] `ch6.5.sauce.04` · **Sauce** · plan: ¿Y Bruto?
+- [ ] `ch6.5.sauce.04` · **Sauce** · GDD: ¿Y Bruto?
 - [ ] `ch6.5.bruto.05` · **Bruto** · plan: ¡Terminé! Me costó, pero terminé.
 - [ ] `ch6.5.sauce.06` · **Sauce** · plan: Se duplica otra vez, de 16 a 32 brotes. ¿Cuántos pasos más dará tu receta?
 - [ ] `ch6.5.bruto.07` · **Bruto** · plan: Zzz…

@@ -4,7 +4,7 @@ import { invariant } from '../shared/invariant';
  * The recipe (GDD 6.1, plan 05 phase 2): the search the player has run by hand since chapter 3,
  * written as cards for someone else to follow. A recipe has three slots: how the search starts
  * (`mark`), what to do with each case of a vine `sun–x` (`cases`), and when it is over (`end`).
- * The five cases exclude each other, so `cases` is a set: the order of its cards means nothing.
+ * The four cases exclude each other, so `cases` is a set: the order of its cards means nothing.
  *
  * Every card answers one case of the search. The right cards are the steps of Edmonds' search;
  * the distractors are tempting rules that answer a case wrongly (GDD 6.1). The core knows the
@@ -12,25 +12,21 @@ import { invariant } from '../shared/invariant';
  */
 
 /**
- * The cases a recipe must answer, in the order a recipe reads: the start, the five cases of a dark
+ * The cases a recipe must answer, in the order a recipe reads: the start, the four cases of a dark
  * vine from a sun to `x` (as `growStep` tells them apart), and the end.
  * - `start`: how the search begins (every dark sprout a sun);
- * - `dark`: x unmarked and in the dark (a chain);
  * - `lit`: x unmarked with a lantern (x a moon, its partner a sun);
- * - `otherTree`: x a sun of another tree (a chain from root to root);
+ * - `otherTree`: x a sun of another tree (a chain from one dark sprout to another, and the search
+ *   starts again from the first card);
  * - `sameTree`: x a sun of the same tree (fold the flower);
  * - `moon`: x a moon (nothing to do);
  * - `end`: nothing left to explore.
+ *
+ * There is no case for x unmarked and in the dark (Códex C10, case (a)): the start makes every dark
+ * sprout a sun, and nothing makes a sprout dark again until a chain wipes the marks and the search
+ * starts over, so a look never reaches one. The recipe's runs are tested to never meet it.
  */
-export const RECIPE_CASES = [
-  'start',
-  'dark',
-  'lit',
-  'otherTree',
-  'sameTree',
-  'moon',
-  'end',
-] as const;
+export const RECIPE_CASES = ['start', 'lit', 'otherTree', 'sameTree', 'moon', 'end'] as const;
 
 /** A case a recipe must answer. */
 export type RecipeCase = (typeof RECIPE_CASES)[number];
@@ -41,7 +37,6 @@ export type RecipeSlot = 'mark' | 'cases' | 'end';
 /** The ids of every card, right ones first in the order of their cases, then the distractors. */
 export const RECIPE_CARD_IDS = [
   'markDarkSuns',
-  'chainToDark',
   'growMoon',
   'chainRootToRoot',
   'foldFlower',
@@ -70,7 +65,6 @@ export interface RecipeCard {
  */
 export const RECIPE_CARDS: readonly RecipeCard[] = [
   { id: 'markDarkSuns', case: 'start', right: true },
-  { id: 'chainToDark', case: 'dark', right: true },
   { id: 'growMoon', case: 'lit', right: true },
   { id: 'chainRootToRoot', case: 'otherTree', right: true },
   { id: 'foldFlower', case: 'sameTree', right: true },

@@ -479,7 +479,6 @@ const RECIPE = {
       type: 'recipe',
       cards: [
         'markDarkSuns',
-        'chainToDark',
         'growMoon',
         'chainRootToRoot',
         'foldFlower',
@@ -495,7 +494,6 @@ const RECIPE = {
         'foldFlower',
         'chainRootToRoot',
         'growMoon',
-        'chainToDark',
         'finishKeepMoons',
       ],
     },
@@ -515,7 +513,6 @@ const BROKEN_RECIPE = {
       type: 'recipe',
       cards: [
         'markDarkSuns',
-        'chainToDark',
         'growMoon',
         'chainRootToRoot',
         'foldFlower',
@@ -529,7 +526,6 @@ const BROKEN_RECIPE = {
 /** Every right card of the recipe, as a walkthrough places them. */
 const RIGHT_CARDS = [
   'markDarkSuns',
-  'chainToDark',
   'growMoon',
   'chainRootToRoot',
   'foldFlower',

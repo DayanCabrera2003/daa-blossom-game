@@ -263,7 +263,7 @@ describe('what a recipe changes in its run', () => {
   });
 
   it('any other card missing, or a distractor placed, is a recipe the automaton cannot run', () => {
-    expect(runOptionsOf(withoutCases(RIGHT_RECIPE, ['dark']))).toBeNull();
+    expect(runOptionsOf(withoutCases(RIGHT_RECIPE, ['lit']))).toBeNull();
     expect(runOptionsOf(withoutCases(RIGHT_RECIPE, ['start']))).toBeNull();
     for (const card of RECIPE_CARDS.filter((candidate) => !candidate.right)) {
       const swapped = placeCard(withoutCases(RIGHT_RECIPE, [card.case]), card.id);

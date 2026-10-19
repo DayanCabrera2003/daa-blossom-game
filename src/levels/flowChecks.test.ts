@@ -357,7 +357,7 @@ describe('the checks of a level script', () => {
   it('the automaton runs a recipe it can run, with the moves the level allows', () => {
     expect(flowProblemsOf(AUTOMATON)).toEqual([]);
     // Only the fold card may be missing: a recipe without its chains would not be the search.
-    const chainless = { ...AUTOMATON, flow: [{ step: 'automaton', missing: ['dark'] }] };
+    const chainless = { ...AUTOMATON, flow: [{ step: 'automaton', missing: ['otherTree'] }] };
     expect(flowProblemsOf({ ...chainless, solution: [{ type: 'tapGarden' }] })).toEqual([
       { code: 'recipeCannotRun', step: 0 },
     ]);

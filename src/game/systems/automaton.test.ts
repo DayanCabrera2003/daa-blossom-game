@@ -26,7 +26,7 @@ describe('the day of the automaton running a recipe', () => {
   });
 
   it('a recipe the automaton cannot run is a broken catalog', () => {
-    expect(() => automatonDay(start, withoutCases(RIGHT_RECIPE, ['dark']))).toThrow();
+    expect(() => automatonDay(start, withoutCases(RIGHT_RECIPE, ['lit']))).toThrow();
     // So is a level whose garden refuses the automaton's moves.
     expect(() => automatonDay({ ...start, allowed: new Set() }, RIGHT_RECIPE)).toThrow();
   });

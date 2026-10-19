@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-121 líneas de diálogo y 31 textos de interfaz distintos de la versión 1.0.1.
+121 líneas de diálogo y 33 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -484,3 +484,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Con Marcas, toca una flor cerrada para abrirla. El trozo de cadena que encontró tu luz sigue dibujado: arrastra solo el tramo de dentro de la flor para completarlo.
 - [ ] `notice.part.level` · nueva
   - Después: el jardín
+- [ ] `recipe.card.chainToDark` · retirada
+  - Antes: Si x no tiene marca y está a oscuras: cadena. Pasa los faroles y vuelve al paso 1.
+- [ ] `recipe.missing.dark` · retirada
+  - Antes: Falta qué hacer si x no tiene marca y está a oscuras.

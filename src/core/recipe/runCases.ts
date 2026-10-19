@@ -10,8 +10,8 @@ import { AUTOMATON_MOVES, type AutomatonMove } from './run';
  * Which case of the recipe each move of a run answers (Códex C10, the recipe told card by card):
  * the card the mechanical gardener is following when it makes that move. A sun at the start is the
  * start card; a look along a vine `sun–x` is the case `growStep` sees, from the garden just before
- * it (x lit: a moon; x in the dark or a sun of another tree: a chain; a sun of the same tree: a
- * flower); the flowers a chain crosses are opened, and the chain lit, by the card that found it;
+ * it (x lit: a moon; a sun of another tree: a chain; a sun of the same tree: a flower; a run never
+ * looks at a sprout unmarked in the dark, as every one is a sun from the start); the flowers a chain crosses are opened, and the chain lit, by the card that found it;
  * "Terminé" is the end card. The moves are played by the rules from `start`, as `runRecipe` plays
  * them, so the cases are those of the very run.
  */
@@ -22,8 +22,8 @@ export function runCases(start: GardenState, moves: readonly AutomatonMove[]): R
     roots: null,
     revealed: null,
   };
-  // The case of the look that found the chain being opened and lit.
-  let chainCase: RecipeCase | null = null;
+  // Whether a look has found the chain being opened and lit.
+  let chainFound = false;
 
   /** The case of a look from the sprout `from` (a sun's) to the sprout `to`. */
   const lookCase = (from: number, to: number): RecipeCase => {
@@ -35,7 +35,8 @@ export function runCases(start: GardenState, moves: readonly AutomatonMove[]): R
       case 'grow':
         return 'lit';
       case 'chain':
-        return search.label[x] === 'outer' ? 'otherTree' : 'dark';
+        invariant(search.label[x] === 'outer', 'a run meets a chain only on a sun of another tree');
+        return 'otherTree';
       case 'oddCycle':
         return 'sameTree';
       case 'alreadyInner':
@@ -51,15 +52,15 @@ export function runCases(start: GardenState, moves: readonly AutomatonMove[]): R
         break;
       case 'markMoon':
         answered = lookCase(move.from, move.to);
-        if (answered === 'dark' || answered === 'otherTree') chainCase = answered;
+        if (answered === 'otherTree') chainFound = true;
         break;
       case 'foldAt':
         answered = 'sameTree';
         break;
       case 'unfold':
       case 'chain':
-        invariant(chainCase !== null, 'a chain is opened and lit only after a look finds it');
-        answered = chainCase;
+        invariant(chainFound, 'a chain is opened and lit only after a look finds it');
+        answered = 'otherTree';
         break;
       case 'declareDone':
         answered = 'end';

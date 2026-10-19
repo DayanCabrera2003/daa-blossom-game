@@ -33,7 +33,6 @@ export const TABLE_ORDER: readonly RecipeCardId[] = [
   'finishKeepMoons',
   'foldAnyLoop',
   'moonNothing',
-  'chainToDark',
 ];
 
 /**
