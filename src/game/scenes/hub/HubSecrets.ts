@@ -23,6 +23,7 @@ import { OutlinedText } from '../../view/OutlinedText';
 import { textStyle } from '../../view/textStyle';
 import { contextOf } from '../context';
 import type { FocusController } from '../focus/FocusController';
+import { openLevel } from '../LevelGate';
 
 /** The pack's animated flower: two frames side by side, the open flower sways between them. */
 const BLOOM_SHEET = 'anim.flower';
@@ -133,7 +134,7 @@ export function addHubSecrets(
     if (flower === undefined || action === undefined || action === null) return;
     playUiSound(scene, 'sfx.button');
     if (action.kind === 'play') {
-      scene.scene.start('level', { levelId: flower.id });
+      openLevel(scene, { levelId: flower.id });
       return;
     }
     show(i, action.text);

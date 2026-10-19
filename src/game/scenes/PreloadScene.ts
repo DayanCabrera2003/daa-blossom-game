@@ -5,6 +5,7 @@ import { LOADING_TONES, loadingBar } from '../picture/loadingBar';
 import { fitCamera } from '../view/fitCamera';
 import { PALETTE } from '../view/palette';
 import { contextOf } from './context';
+import { openLevel } from './LevelGate';
 import { queueLoads } from './queueLoads';
 import { SANDBOX_GATE, type SandboxSceneData } from './SandboxGate';
 import { paletteFrom, recolourSheets } from './recolourSheets';
@@ -53,7 +54,7 @@ export class PreloadScene extends Phaser.Scene {
       );
     }
     const { startLevel, startGarden } = contextOf(this);
-    if (startLevel !== null) this.scene.start('level', { levelId: startLevel });
+    if (startLevel !== null) openLevel(this, { levelId: startLevel });
     else if (startGarden !== null)
       this.scene.start(SANDBOX_GATE, {
         garden: startGarden,

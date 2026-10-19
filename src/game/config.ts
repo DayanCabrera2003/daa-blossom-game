@@ -3,7 +3,7 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH, usableDensity } from './scale/integerZoom'
 import { BootScene } from './scenes/BootScene';
 import { CounterexampleScene } from './scenes/CounterexampleScene';
 import { HubScene } from './scenes/HubScene';
-import { LevelScene } from './scenes/LevelScene';
+import { LevelGate } from './scenes/LevelGate';
 import { PreloadScene } from './scenes/PreloadScene';
 import { SandboxGate } from './scenes/SandboxGate';
 import { CreditsGate } from './scenes/CreditsGate';
@@ -17,7 +17,7 @@ import { PALETTE } from './view/palette';
  * the canvas. Pixel art stays unsmoothed, while text is rasterised at full resolution and
  * stays legible. The canvas clears to the palette's background, the colour views erase with. Scenes are listed in the order Phaser starts them.
  * The free mode is registered by its thin gate only, which adds the free mode's own scene once its
- * chunk has loaded (plan 08, phase 10).
+ * chunk has loaded (plan 08, phase 10); so are the credits and the level screen, each by its gate.
  */
 export function gameConfig(
   parent: HTMLElement,
@@ -43,7 +43,7 @@ export function gameConfig(
       BootScene,
       PreloadScene,
       HubScene,
-      LevelScene,
+      LevelGate,
       CounterexampleScene,
       SandboxGate,
       CreditsGate,

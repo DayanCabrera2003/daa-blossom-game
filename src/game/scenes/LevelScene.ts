@@ -61,7 +61,9 @@ import { addSettings } from './settingsPanel';
  * presentation queue decides, and the mechanic cards through `level/LevelCards.ts`. What stays here is the wiring, and what outlives the screen: the save
  * and the playtest log. It plays a level of the catalog or a garden of the free mode alike: what
  * differs (music, backdrop, what is kept and logged, the way back, the interface shown) comes from
- * the pure screen descriptor (`systems/levelScreenOf.ts`), asked once as the level opens.
+ * the pure screen descriptor (`systems/levelScreenOf.ts`), asked once as the level opens. It lives
+ * in its own chunk: only the gate's import() reaches it (`LevelGate.ts`), and once added to the game
+ * it starts itself again for the next level or a teacher's jump.
  */
 export class LevelScene extends Phaser.Scene {
   private context!: GameContext;
