@@ -299,6 +299,13 @@ describe('level integrity', () => {
     expect(problemsOf(lit)).toContainEqual({ code: 'lightBypassed', action: 'split' });
   });
 
+  it('the checks of the hints are part of its integrity: grade 2 never lights up the answer', () => {
+    const hints = [{ line: 'ch1.1.sauce.01' }, { line: 'ch1.1.sauce.02', highlight: ['A', 'B'] }];
+    expect(problemsOf({ ...trap, hints })).toEqual([
+      { code: 'hintReveals', line: 'ch1.1.sauce.02', reveals: 'chain' },
+    ]);
+  });
+
   it('what a level unlocks must match the unlock table of the rules', () => {
     const wrong = { ...trap, unlocks: { actions: ['chain'] } };
     expect(problemsOf(wrong)).toContainEqual({

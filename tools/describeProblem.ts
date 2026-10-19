@@ -88,6 +88,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} runs a recipe the automaton cannot run: only the fold card may be missing`;
     case 'seenRuleOpen':
       return `only the chain seen may move lanterns here, but "${problem.action}" moves them without the light: forbid it`;
+    case 'hintReveals':
+      return `the grade-2 hint ${problem.line} lights up the answer (${problem.reveals}): point at a wider zone, a single sprout, or ask`;
     case 'lightBypassed':
       return `the light searches by itself here, but "${problem.action}" moves lanterns without it: forbid it (or let only the chain seen light one)`;
     case 'badChainFlower':

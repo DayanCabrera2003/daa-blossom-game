@@ -136,6 +136,7 @@ describe('readable level problems', () => {
       },
       { code: 'seenRuleOpen', action: 'split' },
       { code: 'lightBypassed', action: 'passLantern' },
+      { code: 'hintReveals', line: 'ch4.4.sauce.03', reveals: 'fold' },
       { code: 'badChainFlower', petals: ['c', 'd', 'b'] },
       { code: 'notAFlower', error: { code: 'evenLength', length: 4 } },
       { code: 'flowerBaseLit', base: 'b' },
