@@ -222,7 +222,7 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | **Espantapájaros** | Colocas uno sobre un brote; cubre todas sus enredaderas. | 3.7 |
 | **Avanzar la luz** | En los niveles de flor, la luz busca por ti en un orden fijo: cada toque del botón pone una marca suya. Se para donde se tocan dos soles del mismo árbol, ante un sol en la niebla, al ver una cadena o al no quedarle nada que mirar. | 4.4 |
 | **Plegar (Florecer)** | Seleccionas un ciclo impar válido (o tocas el conflicto sol–sol): se contrae en una flor. | 4.4 |
-| **Desplegar** | Tocas una flor: se abre para trazar el camino por dentro. | 4.5 |
+| **Desplegar** | Tocas una flor: se abre para trazar el camino por dentro. **El gesto de levantar:** en los jardines donde los faroles solo cambian por donde llegó tu luz, desde que la luz ve la cadena sus **tramos hallados** (lo que queda fuera de las flores plegadas) se quedan dibujados, en dorado punteado, hasta que los faroles cambian; con la flor cerrada el tramo pasa por la flor, y al abrirla queda un **hueco** (uno por flor cruzada). El jugador arrastra solo el tramo de dentro, desde un extremo del hueco (el pétalo de entrada o la base), y elige así el lado; con todos los huecos rellenos se enciende la cadena entera. El lado equivocado se rechaza al instante con el motivo de siempre. Arrastrar la cadena entera desde una punta sigue valiendo. | 4.5 |
 | **Girar el tallo** | Cadena de ganancia 0 hasta la base de una flor. | 4.10 |
 | **Capas** | Zoom para entrar y salir de flores anidadas. | 5.2 |
 | **Tarjetas de receta** | Ordenas bloques de pseudocódigo. | 6.1 |
@@ -608,7 +608,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 
 #### 4.5 Desplegar
 - **Jardín:** el mismo, con la cadena `R–a=Flor–e` encontrada.
-- **Enseña:** para pasar los faroles hay que abrir la flor y trazar el camino por dentro. Entras por c (desde e, enredadera apagada). Desde c hay dos lados: `c–b` (apagada) y `c=d` (farol). Como llegaste pidiendo, c tiene que dar su farol: **solo puedes salir por `c=d`**. Luego `d–b`, y b es la base: su farol va afuera (`b=a`). Camino completo: `R–a=b–d=c–e`. El jugador prueba el lado `c–b` y el juego lo rechaza: "Cleo ya tiene farol, no puede pedir otro".
+- **Enseña:** para pasar los faroles hay que abrir la flor y trazar el camino por dentro. Entras por c (desde e, enredadera apagada). Desde c hay dos lados: `c–b` (apagada) y `c=d` (farol). Como llegaste pidiendo, c tiene que dar su farol: **solo puedes salir por `c=d`**. Luego `d–b`, y b es la base: su farol va afuera (`b=a`). Camino completo: `R–a=b–d=c–e`. El jugador prueba el lado `c–b` y el juego lo rechaza: "Cleo ya tiene farol, no puede pedir otro". Cuando la luz ve la cadena, sus tramos hallados `R–a=b` y `c–e` se quedan dibujados; al desplegar la flor queda el hueco entre b y c, y el jugador lo rellena arrastrando solo el tramo de dentro (`b–d=c`, o desde c), con lo que se enciende la cadena entera (§5.1, «El gesto de levantar»).
 - **Por qué aquí:** la alternancia decide el lado. El jugador aprende que dentro de una flor siempre hay exactamente un lado que funciona, y por qué.
 - **Pistas:** (1) "Llegaste a Cleo pidiendo. ¿Qué tiene que hacer Cleo?" (2) `c=d` brilla.
 - **Victoria:** cadena aplicada, 3 faroles: la que encontró la luz, que busca desde R y se para en `d–b` hasta que el jugador pliega (§5.1). Los faroles solo cambian por donde llegó tu luz (regla `seen`): separar, pasar el farol y girar el tallo están cerrados.
