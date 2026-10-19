@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 515 líneas, 75 están tal cual en el GDD y 440 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 515 líneas, 76 están tal cual en el GDD y 439 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -705,7 +705,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.5.oaks.05` · **Los Robles** · plan: Los faroles y las piedras cuadran. Nadie más puede tener farol.
 - [ ] `ch7.5.oaks.06` · **Los Robles** · plan: El Consejo se inclina ante ti, jardinero.
 - [ ] `ch7.5.sauce.07` · **Sauce** · GDD: En el Códex esto tiene nombre: lee «Las piedras».
-- [ ] `ch7.5.sauce.08` · **Sauce** · plan: Mira: los robles florecen. Amanece.
+- [ ] `ch7.5.sauce.08` · **Sauce** · GDD: Mira: los robles florecen. Amanece.
 
 ### 7.6
 
