@@ -22,7 +22,7 @@
   "victory": { "type": "coverComplete" },
   "hints": [
     { "line": "ch7.1.sauce.02" },
-    { "line": "ch7.1.sauce.03", "highlight": ["A", "C"] },
+    { "line": "ch7.1.sauce.03", "highlight": ["A", "B", "C", "D", "E"] },
     { "line": "ch7.1.sauce.04" }
   ],
   "flow": [

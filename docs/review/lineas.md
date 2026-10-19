@@ -575,7 +575,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.1.oaks.00` · **Los Robles** · plan: Dices que dos faroles es lo más que cabe aquí. ¿Cómo lo sabes?
 - [ ] `ch7.1.sauce.01` · **Sauce** · plan: En el Invernadero lo demostraste con espantapájaros. Pon los que hagan falta para vigilar todas las enredaderas y pulsa «Presentar».
 - [ ] `ch7.1.sauce.02` · **Sauce** · plan: ¿Queda alguna enredadera sin vigilar?
-- [ ] `ch7.1.sauce.03` · **Sauce** · plan: Estos dos vigilan mucho. Pero mira lo que queda entre ellos.
+- [ ] `ch7.1.sauce.03` · **Sauce** · plan: Cinco enredaderas en corro. ¿Cuántas vigila cada espantapájaros? ¿Cuántos hacen falta?
 - [ ] `ch7.1.sauce.04` · **Sauce** · plan: Te enseño el siguiente espantapájaros. Los demás, tú.
 - [ ] `ch7.1.sauce.05` · **Sauce** · plan: Todas vigiladas. Ahora cuenta espantapájaros y faroles. ¿Cierra la prueba?
 - [ ] `ch7.1.gardener.06` · **Tú** · plan: No: hacen falta tres espantapájaros y solo hay dos faroles.
