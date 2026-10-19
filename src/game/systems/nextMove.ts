@@ -5,9 +5,11 @@ import { runPhase } from '@core/edmonds/phase';
 import { isMaximum } from '@core/edmonds/fast/maximum';
 import { neighbors } from '@core/graph/queries';
 import type { VertexId } from '@core/graph/types';
-import { size } from '@core/matching/queries';
+import { everyChain } from '@core/matching/everyChain';
+import { isExposed, size } from '@core/matching/queries';
 import { shortestChain } from '@core/matching/shortestChain';
 import type { Action } from '@core/rules/actions';
+import type { ChainRule } from '@core/rules/chainRule';
 import { applyAction } from '@core/rules/applyAction';
 import { sameGarden } from '@core/rules/sameGarden';
 import type { GardenState } from '@core/rules/state';
@@ -67,8 +69,12 @@ function throughTheFog(state: GardenState, move: Action): Action {
  * lantern is passed along, which leaves a chain two vines shorter behind, until a join finishes it.
  */
 function lightMore(state: GardenState): Action | null {
+  if (state.chains.rule === 'seen') return lightSeen(state);
   const flower = state.layer.nodes.find((node) => node.kind === 'blossom');
   if (flower?.kind === 'blossom') return { type: 'unfold', blossom: flower.id };
+  if (state.allowed.has('chain') && state.chains.rule === 'fromBase') {
+    return lightFromBase(state, state.chains);
+  }
   if (state.allowed.has('chain')) {
     const chain = chainToLight(state);
     return chain === null ? null : throughTheFog(state, { type: 'chain', path: chain });
@@ -78,6 +84,52 @@ function lightMore(state: GardenState): Action | null {
   if (chain === null) return null;
   if (chain.length === 2) return { type: 'join', u: itemAt(chain, 0), v: itemAt(chain, 1) };
   return { type: 'passLantern', from: itemAt(chain, 0), to: itemAt(chain, 1) };
+}
+
+/**
+ * Lighting more where only the chain the marks reached moves lanterns (`seen`): the search first,
+ * folding where two suns meet, until it sees a chain; then the flowers that chain crosses are
+ * opened, outer ones first, and the very chain the light found is lit. Opening a flower keeps the
+ * chain seen, so the search is never undone by the opening.
+ */
+function lightSeen(state: GardenState): Action | null {
+  const seen = state.chainSeen;
+  if (seen === null) return searchStep(state);
+  for (const sprout of seen) {
+    const node = itemAt(state.layer.nodes, itemAt(state.layer.nodeOf, sprout));
+    if (node.kind === 'blossom') return { type: 'unfold', blossom: node.id };
+  }
+  return throughTheFog(state, { type: 'chain', path: [...seen] });
+}
+
+/**
+ * Lighting more where the level's flower is closed (`fromBase`, 4.10): a chain the rule lets
+ * through, if there is one; otherwise the stem is rotated to the base (a chain of gain 0 ending
+ * there), which leaves the base in the dark so a chain can leave from it. Chains are tried in a
+ * fixed order (`everyChain`), so the mentor always offers the same move in the same garden.
+ */
+function lightFromBase(
+  state: GardenState,
+  rule: Extract<ChainRule, { rule: 'fromBase' }>,
+): Action | null {
+  // Chains are judged in the clear: in the fog, the vine still hidden is looked at first.
+  const clear: GardenState = { ...state, revealed: null };
+  const chains = everyChain(state.graph, state.matching);
+  const lights = chains.find(
+    (path) =>
+      isExposed(state.matching, itemAt(path, path.length - 1)) &&
+      accepted(clear, { type: 'chain', path }),
+  );
+  if (lights !== undefined) return throughTheFog(state, { type: 'chain', path: lights });
+  const stem = chains.find(
+    (path) =>
+      itemAt(path, path.length - 1) === rule.base && accepted(clear, { type: 'chain', path }),
+  );
+  if (stem === undefined) return null;
+  const rotate: Action = state.allowed.has('rotateStem')
+    ? { type: 'rotateStem', stem }
+    : { type: 'chain', path: stem };
+  return throughTheFog(state, rotate);
 }
 
 /** Moving placed objects towards `target`: take away extras first, then add what is missing. */
@@ -175,7 +227,8 @@ function guardTheRest(state: GardenState): Action {
 
 /**
  * The step the mentor takes for the player at hint grade 3 (GDD §5.3). It is always a move the
- * rules accept and that brings the level closer to its victory, or null once the level is won:
+ * rules accept, the level's chain rule among them, and that brings the level closer to its victory,
+ * or null once the level is won:
  * on the reference solution, its next step; otherwise a step computed by the core for the
  * level's victory (a search for `chainFound` and `searchComplete`, a search to its end and then
  * "Terminé" for `searchExhausted`; the most lanterns, then "Terminé" or the right stones or

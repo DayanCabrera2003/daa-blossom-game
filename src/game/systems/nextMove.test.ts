@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { graphWithMatchingArb } from '../../../tests/support/arbitraries';
+import { explore } from '../../../tests/support/gardenExplorer';
 import {
   closedFlowerLevel,
   festivalLevel,
@@ -329,6 +330,43 @@ const visitedTwice = (): GardenState => {
     allowed: actionsUnlockedBy('3.3'),
   });
 };
+
+/** Every garden a level lets the player reach from `start`, the start among them. */
+const reachable = (start: GardenState): GardenState[] => {
+  const states: GardenState[] = [];
+  explore(start, {
+    goal: (state) => {
+      states.push(state);
+      return false;
+    },
+  });
+  return states;
+};
+
+describe("the mentor's next step, under a level's chain rule", () => {
+  it('wins 4.10, the flower closed, from every garden the level can reach', () => {
+    const level = levelById('4.10');
+    const goal = goalOf(level);
+    const gardens = reachable(level.start);
+    expect(gardens.length).toBeGreaterThan(100);
+    for (const garden of gardens) mentorPlays(goal, garden);
+  });
+
+  it.each(['4.5', '5.1'])(
+    'wins %s played where only the chain seen moves lanterns, from every garden it can reach',
+    (id) => {
+      const level = levelById(id);
+      const closed = new Set<ActionType>(['split', 'passLantern', 'rotateStem']);
+      const start: GardenState = {
+        ...level.start,
+        chains: { rule: 'seen' },
+        allowed: new Set([...level.start.allowed].filter((action) => !closed.has(action))),
+      };
+      const goal: MentorGoal = { ...goalOf(level), start };
+      for (const garden of reachable(start)) mentorPlays(goal, garden);
+    },
+  );
+});
 
 describe("the mentor's next step, when the level is won by the search itself", () => {
   it('completes a search by itself, inspecting only the suns it looks from (3.3)', () => {
