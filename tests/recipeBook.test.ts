@@ -13,12 +13,13 @@ import {
 import { AUTOMATON_MOVES, runRecipe } from '@core/recipe/run';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
-import type { GardenState } from '@core/rules/state';
+import { createGardenState, type GardenState } from '@core/rules/state';
 import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
 import { counterexampleAt } from '@levels/counterexample';
 import { TAUGHT_IN } from '@levels/recipeCards';
 import { describe, expect, it } from 'vitest';
+import { chainLookMarks } from './support/chainLooks';
 
 /**
  * The lessons of the recipe book (GDD §7, chapter 6) that its levels must really hold, checked with
@@ -92,6 +93,25 @@ describe('6.1: cards', () => {
     const start = { ...level.start, allowed: new Set(AUTOMATON_MOVES) };
     const ran = play(start, runRecipe(start, { fold: true }));
     expect(size(ran.matching)).toBe(maximumSize(level.graph));
+  });
+});
+
+describe('the recipe in every garden of the catalog', () => {
+  it('never meets a sprout unmarked in the dark: every chain it finds ends on a sun', () => {
+    for (const level of catalog()) {
+      const start = createGardenState({
+        graph: level.graph,
+        matching: level.start.matching,
+        allowed: AUTOMATON_MOVES,
+      });
+      for (const fold of [true, false]) {
+        const marks = chainLookMarks(start, runRecipe(start, { fold }));
+        expect(
+          marks.filter((mark) => mark !== 'outer'),
+          level.data.id,
+        ).toEqual([]);
+      }
+    }
   });
 });
 

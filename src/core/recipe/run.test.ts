@@ -6,6 +6,7 @@ import {
   graphWithMatchingArb,
   matchingArb,
 } from '../../../tests/support/arbitraries';
+import { chainLookMarks } from '../../../tests/support/chainLooks';
 import { BRUTO_PROPERTY_TIMEOUT } from '../../../tests/support/timeouts';
 import { bruteForceMatching } from '../bruteforce/maximumMatching';
 import { maximumSize } from '../edmonds/fast/maximum';
@@ -190,6 +191,63 @@ describe('the run of a recipe', () => {
         expect(size(ranFrom(gardenOf(graph, matching), false).matching)).toBe(maximumSize(graph));
       }),
     );
+  });
+});
+
+describe('the case of a sprout in the dark and unmarked (Códex C10, case (a))', () => {
+  // After "every dark sprout a sun", no sprout is left unmarked in the dark until a chain wipes the
+  // marks, and the next round starts by marking again. So every look of a run that finds a chain
+  // ends on a sun of another tree, and a card for the dark neighbour would never be followed.
+  const neverDark = (start: GardenState, fold: boolean): void => {
+    const marks = chainLookMarks(start, runRecipe(start, { fold }));
+    expect(marks.every((mark) => mark === 'outer')).toBe(true);
+  };
+
+  it('never comes up in the run of the right recipe, on thousands of random gardens', () => {
+    fc.assert(
+      fc.property(graphWithMatchingArb({ maxN: 12 }), ([graph, matching]) => {
+        neverDark(gardenOf(graph, matching), true);
+      }),
+      { numRuns: 2000 },
+    );
+  });
+
+  it('nor on larger gardens of any density, nor in the run without the fold card', () => {
+    fc.assert(
+      fc.property(
+        graphWithDensityArb({ maxN: 18 }).chain((graph) =>
+          fc.tuple(fc.constant(graph), matchingArb(graph), fc.boolean()),
+        ),
+        ([graph, matching, fold]) => {
+          neverDark(gardenOf(graph, matching), fold);
+        },
+      ),
+      { numRuns: 1000 },
+    );
+  });
+
+  it('the check sees the case when a hand-made search meets it, so it is not empty', () => {
+    // Only 0 marked: its look along the vine reaches 1, unmarked in the dark.
+    const vine = unwrap(createGraph(2, [[0, 1]]));
+    const byHand = chainLookMarks(gardenOf(vine), [
+      { type: 'markRoot', vertex: 0 },
+      { type: 'markMoon', from: 0, to: 1 },
+    ]);
+    expect(byHand).toEqual(['none']);
+  });
+
+  it('a chain is still found by the recipe, and always on a sun', () => {
+    const path = unwrap(
+      createGraph(4, [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+      ]),
+    );
+    expect(chainLookMarks(gardenOf(path), runRecipe(gardenOf(path), { fold: true }))).toEqual([
+      'outer',
+      'outer',
+    ]);
   });
 });
 
