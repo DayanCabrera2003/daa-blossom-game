@@ -143,9 +143,13 @@ const statementAt = (
     ? `script step ${problem.step + 1}, answer ${problem.option + 1}`
     : `notebook question ${problem.question + 1}, statement ${problem.option + 1}`;
 
-/** One readable line for a notebook whose right statement repeats a line heard before it. */
+/**
+ * One readable line for a notebook, or a question of the script, whose right answer repeats a line
+ * heard before it.
+ */
 export function describeEchoProblem(problem: NotebookEchoProblem): string {
-  return `${statementAt(problem)} repeats "${problem.words}" of ${problem.echoes}, said before it: word it otherwise, or say that line after the notebook`;
+  const asker = problem.code === 'notebookEcho' ? 'the notebook' : 'the question';
+  return `${statementAt(problem)} repeats "${problem.words}" of ${problem.echoes}, said before it: word it otherwise, or say that line after ${asker}`;
 }
 
 /** One readable line for a walkthrough that does not play through the interface. */

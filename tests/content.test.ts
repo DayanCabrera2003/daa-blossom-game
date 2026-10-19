@@ -103,7 +103,7 @@ describe('dialogue lines (content/es/lines.json)', () => {
     expect(wrong).toEqual([]);
   });
 
-  it('no notebook asks back, word for word, a line the player has just heard (GDD §5.5)', () => {
+  it('no notebook or question asks back, word for word, a line the player has just heard (GDD §5.5)', () => {
     const echoes = catalog().flatMap((level) =>
       notebookEchoProblems(level.data, (id) => lineTable[id]).map((problem) => ({
         level: level.data.id,

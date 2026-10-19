@@ -1,20 +1,24 @@
 import { stepLines } from './lines';
 import type { LevelData } from './schema';
 
-/**
- * The right statement of a notebook question that repeats, word for word, a line the player has
- * just heard: the question then measures memory, not understanding (plan 10, phase 6).
- */
-export interface NotebookEchoProblem {
-  readonly code: 'notebookEcho';
-  /** The question, by its index in the level's list, and the right statement in it. */
-  readonly question: number;
-  readonly option: number;
-  /** The line heard before the notebook that the statement repeats. */
+/** The line heard before a question that its right answer repeats, and the words they share. */
+interface Echo {
+  /** The line heard before the question that the right answer repeats. */
   readonly echoes: string;
   /** The words they share, normalized. */
   readonly words: string;
 }
+
+/**
+ * The right statement of a notebook question (plan 10, phase 6), or the right answer of a question
+ * of the script (`askEcho`, phase 7), that repeats, word for word, a line the player has just
+ * heard: the question then measures memory, not understanding.
+ */
+export type NotebookEchoProblem =
+  /** The notebook question, by its index in the level's list, and the right statement in it. */
+  | ({ readonly code: 'notebookEcho'; readonly question: number; readonly option: number } & Echo)
+  /** The step of the script that asks, and the right answer in it. */
+  | ({ readonly code: 'askEcho'; readonly step: number; readonly option: number } & Echo);
 
 /**
  * Words that say nothing on their own: articles, pronouns, prepositions, conjunctions and the
@@ -58,40 +62,49 @@ export function sharedRun(statement: string, heard: string): string | null {
   return null;
 }
 
+/** The first line of `heard` that `statement` echoes, with the words they share; null if none. */
+function echoIn(statement: string, heard: readonly string[], text: TextOf): Echo | null {
+  for (const line of heard) {
+    const said = text(line);
+    const words = said === undefined ? null : sharedRun(statement, said);
+    if (words !== null) return { echoes: line, words };
+  }
+  return null;
+}
+
+/** The texts of line ids, as the caller reads them from the content. */
+type TextOf = (id: string) => string | undefined;
+
 /**
  * `notebookEcho` (plan 10, phase 6): the right statement of every notebook question shares no run
  * of three words (two of them meaningful) with a line said before its notebook step: the script's
  * lines, reactions while playing, questions and their answers. What comes after (the reply that
  * sums up, lines after the step) and hints, which the player may never ask for, do not count; nor
- * do the false statements, one of which half-copies the mentor on purpose. The texts come from the
- * caller (`text`, by line id), since levels never read the content.
+ * do the false statements, one of which half-copies the mentor on purpose. The right answers of
+ * the questions of the script (`ask`) are held to the same rule (`askEcho`, phase 7), with their
+ * own prompt and replies not counted. The texts come from the caller (`text`, by line id), since
+ * levels never read the content.
  */
-export function notebookEchoProblems(
-  level: LevelData,
-  text: (id: string) => string | undefined,
-): NotebookEchoProblem[] {
+export function notebookEchoProblems(level: LevelData, text: TextOf): NotebookEchoProblem[] {
   const problems: NotebookEchoProblem[] = [];
   level.flow.forEach((step, index) => {
-    if (step.step !== 'notebook') return;
-    const asked = level.notebook?.[step.question];
-    if (asked === undefined) return;
     const heard = level.flow.slice(0, index).flatMap(stepLines);
-    asked.options.forEach((option, at) => {
+    const options =
+      step.step === 'ask'
+        ? step.options
+        : step.step === 'notebook'
+          ? level.notebook?.[step.question]?.options
+          : undefined;
+    options?.forEach((option, at) => {
       const statement = text(option.line);
       if (!option.correct || statement === undefined) return;
-      for (const line of heard) {
-        const said = text(line);
-        const words = said === undefined ? null : sharedRun(statement, said);
-        if (words === null) continue;
-        problems.push({
-          code: 'notebookEcho',
-          question: step.question,
-          option: at,
-          echoes: line,
-          words,
-        });
-        return;
-      }
+      const echo = echoIn(statement, heard, text);
+      if (echo === null) return;
+      problems.push(
+        step.step === 'notebook'
+          ? { code: 'notebookEcho', question: step.question, option: at, ...echo }
+          : { code: 'askEcho', step: index, option: at, ...echo },
+      );
     });
   });
   return problems;

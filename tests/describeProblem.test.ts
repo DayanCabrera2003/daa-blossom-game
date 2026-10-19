@@ -176,6 +176,17 @@ describe('readable level problems', () => {
     ).toBe(
       'notebook question 1, statement 1 repeats "crea ni destruye" of ch4.11.sauce.06, said before it: word it otherwise, or say that line after the notebook',
     );
+    expect(
+      describeEchoProblem({
+        code: 'askEcho',
+        step: 2,
+        option: 0,
+        echoes: 'ch2.3.sauce.01',
+        words: 'con farol plateado',
+      }),
+    ).toBe(
+      'script step 3, answer 1 repeats "con farol plateado" of ch2.3.sauce.01, said before it: word it otherwise, or say that line after the question',
+    );
   });
 
   it('explains why a file did not load', () => {

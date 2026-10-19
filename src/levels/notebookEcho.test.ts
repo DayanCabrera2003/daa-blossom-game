@@ -122,3 +122,44 @@ describe('notebookEcho: the right statement never repeats a line just heard (pla
     ]);
   });
 });
+
+describe('a question of the script is held to the same rule (plan 10, phase 7)', () => {
+  /** A level that says `before`, then asks with `ch9.1.notebook.01` as the right answer. */
+  const asking = (before: LevelData['flow']): LevelData =>
+    ({
+      id: '9.1',
+      hints: [],
+      flow: [
+        ...before,
+        {
+          step: 'ask',
+          prompt: 'ch9.1.notebook.00',
+          options: [
+            { line: 'ch9.1.notebook.01', correct: true, reply: 'ch9.1.sauce.00' },
+            { line: 'ch9.1.notebook.02', correct: false, reply: 'ch9.1.sauce.01' },
+          ],
+          retry: true,
+        },
+      ],
+    }) as unknown as LevelData;
+
+  it('flags the right answer that copies a line said before the question, by its step', () => {
+    expect(
+      notebookEchoProblems(asking([{ step: 'say', lines: ['ch9.1.sauce.07'] }]), text),
+    ).toEqual([
+      {
+        code: 'askEcho',
+        step: 1,
+        option: 0,
+        echoes: 'ch9.1.sauce.07',
+        words: 'crea ni destruye',
+      },
+    ]);
+  });
+
+  it('its own reply, said after it, is no echo', () => {
+    expect(
+      notebookEchoProblems(asking([{ step: 'say', lines: ['ch9.1.sauce.01'] }]), text),
+    ).toEqual([]);
+  });
+});

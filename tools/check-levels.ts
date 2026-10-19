@@ -41,7 +41,8 @@ for (const { path, json } of files) {
     loaded.push(level.value.data);
     const integrity = checkIntegrity(level.value);
     problems.push(...integrity.map(describeProblem));
-    // The notebook's right statement is said in other words than the lines heard before it.
+    // The right answer of a notebook or a question is said in other words than the lines heard
+    // before it.
     const text = (line: string): string | undefined => (lines as Record<string, string>)[line];
     problems.push(...notebookEchoProblems(level.value.data, text).map(describeEchoProblem));
     // A sound level must also be finished through the interface, script included.
