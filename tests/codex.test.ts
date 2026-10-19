@@ -119,6 +119,26 @@ const boxesDue = (entry: CodexEntryId): number[] =>
 const namedFiles = (text: string): string[] =>
   [...text.matchAll(/`((?:src|tests)\/[\w./-]+\.ts)`/g)].map((match) => match[1] as string);
 
+/** The title of the last section of every bridge tab, where the core witnesses of the entry are. */
+const WITNESS_TITLE = 'Testigos del núcleo';
+
+/**
+ * The text of the witnesses' section of a bridge tab: the body under its `### Testigos del núcleo`
+ * heading, which must be the last section of the tab; null when the tab does not end with it.
+ */
+function witnessSection(bridge: string): string | null {
+  const last = bridge.split(/^### /m).slice(1).at(-1);
+  if (last === undefined) return null;
+  const [title = '', ...body] = last.split('\n');
+  return title.trim() === WITNESS_TITLE ? body.join('\n').trim() : null;
+}
+
+/** The tabs a reader reads as the book (the bridge alone may point at the code). */
+const PAGE_TABS = ['intuition', 'formal'] as const;
+
+/** A file of the repository named in a code span: `` `src/…` `` or `` `tests/…` ``. */
+const REPOSITORY_PATH = /`(?:src|tests)\//;
+
 /** Words that wave a step through instead of justifying it. */
 const HAND_WAVING = /obviamente|es f[áa]cil ver|claramente|trivialmente|es evidente/i;
 
@@ -337,16 +357,30 @@ describe('the structure of rigor of the formal tabs', () => {
     }
   });
 
-  it('every entry names its witnesses in the core, and every one exists', () => {
+  it('every entry names its witnesses in the core at the end of its bridge, and every one exists', () => {
     const root = join(import.meta.dirname, '..');
     for (const entry of entries) {
-      const files = namedFiles(entry.tabs.formal);
+      const section = witnessSection(entry.tabs.bridge);
+      expect({ entry: entry.id, titled: section !== null }).toEqual({
+        entry: entry.id,
+        titled: true,
+      });
+      const files = namedFiles(section ?? '');
       expect({ entry: entry.id, witness: files.some((file) => file.endsWith('.test.ts')) }).toEqual(
         { entry: entry.id, witness: true },
       );
       const missing = files.filter((file) => !existsSync(join(root, file)));
       expect({ entry: entry.id, missing }).toEqual({ entry: entry.id, missing: [] });
     }
+  });
+
+  it('names no file of the repository in the intuition or the formal tab (plan 10, phase 12)', () => {
+    const naming = entries.flatMap((entry) =>
+      PAGE_TABS.filter((tab) => REPOSITORY_PATH.test(entry.tabs[tab])).map(
+        (tab) => `${entry.id} ${tab}`,
+      ),
+    );
+    expect(naming).toEqual([]);
   });
 
   it('no entry waves a step through', () => {
@@ -364,6 +398,13 @@ describe('the structure of rigor of the formal tabs', () => {
       'src/core/a.test.ts',
       'tests/support/b.ts',
     ]);
+    expect(witnessSection('Tabla.\n\n### Testigos del núcleo\n\n`src/core/a.test.ts`.')).toBe(
+      '`src/core/a.test.ts`.',
+    );
+    expect(
+      witnessSection('### Testigos del núcleo\n\nUno.\n\n### Bibliografía\n\nDos.'),
+    ).toBeNull();
+    expect(witnessSection('**Testigos del núcleo.** `src/core/a.test.ts`.')).toBeNull();
     expect(HAND_WAVING.test('Es fácil ver que sí.')).toBe(true);
     expect(HAND_WAVING.test('Por el Lema 2.3, sí.')).toBe(false);
   });
