@@ -53,7 +53,9 @@ const play = (state: GardenState, action: Action): GardenState => {
 /** Plays a move and names the flower it folded, if any, by its petals in alphabetical order. */
 const folding = (level: Level, state: GardenState, action: Action) => {
   const after = play(state, action);
-  const before = new Set(state.layer.nodes.flatMap((node) => [node.id]));
+  const before = new Set(
+    state.layer.nodes.flatMap((node) => (node.kind === 'blossom' ? [node.id] : [])),
+  );
   const flower = after.layer.nodes.find((node) => node.kind === 'blossom' && !before.has(node.id));
   const name =
     flower === undefined
