@@ -45,7 +45,7 @@
   "victory": { "type": "matchingSize", "value": 6 },
   "hints": [
     { "line": "ch5.2.sauce.01" },
-    { "line": "ch5.2.sauce.02", "highlight": ["h", "i"] },
+    { "line": "ch5.2.sauce.02", "highlight": ["h", "i", "j", "R"] },
     { "line": "ch5.2.sauce.03" }
   ],
   "flow": [

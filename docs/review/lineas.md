@@ -430,7 +430,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch5.2.sauce.00` · **Sauce** · plan: Tres flores, una dentro de otra. Avanza tu luz desde R y pliega cada una donde se pare. Con las capas puedes entrar en una flor plegada y mirar qué guarda.
 - [ ] `ch5.2.sauce.01` · **Sauce** · plan: Cada flor plegada es un brote más. ¿Con quién cierra un bucle?
-- [ ] `ch5.2.sauce.02` · **Sauce** · plan: Mira esta enredadera.
+- [ ] `ch5.2.sauce.02` · **Sauce** · plan: Cuando la flor grande esté plegada, mira por este lado. ¿Dónde se tocan dos soles?
 - [ ] `ch5.2.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.2.sauce.04` · **Sauce** · plan: Se abren de fuera hacia dentro: la flor grande, luego la mediana, luego la pequeña. Y la cadena las cruzó las tres.
 
