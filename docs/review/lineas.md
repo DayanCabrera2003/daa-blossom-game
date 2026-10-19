@@ -369,7 +369,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.10.sauce.00` · **Sauce** · plan: Hoy la flor está cerrada: no se puede plegar. Y aun así, este jardín puede encender tres faroles.
 - [ ] `ch4.10.sauce.01` · **Sauce** · GDD: Cuando una flor te estorba, mueve la oscuridad hasta su base. No pierdes nada.
 - [ ] `ch4.10.sauce.02` · **Sauce** · plan: ¿Puedes dejar a b a oscuras sin perder ningún farol?
-- [ ] `ch4.10.sauce.03` · **Sauce** · plan: Gira el tallo: desde R hasta b.
+- [ ] `ch4.10.sauce.03` · **Sauce** · plan: ¿Qué brote tendría que quedar a oscuras?
 - [ ] `ch4.10.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.10.sauce.05` · **Sauce** · plan: Los mismos faroles que antes, y la base quedó a oscuras. Desde ahí, la cadena era directa. Escríbelo en tu Cuaderno.
 - [ ] `ch4.10.notebook.06` · **Cuaderno** · GDD: Si giro el tallo hasta la base de una flor…
