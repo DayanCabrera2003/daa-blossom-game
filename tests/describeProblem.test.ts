@@ -149,6 +149,7 @@ describe('readable level problems', () => {
       { code: 'labelOnSprout', label: 'a', sprout: 'b' },
       { code: 'labelOnLabel', labels: ['a', 'b'] },
       { code: 'labelsDifferByCase', labels: ['c', 'C'] },
+      { code: 'statementUnrefuted', question: 1, option: 0 },
       {
         code: 'counterexampleLayout',
         question: 0,

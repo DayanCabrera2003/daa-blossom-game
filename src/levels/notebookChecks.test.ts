@@ -76,7 +76,7 @@ describe('the checks of a notebook', () => {
   });
 
   it('checks the counterexamples of every question, telling which question each one refutes', () => {
-    const level = levelWith(undefined);
+    const level = levelWith({ mode: 'play', ...row, actions: ['chain'] });
     const [first] = level.notebook;
     const folding = { mode: 'play', ...row, actions: ['chain', 'fold'] };
     const second = {
@@ -183,5 +183,26 @@ describe('the checks of a notebook', () => {
         },
       ],
     );
+  });
+
+  it('every false statement is refuted, by the mentor or by a garden; a true one needs neither', () => {
+    const unrefuted = levelWith(undefined);
+    expect(notebookProblemsOf(unrefuted)).toEqual([
+      { code: 'statementUnrefuted', question: 0, option: 1 },
+    ]);
+    const [question] = unrefuted.notebook;
+    const answered = {
+      ...unrefuted,
+      notebook: [
+        {
+          ...question,
+          options: [
+            { line: 'ch1.5.notebook.01', correct: true },
+            { line: 'ch1.5.notebook.02', correct: false, reply: 'ch1.5.sauce.04' },
+          ],
+        },
+      ],
+    };
+    expect(notebookProblemsOf(answered)).toEqual([]);
   });
 });

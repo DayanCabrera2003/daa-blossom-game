@@ -222,7 +222,7 @@ describe('level integrity', () => {
       codex: 'C2',
       options: [
         { line: 'ch1.1.notebook.01', correct: true },
-        { line: 'ch2.2.notebook.02', correct: false },
+        { line: 'ch2.2.notebook.02', correct: false, reply: 'ch1.1.sauce.03' },
       ],
     };
     expect(problemsOf({ ...trap, notebook: [notebook] })).toEqual([

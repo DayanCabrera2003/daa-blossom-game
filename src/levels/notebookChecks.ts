@@ -14,6 +14,8 @@ interface StatementAt {
 
 /** Something wrong with the notebook of a level, at one of its statements. */
 export type NotebookProblem =
+  /** A false statement with neither a reply nor a garden: choosing it would teach nothing. */
+  | ({ readonly code: 'statementUnrefuted' } & StatementAt)
   /** The counterexample does not describe a garden. */
   | ({ readonly code: 'badCounterexample' } & StatementAt & { readonly error: GardenError })
   /** The counterexample is touched with an action the player has not met by this level. */
@@ -27,7 +29,8 @@ export type NotebookProblem =
 
 /**
  * The checks of a level's notebook (plan 03, phase 6) that the schema cannot see, over every one of
- * its questions: each counterexample is a garden under the core's rules, it is played with tools the
+ * its questions: every false statement is refuted, by the mentor's reply or by a garden; each
+ * counterexample is a garden under the core's rules, it is played with tools the
  * level already gives or knows and closes for the day in its own garden (a counterexample never
  * teaches a new move: 4.7 closes marks by hand, since its light searches by itself, yet its
  * counterexample is marked by hand), and a `mirrorDraw` one leaves a better
@@ -43,6 +46,9 @@ export function checkNotebook(level: Level): NotebookProblem[] {
   );
   for (const { at, statement } of statements) {
     const { counterexample } = statement;
+    if (!statement.correct && statement.reply === undefined && counterexample === undefined) {
+      problems.push({ code: 'statementUnrefuted', ...at });
+    }
     if (counterexample === undefined) continue;
     const built = buildCounterexample(counterexample);
     if (!built.ok) {
