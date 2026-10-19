@@ -85,8 +85,8 @@ describe('the mentor tells why after the player answers, as the reply to the rig
     expect(level.flow.findIndex((step) => step.step === 'play')).toBeLessThan(at);
     expect(ask.retry).toBe(true);
     expect(ask.options.find((answer) => answer.correct)?.reply).toBe(why);
-    expect(level.flow.slice(0, at).flatMap(stepLines)).not.toContain(why);
-    expect(level.flow.slice(at + 1).flatMap(stepLines)).not.toContain(why);
+    expect(level.data.flow.slice(0, at).flatMap(stepLines)).not.toContain(why);
+    expect(level.data.flow.slice(at + 1).flatMap(stepLines)).not.toContain(why);
     // Every false answer is refuted: by a reply, or by a garden.
     for (const answer of ask.options.filter((option) => !option.correct)) {
       expect(answer.reply !== undefined || answer.counterexample !== undefined).toBe(true);
