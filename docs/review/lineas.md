@@ -350,7 +350,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.8
 
-- [ ] `ch4.8.sauce.00` · **Sauce** · plan: Dos ramas, y un bucle en cada una. Busca desde R y enciende la cadena.
+- [ ] `ch4.8.sauce.00` · **Sauce** · plan: Dos ramas, y un bucle en cada una. Avanza tu luz desde R y enciende la cadena.
 - [ ] `ch4.8.sauce.01` · **Sauce** · plan: Pliega cada flor cuando aparezca. ¿Cuál de las dos lleva a Elo?
 - [ ] `ch4.8.sauce.02` · **Sauce** · plan: La cadena atraviesa esta flor. La otra puede quedarse cerrada.
 - [ ] `ch4.8.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
