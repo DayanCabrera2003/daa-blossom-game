@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 486 líneas, 58 están tal cual en el GDD y 428 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 492 líneas, 59 están tal cual en el GDD y 433 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -234,6 +234,12 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.4.sauce.02` · **Sauce** · plan: Empieza aquí, con un sol. ¿Quién más podría empezar su propia búsqueda?
 - [ ] `ch3.4.sauce.03` · **Sauce** · plan: Empiezo yo por R1. El otro es tuyo.
 - [ ] `ch3.4.sauce.04` · **Sauce** · plan: Dos luces se tocaron: sol con sol, y cada uno de un árbol distinto. Eso es una cadena de un solitario al otro.
+- [ ] `ch3.4.sauce.05` · **Sauce** · GDD: Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?
+- [ ] `ch3.4.gardener.06` · **Tú** · plan: Un bucle que vuelve al mismo brote.
+- [ ] `ch3.4.sauce.07` · **Sauce** · plan: No: cada camino acaba en su propio brote a oscuras, y son dos distintos. No se cierra nada.
+- [ ] `ch3.4.gardener.08` · **Tú** · plan: Una cadena de un brote a oscuras al otro.
+- [ ] `ch3.4.gardener.09` · **Tú** · plan: Nada: hay que seguir buscando.
+- [ ] `ch3.4.sauce.10` · **Sauce** · plan: Mira bien: los dos caminos alternan, y la enredadera que los une está apagada. Ya no hace falta buscar más.
 
 ### 3.5
 

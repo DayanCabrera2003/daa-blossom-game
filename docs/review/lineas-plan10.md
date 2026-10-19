@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-99 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
+105 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -103,6 +103,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.4.sauce.02` · **Sauce** · cambiada
   - Antes: R1 y R2. Ponle un sol a cada uno.
   - Después: Empieza aquí, con un sol. ¿Quién más podría empezar su propia búsqueda?
+- [ ] `ch3.4.sauce.05` · **Sauce** · nueva
+  - Después: Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?
+- [ ] `ch3.4.gardener.06` · **Tú** · nueva
+  - Después: Un bucle que vuelve al mismo brote.
+- [ ] `ch3.4.sauce.07` · **Sauce** · nueva
+  - Después: No: cada camino acaba en su propio brote a oscuras, y son dos distintos. No se cierra nada.
+- [ ] `ch3.4.gardener.08` · **Tú** · nueva
+  - Después: Una cadena de un brote a oscuras al otro.
+- [ ] `ch3.4.gardener.09` · **Tú** · nueva
+  - Después: Nada: hay que seguir buscando.
+- [ ] `ch3.4.sauce.10` · **Sauce** · nueva
+  - Después: Mira bien: los dos caminos alternan, y la enredadera que los une está apagada. Ya no hace falta buscar más.
 
 ### 3.7
 
