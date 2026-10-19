@@ -82,6 +82,33 @@ describe('dragging a chain', () => {
     expect(chainGain(fog, [0, 1, 2, 3, 4, 5])).toBeNull();
   });
 
+  it("never promises what the level's chain rule refuses (4.10, the flower closed)", () => {
+    // The festival garden R–a=b, triangle b–c=d–b, c–e as 0–5, its flower b, c, d closed.
+    const festivalGraph = unwrap(
+      createGraph(6, [
+        [0, 1],
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [2, 4],
+        [3, 5],
+      ]),
+    );
+    const closed = createGardenState({
+      graph: festivalGraph,
+      matching: unwrap(
+        createMatching(festivalGraph, [
+          [1, 2],
+          [3, 4],
+        ]),
+      ),
+      chains: { rule: 'fromBase', base: 2, petals: [2, 3, 4] },
+      allowed: ['chain', 'rotateStem'],
+    });
+    expect(chainGain(closed, [0, 1, 2, 4, 3, 5])).toBeNull();
+    expect(chainGain(closed, [0, 1, 2])).toBe(0);
+  });
+
   it('an empty drag cannot be extended', () => {
     expect(extendChain(brigade, [], 0)).toEqual({ path: [], rejection: null });
   });

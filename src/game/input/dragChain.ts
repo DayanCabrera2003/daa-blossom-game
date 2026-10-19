@@ -2,6 +2,7 @@ import type { VertexId } from '@core/graph/types';
 import { checkAlternatingPath, checkAugmentingPath, checkStem } from '@core/matching/paths';
 import { isExposed } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
+import { judgeLighting } from '@core/rules/chainRule';
 import { requireVisibleVines } from '@core/rules/checks';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
@@ -44,12 +45,19 @@ export function extendChain(
   return { path: candidate, rejection: null };
 }
 
-/** What letting go would give: +1 lantern, 0 (the darkness only moves), or null (not legal). */
+/**
+ * What letting go would give: +1 lantern, 0 (the darkness only moves), or null (not legal). Legal
+ * means what the rules would accept, the level's chain rule included (`judgeLighting`), so the
+ * drawn chain never promises what letting go would refuse.
+ */
 export function chainGain(state: GardenState, path: readonly VertexId[]): 1 | 0 | null {
   if (path.length < 2 || requireVisibleVines(state, path) !== null) return null;
-  if (checkAugmentingPath(state.graph, state.matching, path).ok) return 1;
-  if (checkStem(state.graph, state.matching, path).ok) return 0;
-  return null;
+  const gain = checkAugmentingPath(state.graph, state.matching, path).ok
+    ? 1
+    : checkStem(state.graph, state.matching, path).ok
+      ? 0
+      : null;
+  return gain !== null && judgeLighting(state, path) === null ? gain : null;
 }
 
 /**
