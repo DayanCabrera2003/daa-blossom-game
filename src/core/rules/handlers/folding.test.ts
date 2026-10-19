@@ -114,6 +114,34 @@ describe('fold a chosen loop (free mode, «Plegar a mano»)', () => {
     });
   });
 
+  it("cannot play C8's Observation 8.4: the stemless triangle that would hide p–c=d–q", () => {
+    // b c d u p q = 0 1 2 3 4 5; vines bc, cd, db, bu, pc, qd; lanterns c=d and b=u.
+    const graph = unwrap(
+      createGraph(6, [
+        [0, 1],
+        [1, 2],
+        [2, 0],
+        [0, 3],
+        [4, 1],
+        [5, 2],
+      ]),
+    );
+    const stemless = createGardenState({
+      graph,
+      matching: unwrap(
+        createMatching(graph, [
+          [1, 2],
+          [0, 3],
+        ]),
+      ),
+      allowed: ['fold'],
+    });
+    expect(fold(stemless, { type: 'fold', loop: [0, 1, 2] })).toEqual({
+      ok: false,
+      reason: { code: 'baseNotDark' },
+    });
+  });
+
   it('says why a loop is not a flower', () => {
     expect(fold(festival, { type: 'fold', loop: [0, 1, 2] })).toMatchObject({
       ok: false,
