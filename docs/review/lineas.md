@@ -239,7 +239,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.8.sauce.00` · **Sauce** · plan: Busca otra vez desde todos los que estén a oscuras, hasta que no quede nada por mirar.
 - [ ] `ch3.8.sauce.01` · **Sauce** · plan: Cuando la búsqueda se acabe sin cadena, pon espantapájaros en todas las lunas y pulsa «Presentar».
 - [ ] `ch3.8.sauce.02` · **Sauce** · plan: ¿Dónde quedaron las lunas?
-- [ ] `ch3.8.sauce.03` · **Sauce** · plan: Cada uno de estos brotes recibió una visita pidiendo. Ahí van los espantapájaros.
+- [ ] `ch3.8.sauce.03` · **Sauce** · plan: Mira este grupo cuando acabe la búsqueda. ¿Qué brotes recibieron una visita pidiendo?
 - [ ] `ch3.8.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Sigue buscando hasta el final.
 - [ ] `ch3.8.sauce.05` · **Sauce** · plan: Cada luna tiene su farol, así que hay tantos espantapájaros como faroles. Y de un sol solo se llega a lunas: no queda enredadera sin vigilar.
 - [ ] `ch3.8.sauce.06` · **Sauce** · plan: La búsqueda que fracasó te regala la prueba. Escríbelo en tu Cuaderno.

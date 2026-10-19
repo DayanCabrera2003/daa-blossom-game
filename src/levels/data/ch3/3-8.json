@@ -38,7 +38,7 @@
   "victory": { "type": "coverCertificate" },
   "hints": [
     { "line": "ch3.8.sauce.02" },
-    { "line": "ch3.8.sauce.03", "highlight": ["2", "4", "a", "c", "e"] },
+    { "line": "ch3.8.sauce.03", "highlight": ["S", "a", "b", "c", "d", "e", "f"] },
     { "line": "ch3.8.sauce.04" }
   ],
   "notebook": [
