@@ -2,7 +2,8 @@ import { size } from '@core/matching/queries';
 import { applyAction } from '@core/rules/applyAction';
 import { describe, expect, it } from 'vitest';
 import { catalog } from './catalog';
-import { buildCounterexample, counterexampleAt } from './counterexample';
+import { buildCounterexample, counterexampleAt, refutationAt } from './counterexample';
+import { loadLevel } from './loader';
 import { counterexampleSchema } from './notebook';
 
 /** Four sprouts in a row with the middle pair lit: a chain from end to end lights one more. */
@@ -86,5 +87,74 @@ describe('the counterexample of a statement', () => {
     expect(counterexampleAt(byId('1.5'), 0, 7)).toBeNull();
     expect(counterexampleAt(byId('1.5'), 1, 1)).toBeNull();
     expect(counterexampleAt(byId('0.1'), 0, 1)).toBeNull();
+  });
+});
+
+describe('the garden that refutes an answer chosen at a step of the script', () => {
+  const byId = (id: string) => {
+    const level = catalog().find((candidate) => candidate.data.id === id);
+    if (level === undefined) throw new Error(`no level ${id}`);
+    return level;
+  };
+
+  /** Two sprouts, then a question whose second answer is refuted by a row of four. */
+  const asking = loadLevel({
+    id: '1.5',
+    sprouts: [
+      { label: 'A', x: 200, y: 135 },
+      { label: 'B', x: 280, y: 135 },
+    ],
+    vines: [['A', 'B']],
+    goal: { visible: true, value: 1 },
+    victory: { type: 'matchingSize', value: 1 },
+    flow: [
+      { step: 'play' },
+      {
+        step: 'ask',
+        prompt: 'ch1.5.sauce.05',
+        options: [
+          { line: 'ch1.5.sauce.06', correct: true },
+          {
+            line: 'ch1.5.sauce.07',
+            correct: false,
+            counterexample: { mode: 'play', ...rowOfFour, actions: ['chain'] },
+          },
+        ],
+        retry: true,
+      },
+    ],
+    solution: [
+      { type: 'join', u: 'A', v: 'B' },
+      { type: 'answer', option: 0 },
+    ],
+  });
+
+  it('a notebook step opens the garden of its notebook question, under its prompt', () => {
+    const refuted = refutationAt(byId('1.5'), 2, 1);
+    expect(refuted).toMatchObject({
+      asker: 'notebook',
+      prompt: 'ch1.5.notebook.00',
+      statement: 'ch1.5.notebook.02',
+    });
+    expect(refuted?.counterexample.start.graph.n).toBe(6);
+  });
+
+  it('a question of the script opens the garden of its own answer', () => {
+    if (!asking.ok) throw new Error('the level does not load');
+    const refuted = refutationAt(asking.value, 1, 1);
+    expect(refuted).toMatchObject({
+      asker: 'ask',
+      prompt: 'ch1.5.sauce.05',
+      statement: 'ch1.5.sauce.07',
+    });
+    expect(refuted?.counterexample.start.graph.n).toBe(4);
+  });
+
+  it('is none for a right answer, a step that asks nothing or one not in the script', () => {
+    if (!asking.ok) throw new Error('the level does not load');
+    expect(refutationAt(asking.value, 1, 0)).toBeNull();
+    expect(refutationAt(asking.value, 0, 1)).toBeNull();
+    expect(refutationAt(asking.value, 9, 1)).toBeNull();
+    expect(refutationAt(byId('1.5'), 2, 0)).toBeNull();
   });
 });
