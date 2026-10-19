@@ -67,6 +67,23 @@ export function stonesAreTheMoons(state: GardenState): boolean {
   return lifted.length === moons.length && lifted.every((stone, i) => stone === moons[i]);
 }
 
+/**
+ * Whether the condition is a certificate the player presents (scarecrows or stones: 3.7–3.10 and
+ * chapter 7), rather than a claim about the lanterns or the search. The button that ends such a
+ * level says «Presentar» instead of "Terminé" (GDD §5.2).
+ */
+export function isCertificate(condition: VictoryCondition): boolean {
+  switch (condition.type) {
+    case 'coverCertificate':
+    case 'coverComplete':
+    case 'tutteBergeCertificate':
+    case 'moonCertificate':
+      return true;
+    default:
+      return false;
+  }
+}
+
 /** Whether the garden meets the condition. */
 export function isVictory(state: GardenState, condition: VictoryCondition): boolean {
   const lanterns = size(state.matching);
