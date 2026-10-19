@@ -4,7 +4,13 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-0 líneas de diálogo y 10 textos de interfaz distintos de la versión 1.0.1.
+1 líneas de diálogo y 11 textos de interfaz distintos de la versión 1.0.1.
+
+### 4.4
+
+- [ ] `ch4.4.sauce.00` · **Sauce** · cambiada
+  - Antes: El bucle de tres otra vez. Busca desde R hasta que dos soles se toquen.
+  - Después: El bucle de tres otra vez. Hoy tu luz busca sola desde R, y tú la avanzas. Se parará donde dos soles se toquen.
 
 ## Textos de interfaz
 
@@ -28,3 +34,6 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Avanzar la luz
 - [ ] `tutorial.light.body` · nueva
   - Después: Pulsa «Avanzar la luz»: tu luz pone su siguiente sol o luna. Si se para donde se tocan dos soles del mismo árbol, toca esa enredadera con Marcas y vuelve a pulsar.
+- [ ] `tutorial.fold.body` · cambiada
+  - Antes: Con Marcas, toca la enredadera donde se tocan dos soles del mismo árbol: el bucle se pliega en una flor. Con Plegar, toca en orden los brotes de un bucle.
+  - Después: Con Marcas, toca la enredadera donde se tocan dos soles del mismo árbol: el bucle se pliega en una flor.
