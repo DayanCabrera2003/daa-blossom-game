@@ -6,6 +6,7 @@ import { animationGarden } from '../../picture/animationGarden';
 import { raceBetReveal } from '../../picture/raceBetReveal';
 import { raceDurationAt } from '../../picture/racePanel';
 import { checkText } from '../../picture/mirrorDrawing';
+import { claimText } from '../../picture/claimText';
 import { reasonText } from '../../picture/reasonText';
 import type { AssetKey } from '../../assets/keys';
 import { layerOf, type Controller, type Effect } from '../../systems/levelController';
@@ -67,6 +68,13 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       // Before folding opens, the conflict of a search is not told apart (4.1).
       const foldAllowed = stage.level.start.allowed.has('foldAt');
       stage.toast.show(reasonText(effect.reason, effect.action, stage.labels, t, { foldAllowed }));
+      break;
+    }
+    case 'claimRefused': {
+      // A claim that falls short is told gently, without naming where; a vine nobody guards glows
+      // in the garden, painted from the controller.
+      const { key, params } = claimText(effect.verdict);
+      stage.toast.show(t(key, params));
       break;
     }
     case 'drawRefused':

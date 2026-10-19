@@ -233,11 +233,15 @@ describe('the toasts', () => {
       params[name ?? ''] = name === 'action' ? longestAction : 'XX';
     return t(key, params);
   };
-  /** Everything a toast says: refusals, the mirror's check, the free mode's notices. */
+  /**
+   * Everything a toast says: refusals, why a claim falls short, the mirror's check, the free mode's
+   * notices.
+   */
   const messages = Object.keys(strings)
     .filter(
       (key) =>
         key.startsWith('reason.') ||
+        key.startsWith('claim.') ||
         key.startsWith('sandbox.reason.') ||
         key.startsWith('sandbox.opened.') ||
         [

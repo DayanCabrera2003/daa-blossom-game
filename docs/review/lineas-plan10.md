@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-14 líneas de diálogo y 15 textos de interfaz distintos de la versión 1.0.1.
+14 líneas de diálogo y 22 textos de interfaz distintos de la versión 1.0.1.
 
 ### 4.4
 
@@ -100,6 +100,20 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Tu luz ya encontró una cadena: abre las flores que cruza y enciéndela.
 - [ ] `reason.lightDone` · nueva
   - Después: Tu luz ya miró todas las enredaderas que podía.
+- [ ] `claim.chainLeft` · nueva
+  - Después: Mmm… este jardín todavía guarda una cadena. Mírala con calma.
+- [ ] `claim.searchOpen` · nueva
+  - Después: Tu búsqueda aún tiene enredaderas apagadas sin mirar desde algún sol.
+- [ ] `claim.unguarded` · nueva
+  - Después: Queda una enredadera sin vigilar.
+- [ ] `claim.countMismatch` · nueva
+  - Después: Hay {scarecrows} espantapájaros y {lanterns} faroles: para que sea una prueba tienen que ser los mismos.
+- [ ] `claim.countShort` · nueva
+  - Después: La cuenta dice que al menos {atLeast} duermen a oscuras, y hay {dark}: todavía no prueba nada.
+- [ ] `claim.searchNotOver` · nueva
+  - Después: Primero la búsqueda tiene que acabar sin cadena.
+- [ ] `claim.notTheMoons` · nueva
+  - Después: Esas piedras no son las lunas de tu búsqueda.
 - [ ] `action.stepLight` · nueva
   - Después: avanzar la luz
 - [ ] `hud.stepLight` · nueva
