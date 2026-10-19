@@ -100,7 +100,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch2.4.sauce.16` · **Sauce** · nueva
   - Después: Ahora tu jardín no tiene ninguna cadena. Intenta ganarle otra vez.
 - [ ] `ch2.4.sauce.17` · **Sauce** · nueva
-  - Después: No se puede. Si no tienes cadena, nadie te gana.
+  - Después: No se puede.
 
 ### 2.5
 
