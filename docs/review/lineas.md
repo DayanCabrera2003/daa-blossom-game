@@ -669,6 +669,7 @@ Los escribió el plan 09 (fases 7 y 10): el aviso de girar el teléfono, los avi
 - [ ] `notice.part.share` · **Página** · plan: la hoja para compartir
 - [ ] `notice.part.credits` · **Página** · plan: los créditos
 - [ ] `notice.part.sandbox` · **Página** · plan: el modo libre
+- [ ] `notice.part.level` · **Página** · plan: el jardín
 - [ ] `page.description` · **Página** · plan: Un juego de puzles tranquilo en un jardín de pixel art: enciende faroles entre brotes y descubre, paso a paso, cómo se encuentra el mayor número de parejas.
 - [ ] `page.noscript` · **Página** · plan: Florecer necesita JavaScript para crecer. Actívalo en tu navegador y recarga la página.
 - [ ] `page.notFound.title` · **Página** · plan: Este sendero no lleva a ningún jardín

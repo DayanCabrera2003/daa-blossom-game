@@ -29,7 +29,7 @@ export async function probeNetwork(): Promise<NetworkProbe> {
 
 /**
  * Turns a part that did not open (`load.failed` on the bus: a book, the share sheet, the credits,
- * the free mode) into a kind notice (plan 09, phase 10): offline, the notice names the part and asks
+ * the free mode, the level screen) into a kind notice (plan 09, phase 10): offline, the notice names the part and asks
  * to check the connection; after a new version was published while the tab was open, it offers to
  * reload. The error is still written to the console; a bug in a part that did load is no notice
  * (`services/chunkFailure.ts`), and the game goes on either way.

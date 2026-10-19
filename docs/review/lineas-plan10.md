@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-25 líneas de diálogo y 27 textos de interfaz distintos de la versión 1.0.1.
+25 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 3.7
 
@@ -204,3 +204,5 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `tutorial.unfold.body` · cambiada
   - Antes: Con Marcas, toca una flor cerrada para abrirla y ver otra vez sus brotes.
   - Después: Con Marcas, toca una flor cerrada para abrirla. El trozo de cadena que encontró tu luz sigue dibujado: arrastra solo el tramo de dentro de la flor para completarlo.
+- [ ] `notice.part.level` · nueva
+  - Después: el jardín

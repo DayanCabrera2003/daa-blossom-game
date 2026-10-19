@@ -41,6 +41,6 @@ describe('a part of the game that did not load', () => {
   });
 
   it('names the parts that load on demand', () => {
-    expect([...LAZY_PARTS].sort()).toEqual(['books', 'credits', 'sandbox', 'share']);
+    expect([...LAZY_PARTS].sort()).toEqual(['books', 'credits', 'level', 'sandbox', 'share']);
   });
 });

@@ -1,8 +1,8 @@
 /**
  * The parts of the game that load on demand, each in a chunk of its own (plan 07 and 08): the
- * books, the free mode's share sheet, the credits and the free mode itself.
+ * books, the free mode's share sheet, the credits, the free mode itself and the level screen.
  */
-export const LAZY_PARTS = ['books', 'share', 'credits', 'sandbox'] as const;
+export const LAZY_PARTS = ['books', 'share', 'credits', 'sandbox', 'level'] as const;
 
 /** A part of the game that loads on demand. */
 export type LazyPart = (typeof LAZY_PARTS)[number];
