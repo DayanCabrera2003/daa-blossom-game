@@ -241,15 +241,19 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 
 ### 5.3 Pistas (tres grados, siempre con voz)
 
-Las pistas se ofrecen tras 90 segundos sin progreso o tras tres intentos fallidos. Nunca se imponen. No quitan estrellas.
+El botón Pista está **siempre a mano** mientras el paso admite pistas y quedan grados: el jugador puede pedir una cuando quiera. Tras 90 segundos sin progreso o tras tres intentos fallidos seguidos (jugadas rechazadas, «Terminé» equivocados), el juego la **ofrece**: el botón brilla. Nunca se imponen. No quitan estrellas ya ganadas, pero abrir alguna en un nivel pierde su estrella "sin pistas" (§5.4).
+
+**Progreso** no es cualquier jugada aceptada, sino una señal que importa: más faroles que nunca en esta partida; con estos faroles, más brotes marcados en la búsqueda (también las marcas de la luz), más flores plegadas o la cadena vista; más brotes inspeccionados; más enredaderas vigiladas; o la cuenta del Consejo más cerca de los que duermen a oscuras. Juntar y separar en bucle, o marcar y deshacer, no superan nada, así que no aplazan la oferta; tampoco rompen la racha de intentos fallidos.
 
 1. **Empujón:** una pregunta que reorienta ("¿Quién sigue a oscuras? ¿Con quién podría hablar?").
-2. **Dirección:** señala la zona o el brote clave con un brillo.
+2. **Dirección:** señala una **zona** con un brillo, o un solo brote, y pregunta; **nunca la respuesta**: no brilla justo la enredadera donde hay que plegar, ni la cadena entera o sus dos puntas, ni el tallo que hay que girar, ni dos o más espantapájaros o piedras del certificado final. Lo comprueba un check de integridad (`hintReveals`).
 3. **Solución guiada:** el mentor ejecuta el primer paso y deja el resto.
+
+Todos los niveles de juego del capítulo 1 en adelante tienen sus tres pistas propias (también 1.5–1.9).
 
 ### 5.4 Estrellas
 
-Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas, dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y las flores secretas. Nunca bloquean el avance.
+Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas (no haber abierto ninguna en el nivel, ofrecida o pedida), dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y las flores secretas. Nunca bloquean el avance.
 
 Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se pierden: no hay tienda ni nada que gastar. Al llegar, un aviso en el hub los anuncia una sola vez. En modo profesor se ven todos.
 
@@ -421,7 +425,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Enseña:** la acción **Cadena**: arrastrar desde S por `S–a`, `a=b`, `b–c`, `c=d`, `d–T`. Al soltar, cascada automática. El distractor `c–z` es una trampa para quien cree que cualquier camino sirve: la herramienta no deja pasar de `b–c` a `c–z` porque serían dos enredaderas apagadas seguidas ("Cleo ya tiene farol: tiene que dárselo a alguien antes de pedir otro").
 - **Por qué aquí:** convierte la cadena manual en herramienta. La regla de alternancia no se explica: la impone la física del jardín.
 - **Guion:** Sauce: "Arrastra desde alguien a oscuras. Los faroles saben deslizarse solos."
-- **Pistas:** (1) "Empieza por Sami." (2) el camino correcto se insinúa. (3) el mentor traza hasta la mitad.
+- **Pistas:** (1) "Empieza por Sami." (2) brilla Teo: "Sami no es el único a oscuras. ¿Hasta quién puede llegar la luz?" (3) el mentor traza la cadena.
 - **Victoria:** 4 faroles.
 - **Desbloquea:** acción **Cadena**.
 
@@ -555,7 +559,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Enseña:** un espantapájaros vigila todas las enredaderas de su brote. Si k espantapájaros vigilan **todas** las enredaderas del jardín, no puede haber más de k faroles (cada farol está en una enredadera vigilada, y cada espantapájaros vigila como mucho un farol). En parte I, espantapájaros en 2 y 4; en parte II, en H. Coinciden con los faroles: **está demostrado**.
 - **Por qué aquí:** primer certificado, con objeto físico, en el caso fácil. El jugador aprende qué es "una prueba corta de que no se puede más".
 - **Guion:** Sauce: "El Consejo no quiere que pruebes todo. Quiere una razón que se vea."
-- **Pistas:** (1) "¿Qué brote toca más enredaderas?" (2) el 2 y el 4 brillan. (3) —
+- **Pistas:** (1) "¿Qué brote toca más enredaderas?" (2) brilla la fila entera: "En esta fila, ¿qué brotes tocan dos enredaderas a la vez?" (3) el mentor pone un espantapájaros.
 - **Victoria:** cobertura completa con exactamente tantos espantapájaros como faroles.
 - **Desbloquea:** Espantapájaros.
 
@@ -681,7 +685,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 - **Por qué aquí:** la flor plegada es un brote como cualquier otro y puede formar parte de otro bucle impar. Y al desplegar, la flor interior se atraviesa por un lado que depende de por dónde se entra y se sale.
 - **Guion:** Sauce: "Una flor es un brote más. Y los brotes forman bucles."
 - **La luz:** mira primero desde R, así que llega a h por `R–h` (h luna, g sol) y cierra F2 en `c–g`: la misma flor F2, encontrada por el otro lado.
-- **Pistas:** (1) "¿Quién es sol dos veces?" (2) `c–g` brilla. (3) el mentor pliega F2.
+- **Pistas:** (1) "¿Quién es sol dos veces?" (2) brilla el bucle grande (R, a, la flor pequeña, g, h): "La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?" (3) el mentor da el siguiente paso.
 - **Victoria:** cadena aplicada, 4 faroles: la que encontró la luz desde R, que se para en `d–b` y luego en `c–g` hasta que el jugador pliega. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.2 Capas
