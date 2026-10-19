@@ -53,14 +53,14 @@ export type VictoryCondition =
   | { readonly type: 'moonCertificate' };
 
 /** Where the player's search stands, under the level's roots and with folding if it is allowed. */
-const statusOf = (state: GardenState): SearchStatus =>
+export const statusOf = (state: GardenState): SearchStatus =>
   searchStatus(state.layer, state.search, {
     roots: state.roots,
     foldAllowed: state.allowed.has('foldAt'),
   });
 
 /** Whether the stones lifted are exactly the moons of a search that is over without a chain. */
-function stonesAreTheMoons(state: GardenState): boolean {
+export function stonesAreTheMoons(state: GardenState): boolean {
   if (state.search === null || statusOf(state) !== 'exhausted') return false;
   const moons = stonesFromForest(state.layer, state.search);
   const lifted = [...state.stones].sort((a, b) => a - b);
