@@ -4,7 +4,7 @@ import { MAX_SPROUTS } from '../src/levels/sandbox/limits';
 import { catalog } from '../src/levels/catalog';
 import { isUiUnlocked } from '../src/levels/uiUnlocks';
 import { CHAR_ADVANCE, estimatedButtonWidth, hudRow } from '../src/game/picture/bottomRows';
-import { statusEnd, statusLine } from '../src/game/picture/statusLine';
+import { STATUS_LINE, statusEnd, statusLine } from '../src/game/picture/statusLine';
 import { generateDrawer } from '../src/game/picture/generateDrawer';
 import { charsIn, LINE_HEIGHT, wrappedLines } from '../src/game/picture/textWrap';
 import { TOAST, toastBox } from '../src/game/picture/toastBox';
@@ -170,10 +170,10 @@ describe("the HUD's two lines of text", () => {
                 : LAYOUT.margin + lanterns;
           const left: Span = { x0: LAYOUT.margin, x1: end };
           const right = CANVAS_WIDTH - LAYOUT.margin;
+          // The prompt keeps at least a letter of air from the left part, as the parts keep
+          // between them, so the count never reads as the start of the prompt.
           if (p > 0)
-            expect(apart(left, { x0: (CANVAS_WIDTH - p) / 2, x1: (CANVAS_WIDTH + p) / 2 })).toBe(
-              true,
-            );
+            expect(left.x1 + STATUS_LINE.minGap).toBeLessThanOrEqual((CANVAS_WIDTH - p) / 2);
           if (c > 0) expect(apart(left, { x0: right - c, x1: right })).toBe(true);
           expect(end).toBeLessThanOrEqual(right);
         }
