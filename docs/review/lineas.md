@@ -313,7 +313,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.4.sauce.00` · **Sauce** · plan: El bucle de tres otra vez. Hoy tu luz busca sola desde R, y tú la avanzas. Se parará donde dos soles se toquen.
 - [ ] `ch4.4.sauce.01` · **Sauce** · GDD: Si todos pueden ser sol, trátalos como un solo sol grande. Ciérralos como una flor.
 - [ ] `ch4.4.sauce.02` · **Sauce** · plan: ¿Dónde se tocaron dos soles del mismo árbol?
-- [ ] `ch4.4.sauce.03` · **Sauce** · plan: En esa enredadera. Tócala y deja que el bucle se cierre.
+- [ ] `ch4.4.sauce.03` · **Sauce** · plan: Mira este bucle. ¿Dónde se tocan dos soles del mismo árbol?
 - [ ] `ch4.4.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.4.sauce.05` · **Sauce** · plan: Una cadena que pasa a través de la flor. Todavía no la enciendas: mañana abrimos la flor.
 

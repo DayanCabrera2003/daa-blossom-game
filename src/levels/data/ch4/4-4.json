@@ -27,7 +27,7 @@
   "victory": { "type": "chainFound" },
   "hints": [
     { "line": "ch4.4.sauce.02" },
-    { "line": "ch4.4.sauce.03", "highlight": ["b", "d"] },
+    { "line": "ch4.4.sauce.03", "highlight": ["b", "c", "d"] },
     { "line": "ch4.4.sauce.04" }
   ],
   "flow": [
