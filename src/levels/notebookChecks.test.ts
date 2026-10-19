@@ -206,3 +206,42 @@ describe('the checks of a notebook', () => {
     expect(notebookProblemsOf(answered)).toEqual([]);
   });
 });
+
+describe('the checks of a question of the script, which refutes as the notebook does', () => {
+  /** Level 1.5 in small, asking after play; its second answer refuted by `refutation`. */
+  const asking = (refutation: object) => ({
+    ...levelWith(undefined),
+    notebook: undefined,
+    flow: [
+      { step: 'play' },
+      {
+        step: 'ask',
+        prompt: 'ch1.5.sauce.05',
+        options: [
+          { line: 'ch1.5.sauce.06', correct: true },
+          { line: 'ch1.5.sauce.07', correct: false, ...refutation },
+        ],
+        retry: true,
+      },
+    ],
+  });
+
+  it('a sound garden, or a reply, refutes a false answer', () => {
+    const counterexample = { mode: 'play', ...row, actions: ['chain'] };
+    expect(notebookProblemsOf(asking({ counterexample }))).toEqual([]);
+    expect(notebookProblemsOf(asking({ reply: 'ch1.5.sauce.08' }))).toEqual([]);
+  });
+
+  it('its garden passes the same checks, told by the step of the script that asks', () => {
+    const counterexample = { mode: 'play', ...row, actions: ['chain', 'fold'] };
+    expect(notebookProblemsOf(asking({ counterexample }))).toEqual([
+      { code: 'counterexampleLocked', step: 1, option: 1, action: 'fold' },
+    ]);
+  });
+
+  it('a false answer with neither a reply nor a garden is unrefuted', () => {
+    expect(notebookProblemsOf(asking({}))).toEqual([
+      { code: 'statementUnrefuted', step: 1, option: 1 },
+    ]);
+  });
+});

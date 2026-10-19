@@ -130,9 +130,18 @@ export function describeProblem(problem: IntegrityProblem): string {
   }
 }
 
-/** Where a notebook statement is, counted from 1: its question, then the statement itself. */
-const statementAt = (problem: { readonly question: number; readonly option: number }): string =>
-  `notebook question ${problem.question + 1}, statement ${problem.option + 1}`;
+/**
+ * Where a statement is, counted from 1: its notebook question or the script step that asks it, then
+ * the statement itself.
+ */
+const statementAt = (
+  problem:
+    | { readonly question: number; readonly option: number }
+    | { readonly step: number; readonly option: number },
+): string =>
+  'step' in problem
+    ? `script step ${problem.step + 1}, answer ${problem.option + 1}`
+    : `notebook question ${problem.question + 1}, statement ${problem.option + 1}`;
 
 /** One readable line for a notebook whose right statement repeats a line heard before it. */
 export function describeEchoProblem(problem: NotebookEchoProblem): string {

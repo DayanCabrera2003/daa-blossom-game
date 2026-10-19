@@ -5,12 +5,15 @@ import { buildCounterexample } from './counterexample';
 import type { GardenError } from './garden';
 import { sameKindVines, type KindClash } from './kinds';
 import { checkLayout, vineCrossings, type LayoutProblem } from './layoutChecks';
+import type { NotebookData } from './notebook';
 
-/** Where a statement is: the index of its question in the level's list, and its own index. */
-interface StatementAt {
-  readonly question: number;
-  readonly option: number;
-}
+/**
+ * Where a statement is: in a notebook question, by the question's index in the level's list, or in
+ * a question of the script (`ask`), by the index of its step; and its own index among the options.
+ */
+type StatementAt =
+  | { readonly question: number; readonly option: number }
+  | { readonly step: number; readonly option: number };
 
 /** Something wrong with the notebook of a level, at one of its statements. */
 export type NotebookProblem =
@@ -29,7 +32,8 @@ export type NotebookProblem =
 
 /**
  * The checks of a level's notebook (plan 03, phase 6) that the schema cannot see, over every one of
- * its questions: every false statement is refuted, by the mentor's reply or by a garden; each
+ * its questions and every question of its script (`ask`, which refutes a false answer alike, plan
+ * 10, phase 7): every false statement is refuted, by the mentor's reply or by a garden; each
  * counterexample is a garden under the core's rules, it is played with tools the
  * level already gives or knows and closes for the day in its own garden (a counterexample never
  * teaches a new move: 4.7 closes marks by hand, since its light searches by itself, yet its
@@ -41,9 +45,16 @@ export type NotebookProblem =
  */
 export function checkNotebook(level: Level): NotebookProblem[] {
   const problems: NotebookProblem[] = [];
-  const statements = (level.data.notebook ?? []).flatMap((asked, question) =>
-    asked.options.map((statement, option) => ({ at: { question, option }, statement })),
-  );
+  const statements: { at: StatementAt; statement: NotebookData['options'][number] }[] = [
+    ...(level.data.notebook ?? []).flatMap((asked, question) =>
+      asked.options.map((statement, option) => ({ at: { question, option }, statement })),
+    ),
+    ...level.data.flow.flatMap((asked, step) =>
+      asked.step === 'ask'
+        ? asked.options.map((statement, option) => ({ at: { step, option }, statement }))
+        : [],
+    ),
+  ];
   for (const { at, statement } of statements) {
     const { counterexample } = statement;
     if (!statement.correct && statement.reply === undefined && counterexample === undefined) {

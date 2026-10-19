@@ -73,6 +73,9 @@ describe('readable level problems', () => {
     ).toBe(
       'notebook question 2, statement 2: its counterexample is no garden: badLabel {"error":{"code":"unknownName","name":"z"}}',
     );
+    expect(describeProblem({ code: 'statementUnrefuted', step: 3, option: 1 })).toBe(
+      'script step 4, answer 2 is false, but neither a reply nor a garden refutes it',
+    );
     expect(describeProblem({ code: 'sameKindVine', u: 'b', v: 'c', kind: 'flower' })).toBe(
       'vine b–c joins two flowers, but a bee only pairs with a flower',
     );
