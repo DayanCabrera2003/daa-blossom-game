@@ -210,7 +210,7 @@ Notas:
 
 ---
 
-## C5 — Teorema de König (1931) («Abejas, flores y espantapájaros»)
+## C5 — Teorema de König (1931) («Abejas, tréboles y espantapájaros»)
 
 Referencias de la entrada: LP cap. 1; KV cap. 10; D. König, _Matematikai és Fizikai Lapok_ 38 (1931). Testigos: `src/core/certificates/vertexCover.test.ts`, `src/core/search/bipartiteMatching.test.ts`.
 
