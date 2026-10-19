@@ -66,7 +66,7 @@
   "victory": { "type": "tutteBergeCertificate" },
   "hints": [
     { "line": "ch7.5.sauce.02" },
-    { "line": "ch7.5.sauce.03", "highlight": ["R", "t"] },
+    { "line": "ch7.5.sauce.03", "highlight": ["R"] },
     { "line": "ch7.5.sauce.04" }
   ],
   "flow": [

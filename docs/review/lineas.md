@@ -635,7 +635,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.5.oaks.00` · **Los Robles** · plan: Último jardín. Niebla, y flores dentro de flores. No te pedimos que lo enciendas: te pedimos la prueba.
 - [ ] `ch7.5.sauce.01` · **Sauce** · plan: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
 - [ ] `ch7.5.sauce.02` · **Sauce** · plan: ¿Quién sigue a oscuras? Empieza por ahí.
-- [ ] `ch7.5.sauce.03` · **Sauce** · plan: Estos dos están a oscuras, y entre ellos hay flores.
+- [ ] `ch7.5.sauce.03` · **Sauce** · plan: Empieza por aquí. Entre este y el otro que sigue a oscuras hay flores.
 - [ ] `ch7.5.sauce.04` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch7.5.oaks.05` · **Los Robles** · plan: Los faroles y las piedras cuadran. Nadie más puede tener farol.
 - [ ] `ch7.5.oaks.06` · **Los Robles** · plan: El Consejo se inclina ante ti, jardinero.

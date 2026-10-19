@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-42 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
+43 líneas de diálogo y 28 textos de interfaz distintos de la versión 1.0.1.
 
 ### 1.3
 
@@ -203,6 +203,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch7.5.sauce.01` · **Sauce** · cambiada
   - Antes: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y presenta faroles y piedras con «Terminé». La cuenta del Consejo sale al presentarla.
   - Después: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
+- [ ] `ch7.5.sauce.03` · **Sauce** · cambiada
+  - Antes: Estos dos están a oscuras, y entre ellos hay flores.
+  - Después: Empieza por aquí. Entre este y el otro que sigue a oscuras hay flores.
 
 ### 7.6
 
