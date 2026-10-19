@@ -13,6 +13,7 @@ import { HINT_DELAY_MS } from './hints';
 import {
   act,
   askHint,
+  canAskHint,
   garden,
   isHintAvailable,
   openSession,
@@ -116,7 +117,16 @@ describe('a level session', () => {
     expect(grades[1]?.highlight).toEqual([5]);
     expect(grades[2]?.move).toEqual(level.solution[0]);
     expect(session.hints.opened).toBe(3);
-    expect(askHint(startSession(level, 0), 1)).toBeNull();
+  });
+
+  it('the hint button opens grade 1 at 5 s, unoffered, and the star for no hints is lost as ever', () => {
+    const level = levelById('1.1');
+    const asked = askHint(startSession(level, 0), 5_000);
+    expect(isHintAvailable(startSession(level, 0), 5_000)).toBe(false);
+    expect(asked?.hint.line).toBe('ch1.1.sauce.01');
+    const won = playAll(asked?.session ?? startSession(level, 0), level.solution, 6_000);
+    expect(won.won?.noHints).toBe(false);
+    expect(canAskHint(won)).toBe(false);
   });
 
   it('a level without a victory is never won by moves, and its mentor proposes none', () => {

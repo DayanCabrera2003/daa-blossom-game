@@ -7,6 +7,7 @@ import {
   afterAccepted,
   afterMoved,
   afterRejected,
+  hasHintsLeft,
   HINT_DELAY_MS,
   isHintOffered,
   openHint,
@@ -78,17 +79,18 @@ describe('when a hint is offered (GDD §5.3)', () => {
     expect(openHint(opened.hints, 2 * HINT_DELAY_MS)?.grade).toBe(2);
   });
 
-  it('a hint that is not offered cannot be opened; grades stop at 3', () => {
-    expect(openHint(startHints(0), 10)).toBeNull();
+  it('a hint opens whenever it is asked for, offered or not; grades stop at 3', () => {
+    expect(openHint(startHints(0), 5_000)?.grade).toBe(1);
     let hints = startHints(0);
     const grades: number[] = [];
     for (let k = 1; k <= 5; k++) {
-      const opened = openHint(hints, k * HINT_DELAY_MS);
+      const opened = openHint(hints, k);
       if (opened === null) break;
       grades.push(opened.grade);
       hints = opened.hints;
     }
     expect(grades).toEqual([1, 2, 3]);
+    expect(hasHintsLeft(hints)).toBe(false);
     expect(isHintOffered(hints, 100 * HINT_DELAY_MS)).toBe(false);
   });
 });

@@ -228,7 +228,8 @@ export class HudView {
     const { undo, redo, hint, done, checkMirror, leaveLayer } = this.buttons;
     undo?.setEnabled(hud.canUndo);
     redo?.setEnabled(hud.canRedo);
-    hint?.setEnabled(hud.hintAvailable);
+    // The hint is always at hand while grades remain; on offer, it glows as the button in hand.
+    hint?.setEnabled(hud.hintAvailable).setActive(hud.hintOffered);
     done?.setVisible(hud.canDeclareDone);
     this.showLight(hud.canStepLight);
     checkMirror?.setVisible(hud.canCheckMirror);

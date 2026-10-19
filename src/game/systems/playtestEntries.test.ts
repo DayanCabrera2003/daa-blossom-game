@@ -122,9 +122,8 @@ describe('playtest entries of a step', () => {
     ]);
   });
 
-  it('a hint opened is logged with its grade; one not on offer yet is not', () => {
+  it('a hint opened is logged with its grade, offered or not', () => {
     const festival = startController(festivalLevel(), 0);
-    expect(play(festival, [{ kind: 'hint' }], 0).entries).toEqual([]);
     expect(play(festival, [{ kind: 'hint' }], HINT_DELAY_MS).entries).toEqual([
       { kind: 'hint', at: HINT_DELAY_MS, level: '4.1', grade: 1 },
     ]);

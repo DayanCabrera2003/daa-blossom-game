@@ -38,6 +38,7 @@ import {
   afterAccepted,
   afterMoved,
   afterRejected,
+  hasHintsLeft,
   isHintOffered,
   openHint,
   startHints,
@@ -401,17 +402,29 @@ export const redoSession = (session: LevelSession): LevelSession =>
 export const seekSession = (session: LevelSession, step: number): LevelSession =>
   takesHistory(session) ? { ...session, history: seek(session.history, step) } : session;
 
-/** Whether a hint is on offer now (GDD §5.3): only in the steps that offer them. */
-export function isHintAvailable(session: LevelSession, now: number): boolean {
+/** Whether the step now takes hints: playing, answering, drawing… never while the day replays. */
+const takesHints = (session: LevelSession): boolean => {
   const step = stepNow(session);
-  return step !== null && HINT_STEPS.has(step.step) && isHintOffered(session.hints, now);
-}
+  return step !== null && HINT_STEPS.has(step.step);
+};
+
+/**
+ * Whether the hint button is at hand now (GDD §5.3): in the steps that take hints, while some grade
+ * is still closed, offered or not.
+ */
+export const canAskHint = (session: LevelSession): boolean =>
+  takesHints(session) && hasHintsLeft(session.hints);
+
+/** Whether a hint is on offer now, which makes the button glow: only in the steps that take them. */
+export const isHintAvailable = (session: LevelSession, now: number): boolean =>
+  takesHints(session) && isHintOffered(session.hints, now);
 
 /**
  * Opens the hint on offer: the next grade, with the level's own line and sprouts when it has them,
  * and at grade 3 the mentor's step for the garden as it is now, under a question the right option,
  * in the flower challenge a chain to draw, the vine of the conflict to point at, or in the recipe
- * the right card the mentor places. Null if no hint is on offer.
+ * the right card the mentor places. Null outside the steps that take hints, or once all three
+ * grades are open.
  */
 export function askHint(
   session: LevelSession,
@@ -419,6 +432,7 @@ export function askHint(
 ): { session: LevelSession; hint: HintContent } | null {
   const current = stepNow(session);
   if (current === null || !HINT_STEPS.has(current.step)) return null;
+  // Asked for, the hint opens whether it was on offer or not.
   const opened = openHint(session.hints, now);
   if (opened === null) return null;
   const { level } = session;

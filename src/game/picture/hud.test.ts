@@ -33,7 +33,8 @@ describe('the picture of the HUD', () => {
       canRedo: false,
       canDeclareDone: false,
       canStepLight: false,
-      hintAvailable: false,
+      hintAvailable: true,
+      hintOffered: false,
       sun: { fraction: 1, steps: 1, calling: false },
       tools: ['lanterns'],
       tool: 'lanterns',
@@ -102,9 +103,12 @@ describe('the picture of the HUD', () => {
     expect(hudPicture(played, initialPointer('lanterns'), 0).won).not.toBeNull();
   });
 
-  it('offers a hint when it is time', () => {
+  it('keeps the hint button at hand from the start, and makes it glow when a hint is offered', () => {
     const session = startSession(levelById('1.1'), 0);
-    expect(hudPicture(session, initialPointer('lanterns'), HINT_DELAY_MS).hintAvailable).toBe(true);
+    const early = hudPicture(session, initialPointer('lanterns'), 5_000);
+    expect(early).toMatchObject({ hintAvailable: true, hintOffered: false });
+    const late = hudPicture(session, initialPointer('lanterns'), HINT_DELAY_MS);
+    expect(late).toMatchObject({ hintAvailable: true, hintOffered: true });
   });
 
   it('shows the water in levels with fog or a budget', () => {

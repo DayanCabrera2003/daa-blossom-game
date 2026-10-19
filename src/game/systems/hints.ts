@@ -59,19 +59,27 @@ export const afterRejected = (hints: HintState): HintState => ({
 
 /**
  * Whether a hint is on offer: after 90 s without progress or three refusals in a row, while grades
- * remain. Hints are offered, never imposed: the player decides whether to open one.
+ * remain. Hints are offered, never imposed: the offer only makes the hint button glow, and the
+ * player decides whether to open one.
  */
 export function isHintOffered(hints: HintState, now: number): boolean {
   const stuck = now - hints.since >= HINT_DELAY_MS || hints.rejections >= HINT_REJECTIONS;
-  return hints.opened < MAX_HINT_GRADE && stuck;
+  return hasHintsLeft(hints) && stuck;
 }
 
-/** Opens the offered hint: its grade, and a fresh wait before the next one is offered. */
+/** Whether some grade is still closed: the hint button is at hand while one is. */
+export const hasHintsLeft = (hints: HintState): boolean => hints.opened < MAX_HINT_GRADE;
+
+/**
+ * Opens the next hint, offered or not (GDD §5.3: the button is always at hand; the offer only makes
+ * it glow): its grade, and a fresh wait before the next one is offered. Null once all three grades
+ * are open.
+ */
 export function openHint(
   hints: HintState,
   now: number,
 ): { hints: HintState; grade: number } | null {
-  if (!isHintOffered(hints, now)) return null;
+  if (!hasHintsLeft(hints)) return null;
   const grade = hints.opened + 1;
   return { hints: { ...hints, since: now, rejections: 0, opened: grade }, grade };
 }
