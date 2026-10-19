@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-25 líneas de diálogo y 24 textos de interfaz distintos de la versión 1.0.1.
+25 líneas de diálogo y 25 textos de interfaz distintos de la versión 1.0.1.
 
 ### 3.7
 
@@ -183,6 +183,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `hud.councilHidden` · cambiada
   - Antes: La cuenta del Consejo sale al pulsar «Terminé»
   - Después: La cuenta del Consejo sale al pulsar «Presentar»
+- [ ] `diagram.event.declareDone` · cambiada
+  - Antes: «Terminé»: el jardín no puede hacerlo mejor.
+  - Después: «Terminé»: el jardinero dice que el jardín no puede hacerlo mejor.
 - [ ] `tutorial.light.title` · nueva
   - Después: Avanzar la luz
 - [ ] `tutorial.light.body` · nueva

@@ -263,7 +263,7 @@
   "diagram.event.scarecrowRemoved": "{vertex} se queda sin espantapájaros.",
   "diagram.event.stoneLifted": "Se levanta la piedra de {vertex}.",
   "diagram.event.stoneDropped": "La piedra vuelve a {vertex}.",
-  "diagram.event.declareDone": "«Terminé»: el jardín no puede hacerlo mejor.",
+  "diagram.event.declareDone": "«Terminé»: el jardinero dice que el jardín no puede hacerlo mejor.",
   "hub.codex": "Códex",
   "hub.notebook": "Cuaderno",
   "hub.sandbox": "Modo libre",

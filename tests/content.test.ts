@@ -52,6 +52,10 @@ describe('interface text (content/es/strings.json)', () => {
     expect(offending).toEqual([]);
   });
 
+  it('a replayed «Terminé» tells what the gardener says, not a fact about the garden', () => {
+    expect(table['diagram.event.declareDone']).toContain('dice que');
+  });
+
   it('no text separates its words with the middle dot, which the pixel font draws raised', () => {
     const offending = Object.entries(table).filter(([, text]) => text.includes('·'));
     expect(offending).toEqual([]);
