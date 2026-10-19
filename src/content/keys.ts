@@ -167,6 +167,7 @@ const UI = {
   'hud.waterShort': ['used', 'budget'],
   'hud.waterNoBudgetShort': ['used'],
   'hud.done': [],
+  'hud.present': [],
   'hud.undo': [],
   'hud.redo': [],
   'hud.hint': [],

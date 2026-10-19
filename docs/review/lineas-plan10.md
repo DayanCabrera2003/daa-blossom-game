@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-14 líneas de diálogo y 22 textos de interfaz distintos de la versión 1.0.1.
+14 líneas de diálogo y 23 textos de interfaz distintos de la versión 1.0.1.
 
 ### 4.4
 
@@ -116,6 +116,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Esas piedras no son las lunas de tu búsqueda.
 - [ ] `action.stepLight` · nueva
   - Después: avanzar la luz
+- [ ] `hud.present` · nueva
+  - Después: Presentar
 - [ ] `hud.stepLight` · nueva
   - Después: Avanzar la luz
 - [ ] `tutorial.light.title` · nueva

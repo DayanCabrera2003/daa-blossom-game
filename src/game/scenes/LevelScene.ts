@@ -145,6 +145,7 @@ export class LevelScene extends Phaser.Scene {
       back: () => this.leave(),
       hud: {
         backLabel: screen.backLabel,
+        doneLabel: screen.doneLabel,
         buttons: screen.hudButtons,
         traceRow: screen.traceRow,
       },

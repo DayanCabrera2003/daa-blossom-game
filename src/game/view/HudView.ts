@@ -48,6 +48,8 @@ export interface HudActions {
 export interface HudLayout {
   /** The text key of the back button: "Volver", or "Diseñar" in the free mode. */
   readonly backLabel: string;
+  /** The text key of the button that ends the level: "Terminé", or «Presentar» for a certificate. */
+  readonly doneLabel: string;
   /** The buttons of the bottom row, in `HUD_BUTTONS` order. */
   readonly buttons: readonly HudButton[];
   /** Where the teacher's trace button sits: the end of the tools' row, or beside the Códex. */
@@ -55,12 +57,22 @@ export interface HudLayout {
 }
 
 /** The HUD of a level of the catalog. */
-const LEVEL_HUD: HudLayout = { backLabel: 'hud.back', buttons: HUD_BUTTONS, traceRow: 'tools' };
+const LEVEL_HUD: HudLayout = {
+  backLabel: 'hud.back',
+  doneLabel: 'hud.done',
+  buttons: HUD_BUTTONS,
+  traceRow: 'tools',
+};
+
+/** The text key of a HUD button, as the screen's layout names it. */
+const buttonLabel = (name: HudButton, layout: HudLayout): string =>
+  name === 'back' ? layout.backLabel : name === 'done' ? layout.doneLabel : `hud.${name}`;
 
 /**
  * The HUD: the goal (or the question, when it is hidden), lanterns lit and water spent (after the
- * drop of the pack) on top; on wooden buttons, "Terminé", undo, redo, hint, "?" (the mechanic
- * cards again) and back at the bottom right, switched off when not available, "Comprobar" beside them in the mirror challenge, and the way out
+ * drop of the pack) on top; on wooden buttons, "Terminé" (or «Presentar» in the levels of
+ * certificates), undo, redo, hint, "?" (the mechanic cards again) and back at the bottom right,
+ * switched off when not available, "Comprobar" beside them in the mirror challenge, and the way out
  * of a flower entered with the layers, whose depth the status line tells (5.2), and from 7.2 the
  * Council's count on the right of the status line. Where the light searches by itself,
  * "Avanzar la luz" ends the tools' row; in teacher mode, the trace button ends it (just before the
@@ -114,14 +126,7 @@ export class HudView {
     this.council = line(CANVAS_WIDTH - LAYOUT.margin, LAYOUT.secondY).setOrigin(1, 0);
     // Every button keeps its place even while hidden, so the row is laid out for all of them.
     const made = layout.buttons.map(
-      (name) =>
-        new Button(
-          scene,
-          0,
-          LAYOUT.bottomY,
-          t(name === 'back' ? layout.backLabel : `hud.${name}`),
-          actions[name],
-        ),
+      (name) => new Button(scene, 0, LAYOUT.bottomY, t(buttonLabel(name, layout)), actions[name]),
     );
     this.book = new Button(scene, 0, LAYOUT.bottomY, t('hud.book'), actions.book, [
       BOOK_ICON,

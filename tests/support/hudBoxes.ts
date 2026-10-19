@@ -63,9 +63,13 @@ export function hudBoxes(level: Level, teacher: boolean): HudBox[] {
     boxes.push({ id: 'trace', box: wood(traceButtonLeft(trace), LAYOUT.toolbarY, trace) });
   }
   const book = estimatedButtonWidth(t('hud.book')) + iconRoom([BOOK_ICON]);
-  // The buttons of the level's screen: the mirror's check only where its reflection is drawn.
-  const names = levelScreenOf(level, null).hudButtons;
-  const buttons = names.map((name) => estimatedButtonWidth(t(`hud.${name}`)));
+  // The buttons of the level's screen: the mirror's check only where its reflection is drawn, and
+  // the button that ends the level saying «Presentar» in the levels of certificates.
+  const screen = levelScreenOf(level, null);
+  const names = screen.hudButtons;
+  const buttons = names.map((name) =>
+    estimatedButtonWidth(t(name === 'done' ? screen.doneLabel : `hud.${name}`)),
+  );
   const row = bottomRow({ gear: GEAR_SIZE, book, trace: null, buttons });
   boxes.push({
     id: 'gear',

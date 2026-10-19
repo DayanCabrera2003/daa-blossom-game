@@ -3,6 +3,7 @@ import type { SandboxAccess } from '@services/sandboxAccess';
 import type { FreeOrders } from './levelController';
 import { previewModeOf, type PreviewMode } from '../input/previewMode';
 import { HUD_BUTTONS, type HudButton } from '../picture/bottomRows';
+import { doneButton } from '../picture/doneButton';
 import { chapterOfLevel } from '../picture/seasons';
 import { levelScreen, type MusicScreen } from './musicFor';
 
@@ -42,6 +43,11 @@ export interface LevelScreen {
   readonly back: LevelExit;
   /** The text key of the back button. */
   readonly backLabel: string;
+  /**
+   * The text key of the button that ends the level: «Presentar» in the levels of certificates,
+   * "Terminé" elsewhere (`picture/doneButton.ts`).
+   */
+  readonly doneLabel: 'hud.done' | 'hud.present';
   /** The level whose pieces of the interface show (the sun, the layers, the Council's count). */
   readonly interfaceAt: string;
   /** Whether the teacher's panel is fed the garden's sprouts: the catalog does not have them. */
@@ -102,6 +108,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
       logsPlaytest: true,
       back: 'hub',
       backLabel: 'hud.back',
+      doneLabel: doneButton(level.data.victory),
       interfaceAt: level.data.id,
       ownGarden: false,
       showsStars: true,
@@ -118,6 +125,7 @@ export function levelScreenOf(level: Level, sandbox: SandboxAccess | null): Leve
     logsPlaytest: false,
     back: 'editor',
     backLabel: 'sandbox.design',
+    doneLabel: doneButton(level.data.victory),
     interfaceAt: sandbox.interfaceAt,
     ownGarden: true,
     showsStars: false,

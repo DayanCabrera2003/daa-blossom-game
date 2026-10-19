@@ -84,6 +84,7 @@
   "hud.waterShort": "{used}/{budget}",
   "hud.waterNoBudgetShort": "{used}",
   "hud.done": "Terminé",
+  "hud.present": "Presentar",
   "hud.undo": "Deshacer",
   "hud.redo": "Rehacer",
   "hud.hint": "Pista",

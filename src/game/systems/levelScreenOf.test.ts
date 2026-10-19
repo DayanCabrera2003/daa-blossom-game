@@ -63,6 +63,7 @@ describe('the screen of a level of the catalog', () => {
         logsPlaytest: true,
         back: 'hub',
         backLabel: 'hud.back',
+        doneLabel: id === '7.5' ? 'hud.present' : 'hud.done',
         interfaceAt: id,
         ownGarden: false,
         showsStars: true,
@@ -91,6 +92,10 @@ describe('the screen of a garden of the free mode', () => {
     expect(screen.season).toBe('0');
     expect(screen.keepsProgress).toBe(false);
     expect(screen.logsPlaytest).toBe(false);
+  });
+
+  it('ends its garden with "Terminé": it presents no certificate', () => {
+    expect(levelScreenOf(played, AT_1_8).doneLabel).toBe('hud.done');
   });
 
   it('goes back to the editor, and its back button says so', () => {
