@@ -4,13 +4,13 @@ A cozy pixel-art puzzle game that teaches **Edmonds' Blossom algorithm** for max
 
 **Play it at <https://dayancabrera2003.github.io/daa-blossom-game/>** (deployed from `main`). The game is in Spanish.
 
-Built as a creative project for the course *Diseño y Análisis de Algoritmos* (DAA). The design lives in the [game design document](docs/GDD.md) (Spanish).
+Built as a creative project for the course _Diseño y Análisis de Algoritmos_ (DAA). The design lives in the [game design document](docs/GDD.md) (Spanish).
 
 ## What the game is
 
 Every night the sprouts of a garden want a lantern, and a lantern is for two neighbours joined by a vine. The player lights as many as the garden allows and, chapter by chapter, discovers why that is the most: passing lanterns along a chain (augmenting paths), the pond's reflection (Berge's lemma), the night search with sun and moon marks (the alternating forest), the scarecrows (König's vertex cover), the odd loops that fool the light and the flower that folds them (blossoms, contraction and expansion, nested flowers), the recipe and its race against Bruto, the brute-force gardener (the whole algorithm and its cost), and the Council's stones (the Tutte–Berge formula).
 
-- **Eight chapters**, 0 to 7, from the Huerto to the Consejo, with the epilogue *Más allá del jardín* on what matching is used for outside the garden.
+- **Eight chapters**, 0 to 7, from the Huerto to the Consejo, with the epilogue _Más allá del jardín_ on what matching is used for outside the garden.
 - **The Códex**: fourteen entries opened by playing, each with the garden's intuition and a touchable diagram, the formal definitions, statements and proofs, and the bridge between the two.
 - **The Cuaderno**: every statement the player writes down links to the entry that translates it.
 - **The free mode**, the **secret gardens** and the hub's rewards (below).
@@ -28,37 +28,37 @@ What changed for the player since 1.0.1, after an independent review of how the 
 
 - **The light searches in the flower levels.** In 4.4–4.8, 4.12 and all of chapter 5, the player no longer places the suns and moons: the **Avanzar la luz** button moves the search one mark at a time, in the order the algorithm uses, and the light stops where two suns of one tree meet. The vine there glows, and the only way on is to **fold** that loop by touching it; the lanterns then move only along the chain the light found. So every flower level asks for the gesture it teaches. 4.10 closes the flower instead (a chain only goes round it from its base, once the stem is turned), and the secret garden 4.13 keeps the marks by hand, since its lesson is that the order of folding is the player's.
 - **Lifting a chain.** After unfolding, the stretches of the chain the light found stay drawn, and the player drags only the stretch inside the flower; the wrong side is refused at once. From chapter 3 on, a chain being dragged says only whether it is legal; what it gains shows on release.
-- **«Presentar».** In the levels won by a proof (scarecrows, stones) the button says *Presentar*; elsewhere it still says *Terminé*. Either one, pressed too soon, now gets a gentle answer that never says where the chain is.
-- **Hints at hand.** The *Pista* button is always there; only real progress restarts the wait for an offer, and no grade-2 hint lights up the answer.
-- **Thinking first.** The notebooks open before the mentor sums up, and five levels ask *why* (2.3, 3.4, 3.8, 5.2, 7.4), some with a garden to try the wrong answer. 2.4 is played in two phases, the recipe lost a card it never used, and the last level of each chapter invites to its page of the Códex.
-- **One word, one meaning.** The bipartite pair is now *abejas y tréboles*, the optional puzzles are the *jardines secretos*, and the time slider is *el día*: the sun is only the mark of the search, and a flower is only the folded loop.
+- **«Presentar».** In the levels won by a proof (scarecrows, stones) the button says _Presentar_; elsewhere it still says _Terminé_. Either one, pressed too soon, now gets a gentle answer that never says where the chain is.
+- **Hints at hand.** The _Pista_ button is always there; only real progress restarts the wait for an offer, and no grade-2 hint lights up the answer.
+- **Thinking first.** The notebooks open before the mentor sums up, and five levels ask _why_ (2.3, 3.4, 3.8, 5.2, 7.4), some with a garden to try the wrong answer. 2.4 is played in two phases, the recipe lost a card it never used, and the last level of each chapter invites to its page of the Códex.
+- **One word, one meaning.** The bipartite pair is now _abejas y tréboles_, the optional puzzles are the _jardines secretos_, and the time slider is _el día_: the sun is only the mark of the search, and a flower is only the folded loop.
 
-Menus, panels, questions and dialogue also work with the **keyboard** (the garden itself does not). The settings' gear shows the same table as a card (*Teclas*).
+Menus, panels, questions and dialogue also work with the **keyboard** (the garden itself does not). The settings' gear shows the same table as a card (_Teclas_).
 
-| Key | Where | What it does |
-|---|---|---|
-| `Tab` / `Shift+Tab` | everywhere | from one button to the next |
-| `ArrowUp` / `ArrowDown` | everywhere | to the button above or below |
-| `ArrowLeft` / `ArrowRight` | everywhere | to the side, or move a slider in focus (the day, a volume) |
-| `Enter` / `Space` | everywhere | press the button in focus, or go on with the dialogue |
-| `Escape` | everywhere | close what is open, or go back |
-| `M` | hub, levels, settings | mute or unmute |
-| `F` / `Shift+F` | hub | from one secret garden to the next |
-| `0`–`9` | levels | choose an answer of a question |
-| `Alt+ArrowUp` / `Alt+ArrowDown` / `Alt+ArrowLeft` / `Alt+ArrowRight` | levels, free mode | move the panel open (a question, a card, the dialogue box…) |
-| `Ctrl+Z` | levels, free mode | undo |
-| `Ctrl+Y` / `Ctrl+Shift+Z` | levels, free mode | redo |
-| `1`–`5` | free mode's editor | choose a tool |
-| `G` | free mode's editor | open or close the generator's drawer |
-| `ArrowUp` / `ArrowDown`, `PageUp` / `PageDown` | credits | roll the credits |
-| `T` | levels, teacher mode | open or close the trace panel |
-| `PageUp` / `PageDown` | levels, teacher mode | the level before or after |
+| Key                                                                  | Where                 | What it does                                                |
+| -------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
+| `Tab` / `Shift+Tab`                                                  | everywhere            | from one button to the next                                 |
+| `ArrowUp` / `ArrowDown`                                              | everywhere            | to the button above or below                                |
+| `ArrowLeft` / `ArrowRight`                                           | everywhere            | to the side, or move a slider in focus (the day, a volume)  |
+| `Enter` / `Space`                                                    | everywhere            | press the button in focus, or go on with the dialogue       |
+| `Escape`                                                             | everywhere            | close what is open, or go back                              |
+| `M`                                                                  | hub, levels, settings | mute or unmute                                              |
+| `F` / `Shift+F`                                                      | hub                   | from one secret garden to the next                          |
+| `0`–`9`                                                              | levels                | choose an answer of a question                              |
+| `Alt+ArrowUp` / `Alt+ArrowDown` / `Alt+ArrowLeft` / `Alt+ArrowRight` | levels, free mode     | move the panel open (a question, a card, the dialogue box…) |
+| `Ctrl+Z`                                                             | levels, free mode     | undo                                                        |
+| `Ctrl+Y` / `Ctrl+Shift+Z`                                            | levels, free mode     | redo                                                        |
+| `1`–`5`                                                              | free mode's editor    | choose a tool                                               |
+| `G`                                                                  | free mode's editor    | open or close the generator's drawer                        |
+| `ArrowUp` / `ArrowDown`, `PageUp` / `PageDown`                       | credits               | roll the credits                                            |
+| `T`                                                                  | levels, teacher mode  | open or close the trace panel                               |
+| `PageUp` / `PageDown`                                                | levels, teacher mode  | the level before or after                                   |
 
 In the books (Códex, Cuaderno) `ArrowLeft` / `ArrowRight` and `PageUp` / `PageDown` turn to the previous or next entry, `Home` and `End` go to the first and the last, `1`, `2` and `3` choose a tab, and `Escape` closes the book.
 
 ### Accessibility
 
-- **Motion:** the settings panel has *Movimiento*: *Como el sistema* (the default, following the system's reduced-motion setting), *Menos* or *Todo*.
+- **Motion:** the settings panel has _Movimiento_: _Como el sistema_ (the default, following the system's reduced-motion setting), _Menos_ or _Todo_.
 - **Keyboard:** the table above; the focus ring is drawn only once the keyboard is used.
 - **Screen reader:** a live region of the page says each line of dialogue whole as it starts, with who says it, each question with its options numbered as the digits that pick them, and whether an answer was the one.
 - Sun and moon marks differ in shape as well as colour; text and focus meet the contrast checked by the tests.
@@ -132,7 +132,7 @@ CI (GitHub Actions) runs lint, format check, typecheck, coverage, check-levels, 
 npm run solve -- 4.6  # readable trace, result and proof for a level id or a garden code
 npm run bench         # steps of the recipe, the fast version and Bruto per garden size
 npm run save -- after-ch4  # a synthetic save, and the line to paste in the browser's console
-npm run lines         # write the review sheets of the Spanish lines (docs/review/lineas.md, lineas-plan10.md)
+npm run lines         # write the review sheets of the Spanish lines (docs/review/lineas.md, lineas-plan10.md, lineas-plan11.md)
 ```
 
 ### Art, music and sound
@@ -159,6 +159,7 @@ The weight of each part is capped (decimal units): JavaScript 1.8 MB, images 600
 - [Recording script of the guided walk](docs/video/guion.md): the ten parts of the video, with what to load for each.
 - [Review sheet of the Spanish lines](docs/review/lineas.md), written by `npm run lines`.
 - [Sheet of the lines changed since 1.0.1](docs/review/lineas-plan10.md), written by the same command: every new or changed line, before and after, to review before a release.
+- [Sheet of the lines changed since 1.1.0](docs/review/lineas-plan11.md), the same for the sentences of plan 11.
 - [Rigour review of the Códex](docs/codex-review.md), for a classmate to check the proofs.
 - Synthetic saves to start halfway: `npm run save -- <point>` (`fresh`, `after-ch2`, `after-ch4`, `after-ch6`, `after-ch7`, `all-stars`, `hub-flowers`).
 

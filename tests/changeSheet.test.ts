@@ -4,17 +4,22 @@ import { describe, expect, it } from 'vitest';
 import lines from '../src/content/es/lines.json';
 import strings from '../src/content/es/strings.json';
 import baseLines from '../tools/review/baseline/lines-1.0.1.json';
+import baseLines110 from '../tools/review/baseline/lines-1.1.0.json';
 import baseStrings from '../tools/review/baseline/strings-1.0.1.json';
+import baseStrings110 from '../tools/review/baseline/strings-1.1.0.json';
 import { changeSheet } from '../tools/review/changeSheet';
 
-// The sheet of the lines changed since version 1.0.1 (plan 10, phase 0): every dialogue line and
-// interface text that is new, changed or removed, with its before and after, for the author to
-// read before version 1.1.0; and the sheet in docs/review/ is the one the texts give today.
+// The sheets of the lines changed since a version: every dialogue line and interface text that is
+// new, changed or removed, with its before and after, for the author to read before the next
+// release; one per plan (plan 10 against 1.0.1, plan 11 against 1.1.0), and each sheet in
+// docs/review/ is the one the texts give today.
 
 const read = (path: string): string => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 /** The sheet of some sample texts against a sample base. */
 const sample = changeSheet({
+  version: '1.0.1',
+  plan: 10,
   lines: {
     'ch1.1.sauce.00': 'Igual que antes.',
     'ch1.2.sauce.00': 'Después de cambiar.',
@@ -44,7 +49,7 @@ const sampleRows = sample.split('\n');
 /** The position of the first row that mentions `text`. */
 const at = (text: string): number => sampleRows.findIndex((row) => row.includes(text));
 
-describe('the sheet of the lines changed since version 1.0.1', () => {
+describe('the sheet of the lines changed since a version', () => {
   it('lists a changed, a new and a removed line with their before and after', () => {
     const changed = at('`ch1.2.sauce.00`');
     expect(sampleRows[changed]).toContain('cambiada');
@@ -81,23 +86,47 @@ describe('the sheet of the lines changed since version 1.0.1', () => {
   });
 
   it('says there is nothing to review when nothing changed', () => {
-    const none = changeSheet({ lines: {}, baseLines: {}, strings: {}, baseStrings: {} });
+    const none = changeSheet({
+      version: '1.0.1',
+      plan: 10,
+      lines: {},
+      baseLines: {},
+      strings: {},
+      baseStrings: {},
+    });
     expect(none).toContain('Sin cambios');
     expect(none).not.toContain('- [ ]');
   });
 
-  it('keeps the base exactly as the texts of the tag v1.0.1', () => {
+  it('names in its header the version it compares with and the plan it is for', () => {
+    const later = changeSheet({
+      version: '1.1.0',
+      plan: 11,
+      lines: {},
+      baseLines: {},
+      strings: {},
+      baseStrings: {},
+    });
+    expect(later).toContain('# Hoja de cambios de líneas (Plan 11)');
+    expect(later).toContain('copias de la versión 1.1.0');
+    expect(later).toContain('Las frases del Plan 11 son borradores');
+    expect(later).toContain('Sin cambios desde la versión 1.1.0.');
+    expect(later).not.toContain('1.0.1');
+    expect(later).not.toContain('Plan 10');
+  });
+
+  it.each(['1.0.1', '1.1.0'])('keeps the base exactly as the texts of the tag v%s', (version) => {
     const tagged = (path: string): string | undefined => {
       try {
-        return execFileSync('git', ['show', `v1.0.1:${path}`], { encoding: 'utf8' });
+        return execFileSync('git', ['show', `v${version}:${path}`], { encoding: 'utf8' });
       } catch {
         // Without git or without the tag (a copy of the sources), there is nothing to compare.
         return undefined;
       }
     };
     for (const [base, source] of [
-      ['../tools/review/baseline/lines-1.0.1.json', 'src/content/es/lines.json'],
-      ['../tools/review/baseline/strings-1.0.1.json', 'src/content/es/strings.json'],
+      [`../tools/review/baseline/lines-${version}.json`, 'src/content/es/lines.json'],
+      [`../tools/review/baseline/strings-${version}.json`, 'src/content/es/strings.json'],
     ] as const) {
       const original = tagged(source);
       if (original !== undefined) expect(read(base)).toBe(original);
@@ -106,7 +135,20 @@ describe('the sheet of the lines changed since version 1.0.1', () => {
 
   it('is up to date in docs/review/lineas-plan10.md (npm run lines writes it)', () => {
     expect(read('../docs/review/lineas-plan10.md')).toBe(
-      changeSheet({ lines, strings, baseLines, baseStrings }),
+      changeSheet({ version: '1.0.1', plan: 10, lines, strings, baseLines, baseStrings }),
+    );
+  });
+
+  it('is up to date in docs/review/lineas-plan11.md (npm run lines writes it)', () => {
+    expect(read('../docs/review/lineas-plan11.md')).toBe(
+      changeSheet({
+        version: '1.1.0',
+        plan: 11,
+        lines,
+        strings,
+        baseLines: baseLines110,
+        baseStrings: baseStrings110,
+      }),
     );
   });
 });
