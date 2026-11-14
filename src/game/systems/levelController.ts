@@ -110,7 +110,8 @@ export interface Controller {
 
 /** What the player did on the level screen, as the scene reports it. */
 export type UiEvent =
-  | { readonly kind: 'press' | 'move' | 'release'; readonly point: Point }
+  /** A press, a drag and its end; `letGo` ends it outside the screen, a release with no chain. */
+  | { readonly kind: 'press' | 'move' | 'release' | 'letGo'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
   | { readonly kind: 'undo' | 'redo' | 'hint' | 'done' }
   /** "Avanzar la luz": the light that searches by itself makes its next mark (flower levels). */
@@ -375,6 +376,10 @@ export function handle(controller: Controller, event: UiEvent, now: number): Ste
  * sprouts, and only what it shows, so a touch on an enlarged petal names the true sprout.
  */
 function respondTo(controller: Controller, event: UiEvent, now: number): Step {
+  if (event.kind === 'letGo') {
+    const dropped = { ...controller, pointer: { ...controller.pointer, chain: null } };
+    return respondTo(dropped, { kind: 'release', point: event.point }, now);
+  }
   const state = garden(controller.session);
   const view = layerOf(controller, state);
   const { positions } = view;

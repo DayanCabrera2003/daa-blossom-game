@@ -119,6 +119,26 @@ describe('the level controller', () => {
     expect(effects).toMatchObject([{ kind: 'rejected', reason: { code: 'invalidPath' } }]);
   });
 
+  it('a drag let go outside the screen drops its chain and plays nothing', () => {
+    const chainLevel = festivalLevel();
+    const p = (v: number) => spot(chainLevel, v);
+    const start = startController(chainLevel, 0);
+    const drag: UiEvent[] = [
+      { kind: 'press', point: p(0) },
+      { kind: 'move', point: p(1) },
+      { kind: 'move', point: p(2) },
+    ];
+    const outside = { x: 600, y: p(2).y };
+    // Let go on the screen, the same drag is a chain played.
+    expect(feed(start, [...drag, { kind: 'release', point: p(2) }]).effects).toMatchObject([
+      { kind: 'animate' },
+    ]);
+    const { controller, effects } = feed(start, [...drag, { kind: 'letGo', point: outside }]);
+    expect(effects).toEqual([]);
+    expect(controller.pointer.chain).toBeNull();
+    expect(garden(controller.session)).toBe(garden(start.session));
+  });
+
   it('undo, redo and the sun move through the day', () => {
     const played = feed(startController(trap, 0), [...touch(at(0)), ...touch(at(1))]).controller;
     const undone = handle(played, { kind: 'undo' }, 0).controller;
