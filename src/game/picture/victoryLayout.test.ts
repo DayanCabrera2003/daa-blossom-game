@@ -20,9 +20,12 @@ const apart = (
   b: { x0: number; y0: number; x1: number; y1: number },
 ): boolean => a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0;
 
-/** Checks every rule of the panel for buttons of `widths` and a middle line of `line` pixels. */
-function expectSound(widths: readonly number[], line: number): void {
-  const layout = victoryLayout(widths, line);
+/**
+ * Checks every rule of the panel for buttons of `widths` and `rows` middle rows (one per star, or
+ * the free mode's line) of at most `line` pixels.
+ */
+function expectSound(widths: readonly number[], line: number, rows = 1): void {
+  const layout = victoryLayout(widths, { width: line, rows });
   const panel = {
     x0: layout.x,
     y0: layout.y,
@@ -33,8 +36,13 @@ function expectSound(widths: readonly number[], line: number): void {
   expect(panel.x1).toBeLessThanOrEqual(CANVAS_WIDTH);
   expect(panel.y0).toBeGreaterThanOrEqual(0);
   expect(panel.y1).toBeLessThanOrEqual(CANVAS_HEIGHT);
-  // The middle line ends before the buttons start, and inside the panel's padding.
-  expect(layout.lineY + VICTORY.lineHeight).toBeLessThanOrEqual(
+  // One top per middle row, each below the last and the title; the last ends before the buttons
+  // start; all of them inside the panel's padding.
+  expect(layout.rows).toHaveLength(rows);
+  layout.rows.forEach((top, i) => {
+    expect(top).toBeGreaterThanOrEqual((layout.rows[i - 1] ?? layout.titleY) + VICTORY.lineHeight);
+  });
+  expect((layout.rows.at(-1) ?? NaN) + VICTORY.lineHeight).toBeLessThanOrEqual(
     Math.min(...layout.buttons.map((b) => b.y)),
   );
   expect(line).toBeLessThanOrEqual(layout.width - 2 * VICTORY.pad);
@@ -55,35 +63,45 @@ describe('the victory panel laid out round what it says', () => {
   it('keeps two buttons of 100 px apart, though together they pass the old 200 px panel', () => {
     // "Volver al jardín" and "Siguiente jardín": sixteen letters of 6 px, plus the panel's 4.
     expectSound([100, 100], 120);
-    expect(victoryLayout([100, 100], 120).width).toBeGreaterThan(200);
+    expect(victoryLayout([100, 100], { width: 120, rows: 1 }).width).toBeGreaterThan(200);
   });
 
   it('stays the 200 px panel it was when its contents fit there', () => {
-    const layout = victoryLayout([46, 46], 120);
+    const layout = victoryLayout([46, 46], { width: 120, rows: 1 });
     expect(layout.width).toBe(VICTORY.minWidth);
     expect(layout.height).toBe(70);
   });
 
   it('centres a lone button, the way back of a last garden or of the free mode', () => {
-    const layout = victoryLayout([118], 120);
+    const layout = victoryLayout([118], { width: 120, rows: 1 });
     const at = layout.buttons[0] ?? { x: 0, y: 0 };
     expect(at.x * 2 + 118).toBe(layout.x * 2 + layout.width);
     expectSound([118], 120);
   });
 
   it('puts the buttons on rows of their own when side by side they would not fit the canvas', () => {
-    const layout = victoryLayout([300, 300], 120);
+    const layout = victoryLayout([300, 300], { width: 120, rows: 1 });
     expect(layout.buttons[0]?.y).not.toBe(layout.buttons[1]?.y);
     expectSound([300, 300], 120);
   });
 
-  it('property: any buttons and middle line that fit the canvas lay out with nothing overlapping', () => {
+  it('grows a row taller for each star it tells, the four of a level with water and a bet', () => {
+    const one = victoryLayout([100, 100], { width: 120, rows: 1 });
+    const four = victoryLayout([100, 100], { width: 120, rows: 4 });
+    expect(four.height).toBe(one.height + 3 * VICTORY.lineHeight);
+    // Four rows and two buttons of 100 px, which once overlapped on a fixed 200 px panel.
+    expectSound([100, 100], 120, 4);
+    expectSound([300, 300], 120, 4);
+  });
+
+  it('property: any buttons and middle rows that fit the canvas lay out with nothing overlapping', () => {
     const widest = CANVAS_WIDTH - 2 * VICTORY.margin - 2 * VICTORY.pad;
     fc.assert(
       fc.property(
         fc.array(fc.integer({ min: 10, max: widest }), { minLength: 1, maxLength: 2 }),
         fc.integer({ min: 0, max: widest }),
-        (widths, line) => expectSound(widths, line),
+        fc.integer({ min: 1, max: 4 }),
+        (widths, line, rows) => expectSound(widths, line, rows),
       ),
     );
   });

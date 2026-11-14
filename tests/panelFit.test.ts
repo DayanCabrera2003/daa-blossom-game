@@ -152,7 +152,10 @@ describe('the panels fit their texts', () => {
 
   it('the victory panel of a free garden says its line on one row, in place of the stars', () => {
     const line = [...t('victory.free')].length * CHAR_ADVANCE;
-    const layout = victoryLayout([estimatedButtonWidth(t('sandbox.design'))], line);
+    const layout = victoryLayout([estimatedButtonWidth(t('sandbox.design'))], {
+      width: line,
+      rows: 1,
+    });
     expect(line).toBeLessThanOrEqual(layout.width - 2 * VICTORY.pad);
   });
 
@@ -165,7 +168,7 @@ describe('the panels fit their texts', () => {
         const widths = [back, ...(withNext ? [t('victory.next')] : [])].map((label) =>
           estimatedButtonWidth(label),
         );
-        const layout = victoryLayout(widths, stars);
+        const layout = victoryLayout(widths, { width: stars, rows: 1 });
         const boxes = layout.buttons.map((at, i) => ({
           x0: at.x,
           x1: at.x + (widths[i] ?? 0),

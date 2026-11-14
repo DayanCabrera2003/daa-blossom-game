@@ -51,7 +51,7 @@ export function showVictoryPanel(
   ];
   const layout = victoryLayout(
     buttons.map((button) => button.width),
-    middle.width,
+    { width: middle.width, rows: 1 },
   );
   coverWith(
     new WoodFrame(
@@ -62,7 +62,7 @@ export function showVictoryPanel(
     ).zone.setInteractive(),
   );
   title.setY(layout.titleY);
-  middle.place(layout.lineY);
+  middle.place(layout.rows[0] ?? layout.titleY);
   buttons.forEach((button, i) => {
     const at = layout.buttons[i];
     if (at !== undefined) button.moveTo(at.x, at.y);
