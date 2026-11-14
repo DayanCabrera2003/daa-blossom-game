@@ -1,7 +1,7 @@
 import { catalog } from '@levels/catalog';
 import { hasFormalBet, starsCeiling } from '@levels/starsCeiling';
 import { describe, expect, it } from 'vitest';
-import { computeStars } from './stars';
+import { computeStars } from '../systems/stars';
 import { starRows } from './starRows';
 
 describe('the rows of the stars of a won level (GDD §5.4)', () => {

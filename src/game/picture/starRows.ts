@@ -1,4 +1,4 @@
-import type { StarResult } from './stars';
+import type { StarResult } from '../systems/stars';
 
 /** Each star a level can give (GDD §5.4), named as its row of the victory panel says it. */
 export type StarKind = 'done' | 'noHints' | 'water' | 'bet';
