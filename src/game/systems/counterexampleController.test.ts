@@ -97,6 +97,18 @@ describe('the screen of a counterexample', () => {
     expect(lit.effects.some((effect) => effect.kind === 'rejected')).toBe(false);
   });
 
+  it('a drag let go outside the screen drops its chain and plays nothing', () => {
+    const opened = openCounterexample(playable);
+    const held = drag(0, 5).slice(0, -1);
+    const { controller, effects } = send(opened, [
+      ...held,
+      { kind: 'letGo', point: { x: 600, y: 130 } },
+    ]);
+    expect(effects).toEqual([]);
+    expect(controller.pointer.chain).toBeNull();
+    expect(shownGarden(controller)).toBe(playable.start);
+  });
+
   it('a touch the rules refuse is reported with the move tried', () => {
     const chainsOnly = built({ mode: 'play', ...rowOfSix, actions: ['chain'] });
     const onVine = { x: 180, y: 130 };

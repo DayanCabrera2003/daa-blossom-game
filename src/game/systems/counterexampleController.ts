@@ -47,7 +47,8 @@ export interface CounterexampleController {
 
 /** What the player did on the counterexample screen. */
 export type CounterexampleEvent =
-  | { readonly kind: 'press' | 'move' | 'release'; readonly point: Point }
+  /** A press, a drag and its end; `letGo` ends it outside the screen, a release with no chain. */
+  | { readonly kind: 'press' | 'move' | 'release' | 'letGo'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
   | { readonly kind: 'undo' | 'redo' }
   /** In a `mirrorDraw` garden: a vine put in or out of the drawn reflection, and the check of it. */
@@ -147,6 +148,11 @@ export function handleCounterexample(
     controller: { ...controller, ...next },
     effects: [],
   });
+  if (event.kind === 'letGo') {
+    // Whatever was being dragged is dropped: the press ends as a release with no chain.
+    const dropped = { ...controller, pointer: { ...controller.pointer, chain: null } };
+    return handleCounterexample(dropped, { kind: 'release', point: event.point });
+  }
   if (controller.challenge !== null) return handleDrawing(controller, controller.challenge, event);
   const state = shownGarden(controller);
   const { pointer, positions } = controller;
