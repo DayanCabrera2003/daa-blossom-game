@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import { escapeAction } from '../../input/escape';
+import { NO_PRESSES, pressDown, pressHeld, pressUp } from '../../input/gardenPresses';
 import { historyKey, keyAction, pressOf } from '../../input/keyBindings';
 import type { Point } from '../../input/target';
 import type { UiEvent } from '../../systems/levelController';
@@ -38,8 +39,9 @@ export interface LevelInputTarget {
 }
 
 /**
- * Listens to the pointer and the keys of the level screen. Presses and releases on the garden go to
- * the controller; touches on buttons and on the dialogue stay theirs. The keys are the table's
+ * Listens to the pointer and the keys of the level screen. Presses on the garden go to the
+ * controller, and the release that ends each of them (let go outside the screen, it drops the
+ * chain); touches on buttons and on the dialogue stay theirs. The keys are the table's
  * (`input/keyBindings.ts`): the keyboard's focus walks the buttons, the tools, the sun and the
  * panels, and Enter or Space press what it is on, or move the dialogue on; a digit answers the
  * question open; Ctrl/Cmd+Z undoes and Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redo; Escape closes the
@@ -54,21 +56,30 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
     over.length === 0 && !target.dialogueOpen() && !heldByPanel(scene, pointer);
   // The buttons' grown touch zones keep off the garden, whose touches are the player's moves.
   keepGardenClear(scene);
+  // Only the release of a press the garden heard reaches it (`input/gardenPresses.ts`).
+  let presses = NO_PRESSES;
   scene.input.on(
     'pointerdown',
     (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-      if (free(pointer, over)) dispatch({ kind: 'press', point: at(pointer) });
+      const down = pressDown(presses, pointer.id, free(pointer, over));
+      presses = down.presses;
+      if (down.send) dispatch({ kind: 'press', point: at(pointer) });
     },
   );
   scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-    if (pointer.isDown && target.drawing()) dispatch({ kind: 'move', point: at(pointer) });
+    const held = pointer.isDown && pressHeld(presses, pointer.id);
+    if (held && target.drawing()) dispatch({ kind: 'move', point: at(pointer) });
   });
-  scene.input.on(
-    'pointerup',
-    (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-      if (free(pointer, over)) dispatch({ kind: 'release', point: at(pointer) });
-    },
-  );
+  // Let go on the screen or outside it (a drag that left the canvas): the press held ends either way.
+  const release =
+    (outside: boolean) =>
+    (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[] = []) => {
+      const up = pressUp(presses, pointer.id, { free: free(pointer, over), outside });
+      presses = up.presses;
+      if (up.send !== null) dispatch({ kind: up.send, point: at(pointer) });
+    };
+  scene.input.on('pointerup', release(false));
+  scene.input.on('pointerupoutside', release(true));
   const screen = () => (target.settingsOpen() ? 'settings' : 'level');
   new FocusController(scene, { screen, fallback: target.advanceDialogue });
   scene.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
