@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CounterexampleEvent } from '../../systems/counterexampleController';
+import { FocusController } from '../focus/FocusController';
 import { bindCounterexampleInput } from './counterexampleInput';
 
 // The pointer of the counterexample screen: what reaches the garden is a press and the release
@@ -145,5 +146,19 @@ describe('the keys of the counterexample screen', () => {
     expect(sent).toEqual([{ kind: 'undo' }]);
     fake.key({ key: 'Escape', ctrlKey: false, metaKey: false, shiftKey: false, altKey: false });
     expect(left).toBe(1);
+  });
+
+  it('other keys send nothing', () => {
+    fake.key({ key: 'a', ctrlKey: false, metaKey: false, shiftKey: false, altKey: false });
+    expect(sent).toEqual([]);
+    expect(left).toBe(0);
+  });
+
+  it('the keyboard focus walks this screen, and with nothing in focus moves the dialogue on', () => {
+    const [, options] = vi.mocked(FocusController).mock.calls.at(-1) ?? [];
+    expect(options?.screen()).toBe('counterexample');
+    dialogueOpen = true;
+    options?.fallback?.();
+    expect(dialogueOpen).toBe(false);
   });
 });
