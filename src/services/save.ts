@@ -13,7 +13,11 @@ export const SAVE_KEY = 'florecer.save';
 
 const SAVE_VERSION = 5 as const;
 
-/** Each completed level with its best number of stars; the same in every version. */
+/**
+ * Each completed level with its best number of stars; the same in every version. No level gives
+ * more than three (`tests/saveStars.test.ts` checks the whole catalogue): a save over the maximum
+ * would not read back, and all the progress would be lost.
+ */
 const levels = z.record(z.string(), z.strictObject({ stars: z.number().int().min(0).max(3) }));
 
 /** A bet of a script, named by its level and the index of its step: `1.6#3`. */
