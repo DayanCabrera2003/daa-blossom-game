@@ -2,9 +2,10 @@ import type Phaser from 'phaser';
 import type { Translate } from '@services/i18n';
 import type { StarResult } from '../systems/stars';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
-import { rowWidth, STAR_SIZE, starRow } from '../picture/starIcon';
+import { STAR_SIZE } from '../picture/starIcon';
 import { Button } from './Button';
-import { victoryLayout } from '../picture/victoryLayout';
+import { VICTORY, victoryLayout } from '../picture/victoryLayout';
+import { starRows } from '../picture/starRows';
 import { WOOD_PANEL } from '../picture/wood';
 import { PALETTE } from './palette';
 import { drawStars } from './StarIcons';
@@ -12,16 +13,11 @@ import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 import { coverWith } from './focusables';
 
-/** The stars a level can give (GDD §5). */
-const MAX_STARS = 3;
-
-/** Between the row of stars and their count in words. */
-const STARS_GAP = 6;
-
 /**
- * Shows the wooden panel of a won level: its stars, and where to go next (none after the last
- * level). The way back is named by the scene: the hub, or the epilogue after the last garden. A
- * garden that earns no stars (`stars` null: the free mode's) says a line of its own in their place.
+ * Shows the wooden panel of a won level: a row for each star the level can give, earned or not,
+ * saying what it is for (GDD §5.4), and where to go next (none after the last level). The way back
+ * is named by the scene: the hub, or the epilogue after the last garden. A garden that earns no
+ * stars (`stars` null: the free mode's) says a line of its own in their place.
  * Its texts and buttons are made first and measured, then laid out by `victoryLayout`, so the panel
  * grows round them and no button is ever drawn over another.
  */
@@ -40,9 +36,7 @@ export function showVictoryPanel(
     .setOrigin(0.5, 0)
     .setDepth(301);
   const middle =
-    stars === null
-      ? freeLine(scene, t('victory.free'), ink)
-      : starLine(scene, t('victory.stars', { count: stars.total }), stars, ink);
+    stars === null ? freeLine(scene, t('victory.free'), ink) : starLines(scene, t, stars, ink);
   const buttons = [
     new Button(scene, 0, 0, actions.back.label, actions.back.go).setDepth(302),
     ...(actions.next === null
@@ -51,7 +45,7 @@ export function showVictoryPanel(
   ];
   const layout = victoryLayout(
     buttons.map((button) => button.width),
-    { width: middle.width, rows: 1 },
+    { width: middle.width, rows: middle.rows },
   );
   coverWith(
     new WoodFrame(
@@ -62,47 +56,54 @@ export function showVictoryPanel(
     ).zone.setInteractive(),
   );
   title.setY(layout.titleY);
-  middle.place(layout.rows[0] ?? layout.titleY);
+  middle.place(layout.rows);
   buttons.forEach((button, i) => {
     const at = layout.buttons[i];
     if (at !== undefined) button.moveTo(at.x, at.y);
   });
 }
 
-/** A middle line made but not yet placed: its width, and how to put it at a height. */
-interface MiddleLine {
+/**
+ * The middle rows made but not yet placed: how many, the width of the widest, and how to put each
+ * at the top the layout gives it.
+ */
+interface MiddleRows {
   readonly width: number;
-  readonly place: (top: number) => void;
+  readonly rows: number;
+  readonly place: (tops: readonly number[]) => void;
 }
 
 /** The free mode's line, centred, in place of the stars. */
-function freeLine(scene: Phaser.Scene, said: string, ink: number): MiddleLine {
+function freeLine(scene: Phaser.Scene, said: string, ink: number): MiddleRows {
   const text = scene.add
     .text(CANVAS_WIDTH / 2, 0, said, textStyle(8, ink))
     .setOrigin(0.5, 0)
     .setDepth(301);
-  return { width: text.width, place: (top) => text.setY(top) };
+  return { width: text.width, rows: 1, place: ([top = 0]) => text.setY(top) };
 }
 
 /**
- * The three stars, drawn (the pixel font has none), then their count in words, centred together.
+ * One row per star the level can give: the star, drawn (the pixel font has none) in sunlight when
+ * earned and in dim wood when not, then what it is for in words. The rows start at one left edge,
+ * so their stars line up, and are centred together.
  */
-function starLine(scene: Phaser.Scene, said: string, stars: StarResult, ink: number): MiddleLine {
-  const count = scene.add.text(0, 0, said, textStyle(8, ink)).setDepth(301);
-  const starsWidth = rowWidth(MAX_STARS);
-  const width = starsWidth + STARS_GAP + count.width;
+function starLines(scene: Phaser.Scene, t: Translate, stars: StarResult, ink: number): MiddleRows {
+  const rows = starRows(stars).map((row) => ({
+    earned: row.earned,
+    text: scene.add.text(0, 0, t(`victory.star.${row.star}`), textStyle(8, ink)).setDepth(301),
+  }));
+  const width = STAR_SIZE + VICTORY.starGap + Math.max(...rows.map((row) => row.text.width));
   return {
     width,
-    place: (top) => {
+    rows: rows.length,
+    place: (tops) => {
       const left = Math.round((CANVAS_WIDTH - width) / 2);
-      count.setPosition(left + starsWidth + STARS_GAP, top);
-      drawStars(
-        scene,
-        left,
-        top + Math.round((count.height - STAR_SIZE) / 2),
-        starRow(stars.total, MAX_STARS),
-        301,
-      );
+      rows.forEach((row, i) => {
+        const top = tops[i] ?? 0;
+        row.text.setPosition(left + STAR_SIZE + VICTORY.starGap, top);
+        const starTop = top + Math.round((row.text.height - STAR_SIZE) / 2);
+        drawStars(scene, left, starTop, [{ x: 0, earned: row.earned }], 301);
+      });
     },
   };
 }

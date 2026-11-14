@@ -21,6 +21,7 @@ import { MOTION_CHOICES } from '@services/motion';
 import { LAZY_PARTS } from '@services/chunkFailure';
 import { AUDIO_CHANNELS } from '@services/settings';
 import { SPEAKERS } from '@game/systems/speaker';
+import { STAR_KINDS } from '@game/picture/starRows';
 
 /**
  * Every interface text key the game uses, with the `{parameters}` it fills in (sprout names,
@@ -380,7 +381,7 @@ const UI = {
   'raceBet.revealWrong': ['runner', 'answer', 'bet'],
   'hud.checkMirror': [],
   'victory.title': [],
-  'victory.stars': ['count'],
+  ...Object.fromEntries(STAR_KINDS.map((star) => [`victory.star.${star}`, []])),
   'victory.next': [],
   'victory.hub': [],
   'victory.free': [],

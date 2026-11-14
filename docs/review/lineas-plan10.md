@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-148 líneas de diálogo y 56 textos de interfaz distintos de la versión 1.0.1.
+148 líneas de diálogo y 61 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
@@ -595,6 +595,14 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `recipe.wrong.moonToSun` · cambiada
   - Antes: Una luna ya tiene su camino hasta la raíz: no necesita otro, y cambiarla a sol no la ayuda.
   - Después: Una luna ya tiene su camino hasta el brote a oscuras de su árbol: no necesita otro, y cambiarla a sol no la ayuda.
+- [ ] `victory.star.done` · nueva
+  - Después: Jardín iluminado
+- [ ] `victory.star.noHints` · nueva
+  - Después: Sin pistas
+- [ ] `victory.star.water` · nueva
+  - Después: Con el agua justa
+- [ ] `victory.star.bet` · nueva
+  - Después: Apuesta acertada
 - [ ] `hub.secret.bud` · cambiada
   - Antes: Esta flor se abre con {need} estrellas de este capítulo. Tienes {have}.
   - Después: Este jardín secreto se abre con {need} estrellas de este capítulo. Tienes {have}.
@@ -663,3 +671,5 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Antes: Si x no tiene marca y está a oscuras: cadena. Pasa los faroles y vuelve al paso 1.
 - [ ] `recipe.missing.dark` · retirada
   - Antes: Falta qué hacer si x no tiene marca y está a oscuras.
+- [ ] `victory.stars` · retirada
+  - Antes: Estrellas: {count}

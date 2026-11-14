@@ -18,6 +18,8 @@ export const VICTORY = {
   titleTop: 8,
   lineTop: 26,
   lineHeight: LINE_HEIGHT,
+  /** Between a row's star and the words that say what it is for. */
+  starGap: 4,
   buttonsTop: 51,
   bottomPad: 5,
 } as const;

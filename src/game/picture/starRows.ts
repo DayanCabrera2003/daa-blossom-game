@@ -1,7 +1,10 @@
 import type { StarResult } from '../systems/stars';
 
-/** Each star a level can give (GDD §5.4), named as its row of the victory panel says it. */
-export type StarKind = 'done' | 'noHints' | 'water' | 'bet';
+/** Each star a level can give (GDD §5.4), in the order the victory panel tells them. */
+export const STAR_KINDS = ['done', 'noHints', 'water', 'bet'] as const;
+
+/** One star a level can give: its row of the victory panel says it with `victory.star.<kind>`. */
+export type StarKind = (typeof STAR_KINDS)[number];
 
 /** One row of the victory panel: which star it tells, and whether it was earned. */
 export interface StarRow {

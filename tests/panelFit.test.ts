@@ -20,6 +20,9 @@ import { DEMO_SIZE } from '../src/game/view/CardDemoView';
 import { LAYOUT } from '../src/game/view/layout';
 import { RACE_COUNTERS } from '../src/game/view/RaceView';
 import { VICTORY, victoryLayout } from '../src/game/picture/victoryLayout';
+import { STAR_SIZE } from '../src/game/picture/starIcon';
+import { CANVAS_HEIGHT } from '../src/game/scale/integerZoom';
+import { STAR_KINDS } from '../src/game/picture/starRows';
 import { BUTTON_HEIGHT as VICTORY_BUTTON_HEIGHT } from '../src/game/picture/panelLayout';
 import { CARD_IDS } from '../src/levels/cards/schema';
 import { catalog } from '../src/levels/catalog';
@@ -160,15 +163,27 @@ describe('the panels fit their texts', () => {
   });
 
   it("the victory panel's buttons never sit on one another, whatever way back and next it offers", () => {
-    // Every way back the level scene names, each with and without "Siguiente jardín".
+    // Every way back the level scene names, each with and without "Siguiente jardín", under the
+    // four rows of a level with water and a formal bet: its star, then what it is for.
     const backs = [t('victory.hub'), t('epilogue.title'), t('sandbox.design')];
-    const stars = [...t('victory.stars', { count: 3 })].length * CHAR_ADVANCE + 40;
+    const rows = STAR_KINDS.map(
+      (star) => STAR_SIZE + VICTORY.starGap + [...t(`victory.star.${star}`)].length * CHAR_ADVANCE,
+    );
+    const stars = Math.max(...rows);
     for (const back of backs) {
       for (const withNext of [false, true]) {
         const widths = [back, ...(withNext ? [t('victory.next')] : [])].map((label) =>
           estimatedButtonWidth(label),
         );
-        const layout = victoryLayout(widths, { width: stars, rows: 1 });
+        const layout = victoryLayout(widths, { width: stars, rows: rows.length });
+        // The panel stays on the 480 × 270 canvas, every row inside its padding and above the
+        // buttons.
+        expect(layout.y).toBeGreaterThanOrEqual(0);
+        expect(layout.y + layout.height).toBeLessThanOrEqual(CANVAS_HEIGHT);
+        expect(stars).toBeLessThanOrEqual(layout.width - 2 * VICTORY.pad);
+        expect((layout.rows.at(-1) ?? NaN) + VICTORY.lineHeight).toBeLessThanOrEqual(
+          Math.min(...layout.buttons.map((at) => at.y)),
+        );
         const boxes = layout.buttons.map((at, i) => ({
           x0: at.x,
           x1: at.x + (widths[i] ?? 0),
