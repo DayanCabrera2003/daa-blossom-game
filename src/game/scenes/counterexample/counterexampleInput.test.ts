@@ -4,9 +4,11 @@ import type { CounterexampleEvent } from '../../systems/counterexampleController
 import { bindCounterexampleInput } from './counterexampleInput';
 
 // The pointer of the counterexample screen: what reaches the garden is a press and the release
-// that ends that same press. A touch that closes the dialogue never ends as a move in the garden.
+// that ends that same press. A touch that closes the dialogue never ends as a move in the garden,
+// and a drag let go outside the screen drops its chain instead of leaving it hanging.
 
 // The views only draw: the input is tested on its own, with a scene that records the listeners.
+vi.mock('../../view/PanelGrip', () => ({ heldByPanel: () => false }));
 vi.mock('../../view/touchZone', () => ({ keepGardenClear: () => undefined }));
 vi.mock('../focus/FocusController', () => ({ FocusController: vi.fn() }));
 
@@ -84,6 +86,55 @@ describe('the pointer of the counterexample screen', () => {
   it('keeps touches on a button off the garden', () => {
     fake.fire('pointerdown', pointer(1, 10, 20), true);
     fake.fire('pointerup', pointer(1, 10, 20, false), true);
+    expect(sent).toEqual([]);
+  });
+
+  it('ends a drag let go over a button, so a later tap that closes the dialogue stays off', () => {
+    fake.fire('pointerdown', pointer(1, 10, 20));
+    fake.fire('pointerup', pointer(1, 400, 260, false), true);
+    // The dialogue's last line closes on the press; the release lands on a garden now free.
+    dialogueOpen = true;
+    fake.fire('pointerdown', pointer(1, 10, 20));
+    dialogueOpen = false;
+    fake.fire('pointerup', pointer(1, 10, 20, false));
+    expect(sent).toEqual([
+      { kind: 'press', point: { x: 10, y: 20 } },
+      { kind: 'letGo', point: { x: 400, y: 260 } },
+    ]);
+  });
+
+  it('pairs each release with the press of the same pointer', () => {
+    dialogueOpen = true;
+    fake.fire('pointerdown', pointer(1, 10, 20));
+    dialogueOpen = false;
+    fake.fire('pointerdown', pointer(2, 40, 40));
+    fake.fire('pointerup', pointer(1, 10, 20, false));
+    fake.fire('pointerup', pointer(2, 40, 40, false));
+    expect(sent).toEqual([
+      { kind: 'press', point: { x: 40, y: 40 } },
+      { kind: 'release', point: { x: 40, y: 40 } },
+    ]);
+  });
+
+  it('moves only the chain of a press the garden heard', () => {
+    dialogueOpen = true;
+    fake.fire('pointerdown', pointer(1, 10, 20));
+    dialogueOpen = false;
+    fake.fire('pointermove', pointer(1, 12, 20));
+    expect(sent).toEqual([]);
+  });
+
+  it('drops the chain of a drag let go outside the screen, without playing it', () => {
+    fake.fire('pointerdown', pointer(1, 10, 20));
+    fake.fire('pointerupoutside', pointer(1, 500, 20, false));
+    expect(sent).toEqual([
+      { kind: 'press', point: { x: 10, y: 20 } },
+      { kind: 'letGo', point: { x: 500, y: 20 } },
+    ]);
+  });
+
+  it('ignores a release outside the screen whose press never reached the garden', () => {
+    fake.fire('pointerupoutside', pointer(1, 500, 20, false));
     expect(sent).toEqual([]);
   });
 });
