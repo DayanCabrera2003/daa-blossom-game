@@ -255,6 +255,8 @@ Del Prado en adelante cada nivel escribe sus pistas (1.5–1.9 también, con sus
 
 Cada nivel da una estrella por completarlo. Estrellas extra opcionales por: sin pistas (no haber abierto ninguna en el nivel, ofrecida o pedida), dentro del presupuesto de agua/pasos, acertar la apuesta. Las estrellas desbloquean cosméticos del hub y los jardines secretos. Nunca bloquean el avance.
 
+Cada nivel enseña solo las estrellas que puede dar: dos como poco (completarlo y sin pistas), una más si cuenta el agua y otra si tiene una apuesta formal. No se inventa una tercera para los niveles de dos. El panel de victoria dibuja tantos huecos como estrellas da el nivel y un renglón por cada una, ganada o no, que dice de qué es: «Jardín iluminado», «Sin pistas», «Con el agua justa», «Apuesta acertada». Así una apuesta fallada enseña su renglón sin estrella. Los renglones sustituyen al recuento «Estrellas: N».
+
 Los cosméticos llegan solos al alcanzar un umbral de estrellas totales y no se pierden: no hay tienda ni nada que gastar. Al llegar, un aviso en el hub los anuncia una sola vez. En modo profesor se ven todos.
 
 | ★ | Cosmético |
