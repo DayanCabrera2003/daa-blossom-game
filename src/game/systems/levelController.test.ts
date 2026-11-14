@@ -191,7 +191,7 @@ describe('the level controller', () => {
     const step = handle(startController(closed, 0), { kind: 'done' }, 0);
     expect(step.effects).toContainEqual({
       kind: 'won',
-      stars: { total: 2, noHints: true, withinWater: null },
+      stars: { total: 2, noHints: true, withinWater: null, betRight: null },
     });
     const again = handle(step.controller, { kind: 'done' }, 0);
     expect(again.effects.some((effect) => effect.kind === 'won')).toBe(false);
@@ -283,7 +283,7 @@ describe('the level controller runs the script', () => {
         options: ['ch2.9.sauce.02', 'ch2.9.sauce.03'],
       },
       { kind: 'answered', step: 1, value: 1, correct: true },
-      { kind: 'won', stars: { total: 3, noHints: true, withinWater: null } },
+      { kind: 'won', stars: { total: 3, noHints: true, withinWater: null, betRight: true } },
     ]);
     expect(controller.session.won?.total).toBe(3);
   });

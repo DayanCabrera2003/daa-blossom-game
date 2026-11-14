@@ -15,6 +15,8 @@ export interface StarResult {
   readonly noHints: boolean;
   /** Null when the level has no water budget. */
   readonly withinWater: boolean | null;
+  /** Whether the formal bet was right; null without one, or with an informal one. */
+  readonly betRight: boolean | null;
 }
 
 /**
@@ -31,5 +33,6 @@ export function computeStars(record: PlayRecord): StarResult {
       1 + (noHints ? 1 : 0) + (withinWater === true ? 1 : 0) + (record.betRight === true ? 1 : 0),
     noHints,
     withinWater,
+    betRight: record.betRight,
   };
 }

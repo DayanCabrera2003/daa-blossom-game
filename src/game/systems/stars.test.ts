@@ -8,6 +8,7 @@ describe('stars when a level is won (GDD §5.4)', () => {
         total: 1,
         noHints: false,
         withinWater: false,
+        betRight: null,
       },
     );
   });
@@ -19,6 +20,7 @@ describe('stars when a level is won (GDD §5.4)', () => {
       total: 2,
       noHints: true,
       withinWater: null,
+      betRight: null,
     });
   });
 
@@ -29,6 +31,7 @@ describe('stars when a level is won (GDD §5.4)', () => {
       total: 3,
       noHints: true,
       withinWater: true,
+      betRight: null,
     });
     expect(
       computeStars({ hintsOpened: 1, waterSpent: 19, waterBudget: 18, betRight: null }).withinWater,
@@ -41,8 +44,12 @@ describe('stars when a level is won (GDD §5.4)', () => {
       total: 2,
       noHints: false,
       withinWater: null,
+      betRight: true,
     });
-    expect(computeStars({ ...played, betRight: false }).total).toBe(1);
-    expect(computeStars({ ...played, betRight: null }).total).toBe(1);
+    expect(computeStars({ ...played, betRight: false })).toMatchObject({
+      total: 1,
+      betRight: false,
+    });
+    expect(computeStars({ ...played, betRight: null })).toMatchObject({ total: 1, betRight: null });
   });
 });

@@ -138,7 +138,12 @@ describe('playing the reference walkthrough of a level without a scene', () => {
     );
     const played = playWalkthrough(level);
     expect(played.problem).toBeNull();
-    expect(played.controller.session.won).toEqual({ total: 3, noHints: true, withinWater: null });
+    expect(played.controller.session.won).toEqual({
+      total: 3,
+      noHints: true,
+      withinWater: null,
+      betRight: true,
+    });
     expect(played.effects.map((effect) => effect.kind)).toEqual([
       'bet',
       'answered',

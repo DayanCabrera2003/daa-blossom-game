@@ -30,7 +30,7 @@ const question: Question = {
 const asking: Presentation = { kind: 'question', question };
 const victory: Presentation = {
   kind: 'victory',
-  stars: { total: 3, noHints: true, withinWater: null },
+  stars: { total: 3, noHints: true, withinWater: null, betRight: null },
 };
 
 describe('the order the player sees things in', () => {

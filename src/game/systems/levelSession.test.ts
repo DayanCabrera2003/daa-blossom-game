@@ -38,7 +38,7 @@ describe('a level session', () => {
   it('playing 4.6 with its solution wins, with the star for no hints', () => {
     const level = fivePetalsLevel();
     const won = playAll(startSession(level, 0), level.solution);
-    expect(won.won).toEqual({ total: 2, noHints: true, withinWater: null });
+    expect(won.won).toEqual({ total: 2, noHints: true, withinWater: null, betRight: null });
   });
 
   it('a wrong "Terminé" in 4.9 neither wins nor punishes: it is counted, and play goes on', () => {
@@ -190,7 +190,7 @@ describe('a level session', () => {
       { type: 'join', u: 0, v: 1 },
     ]);
     expect(won.waterSpent).toBe(3);
-    expect(won.won).toEqual({ total: 2, noHints: true, withinWater: false });
+    expect(won.won).toEqual({ total: 2, noHints: true, withinWater: false, betRight: null });
   });
 });
 
@@ -281,7 +281,12 @@ describe('a level session follows its script', () => {
     expect(wrong.effects.map((effect) => effect.kind)).toEqual(['answered', 'say', 'ask']);
     const right = respond(wrong.session, { type: 'answer', option: 1 }, 0);
     expect(right.effects.map((effect) => effect.kind)).toEqual(['answered', 'finished']);
-    expect(right.session.won).toEqual({ total: 2, noHints: true, withinWater: null });
+    expect(right.session.won).toEqual({
+      total: 2,
+      noHints: true,
+      withinWater: null,
+      betRight: null,
+    });
   });
 
   it('the notebook ends only with the right statement; false ones are refuted or answered', () => {
@@ -468,7 +473,7 @@ describe('a level session follows its script', () => {
     if (opened === null) throw new Error('hint not offered');
     const asked = playAll(opened.session, toTwo);
     const done = respond(asked, { type: 'answer', option: 1 }, 0).session;
-    expect(done.won).toEqual({ total: 1, noHints: false, withinWater: null });
+    expect(done.won).toEqual({ total: 1, noHints: false, withinWater: null, betRight: null });
   });
 
   it('a right formal bet, judged by the core, adds a star', () => {
@@ -549,7 +554,12 @@ describe('a level session follows its script', () => {
   it('a script of lines only completes the level as it opens', () => {
     const opened = openSession(scripted([{ step: 'say', lines: ['ch2.9.sauce.00'] }]), 0);
     expect(opened.effects.map((effect) => effect.kind)).toEqual(['say', 'finished']);
-    expect(opened.session.won).toEqual({ total: 2, noHints: true, withinWater: null });
+    expect(opened.session.won).toEqual({
+      total: 2,
+      noHints: true,
+      withinWater: null,
+      betRight: null,
+    });
   });
 
   it('touches end the steps that wait for them', () => {
