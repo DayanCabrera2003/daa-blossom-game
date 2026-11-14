@@ -21,7 +21,6 @@ import { availableTools, type ToolId } from '../input/tools';
 import { NO_FILLS, type LiftFills } from '../input/liftDrag';
 import { triedChain } from '../input/triedChain';
 import {
-  enterFlower,
   layerView,
   leaveFlower,
   OUTSIDE,
@@ -33,6 +32,7 @@ import type { ClaimVerdict } from './claimVerdict';
 import type { FlowEffect } from './flow';
 import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
+import { touchLayers } from './layerTouch';
 import { letGoLift, moveLift, pressLift, type LiftScreen } from './liftInput';
 import {
   act,
@@ -335,16 +335,6 @@ export const layerOf = (
   state: GardenState = garden(controller.session),
 ): LayerView => layerView(state.layer, controller.positions, controller.layers);
 
-/** A touch of the layers tool: a folded flower the layer shows is entered; anything else is not. */
-function enter(controller: Controller, view: LayerView, point: Point): Step {
-  const target = hitTest(garden(controller.session), view.positions, point, view);
-  const layers =
-    target.kind === 'flower'
-      ? enterFlower(garden(controller.session).layer, view.path, target.blossom)
-      : view.path;
-  return { controller: { ...controller, layers }, effects: [] };
-}
-
 /** What the gesture of lifting reads of the level screen (`liftInput.ts`). */
 const liftScreen = (controller: Controller, view: LayerView): LiftScreen => ({
   pointer: controller.pointer,
@@ -470,7 +460,9 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
           : { controller: released, effects: [] };
       }
       // The layers tool makes no move: its touch only enters a flower.
-      if (controller.pointer.tool === 'layers') return enter(controller, view, event.point);
+      if (controller.pointer.tool === 'layers') {
+        return same({ layers: touchLayers(state, view, event.point) });
+      }
       const lifted = letGo(controller, view, now);
       if (lifted !== null) return lifted;
       const released = pressEnd(controller.pointer, state, positions, event.point, view);
