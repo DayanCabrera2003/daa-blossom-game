@@ -5,9 +5,7 @@ import { refutationAt, type Refutation } from '@levels/counterexample';
 import type { SproutKind } from '@levels/fields';
 import { planAnimation } from '../animation/plan';
 import { SfxPlayer } from '../audio/SfxPlayer';
-import { historyKey, keyAction, pressOf } from '../input/keyBindings';
 import { previewModeOf } from '../input/previewMode';
-import type { Point } from '../input/target';
 import { availableTools } from '../input/tools';
 import { animationGarden } from '../picture/animationGarden';
 import { gardenPicture } from '../picture/garden';
@@ -46,11 +44,10 @@ import { PALETTE } from '../view/palette';
 import { textStyle } from '../view/textStyle';
 import { ToastView } from '../view/ToastView';
 import { ToolbarView } from '../view/ToolbarView';
-import { keepGardenClear } from '../view/touchZone';
 import { setPanelAvoidance } from '../view/panelPlacer';
 import { gardenShapes } from '../picture/gardenShapes';
 import { NOTHING_TO_AVOID, type Avoidance } from '../picture/panelAvoidance';
-import { FocusController } from './focus/FocusController';
+import { bindCounterexampleInput } from './counterexample/counterexampleInput';
 import { contextOf, type GameContext } from './context';
 
 /** What the level scene gives the counterexample screen when it opens it. */
@@ -71,7 +68,7 @@ export interface CounterexampleSceneData {
  * counterexample's tools under the core's rules, with no victory, until "Volver al Cuaderno" (or
  * "Volver a la pregunta") takes them back to the question. In a `mirrorDraw` garden (2.4 c) the player
  * draws a reflection instead, checks it with "Comprobar", and sees the chain it leaves. Every decision is the pure controller's
- * (`systems/counterexampleController.ts`); this scene forwards touches and draws what it answers.
+ * (`systems/counterexampleController.ts`); this scene forwards touches (`counterexample/counterexampleInput.ts`) and draws what it answers.
  */
 export class CounterexampleScene extends Phaser.Scene {
   private context!: GameContext;
@@ -99,8 +96,6 @@ export class CounterexampleScene extends Phaser.Scene {
     redo: Button;
     check: Button;
   };
-  /** Whether a press started on this screen: the touch that opened it must not end here as a tap. */
-  private pressing = false;
   /** Plays the sounds of moves and refusals on the effects channel. */
   private sfx!: SfxPlayer;
 
@@ -111,7 +106,6 @@ export class CounterexampleScene extends Phaser.Scene {
   create(data: CounterexampleSceneData): void {
     fitCamera(this);
     this.context = contextOf(this);
-    this.pressing = false;
     this.sfx = new SfxPlayer(this, this.context.audio);
     const { t, line } = this.context;
     const level = this.context.catalog.find((candidate) => candidate.data.id === data.levelId);
@@ -148,7 +142,13 @@ export class CounterexampleScene extends Phaser.Scene {
       lanterns: this.add.text(LAYOUT.margin, LAYOUT.bottomY, '', textStyle(8)).setDepth(100),
       ...this.buttons(refuted.asker, data.back),
     };
-    this.listen(data.back);
+    bindCounterexampleInput(this, {
+      dispatch: (event) => this.dispatch(event),
+      leave: () => this.leave(data.back),
+      dialogueOpen: () => this.views.dialogue.open,
+      advanceDialogue: () => this.views.dialogue.touch(),
+      drawing: () => this.controller.pointer.chain !== null,
+    });
     this.views.dialogue.say([spokenLine(counterexample.line, line)]);
     this.render();
   }
@@ -183,46 +183,6 @@ export class CounterexampleScene extends Phaser.Scene {
     const lefts = hudRow(row.map((button) => button.width));
     row.forEach((button, i) => button.moveTo(itemAt(lefts, i), LAYOUT.bottomY));
     return { undo, redo, check };
-  }
-
-  /** Pointer and keys go to the controller; touches on buttons and on the dialogue stay theirs. */
-  private listen(back: () => void): void {
-    const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
-    const free = (over: Phaser.GameObjects.GameObject[]) =>
-      over.length === 0 && !this.views.dialogue.open;
-    // The buttons' grown touch zones keep off the garden, whose touches are the player's moves.
-    keepGardenClear(this);
-    this.input.on(
-      'pointerdown',
-      (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-        if (!free(over)) return;
-        this.pressing = true;
-        this.dispatch({ kind: 'press', point: at(pointer) });
-      },
-    );
-    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (pointer.isDown && this.controller.pointer.chain !== null)
-        this.dispatch({ kind: 'move', point: at(pointer) });
-    });
-    this.input.on(
-      'pointerup',
-      (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-        if (!this.pressing || !free(over)) return;
-        this.pressing = false;
-        this.dispatch({ kind: 'release', point: at(pointer) });
-      },
-    );
-    // The keyboard's focus walks the buttons and moves the dialogue on; Escape goes back.
-    new FocusController(this, {
-      screen: () => 'counterexample',
-      fallback: () => this.views.dialogue.touch(),
-    });
-    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
-      const press = pressOf(event);
-      const history = historyKey(press);
-      if (history !== null) this.dispatch({ kind: history });
-      else if (keyAction('counterexample', press) === 'escape') this.leave(back);
-    });
   }
 
   /** One event through the controller; a new move ends any animation still playing. */
