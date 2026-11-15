@@ -62,6 +62,7 @@ import { hintedOption, questionAt } from './question';
 import { reactionsTo, type FiredReaction } from './reactions';
 import { checkBoard, mentorFix, startBoard, touchCard, type RecipeBoard } from './recipeBoard';
 import { NOT_NOW, type Refusal } from './refusal';
+import { startStep } from './stepStart';
 import { computeStars, type StarResult } from './stars';
 
 /**
@@ -179,12 +180,9 @@ function advance(
   const { flow, effects } = advanceFlow(session.flow, signal);
   if (flow.index === session.flow.index) return { session: { ...session, flow }, effects };
   const hints = afterAccepted(session.hints, garden(session), now);
-  // A mirror challenge that begins starts from a clean drawing (2.4 holds two of them).
-  const challenge =
-    currentStep(flow)?.step === 'draw'
-      ? startChallenge(session.level.start.graph)
-      : session.challenge;
-  return { session: { ...session, flow, hints, challenge, won: starsAt(session, flow) }, effects };
+  // What the step that begins resets (`stepStart.ts`): the mirror's drawing, the floor of undo.
+  const begun = startStep(session, currentStep(flow));
+  return { session: { ...session, ...begun, flow, hints, won: starsAt(session, flow) }, effects };
 }
 
 /** A session at the start of `level`, at time `now` (milliseconds), with what its script opens with. */

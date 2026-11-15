@@ -1,6 +1,16 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { canRedo, canUndo, current, push, redo, seek, startHistory, undo } from './history';
+import {
+  canRedo,
+  canUndo,
+  current,
+  layFloor,
+  push,
+  redo,
+  seek,
+  startHistory,
+  undo,
+} from './history';
 
 describe('history of the garden', () => {
   it('starts at the first state, with nothing to undo or redo', () => {
@@ -31,6 +41,17 @@ describe('history of the garden', () => {
     expect(current(seek(history, 1))).toBe('b');
     expect(seek(history, 9).cursor).toBe(2);
     expect(seek(history, -3).cursor).toBe(0);
+  });
+
+  it('a floor laid at the cursor keeps undo and the sun from going back past it', () => {
+    const floored = push(layFloor(push(startHistory('a'), 'b')), 'c');
+    expect(floored.floor).toBe(1);
+    expect(current(undo(floored))).toBe('b');
+    expect(canUndo(undo(floored))).toBe(false);
+    expect(current(undo(undo(floored)))).toBe('b');
+    expect(seek(floored, 0).cursor).toBe(1);
+    // Acting after undoing to the floor keeps it.
+    expect(push(undo(floored), 'x')).toEqual({ states: ['a', 'b', 'x'], cursor: 2, floor: 1 });
   });
 
   it('never changes the history it was given', () => {
