@@ -48,9 +48,14 @@ export interface VictoryMiddle {
  * any) and its `middle` rows (one per star the level can give, or the free mode's line). Its width
  * grows from 200 px until both fit, so no button is ever drawn over another, and its height grows
  * a line for each middle row; buttons that would not fit side by side even on the whole canvas go
- * on rows of their own, centred.
+ * on rows of their own, centred. The panel sits in the middle of the canvas, or with its top-left
+ * corner `at` where it was placed clear of the garden (`panelSpots.ts`), all its parts with it.
  */
-export function victoryLayout(widths: readonly number[], middle: VictoryMiddle): VictoryLayout {
+export function victoryLayout(
+  widths: readonly number[],
+  middle: VictoryMiddle,
+  at: Point | null = null,
+): VictoryLayout {
   const widest = CANVAS_WIDTH - 2 * VICTORY.margin;
   const sideBySide = widths.reduce((sum, w) => sum + w, 0) + VICTORY.gap * (widths.length - 1);
   const oneRow = sideBySide <= widest - 2 * VICTORY.pad;
@@ -61,8 +66,8 @@ export function victoryLayout(widths: readonly number[], middle: VictoryMiddle):
   const buttonsTop = VICTORY.buttonsTop + (middle.rows - 1) * VICTORY.lineHeight;
   const height =
     buttonsTop + rows * BUTTON_HEIGHT + (rows - 1) * VICTORY.rowGap + VICTORY.bottomPad;
-  const x = Math.floor((CANVAS_WIDTH - width) / 2);
-  const y = Math.floor((CANVAS_HEIGHT - height) / 2);
+  const x = at?.x ?? Math.floor((CANVAS_WIDTH - width) / 2);
+  const y = at?.y ?? Math.floor((CANVAS_HEIGHT - height) / 2);
   const top = y + buttonsTop;
   const centred = (w: number): number => x + Math.floor((width - w) / 2);
   const buttons = widths.map((w, i): Point => {

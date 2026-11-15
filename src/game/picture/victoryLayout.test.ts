@@ -94,6 +94,21 @@ describe('the victory panel laid out round what it says', () => {
     expectSound([300, 300], 120, 4);
   });
 
+  it('moves whole, every part with it, to the corner it is placed at', () => {
+    const centred = victoryLayout([100, 100], { width: 120, rows: 3 });
+    const placed = victoryLayout([100, 100], { width: 120, rows: 3 }, { x: 12, y: 30 });
+    const dx = 12 - centred.x;
+    const dy = 30 - centred.y;
+    expect(placed).toEqual({
+      ...centred,
+      x: 12,
+      y: 30,
+      titleY: centred.titleY + dy,
+      rows: centred.rows.map((top) => top + dy),
+      buttons: centred.buttons.map((at) => ({ x: at.x + dx, y: at.y + dy })),
+    });
+  });
+
   it('property: any buttons and middle rows that fit the canvas lay out with nothing overlapping', () => {
     const widest = CANVAS_WIDTH - 2 * VICTORY.margin - 2 * VICTORY.pad;
     fc.assert(
