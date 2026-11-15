@@ -241,13 +241,17 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 
 ### 5.3 Pistas (tres grados, siempre con voz)
 
-El botón Pista está **siempre a mano** mientras el paso admite pistas y quedan grados: el jugador puede pedir una cuando quiera. Tras 90 segundos sin progreso o tras tres intentos fallidos seguidos (jugadas rechazadas, «Terminé» equivocados), el juego la **ofrece**: el botón brilla. Nunca se imponen. No quitan estrellas ya ganadas, pero abrir alguna en un nivel pierde su estrella "sin pistas" (§5.4).
+El botón Pista está **siempre a mano** mientras el paso admite pistas: el jugador puede pedir una cuando quiera. Tras 90 segundos sin progreso o tras tres intentos fallidos seguidos (jugadas rechazadas, «Terminé» equivocados), el juego la **ofrece**: el botón brilla. El reloj de esos 90 segundos se para mientras hay un diálogo o una tarjeta abiertos: leer no es estar atascado. Nunca se imponen. No quitan estrellas ya ganadas, pero abrir alguna en un nivel pierde su estrella "sin pistas" (§5.4).
 
 **Progreso** no es cualquier jugada aceptada, sino una señal que importa: más faroles que nunca en esta partida; con estos faroles, más brotes marcados en la búsqueda (también las marcas de la luz), más flores plegadas o la cadena vista; más brotes inspeccionados; más enredaderas vigiladas; o la cuenta del Consejo más cerca de los que duermen a oscuras. Juntar y separar en bucle, o marcar y deshacer, no superan nada, así que no aplazan la oferta; tampoco rompen la racha de intentos fallidos.
 
 1. **Empujón:** una pregunta que reorienta ("¿Quién sigue a oscuras? ¿Con quién podría hablar?").
 2. **Dirección:** señala una **zona** con un brillo, o un solo brote, y pregunta; **nunca la respuesta**: no brilla justo la enredadera donde hay que plegar, ni la cadena entera o sus dos puntas, ni el tallo que hay que girar, ni dos o más espantapájaros o piedras del certificado final. Lo comprueba un check de integridad (`hintReveals`).
 3. **Solución guiada:** el mentor ejecuta el primer paso y deja el resto.
+
+**Pistas por paso.** Cada paso del guion puede traer sus propias pistas. Un paso de juego que no trae las suyas usa las del nivel; una pregunta, un conteo, el reto del espejo, la receta o cualquier otro paso que no es de juego solo ofrece Pista si trae las suyas: las pistas escritas para jugar («pulsa Presentar») no se dicen bajo una pregunta, y equivocarse en una pregunta no cuesta nada.
+
+**Los grados vuelven a empezar** con cada paso del guion y tras cada cadena encendida, así que en un nivel de varias rondas las pistas hablan de la ronda en curso. La de grado 3 se puede repetir: cada vez el mentor da el siguiente paso del jardín tal como está; el botón nunca se apaga mientras el paso admite pistas.
 
 Del Prado en adelante cada nivel escribe sus pistas (1.5–1.9 también, con sus tres grados); el grado que un nivel no escribe lo dice una pista genérica, y desde el grado 2 brilla lo que toca el siguiente paso del mentor.
 
