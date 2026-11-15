@@ -38,6 +38,8 @@ function mentorTexts(): string[] {
     // A bet and a count of two digits at most: no garden lights a hundred lanterns.
     t('bet.revealRight', { count: 99 }),
     t('bet.revealWrong', { bet: 99, count: 99 }),
+    t('bet.revealRight.one', { count: 1 }),
+    t('bet.revealWrong.one', { bet: 99, count: 1 }),
     ...reveals,
     // The free mode's mentor after the gardener and on the scarecrows (24 sprouts at most).
     t('sandbox.solve.done', { count: 99 }),

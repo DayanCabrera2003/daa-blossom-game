@@ -197,6 +197,8 @@ const UI = {
   'bet.veil': [],
   'bet.revealRight': ['count'],
   'bet.revealWrong': ['bet', 'count'],
+  'bet.revealRight.one': ['count'],
+  'bet.revealWrong.one': ['bet', 'count'],
   'notebook.title': [],
   'notebook.choose': [],
   'notebook.written': [],

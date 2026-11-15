@@ -3,6 +3,7 @@ import type { Translate } from '@services/i18n';
 import type { LineText } from '@services/lines';
 import { planAnimation } from '../../animation/plan';
 import { animationGarden } from '../../picture/animationGarden';
+import { betReveal } from '../../picture/betReveal';
 import { raceBetReveal } from '../../picture/raceBetReveal';
 import { raceDurationAt } from '../../picture/racePanel';
 import { checkText } from '../../picture/mirrorDrawing';
@@ -216,11 +217,8 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       // Nothing to queue: a right pick shows in the garden, painted from the session.
       break;
     case 'reveal': {
-      const key = effect.bet === effect.right ? 'bet.revealRight' : 'bet.revealWrong';
-      stage.presenter.present({
-        kind: 'lines',
-        lines: [said(key, { bet: effect.bet, count: effect.right })],
-      });
+      const { key, params } = betReveal(effect.bet, effect.right);
+      stage.presenter.present({ kind: 'lines', lines: [said(key, params)] });
       break;
     }
     case 'sameStones':
