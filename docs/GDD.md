@@ -252,6 +252,14 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 - Un "Terminé" que no gana nunca se queda sin respuesta: un aviso suave dice por qué todavía no basta (queda una cadena, la búsqueda aún tiene enredaderas por mirar, una enredadera sin vigilar, la cuenta no cuadra, esas piedras no son las lunas), **sin decir dónde está la cadena**; en un certificado de espantapájaros brilla una enredadera sin vigilar. Cuenta como un intento fallido para las pistas (§5.3), no como progreso.
 - En los niveles de certificado (3.7–3.10 y el capítulo 7) el botón dice **«Presentar»**: para terminar hay que **presentar un certificado** (espantapájaros o piedras). En el resto sigue diciendo "Terminé".
 
+**Deshacer, reiniciar y salir.**
+
+- **El suelo de Deshacer.** Deshacer, rehacer y el día no bajan del sitio donde empezó el paso de juego: lo que el jardín hizo antes de que el jugador tome el mando (la búsqueda de la luz en 4.1, la del jardinero en 7.4) no se deshace ni se borra.
+- **Deshacer devuelve la niebla, pero no la gota:** el agua gastada sigue gastada, y la tarjeta de Inspeccionar lo dice.
+- **Reiniciar** devuelve el paso de juego en curso a su comienzo: los faroles, las marcas y la niebla de entonces, y **rellena el agua** gastada desde entonces. No devuelve las pistas abiertas ni hace callar otra vez lo que Sauce ya dijo, y no se puede rehacer. En la fila de botones no cabe (se comprueba con las medidas de `bottomRows`), así que está en los ajustes, solo dentro de un nivel.
+- **Salir avisa.** Con jugadas hechas y el paso de juego sin ganar, «Volver» (o Esc) no sale a la primera: avisa «Si sales ahora, este jardín empieza de nuevo. Pulsa otra vez para salir.», y sale si se pulsa otra vez mientras el aviso se ve. Esc antes avanza el diálogo o cierra lo que esté abierto (la tarjeta, los ajustes); con una pregunta abierta no sale: la pregunta espera su respuesta.
+- **Una victoria alcanzada no se pierde.** Si el paso de juego ya se ganó y el guion sigue (líneas de cierre, el Cuaderno), salir guarda el nivel como ganado, con las estrellas de ese momento.
+
 ### 5.3 Pistas (tres grados, siempre con voz)
 
 El botón Pista está **siempre a mano** mientras el paso admite pistas: el jugador puede pedir una cuando quiera. Tras 90 segundos sin progreso o tras tres intentos fallidos seguidos (jugadas rechazadas, «Terminé» equivocados), el juego la **ofrece**: el botón brilla. El reloj de esos 90 segundos se para mientras hay un diálogo o una tarjeta abiertos: leer no es estar atascado. Nunca se imponen. No quitan estrellas ya ganadas, pero abrir alguna en un nivel pierde su estrella "sin pistas" (§5.4).
