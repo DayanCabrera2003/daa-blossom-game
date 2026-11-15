@@ -9,18 +9,21 @@ import { HUB, layoutHub } from '../../src/game/picture/hubLayout';
 import { hubTopLine } from '../../src/game/picture/hubTopLine';
 import { BUTTON_HEIGHT } from '../../src/game/picture/panelLayout';
 import { labelSeal } from '../../src/game/picture/signSeal';
-import { labelStars } from '../../src/game/picture/starIcon';
+import { levelButtonLabel } from '../../src/game/picture/levelButtonLabel';
 import { catalog } from '../../src/levels/catalog';
+import { starsCeiling } from '../../src/levels/starsCeiling';
 import { createTranslator } from '../../src/services/i18n';
 import { catalogEntries, visibleLevels } from '../../src/services/progress';
 
-// The hub as `HubScene` lays it out with the real catalog and the real words, every level at
-// three stars (the widest buttons), the counter at its widest and every sign of the top line: the boxes of the top line, the
+// The hub as `HubScene` lays it out with the real catalog and the real words, every level's button
+// as wide as its label makes it (the same whatever stars it has won), the counter at its widest and every sign of the top line: the boxes of the top line, the
 // titles and the buttons, and each chapter's flower column and signpost. The tests of what grows
 // in the hub (the secret flowers, the cosmetics) keep clear of these.
 
 export const t = createTranslator(strings);
 export const entries = catalogEntries(catalog());
+/** The most stars each level can give, which its button keeps room for. */
+const ceilings = new Map(catalog().map(({ data }) => [data.id, starsCeiling(data)]));
 /** The width the pixel font gives a text. */
 export const text = (words: string): number => estimatedButtonWidth(words) - 4;
 
@@ -49,7 +52,10 @@ export function hubOf(teacherMode: boolean): {
   const widths = chapters.map((chapter) =>
     shown
       .filter((level) => level.id.startsWith(`${chapter}.`))
-      .map(({ id }) => estimatedButtonWidth(`${id} ${' '.repeat(labelStars(3).spaces)}`)),
+      .map(({ id }) => {
+        const ceiling = ceilings.get(id) ?? 0;
+        return estimatedButtonWidth(levelButtonLabel(id, true, ceiling, ceiling).text);
+      }),
   );
   const titles = chapters.map((chapter) => {
     const title = chapterTitle(chapter);
