@@ -27,6 +27,8 @@ export class Button {
   /** The width the icons and their gaps take before the label. */
   private readonly iconRoom: number;
   private readonly onPress: () => void;
+  /** What a touch on the button does while it is switched off: nothing, unless told. */
+  private onPressOff: () => void = () => undefined;
   private enabled = true;
   private active = false;
   private visible = true;
@@ -90,9 +92,15 @@ export class Button {
     growTouchZone(this.wood.zone, focusable);
   }
 
-  /** What a touch does, and Enter or Space on the button in focus: it clicks, unless switched off. */
+  /**
+   * What a touch does, and Enter or Space on the button in focus: it clicks, unless switched off;
+   * switched off, it does what `whenOff` asked (a locked level of the hub says it is locked).
+   */
   press(): void {
-    if (!this.enabled) return;
+    if (!this.enabled) {
+      this.onPressOff();
+      return;
+    }
     playUiSound(this.scene, 'sfx.button');
     this.onPress();
   }
@@ -167,6 +175,12 @@ export class Button {
   setEnabled(enabled: boolean): this {
     this.enabled = enabled;
     return this.restyle();
+  }
+
+  /** What a touch on the button does while it is switched off; the keyboard's focus skips it still. */
+  whenOff(onPressOff: () => void): this {
+    this.onPressOff = onPressOff;
+    return this;
   }
 
   /** Marks the button as the one in use (the tool in hand). */

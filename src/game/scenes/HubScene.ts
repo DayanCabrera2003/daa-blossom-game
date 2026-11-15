@@ -29,6 +29,7 @@ import { fitCamera } from '../view/fitCamera';
 import { cutFrame } from '../view/sheetCuts';
 import { drawStars } from '../view/StarIcons';
 import { textStyle } from '../view/textStyle';
+import { ToastView } from '../view/ToastView';
 import { contextOf } from './context';
 import { addHubCosmetics } from './hub/HubCosmetics';
 import { bindHubKeys } from './hub/hubKeys';
@@ -37,6 +38,7 @@ import { addHubTopLine } from './hub/HubTopLine';
 import { openLevel } from './LevelGate';
 import { addSettings } from './settingsPanel';
 import { loadBehind } from './loadBehind';
+import { sayAloud } from './sayAloud';
 
 /** Above the buttons' labels, which sit at depth 101. */
 const STAR_DEPTH = 102;
@@ -88,6 +90,8 @@ export class HubScene extends Phaser.Scene {
     const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const open = unlockedLevels(shown, save, teacherMode);
     const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] as string))];
+    // The notice a touch on a locked level brings, as a level's refusals show.
+    const toast = new ToastView(this, sayAloud(this));
     const ceilings = new Map(catalog.map(({ data }) => [data.id, starsCeiling(data)]));
 
     // The buttons and titles are made first, to measure them; then the layout says where they go.
@@ -100,7 +104,9 @@ export class HubScene extends Phaser.Scene {
           const stars = save.levels[id]?.stars ?? 0;
           const { text, room } = levelButtonLabel(id, open.has(id), stars, ceilings.get(id) ?? 0);
           const button = new Button(this, 0, 0, text, () => openLevel(this, { levelId: id }));
-          return { button: button.setEnabled(open.has(id)), room };
+          // A locked level does not open; a touch on it says so, kindly (GDD §6).
+          button.setEnabled(open.has(id)).whenOff(() => toast.show(t('hub.locked')));
+          return { button, room };
         }),
     );
     const titles = chapters.map((chapter) => {
