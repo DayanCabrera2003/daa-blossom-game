@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-153 líneas de diálogo y 65 textos de interfaz distintos de la versión 1.0.1.
+167 líneas de diálogo y 68 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
@@ -258,7 +258,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch4.7.sauce.00` · **Sauce** · cambiada
   - Antes: Un tallo largo esta vez. Busca desde R y fíjate por dónde sale la luz de la flor.
-  - Después: Un tallo largo esta vez. Avanza tu luz desde R y fíjate por dónde sale la luz de la flor.
+  - Después: Un tallo largo esta vez. Avanza tu luz desde R y fíjate en qué pétalo tiene su farol fuera de la flor.
 - [ ] `ch4.7.sauce.02` · **Sauce** · cambiada
   - Antes: Aquí se cierra la flor.
   - Después: La flor está en este bucle. ¿Qué enredadera une dos soles?
@@ -267,7 +267,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Eso es. La cadena recorrió el tallo entero y entró en la flor por d, el pétalo cuyo farol salía de la flor: la base. Por la base entra el tallo, y por la base sale la luz.
 - [ ] `ch4.7.notebook.06` · **Cuaderno** · cambiada
   - Antes: …el pétalo cuyo farol va hacia afuera de la flor (o que está a oscuras).
-  - Después: …el pétalo por donde la luz sale, o el que está a oscuras.
+  - Después: …el único pétalo sin pareja dentro: su farol sale, o no tiene.
 - [ ] `ch4.7.sauce.09` · **Sauce** · retirada
   - Antes: Eso es. Por la base entra el tallo, y por la base sale la luz.
 - [ ] `ch4.7.sauce.12` · **Sauce** · nueva
@@ -285,12 +285,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 4.9
 
+- [ ] `ch4.9.sauce.00` · **Sauce** · cambiada
+  - Antes: Busca desde R. Pliega lo que haga falta y, cuando no quede nada por mirar, pulsa «Terminé».
+  - Después: Hoy buscas tú, con Marcas, como en el Invernadero. Empieza en R, pliega lo que haga falta y, cuando no quede nada por mirar, pulsa «Terminé».
 - [ ] `ch4.9.sauce.02` · **Sauce** · cambiada
   - Antes: Aquí se tocan dos soles. Pliega y sigue mirando desde la flor.
   - Después: Mira este bucle. Si dos soles se tocan aquí, pliega y sigue mirando desde la flor.
 
 ### 4.10
 
+- [ ] `ch4.10.sauce.01` · **Sauce** · cambiada
+  - Antes: Cuando una flor te estorba, mueve la oscuridad hasta su base. No pierdes nada.
+  - Después: Cuando una flor te estorba, prueba a mover los faroles del tallo.
 - [ ] `ch4.10.sauce.03` · **Sauce** · cambiada
   - Antes: Gira el tallo: desde R hasta b.
   - Después: ¿Qué brote tendría que quedar a oscuras?
@@ -319,7 +325,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Eso es. Plegar no esconde cadenas, y al revés ya lo viviste: una cadena del jardín plegado siempre se puede desplegar. Plegar no crea ni destruye cadenas.
 - [ ] `ch4.11.notebook.08` · **Cuaderno** · cambiada
   - Antes: …no crea ni destruye cadenas.
-  - Después: …deja el jardín con cadena justo cuando ya la tenía.
+  - Después: …no cambia la respuesta: si había cadena, sigue habiéndola; si no, no aparece ninguna.
 - [ ] `ch4.11.notebook.09` · **Cuaderno** · cambiada
   - Antes: …puede esconder una cadena.
   - Después: …no crea cadenas, pero puede esconder alguna.
@@ -354,6 +360,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.1.sauce.02` · **Sauce** · cambiada
   - Antes: Esta enredadera brilla. Mira quién está en cada punta.
   - Después: La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?
+- [ ] `ch5.1.sauce.04` · **Sauce** · cambiada
+  - Antes: Abriste la flor grande y luego la pequeña. Por dentro, la cadena entró por b y salió por c, por el lado de d: el lado corto ponía dos enredaderas apagadas seguidas.
+  - Después: Abriste la flor grande y luego la pequeña. La cadena toca la flor pequeña en dos pétalos, b y c; entre los dos, solo una vuelta alterna: la que pasa por d.
 
 ### 5.2
 
@@ -386,7 +395,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: La flor pequeña ya es un brote más. ¿Con quién se toca por este lado?
 - [ ] `ch5.3.sauce.04` · **Sauce** · cambiada
   - Antes: Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba. Escríbelo en tu Cuaderno.
-  - Después: Eso es. Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba.
+  - Después: Eso es. La cadena toca la flor pequeña en dos pétalos, f y b, y f no es su base; entre los dos, solo una vuelta alterna: aquí, la larga.
 - [ ] `ch5.3.notebook.06` · **Cuaderno** · cambiada
   - Antes: …entro por un pétalo, salgo por otro y solo un lado del bucle alterna bien.
   - Después: …la entrada y la salida deciden un único lado bueno.
@@ -443,6 +452,26 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Antes: Encendió todos los que caben y dijo «Terminé». Mueve el sol y míralo otra vez, paso a paso.
   - Después: Encendió todos los que caben y dijo «Terminé». Arrastra el día y míralo otra vez, paso a paso.
 
+### 6.3
+
+- [ ] `ch6.3.sauce.10` · **Sauce** · nueva
+  - Después: Antes de mirar: sin la tarjeta de las flores, ¿cuántos faroles encenderá su receta en este jardín?
+- [ ] `ch6.3.gardener.11` · **Tú** · nueva
+  - Después: Cuatro, como yo.
+- [ ] `ch6.3.gardener.12` · **Tú** · nueva
+  - Después: Menos de cuatro.
+
+### 6.4
+
+- [ ] `ch6.4.sauce.12` · **Sauce** · nueva
+  - Después: Antes de mirar: en un jardín de seis brotes, ¿quién crees que llegará antes?
+- [ ] `ch6.4.gardener.13` · **Tú** · nueva
+  - Después: Mi receta.
+- [ ] `ch6.4.gardener.14` · **Tú** · nueva
+  - Después: Bruto.
+- [ ] `ch6.4.gardener.15` · **Tú** · nueva
+  - Después: Casi a la vez.
+
 ### 6.5
 
 - [ ] `ch6.5.sauce.06` · **Sauce** · cambiada
@@ -451,6 +480,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch6.5.sauce.09` · **Sauce** · cambiada
   - Antes: La última: de 32 a 64 brotes. ¿Cuántos pasos más dará tu receta?
   - Después: La última: de 32 a 64 brotes. ¿Otra vez lo de antes? ¿Cuántos pasos más dará tu receta?
+- [ ] `ch6.5.sauce.12` · **Sauce** · nueva
+  - Después: Cada apuesta que aciertes te da una semilla, y tus semillas brotan en el jardín.
 
 ### 6.6
 
@@ -462,6 +493,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch6.7.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor escondida del Recetario. Bruto pide la revancha, y esta vez elige él los jardines.
   - Después: Un jardín secreto del Recetario. Bruto pide la revancha, y esta vez elige él los jardines.
+- [ ] `ch6.7.sauce.13` · **Sauce** · nueva
+  - Después: Antes de mirar: en un jardín tan pequeño, ¿quién crees que llegará antes?
+- [ ] `ch6.7.gardener.14` · **Tú** · nueva
+  - Después: Mi receta, como siempre.
+- [ ] `ch6.7.gardener.15` · **Tú** · nueva
+  - Después: Bruto.
 
 ### 7.1
 
@@ -518,7 +555,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch7.5.sauce.01` · **Sauce** · cambiada
   - Antes: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y presenta faroles y piedras con «Terminé». La cuenta del Consejo sale al presentarla.
-  - Después: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
+  - Después: Enciende todo lo que puedas. Busca tú, con Marcas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
 - [ ] `ch7.5.sauce.03` · **Sauce** · cambiada
   - Antes: Estos dos están a oscuras, y entre ellos hay flores.
   - Después: Empieza por aquí. Entre este y el otro que sigue a oscuras hay flores.
@@ -569,7 +606,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `claim.searchNotOver` · nueva
   - Después: Primero la búsqueda tiene que acabar sin cadena.
 - [ ] `claim.notTheMoons` · nueva
-  - Después: Esas piedras no son las lunas de tu búsqueda.
+  - Después: Esas piedras todavía no prueban nada. ¿Qué te dejó la búsqueda en cada brote?
 - [ ] `action.stepLight` · nueva
   - Después: avanzar la luz
 - [ ] `hud.goal` · cambiada
@@ -616,7 +653,16 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: 2. Mientras algún sol tenga una enredadera apagada sin mirar (x es el brote del otro lado):
 - [ ] `recipe.card.chainRootToRoot` · cambiada
   - Antes: Si x es sol de otro árbol: cadena de raíz a raíz.
-  - Después: Si x es sol de otro árbol: cadena de un brote a oscuras a otro. Pasa los faroles y vuelve al paso 1.
+  - Después: Si x es sol de otro árbol: cadena de un brote a oscuras a otro. Abre las flores que cruza, de fuera hacia dentro, por el lado que alterna; pasa los faroles y vuelve al paso 1.
+- [ ] `recipe.card.moonToSun` · cambiada
+  - Antes: Si x es luna, cámbiala a sol.
+  - Después: Si x es luna: cámbiala a sol.
+- [ ] `recipe.card.foldAnyLoop` · cambiada
+  - Antes: Si hay bucle, pliega.
+  - Después: Si x cierra un bucle: pliega la flor.
+- [ ] `recipe.card.untilNoneDark` · cambiada
+  - Antes: Repite hasta que no queden brotes a oscuras.
+  - Después: Mientras quede un brote a oscuras: vuelve al paso 1.
 - [ ] `recipe.wrong.moonToSun` · cambiada
   - Antes: Una luna ya tiene su camino hasta la raíz: no necesita otro, y cambiarla a sol no la ayuda.
   - Después: Una luna ya tiene su camino hasta el brote a oscuras de su árbol: no necesita otro, y cambiarla a sol no la ayuda.

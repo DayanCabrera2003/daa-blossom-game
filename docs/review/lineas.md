@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 515 líneas, 76 están tal cual en el GDD y 439 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 526 líneas, 79 están tal cual en el GDD y 447 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -378,13 +378,13 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.7
 
-- [ ] `ch4.7.sauce.00` · **Sauce** · plan: Un tallo largo esta vez. Avanza tu luz desde R y fíjate por dónde sale la luz de la flor.
+- [ ] `ch4.7.sauce.00` · **Sauce** · plan: Un tallo largo esta vez. Avanza tu luz desde R y fíjate en qué pétalo tiene su farol fuera de la flor.
 - [ ] `ch4.7.sauce.01` · **Sauce** · plan: Sigue el tallo desde R. ¿Dónde se tocan dos soles?
 - [ ] `ch4.7.sauce.02` · **Sauce** · plan: La flor está en este bucle. ¿Qué enredadera une dos soles?
 - [ ] `ch4.7.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.7.sauce.04` · **Sauce** · plan: Eso es. La cadena recorrió el tallo entero y entró en la flor por d, el pétalo cuyo farol salía de la flor: la base. Por la base entra el tallo, y por la base sale la luz.
 - [ ] `ch4.7.notebook.05` · **Cuaderno** · GDD: La base de una flor es…
-- [ ] `ch4.7.notebook.06` · **Cuaderno** · plan: …el pétalo por donde la luz sale, o el que está a oscuras.
+- [ ] `ch4.7.notebook.06` · **Cuaderno** · plan: …el único pétalo sin pareja dentro: su farol sale, o no tiene.
 - [ ] `ch4.7.notebook.07` · **Cuaderno** · plan: …el pétalo más cercano a mí.
 - [ ] `ch4.7.notebook.08` · **Cuaderno** · plan: …cualquier pétalo.
 - [ ] `ch4.7.sauce.10` · **Sauce** · plan: En la flor de cinco pétalos, el más cercano a Elo era Cleo, y la luz salía por b. Cerca no quiere decir base.
@@ -403,7 +403,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.9
 
-- [ ] `ch4.9.sauce.00` · **Sauce** · plan: Busca desde R. Pliega lo que haga falta y, cuando no quede nada por mirar, pulsa «Terminé».
+- [ ] `ch4.9.sauce.00` · **Sauce** · plan: Hoy buscas tú, con Marcas, como en el Invernadero. Empieza en R, pliega lo que haga falta y, cuando no quede nada por mirar, pulsa «Terminé».
 - [ ] `ch4.9.sauce.01` · **Sauce** · plan: ¿Queda algún sol con enredaderas sin mirar?
 - [ ] `ch4.9.sauce.02` · **Sauce** · plan: Mira este bucle. Si dos soles se tocan aquí, pliega y sigue mirando desde la flor.
 - [ ] `ch4.9.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás, hasta el final, es tuyo.
@@ -412,7 +412,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 4.10
 
 - [ ] `ch4.10.sauce.00` · **Sauce** · plan: Hoy la flor está cerrada: no se puede plegar. Y aun así, este jardín puede encender tres faroles.
-- [ ] `ch4.10.sauce.01` · **Sauce** · GDD: Cuando una flor te estorba, mueve la oscuridad hasta su base. No pierdes nada.
+- [ ] `ch4.10.sauce.01` · **Sauce** · GDD: Cuando una flor te estorba, prueba a mover los faroles del tallo.
 - [ ] `ch4.10.sauce.02` · **Sauce** · plan: ¿Puedes dejar a b a oscuras sin perder ningún farol?
 - [ ] `ch4.10.sauce.03` · **Sauce** · plan: ¿Qué brote tendría que quedar a oscuras?
 - [ ] `ch4.10.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
@@ -437,7 +437,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.11.sauce.05` · **Sauce** · plan: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor.
 - [ ] `ch4.11.sauce.06` · **Sauce** · plan: Eso es. Plegar no esconde cadenas, y al revés ya lo viviste: una cadena del jardín plegado siempre se puede desplegar. Plegar no crea ni destruye cadenas.
 - [ ] `ch4.11.notebook.07` · **Cuaderno** · GDD: Plegar una flor…
-- [ ] `ch4.11.notebook.08` · **Cuaderno** · plan: …deja el jardín con cadena justo cuando ya la tenía.
+- [ ] `ch4.11.notebook.08` · **Cuaderno** · plan: …no cambia la respuesta: si había cadena, sigue habiéndola; si no, no aparece ninguna.
 - [ ] `ch4.11.notebook.09` · **Cuaderno** · plan: …no crea cadenas, pero puede esconder alguna.
 - [ ] `ch4.11.notebook.10` · **Cuaderno** · plan: …solo sirve si la flor tiene 3 pétalos.
 - [ ] `ch4.11.sauce.11` · **Sauce** · plan: Por eso puedes fiarte de la flor: si la luz con flores dice que no hay cadena, no la hay.
@@ -473,7 +473,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.1.sauce.01` · **Sauce** · GDD: La flor pequeña ya brilla como un sol. ¿Toca a otro sol?
 - [ ] `ch5.1.sauce.02` · **Sauce** · GDD: La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?
 - [ ] `ch5.1.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Una flor también cabe dentro de otra.
-- [ ] `ch5.1.sauce.04` · **Sauce** · plan: Abriste la flor grande y luego la pequeña. Por dentro, la cadena entró por b y salió por c, por el lado de d: el lado corto ponía dos enredaderas apagadas seguidas.
+- [ ] `ch5.1.sauce.04` · **Sauce** · plan: Abriste la flor grande y luego la pequeña. La cadena toca la flor pequeña en dos pétalos, b y c; entre los dos, solo una vuelta alterna: la que pasa por d.
 
 ### 5.2
 
@@ -495,7 +495,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.3.sauce.01` · **Sauce** · plan: ¿Dónde se tocan dos soles del mismo árbol?
 - [ ] `ch5.3.sauce.02` · **Sauce** · plan: La flor pequeña ya es un brote más. ¿Con quién se toca por este lado?
 - [ ] `ch5.3.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
-- [ ] `ch5.3.sauce.04` · **Sauce** · plan: Eso es. Esta vez la cadena entró en la flor pequeña por f, que no es su base, y dio la vuelta larga hasta b. Por el lado corto no alternaba.
+- [ ] `ch5.3.sauce.04` · **Sauce** · plan: Eso es. La cadena toca la flor pequeña en dos pétalos, f y b, y f no es su base; entre los dos, solo una vuelta alterna: aquí, la larga.
 - [ ] `ch5.3.notebook.05` · **Cuaderno** · GDD: Al desplegar una flor que está dentro de otra…
 - [ ] `ch5.3.notebook.06` · **Cuaderno** · plan: …la entrada y la salida deciden un único lado bueno.
 - [ ] `ch5.3.notebook.07` · **Cuaderno** · plan: …siempre salgo por la base.
@@ -559,6 +559,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.3.sauce.07` · **Sauce** · plan: Pongo la tarjeta por ti.
 - [ ] `ch6.3.sauce.08` · **Sauce** · plan: Cuatro. Sin plegar, la receta pasaba junto a la flor sin verla y se rendía antes de tiempo.
 - [ ] `ch6.3.bruto.09` · **Bruto** · plan: Hmpf. La mía era más corta.
+- [ ] `ch6.3.sauce.10` · **Sauce** · GDD: Antes de mirar: sin la tarjeta de las flores, ¿cuántos faroles encenderá su receta en este jardín?
+- [ ] `ch6.3.gardener.11` · **Tú** · plan: Cuatro, como yo.
+- [ ] `ch6.3.gardener.12` · **Tú** · plan: Menos de cuatro.
 
 ### 6.4
 
@@ -574,6 +577,10 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.4.sauce.09` · **Sauce** · plan: El jardinero mecánico.
 - [ ] `ch6.4.sauce.10` · **Sauce** · plan: Mira otra vez los dos contadores.
 - [ ] `ch6.4.sauce.11` · **Sauce** · plan: Casi empataron.
+- [ ] `ch6.4.sauce.12` · **Sauce** · GDD: Antes de mirar: en un jardín de seis brotes, ¿quién crees que llegará antes?
+- [ ] `ch6.4.gardener.13` · **Tú** · plan: Mi receta.
+- [ ] `ch6.4.gardener.14` · **Tú** · plan: Bruto.
+- [ ] `ch6.4.gardener.15` · **Tú** · plan: Casi a la vez.
 
 ### 6.5
 
@@ -589,6 +596,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.5.sauce.09` · **Sauce** · plan: La última: de 32 a 64 brotes. ¿Otra vez lo de antes? ¿Cuántos pasos más dará tu receta?
 - [ ] `ch6.5.sauce.10` · **Sauce** · plan: Mira la gráfica. La de tu receta sube como una curva suave: cada vez que el jardín se duplica, da unas cuatro veces más pasos. La de Bruto se salió por arriba, y él se durmió.
 - [ ] `ch6.5.bruto.11` · **Bruto** · plan: Zzz… ¿Ya… ganó alguien?
+- [ ] `ch6.5.sauce.12` · **Sauce** · plan: Cada apuesta que aciertes te da una semilla, y tus semillas brotan en el jardín.
 
 ### 6.6
 
@@ -626,6 +634,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.7.sauce.10` · **Sauce** · plan: Ganó en los dos jardines diminutos. Mira el de ocho brotes: ¿quién llegó antes?
 - [ ] `ch6.7.gardener.11` · **Tú** · plan: Siempre: pensar no puede perder.
 - [ ] `ch6.7.sauce.12` · **Sauce** · plan: Pensar también cuesta pasos. Mira los dos primeros jardines: ¿quién llegó antes?
+- [ ] `ch6.7.sauce.13` · **Sauce** · GDD: Antes de mirar: en un jardín tan pequeño, ¿quién crees que llegará antes?
+- [ ] `ch6.7.gardener.14` · **Tú** · plan: Mi receta, como siempre.
+- [ ] `ch6.7.gardener.15` · **Tú** · plan: Bruto.
 
 ## Capítulo 7
 
@@ -698,7 +709,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 7.5
 
 - [ ] `ch7.5.oaks.00` · **Los Robles** · plan: Último jardín. Niebla, y flores dentro de flores. No te pedimos que lo enciendas: te pedimos la prueba.
-- [ ] `ch7.5.sauce.01` · **Sauce** · plan: Enciende todo lo que puedas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
+- [ ] `ch7.5.sauce.01` · **Sauce** · plan: Enciende todo lo que puedas. Busca tú, con Marcas. Cuando la búsqueda se acabe sin cadena, levanta las piedras y pulsa «Presentar» con tus faroles y tus piedras. La cuenta del Consejo sale al presentarla.
 - [ ] `ch7.5.sauce.02` · **Sauce** · plan: ¿Quién sigue a oscuras? Empieza por ahí.
 - [ ] `ch7.5.sauce.03` · **Sauce** · plan: Empieza por aquí. Entre este y el otro que sigue a oscuras hay flores.
 - [ ] `ch7.5.sauce.04` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
