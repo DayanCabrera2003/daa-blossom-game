@@ -1,4 +1,5 @@
 import lines from '@content/es/lines.json';
+import strings from '@content/es/strings.json';
 import { baseVertex, members } from '@core/blossom/hierarchy';
 import type { Blossom } from '@core/blossom/types';
 import { idOf } from '@core/graph/labels';
@@ -20,12 +21,20 @@ import { describe, expect, it } from 'vitest';
  */
 
 const lineTable: Readonly<Record<string, string>> = lines;
+const stringTable: Readonly<Record<string, string>> = strings;
 
 /** The text of a line, which must exist. */
 const lineOf = (id: string): string => {
   const said = lineTable[id];
   if (said === undefined) throw new Error(`no line ${id}`);
   return said;
+};
+
+/** An interface text, which must exist. */
+const stringOf = (key: string): string => {
+  const text = stringTable[key];
+  if (text === undefined) throw new Error(`no text ${key}`);
+  return text;
 };
 
 const levelOf = (id: string): Level => {
@@ -177,5 +186,23 @@ describe('what is said about flowers holds in their gardens', () => {
     expect(lineOf('ch4.11.notebook.08')).toBe(
       '…no cambia la respuesta: si había cadena, sigue habiéndola; si no, no aparece ninguna.',
     );
+  });
+});
+
+describe('who searches is said where the light stops searching', () => {
+  it('4.9 and 7.5 have no light: the opening line says the search is by hand, with the marks', () => {
+    const marks = stringOf('tool.marks');
+    for (const [id, line] of [
+      ['4.9', 'ch4.9.sauce.00'],
+      ['7.5', 'ch7.5.sauce.01'],
+    ] as const) {
+      const level = levelOf(id);
+      expect(level.data.light, id).toBeFalsy();
+      expect(
+        level.solution.some((move) => move.type === 'markRoot'),
+        id,
+      ).toBe(true);
+      expect(lineOf(line), id).toMatch(new RegExp(`[Bb]usca(s)? tú, con ${marks}`));
+    }
   });
 });
