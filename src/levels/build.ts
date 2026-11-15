@@ -1,4 +1,4 @@
-import { idOf, toEdges, type Labels } from '@core/graph/labels';
+import { toEdges, type Labels } from '@core/graph/labels';
 import type { Graph, VertexId } from '@core/graph/types';
 import { createMatching, type MatchingError } from '@core/matching/createMatching';
 import type { Matching } from '@core/matching/types';
@@ -12,7 +12,7 @@ import type { LevelData } from './schema';
 import type { LevelStep } from './flow';
 import { isFlowInput, type FlowInput } from './flowInput';
 import { buildGarden, type GardenError } from './garden';
-import { toLevelStep, toSprouts, toWalkthroughEntry } from './translate';
+import { toHints, toLevelStep, toSprouts, toWalkthroughEntry } from './translate';
 
 /** The moves a level where the light searches by itself keeps closed: the search is the light's. */
 const BY_HAND: readonly ActionType[] = ['markRoot', 'markMoon'];
@@ -37,8 +37,10 @@ export interface Level {
   readonly solution: readonly Action[];
   /** The whole reference walkthrough in order, moves and script inputs, with sprout ids. */
   readonly walkthrough: readonly WalkthroughEntry[];
-  /** The hints, each with the ids of the sprouts it lights up. */
+  /** The hints of the play steps that bring none, each with the ids of the sprouts it lights up. */
   readonly hints: readonly LevelHint[];
+  /** Beside each step of the script, the hints it brings of its own, or null when it brings none. */
+  readonly stepHints: readonly (readonly LevelHint[] | null)[];
 }
 
 /** A hint of the level: the line the mentor says and the sprouts that glow with it. */
@@ -77,23 +79,18 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     mirror = reflection.value;
   }
 
-  const hints: LevelHint[] = [];
-  for (const hint of data.hints) {
-    const highlight: VertexId[] = [];
-    for (const name of hint.highlight) {
-      const vertex = idOf(labels, name);
-      if (vertex === undefined)
-        return err({ code: 'badLabel', error: { code: 'unknownName', name } });
-      highlight.push(vertex);
-    }
-    hints.push({ line: hint.line, highlight });
-  }
+  const hints = toHints(labels, data.hints);
+  if (!hints.ok) return err({ code: 'badLabel', error: hints.error });
 
   const flow: LevelStep[] = [];
+  const stepHints: (LevelHint[] | null)[] = [];
   for (const step of data.flow) {
     const built = toLevelStep(labels, step);
     if (!built.ok) return err({ code: 'badLabel', error: built.error });
     flow.push(built.value);
+    const own = 'hints' in step && step.hints !== undefined ? toHints(labels, step.hints) : null;
+    if (own !== null && !own.ok) return err({ code: 'badLabel', error: own.error });
+    stepHints.push(own === null ? null : own.value);
   }
 
   const walkthrough: WalkthroughEntry[] = [];
@@ -153,6 +150,7 @@ export function buildLevel(data: LevelData): Result<Level, BuildError> {
     flow,
     solution,
     walkthrough,
-    hints,
+    hints: hints.value,
+    stepHints,
   });
 }

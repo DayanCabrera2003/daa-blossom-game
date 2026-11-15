@@ -144,6 +144,26 @@ describe('level schema', () => {
     expect(levelSchema.safeParse(badLine).success).toBe(false);
   });
 
+  it('a step that may offer hints can bring its own; a step that never offers them cannot', () => {
+    const asking = {
+      step: 'ask',
+      prompt: 'ch0.1.sauce.02',
+      options: [
+        { line: 'ch0.1.sauce.03', correct: true },
+        { line: 'ch0.1.sauce.04', correct: false, reply: 'ch0.1.sauce.05' },
+      ],
+      hints: [{ line: 'ch0.1.sauce.06', highlight: ['A'] }],
+    };
+    const parsed = levelSchema.parse({ ...twoSprouts, flow: [{ step: 'play' }, asking] });
+    expect(parsed.flow[1]).toMatchObject({ hints: [{ line: 'ch0.1.sauce.06', highlight: ['A'] }] });
+    const saying = { step: 'say', lines: ['ch0.1.sauce.00'], hints: [{ line: 'ch0.1.sauce.06' }] };
+    expect(levelSchema.safeParse({ ...twoSprouts, flow: [saying, { step: 'play' }] }).success).toBe(
+      false,
+    );
+    const none = { ...twoSprouts, flow: [{ step: 'play', hints: [] }] };
+    expect(levelSchema.safeParse(none).success).toBe(false);
+  });
+
   it('a notebook question needs at least one right answer', () => {
     const notebook = {
       prompt: 'ch0.1.notebook.00',

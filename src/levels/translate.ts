@@ -31,6 +31,26 @@ export function toSprouts(
   return ok(vertices);
 }
 
+/** A hint as a level file writes it: its line and the names of the sprouts that glow with it. */
+interface NamedHint {
+  readonly line: string;
+  readonly highlight: readonly string[];
+}
+
+/** Hints with the ids of the sprouts they light up, stopping at the first unknown name. */
+export function toHints(
+  labels: Labels,
+  hints: readonly NamedHint[],
+): Result<{ line: string; highlight: VertexId[] }[], LabelError> {
+  const built: { line: string; highlight: VertexId[] }[] = [];
+  for (const { line, highlight } of hints) {
+    const sprouts = toSprouts(labels, highlight);
+    if (!sprouts.ok) return sprouts;
+    built.push({ line, highlight: sprouts.value });
+  }
+  return ok(built);
+}
+
 const SPROUT_FIELDS = ['u', 'v', 'from', 'to', 'vertex'] as const;
 const PATH_FIELDS = ['path', 'stem', 'loop'] as const;
 

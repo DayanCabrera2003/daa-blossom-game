@@ -4,7 +4,7 @@ import type { VertexId } from '@core/graph/types';
 import { RECIPE_CASES } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import { z } from 'zod';
-import { label, levelAction, lineId } from './fields';
+import { label, levelAction, lineId, stepHints } from './fields';
 import { statementSchema } from './notebook';
 
 /**
@@ -30,7 +30,6 @@ const reaction = z.discriminatedUnion('on', [
 /** The numbers offered by a numeric question: every whole number from 0 to `range`. */
 const range = z.number().int().min(1);
 
-/** The steps of a script, by `step`. Every object is strict, so a typo is an error. */
 /** Cases of the recipe, each named once: the cards a recipe arrives without. */
 const missingCases = z
   .array(z.enum(RECIPE_CASES))
@@ -43,15 +42,24 @@ const missingCases = z
 export const MAX_RACE_SIZE = 64;
 export const MAX_BRUTO_BUDGET = 2_000_000;
 
+/**
+ * The steps of a script, by `step`. Every object is strict, so a typo is an error. The steps that
+ * may offer hints (playing, answering, counting, drawing, pointing at a vine, the recipe) can bring
+ * their own (`hints`, GDD §5.3); the others never offer any.
+ */
 const flowStep = z.discriminatedUnion('step', [
   /** Play with the level's rules until its victory holds. */
-  z.strictObject({ step: z.literal('play'), reactions: z.array(reaction).default([]) }),
+  z.strictObject({
+    step: z.literal('play'),
+    reactions: z.array(reaction).default([]),
+    hints: stepHints,
+  }),
   /**
    * After a play step won with a Tutte–Berge certificate (7.6): the garden goes on taking moves, and
    * the step is over once the victory holds again with stones different from all those presented.
    * `repeated` is the line the council says to a certificate whose stones it already knows.
    */
-  z.strictObject({ step: z.literal('certifyAgain'), repeated: lineId }),
+  z.strictObject({ step: z.literal('certifyAgain'), repeated: lineId, hints: stepHints }),
   /** The mentor says these lines; done at once. */
   z.strictObject({ step: z.literal('say'), lines: z.array(lineId).min(1) }),
   /**
@@ -66,6 +74,7 @@ const flowStep = z.discriminatedUnion('step', [
       prompt: lineId,
       options: z.array(statementSchema).min(2),
       retry: z.boolean().default(false),
+      hints: stepHints,
     })
     .refine(
       (ask) => ask.retry || ask.options.every((option) => option.counterexample === undefined),
@@ -110,20 +119,33 @@ const flowStep = z.discriminatedUnion('step', [
       piece: label,
       of: z.enum(['yours', 'mirror']),
       range,
+      hints: stepHints,
     }),
-    z.strictObject({ step: z.literal('count'), prompt: lineId, of: z.literal('loop'), range }),
+    z.strictObject({
+      step: z.literal('count'),
+      prompt: lineId,
+      of: z.literal('loop'),
+      range,
+      hints: stepHints,
+    }),
     z.strictObject({
       step: z.literal('count'),
       prompt: lineId,
       of: z.literal('winningThreads'),
       range,
+      hints: stepHints,
     }),
   ]),
   /**
    * The player points at the vine where the light went wrong: the conflict of their search (4.2),
    * as the core finds it. A wrong vine is answered with `reply`, if any, and asked again.
    */
-  z.strictObject({ step: z.literal('pickVine'), prompt: lineId, reply: lineId.optional() }),
+  z.strictObject({
+    step: z.literal('pickVine'),
+    prompt: lineId,
+    reply: lineId.optional(),
+    hints: stepHints,
+  }),
   /**
    * The light searches by itself (4.1, 4.2): the player's marks, made with the greenhouse rules in
    * one fixed order (`autoSearch` of the core), shown one by one while the garden takes no input.
@@ -139,12 +161,17 @@ const flowStep = z.discriminatedUnion('step', [
     step: z.literal('draw'),
     attempts: z.number().int().min(1),
     beatable: z.boolean().default(true),
+    hints: stepHints,
   }),
   /**
    * The flower challenge (4.11): the player draws chains in the open garden, which are shown cut at
    * the level's `flower` and never applied, until `attempts` of them are chains.
    */
-  z.strictObject({ step: z.literal('flowerChallenge'), attempts: z.number().int().min(1) }),
+  z.strictObject({
+    step: z.literal('flowerChallenge'),
+    attempts: z.number().int().min(1),
+    hints: stepHints,
+  }),
   /** A notebook question of the level: the one at `question` in its list, the first by default. */
   z.strictObject({ step: z.literal('notebook'), question: z.number().int().min(0).default(0) }),
   /**
@@ -152,7 +179,11 @@ const flowStep = z.discriminatedUnion('step', [
    * right. With `missing`, the right recipe arrives without the cards of those cases, to be
    * repaired (6.3); each case is named once.
    */
-  z.strictObject({ step: z.literal('recipe'), missing: missingCases.default([]) }),
+  z.strictObject({
+    step: z.literal('recipe'),
+    missing: missingCases.default([]),
+    hints: stepHints,
+  }),
   /**
    * The mechanical gardener (6.2, 6.3) runs a recipe from the lanterns the level starts with: its
    * moves enter the day, shown one by one while the garden takes no input, and the step is over

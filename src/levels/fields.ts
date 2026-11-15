@@ -19,6 +19,15 @@ export const lineId = z
   .string()
   .regex(/^ch\d+\.\d+\.[a-z]+\.\d{2}$/, 'expected a line id like ch4.11.sauce.03');
 
+/** A hint: the line the mentor says and the sprouts that glow with it (GDD §5.3). */
+export const hint = z.strictObject({ line: lineId, highlight: z.array(label).default([]) });
+
+/**
+ * The hints a step of the script brings of its own, in grade order (GDD §5.3): at least one when
+ * written, since a step that has none simply leaves the field out.
+ */
+export const stepHints = z.array(hint).min(1).optional();
+
 /**
  * Where sprouts may sit on the 480×270 canvas: inside the garden area, clear of the HUD bars (the
  * goal and the sun on top, tools and buttons in two rows at the bottom) and of the edges.

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { codexUnlock } from './codex';
-import { actionType, label, levelActionOptions, lineId, sprouts, vine } from './fields';
+import { actionType, hint, label, levelActionOptions, sprouts, vine } from './fields';
 import { flowSchema } from './flow';
 import { flowInputOptions } from './flowInput';
 import { notebookSchema } from './notebook';
@@ -88,10 +88,11 @@ export const levelSchema = z.strictObject({
   light: z.boolean().default(false),
   /** When the play step is won; required exactly when the script has a play step. */
   victory: victory.optional(),
-  /** Hints: a voiced line and the sprouts to highlight (GDD §5.3). */
-  hints: z
-    .array(z.strictObject({ line: lineId, highlight: z.array(label).default([]) }))
-    .default([]),
+  /**
+   * Hints: a voiced line and the sprouts to highlight (GDD §5.3). They are those of the play steps
+   * that bring none of their own; any other step offers only the hints it brings.
+   */
+  hints: z.array(hint).default([]),
   /**
    * The notebook questions of the level, in order: each `notebook` step of the script asks one of
    * them by its index (6.6 asks two).

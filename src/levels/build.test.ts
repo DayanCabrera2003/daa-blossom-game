@@ -45,6 +45,38 @@ describe('building a level', () => {
     expect(unwrapLevel(rotate).hints).toEqual([{ line: 'ch4.10.sauce.01', highlight: [0, 2] }]);
   });
 
+  it('turns the names the hints of each step highlight into ids; null for a step without its own', () => {
+    const hinted = {
+      ...rotate,
+      flow: [
+        { step: 'say' as const, lines: ['ch4.10.sauce.00'] },
+        {
+          step: 'play' as const,
+          reactions: [],
+          hints: [{ line: 'ch4.10.sauce.02', highlight: ['e'] }],
+        },
+      ],
+    };
+    expect(unwrapLevel(hinted).stepHints).toEqual([
+      null,
+      [{ line: 'ch4.10.sauce.02', highlight: [5] }],
+    ]);
+    expect(unwrapLevel(rotate).stepHints).toEqual([null]);
+    const unknown = {
+      ...hinted,
+      flow: [
+        {
+          step: 'play' as const,
+          reactions: [],
+          hints: [{ line: 'ch4.10.sauce.02', highlight: ['X'] }],
+        },
+      ],
+    };
+    expect(buildLevel(unknown)).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'X' } },
+    });
+  });
+
   it('allows what has been unlocked by this level, minus what it keeps closed', () => {
     const { allowed } = unwrapLevel(rotate).start;
     expect(allowed.has('rotateStem')).toBe(true);
