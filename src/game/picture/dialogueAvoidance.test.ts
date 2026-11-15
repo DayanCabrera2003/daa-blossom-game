@@ -33,15 +33,16 @@ describe('what the dialogue box keeps clear of', () => {
   ]);
   const avoid = { shapes: [box(0), box(50), box(100)], referred: [box(100)], sprouts };
 
-  it('the step’s own pieces and the sprouts its lines name, above the rest', () => {
+  it('the step’s own pieces and the sprouts its lines name, then every sprout, then the rest', () => {
     expect(dialogueAvoidance(avoid, ['Empieza por X.'])).toEqual({
       ...avoid,
       referred: [box(100), box(50)],
+      kept: [box(0), box(50)],
     });
   });
 
-  it('only the step’s pieces when its lines name nobody', () => {
-    expect(dialogueAvoidance(avoid, ['Hola.'])).toEqual(avoid);
+  it('only the step’s pieces, then every sprout, when its lines name nobody', () => {
+    expect(dialogueAvoidance(avoid, ['Hola.'])).toEqual({ ...avoid, kept: [box(0), box(50)] });
   });
 
   it('nothing more on a screen that tells no sprouts', () => {

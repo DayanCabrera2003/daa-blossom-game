@@ -1,9 +1,11 @@
 import type { Avoidance } from './panelAvoidance';
 
 /**
- * What the dialogue box keeps clear of when it opens for a run of lines: what the step on screen
- * points at, as every panel does, and also the sprouts the lines name, so the box never hides the
- * sprout the mentor is talking about while some spot leaves it in sight. Pure.
+ * What the dialogue box keeps clear of when it opens for a run of lines: first what the step on
+ * screen points at, as every panel does, and the sprouts the lines name, so the box never hides the
+ * sprout the mentor is talking about while some spot leaves it in sight; then every other sprout,
+ * before the vines and lanterns, so a box that cannot miss the whole garden at least hides as
+ * few sprouts as it can. Pure.
  */
 
 /**
@@ -31,5 +33,9 @@ export function dialogueAvoidance(avoid: Avoidance, texts: readonly string[]): A
   const named = namedLabels(texts, [...sprouts.keys()]).flatMap(
     (label) => sprouts.get(label) ?? [],
   );
-  return named.length === 0 ? avoid : { ...avoid, referred: [...avoid.referred, ...named] };
+  return {
+    ...avoid,
+    referred: [...avoid.referred, ...named],
+    kept: [...sprouts.values()].flat(),
+  };
 }
