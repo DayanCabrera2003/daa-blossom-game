@@ -35,6 +35,21 @@ describe('where a panel opens among its spots', () => {
     expect(choosePanel(spots, { shapes: [], referred })).toBe(spots[1]);
   });
 
+  it('keeps the sprouts in sight before the rest of the garden, when it is told them', () => {
+    // The first spot hides a sprout; the second hides more of the garden, but only of its vines.
+    const sprout = box(0, 0);
+    const vines = [box(100, 0, 20, 20)];
+    const shapes = [sprout, ...vines];
+    expect(choosePanel(spots, { shapes, referred: [] })).toBe(spots[2]);
+    expect(choosePanel(spots.slice(0, 2), { shapes, referred: [], kept: [sprout] })).toBe(spots[1]);
+  });
+
+  it('what is pointed at still comes before the sprouts', () => {
+    const referred = [box(100, 0)];
+    const kept = [box(200, 0, 20, 20)];
+    expect(choosePanel(spots.slice(1), { shapes: [], referred, kept })).toBe(spots[2]);
+  });
+
   it('a hair of difference is no reason to move', () => {
     const shapes = [box(0, 0, 0.1, 1)];
     expect(choosePanel(spots, { shapes, referred: [] })).toBe(spots[0]);

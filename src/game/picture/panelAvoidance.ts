@@ -19,6 +19,8 @@ import { referredShapes } from './referredShapes';
 export interface Avoidance {
   readonly shapes: readonly Shape[];
   readonly referred: readonly Shape[];
+  /** Shapes to keep in sight before the rest of the garden, after those referred; none if absent. */
+  readonly kept?: readonly Shape[];
   /** The shapes of each sprout in sight, by its label, for a line that names it; none if absent. */
   readonly sprouts?: ReadonlyMap<string, readonly Shape[]>;
 }
