@@ -399,9 +399,9 @@ Tarde de verano tardío. Sin música todavía, solo grillos. Tutorial silencioso
 - **Jardín:** `A–B–C`.
 - **Objetivo:** visible, 1.
 - **Enseña:** exclusividad. Junta A–B: C se queda a oscuras con carita dormida. Prueba deshacer y juntar B–C: ahora A. **Siempre queda uno.**
-- **Guion:** Sauce: "Un farol es para dos. Hoy alguien duerme sin luz. No pasa nada; mañana será otra noche."
+- **Guion:** tras el primer farol, Sauce: "¿Cabe otro farol? Pruébalo." El jugador intenta encender un segundo farol y el jardín lo rechaza (el brote del medio ya tiene farol). Después, Sauce: "Un farol es para dos. Hoy alguien duerme sin luz. No pasa nada; mañana será otra noche." La regla la descubre el jugador al fallar; Sauce solo le pone nombre.
 - **Pistas:** (1) "¿Cuántos brotes hay? ¿Cuántos caben en un farol?" (2) — (3) —
-- **Victoria:** 1 farol. El mentor acepta cualquiera de las dos.
+- **Victoria:** 1 farol (cualquiera de los dos) y un intento de encender otro, rechazado porque su brote ya tiene farol. Es un dato del paso de juego del nivel, no del juego.
 
 #### 0.3 El cuadrado
 - **Jardín:** ciclo `A–B–C–D–A`.
@@ -414,8 +414,8 @@ Tarde de verano tardío. Sin música todavía, solo grillos. Tutorial silencioso
 - **Jardín:** `H–L1, H–L2, H–L3` (H en el centro, grande).
 - **Objetivo:** primera **apuesta** (sin contar como sistema aún: el mentor pregunta "¿cuántos crees?"). Valor real: 1.
 - **Enseña:** un brote muy conectado sigue valiendo un solo farol. Dos brotes quedarán a oscuras hagas lo que hagas. Primera intuición de "límite estructural", que volverá con las piedras del capítulo 7.
-- **Guion:** Sauce: "Hortensia tiene muchos amigos. ¿Cuántos faroles crees que se encienden esta noche?"
-- **Victoria:** 1 farol.
+- **Guion:** Sauce: "Hortensia tiene muchos amigos. ¿Cuántos faroles crees que se encienden esta noche?" Tras el primer farol: "¿Cabe otro farol? Pruébalo." Quien apostó más de uno lo comprueba con la mano: el jardín rechaza el segundo farol, y solo entonces se revela la apuesta.
+- **Victoria:** 1 farol y un intento de encender otro, rechazado porque Hortensia ya tiene farol (como en 0.2).
 
 #### 0.5 El día
 - **Jardín:** `A–B–C–D–E`.
