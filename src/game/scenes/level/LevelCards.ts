@@ -5,7 +5,8 @@ import type { CardDemo } from '@levels/cards/demo';
 import type { CardId } from '@levels/cards/schema';
 import { recordTutorialSeen } from '@services/save';
 import { demoLoop } from '../../picture/cardDemo';
-import { helpCards, offerCards } from '../../systems/tutorials';
+import { openingOrder } from '../../systems/openingOrder';
+import { helpCards, offerCards, startCards } from '../../systems/tutorials';
 import type { ShownCard } from '../../view/TutorialView';
 import type { GameContext } from '../context';
 import type { Presenter } from '../presenter';
@@ -40,6 +41,23 @@ export class LevelCards {
     const { cards, offered } = offerCards(this.offered, candidates);
     this.offered = offered;
     for (const card of cards) this.presenter.present({ kind: 'tutorial', card });
+  }
+
+  /**
+   * The level opens: the `effects` its script opens with go to `show`, and the cards of what opens
+   * with `level` (its interface as from level `interfaceAt`) are queued among them, after its first
+   * line if it opens with one (`systems/openingOrder.ts`).
+   */
+  open<E extends { readonly kind: string }>(
+    level: Level,
+    interfaceAt: string,
+    effects: readonly E[],
+    show: (effect: E) => void,
+  ): void {
+    for (const item of openingOrder(effects)) {
+      if (item === 'cards') this.offer(startCards(level, this.offered, interfaceAt));
+      else show(item);
+    }
   }
 
   /**

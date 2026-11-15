@@ -30,7 +30,7 @@ import { effectCues } from '../systems/soundCues';
 import { movesLess } from './motion';
 import { sayAloud } from './sayAloud';
 import type { StarResult } from '../systems/stars';
-import { levelStepCard, startCards } from '../systems/tutorials';
+import { levelStepCard } from '../systems/tutorials';
 import { SfxPlayer } from '../audio/SfxPlayer';
 import { panelAvoidance } from '../picture/panelAvoidance';
 import { fitCamera } from '../view/fitCamera';
@@ -258,10 +258,8 @@ export class LevelScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teacher.leave());
     this.views.hud.showTrace(this.context.teacherMode);
     this.ready = true;
-    // The cards of what opens with the level come first; then the script opens it: its first
-    // lines, then whatever step waits for the player.
-    this.cards.offer(startCards(level, this.cards.seen, screen.interfaceAt));
-    for (const effect of opened.effects) this.show(effect);
+    // The script opens the level, its first line before the cards of what opens with it.
+    this.cards.open(level, screen.interfaceAt, opened.effects, (effect) => this.show(effect));
     this.painter.render(this.time.now);
     this.showBook();
     this.teacher.feed(this.controller.session);
