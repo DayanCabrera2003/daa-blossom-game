@@ -93,4 +93,12 @@ describe('one word, one meaning (plan 11, phase 11; GDD §3.3)', () => {
   it('what the fog spends are drops: «agua» is only ever said as «gotas de agua»', () => {
     expect(offending(/(?<!gotas? de )\bagua\b/i)).toEqual([]);
   });
+
+  it('a closed flower is a folded one: the loop of 4.10 that cannot fold is a loop', () => {
+    const table: Readonly<Record<string, string>> = { ...strings, ...lines };
+    for (const id of ['ch4.10.sauce.00', 'reason.flowerClosed']) {
+      expect(table[id], id).not.toMatch(/cerrad/i);
+      expect(table[id], id).toMatch(/bucle/i);
+    }
+  });
 });
