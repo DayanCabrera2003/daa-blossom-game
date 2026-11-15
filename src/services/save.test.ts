@@ -9,6 +9,7 @@ import {
   recordCompletion,
   recordNotebook,
   recordTutorialSeen,
+  SAVE_BACKUP_KEY,
   SAVE_KEY,
   writeSave,
   type KeyValueStore,
@@ -204,6 +205,34 @@ describe('saved progress', () => {
     expect(
       loadSave(memoryStore({ [SAVE_KEY]: '{"version":1,"levels":{"0.1":{"stars":-2}}}' })),
     ).toEqual(emptySave());
+  });
+
+  it('keeps a copy of an unreadable save before starting afresh, so it can be recovered', () => {
+    expect(SAVE_BACKUP_KEY).toBe('florecer.save.bak');
+    for (const bad of ['{not json', '{"version":99,"levels":{}}']) {
+      const store = memoryStore({ [SAVE_KEY]: bad });
+      expect(loadSave(store)).toEqual(emptySave());
+      expect(store.getItem(SAVE_BACKUP_KEY)).toBe(bad);
+    }
+  });
+
+  it('copies nothing when there is no save or it reads well', () => {
+    const none = memoryStore();
+    loadSave(none);
+    const good = memoryStore({ [SAVE_KEY]: JSON.stringify(emptySave()) });
+    loadSave(good);
+    expect(none.data.has(SAVE_BACKUP_KEY)).toBe(false);
+    expect(good.data.has(SAVE_BACKUP_KEY)).toBe(false);
+  });
+
+  it('starts afresh even if the browser refuses to keep the copy', () => {
+    const refusing: KeyValueStore = {
+      getItem: () => '{not json',
+      setItem: () => {
+        throw new Error('quota');
+      },
+    };
+    expect(loadSave(refusing)).toEqual(emptySave());
   });
 
   it('never fails if the browser refuses storage (private mode)', () => {

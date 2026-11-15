@@ -11,6 +11,9 @@ export interface KeyValueStore {
 /** Where progress is kept in the browser. */
 export const SAVE_KEY = 'florecer.save';
 
+/** Where an unreadable save is copied before a fresh start covers it. */
+export const SAVE_BACKUP_KEY = `${SAVE_KEY}.bak`;
+
 const SAVE_VERSION = 5 as const;
 
 /**
@@ -112,16 +115,40 @@ export const emptySave = (): SaveData => ({
 /**
  * Reads the saved progress; a save of an older version is migrated to the current one. Anything
  * unreadable (no save, damaged JSON, an unknown version, storage refused in private mode) gives a
- * fresh start: losing progress is better than a broken game.
+ * fresh start: a broken game is worse than starting again. A save that is there but cannot be read
+ * is first copied, word for word, to `SAVE_BACKUP_KEY`, since the next write will cover it: the
+ * progress can still be recovered by hand.
  */
 export function loadSave(store: KeyValueStore): SaveData {
+  let raw: string | null;
   try {
-    const raw = store.getItem(SAVE_KEY);
-    if (raw === null) return emptySave();
-    const parsed = z.union([saveSchema, olderSaves]).safeParse(JSON.parse(raw));
-    return parsed.success ? parsed.data : emptySave();
+    raw = store.getItem(SAVE_KEY);
   } catch {
     return emptySave();
+  }
+  if (raw === null) return emptySave();
+  const parsed = readSave(raw);
+  if (parsed !== null) return parsed;
+  keepBackup(store, raw);
+  return emptySave();
+}
+
+/** The save written in `raw`, migrated to the current version, or null if it cannot be read. */
+function readSave(raw: string): SaveData | null {
+  try {
+    const parsed = z.union([saveSchema, olderSaves]).safeParse(JSON.parse(raw));
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Copies an unreadable save aside; if the browser refuses, the fresh start goes on anyway. */
+function keepBackup(store: KeyValueStore, raw: string): void {
+  try {
+    store.setItem(SAVE_BACKUP_KEY, raw);
+  } catch {
+    // Storage refused: there is nowhere to keep the copy.
   }
 }
 
