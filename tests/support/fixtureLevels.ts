@@ -455,7 +455,7 @@ export const BLOOM = {
 /**
  * The recipe with cards (GDD 6.1), as drafted before chapter 6 had its files: a garden, `R–a=b–c`,
  * that the script does not touch, and a recipe built from nothing. The walkthrough first checks a
- * recipe tempted by a distractor ("si x es luna, cámbiala a sol"), which is told and stays open,
+ * recipe tempted by a distractor ("si x es luna: cámbiala a sol"), which is told and stays open,
  * then the right one, with its cases in an order of its own.
  */
 const RECIPE = {

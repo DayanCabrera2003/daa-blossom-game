@@ -106,6 +106,36 @@ describe('6.1: cards', () => {
     expect(stringTable[cardTextKey('chainRootToRoot')]).toContain('vuelve al paso 1');
   });
 
+  it('the chain card opens the flowers it crosses as the automaton does: from the outside in', () => {
+    const card = stringTable[cardTextKey('chainRootToRoot')] ?? '';
+    expect(card).toContain(
+      'Abre las flores que cruza, de fuera hacia dentro, por el lado que alterna',
+    );
+    // In the garden of 5.1 the chain crosses a flower inside another: the outer one opens first.
+    const garden = levelOf('6.3').start;
+    const moves = runRecipe(garden, { fold: true });
+    const chainAt = moves.findIndex((move) => move.type === 'chain');
+    const opened = moves
+      .slice(0, chainAt)
+      .flatMap((move, at) =>
+        move.type === 'unfold' && moves.slice(at, chainAt).every((next) => next.type !== 'foldAt')
+          ? [move.blossom]
+          : [],
+      );
+    expect(opened).toEqual([1, 0]);
+  });
+
+  it('every card of a slot has the form of the others: a condition, a colon, what to do', () => {
+    const textOf = (id: RecipeCardId): string => stringTable[cardTextKey(id)] ?? '';
+    for (const card of RECIPE_CARDS) {
+      const text = textOf(card.id);
+      if (card.case === 'start') continue;
+      // One condition, then one colon, and no comma before it: no card gives itself away.
+      expect(text, card.id).toMatch(/^[^,:]+: [^:]+\.$/);
+      if (card.case !== 'end') expect(text, card.id).toMatch(/^Si x /);
+    }
+  });
+
   it('the mentor lists the neighbours the case cards answer, and no other', () => {
     const neighbours = said('ch6.1.sauce.02') ?? '';
     expect(neighbours).not.toContain('a oscuras');
