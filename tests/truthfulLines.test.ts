@@ -60,10 +60,10 @@ describe('lines that tell the truth about their garden', () => {
   it('1.2: the demo is two passes and a new lantern, and then there is room for one more', () => {
     const level = levelOf('1.2');
     const replay = level.flow.find((step) => step.step === 'replay');
-    if (replay?.step !== 'replay') throw new Error('1.2 replays a demo');
-    const kinds = replay.demo.map((move) => move.type);
-    expect(kinds).toEqual(['passLantern', 'passLantern', 'join']);
-    expect(size(play(level.start, replay.demo).matching)).toBe(size(level.start.matching) + 1);
+    const demo = replay?.step === 'replay' ? replay.demo : undefined;
+    if (demo === undefined) throw new Error('1.2 replays a demo');
+    expect(demo.map((move) => move.type)).toEqual(['passLantern', 'passLantern', 'join']);
+    expect(size(play(level.start, demo).matching)).toBe(size(level.start.matching) + 1);
     expect(lineOf('ch1.2.sauce.00')).toContain('dos pases y un farol nuevo');
   });
 
@@ -107,11 +107,13 @@ describe('lines that tell the truth about their garden', () => {
         expect(checkVertexCover(level.graph, [a, b]).ok).toBe(false);
       }
     }
-    const closing = level.flow.flatMap((step) =>
-      step.step === 'ask'
-        ? [step.prompt, ...step.options.flatMap((option) => [option.line, option.reply])]
-        : [],
-    );
+    const closing = level.flow
+      .flatMap((step) =>
+        step.step === 'ask'
+          ? [step.prompt, ...step.options.flatMap((option) => [option.line, option.reply])]
+          : [],
+      )
+      .filter((id): id is string => id !== undefined);
     expect(closing).toHaveLength(7);
     for (const id of closing) {
       const said = lineOf(id);
