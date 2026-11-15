@@ -233,10 +233,10 @@ function travel(controller: Controller, session: LevelSession, now: number): Ste
 }
 
 /**
- * Tries a move: refused, it is reported (where the light stops at a flower, its vine glows until
- * the next move); accepted, it is animated, puts out hint glows, and may win the play step, which
- * moves the script on. A "Terminé" that does not win is told why after its animation, and a vine
- * nobody guards glows until the next move.
+ * Tries a move: refused, it is reported, then what it moves the script on to (where the light stops
+ * at a flower, its vine glows until the next move); accepted, it is animated, puts out hint glows,
+ * and may win the play step, which moves the script on. A "Terminé" that does not win is told why
+ * after its animation, and a vine nobody guards glows until the next move.
  */
 function apply(controller: Controller, action: Action, now: number): Step {
   const { session, outcome, effects: flowEffects, claim } = act(controller.session, action, now);
@@ -246,7 +246,7 @@ function apply(controller: Controller, action: Action, now: number): Step {
       reason.code === 'lightAtFlower' ? [reason.u, reason.v] : controller.vineGlow;
     return {
       controller: { ...controller, session, vineGlow },
-      effects: [{ kind: 'rejected', reason, action }],
+      effects: [{ kind: 'rejected', reason, action }, ...shown(session, flowEffects)],
     };
   }
   const effects: Effect[] = [
