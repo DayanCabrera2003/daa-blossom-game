@@ -1,6 +1,7 @@
 import { itemAt } from '@core/shared/itemAt';
 import type { Level } from './build';
 import { gardenBefore } from './playStart';
+import { hintsAt } from './stepHints';
 
 /**
  * Something wrong with what a hint calls suns (plan 11, phase 3). In a level that repairs a broken
@@ -15,7 +16,7 @@ export type HintSunProblem =
 
 /**
  * `hintNotSun` and `hintSunsApart`: in a level whose script has a recipe step that arrives without
- * some cards, every hint lights up only suns of one tree in the garden that step starts from (the
+ * some cards, every hint that step offers lights up only suns of one tree in the garden that step starts from (the
  * marks the broken run kept with its "Terminé"). Other levels are not checked: in a play step the
  * marks are the player's, and a hint may be asked before any is made.
  */
@@ -23,7 +24,7 @@ export function checkHintSuns(level: Level): HintSunProblem[] {
   const repair = level.flow.findIndex((step) => step.step === 'recipe' && step.missing.length > 0);
   if (repair < 0) return [];
   const { layer, search } = gardenBefore(level, repair);
-  return level.hints.flatMap(({ line, highlight }): HintSunProblem[] => {
+  return (hintsAt(level, repair) ?? []).flatMap(({ line, highlight }): HintSunProblem[] => {
     if (highlight.length === 0) return [];
     const nodes = highlight.map((sprout) => itemAt(layer.nodeOf, sprout));
     const notSuns = highlight.filter((_, i) => search?.label[itemAt(nodes, i)] !== 'outer');

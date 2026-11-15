@@ -13,14 +13,16 @@
   ],
   "lanterns": [["a", "b"]],
   "goal": { "visible": false },
-  "hints": [
-    { "line": "ch6.1.sauce.01" },
-    { "line": "ch6.1.sauce.02" },
-    { "line": "ch6.1.sauce.03" }
-  ],
   "flow": [
     { "step": "say", "lines": ["ch6.1.sauce.00"] },
-    { "step": "recipe" },
+    {
+      "step": "recipe",
+      "hints": [
+        { "line": "ch6.1.sauce.01" },
+        { "line": "ch6.1.sauce.02" },
+        { "line": "ch6.1.sauce.03" }
+      ]
+    },
     { "step": "say", "lines": ["ch6.1.sauce.04"] }
   ],
   "solution": [

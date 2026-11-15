@@ -27,11 +27,6 @@
     ["g", "h"]
   ],
   "goal": { "visible": true, "value": 4 },
-  "hints": [
-    { "line": "ch6.3.sauce.05" },
-    { "line": "ch6.3.sauce.06", "highlight": ["b", "d"] },
-    { "line": "ch6.3.sauce.07" }
-  ],
   "flow": [
     { "step": "say", "lines": ["ch6.3.bruto.00", "ch6.3.bruto.01"] },
     {
@@ -44,7 +39,15 @@
     },
     { "step": "automaton", "missing": ["sameTree"] },
     { "step": "say", "lines": ["ch6.3.sauce.02", "ch6.3.sauce.03", "ch6.3.sauce.04"] },
-    { "step": "recipe", "missing": ["sameTree"] },
+    {
+      "step": "recipe",
+      "hints": [
+        { "line": "ch6.3.sauce.05" },
+        { "line": "ch6.3.sauce.06", "highlight": ["b", "d"] },
+        { "line": "ch6.3.sauce.07" }
+      ],
+      "missing": ["sameTree"]
+    },
     { "step": "automaton" },
     { "step": "say", "lines": ["ch6.3.sauce.08", "ch6.3.bruto.09"] }
   ],

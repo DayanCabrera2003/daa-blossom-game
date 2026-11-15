@@ -12,6 +12,7 @@ import type { GardenState } from '@core/rules/state';
 import type { TraceEvent } from '@core/trace/events';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
+import { hintsAt } from '@levels/stepHints';
 import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
 import { automatonRun } from './automaton';
 import { judgeVictory } from './certifyAgain';
@@ -138,18 +139,6 @@ export type ScriptInput =
   | { readonly type: 'searched' }
   /** A race has been shown to its end (sent by the scene, not by the player). */
   | { readonly type: 'raced' };
-
-/** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
-const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
-  'play',
-  'certifyAgain',
-  'ask',
-  'count',
-  'draw',
-  'pickVine',
-  'flowerChallenge',
-  'recipe',
-]);
 
 /** The step of the script now, or null once it is over. */
 export const stepNow = (session: LevelSession): LevelStep | null => currentStep(session.flow);
@@ -407,13 +396,11 @@ export const redoSession = (session: LevelSession): LevelSession =>
 export const seekSession = (session: LevelSession, step: number): LevelSession =>
   takesHistory(session) ? { ...session, history: seek(session.history, step) } : session;
 
-/** Whether the step now takes hints: playing, answering, drawing… never while the day replays. */
-const takesHints = (session: LevelSession): boolean => {
-  const step = stepNow(session);
-  // A mirror challenge nobody can win (2.4, second phase) has nothing to find.
-  if (step?.step === 'draw' && !step.beatable) return false;
-  return step !== null && HINT_STEPS.has(step.step);
-};
+/** The hints the step now offers (`stepHints.ts`), or null when it offers none. */
+const hintsNow = (session: LevelSession) => hintsAt(session.level, session.flow.index);
+
+/** Whether the step now takes hints: playing, or a step that brings its own; never under a replay. */
+const takesHints = (session: LevelSession): boolean => hintsNow(session) !== null;
 
 /**
  * Whether the hint button is at hand now (GDD §5.3): in the steps that take hints, while some grade
@@ -438,7 +425,8 @@ export function askHint(
   now: number,
 ): { session: LevelSession; hint: HintContent } | null {
   const current = stepNow(session);
-  if (current === null || !takesHints(session)) return null;
+  const written = hintsNow(session);
+  if (current === null || written === null) return null;
   // Asked for, the hint opens whether it was on offer or not.
   const opened = openHint(session.hints, now);
   if (opened === null) return null;
@@ -463,7 +451,7 @@ export function askHint(
   // In the recipe, the mentor places the right card of the first case that fails, at grade 3.
   const board = recipeBoardOf(session);
   const fix = board === null ? null : mentorFix(board.recipe);
-  const hint = hintContent(level.hints, opened.grade, {
+  const hint = hintContent(written, opened.grade, {
     step,
     option,
     reflection: offer?.reflection ?? null,

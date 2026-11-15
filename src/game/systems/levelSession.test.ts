@@ -147,6 +147,7 @@ describe('a level session', () => {
             { line: 'ch2.2.sauce.02', correct: true },
             { line: 'ch2.2.sauce.03', correct: false },
           ],
+          hints: [{ line: 'ch2.2.sauce.04' }],
         },
       ],
       solution: [{ type: 'answer', option: 0 }],
@@ -243,6 +244,9 @@ const question = {
   ],
   retry: true,
 };
+
+/** The same question, bringing a hint of its own: a question offers only the hints it brings. */
+const hintedQuestion = { ...question, hints: [{ line: 'ch2.9.sauce.07' }] };
 
 describe('a level session follows its script', () => {
   it('the default script opens with its lines and wins as before: both moments coincide', () => {
@@ -396,7 +400,7 @@ describe('a level session follows its script', () => {
   });
 
   it('hints are offered while playing and asking, never in a step that only waits', () => {
-    const level = scripted([{ step: 'play' }, question, { step: 'separate' }]);
+    const level = scripted([{ step: 'play' }, hintedQuestion, { step: 'separate' }]);
     const late = 2 * HINT_DELAY_MS;
     expect(isHintAvailable(startSession(level, 0), late)).toBe(true);
     const asked = playAll(startSession(level, 0), toTwo, HINT_DELAY_MS);
@@ -411,8 +415,15 @@ describe('a level session follows its script', () => {
 
   it('a grade-3 hint under a question points at its right option, and never gives a bet away', () => {
     const level = scripted([
-      question,
-      { step: 'count', prompt: 'ch2.9.sauce.06', piece: 'A', of: 'mirror', range: 3 },
+      hintedQuestion,
+      {
+        step: 'count',
+        prompt: 'ch2.9.sauce.06',
+        piece: 'A',
+        of: 'mirror',
+        range: 3,
+        hints: [{ line: 'ch2.9.sauce.08' }],
+      },
       { step: 'bet', prompt: 'ch2.9.sauce.05', range: 3 },
     ]);
     const third = (from: LevelSession) => {
@@ -461,7 +472,7 @@ describe('a level session follows its script', () => {
   });
 
   it('the wait for a hint starts again with each step', () => {
-    const level = scripted([{ step: 'play' }, question]);
+    const level = scripted([{ step: 'play' }, hintedQuestion]);
     const asked = playAll(startSession(level, 0), toTwo, 80_000);
     expect(isHintAvailable(asked, 100_000)).toBe(false);
     expect(isHintAvailable(asked, 80_000 + HINT_DELAY_MS)).toBe(true);
@@ -516,13 +527,16 @@ describe('a level session follows its script', () => {
     });
   });
 
-  it('pointing at a vine offers hints: the level lines, then the conflict glows unanswered', () => {
+  it('pointing at a vine offers its own hints, then the conflict glows unanswered', () => {
+    const betrayal = betrayalLevel();
+    // The hints belong to the step that points at the vine.
+    const own = [
+      { line: 'ch4.2.sauce.04', highlight: [] },
+      { line: 'ch4.2.sauce.05', highlight: [2, 4] },
+    ];
     const level = {
-      ...betrayalLevel(),
-      hints: [
-        { line: 'ch4.2.sauce.04', highlight: [] },
-        { line: 'ch4.2.sauce.05', highlight: [2, 4] },
-      ],
+      ...betrayal,
+      stepHints: betrayal.flow.map((step) => (step.step === 'pickVine' ? own : null)),
     };
     let session = playAll(startSession(level, 0), level.solution);
     const hints = [];

@@ -42,16 +42,43 @@
     ["e", "f"]
   ],
   "goal": { "visible": true, "value": 6 },
-  "hints": [{ "line": "ch2.2.sauce.12" }, { "line": "ch2.2.sauce.13" }],
   "flow": [
     { "step": "say", "lines": ["ch2.2.sauce.00"] },
     { "step": "mirror" },
     { "step": "separate" },
-    { "step": "count", "prompt": "ch2.2.sauce.01", "piece": "a", "of": "yours", "range": 4 },
-    { "step": "count", "prompt": "ch2.2.sauce.02", "piece": "a", "of": "mirror", "range": 4 },
+    {
+      "step": "count",
+      "hints": [{ "line": "ch2.2.sauce.12" }, { "line": "ch2.2.sauce.13" }],
+      "prompt": "ch2.2.sauce.01",
+      "piece": "a",
+      "of": "yours",
+      "range": 4
+    },
+    {
+      "step": "count",
+      "hints": [{ "line": "ch2.2.sauce.12" }, { "line": "ch2.2.sauce.13" }],
+      "prompt": "ch2.2.sauce.02",
+      "piece": "a",
+      "of": "mirror",
+      "range": 4
+    },
     { "step": "say", "lines": ["ch2.2.sauce.03"] },
-    { "step": "count", "prompt": "ch2.2.sauce.04", "piece": "1", "of": "yours", "range": 4 },
-    { "step": "count", "prompt": "ch2.2.sauce.05", "piece": "1", "of": "mirror", "range": 4 },
+    {
+      "step": "count",
+      "hints": [{ "line": "ch2.2.sauce.12" }, { "line": "ch2.2.sauce.13" }],
+      "prompt": "ch2.2.sauce.04",
+      "piece": "1",
+      "of": "yours",
+      "range": 4
+    },
+    {
+      "step": "count",
+      "hints": [{ "line": "ch2.2.sauce.12" }, { "line": "ch2.2.sauce.13" }],
+      "prompt": "ch2.2.sauce.05",
+      "piece": "1",
+      "of": "mirror",
+      "range": 4
+    },
     { "step": "say", "lines": ["ch2.2.sauce.06"] },
     {
       "step": "ask",

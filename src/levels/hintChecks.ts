@@ -2,8 +2,9 @@ import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { VictoryCondition } from '@core/rules/victory';
-import type { Level } from './build';
+import type { Level, LevelHint } from './build';
 import { gardenAtPlay } from './playStart';
+import { hintsAt } from './stepHints';
 
 /** What a grade-2 hint can give away: a decisive move of the solution, or its final certificate. */
 export type RevealedPart = 'fold' | 'chain' | 'chainEnds' | 'stem' | 'certificate';
@@ -15,7 +16,12 @@ export type HintProblem =
    * solution, or two or more stones, scarecrows or moons of its final certificate. Grade 2 points at
    * a zone or asks a question (GDD §5.3); only grade 3, the mentor's step, gives the move.
    */
-  { readonly code: 'hintReveals'; readonly line: string; readonly reveals: RevealedPart };
+  | { readonly code: 'hintReveals'; readonly line: string; readonly reveals: RevealedPart }
+  /**
+   * The level writes hints that no step would say: none of its steps plays the garden, or every
+   * one that does brings hints of its own (GDD §5.3, hints per step).
+   */
+  | { readonly code: 'hintsUnheard' };
 
 /** The victories won by presenting a certificate: scarecrows, or stones (the moons in 7.4). */
 const CERTIFICATES: ReadonlySet<VictoryCondition['type']> = new Set([
@@ -78,13 +84,28 @@ function finalCertificate(level: Level): readonly VertexId[] {
 }
 
 /**
- * `hintReveals` (plan 10, phase 5): the sprouts the grade-2 hint lights up are never exactly a
- * decisive move of the reference solution (`decisiveSets`), nor two or more sprouts all inside its
- * final certificate. A wider zone that holds the answer, a single sprout, or the whole garden (which
- * points at nothing) is fine, and so is a hint that lights nothing up.
+ * The hints of a level: `hintReveals` on the grade 2 of the level's own and of each step's
+ * (`revealed`), and `hintsUnheard` when the level writes hints no step would say. That their lines
+ * exist is checked with every line the level refers to (`lines.ts`), and that the sprouts they
+ * light up exist as the level builds.
  */
 export function checkHints(level: Level): HintProblem[] {
-  const hint = level.hints[1];
+  const own = level.stepHints.filter((hints): hints is readonly LevelHint[] => hints !== null);
+  const heard = level.flow.some((_, index) => hintsAt(level, index) === level.hints);
+  return [
+    ...[level.hints, ...own].flatMap((hints) => revealed(level, hints)),
+    ...(level.hints.length > 0 && !heard ? [{ code: 'hintsUnheard' } as const] : []),
+  ];
+}
+
+/**
+ * `hintReveals` (plan 10, phase 5): the sprouts the grade-2 hint of `hints` lights up are never
+ * exactly a decisive move of the reference solution (`decisiveSets`), nor two or more sprouts all
+ * inside its final certificate. A wider zone that holds the answer, a single sprout, or the whole
+ * garden (which points at nothing) is fine, and so is a hint that lights nothing up.
+ */
+function revealed(level: Level, hints: readonly LevelHint[]): HintProblem[] {
+  const hint = hints[1];
   if (hint === undefined) return [];
   const { highlight, line } = hint;
   if (highlight.length < 2 || highlight.length === level.graph.n) return [];

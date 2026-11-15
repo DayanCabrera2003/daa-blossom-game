@@ -43,8 +43,8 @@ function optionLines(option: NotebookData['options'][number]): string[] {
 }
 
 /**
- * Every dialogue line a level refers to, in the order it may be heard: the script, the hints, then
- * the notebook questions, their statements and what refutes them. Each id appears once, so content checks can match the ids
+ * Every dialogue line a level refers to, in the order it may be heard: the script, the hints (the
+ * level's, then those each step brings), then the notebook questions, their statements and what refutes them. Each id appears once, so content checks can match the ids
  * against the line table and the voice files.
  */
 export function referencedLines(level: LevelData): string[] {
@@ -56,6 +56,9 @@ export function referencedLines(level: LevelData): string[] {
     ...new Set([
       ...level.flow.flatMap(stepLines),
       ...level.hints.map((hint) => hint.line),
+      ...level.flow.flatMap((step) =>
+        'hints' in step && step.hints !== undefined ? step.hints.map((hint) => hint.line) : [],
+      ),
       ...notebook,
     ]),
   ];

@@ -147,7 +147,11 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch2.4.sauce.00", "ch2.4.sauce.01"] },
-    { "step": "draw", "attempts": 2 },
+    {
+      "step": "draw",
+      "hints": [{ "line": "ch2.4.sauce.14" }, { "line": "ch2.4.sauce.15" }],
+      "attempts": 2
+    },
     { "step": "say", "lines": ["ch2.4.sauce.02"] },
     { "step": "play" },
     { "step": "say", "lines": ["ch2.4.sauce.16"] },

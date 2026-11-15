@@ -42,7 +42,6 @@
     ["e", "f"]
   ],
   "goal": { "visible": true, "value": 6 },
-  "hints": [{ "line": "ch2.1.sauce.11" }, { "line": "ch2.1.sauce.12", "highlight": ["3"] }],
   "flow": [
     { "step": "say", "lines": ["ch2.1.sauce.00"] },
     { "step": "mirror" },
@@ -50,6 +49,7 @@
     { "step": "explore" },
     {
       "step": "ask",
+      "hints": [{ "line": "ch2.1.sauce.11" }, { "line": "ch2.1.sauce.12", "highlight": ["3"] }],
       "prompt": "ch2.1.sauce.02",
       "options": [
         { "line": "ch2.1.gardener.03", "correct": false, "reply": "ch2.1.sauce.08" },

@@ -50,7 +50,7 @@ const mirrorLevel = (
     lanterns,
     goal: { visible: false },
     flow: [
-      { step: 'draw', attempts },
+      { step: 'draw', attempts, hints: [{ line: 'ch2.4.sauce.14' }] },
       { step: 'say', lines: ['ch2.4.sauce.01'] },
     ],
     solution: [{ type: 'checkMirror' }],

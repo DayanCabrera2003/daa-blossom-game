@@ -66,7 +66,8 @@ describe('a level session with the recipe (6.1, 6.3)', () => {
   });
 
   it('three wrong checks in a row offer a hint, whose grade 3 places a right card', () => {
-    const level = recipeLevel([{ step: 'recipe', missing: ['moon', 'end'] }]);
+    const hints = [{ line: 'ch6.1.sauce.01' }];
+    const level = recipeLevel([{ step: 'recipe', missing: ['moon', 'end'], hints }]);
     let session = openSession(level, 0).session;
     for (let check = 0; check < 3; check++) session = checkRecipeNow(session, 0).session;
     expect(isHintAvailable(session, 0)).toBe(true);
@@ -89,7 +90,8 @@ describe('a level session with the recipe (6.1, 6.3)', () => {
   });
 
   it('a hint on a right recipe places nothing more', () => {
-    const built = touchAll(openSession(recipeLevel([{ step: 'recipe' }]), 0).session);
+    const hinted = recipeLevel([{ step: 'recipe', hints: [{ line: 'ch6.1.sauce.01' }] }]);
+    const built = touchAll(openSession(hinted, 0).session);
     let session = built;
     for (let grade = 1; grade <= 3; grade++) {
       session = askHint(session, grade * HINT_DELAY_MS)?.session ?? session;

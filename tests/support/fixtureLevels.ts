@@ -72,7 +72,12 @@ const BETRAYAL = {
   victory: { type: 'searchComplete' },
   flow: [
     { step: 'play' },
-    { step: 'pickVine', prompt: 'ch4.2.sauce.01', reply: 'ch4.2.sauce.03' },
+    {
+      step: 'pickVine',
+      prompt: 'ch4.2.sauce.01',
+      reply: 'ch4.2.sauce.03',
+      hints: [{ line: 'ch4.2.sauce.04' }],
+    },
     { step: 'count', prompt: 'ch4.2.sauce.02', of: 'loop', range: 6 },
   ],
   solution: [
@@ -439,10 +444,13 @@ export const BLOOM = {
   ],
   flower: ['b', 'c', 'd', 'f', 'g'],
   goal: { visible: false },
-  hints: [{ line: 'ch4.11.sauce.02', highlight: ['e'] }],
   flow: [
     { step: 'say', lines: ['ch4.11.sauce.00'] },
-    { step: 'flowerChallenge', attempts: 3 },
+    {
+      step: 'flowerChallenge',
+      attempts: 3,
+      hints: [{ line: 'ch4.11.sauce.02', highlight: ['e'] }],
+    },
     { step: 'say', lines: ['ch4.11.sauce.01'] },
   ],
   solution: [

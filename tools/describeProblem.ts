@@ -93,6 +93,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `only the chain seen may move lanterns here, but "${problem.action}" moves them without the light: forbid it`;
     case 'hintReveals':
       return `the grade-2 hint ${problem.line} lights up the answer (${problem.reveals}): point at a wider zone, a single sprout, or ask`;
+    case 'hintsUnheard':
+      return 'the level writes hints, but no step says them: no step plays, or every one brings its own';
     case 'hintNotSun':
       return `the hint ${problem.line} lights up ${problem.sprouts.join(', ')} over the broken recipe's garden, where they are no suns`;
     case 'hintSunsApart':

@@ -142,6 +142,7 @@ describe('readable level problems', () => {
       { code: 'seenRuleOpen', action: 'split' },
       { code: 'lightBypassed', action: 'passLantern' },
       { code: 'hintReveals', line: 'ch4.4.sauce.03', reveals: 'fold' },
+      { code: 'hintsUnheard' },
       { code: 'hintNotSun', line: 'ch6.3.sauce.06', sprouts: ['h'] },
       { code: 'hintSunsApart', line: 'ch6.3.sauce.06' },
       { code: 'badChainFlower', petals: ['c', 'd', 'b'] },

@@ -80,7 +80,7 @@ describe('6.1: cards', () => {
   it('is written, and its script is a recipe built from nothing between two lines of the mentor', () => {
     expect(level.data.draft).toBe(false);
     expect(stepsOf(level)).toEqual(['say', 'recipe', 'say']);
-    expect(level.flow[1]).toEqual({ step: 'recipe', missing: [] });
+    expect(level.flow[1]).toMatchObject({ step: 'recipe', missing: [] });
     expect(level.data.victory).toBeUndefined();
   });
 
@@ -216,7 +216,7 @@ describe('6.3: the broken recipe', () => {
       'say',
     ]);
     expect(level.flow[2]).toEqual({ step: 'automaton', missing: ['sameTree'] });
-    expect(level.flow[4]).toEqual({ step: 'recipe', missing: ['sameTree'] });
+    expect(level.flow[4]).toMatchObject({ step: 'recipe', missing: ['sameTree'] });
     expect(level.flow[5]).toEqual({ step: 'automaton' });
     const [bruto] = level.flow;
     const brutoSays = bruto?.step === 'say' ? bruto.lines.map(said) : [];

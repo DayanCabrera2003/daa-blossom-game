@@ -35,11 +35,6 @@
   ],
   "flower": ["b", "c", "d", "f", "g"],
   "goal": { "visible": false },
-  "hints": [
-    { "line": "ch4.11.sauce.02", "highlight": ["b", "e", "t"] },
-    { "line": "ch4.11.sauce.03", "highlight": ["e"] },
-    { "line": "ch4.11.sauce.04" }
-  ],
   "notebook": [
     {
       "prompt": "ch4.11.notebook.07",
@@ -86,7 +81,15 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch4.11.sauce.00", "ch4.11.sauce.01"] },
-    { "step": "flowerChallenge", "attempts": 3 },
+    {
+      "step": "flowerChallenge",
+      "hints": [
+        { "line": "ch4.11.sauce.02", "highlight": ["b", "e", "t"] },
+        { "line": "ch4.11.sauce.03", "highlight": ["e"] },
+        { "line": "ch4.11.sauce.04" }
+      ],
+      "attempts": 3
+    },
     { "step": "say", "lines": ["ch4.11.sauce.05", "ch4.11.sauce.14"] },
     { "step": "notebook" },
     { "step": "say", "lines": ["ch4.11.sauce.11"] }

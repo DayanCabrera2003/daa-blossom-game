@@ -15,7 +15,9 @@ const brokenRecipe = (highlight: readonly string[]): Level => {
     { line: 'ch6.3.sauce.06', highlight },
     { line: 'ch6.3.sauce.07' },
   ];
-  const loaded = loadLevel({ ...AUTOMATON, hints });
+  // The hints belong to the step that repairs the recipe: its own, never the level's.
+  const flow = AUTOMATON.flow.map((step, i) => (i === 2 ? { ...step, hints } : step));
+  const loaded = loadLevel({ ...AUTOMATON, flow });
   if (!loaded.ok) throw new Error(`level does not load: ${JSON.stringify(loaded.error)}`);
   return loaded.value;
 };

@@ -39,6 +39,30 @@ describe('referencedLines', () => {
     ]);
   });
 
+  it('lists the hints each step of the script brings, after those of the level', () => {
+    const hinted = {
+      ...talkative,
+      flow: [
+        ...talkative.flow,
+        {
+          step: 'pickVine' as const,
+          prompt: 'ch4.7.sauce.03',
+          hints: [{ line: 'ch4.7.sauce.04', highlight: [] }],
+        },
+      ],
+    };
+    expect(referencedLines(hinted)).toEqual([
+      'ch4.7.sauce.00',
+      'ch4.7.sauce.01',
+      'ch4.7.sauce.03',
+      'ch4.7.sauce.02',
+      'ch4.7.sauce.04',
+      'ch4.7.notebook.00',
+      'ch4.7.notebook.01',
+      'ch4.7.notebook.02',
+    ]);
+  });
+
   it('lists what the notebook says: each statement, its reply and the lines of its garden', () => {
     const garden = {
       sprouts: [{ label: 'a', x: 100, y: 100 }],

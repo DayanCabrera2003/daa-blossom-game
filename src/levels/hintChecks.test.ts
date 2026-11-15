@@ -120,3 +120,29 @@ describe('hintReveals: grade 2 never lights up the answer (plan 10, phase 5)', (
     expect(checkHints(level(null))).toEqual([]);
   });
 });
+
+describe('the hints each step of the script brings', () => {
+  it('a step with its own grade 2 that lights up the answer is reported like a level hint', () => {
+    const hints = [{ line: 'ch4.5.sauce.03' }, { line: 'ch4.5.sauce.04', highlight: ['b', 'd'] }];
+    const flow = [{ step: 'play', hints }];
+    expect(checkHints(level(null, { flow, hints: [] }))).toEqual([
+      { code: 'hintReveals', line: 'ch4.5.sauce.04', reveals: 'fold' },
+    ]);
+  });
+
+  it('level hints that no step would say are reported: every step brings its own, or none plays', () => {
+    const flow = [{ step: 'play', hints: [{ line: 'ch4.5.sauce.03' }] }];
+    expect(checkHints(level(null, { flow }))).toEqual([{ code: 'hintsUnheard' }]);
+    const asking = {
+      step: 'ask',
+      prompt: 'ch4.5.sauce.05',
+      options: [
+        { line: 'ch4.5.sauce.06', correct: true },
+        { line: 'ch4.5.sauce.07', correct: false, reply: 'ch4.5.sauce.08' },
+      ],
+    };
+    const solution = [{ type: 'answer', option: 0 }];
+    const unplayed = level(null, { flow: [asking], victory: undefined, solution });
+    expect(checkHints(unplayed)).toEqual([{ code: 'hintsUnheard' }]);
+  });
+});
