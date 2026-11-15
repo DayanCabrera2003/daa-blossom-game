@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
 import { starsCeiling } from '@levels/starsCeiling';
-import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
+import { catalogEntries, nextLevel, unlockedLevels, visibleLevels } from '@services/progress';
 import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
 import type { Rect } from '../picture/boxDistance';
 import { OutlinedText } from '../view/OutlinedText';
+import { PALETTE } from '../view/palette';
 import { hubKeys } from '../assets/loadPlan';
 import { chapterTitle } from '../picture/chapterTitle';
 import {
@@ -20,6 +21,7 @@ import { epilogueSignAt, HUB, layoutHub } from '../picture/hubLayout';
 import { PIXEL_FONT } from '../picture/pixelFont';
 import { cutOf, seasonOf } from '../picture/seasons';
 import { levelButtonLabel } from '../picture/levelButtonLabel';
+import { NEXT_GLOW, nextLevelGlow } from '../picture/nextLevelGlow';
 import { STAR_SIZE } from '../picture/starIcon';
 import { epilogueReached } from '../systems/epilogue';
 import { trackFor } from '../systems/musicFor';
@@ -38,10 +40,13 @@ import { addHubTopLine } from './hub/HubTopLine';
 import { openLevel } from './LevelGate';
 import { addSettings } from './settingsPanel';
 import { loadBehind } from './loadBehind';
+import { movesLess } from './motion';
 import { sayAloud } from './sayAloud';
 
 /** Above the buttons' labels, which sit at depth 101. */
 const STAR_DEPTH = 102;
+/** Under the buttons' wood, at depth 100: the glow of the next level shows round it. */
+const GLOW_DEPTH = 99;
 
 /** Where a chapter title starts: after its flower's column and the signpost it hangs from. */
 const TITLE_X = HUB.margin + HUB_HEAD;
@@ -54,6 +59,33 @@ const boxOf = (thing: { x: number; y: number; width: number; height: number }): 
   height: thing.height,
 });
 
+/**
+ * Draws the glow of the next level to play under its button's wood `box` (`picture/nextLevelGlow.ts`):
+ * it brightens and fades for as long as the hub shows, or holds still when the player moves less.
+ * Gives back the box it covers, for the hub's garden to keep clear of.
+ */
+function glowBehind(scene: Phaser.Scene, box: Rect): Rect {
+  const glow = nextLevelGlow(box);
+  const halo = scene.add
+    .rectangle(glow.x, glow.y, glow.width, glow.height, PALETTE.litGlow)
+    .setOrigin(0, 0)
+    .setDepth(GLOW_DEPTH);
+  if (movesLess(scene)) {
+    halo.setAlpha(NEXT_GLOW.still);
+    return glow;
+  }
+  halo.setAlpha(NEXT_GLOW.alpha.from);
+  scene.tweens.add({
+    targets: halo,
+    alpha: NEXT_GLOW.alpha.to,
+    duration: NEXT_GLOW.ms,
+    ease: 'Sine.easeInOut',
+    yoyo: true,
+    repeat: -1,
+  });
+  return glow;
+}
+
 /** What a scene can ask of the hub it starts: to open the epilogue over it (after the last garden). */
 export interface HubSceneData {
   readonly epilogue?: boolean;
@@ -61,7 +93,8 @@ export interface HubSceneData {
 
 /**
  * The hub: the levels of the game by chapter, each chapter's name hanging from a signpost, with
- * their stars; levels not yet open are shown greyed out. It stands on the orchard's grass, and each
+ * their stars; levels not yet open are shown greyed out, and a touch on one says it is locked, while
+ * the next level to play glows (GDD §6). It stands on the orchard's grass, and each
  * finished chapter plants its piece of the garden that grows along the bottom (GDD §4.1). Where
  * everything goes is decided by `picture/hubLayout.ts`, and the garden by `picture/hubGarden.ts`.
  */
@@ -89,6 +122,8 @@ export class HubScene extends Phaser.Scene {
     // flowers are never buttons.
     const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const open = unlockedLevels(shown, save, teacherMode);
+    // The level the player is pointed to: it glows, gently (GDD §6).
+    const next = nextLevel(shown, save, teacherMode);
     const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] as string))];
     // The notice a touch on a locked level brings, as a level's refusals show.
     const toast = new ToastView(this, sayAloud(this));
@@ -106,7 +141,7 @@ export class HubScene extends Phaser.Scene {
           const button = new Button(this, 0, 0, text, () => openLevel(this, { levelId: id }));
           // A locked level does not open; a touch on it says so, kindly (GDD §6).
           button.setEnabled(open.has(id)).whenOff(() => toast.show(t('hub.locked')));
-          return { button, room };
+          return { id, button, room };
         }),
     );
     const titles = chapters.map((chapter) => {
@@ -139,9 +174,10 @@ export class HubScene extends Phaser.Scene {
       // The column of the secret flower is kept clear too, flower or not.
       taken.push(cell, sign, boxOf(title));
       placement.buttons.forEach((at, b) => {
-        const { button, room } = itemAt(itemAt(rows, c), b);
+        const { id, button, room } = itemAt(itemAt(rows, c), b);
         button.moveTo(at.x, at.y);
         taken.push({ x: at.x, y: at.y - 1, width: button.width, height: button.height });
+        if (id === next) taken.push(glowBehind(this, button.bounds));
         if (room.spaces === 0) return;
         // The blank cells end where the label does, 2 px inside the button's right edge.
         const left = at.x + button.width - 2 - room.spaces * PIXEL_FONT.advance;
