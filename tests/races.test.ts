@@ -94,6 +94,12 @@ describe('6.5, race II: 16, 32 and 64 sprouts, with doubling bets', () => {
     expect([32, 64].map((n) => runOf(raceAt(races, n), 'bruto').asleep)).toEqual([true, true]);
   });
 
+  it('before any bet, the mentor says what a right one brings: a seed, which sprouts in the garden', () => {
+    const [opening] = level.flow;
+    const lines = opening?.step === 'say' ? opening.lines.map(said) : [];
+    expect(lines.some((line) => /semilla/.test(line ?? ''))).toBe(true);
+  });
+
   it('keeps every race quick: Bruto never has more than a million steps', () => {
     for (const { race } of racesOf(level.flow)) expect(race.budget).toBeLessThanOrEqual(1_000_000);
   });

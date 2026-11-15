@@ -7,7 +7,10 @@
   "vines": [["M", "B"]],
   "goal": { "visible": false },
   "flow": [
-    { "step": "say", "lines": ["ch6.5.sauce.00", "ch6.5.bruto.01", "ch6.5.sauce.02"] },
+    {
+      "step": "say",
+      "lines": ["ch6.5.sauce.00", "ch6.5.sauce.12", "ch6.5.bruto.01", "ch6.5.sauce.02"]
+    },
     { "step": "race", "family": "half", "size": 8, "seed": 4, "budget": 1000000 },
     { "step": "raceBet", "prompt": "ch6.5.sauce.03", "runner": "automaton" },
     { "step": "raceBet", "prompt": "ch6.5.sauce.04", "runner": "bruto" },
