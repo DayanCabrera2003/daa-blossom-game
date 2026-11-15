@@ -1,7 +1,7 @@
 import { size } from '@core/matching/queries';
 import { describe, expect, it } from 'vitest';
 import { automatonLevel, festivalLevel, lightLevel } from '../../tests/support/fixtureLevels';
-import { gardenAtPlay } from './playStart';
+import { gardenAtPlay, gardenBefore } from './playStart';
 
 describe('the garden the play step starts from', () => {
   it('is the start of the level when nothing moves the garden before the play', () => {
@@ -27,5 +27,15 @@ describe('the garden the play step starts from', () => {
     const level = automatonLevel();
     const locked = { ...level, start: { ...level.start, allowed: new Set<never>() } };
     expect(gardenAtPlay(locked)).toBe(locked.start);
+  });
+
+  it("before a later step, holds what the steps before it did: Bruto's broken run (6.3)", () => {
+    const level = automatonLevel();
+    // Step 2 is the recipe to repair: the run without the fold card stopped at 3 lanterns.
+    const broken = gardenBefore(level, 2);
+    expect(size(broken.matching)).toBe(3);
+    expect(broken.declaredDone).toBe(true);
+    expect(gardenBefore(level, 0)).toBe(level.start);
+    expect(gardenBefore(level, level.flow.length)).toEqual(gardenAtPlay(level));
   });
 });
