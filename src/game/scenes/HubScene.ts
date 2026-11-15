@@ -60,9 +60,9 @@ const boxOf = (thing: { x: number; y: number; width: number; height: number }): 
 });
 
 /**
- * Draws the glow of the next level to play under its button's wood `box` (`picture/nextLevelGlow.ts`):
- * it brightens and fades for as long as the hub shows, or holds still when the player moves less.
- * Gives back the box it covers, for the hub's garden to keep clear of.
+ * Draws the glow of the next level to play under its button's wood `box`
+ * (`picture/nextLevelGlow.ts`): it brightens and fades for as long as the hub shows, or holds still
+ * when the player moves less. Gives back the box it covers, for the hub's garden to keep clear of.
  */
 function glowBehind(scene: Phaser.Scene, box: Rect): Rect {
   const glow = nextLevelGlow(box);
@@ -93,10 +93,10 @@ export interface HubSceneData {
 
 /**
  * The hub: the levels of the game by chapter, each chapter's name hanging from a signpost, with
- * their stars; levels not yet open are shown greyed out, and a touch on one says it is locked, while
- * the next level to play glows (GDD §6). It stands on the orchard's grass, and each
- * finished chapter plants its piece of the garden that grows along the bottom (GDD §4.1). Where
- * everything goes is decided by `picture/hubLayout.ts`, and the garden by `picture/hubGarden.ts`.
+ * their stars; levels not yet open are shown greyed out, and a touch on one says it is locked,
+ * while the next level to play glows (GDD §6). It stands on the orchard's grass, and each finished
+ * chapter plants its piece of the garden that grows along the bottom (GDD §4.1). Where everything
+ * goes is decided by `picture/hubLayout.ts`, and the garden by `picture/hubGarden.ts`.
  */
 export class HubScene extends Phaser.Scene {
   constructor() {
