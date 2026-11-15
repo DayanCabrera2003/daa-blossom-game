@@ -77,6 +77,8 @@ function wordsFor(
   const council = isUiUnlocked('council', at)
     ? [
         t('hud.council', { groups: n, stones: n, atLeast: n, dark: n }),
+        t('hud.councilProves', { groups: n, stones: n, atLeast: n, dark: n }),
+        t('hud.councilNoBound', { groups: n, stones: n, dark: n }),
         ...(fog ? [t('hud.councilHidden')] : []),
       ]
     : [];

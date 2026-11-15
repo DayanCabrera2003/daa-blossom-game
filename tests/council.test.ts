@@ -292,6 +292,6 @@ describe('7.5: before the Council', () => {
     const beforeClaim = day.at(-2);
     if (beforeClaim === undefined) throw new Error('no garden before "Terminé"');
     expect(councilCount(level, beforeClaim)).toEqual({ key: 'hud.councilHidden', params: {} });
-    expect(councilCount(level, end)?.key).toBe('hud.council');
+    expect(councilCount(level, end)?.key).toBe('hud.councilProves');
   });
 });

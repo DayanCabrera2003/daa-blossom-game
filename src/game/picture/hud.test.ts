@@ -50,7 +50,7 @@ describe('the picture of the HUD', () => {
     const level = helixLevel();
     const lifted = act(startSession(level, 0), { type: 'liftStone', vertex: 0 }, 0).session;
     expect(hudPicture(lifted, initialPointer('stones'), 0).council).toEqual({
-      key: 'hud.council',
+      key: 'hud.councilProves',
       params: { groups: 3, stones: 1, atLeast: 2, dark: 2 },
     });
   });

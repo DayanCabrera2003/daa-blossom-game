@@ -178,6 +178,8 @@ const UI = {
   'hud.stepLight': [],
   'hud.layer': ['depth'],
   'hud.council': ['groups', 'stones', 'atLeast', 'dark'],
+  'hud.councilProves': ['groups', 'stones', 'atLeast', 'dark'],
+  'hud.councilNoBound': ['groups', 'stones', 'dark'],
   'hud.councilHidden': [],
   'tool.lanterns': [],
   'tool.marks': [],
