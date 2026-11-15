@@ -10,6 +10,7 @@ import { checkLight, type LightProblem } from './lightChecks';
 import { checkFlow, type FlowProblem } from './flowChecks';
 import { checkFlower, type FlowerProblem } from './flowerChecks';
 import { checkHints, type HintProblem } from './hintChecks';
+import { checkHintSuns, type HintSunProblem } from './hintSuns';
 import { isFlowInput } from './flowInput';
 import { sameKindVines, type KindClash } from './kinds';
 import { checkLayout, type LayoutProblem } from './layoutChecks';
@@ -38,6 +39,7 @@ export type IntegrityProblem =
   | FlowProblem
   | FlowerProblem
   | HintProblem
+  | HintSunProblem
   | LayoutProblem
   | NotebookProblem;
 
@@ -107,6 +109,7 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
     ...checkFlow(level),
     ...checkFlower(level),
     ...checkHints(level),
+    ...checkHintSuns(level),
     ...checkNotebook(level),
   );
 
