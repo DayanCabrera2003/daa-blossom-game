@@ -173,6 +173,7 @@ const UI = {
   'hud.redo': [],
   'hud.hint': [],
   'hud.back': [],
+  'leave.confirm': [],
   'hud.help': [],
   'hud.leaveLayer': [],
   'hud.stepLight': [],

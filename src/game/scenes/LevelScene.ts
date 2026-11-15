@@ -40,6 +40,7 @@ import { showVictoryPanel } from '../view/VictoryPanel';
 import type { CounterexampleSceneData } from './CounterexampleScene';
 import { contextOf, type GameContext } from './context';
 import type { HubSceneData } from './HubScene';
+import { LeaveGate } from './level/leaveGate';
 import { LevelCards } from './level/LevelCards';
 import { LevelRenderer } from './level/LevelRenderer';
 import { bindLevelInput } from './level/levelInput';
@@ -87,6 +88,8 @@ export class LevelScene extends Phaser.Scene {
   private winJingle: AssetKey = 'jingle.victory';
   /** Whether the win opened pages of the Codex, told when the victory panel shows. */
   private codexNotice = false;
+  /** The way out of the level: a warning first, the win kept (`level/leaveGate.ts`). */
+  private leaving!: LeaveGate;
   /** Teacher mode's side of the screen: the trace panel's feed and the jumps between levels. */
   private teacher!: TeacherBridge;
   /**
@@ -204,6 +207,7 @@ export class LevelScene extends Phaser.Scene {
       { t, line: this.context.line, say: sayAloud(this) },
     );
     this.cards = new LevelCards(this.context, this.presenter);
+    this.leaving = new LeaveGate(this.context, this.views.toast, screen, level.data.id);
     this.stage = {
       level,
       labels: this.labels,
@@ -320,23 +324,11 @@ export class LevelScene extends Phaser.Scene {
   }
 
   /**
-   * Back the way the screen leads: to the hub, or to the free mode's editor with the design that
-   * was played (through the free mode's gate, which loads the editor if needed); a level left
-   * unwon is logged as left.
+   * Back the way the screen leads, once the way out lets it (`level/leaveGate.ts`): with moves made
+   * it warns first, and a play step already won keeps its win.
    */
   private leave(): void {
-    if (this.controller.session.won === null) {
-      this.log([
-        {
-          kind: 'levelEnd',
-          at: this.context.clock(),
-          level: this.level.data.id,
-          outcome: 'left',
-          stars: null,
-        },
-      ]);
-    }
-    this.goBack();
+    if (this.leaving.mayLeave(this.controller.session)) this.goBack();
   }
 
   /** To where the screen's way back leads. */
