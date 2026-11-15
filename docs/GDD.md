@@ -216,7 +216,7 @@ Criterio: la calidad visual y sonora **no depende de dibujar, componer ni grabar
 | **Pasar el farol** | Un brote solitario toca a un vecino con farol: el vecino se lo da y su antigua pareja queda solitaria. Se puede encadenar a mano. | 1.1 (emerge de las reglas) |
 | **Cadena** | Arrastras desde un brote solitario a lo largo de enredaderas; el juego solo permite alternar (apagada, farol, apagada…). Al soltar en un brote solitario, todos los faroles se deslizan y se enciende uno nuevo (+1). Si sueltas en un brote con farol, se aplica igual pero con ganancia 0 (el juego lo marca en gris). Mientras arrastras, el trazo dice en los capítulos 0–2 lo que ganarías (+1 dorado, 0 en gris, ilegal); desde el capítulo 3 (y en sus jardines secretos) solo dice si es legal, con un único color neutro, y la ganancia se ve al soltar, con la cadena aplicada (el gris de 1.4 sigue). El modo libre conserva la ganancia en el trazo: es una herramienta, no un nivel. | 1.3 |
 | **El día (tiempo)** | Slider en la barra superior: rebobina y reproduce los movimientos propios o los del jardinero mecánico. Su asa es un sol, pero se llama «el día» («Arrastra el día»): «sol» es solo la marca de la búsqueda, y «flor», solo la flor que se pliega. | 0.5 |
-| **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da una semilla, la primera vez (también cada apuesta de las carreras de 6.5; la pregunta informal de 0.4, no). Cada semilla planta una planta en el hub. | 1.6 |
+| **Apuesta** | Antes de ciertos niveles, eliges cuántos faroles crees que se pueden encender. Acertar da una semilla, la primera vez (también cada apuesta de las carreras de 6.5; la pregunta informal de 0.4 y las apuestas informales del Recetario, en 6.3, 6.4 y su jardín secreto, no). Cada semilla planta una planta en el hub. | 1.6 |
 | **Inspeccionar** | En niebla, revela las enredaderas de un brote. Cuesta una gota de agua. | 3.1 |
 | **Marcas sol / luna** | Colocas la marca sobre un brote; el juego solo acepta marcas coherentes con las reglas. | 3.1 |
 | **Espantapájaros** | Colocas uno sobre un brote; cubre todas sus enredaderas. | 3.7 |
@@ -650,7 +650,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 #### 4.7 Flor con tallo largo
 - **Jardín:** `R–a=b–c=d` (tallo de longitud 4) y triángulo `d–e=f–d`, con salida `e–T`, T libre.
 - **Enseña:** la **base** es el pétalo cuyo farol sale de la flor (d, con `c=d`), y el **tallo** es el camino desde el solitario hasta la base. La cadena pasa por el tallo entero, entra por e, sale por la base.
-- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "La base de una flor es…" (a) "…el único pétalo por el que la luz de la flor sale hacia afuera (o el que está a oscuras)" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia (d) "…el pétalo cuyo farol va a otro pétalo de la flor" ✘ (dentro de la flor los faroles van de pétalo a pétalo; la base es la que se queda sin pareja dentro).
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "La base de una flor es…" (a) "…el único pétalo sin pareja dentro de la flor: su farol va hacia fuera, o no tiene" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia (d) "…el pétalo cuyo farol va a otro pétalo de la flor" ✘ (dentro de la flor los faroles van de pétalo a pétalo; la base es la que se queda sin pareja dentro).
 - **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en `d–f` hasta plegar). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 4.8 Dos flores
@@ -661,7 +661,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 #### 4.9 Flor sin cadena
 - **Jardín:** `R–a=b`, triángulo `b–c=d–b`, sin salida. (5 brotes, 2 faroles, R a oscuras.)
 - **Objetivo:** oculto. Valor real: 2 (ya alcanzado).
-- **Enseña:** la búsqueda pliega la flor y **aun así no encuentra cadena**. Termina. Sauce: "Ahora la luz no miente. Pero, ¿por qué te fías de la flor?" El jugador pulsa "Terminé". Se abre la pregunta que responden 4.10 y 4.11.
+- **Enseña:** la búsqueda pliega la flor y **aun así no encuentra cadena**. Termina. Sauce: "Ahora la luz no miente. Pero, ¿por qué te fías de la flor?" Aquí no hay luz que avance sola: Sauce lo dice al empezar ("Hoy buscas tú, con Marcas, como en el Invernadero"). El jugador pulsa "Terminé". Se abre la pregunta que responden 4.10 y 4.11.
 - **Por qué aquí:** el jugador tiene que sentir la duda legítima: la búsqueda con flores dice "no hay cadena", pero antes ya mintió una vez.
 - **Victoria:** pulsar "Terminé". Juntar, separar, pasar el farol y cadena están cerrados: los faroles ya son los máximos, y moverlos solo serviría para que la búsqueda acabe sin encontrarse la flor.
 
@@ -669,7 +669,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 - **Jardín:** `R–a=b`, triángulo `b–c=d–b`, más una salida `c–e` con e libre, pero el jugador **no puede usar Plegar** en este nivel (la flor está "cerrada por hoy").
 - **Enseña:** una cadena de ganancia 0 (aprendida en 1.4) desde R hasta b: `R–a=b` se convierte en `R=a–b`. Mismo número de faroles, pero ahora **la base b está a oscuras**. Desde b, la cadena `b–d=c–e` es directa, sin flor.
 - **Por qué aquí:** es la herramienta de la demostración difícil. Establece que se puede suponer, sin perder nada, que la base de una flor está solitaria.
-- **Guion:** Sauce: "Cuando una flor te estorba, mueve la oscuridad hasta su base. No pierdes nada."
+- **Guion:** Sauce: "Cuando una flor te estorba, prueba a mover los faroles del tallo."
 - **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "Si giro el tallo hasta la base de una flor…" (a) "…no gano ni pierdo, y la oscuridad pasa a la base" ✔ (b) "…gano un farol" ✘ (c) "…pierdo un farol" ✘ (d) "…tengo los mismos faroles, y la base gana uno" ✘ contraejemplo: girar y mirar la base.
 - **Victoria:** 3 faroles sin plegar, con la flor `b, c, d` cerrada (regla `fromBase`, §5.1): toda jugada que mueve faroles por uno de sus pétalos (una cadena, una unión, pasar el farol) tiene que salir de la base b o acabar en ella. La cadena de 4.1, `R–a=b–d=c–e`, se rechaza ("la flor está cerrada por hoy"); girar el tallo `R–a=b` (o pasar el farol de R a a) y luego `b–d=c–e`, sí.
 - **Desbloquea:** Girar el tallo (que es simplemente Cadena de ganancia 0, ahora con nombre).
@@ -683,7 +683,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
   Tras dos o tres intentos, Sauce: "Da igual la que dibujes: siempre le sobra un trozo que llega a la flor. Plegar no esconde cadenas."
   Y el otro sentido ya lo vivió en 4.5–4.7: una cadena en el plegado se despliega siempre. **Plegar no crea ni destruye cadenas.**
 - **Por qué aquí:** cierra la corrección del algoritmo: buscar-con-flores dice "no hay cadena" ⇒ no la hay ⇒ por Berge, es máximo. Es la parte más densa del juego y va guiada, con el jugador manipulando y comprobando, no leyendo.
-- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto; después, "por eso puedes fiarte de la flor"): "Plegar una flor…" (a) "…deja el jardín con cadena justo cuando ya la tenía" ✔ (b) "…no crea cadenas, pero puede esconder alguna" ✘ (el juego repite el reto) (c) "…solo sirve si la flor tiene 3 pétalos" ✘.
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto; después, "por eso puedes fiarte de la flor"): "Plegar una flor…" (a) "…no cambia la respuesta: si había cadena, sigue habiéndola; si no, no aparece ninguna" ✔ (b) "…no crea cadenas, pero puede esconder alguna" ✘ (el juego repite el reto) (c) "…solo sirve si la flor tiene 3 pétalos" ✘.
 - **Victoria:** tres cadenas dibujadas y "cortadas"; elegir la opción correcta.
 - **Desbloquea:** Códex **C6 Bucles impares**, **C7 La flor** y **C8 Lema de la flor**.
 
@@ -744,11 +744,11 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
   1. Marca sol a todos los brotes a oscuras.
   2. Mientras algún sol tenga una enredadera apagada sin mirar (x es el brote del otro lado):
      - si x no tiene marca y tiene farol: marca x luna y a su pareja sol;
-     - si x es sol de otro árbol: **cadena** de un brote a oscuras a otro (pasa los faroles y vuelve al paso 1);
+     - si x es sol de otro árbol: **cadena** de un brote a oscuras a otro (abre las flores que cruza, de fuera hacia dentro, por el lado que alterna; pasa los faroles y vuelve al paso 1);
      - si x es sol del mismo árbol: **pliega la flor**;
      - si x es luna: nada.
   3. Si no queda nada que explorar: **terminaste** (y guarda las lunas para el Consejo).
-  Tarjetas distractoras: "si x es luna, cámbiala a sol", "si hay bucle, pliega", "repite hasta que no queden brotes a oscuras" (falsa: puede quedar alguno para siempre).
+  Tarjetas distractoras, con la misma forma que las buenas (una condición, dos puntos y lo que se hace), para que ninguna se delate por cómo está escrita: "si x es luna: cámbiala a sol", "si x cierra un bucle: pliega la flor", "mientras quede un brote a oscuras: vuelve al paso 1" (falsa: puede quedar alguno para siempre, y la receta no acabaría).
   No hay tarjeta para "x sin marca y a oscuras": tras el paso 1 todo brote a oscuras ya es sol, así que ese caso no ocurre nunca (un test del núcleo lo comprueba en miles de jardines). Por eso «vuelve al paso 1» va en la única tarjeta de cadena, la de otro árbol, y las tarjetas no dicen «raíz».
 - **Por qué aquí:** el jugador ha ejecutado esto decenas de veces. Ahora lo formaliza. Cada tarjeta corresponde a un nivel que ya jugó, y el juego lo recuerda ("esto lo hiciste en 3.4").
 - **Victoria:** receta correcta.
@@ -765,16 +765,18 @@ Nieve fuera, cabaña con chimenea. El jugador ya sabe hacerlo todo con las manos
 - **Por qué este jardín:** la receta busca desde todos los brotes a oscuras a la vez; en jardines como el de 4.6 dos búsquedas se encuentran y rodean la flor sin plegarla, y la receta rota acertaría por casualidad. En el de 5.1 no hay atajo: sin plegar, se queda corta.
 - **Por qué aquí:** el error de una receta se ve como comportamiento, no como texto. Reafirma por qué la flor es imprescindible.
 - **Guion:** Bruto: "¡Menos pasos! ¡Más rápido!" Sauce: "Más rápido para equivocarse."
+- **Apuesta informal** (antes de mirar, tras la propuesta de Bruto): "Antes de mirar: sin la tarjeta de las flores, ¿cuántos faroles encenderá su receta en este jardín?" (a) "Cuatro, como yo" (b) "Menos de cuatro". Es una pregunta sin respuesta mala, como la de 1.8: no da estrella ni semilla, solo obliga a decidir antes de ver al autómata pararse en 3.
 - **Victoria:** receta reparada y 3 faroles.
 
 #### 6.4 La carrera I
 - **Jardín:** jardines de 6, 8 y 10 brotes.
 - **Enseña:** el autómata contra Bruto, que prueba todas las combinaciones. Contadores de pasos. En 6 brotes casi empatan; en 10 Bruto ya va muy por detrás.
+- **Apuesta informal** (antes de la primera carrera): "Antes de mirar: en un jardín de seis brotes, ¿quién crees que llegará antes?" (a) "Mi receta" (b) "Bruto" (c) "Casi a la vez". Sin respuesta mala, sin estrella ni semilla; la carrera la contesta.
 - **Victoria:** completar las tres carreras.
 
 #### 6.5 La carrera II
 - **Jardín:** 16, 32, 64 brotes (vista alejada, brotes en miniatura).
-- **Enseña:** antes de cada carrera, **apuesta**: "si el jardín se duplica, ¿cuántos pasos más dará tu receta?" Tres respuestas: «≈ el doble», «≈ 3 a 5 veces», «Muchísimo más, o se duerme» (la receta mide de ×3,7 a ×4,5). Bruto apuesta solo en la primera ronda ("¿Y Bruto?"); en la siguiente se duerme y ya no hay nada que apostar por él. Las apuestas de la receta siguen en las tres rondas, y en la segunda y la tercera preguntan si se repite lo de antes: que el cociente **se mantenga** al duplicar es la lección. Cuatro apuestas en total. Una gráfica se dibuja punto a punto: la del autómata sube como una curva suave, la de Bruto se sale de la pantalla y Bruto se duerme.
+- **Enseña:** al empezar, Sauce cuenta que cada apuesta acertada da una semilla, y que las semillas brotan en el jardín (§5.1). Antes de cada carrera, **apuesta**: "si el jardín se duplica, ¿cuántos pasos más dará tu receta?" Tres respuestas: «≈ el doble», «≈ 3 a 5 veces», «Muchísimo más, o se duerme» (la receta mide de ×3,7 a ×4,5). Bruto apuesta solo en la primera ronda ("¿Y Bruto?"); en la siguiente se duerme y ya no hay nada que apostar por él. Las apuestas de la receta siguen en las tres rondas, y en la segunda y la tercera preguntan si se repite lo de antes: que el cociente **se mantenga** al duplicar es la lección. Cuatro apuestas en total. Una gráfica se dibuja punto a punto: la del autómata sube como una curva suave, la de Bruto se sale de la pantalla y Bruto se duerme.
 - **Por qué aquí:** medir antes de razonar. La intuición del costo viene de datos que el jugador vio dibujarse.
 - **Victoria:** completar las carreras y las apuestas.
 
@@ -814,7 +816,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 #### 7.4 El regalo de la búsqueda II
 - **Jardín:** el de 4.9 (`R–a=b`, triángulo `b–c=d–b`), más otra componente parecida.
-- **Enseña:** la búsqueda termina sin cadena, con lunas {a, …} y soles {R, flor, …}. Sauce no dice qué levantar ("lo que dejó la búsqueda ya guarda tus piedras"); las pistas llevan hacia las lunas. Al levantar a, quedan {R} (grupo de 1, impar) y {b, c, d} (grupo de 3, impar): 2 grupos impares, 1 piedra, al menos 1 a oscuras. Tienes exactamente 1. **La búsqueda que fracasó te entrega las piedras.** Y siempre pasa: de un sol solo salen lunas (si saliera a otro sol sería cadena o flor, y a un brote sin marca ya lo habrías marcado), así que al quitar las lunas cada sol o flor queda aislado, y una flor siempre es impar.
+- **Enseña:** la búsqueda termina sin cadena, con lunas {a, …} y soles {R, flor, …}. Sauce no dice qué levantar ("lo que dejó la búsqueda ya guarda tus piedras"); las pistas llevan hacia las lunas, y unas piedras que no son las lunas tampoco reciben la respuesta: "Esas piedras todavía no prueban nada. ¿Qué te dejó la búsqueda en cada brote?" Al levantar a, quedan {R} (grupo de 1, impar) y {b, c, d} (grupo de 3, impar): 2 grupos impares, 1 piedra, al menos 1 a oscuras. Tienes exactamente 1. **La búsqueda que fracasó te entrega las piedras.** Y siempre pasa: de un sol solo salen lunas (si saliera a otro sol sería cadena o flor, y a un brote sin marca ya lo habrías marcado), así que al quitar las lunas cada sol o flor queda aislado, y una flor siempre es impar.
 - **Pregunta** (tras la cuenta, antes de la explicación): "Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?" (a) "Solo con los de su flor: de un sol solo se sale a lunas" ✔ (b) "Con soles de otro árbol" ✘ (sería una cadena, y la búsqueda acabó sin ninguna) (c) "Con brotes sin marca" ✘ (la búsqueda los habría marcado). La explicación de Sauce ("la búsqueda que fracasó te entrega las piedras…") es la respuesta al acierto, nunca antes.
 - **Por qué aquí:** cierre del círculo. El algoritmo no solo se rinde: demuestra que tenía razón. Es la misma idea de 3.8 en el caso general.
 - **Victoria:** certificado válido a partir de las lunas.
@@ -822,7 +824,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 #### 7.5 Ante el Consejo
 - **Jardín:** 22 brotes en niebla, con flores anidadas.
-- **Objetivo:** oculto. Para terminar hay que presentar **los faroles y las piedras**, y la cuenta tiene que cuadrar.
+- **Objetivo:** oculto. Para terminar hay que presentar **los faroles y las piedras**, y la cuenta tiene que cuadrar. La búsqueda es a mano, y Sauce lo dice al empezar: "Busca tú, con Marcas."
 - **Victoria:** certificado válido. Los Robles se inclinan. Hub: los robles florecen; amanece.
 - **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Las piedras»."
 
@@ -843,7 +845,7 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 - **Invernadero:** certificar con espantapájaros un jardín donde la búsqueda no llega a todos los brotes (obliga a añadir los no visitados de un lado; enlaza con C5).
 - **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa). Aquí las marcas siguen siendo del jugador: la luz de los niveles de flor (§5.1), en su orden fijo, solo se encuentra con dos de las tres flores y no deja elegir el orden.
 - **Salvaje:** cuatro flores anidadas. La luz busca desde R y se para en cada una hasta plegarla (§5.1).
-- **Invierno:** un jardín donde Bruto gana (muy pequeño) y la pregunta "¿cuándo compensa pensar?".
+- **Invierno:** un jardín donde Bruto gana (muy pequeño) y la pregunta "¿cuándo compensa pensar?". Antes de la primera carrera, una apuesta informal: "Antes de mirar: en un jardín tan pequeño, ¿quién crees que llegará antes?" (a) "Mi receta, como siempre" (b) "Bruto". Sin respuesta mala, sin estrella ni semilla.
 - **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín. Tras el primer certificado, un paso nuevo del guion ("otro certificado") solo termina con piedras distintas de las ya presentadas; repetir uno se contesta con amabilidad.
 
 ---
