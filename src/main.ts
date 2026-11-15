@@ -13,6 +13,7 @@ import type { BusEvents } from '@services/busEvents';
 import { createTranslator } from '@services/i18n';
 import { createLines } from '@services/lines';
 import { playtestRecorder } from '@services/playtestRecorder';
+import { SAVE_KEY } from '@services/save';
 import { createSaveStore } from '@services/saveStore';
 import { loadSettings } from '@services/settings';
 import { requestedGarden } from '@services/startGarden';
@@ -81,6 +82,11 @@ const settings = loadSettings(storage);
 const audio = new AudioBus(game, settings);
 const bus = createBus<BusEvents>();
 const saves = createSaveStore(storage);
+// Another tab of the game wrote its progress (or the storage was cleared): this tab takes it in,
+// so it shows the other's wins at once; its own next write merges them anyway.
+window.addEventListener('storage', (event) => {
+  if (event.key === SAVE_KEY || event.key === null) saves.refresh();
+});
 const teacherMode = isTeacherMode(window.location.search);
 provideContext(game, {
   catalog: levels,
