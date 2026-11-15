@@ -6,6 +6,7 @@ import { itemAt } from '@core/shared/itemAt';
 import type { PlaytestEntry } from '@services/playtestLog';
 import type { Controller, Effect, Step, UiEvent } from './levelController';
 import { garden, type LevelSession } from './levelSession';
+import { nextGrade } from './hints';
 import type { MirrorCheck } from './mirrorChallenge';
 import type { Refusal } from './refusal';
 
@@ -110,7 +111,8 @@ export function playtestEntries(
   for (const effect of step.effects) {
     switch (effect.kind) {
       case 'hint':
-        entries.push({ kind: 'hint', at, level, grade: after.hints.opened });
+        // The grade the hint opened at, even when the mentor's step it brings lit a chain.
+        entries.push({ kind: 'hint', at, level, grade: nextGrade(before.session.hints) });
         break;
       case 'rejected':
         entries.push({

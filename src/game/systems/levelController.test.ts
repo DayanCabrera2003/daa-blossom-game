@@ -166,9 +166,11 @@ describe('the level controller', () => {
     expect(shown[2]?.map((effect) => effect.kind)).toEqual(['hint', 'animate']);
     expect(controller.highlight).toEqual([0, 1, 2, 4]);
     expect(garden(controller.session).search?.label[0]).toBe('outer');
-    // Asked for at once, a hint opens unoffered; once the three grades are open, nothing more.
+    // Asked for at once, a hint opens unoffered; the third grade repeats: the mentor's next step.
     expect(handle(startController(festival, 0), { kind: 'hint' }, 1).effects).toHaveLength(1);
-    expect(handle(controller, { kind: 'hint' }, 4 * HINT_DELAY_MS).effects).toEqual([]);
+    const again = handle(controller, { kind: 'hint' }, 4 * HINT_DELAY_MS);
+    expect(again.effects.map((effect) => effect.kind)).toEqual(['hint', 'animate']);
+    expect(garden(again.controller.session).search?.label[1]).toBe('inner');
   });
 
   it('the next accepted move puts the glow out', () => {

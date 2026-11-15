@@ -39,7 +39,6 @@ import {
   afterAccepted,
   afterMoved,
   afterRejected,
-  hasHintsLeft,
   isHintOffered,
   openHint,
   startHints,
@@ -403,11 +402,10 @@ const hintsNow = (session: LevelSession) => hintsAt(session.level, session.flow.
 const takesHints = (session: LevelSession): boolean => hintsNow(session) !== null;
 
 /**
- * Whether the hint button is at hand now (GDD §5.3): in the steps that take hints, while some grade
- * is still closed, offered or not.
+ * Whether the hint button is at hand now (GDD §5.3): in the steps that take hints, offered or not;
+ * the third grade repeats, so it never runs out.
  */
-export const canAskHint = (session: LevelSession): boolean =>
-  takesHints(session) && hasHintsLeft(session.hints);
+export const canAskHint = takesHints;
 
 /** Whether a hint is on offer now, which makes the button glow: only in the steps that take them. */
 export const isHintAvailable = (session: LevelSession, now: number): boolean =>
@@ -417,8 +415,7 @@ export const isHintAvailable = (session: LevelSession, now: number): boolean =>
  * Opens the hint on offer: the next grade, with the level's own line and sprouts when it has them,
  * and at grade 3 the mentor's step for the garden as it is now, under a question the right option,
  * in the flower challenge a chain to draw, the vine of the conflict to point at, or in the recipe
- * the right card the mentor places. Null outside the steps that take hints, or once all three
- * grades are open.
+ * the right card the mentor places. Null outside the steps that take hints.
  */
 export function askHint(
   session: LevelSession,
@@ -429,7 +426,6 @@ export function askHint(
   if (current === null || written === null) return null;
   // Asked for, the hint opens whether it was on offer or not.
   const opened = openHint(session.hints, now);
-  if (opened === null) return null;
   const { level } = session;
   const { victory } = level.data;
   // The mentor's step leads to the victory of the play step; other steps have no move to give.
