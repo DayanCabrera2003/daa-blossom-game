@@ -421,7 +421,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 3.
 - **Enseña:** la reacción en cadena de pases: A roba a B, C queda solo, C roba a D, E queda solo, E junta con F. Tres movimientos, un farol nuevo.
 - **Por qué aquí:** primer nivel que empieza con faroles ya puestos. Todo el algoritmo trabaja así: mejorar una noche ya empezada.
-- **Guion:** Sauce (al terminar, rebobinando con los pases): "Mira otra forma de verlo: uno, dos, tres pases, y al final había sitio para uno más. Eso es una **cadena**." Como en 1.1, vale lo haya hecho el jugador así o no.
+- **Guion:** Sauce (al terminar, rebobinando con los pases): "Mira otra forma de verlo: dos pases y un farol nuevo, y al final había sitio para uno más. Eso es una **cadena**." Como en 1.1, vale lo haya hecho el jugador así o no.
 - **Pistas:** (1) "¿Quién está a oscuras? ¿Quién tiene el farol más cercano?" (2) A brilla. (3) el mentor hace el primer pase.
 - **Victoria:** 3 faroles.
 
@@ -441,7 +441,7 @@ Música ligera. Los brotes ya tienen nombres y caritas expresivas. Aquí nace la
 - **Objetivo:** visible, 4 (hay 3: B=C, D=E y F=G).
 - **Enseña:** una cadena que termina en un brote con farol y sin salida no gana nada, solo mueve la oscuridad. El jugador la prueba, el juego la aplica con **ganancia 0** en gris (A con luz, E sin ella). Debe deshacer y encontrar la rama 2.
 - **Por qué aquí:** fija la condición "empieza y termina en solitario". Además establece que las cadenas de ganancia 0 son legales, lo que hará falta en 4.10 (girar el tallo).
-- **Guion:** Sauce: "Eli se quedó sin luz para que Ana la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras."
+- **Guion:** Sauce: "Alguien se quedó sin luz para que otro la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras."
 - **Pistas:** (1) "¿La cadena terminó en alguien que ya tenía farol?" (2) H brilla. (3) —
 - **Victoria:** 4 faroles.
 
@@ -705,7 +705,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 - **Por qué aquí:** la flor plegada es un brote como cualquier otro y puede formar parte de otro bucle impar. Y al desplegar, la flor interior se atraviesa por un lado que depende de por dónde se entra y se sale.
 - **Guion:** Sauce: "Una flor es un brote más. Y los brotes forman bucles."
 - **La luz:** mira primero desde R, así que llega a h por `R–h` (h luna, g sol) y cierra F2 en `c–g`: la misma flor F2, encontrada por el otro lado.
-- **Pistas:** (1) "¿Quién es sol dos veces?" (2) brilla el bucle grande (R, a, la flor pequeña, g, h): "La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?" (3) el mentor da el siguiente paso.
+- **Pistas:** (1) "La flor pequeña ya brilla como un sol. ¿Toca a otro sol?" (2) brilla el bucle grande (R, a, la flor pequeña, g, h): "La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?" (3) el mentor da el siguiente paso.
 - **Victoria:** cadena aplicada, 4 faroles: la que encontró la luz desde R, que se para en `d–b` y luego en `c–g` hasta que el jugador pliega. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.2 Capas

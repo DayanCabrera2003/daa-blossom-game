@@ -96,7 +96,7 @@ El papel del observador es el del playtest A: sin tocar ni señalar, sin pistas,
 
 ### Capítulo 5 (5.1–5.5)
 
-- 5.1: cuando la luz se para por segunda vez, si ve que la flor plegada forma parte de otro bucle impar ("¿quién es sol dos veces?") y la pliega sin la pista 3 (rechazos `lightAtFlower` seguidos indican que no).
+- 5.1: cuando la luz se para por segunda vez, si ve que la flor plegada forma parte de otro bucle impar ("La flor pequeña ya brilla como un sol. ¿Toca a otro sol?") y la pliega sin la pista 3 (rechazos `lightAtFlower` seguidos indican que no).
 - 5.1–5.3: al levantar la cadena, si abre las flores de fuera hacia dentro y arrastra solo el tramo de dentro; los rechazos `invalidPath.*` de `chain` tras desplegar son lados equivocados.
 - 5.2: si usa las capas para entrar y salir de las flores, o si las ignora y se pierde. **La pregunta del final** ("¿Por qué no una de las de dentro?"): qué opción elige primero y qué dice. Si responde algo como "porque la pequeña no se ve", es una restricción de la pantalla, no la idea (la flor plegada es un brote más).
 - 5.3: si prueba primero el lado corto de la flor interior; cómo lee el Cuaderno ("Al desplegar una flor que está dentro de otra…"), que ahora llega antes del resumen de Sauce.
