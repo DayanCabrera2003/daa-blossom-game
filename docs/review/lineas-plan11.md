@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.1.0, con su texto de antes y de después. Las frases del Plan 11 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-27 líneas de diálogo y 14 textos de interfaz distintos de la versión 1.1.0.
+27 líneas de diálogo y 15 textos de interfaz distintos de la versión 1.1.0.
 
 ### 1.2
 
@@ -155,5 +155,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Apuesta acertada
 - [ ] `title.start` · nueva
   - Después: Toca para empezar
+- [ ] `tutorial.question.body` · cambiada
+  - Antes: Cuando el jardín te pregunte algo, toca la respuesta que elijas. Si dudas, pulsa Pista.
+  - Después: Cuando el jardín te pregunte algo, toca la respuesta que elijas. Equivocarse no cuesta nada.
 - [ ] `victory.stars` · retirada
   - Antes: Estrellas: {count}

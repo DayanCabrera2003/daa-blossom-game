@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-167 líneas de diálogo y 68 textos de interfaz distintos de la versión 1.0.1.
+167 líneas de diálogo y 69 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
@@ -700,6 +700,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `tutorial.sun.body` · cambiada
   - Antes: Arrastra el sol de arriba a la derecha para ver cómo estaba tu jardín antes. Llévalo hasta el final para volver al presente.
   - Después: Arrastra el día, arriba a la derecha, para ver cómo estaba tu jardín antes. Llévalo hasta el final para volver al presente.
+- [ ] `tutorial.question.body` · cambiada
+  - Antes: Cuando el jardín te pregunte algo, toca la respuesta que elijas. Si dudas, pulsa Pista.
+  - Después: Cuando el jardín te pregunte algo, toca la respuesta que elijas. Equivocarse no cuesta nada.
 - [ ] `tutorial.present.title` · nueva
   - Después: Presentar
 - [ ] `tutorial.present.body` · nueva
