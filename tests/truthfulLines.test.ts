@@ -1,4 +1,5 @@
 import lines from '@content/es/lines.json';
+import strings from '@content/es/strings.json';
 import { checkVertexCover } from '@core/certificates/vertexCover';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
@@ -11,6 +12,7 @@ import { itemAt } from '@core/shared/itemAt';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { gardenAtPlay } from '@levels/playStart';
+import { hintsAt } from '@levels/stepHints';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -149,5 +151,15 @@ describe('lines that tell the truth about their garden', () => {
     expect(folds).toHaveLength(3);
     expect(highlight.has(last.from) && highlight.has(last.to)).toBe(true);
     expect(lineOf('ch5.2.sauce.02')).toBe(lineOf('ch5.6.sauce.02'));
+  });
+
+  it('the card of questions invites no hint: most questions offer none, and a mistake costs nothing', () => {
+    const silent = catalog().flatMap((level) =>
+      level.flow.filter((step, i) => step.step === 'ask' && hintsAt(level, i) === null),
+    );
+    expect(silent.length).toBeGreaterThan(0);
+    const body = (strings as Readonly<Record<string, string>>)['tutorial.question.body'];
+    expect(body).not.toContain('Pista');
+    expect(body).toContain('Equivocarse no cuesta nada');
   });
 });
