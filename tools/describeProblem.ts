@@ -27,6 +27,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `solution step ${problem.step + 1} uses "${problem.action}", which this level does not allow`;
     case 'solutionRefused':
       return `solution step ${problem.step + 1} is refused by the rules: ${withDetails(problem.reason)}`;
+    case 'refusedMoveAccepted':
+      return `solution step ${problem.step + 1} is written as refused, but the rules accept it`;
     case 'solutionFallsShort':
       return 'the solution is accepted but does not win the level';
     case 'solutionOverWater':
@@ -171,6 +173,8 @@ export function describeWalkthroughProblem(problem: WalkthroughProblem): string 
       return `walkthrough entry ${problem.entry + 1}: the gestures make a different move`;
     case 'inputIgnored':
       return `walkthrough entry ${problem.entry + 1} is an input the script is not waiting for`;
+    case 'moveNotRefused':
+      return `walkthrough entry ${problem.entry + 1} is written as refused, but the rules take it`;
     case 'unfinished':
       return `the walkthrough ends with the script still waiting at step ${problem.step + 1}`;
   }

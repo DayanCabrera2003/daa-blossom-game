@@ -17,11 +17,11 @@ import { COUNCIL, councilLevel, tangleLevel } from '../../../tests/support/secre
 import { garden } from './levelSession';
 import { playWalkthrough } from './walkthrough';
 
-/** A path A–B–C with the script `flow` and the walkthrough `solution`. */
-const scripted = (flow: unknown[], solution: unknown[]): Level => {
+/** A path A–B–C with the script `flow` and the walkthrough `solution`, as level `id`. */
+const scripted = (flow: unknown[], solution: unknown[], id = '2.9'): Level => {
   const plays = flow.some((step) => (step as { step: string }).step === 'play');
   const loaded = loadLevel({
-    id: '2.9',
+    id,
     sprouts: [
       { label: 'A', x: 100, y: 100 },
       { label: 'B', x: 200, y: 100 },
@@ -221,6 +221,27 @@ describe('playing the reference walkthrough of a level without a scene', () => {
     const level = scripted([question, { step: 'play' }], [{ type: 'join', u: 'A', v: 'B' }]);
     const played = playWalkthrough(level);
     expect(played.problem).toEqual({ code: 'moveRefused', entry: 0, reason: { code: 'notNow' } });
+  });
+
+  it('a play step that waits for a refusal ends only once the walkthrough tries that move', () => {
+    const trying = [{ step: 'play', until: { refused: 'alreadyLit' } }, question];
+    const lit = { type: 'join', u: 'A', v: 'B' };
+    const second = { type: 'refusedMove', move: { type: 'join', u: 'C', v: 'B' } };
+    // In the prologue, C and then the lit B is a second lantern, which the rules refuse.
+    const prologue = (solution: unknown[]) => scripted(trying, solution, '0.2');
+    expect(playWalkthrough(prologue([lit])).problem).toEqual({
+      code: 'unfinished',
+      step: 0,
+    });
+    const tried = playWalkthrough(prologue([lit, second, { type: 'answer', option: 1 }]));
+    expect(tried.problem).toBeNull();
+    expect(size(garden(tried.controller.session).matching)).toBe(1);
+    // A move written as refused that the rules accept is a problem.
+    const accepted = { type: 'refusedMove', move: { type: 'join', u: 'A', v: 'B' } };
+    expect(playWalkthrough(prologue([accepted])).problem).toEqual({
+      code: 'moveNotRefused',
+      entry: 0,
+    });
   });
 
   it('an input the script does not wait for is reported', () => {

@@ -96,6 +96,22 @@ describe('level integrity', () => {
     });
   });
 
+  it('a move written as refused must be refused by the rules, and leaves the garden alone', () => {
+    const tried = {
+      ...trap,
+      solution: [...trap.solution, { type: 'refusedMove', move: { type: 'join', u: 'B', v: 'C' } }],
+    };
+    expect(problemsOf(tried)).toEqual([]);
+    const accepted = {
+      ...trap,
+      solution: [
+        { type: 'refusedMove', move: { type: 'join', u: 'A', v: 'B' } },
+        { type: 'join', u: 'C', v: 'D' },
+      ],
+    };
+    expect(problemsOf(accepted)).toContainEqual({ code: 'refusedMoveAccepted', step: 0 });
+  });
+
   it('the solution must actually win', () => {
     const short = { ...trap, solution: [{ type: 'join', u: 'B', v: 'C' }] };
     expect(problemsOf(short)).toContainEqual({ code: 'solutionFallsShort' });

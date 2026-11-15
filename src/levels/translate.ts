@@ -116,7 +116,7 @@ export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, L
 
 /**
  * Translates one script input of a walkthrough: the sprout touched, the vine pointed at, the
- * reflection or the chain drawn.
+ * reflection or the chain drawn, the move tried for the rules to refuse.
  */
 function toFlowInput(labels: Labels, input: LevelFlowInput): Result<FlowInput, LabelError> {
   switch (input.type) {
@@ -137,6 +137,10 @@ function toFlowInput(labels: Labels, input: LevelFlowInput): Result<FlowInput, L
     case 'drawMirror': {
       const lanterns = toEdges(labels, input.lanterns);
       return lanterns.ok ? ok({ type: 'drawMirror', lanterns: lanterns.value }) : lanterns;
+    }
+    case 'refusedMove': {
+      const move = toAction(labels, input.move);
+      return move.ok ? ok({ type: 'refusedMove', move: move.value }) : move;
     }
     default:
       return ok(input);

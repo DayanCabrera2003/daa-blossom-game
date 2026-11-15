@@ -22,7 +22,8 @@ import type { Refusal } from './refusal';
  * the touches and drags a player would make where the sprouts really are, every script input as
  * the interface event the scene would send; a reflection of the mirror challenge as touches on its
  * vines, a chain of the flower challenge as a drag through its sprouts, a recipe as touches on its
- * cards and "Comprobar", the answer of a doubling bet as the option of its panel, and the end of
+ * cards and "Comprobar", the answer of a doubling bet as the option of its panel, a move written
+ * as refused as the gestures that try it, and the end of
  * the light's own search, of the automaton's run or of a race as the scene reports it, with no
  * entry of its own. A level whose walkthrough does not
  * finish its script never reaches the browser (plan 03, §0): the playability test and
@@ -33,6 +34,8 @@ import type { Refusal } from './refusal';
 export type WalkthroughProblem =
   /** A move was refused (by the rules, or because the script was not playing). */
   | { readonly code: 'moveRefused'; readonly entry: number; readonly reason: Refusal }
+  /** A move written as refused (a second lantern in 0.2) was taken. */
+  | { readonly code: 'moveNotRefused'; readonly entry: number }
   /** No gesture on the canvas makes this move (a sprout hides a vine, for instance). */
   | { readonly code: 'gestureImpossible'; readonly entry: number; readonly message: string }
   /** The gestures made a different move from the one written. */
@@ -70,7 +73,10 @@ function gestureEvents(gesture: Gesture): UiEvent[] {
  * really are instead (`drawEvents`), and so is a vine pointed at (`vineEvents`).
  */
 function inputEvents(
-  input: Exclude<FlowInput, { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' | 'recipe' }>,
+  input: Exclude<
+    FlowInput,
+    { readonly type: 'drawMirror' | 'pickVine' | 'drawChain' | 'recipe' | 'refusedMove' }
+  >,
 ): UiEvent[] {
   switch (input.type) {
     case 'answer':
@@ -242,6 +248,26 @@ function playDrawing(
   };
 }
 
+/** Plays a move written as refused with its gestures: the rules must refuse it. */
+function playRefused(
+  controller: Controller,
+  move: Action,
+  index: number,
+  now: number,
+): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
+  const events = moveEvents(controller, move);
+  if (typeof events === 'string') {
+    return {
+      controller,
+      effects: [],
+      problem: { code: 'gestureImpossible', entry: index, message: events },
+    };
+  }
+  const played = feed(controller, events, now);
+  const refused = played.effects.some((effect) => effect.kind === 'rejected');
+  return { ...played, problem: refused ? null : { code: 'moveNotRefused', entry: index } };
+}
+
 /** Plays one entry; returns where it leaves the controller, or the problem it ran into. */
 function playEntry(
   controller: Controller,
@@ -252,6 +278,7 @@ function playEntry(
   if (isFlowInput(entry)) {
     if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
     if (entry.type === 'drawChain') return playChain(controller, entry.path, index, now);
+    if (entry.type === 'refusedMove') return playRefused(controller, entry.move, index, now);
     const events =
       entry.type === 'pickVine'
         ? vineEvents(controller, entry.u, entry.v)

@@ -26,6 +26,12 @@ describe('the inputs a walkthrough gives the script', () => {
     }
   });
 
+  it('writes a move the rules refuse as the move itself, by names', () => {
+    expect(accepts({ type: 'refusedMove', move: { type: 'join', u: 'C', v: 'B' } })).toBe(true);
+    expect(accepts({ type: 'refusedMove', move: { type: 'answer', option: 0 } })).toBe(false);
+    expect(accepts({ type: 'refusedMove' })).toBe(false);
+  });
+
   it('answers a doubling bet with one of its three answers, never a number', () => {
     expect(accepts({ type: 'raceBet', answer: 'farMore' })).toBe(true);
     expect(accepts({ type: 'raceBet', answer: 2 })).toBe(false);

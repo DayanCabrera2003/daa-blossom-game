@@ -304,6 +304,10 @@ function playInput(
         return { kind: 'bad', why: 'badChain' };
       frame({ kind: 'drag', path: entry.path });
       return null;
+    case 'refusedMove':
+      // A move tried for the rules to refuse is shown being tried, and changes nothing.
+      frame(gestureOf(state, entry.move, 'done'));
+      return null;
     default: {
       const outcome = applyAction(state, entry);
       if (!outcome.ok) return { kind: 'refused', reason: outcome.reason };

@@ -191,6 +191,19 @@ describe('the demo of a mechanic card', () => {
     ]);
   });
 
+  it('a move tried for the rules to refuse shows its touches, and changes no lantern', () => {
+    const demo = built({
+      ...path3,
+      lanterns: [['a', 'b']],
+      steps: [{ type: 'refusedMove', move: { type: 'join', u: 'c', v: 'b' } }],
+    });
+    expect(demo.frames.map((frame) => frame.gesture)).toEqual([
+      { kind: 'touch', sprouts: [2, 1] },
+      { kind: 'none' },
+    ]);
+    expect(lit(demo, 1, 2)).toBe(false);
+  });
+
   it('a reflection shows its silver lanterns; a drawn one shows from the frame after it', () => {
     const shown = built({ ...path3, mirror: [['a', 'b']], steps: [{ type: 'tapGarden' }] });
     expect(itemAt(shown.frames, 0).silver).toEqual([[0, 1]]);

@@ -29,6 +29,8 @@ export type IntegrityProblem =
   | { readonly code: 'solutionLocked'; readonly step: number; readonly action: ActionType }
   | { readonly code: 'solutionRefused'; readonly step: number; readonly reason: RejectReason }
   | { readonly code: 'solutionFallsShort' }
+  /** A move the solution writes as refused (a second lantern in 0.2) is accepted by the rules. */
+  | { readonly code: 'refusedMoveAccepted'; readonly step: number }
   | { readonly code: 'solutionOverWater'; readonly used: number; readonly budget: number }
   | { readonly code: 'waterAndBet' }
   | { readonly code: 'foreignLine'; readonly line: string }
@@ -72,7 +74,11 @@ export function checkIntegrity(level: Level): IntegrityProblem[] {
   let state = gardenAtPlay(level);
   let replayed = true;
   for (const [step, action] of level.walkthrough.entries()) {
-    // Script inputs never change the lanterns; steps are numbered as the file writes them.
+    // Script inputs never change the lanterns; steps are numbered as the file writes them. A move
+    // written as refused must be refused where it is tried.
+    if (action.type === 'refusedMove' && applyAction(state, action.move).ok) {
+      problems.push({ code: 'refusedMoveAccepted', step });
+    }
     if (isFlowInput(action)) continue;
     if (!start.allowed.has(action.type)) {
       problems.push({ code: 'solutionLocked', step, action: action.type });

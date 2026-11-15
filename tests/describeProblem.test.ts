@@ -20,6 +20,9 @@ describe('readable level problems', () => {
         reason: { code: 'notAdjacent', u: 0, v: 2 },
       }),
     ).toBe('solution step 2 is refused by the rules: notAdjacent {"u":0,"v":2}');
+    expect(describeProblem({ code: 'refusedMoveAccepted', step: 2 })).toBe(
+      'solution step 3 is written as refused, but the rules accept it',
+    );
     expect(
       describeProblem({
         code: 'demoRefused',
@@ -214,6 +217,9 @@ describe('readable level problems', () => {
     );
     expect(describeWalkthroughProblem({ code: 'inputIgnored', entry: 1 })).toBe(
       'walkthrough entry 2 is an input the script is not waiting for',
+    );
+    expect(describeWalkthroughProblem({ code: 'moveNotRefused', entry: 1 })).toBe(
+      'walkthrough entry 2 is written as refused, but the rules take it',
     );
     expect(describeWalkthroughProblem({ code: 'unfinished', step: 3 })).toBe(
       'the walkthrough ends with the script still waiting at step 4',

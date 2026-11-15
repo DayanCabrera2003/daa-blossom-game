@@ -1,14 +1,16 @@
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { Edge, VertexId } from '@core/graph/types';
+import type { Action } from '@core/rules/actions';
 import { RECIPE_CARD_IDS } from '@core/recipe/recipe';
 import { z } from 'zod';
-import { label, vine } from './fields';
+import { label, levelAction, vine } from './fields';
 
 /**
  * What a player gives the script of a level besides garden moves: answers, bets, the sun, touches
  * (on the garden, a sprout or a vine), the mirror challenge, the chains of the flower challenge,
- * the recipe cards and the answers of doubling bets. A level's reference walkthrough (`solution`) writes them between its
- * moves, so a test can play the whole level, script included. None of these changes the lanterns.
+ * the recipe cards, the answers of doubling bets and a move tried for the rules to refuse. A
+ * level's reference walkthrough (`solution`) writes them between its moves, so a test can play the
+ * whole level, script included. None of these changes the lanterns.
  */
 
 /** The inputs as a level file writes them, sprouts by name. */
@@ -38,6 +40,11 @@ export const flowInputOptions = [
   z.strictObject({ type: z.literal('recipe'), cards: z.array(z.enum(RECIPE_CARD_IDS)) }),
   /** The answer picked in a `raceBet` step: how many more steps a doubled garden takes. */
   z.strictObject({ type: z.literal('raceBet'), answer: z.enum(DOUBLING_ANSWERS) }),
+  /**
+   * A move tried for the rules to refuse (0.2: a second lantern), which a play step may wait for;
+   * it changes nothing in the garden.
+   */
+  z.strictObject({ type: z.literal('refusedMove'), move: levelAction }),
 ] as const;
 
 /** Every input type; none of them is the type of a player action. */
@@ -52,8 +59,13 @@ export type LevelFlowInput = z.infer<(typeof flowInputOptions)[number]>;
 export type FlowInput =
   | Exclude<
       LevelFlowInput,
-      { type: 'tapSprout' } | { type: 'drawMirror' } | { type: 'pickVine' } | { type: 'drawChain' }
+      | { type: 'tapSprout' }
+      | { type: 'drawMirror' }
+      | { type: 'pickVine' }
+      | { type: 'drawChain' }
+      | { type: 'refusedMove' }
     >
+  | { readonly type: 'refusedMove'; readonly move: Action }
   | { readonly type: 'tapSprout'; readonly vertex: VertexId }
   | { readonly type: 'drawChain'; readonly path: readonly VertexId[] }
   | { readonly type: 'pickVine'; readonly u: VertexId; readonly v: VertexId }
