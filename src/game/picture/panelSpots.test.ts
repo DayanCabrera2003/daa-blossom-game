@@ -11,6 +11,7 @@ import {
   QUESTION_WIDTHS,
   spotsIn,
   toastSpots,
+  victorySpots,
 } from './panelSpots';
 import type { Rect } from './boxDistance';
 import { LAYOUT } from '../view/layout';
@@ -89,6 +90,21 @@ describe('the spots a panel may take', () => {
       expect(spot.height).toBe(box.height);
       expect(spot.y).toBeGreaterThan(LAYOUT.garden.y);
       expect(spot.y).toBeLessThanOrEqual(box.y);
+    }
+  });
+
+  it('the victory panel sits in the middle first, then anywhere between the bars', () => {
+    const home = { x: 140, y: 100, width: 200, height: 70 };
+    const spots = victorySpots(home);
+    expect(spots[0]).toEqual(home);
+    expect(spots.length).toBeGreaterThan(9);
+    for (const spot of spots) {
+      expect(spot.width).toBe(home.width);
+      expect(spot.height).toBe(home.height);
+      expect(spot.y).toBeGreaterThan(LAYOUT.garden.y);
+      expect(spot.y + spot.height).toBeLessThan(LAYOUT.toolbarY);
+      expect(spot.x).toBeGreaterThanOrEqual(0);
+      expect(spot.x + spot.width).toBeLessThanOrEqual(480);
     }
   });
 

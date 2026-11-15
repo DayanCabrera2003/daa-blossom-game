@@ -113,6 +113,21 @@ export function dialogueSpots(): Rect[] {
 }
 
 /**
+ * The spots of the victory panel whose box in the middle of the canvas is `home`: there first, as
+ * always, then anywhere between the top bar and the toolbar, to sit clear of the garden just lit.
+ */
+export function victorySpots(home: Rect): Rect[] {
+  const top = LAYOUT.garden.y + 1;
+  const room = {
+    x: SIDE,
+    y: top,
+    width: CANVAS_WIDTH - 2 * SIDE,
+    height: LAYOUT.toolbarY - 1 - top,
+  };
+  return [home, ...spotsIn(room, home.width, home.height)];
+}
+
+/**
  * The spots of a toast whose panel `home` ends at the bottom of its room: there first, as always,
  * then anywhere between the top bar and that bottom.
  */
