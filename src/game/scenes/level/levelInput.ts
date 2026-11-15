@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import { escapeAction } from '../../input/escape';
 import { NO_PRESSES, pressDown, pressHeld, pressUp } from '../../input/gardenPresses';
 import { historyKey, keyAction, pressOf } from '../../input/keyBindings';
+import { pressTarget } from '../../input/pressTarget';
 import type { Point } from '../../input/target';
 import type { UiEvent } from '../../systems/levelController';
 import { heldByPanel } from '../../view/PanelGrip';
@@ -32,7 +33,10 @@ export interface LevelInputTarget {
   readonly answerKey: (key: string) => void;
   /** Whether the dialogue box is open: it takes the touches meant for it. */
   readonly dialogueOpen: () => boolean;
-  /** Enter or Space with nothing in the keyboard's focus: the dialogue moves on, as a touch does. */
+  /**
+   * Enter or Space with nothing in the keyboard's focus, or a touch anywhere off the buttons and
+   * panels while the box is open: the dialogue moves on, as a touch on it does.
+   */
   readonly advanceDialogue: () => void;
   /** Whether a chain is being drawn: only then does a drag move it on. */
   readonly drawing: () => boolean;
@@ -41,7 +45,8 @@ export interface LevelInputTarget {
 /**
  * Listens to the pointer and the keys of the level screen. Presses on the garden go to the
  * controller, and the release that ends each of them (let go outside the screen, it drops the
- * chain); touches on buttons and on the dialogue stay theirs. The keys are the table's
+ * chain); touches on buttons and on the dialogue stay theirs, and while the dialogue is open a touch
+ * anywhere else moves it on instead of reaching the garden. The keys are the table's
  * (`input/keyBindings.ts`): the keyboard's focus walks the buttons, the tools, the sun and the
  * panels, and Enter or Space press what it is on, or move the dialogue on; a digit answers the
  * question open; Ctrl/Cmd+Z undoes and Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redo; Escape closes the
@@ -51,9 +56,15 @@ export interface LevelInputTarget {
 export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): void => {
   const { dispatch } = target;
   const at = (pointer: Phaser.Input.Pointer): Point => ({ x: pointer.worldX, y: pointer.worldY });
-  // A press that grabbed a panel's frame is a drag of the panel, never a move in the garden.
+  // Who hears a press: the garden, or the dialogue box while it is open (`input/pressTarget.ts`).
+  const heard = (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) =>
+    pressTarget({
+      covered: over.length > 0,
+      grabbed: heldByPanel(scene, pointer),
+      dialogueOpen: target.dialogueOpen(),
+    });
   const free = (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) =>
-    over.length === 0 && !target.dialogueOpen() && !heldByPanel(scene, pointer);
+    heard(pointer, over) === 'garden';
   // The buttons' grown touch zones keep off the garden, whose touches are the player's moves.
   keepGardenClear(scene);
   // Only the release of a press the garden heard reaches it (`input/gardenPresses.ts`).
@@ -61,7 +72,10 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
   scene.input.on(
     'pointerdown',
     (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => {
-      const down = pressDown(presses, pointer.id, free(pointer, over));
+      const to = heard(pointer, over);
+      // A touch anywhere moves the dialogue on, and never reaches the garden under it.
+      if (to === 'dialogue') target.advanceDialogue();
+      const down = pressDown(presses, pointer.id, to === 'garden');
       presses = down.presses;
       if (down.send) dispatch({ kind: 'press', point: at(pointer) });
     },

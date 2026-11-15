@@ -33,11 +33,13 @@ const pointer = (id: number, x: number, y: number, isDown = true) => ({
 
 let sent: UiEvent[];
 let dialogueOpen: boolean;
+let advanced: number;
 let fire: (name: string, pointer: object) => void;
 
 beforeEach(() => {
   sent = [];
   dialogueOpen = false;
+  advanced = 0;
   const fake = fakeScene();
   fire = fake.fire;
   const target: LevelInputTarget = {
@@ -53,6 +55,7 @@ beforeEach(() => {
     answerKey: () => undefined,
     dialogueOpen: () => dialogueOpen,
     advanceDialogue: () => {
+      advanced += 1;
       dialogueOpen = false;
     },
     drawing: () => true,
@@ -80,6 +83,19 @@ describe('the pointer of the level screen', () => {
     fire('pointermove', pointer(1, 12, 20));
     fire('pointerup', pointer(1, 10, 20, false));
     expect(sent).toEqual([]);
+  });
+
+  it('moves the dialogue on with a touch anywhere on the garden, which stays untouched', () => {
+    dialogueOpen = true;
+    fire('pointerdown', pointer(1, 200, 60));
+    fire('pointerup', pointer(1, 200, 60, false));
+    expect(advanced).toBe(1);
+    expect(sent).toEqual([]);
+  });
+
+  it('never moves the dialogue on from a touch on the garden while it is closed', () => {
+    fire('pointerdown', pointer(1, 200, 60));
+    expect(advanced).toBe(0);
   });
 
   it('pairs each release with the press of the same pointer', () => {
