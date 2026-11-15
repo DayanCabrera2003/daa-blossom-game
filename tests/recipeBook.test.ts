@@ -64,12 +64,18 @@ const recipesOf = (level: Level): Recipe[] =>
       : [],
   );
 
-/** The garden of a level, as its file writes it: sprouts by name, vines and lanterns. */
-const gardenOf = (level: Level) => ({
-  names: level.data.sprouts.map((sprout) => sprout.label),
-  vines: level.data.vines,
-  lanterns: level.data.lanterns,
-});
+/**
+ * The garden of a level, as its file writes it: sprouts by name, vines and lanterns. A name of the
+ * Meadow (Sami) is written by its letter in later chapters (S), so each name counts by its initial.
+ */
+const gardenOf = (level: Level) => {
+  const initial = (label: string): string => label.charAt(0);
+  return {
+    names: level.data.sprouts.map((sprout) => initial(sprout.label)),
+    vines: level.data.vines.map((vine) => vine.map(initial)),
+    lanterns: level.data.lanterns?.map((pair) => pair.map(initial)),
+  };
+};
 
 /** The text of a line of dialogue. */
 const said = (id: string): string | undefined => lineTable[id];

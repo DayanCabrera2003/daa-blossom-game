@@ -75,16 +75,18 @@ describe('lines that tell the truth about their garden', () => {
       type: 'chain',
       path: names.map((name) => sprout(level, name)),
     });
-    const left = [chain('A', 'B', 'C', 'D', 'E'), chain('A', 'F', 'G'), chain('H', 'G', 'F')].map(
-      (move) => {
-        const after = play(level.start, [move]);
-        expect(size(after.matching)).toBe(size(level.start.matching));
-        return darkOf(level, after).sort();
-      },
-    );
+    const left = [
+      chain('A', 'B', 'C', 'D', 'E'),
+      chain('A', 'F', 'G'),
+      chain('Hugo', 'G', 'F'),
+    ].map((move) => {
+      const after = play(level.start, [move]);
+      expect(size(after.matching)).toBe(size(level.start.matching));
+      return darkOf(level, after).sort();
+    });
     expect(left).toEqual([
-      ['E', 'H'],
-      ['G', 'H'],
+      ['E', 'Hugo'],
+      ['G', 'Hugo'],
       ['A', 'F'],
     ]);
     expect(namesIn(lineOf('ch1.4.sauce.00'))).toEqual([]);

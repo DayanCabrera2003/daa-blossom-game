@@ -105,7 +105,7 @@ describe('miniGarden', () => {
     const layout = fitGarden(garden.positions);
     const picture = miniGarden(garden, layout, bare(snapshotOf(joined.state)));
     expect(picture.sprouts.map((sprout) => sprout.lit)).toEqual([false, true, true, false]);
-    expect(picture.sprouts.map((sprout) => sprout.label)).toEqual(['A', 'B', 'C', 'D']);
+    expect(picture.sprouts.map((sprout) => sprout.label)).toEqual(['Ana', 'Beto', 'Cleo', 'Dani']);
     const lit = picture.vines.filter((vine) => vine.lit);
     expect(lit.map(({ u, v }) => [u, v])).toEqual([[1, 2]]);
     const [b, c] = [layout.at[1], layout.at[2]];
