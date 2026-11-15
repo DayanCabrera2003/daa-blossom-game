@@ -23,7 +23,7 @@ export interface GameContext {
   readonly line: LineText;
   readonly storage: KeyValueStore;
   readonly teacherMode: boolean;
-  /** A level to open straight away (teacher mode, `?level=`), or null to start at the hub. */
+  /** A level to open straight away (teacher mode, `?level=`), or null to start at the title or hub. */
   readonly startLevel: string | null;
   /** A shared link's `?garden=` as given, to open the free mode with (it reads it), or null. */
   readonly startGarden: string | null;

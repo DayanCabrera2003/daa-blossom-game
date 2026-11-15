@@ -12,7 +12,7 @@ export const LEVEL_SCENE = 'level';
 
 /**
  * The thin gate of the level screen, the only part of it in the initial script, like the free
- * mode's and the credits': the first screen is the hub, so the level scene with its views, its
+ * mode's and the credits': the first screen is the title or the hub, so the level scene with its views, its
  * cards and its presenter loads on demand. Started, it shows the bare background a level shows
  * while its chapter's music loads, loads the level scene with import() (its own chunk), adds it to
  * the game the first time and hands it the level asked for. If the chunk cannot load (offline, or
