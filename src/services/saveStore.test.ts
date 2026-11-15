@@ -47,6 +47,44 @@ describe('shared save store', () => {
     expect(heard).toBe(0);
   });
 
+  it('two tabs on the same storage never cover what the other one won', () => {
+    const storage = memoryStore();
+    const first = createSaveStore(storage);
+    const second = createSaveStore(storage);
+    first.update((save) => recordCompletion(save, '1.1', 2));
+    second.update((save) => recordCompletion(save, '2.4', 1));
+    first.update((save) => recordNotebook(save, '1.5'));
+    const kept = loadSave(storage);
+    expect(kept.levels).toEqual({ '1.1': { stars: 2 }, '2.4': { stars: 1 } });
+    expect(kept.notebook).toEqual(['1.5']);
+    expect(first.get()).toEqual(kept);
+  });
+
+  it('an update that changes nothing still takes in what another tab wrote', () => {
+    const storage = memoryStore();
+    const first = createSaveStore(storage);
+    createSaveStore(storage).update((save) => recordCompletion(save, '0.1', 3));
+    const heard: SaveData[] = [];
+    first.subscribe((save) => heard.push(save));
+    first.update((save) => save);
+    expect(first.get().levels['0.1']).toEqual({ stars: 3 });
+    expect(heard).toHaveLength(1);
+  });
+
+  it('refresh takes in what another tab wrote and tells the subscribers, once', () => {
+    const storage = memoryStore();
+    const first = createSaveStore(storage);
+    let heard = 0;
+    first.subscribe(() => (heard += 1));
+    first.refresh();
+    expect(heard).toBe(0);
+    createSaveStore(storage).update((save) => recordCompletion(save, '1.1', 1));
+    first.refresh();
+    first.refresh();
+    expect(first.get().levels['1.1']).toEqual({ stars: 1 });
+    expect(heard).toBe(1);
+  });
+
   it('keeps the progress in memory when the browser refuses to store it', () => {
     const refusing = {
       getItem: () => null,
