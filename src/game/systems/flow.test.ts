@@ -201,6 +201,24 @@ describe('the script engine', () => {
     expect(unbet.effects.map((effect) => effect.kind)).toEqual(['bet']);
   });
 
+  it('a play step with `until` ends only on that refusal while the victory holds (0.2, 0.4)', () => {
+    const trying: LevelStep = { step: 'play', reactions: [], until: { refused: 'alreadyLit' } };
+    const betting = start([bet(true), trying, say('ch0.4.sauce.01')]);
+    const { flow } = advanceFlow(betting.flow, { type: 'bet', value: 3, right: 1 });
+    // The victory alone, another refusal, or the refusal before the victory: still playing.
+    expect(advanceFlow(flow, { type: 'won' }).flow).toBe(flow);
+    expect(advanceFlow(flow, { type: 'refused', code: 'notAdjacent', won: true }).flow).toBe(flow);
+    expect(advanceFlow(flow, { type: 'refused', code: 'alreadyLit', won: false }).flow).toBe(flow);
+    expect(advanceFlow(flow, { type: 'refused', code: 'alreadyLit', won: true }).effects).toEqual([
+      { kind: 'reveal', bet: 3, right: 1 },
+      { kind: 'say', lines: ['ch0.4.sauce.01'] },
+      { kind: 'finished' },
+    ]);
+    // A play step without `until` pays no attention to refusals.
+    const plain = start([play]).flow;
+    expect(advanceFlow(plain, { type: 'refused', code: 'alreadyLit', won: true }).flow).toBe(plain);
+  });
+
   it('another certificate waits until the session says the victory holds again (7.6)', () => {
     const started = start([
       play,

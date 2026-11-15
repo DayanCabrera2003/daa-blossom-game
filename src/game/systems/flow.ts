@@ -3,6 +3,7 @@ import { DOUBLING_ANSWERS } from '@core/cost/doubling';
 import type { VertexId } from '@core/graph/types';
 import type { RecipeCase } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
+import type { RejectReason } from '@core/rules/reasons';
 import type { LevelStep } from '@levels/flow';
 
 /**
@@ -28,6 +29,11 @@ export type FlowSignal =
    * `certifyAgain`).
    */
   | { readonly type: 'won' }
+  /**
+   * The rules refused a move for the reason `code`; `won` when the level's victory holds in the
+   * garden as it is (ends a `play` step that waits for that refusal).
+   */
+  | { readonly type: 'refused'; readonly code: RejectReason['code']; readonly won: boolean }
   /**
    * An option of an `ask` or `notebook`, a number in a `count`, or an answer of a doubling bet (its
    * index); `right` is the number the core gives for a count, or the index of the right answer of
@@ -354,7 +360,12 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
 
   switch (step.step) {
     case 'play': {
-      if (signal.type !== 'won') return unchanged;
+      // A step that waits for a refusal takes it only with the victory holding, and nothing else.
+      const ends =
+        step.until === undefined
+          ? signal.type === 'won'
+          : signal.type === 'refused' && signal.won && signal.code === step.until.refused;
+      if (!ends) return unchanged;
       // The goal stays hidden after a bet until the win; then the mentor tells the real value.
       const { bet } = flow;
       const reveal: FlowEffect[] =

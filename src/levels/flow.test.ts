@@ -94,6 +94,14 @@ describe('the script of a level (flow)', () => {
     ).toBe(false);
   });
 
+  it('a play step may wait, past its victory, for a move refused with a given reason (0.2)', () => {
+    expect(parse([{ step: 'play', until: { refused: 'alreadyLit' } }])).toEqual([
+      { step: 'play', reactions: [], until: { refused: 'alreadyLit' } },
+    ]);
+    expect(accepts([{ step: 'play', until: { refused: 'noSuchReason' } }])).toBe(false);
+    expect(accepts([{ step: 'play', until: {} }])).toBe(false);
+  });
+
   it('numeric questions offer at least 0 and 1, and a demo replays at least one move', () => {
     expect(accepts([{ step: 'bet', prompt: 'ch1.6.sauce.01', range: 0 }])).toBe(false);
     expect(

@@ -3,6 +3,7 @@ import { RACE_FAMILIES } from '@core/generators/raceGarden';
 import type { VertexId } from '@core/graph/types';
 import { RECIPE_CASES } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
+import type { RejectReason } from '@core/rules/reasons';
 import { z } from 'zod';
 import { label, levelAction, lineId, stepHints } from './fields';
 import { statementSchema } from './notebook';
@@ -27,6 +28,12 @@ const reaction = z.discriminatedUnion('on', [
   }),
 ]);
 
+/**
+ * The refusals a play step may wait for (codes of `core/rules/reasons.ts`): only the one the
+ * prologue teaches with, for now.
+ */
+const refusedReason = z.enum(['alreadyLit']) satisfies z.ZodType<RejectReason['code']>;
+
 /** The numbers offered by a numeric question: every whole number from 0 to `range`. */
 const range = z.number().int().min(1);
 
@@ -48,11 +55,16 @@ export const MAX_BRUTO_BUDGET = 2_000_000;
  * their own (`hints`, GDD §5.3); the others never offer any.
  */
 const flowStep = z.discriminatedUnion('step', [
-  /** Play with the level's rules until its victory holds. */
+  /**
+   * Play with the level's rules until its victory holds. With `until`, the victory is not enough:
+   * the step is over once, with the victory holding, the rules refuse a move for that reason (0.2
+   * and 0.4: the player tries a second lantern and learns that one lantern is for two).
+   */
   z.strictObject({
     step: z.literal('play'),
     reactions: z.array(reaction).default([]),
     hints: stepHints,
+    until: z.strictObject({ refused: refusedReason }).optional(),
   }),
   /**
    * After a play step won with a Tutte–Berge certificate (7.6): the garden goes on taking moves, and
