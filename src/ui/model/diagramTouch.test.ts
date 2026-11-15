@@ -16,7 +16,19 @@ const lanterns: ReadonlySet<DiagramMove> = new Set(['join', 'split', 'passLanter
 const chains: ReadonlySet<DiagramMove> = new Set(['chain', 'split']);
 
 describe('touchDiagram, with lanterns to join and pass', () => {
-  const garden = startOf('1.1');
+  // The garden of 1.1, where passing the lantern is open (the level itself closes it).
+  const base = startOf('1.1');
+  const garden: GardenState = { ...base, allowed: new Set([...base.allowed, 'passLantern']) };
+
+  it('where the garden cannot pass the lantern, a lit neighbour is a join, as in the game', () => {
+    const joined = applyAction(base, { type: 'join', u: 1, v: 2 });
+    if (!joined.ok) throw new Error('B–C is a vine');
+    expect(touchDiagram(joined.state, lanterns, [0], sprout(1)).action).toEqual({
+      type: 'join',
+      u: 0,
+      v: 1,
+    });
+  });
 
   it('holds a sprout in the dark, then joins it to the next one in the dark', () => {
     const first = touchDiagram(garden, lanterns, [], sprout(1));

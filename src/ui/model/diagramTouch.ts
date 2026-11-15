@@ -45,8 +45,10 @@ function pairTouch(
       : act(null, moves);
   }
   if (vertex === first) return act(null, moves);
+  // As in the game, where the garden cannot pass the lantern a lit neighbour is a join, which the
+  // rules answer with the lantern it already has.
   return act(
-    isExposed(state.matching, vertex)
+    isExposed(state.matching, vertex) || !state.allowed.has('passLantern')
       ? { type: 'join', u: first, v: vertex }
       : { type: 'passLantern', from: first, to: vertex },
     moves,
