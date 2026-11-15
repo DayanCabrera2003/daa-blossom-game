@@ -78,6 +78,20 @@ describe('the spots a panel may take', () => {
     expect(top?.y).toBe(LAYOUT.garden.y + 1);
   });
 
+  it('the dialogue box may also sit anywhere between, as wide as always', () => {
+    const spots = dialogueSpots();
+    const { box } = dialogueBox(false);
+    const ys = new Set(spots.map((spot) => spot.y));
+    expect(ys.size).toBeGreaterThan(2);
+    for (const spot of spots) {
+      expect(spot.x).toBe(box.x);
+      expect(spot.width).toBe(box.width);
+      expect(spot.height).toBe(box.height);
+      expect(spot.y).toBeGreaterThan(LAYOUT.garden.y);
+      expect(spot.y).toBeLessThanOrEqual(box.y);
+    }
+  });
+
   it('a toast keeps to the room above where it always ended', () => {
     const home = { x: 200, y: 220, width: 80, height: 20 };
     const spots = toastSpots(home);

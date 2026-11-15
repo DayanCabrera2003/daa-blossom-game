@@ -10,8 +10,8 @@ import { LAYOUT } from '../view/layout';
  * every other spot on a grid of a few pixels. Which of them hides least of the garden is chosen by
  * `panelPlacement.ts`. Each kind keeps the room it always had: a question and the notebook end
  * above the dialogue box (a hint can be said beside them), a card's window above the toolbar, the
- * dialogue box above it too, a toast above the toolbar (or the drawer it sits on); none reaches
- * into the top bar, which stays readable. Pure.
+ * dialogue box above it too (anywhere from under the top bar down), a toast above the toolbar (or
+ * the drawer it sits on); none reaches into the top bar, which stays readable. Pure.
  */
 
 /** How far apart the spots of the grid are, across and down. */
@@ -101,10 +101,15 @@ export function cardSpots(height: number): Rect[] {
   return [{ x, y, width, height }, ...spotsIn(CARD_ROOM, width, height)];
 }
 
-/** The spots of the dialogue box: over the bottom of the garden, as always, or under the top bar. */
+/**
+ * The spots of the dialogue box, as wide as always: over the bottom of the garden, as always, or
+ * under the top bar; then anywhere between, a few pixels apart, to sit in a gap of the garden.
+ */
 export function dialogueSpots(): Rect[] {
   const { box } = dialogueBox(false);
-  return [box, { ...box, y: LAYOUT.garden.y + 1 }];
+  const top = LAYOUT.garden.y + 1;
+  const room = { x: box.x, y: top, width: box.width, height: box.y + box.height - top };
+  return [box, { ...box, y: top }, ...spotsIn(room, box.width, box.height)];
 }
 
 /**
