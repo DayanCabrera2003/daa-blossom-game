@@ -46,6 +46,8 @@ export interface RenderSource {
   readonly replaySun: () => { readonly fraction: number } | null;
   /** The race running on screen and how long since it began, or null when none runs. */
   readonly raceClock: () => RaceClock | null;
+  /** The time the hint wait runs on: the scene's, stopped while a dialogue or a card is read. */
+  readonly hintTime: () => number;
 }
 
 /**
@@ -92,7 +94,7 @@ export class LevelRenderer {
   refreshHud(time: number): void {
     if (time - this.lastHudRefresh > HUD_REFRESH_MS) {
       this.lastHudRefresh = time;
-      this.renderHud(time);
+      this.renderHud();
     }
   }
 
@@ -125,7 +127,7 @@ export class LevelRenderer {
     this.renderSideBySide(now);
     this.views.recipe.render(recipePicture(session));
     this.renderRace();
-    this.renderHud(now);
+    this.renderHud();
   }
 
   /** Repaints the race panel (6.4, 6.5), its counters on the clock of the race running. */
@@ -135,10 +137,10 @@ export class LevelRenderer {
   }
 
   /** Shows one state of a replayed day, with the sun where the replay stands. */
-  renderReplayed(state: GardenState, now: number): void {
+  renderReplayed(state: GardenState): void {
     this.renderGarden(state, NO_EXTRAS);
     this.views.foundTrail.render([]);
-    this.renderHud(now);
+    this.renderHud();
   }
 
   /**
@@ -176,12 +178,15 @@ export class LevelRenderer {
     this.views.marks.render(picture.sprouts, split);
   }
 
-  /** Repaints the HUD; while the day replays, the sun follows the replay instead of the session. */
-  private renderHud(now: number): void {
+  /**
+   * Repaints the HUD, its hint on the hint wait's clock; while the day replays, the sun follows the
+   * replay instead of the session.
+   */
+  private renderHud(): void {
     const controller = this.source.controller();
     const { session, pointer } = controller;
     const depth = layerOf(controller).path.length;
-    const hud = hudPicture(session, pointer, now, depth, this.look.interfaceAt);
+    const hud = hudPicture(session, pointer, this.source.hintTime(), depth, this.look.interfaceAt);
     this.views.hud.render(hud);
     this.views.toolbar.render(hud.tools, hud.tool);
     const replayed = this.source.replaySun();

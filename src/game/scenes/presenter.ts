@@ -27,6 +27,7 @@ import type { QuestionView, ShownOption, ShownQuestion } from '../view/QuestionV
 import type { ShownCard, TutorialView } from '../view/TutorialView';
 import type { VeilView } from '../view/VeilView';
 import { questionAloud } from '../systems/aloud';
+import { playTime, startReadingClock, tickReading } from '../systems/readingClock';
 
 /** A day replaying itself on screen: its states, its timing, when it began and what shows now. */
 interface Replaying {
@@ -105,6 +106,8 @@ export class Presenter {
   private replaying: Replaying | null = null;
   /** The race running now, if any; while it runs, the garden takes no input. */
   private racing: Racing | null = null;
+  /** The clock of the hint wait, stopped while a dialogue or a card is read (GDD §5.3). */
+  private reading = startReadingClock();
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -137,6 +140,11 @@ export class Presenter {
     return racing === null
       ? null
       : { step: racing.step, elapsed: this.scene.time.now - racing.startedAt };
+  }
+
+  /** The time the hint wait runs on now: the scene's, without what has been read. */
+  get hintTime(): number {
+    return playTime(this.reading, this.scene.time.now);
   }
 
   /** Whether a mechanic card is on screen. */
@@ -183,8 +191,9 @@ export class Presenter {
     if (option !== null) this.views.question.mark(option);
   }
 
-  /** Moves a replay or a race on; called every frame by the scene. */
+  /** Moves a replay or a race and the hint wait's clock on; called every frame by the scene. */
   update(time: number): void {
+    this.reading = tickReading(this.reading, time, this.cardOpen || this.views.dialogue.open);
     if (this.replaying !== null) this.replayFrame(time);
     const { racing } = this;
     if (racing !== null && time - racing.startedAt >= racing.duration) {

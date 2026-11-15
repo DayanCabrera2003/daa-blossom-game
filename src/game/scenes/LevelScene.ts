@@ -169,6 +169,7 @@ export class LevelScene extends Phaser.Scene {
         controller: () => this.controller,
         replaySun: () => this.presenter.replaySun,
         raceClock: () => this.presenter.raceClock,
+        hintTime: () => this.presenter.hintTime,
       },
     );
     this.presenter = new Presenter(
@@ -176,9 +177,7 @@ export class LevelScene extends Phaser.Scene {
       buildPresenterViews(this, t, this.views.dialogue),
       {
         showDay: (state) =>
-          state === null
-            ? this.painter.render(this.time.now)
-            : this.painter.renderReplayed(state, this.time.now),
+          state === null ? this.painter.render(this.time.now) : this.painter.renderReplayed(state),
         searched: () => this.forward({ kind: 'searched' }),
         raced: () => this.forward({ kind: 'raced' }),
         stopAnimation: () => {
@@ -299,7 +298,7 @@ export class LevelScene extends Phaser.Scene {
       this.views.animation.finish();
       this.sfx.cancel();
     }
-    const step = handle(this.controller, event, this.time.now);
+    const step = handle(this.controller, event, this.presenter.hintTime);
     this.log(playtestEntries(this.controller, event, step, this.context.clock()));
     this.controller = step.controller;
     for (const effect of step.effects) this.show(effect);
