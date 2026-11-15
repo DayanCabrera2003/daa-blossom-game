@@ -170,6 +170,7 @@ const UI = {
   'hud.done': [],
   'hud.present': [],
   'hud.undo': [],
+  'hud.restart': [],
   'hud.redo': [],
   'hud.hint': [],
   'hud.back': [],

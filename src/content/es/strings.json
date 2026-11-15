@@ -86,6 +86,7 @@
   "hud.done": "Terminé",
   "hud.present": "Presentar",
   "hud.undo": "Deshacer",
+  "hud.restart": "Reiniciar",
   "hud.redo": "Rehacer",
   "hud.hint": "Pista",
   "hud.back": "Volver",

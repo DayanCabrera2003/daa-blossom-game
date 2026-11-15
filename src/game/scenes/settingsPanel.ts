@@ -33,9 +33,15 @@ export interface SettingsPanel {
  * key, which mutes or unmutes at any time. Every change is kept in the shared context, saved at
  * once, handed to the audio bus and shown on the panel if it is open; the panel also downloads the
  * playtest log, opens the credits and the card of the keys of `screen` (the hub's or a level's,
- * `input/keyBindings.ts`). The panel and its card are returned, so the scene's Escape can close them.
+ * `input/keyBindings.ts`), and in a level «Reiniciar», which calls `restart`. The panel and its card
+ * are returned, so the scene's Escape can close them.
  */
-export function addSettings(scene: Phaser.Scene, at: Point, screen: KeyScreen): SettingsPanel {
+export function addSettings(
+  scene: Phaser.Scene,
+  at: Point,
+  screen: KeyScreen,
+  restart?: () => void,
+): SettingsPanel {
   const context = contextOf(scene);
   const change = (next: Settings): void => {
     context.settings = next;
@@ -71,6 +77,7 @@ export function addSettings(scene: Phaser.Scene, at: Point, screen: KeyScreen): 
         close: t('keys.close'),
       });
     },
+    ...(restart === undefined ? {} : { restart }),
   });
   const card = new KeysCard(scene);
   addGearButton(scene, at, () => view.show(context.settings));

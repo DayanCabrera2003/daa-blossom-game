@@ -50,6 +50,24 @@ describe('the rows of the settings panel', () => {
     expect(rows.close - 1 + BUTTON_HEIGHT + SETTINGS_PANEL.pad - 1).toBe(rows.height);
   });
 
+  it('has no «Reiniciar» unless asked, on the hub', () => {
+    expect(rows.restart).toBeNull();
+  });
+
+  it('in a level, puts «Reiniciar» after the motion, the other buttons a row lower, still on the canvas', () => {
+    const level = settingsRows(BUTTON_HEIGHT, true);
+    const restart = level.restart ?? 0;
+    expect(level.restart).not.toBeNull();
+    expect(level.motionChoices - 1 + BUTTON_HEIGHT).toBeLessThan(restart - 1);
+    expect(restart - 1 + BUTTON_HEIGHT).toBeLessThan(level.exportLog - 1);
+    expect(level.exportLog - restart).toBe(level.credits - level.exportLog);
+    expect(level.height - rows.height).toBe(level.close - rows.close);
+    expect(level.close - 1 + BUTTON_HEIGHT + SETTINGS_PANEL.pad - 1).toBe(level.height);
+    const corner = settingsCorner(level.height);
+    expect(corner.y).toBeGreaterThan(0);
+    expect(corner.y + level.height).toBeLessThan(CANVAS_HEIGHT);
+  });
+
   it('is centred on the canvas and stays inside it', () => {
     const corner = settingsCorner(rows.height);
     expect(corner.x * 2 + SETTINGS_PANEL.width).toBe(CANVAS_WIDTH);

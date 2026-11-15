@@ -224,8 +224,9 @@ export class LevelScene extends Phaser.Scene {
       writeNotebook: () => this.writeNotebook(),
       jingle: (key) => this.context.music.jingle(key),
     };
-    // The settings, at the bottom left, clear of the buttons laid out from the right.
-    const settings = addSettings(this, { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 }, 'level');
+    // The settings at the bottom left, clear of the buttons laid out from the right; «Reiniciar» in it.
+    const corner = { x: LAYOUT.margin, y: LAYOUT.bottomY - 1 };
+    const settings = addSettings(this, corner, 'level', () => this.dispatch({ kind: 'restart' }));
     // A garden of the free mode ends the tools' row with its orders: the gardener, the certificate.
     if (orders !== null) addSandboxBar(this, t, orders, (event) => this.dispatch(event));
     bindLevelInput(this, {

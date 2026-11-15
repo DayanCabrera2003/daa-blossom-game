@@ -42,6 +42,8 @@ export interface SettingsActions {
   readonly credits: () => void;
   /** Opens the card of the keys over the panel. */
   readonly keys: () => void;
+  /** «Reiniciar»: the play step starts again (GDD §5.2); only a level's panel has it. */
+  readonly restart?: () => void;
 }
 
 /** The panel's size and the rows on it, in canvas pixels (`picture/settingsPanelLayout.ts`). */
@@ -76,8 +78,8 @@ interface Slider {
 /**
  * The settings panel, in the wooden frame of the other panels and written in its ink: a slider for
  * the music, one for the effects and one for the voices, each with its percentage, the mute box,
- * the motion setting's three buttons, the button that exports the playtest log, "Créditos",
- * "Teclas" and "Cerrar". A dim layer over the whole screen takes every touch meant for what is
+ * the motion setting's three buttons, «Reiniciar» in a level, the button that exports the playtest
+ * log, "Créditos", "Teclas" and "Cerrar". A dim layer over the whole screen takes every touch meant for what is
  * below while the panel is open. The panel only draws and reports:
  * what a touch means for the settings is decided by `picture/volumeSlider.ts` and the scene. The
  * keyboard's focus reaches each slider (the side arrows move it a step) and the mute box.
@@ -111,7 +113,8 @@ export class SettingsView {
     const close = new Button(scene, 0, 0, t('settings.close'), () => this.close()).setDepth(
       PANEL_DEPTH + 4,
     );
-    const rows = settingsRows(close.height);
+    const { restart } = this.actions;
+    const rows = settingsRows(close.height, restart !== undefined);
     const { x, y } = settingsCorner(rows.height);
     const blocker = coverWith(
       scene.add
@@ -150,7 +153,19 @@ export class SettingsView {
     keys.moveTo(x + Math.round((WIDTH - keys.width) / 2), y + rows.keys);
     close.moveTo(x + Math.round((WIDTH - close.width) / 2), y + rows.close);
     this.parts.push(exportLog, credits, keys, close);
+    if (restart !== undefined && rows.restart !== null)
+      this.addRestart(restart, x, y + rows.restart);
     this.render(settings);
+  }
+
+  /** «Reiniciar», centred on its row at `top`: it closes the panel and restarts the play step. */
+  private addRestart(restart: () => void, x: number, top: number): void {
+    const button = new Button(this.scene, 0, 0, this.t('hud.restart'), () => {
+      this.close();
+      restart();
+    }).setDepth(PANEL_DEPTH + 4);
+    button.moveTo(x + Math.round((WIDTH - button.width) / 2), top);
+    this.parts.push(button);
   }
 
   /** Shows `settings` on the open panel: each knob and its bar, each percentage, and the mute box. */

@@ -5,7 +5,7 @@ import { WOOD_PANEL, type WoodPiece } from './wood';
 /**
  * Where everything goes on the settings panel, in canvas pixels from the panel's top-left corner:
  * the title, a row for each audio channel's slider, the mute box, the motion setting's name and its
- * three buttons (plan 09, phase 6), the button that exports the
+ * three buttons (plan 09, phase 6), «Reiniciar» in a level (GDD §5.2), the button that exports the
  * playtest log (GDD §10; it moved here from the hub's top line, plan 08 phase 5), "Créditos"
  * (plan 09, phase 3), "Teclas" (the card of the keys, plan 09, phase 4) and "Cerrar", the buttons
  * centred, all in the wooden frame of the other
@@ -45,6 +45,8 @@ export interface SettingsRows {
   readonly motion: number;
   /** The top of the labels of the motion's three buttons. */
   readonly motionChoices: number;
+  /** The top of the label of «Reiniciar», in a level only (GDD §5.2); null elsewhere. */
+  readonly restart: number | null;
   /** The top of the export button's label (its wood starts a pixel higher). */
   readonly exportLog: number;
   /** The top of the label of "Créditos". */
@@ -58,18 +60,19 @@ export interface SettingsRows {
 
 /**
  * The rows of the panel for buttons `buttonHeight` tall: under the title the sliders, the mute box
- * and the motion's name a row apart, the motion's buttons a row under its name, then the export
- * button two pixels further, "Créditos", "Teclas" and "Cerrar" under it, and the panel's pad under
- * that.
+ * and the motion's name a row apart, the motion's buttons a row under its name, then two pixels
+ * further «Reiniciar» when the panel is opened in a level (`restart`), the export button,
+ * "Créditos", "Teclas" and "Cerrar" under it, and the panel's pad under that.
  */
-export function settingsRows(buttonHeight: number): SettingsRows {
+export function settingsRows(buttonHeight: number, restart: boolean = false): SettingsRows {
   const { pad, row, gap } = SETTINGS_PANEL;
   const first = pad + 18;
   const sliders = AUDIO_CHANNELS.map((_, i) => first + i * row);
   const mute = first + AUDIO_CHANNELS.length * row;
   const motion = mute + row;
   const motionChoices = motion + row;
-  const exportLog = motionChoices + buttonHeight + gap + 2;
+  const firstButton = motionChoices + buttonHeight + gap + 2;
+  const exportLog = restart ? firstButton + buttonHeight + gap : firstButton;
   const credits = exportLog + buttonHeight + gap;
   const keys = credits + buttonHeight + gap;
   const close = keys + buttonHeight + gap;
@@ -80,6 +83,7 @@ export function settingsRows(buttonHeight: number): SettingsRows {
     mute,
     motion,
     motionChoices,
+    restart: restart ? firstButton : null,
     exportLog,
     credits,
     keys,
