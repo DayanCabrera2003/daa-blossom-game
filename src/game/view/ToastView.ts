@@ -3,6 +3,7 @@ import { toastSpots } from '../picture/panelSpots';
 import { TOAST, toastBox } from '../picture/toastBox';
 import { WOOD_PANEL } from '../picture/wood';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
+import { TOAST_FADE_MS, toastDuration } from '../picture/toastDuration';
 import { PALETTE } from './palette';
 import { textStyle } from './textStyle';
 import { PanelGrip } from './PanelGrip';
@@ -10,8 +11,6 @@ import { placePanel } from './panelPlacer';
 import { shiftParts } from './shiftParts';
 import { WoodFrame } from './WoodFrame';
 
-/** How long a message stays before fading, in milliseconds. */
-const VISIBLE_MS = 2600;
 /** The depth of the toast (`picture/toastBox.ts`). */
 const DEPTH = TOAST.depth;
 
@@ -90,7 +89,7 @@ export class ToastView {
     this.setAlpha(1);
   }
 
-  /** The toast fades away after it has been read, and then goes. */
+  /** The toast fades away after it has been read (a stay by its length), and then goes. */
   private fadeLater(): void {
     this.fade?.stop();
     const shown = { alpha: 1 };
@@ -98,8 +97,8 @@ export class ToastView {
     this.fade = this.scene.tweens.add({
       targets: shown,
       alpha: 0,
-      delay: VISIBLE_MS,
-      duration: 400,
+      delay: toastDuration(this.text.text),
+      duration: TOAST_FADE_MS,
       onUpdate: () => this.setAlpha(shown.alpha),
       onComplete: () => this.takeAway(),
     });
