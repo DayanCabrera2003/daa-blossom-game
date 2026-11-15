@@ -18,6 +18,8 @@ import { placePanel } from './panelPlacer';
 import type { Point } from '../input/target';
 import { GRIP_MARK } from '../picture/gripMark';
 import { dialogueSpots } from '../picture/panelSpots';
+import { dialogueAvoidance } from '../picture/dialogueAvoidance';
+import type { Avoidance } from '../picture/panelAvoidance';
 
 /** The box's depth (`picture/dialogueBox.ts`). */
 const DEPTH = DIALOGUE_DEPTH;
@@ -46,8 +48,8 @@ interface Typing {
  * is told each line once, whole, with who says it, as it starts (`sayAloud`), never letter by
  * letter.
  *
- * Each run of lines opens the box where it hides less of the garden, at the bottom or under the top
- * bar, unless the player dropped it elsewhere: a press on its tab or its top border drags it (the
+ * Each run of lines opens the box where it hides least of the garden, and never over the sprouts
+ * its lines name while some spot leaves them in sight, unless the player dropped it elsewhere: a press on its tab or its top border drags it (the
  * post-release fix of plan 09).
  */
 export class DialogueView {
@@ -163,21 +165,24 @@ export class DialogueView {
       closed?.();
       return;
     }
-    if (!this.shown) this.place();
+    if (!this.shown) this.place([next, ...this.queue].map((line) => line.text));
     this.setVisible(true);
     this.show(next);
   }
 
   /**
-   * The box opens for a run of lines: where the player last dropped it, or else at the bottom of
-   * the garden or under the top bar, whichever hides less of it; beside a question, a notebook or a
-   * card it keeps to the bottom, which their rooms leave free. Its grip comes with it.
+   * The box opens for a run of lines, whose `texts` are given: where the player last dropped it, or
+   * else anywhere from the bottom of the garden up to the top bar, where it hides least of what the
+   * step points at and of the sprouts the lines name, then of the other sprouts, then of the rest
+   * (`picture/dialogueAvoidance.ts`); beside a question, a notebook or a card it keeps to the
+   * bottom, which their rooms leave free. Its grip comes with it.
    */
-  private place(): void {
+  private place(texts: readonly string[]): void {
     const { scene } = this;
     const spots = dialogueSpots();
     const beside = panelOpen(scene, ['question', 'notebook', 'card']);
-    this.moveTo(placePanel(scene, 'dialogue', beside ? spots.slice(0, 1) : spots));
+    const own = (avoid: Avoidance): Avoidance => dialogueAvoidance(avoid, texts);
+    this.moveTo(placePanel(scene, 'dialogue', beside ? spots.slice(0, 1) : spots, own));
     const home = this.layouts.portrayed;
     this.grip = new PanelGrip(
       scene,
@@ -197,7 +202,7 @@ export class DialogueView {
           ];
         },
         moveTo: (at) => this.moveTo(at),
-        reset: () => this.moveTo(placePanel(scene, 'dialogue', spots)),
+        reset: () => this.moveTo(placePanel(scene, 'dialogue', spots, own)),
         markAt: () => {
           const { x, y, width } = this.wood.bounds;
           return { x: Math.round(x + width / 2), y: y + home.tab.height + GRIP_MARK.inset };

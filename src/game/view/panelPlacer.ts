@@ -36,15 +36,21 @@ export function setPanelAvoidance(scene: Phaser.Scene, avoid: () => Avoidance): 
 /**
  * Where a panel of `kind` opens on `scene` among `spots` (where it always opened first): where
  * the player last dropped one, as large as the first spot and kept on the canvas, or the spot
- * that hides least of the garden.
+ * that hides least of the garden, of what the scene tells as `own` turns it for this panel (the
+ * dialogue box adds the sprouts its lines name).
  */
-export function placePanel(scene: Phaser.Scene, kind: PanelKind, spots: readonly Rect[]): Rect {
+export function placePanel(
+  scene: Phaser.Scene,
+  kind: PanelKind,
+  spots: readonly Rect[],
+  own: (avoid: Avoidance) => Avoidance = (avoid) => avoid,
+): Rect {
   const dropped = recallPanel(memory, kind);
   const [home] = spots;
   if (dropped !== null && home !== undefined) {
     return { ...home, ...clampToCanvas(dropped, home) };
   }
-  return choosePanel(spots, (sources.get(scene) ?? (() => NOTHING_TO_AVOID))());
+  return choosePanel(spots, own((sources.get(scene) ?? (() => NOTHING_TO_AVOID))()));
 }
 
 /** The player dropped a panel of `kind` with its corner at `at`: the next ones open there. */
