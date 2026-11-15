@@ -36,3 +36,10 @@ export const TOUCH_PROPERTY_TIMEOUT = 30_000;
  * of them, every page of both columns): about a second, more under coverage on a busy machine.
  */
 export const RECIPE_FIT_TIMEOUT = 30_000;
+
+/**
+ * Time allowed to the first lint of the lint-rule tests: it loads the whole configuration and the
+ * TypeScript project behind the typed rules, several seconds on a busy machine, beyond vitest's
+ * default of 5 s. The cases after it reuse what it loaded and stay quick.
+ */
+export const ESLINT_WARMUP_TIMEOUT = 60_000;

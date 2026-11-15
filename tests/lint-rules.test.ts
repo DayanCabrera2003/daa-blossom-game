@@ -1,14 +1,18 @@
 import { ESLint } from 'eslint';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { ESLINT_WARMUP_TIMEOUT } from './support/timeouts';
 
 // Guards the architecture and hard rule 3 against being disabled silently: each case lints a
 // virtual file at a given path and checks which rules fire. The files never exist on disk.
 
 let eslint: ESLint;
 
-beforeAll(() => {
+// The first lint loads the configuration and the typed project; it is done here, with room, so
+// that no case pays for it under vitest's default time per test.
+beforeAll(async () => {
   eslint = new ESLint();
-});
+  await eslint.lintText('export {};\n', { filePath: 'src/core/graph/virtual.ts' });
+}, ESLINT_WARMUP_TIMEOUT);
 
 /** Lints `code` as if it lived at `filePath` and returns the ids of the rules that fired. */
 async function firedRules(filePath: string, code: string): Promise<string[]> {
