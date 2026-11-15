@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-153 líneas de diálogo y 64 textos de interfaz distintos de la versión 1.0.1.
+153 líneas de diálogo y 65 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
@@ -628,6 +628,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Con el agua justa
 - [ ] `victory.star.bet` · nueva
   - Después: Apuesta acertada
+- [ ] `title.start` · nueva
+  - Después: Toca para empezar
 - [ ] `hub.secret.bud` · cambiada
   - Antes: Esta flor se abre con {need} estrellas de este capítulo. Tienes {have}.
   - Después: Este jardín secreto se abre con {need} estrellas de este capítulo. Tienes {have}.
