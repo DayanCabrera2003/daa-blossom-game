@@ -54,6 +54,7 @@ import {
 } from './levelSession';
 import type { MirrorCheck } from './mirrorChallenge';
 import type { Refusal } from './refusal';
+import { restartController } from './restart';
 import type { StarResult } from './stars';
 import { stepAtFraction } from './sun';
 
@@ -113,7 +114,7 @@ export type UiEvent =
   /** A press, a drag and its end; `letGo` ends it outside the screen, a release with no chain. */
   | { readonly kind: 'press' | 'move' | 'release' | 'letGo'; readonly point: Point }
   | { readonly kind: 'tool'; readonly tool: ToolId }
-  | { readonly kind: 'undo' | 'redo' | 'hint' | 'done' }
+  | { readonly kind: 'undo' | 'redo' | 'hint' | 'done' | 'restart' }
   /** "Avanzar la luz": the light that searches by itself makes its next mark (flower levels). */
   | { readonly kind: 'light' }
   /** Out of the innermost flower entered, back to the layer before (5.2). */
@@ -215,10 +216,7 @@ export function openController(level: Level, now: number, orders: FreeOrders | n
 export const startController = (level: Level, now: number): Controller =>
   openController(level, now).controller;
 
-/**
- * Gives the script an input of the player; an answer puts out the vine a hint made glow, and the
- * controller keeps everything else.
- */
+/** Gives the script an input of the player; an answer puts out the vine a hint made glow. */
 function tell(controller: Controller, input: ScriptInput, now: number): Step {
   const { session, effects } = respond(controller.session, input, now);
   return {
@@ -380,6 +378,7 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
     const dropped = { ...controller, pointer: { ...controller.pointer, chain: null } };
     return respondTo(dropped, { kind: 'release', point: event.point }, now);
   }
+  if (event.kind === 'restart') return { controller: restartController(controller), effects: [] };
   const state = garden(controller.session);
   const view = layerOf(controller, state);
   const { positions } = view;
