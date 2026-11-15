@@ -89,4 +89,8 @@ describe('one word, one meaning (plan 11, phase 11; GDD §3.3)', () => {
     ).concat(TEXTS.filter(([where]) => where === 'codex C03.md'));
     expect(pond.filter(([, text]) => AGUA.test(text)).map(([where]) => where)).toEqual([]);
   });
+
+  it('what the fog spends are drops: «agua» is only ever said as «gotas de agua»', () => {
+    expect(offending(/(?<!gotas? de )\bagua\b/i)).toEqual([]);
+  });
 });

@@ -37,7 +37,7 @@ export interface StatusParts {
   /** The width of the water's drop, drawn before the water spent. */
   readonly drop: number;
   /**
-   * The width of the water spent, with its word ("Agua: 3/5") and without it ("3/5", the drop
+   * The width of the water spent, with its word ("Gotas: 3/5") and without it ("3/5", the drop
    * saying the rest); null where the level has no water.
    */
   readonly water: { readonly full: number; readonly short: number } | null;
