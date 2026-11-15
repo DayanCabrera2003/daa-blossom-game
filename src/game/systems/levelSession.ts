@@ -62,6 +62,7 @@ import { hintedOption, questionAt } from './question';
 import { reactionsTo, type FiredReaction } from './reactions';
 import { checkBoard, mentorFix, startBoard, touchCard, type RecipeBoard } from './recipeBoard';
 import { NOT_NOW, type Refusal } from './refusal';
+import { refusalSignal } from './refusalSignal';
 import { startStep } from './stepStart';
 import { computeStars, type StarResult } from './stars';
 
@@ -279,16 +280,11 @@ export function act(
   const before = garden(session);
   const outcome = applyAction(before, action);
   if (!outcome.ok) {
-    return {
-      session: {
-        ...session,
-        hints: afterRejected(session.hints),
-        rejections: session.rejections + 1,
-      },
-      outcome,
-      effects: [],
-      claim: null,
-    };
+    const { hints, rejections } = session;
+    const refused = { ...session, hints: afterRejected(hints), rejections: rejections + 1 };
+    // A play step may wait for this refusal, with the victory holding (0.2: a second lantern).
+    const signal = refusalSignal(session, before, outcome.reason);
+    return { ...advance(refused, signal, now), outcome, claim: null };
   }
   const after = outcome.state;
   const claims =
