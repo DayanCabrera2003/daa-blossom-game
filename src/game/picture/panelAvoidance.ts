@@ -2,7 +2,7 @@ import type { SproutKind } from '@levels/fields';
 import { layerOf, type Controller } from '../systems/levelController';
 import { garden } from '../systems/levelSession';
 import type { Shape } from './coverage';
-import { gardenShapes } from './gardenShapes';
+import { gardenShapes, sproutShapes } from './gardenShapes';
 import { layerPicture } from './layerPicture';
 import { moonGlow } from './moonGlow';
 import { pondPicture } from './pond';
@@ -19,6 +19,8 @@ import { referredShapes } from './referredShapes';
 export interface Avoidance {
   readonly shapes: readonly Shape[];
   readonly referred: readonly Shape[];
+  /** The shapes of each sprout in sight, by its label, for a line that names it; none if absent. */
+  readonly sprouts?: ReadonlyMap<string, readonly Shape[]>;
 }
 
 /** Nothing to keep clear of: a screen with no garden under its panels. */
@@ -44,5 +46,6 @@ export function panelAvoidance(
   return {
     shapes: gardenShapes(picture, pond),
     referred: referredShapes(session, picture, pond),
+    sprouts: new Map(picture.sprouts.map((sprout) => [sprout.label, sproutShapes(sprout)])),
   };
 }

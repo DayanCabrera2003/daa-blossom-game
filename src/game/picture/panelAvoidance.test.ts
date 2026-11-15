@@ -27,6 +27,18 @@ describe('what a panel opening now keeps clear of', () => {
     for (const shape of avoid.referred) expect(avoid.shapes).toContainEqual(shape);
   });
 
+  it('tells the shapes of each sprout by its label, for the lines that name it', () => {
+    const level = levels.find((candidate) => candidate.data.id === '3.1');
+    invariant(level !== undefined, 'level 3.1 exists');
+    const avoid = panelAvoidance(openController(level, 0).controller);
+    const labels = level.data.sprouts.map((sprout) => sprout.label);
+    expect([...(avoid.sprouts?.keys() ?? [])]).toEqual(labels);
+    for (const shapes of avoid.sprouts?.values() ?? []) {
+      expect(shapes.length).toBeGreaterThan(0);
+      for (const shape of shapes) expect(avoid.shapes).toContainEqual(shape);
+    }
+  });
+
   it('a screen with no garden keeps clear of nothing', () => {
     expect(NOTHING_TO_AVOID).toEqual({ shapes: [], referred: [] });
   });
