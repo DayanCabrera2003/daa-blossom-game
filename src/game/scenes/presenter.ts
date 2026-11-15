@@ -21,6 +21,13 @@ import type { Question, QuestionOption } from '../systems/question';
 import type { SpokenLine } from '../systems/speaker';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
+import {
+  holdVictory,
+  NO_VICTORY_HELD,
+  releaseVictory,
+  type HeldVictory,
+  type VictoryTurn,
+} from '../systems/heldVictory';
 import type { DialogueView } from '../view/DialogueView';
 import type { NotebookView, ShownNotebook } from '../view/NotebookView';
 import type { QuestionView, ShownOption, ShownQuestion } from '../view/QuestionView';
@@ -78,6 +85,8 @@ export interface PresenterHooks {
   readonly stopAnimation: () => void;
   /** Shows the victory panel. */
   readonly victory: (stars: StarResult) => void;
+  /** Whether a move still plays on the garden: the victory panel waits for it to end. */
+  readonly animating?: () => boolean;
   /** The player chose an option (its value) of the question on screen. */
   readonly answer: (question: Question, value: number) => void;
   /** Opens the garden that refutes the false answer `option` of the question at script step `step`. */
@@ -96,8 +105,8 @@ export interface PresenterHooks {
  * Shows the items of the presentation queue on the level screen, one at a time (plan 03, phases 3,
  * 4, 6 and 12): a mechanic card in its window, lines in the dialogue box, a question in its panel (a bet maybe under the veil, the
  * notebook on its page), a counterexample in its own screen, the replayed day on the garden, the
- * victory panel. It opens each when the queue says so, and moves
- * the queue on when it is over. The order is decided by the pure queue (`systems/presentation.ts`);
+ * victory panel, once the last move has finished playing. It opens each when the queue says so,
+ * and moves the queue on when it is over. The order is decided by the pure queue (`systems/presentation.ts`);
  * this only carries it out.
  */
 export class Presenter {
@@ -108,6 +117,8 @@ export class Presenter {
   private racing: Racing | null = null;
   /** The clock of the hint wait, stopped while a dialogue or a card is read (GDD §5.3). */
   private reading = startReadingClock();
+  /** The win whose panel waits for the last move to finish playing, if any. */
+  private heldWin: HeldVictory = NO_VICTORY_HELD;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -191,10 +202,14 @@ export class Presenter {
     if (option !== null) this.views.question.mark(option);
   }
 
-  /** Moves a replay or a race and the hint wait's clock on; called every frame by the scene. */
+  /**
+   * Moves a replay or a race and the hint wait's clock on, and shows a held win once its move ends;
+   * called every frame by the scene.
+   */
   update(time: number): void {
     this.reading = tickReading(this.reading, time, this.cardOpen || this.views.dialogue.open);
     if (this.replaying !== null) this.replayFrame(time);
+    if (this.heldWin !== null) this.win(releaseVictory(this.heldWin, this.animating));
     const { racing } = this;
     if (racing !== null && time - racing.startedAt >= racing.duration) {
       // The race is over: the scene is told first, so the script moves on before what follows.
@@ -246,9 +261,20 @@ export class Presenter {
         this.hooks.counterexample(start.step, start.option);
         break;
       case 'victory':
-        this.hooks.victory(start.stars);
+        this.win(holdVictory(start.stars, this.animating));
         break;
     }
+  }
+
+  /** Whether a move still plays on the garden. */
+  private get animating(): boolean {
+    return this.hooks.animating?.() === true;
+  }
+
+  /** Keeps the win that waits, and shows the victory panel when its turn says so. */
+  private win({ held, show }: VictoryTurn): void {
+    this.heldWin = held;
+    if (show !== null) this.hooks.victory(show);
   }
 
   /**

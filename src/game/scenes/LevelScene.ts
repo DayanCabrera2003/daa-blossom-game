@@ -187,6 +187,7 @@ export class LevelScene extends Phaser.Scene {
         replayed: (from, to) => this.sfx.schedule(replayCues(from, to)),
         raceStarted: (step) => this.sfx.schedule(raceCues(level.flow, step)),
         victory: (stars) => this.offerNext(stars),
+        animating: () => this.views.animation.playing,
         answer: (question, value) =>
           this.dispatch(
             question.kind === 'bet' ? { kind: 'bet', value } : { kind: 'answer', option: value },
