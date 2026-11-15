@@ -43,7 +43,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 1.2
 
-- [ ] `ch1.2.sauce.00` · **Sauce** · GDD: Mira otra forma de verlo: uno, dos, tres pases, y al final había sitio para uno más. Eso es una cadena.
+- [ ] `ch1.2.sauce.00` · **Sauce** · GDD: Mira otra forma de verlo: dos pases y un farol nuevo, y al final había sitio para uno más. Eso es una cadena.
 - [ ] `ch1.2.sauce.01` · **Sauce** · GDD: ¿Quién está a oscuras? ¿Quién tiene el farol más cercano?
 - [ ] `ch1.2.sauce.02` · **Sauce** · plan: Empieza por Ana.
 - [ ] `ch1.2.sauce.03` · **Sauce** · plan: Mira, yo hago el primer pase.
@@ -57,7 +57,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 1.4
 
-- [ ] `ch1.4.sauce.00` · **Sauce** · GDD: Eli se quedó sin luz para que Ana la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras.
+- [ ] `ch1.4.sauce.00` · **Sauce** · GDD: Alguien se quedó sin luz para que otro la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras.
 - [ ] `ch1.4.sauce.01` · **Sauce** · GDD: ¿La cadena terminó en alguien que ya tenía farol?
 - [ ] `ch1.4.sauce.02` · **Sauce** · plan: Mira a Hugo, al final de la otra rama.
 
@@ -470,7 +470,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 5.1
 
 - [ ] `ch5.1.sauce.00` · **Sauce** · plan: Una flor es un brote más. Y los brotes forman bucles. Avanza tu luz desde R y pliega cada flor donde se pare.
-- [ ] `ch5.1.sauce.01` · **Sauce** · GDD: ¿Quién es sol dos veces?
+- [ ] `ch5.1.sauce.01` · **Sauce** · GDD: La flor pequeña ya brilla como un sol. ¿Toca a otro sol?
 - [ ] `ch5.1.sauce.02` · **Sauce** · GDD: La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?
 - [ ] `ch5.1.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Una flor también cabe dentro de otra.
 - [ ] `ch5.1.sauce.04` · **Sauce** · plan: Abriste la flor grande y luego la pequeña. Por dentro, la cadena entró por b y salió por c, por el lado de d: el lado corto ponía dos enredaderas apagadas seguidas.
@@ -479,7 +479,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch5.2.sauce.00` · **Sauce** · plan: Tres flores, una dentro de otra. Avanza tu luz desde R y pliega cada una donde se pare. Con las capas puedes entrar en una flor plegada y mirar qué guarda.
 - [ ] `ch5.2.sauce.01` · **Sauce** · plan: Cada flor plegada es un brote más. ¿Con quién cierra un bucle?
-- [ ] `ch5.2.sauce.02` · **Sauce** · plan: Cuando la flor grande esté plegada, mira por este lado. ¿Dónde se tocan dos soles?
+- [ ] `ch5.2.sauce.02` · **Sauce** · plan: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
 - [ ] `ch5.2.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.2.sauce.04` · **Sauce** · plan: Se abren de fuera hacia dentro: la flor grande, luego la mediana, luego la pequeña. Y la cadena las cruzó las tres.
 - [ ] `ch5.2.sauce.05` · **Sauce** · GDD: Para desplegar, abriste primero la flor grande. ¿Por qué no una de las de dentro?
@@ -637,12 +637,12 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.1.sauce.03` · **Sauce** · plan: Cinco enredaderas en corro. ¿Cuántas vigila cada espantapájaros? ¿Cuántos hacen falta?
 - [ ] `ch7.1.sauce.04` · **Sauce** · plan: Te enseño el siguiente espantapájaros. Los demás, tú.
 - [ ] `ch7.1.sauce.05` · **Sauce** · plan: Todas vigiladas. Ahora cuenta espantapájaros y faroles. ¿Cierra la prueba?
-- [ ] `ch7.1.gardener.06` · **Tú** · plan: No: hacen falta tres espantapájaros y solo hay dos faroles.
-- [ ] `ch7.1.sauce.07` · **Sauce** · plan: Eso es. Tres espantapájaros solo dicen que no caben más de tres. Con abejas y tréboles bastaba. En el Festival hace falta otra cosa.
+- [ ] `ch7.1.gardener.06` · **Tú** · plan: No: hay más espantapájaros que faroles.
+- [ ] `ch7.1.sauce.07` · **Sauce** · plan: Eso es. Si hay más espantapájaros que faroles, solo prueban que no caben más faroles que espantapájaros. Con abejas y tréboles bastaba. En el Festival hace falta otra cosa.
 - [ ] `ch7.1.gardener.08` · **Tú** · plan: Sí: no queda ninguna enredadera sin vigilar.
-- [ ] `ch7.1.sauce.09` · **Sauce** · plan: Vigiladas, sí. Pero cuenta: tres espantapájaros prueban que caben como mucho tres faroles, y tienes dos.
+- [ ] `ch7.1.sauce.09` · **Sauce** · plan: Vigiladas, sí. Pero cuenta: tienes más espantapájaros que faroles, y así solo prueban que no caben más faroles que espantapájaros.
 - [ ] `ch7.1.gardener.10` · **Tú** · plan: Sí, si quito uno de los espantapájaros.
-- [ ] `ch7.1.sauce.11` · **Sauce** · plan: Quita cualquiera y alguna enredadera se queda sin vigilar. Con dos no llegas.
+- [ ] `ch7.1.sauce.11` · **Sauce** · plan: Con dos no llegas: dos espantapájaros siempre dejan alguna enredadera sin vigilar.
 - [ ] `ch7.1.oaks.12` · **Los Robles** · plan: Entonces tráenos otra prueba.
 
 ### 7.2

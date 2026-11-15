@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-148 líneas de diálogo y 61 textos de interfaz distintos de la versión 1.0.1.
+153 líneas de diálogo y 64 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
@@ -24,13 +24,19 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch1.2.sauce.00` · **Sauce** · cambiada
   - Antes: Uno, dos, tres pases, y al final había sitio para uno más. Eso es una cadena.
-  - Después: Mira otra forma de verlo: uno, dos, tres pases, y al final había sitio para uno más. Eso es una cadena.
+  - Después: Mira otra forma de verlo: dos pases y un farol nuevo, y al final había sitio para uno más. Eso es una cadena.
 
 ### 1.3
 
 - [ ] `ch1.3.sauce.02` · **Sauce** · cambiada
   - Antes: Sigue la luz, de Sami hasta Teo.
   - Después: Sami no es el único a oscuras. ¿Hasta quién puede llegar la luz?
+
+### 1.4
+
+- [ ] `ch1.4.sauce.00` · **Sauce** · cambiada
+  - Antes: Eli se quedó sin luz para que Ana la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras.
+  - Después: Alguien se quedó sin luz para que otro la tuviera. Cambiaste una tristeza por otra. Una cadena de verdad termina en alguien que estaba a oscuras.
 
 ### 1.5
 
@@ -342,6 +348,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.1.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor es un brote más. Y los brotes forman bucles. Busca desde R y pliega cada flor que aparezca.
   - Después: Una flor es un brote más. Y los brotes forman bucles. Avanza tu luz desde R y pliega cada flor donde se pare.
+- [ ] `ch5.1.sauce.01` · **Sauce** · cambiada
+  - Antes: ¿Quién es sol dos veces?
+  - Después: La flor pequeña ya brilla como un sol. ¿Toca a otro sol?
 - [ ] `ch5.1.sauce.02` · **Sauce** · cambiada
   - Antes: Esta enredadera brilla. Mira quién está en cada punta.
   - Después: La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?
@@ -353,7 +362,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Tres flores, una dentro de otra. Avanza tu luz desde R y pliega cada una donde se pare. Con las capas puedes entrar en una flor plegada y mirar qué guarda.
 - [ ] `ch5.2.sauce.02` · **Sauce** · cambiada
   - Antes: Mira esta enredadera.
-  - Después: Cuando la flor grande esté plegada, mira por este lado. ¿Dónde se tocan dos soles?
+  - Después: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
 - [ ] `ch5.2.sauce.05` · **Sauce** · nueva
   - Después: Para desplegar, abriste primero la flor grande. ¿Por qué no una de las de dentro?
 - [ ] `ch5.2.gardener.06` · **Tú** · nueva
@@ -462,9 +471,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch7.1.sauce.03` · **Sauce** · cambiada
   - Antes: Estos dos vigilan mucho. Pero mira lo que queda entre ellos.
   - Después: Cinco enredaderas en corro. ¿Cuántas vigila cada espantapájaros? ¿Cuántos hacen falta?
+- [ ] `ch7.1.gardener.06` · **Tú** · cambiada
+  - Antes: No: hacen falta tres espantapájaros y solo hay dos faroles.
+  - Después: No: hay más espantapájaros que faroles.
 - [ ] `ch7.1.sauce.07` · **Sauce** · cambiada
   - Antes: Eso es. Tres espantapájaros solo dicen que no caben más de tres. Con abejas y flores bastaba. En el Festival hace falta otra cosa.
-  - Después: Eso es. Tres espantapájaros solo dicen que no caben más de tres. Con abejas y tréboles bastaba. En el Festival hace falta otra cosa.
+  - Después: Eso es. Si hay más espantapájaros que faroles, solo prueban que no caben más faroles que espantapájaros. Con abejas y tréboles bastaba. En el Festival hace falta otra cosa.
+- [ ] `ch7.1.sauce.09` · **Sauce** · cambiada
+  - Antes: Vigiladas, sí. Pero cuenta: tres espantapájaros prueban que caben como mucho tres faroles, y tienes dos.
+  - Después: Vigiladas, sí. Pero cuenta: tienes más espantapájaros que faroles, y así solo prueban que no caben más faroles que espantapájaros.
+- [ ] `ch7.1.sauce.11` · **Sauce** · cambiada
+  - Antes: Quita cualquiera y alguna enredadera se queda sin vigilar. Con dos no llegas.
+  - Después: Con dos no llegas: dos espantapájaros siempre dejan alguna enredadera sin vigilar.
 
 ### 7.2
 
@@ -554,6 +572,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Esas piedras no son las lunas de tu búsqueda.
 - [ ] `action.stepLight` · nueva
   - Después: avanzar la luz
+- [ ] `hud.goal` · cambiada
+  - Antes: Este jardín puede encender {count} faroles
+  - Después: Faroles que caben aquí: {count}
 - [ ] `hud.prompt.sun` · cambiada
   - Antes: Arrastra el sol de arriba a la derecha
   - Después: Arrastra el día, arriba a la derecha
@@ -567,6 +588,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `hud.councilHidden` · cambiada
   - Antes: La cuenta del Consejo sale al pulsar «Terminé»
   - Después: La cuenta del Consejo sale al pulsar «Presentar»
+- [ ] `bet.revealRight.one` · nueva
+  - Después: ¡Lo adivinaste! Esta noche cabe {count} farol.
+- [ ] `bet.revealWrong.one` · nueva
+  - Después: Apostaste {bet}, y esta noche cabe {count} farol. Mirar antes de adivinar también se aprende.
 - [ ] `raceBet.answer.threeToFive` · nueva
   - Después: ≈ 3 a 5 veces
 - [ ] `diagram.help.replay` · cambiada
