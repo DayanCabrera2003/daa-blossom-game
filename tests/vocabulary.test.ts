@@ -113,6 +113,21 @@ describe('one word, one meaning (plan 11, phase 11; GDD §3.3)', () => {
     expect(after.some((text) => BASE.test(text))).toBe(true);
   });
 
+  it('the close of 3.1 ties the sun to the free hand and the moon to asking', () => {
+    const close = (lines as Record<string, string>)['ch3.1.sauce.05'] ?? '';
+    expect(close).toMatch(/mano libre[^.]*\bsol\b/);
+    expect(close).toMatch(/pidiendo[^.]*\bluna\b/);
+  });
+
+  it('no letters for numbers, no «vosotros», no «solitario», and the mentor is Sauce', () => {
+    // The formal tabs of the Codex write their mathematics; what the game says never does.
+    const said = TEXTS.filter(([where]) => !where.startsWith('codex'));
+    const wrong =
+      /\bk (espantapájaros|piedras|faroles)\b|\bde k\b|\bg − k\b|\bg grupos\b|\bten[ée]is\b|\bvosotros\b|solitari|\bel mentor\b/i;
+    expect(said.filter(([, text]) => wrong.test(text)).map(([where]) => where)).toEqual([]);
+    expect(offending(/solitari|\bten[ée]is\b/i)).toEqual([]);
+  });
+
   it('a closed flower is a folded one: the loop of 4.10 that cannot fold is a loop', () => {
     const table: Readonly<Record<string, string>> = { ...strings, ...lines };
     for (const id of ['ch4.10.sauce.00', 'reason.flowerClosed']) {
