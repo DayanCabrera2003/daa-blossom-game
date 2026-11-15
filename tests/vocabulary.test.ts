@@ -73,3 +73,20 @@ describe('«flor» is only the flower that folds', () => {
     expect(hub).toEqual([]);
   });
 });
+
+describe('one word, one meaning (plan 11, phase 11; GDD §3.3)', () => {
+  const AGUA = /\bagua\b/i;
+
+  it('«hilo» is only a piece of the tangle: what a sprout carries are its lanterns', () => {
+    const carried =
+      /hilos? (que )?le salen|sus hilos|hilos? por brote|cuántos hilos puede|hilo (ámbar|plateado)|^Hilos: /i;
+    expect(offending(carried)).toEqual([]);
+  });
+
+  it('the rival of the pond is the reflection: no text of the pond says «agua»', () => {
+    const pond = TEXTS.filter(
+      ([where]) => /^lines ch2\./.test(where) || /^strings (pond|mirror|diagram\.pond)/.test(where),
+    ).concat(TEXTS.filter(([where]) => where === 'codex C03.md'));
+    expect(pond.filter(([, text]) => AGUA.test(text)).map(([where]) => where)).toEqual([]);
+  });
+});
