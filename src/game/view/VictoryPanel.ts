@@ -12,6 +12,8 @@ import { drawStars } from './StarIcons';
 import { textStyle } from './textStyle';
 import { WoodFrame } from './WoodFrame';
 import { coverWith } from './focusables';
+import { placeClear } from './panelPlacer';
+import { victorySpots } from '../picture/panelSpots';
 
 /**
  * Shows the wooden panel of a won level: a row for each star the level can give, earned or not,
@@ -19,7 +21,8 @@ import { coverWith } from './focusables';
  * is named by the scene: the hub, or the epilogue after the last garden. A garden that earns no
  * stars (`stars` null: the free mode's) says a line of its own in their place.
  * Its texts and buttons are made first and measured, then laid out by `victoryLayout`, so the panel
- * grows round them and no button is ever drawn over another.
+ * grows round them and no button is ever drawn over another; it sits where it hides least of the
+ * garden just won, the middle of the canvas when that hides none (`picture/panelSpots.ts`).
  */
 export function showVictoryPanel(
   scene: Phaser.Scene,
@@ -43,10 +46,16 @@ export function showVictoryPanel(
       ? []
       : [new Button(scene, 0, 0, t('victory.next'), actions.next).setDepth(302)]),
   ];
+  const widths = buttons.map((button) => button.width);
+  const rows = { width: middle.width, rows: middle.rows };
+  // Laid out in the middle of the canvas first, then moved where it hides least of the garden.
+  const { x, y, width, height } = victoryLayout(widths, rows);
   const layout = victoryLayout(
-    buttons.map((button) => button.width),
-    { width: middle.width, rows: middle.rows },
+    widths,
+    rows,
+    placeClear(scene, victorySpots({ x, y, width, height })),
   );
+  const centre = layout.x + Math.round(layout.width / 2);
   coverWith(
     new WoodFrame(
       scene,
@@ -55,8 +64,8 @@ export function showVictoryPanel(
       300,
     ).zone.setInteractive(),
   );
-  title.setY(layout.titleY);
-  middle.place(layout.rows);
+  title.setPosition(centre, layout.titleY);
+  middle.place(centre, layout.rows);
   buttons.forEach((button, i) => {
     const at = layout.buttons[i];
     if (at !== undefined) button.moveTo(at.x, at.y);
@@ -64,13 +73,13 @@ export function showVictoryPanel(
 }
 
 /**
- * The middle rows made but not yet placed: how many, the width of the widest, and how to put each
- * at the top the layout gives it.
+ * The middle rows made but not yet placed: how many, the width of the widest, and how to put each,
+ * centred on the panel's middle, at the top the layout gives it.
  */
 interface MiddleRows {
   readonly width: number;
   readonly rows: number;
-  readonly place: (tops: readonly number[]) => void;
+  readonly place: (centre: number, tops: readonly number[]) => void;
 }
 
 /** The free mode's line, centred, in place of the stars. */
@@ -79,7 +88,11 @@ function freeLine(scene: Phaser.Scene, said: string, ink: number): MiddleRows {
     .text(CANVAS_WIDTH / 2, 0, said, textStyle(8, ink))
     .setOrigin(0.5, 0)
     .setDepth(301);
-  return { width: text.width, rows: 1, place: ([top = 0]) => text.setY(top) };
+  return {
+    width: text.width,
+    rows: 1,
+    place: (centre, [top = 0]) => text.setPosition(centre, top),
+  };
 }
 
 /**
@@ -96,8 +109,8 @@ function starLines(scene: Phaser.Scene, t: Translate, stars: StarResult, ink: nu
   return {
     width,
     rows: rows.length,
-    place: (tops) => {
-      const left = Math.round((CANVAS_WIDTH - width) / 2);
+    place: (centre, tops) => {
+      const left = Math.round(centre - width / 2);
       rows.forEach((row, i) => {
         const top = tops[i] ?? 0;
         row.text.setPosition(left + STAR_SIZE + VICTORY.starGap, top);

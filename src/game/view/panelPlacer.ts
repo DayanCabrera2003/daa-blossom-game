@@ -53,6 +53,13 @@ export function placePanel(
   return choosePanel(spots, own((sources.get(scene) ?? (() => NOTHING_TO_AVOID))()));
 }
 
+/**
+ * Where a panel that is never dragged (the victory panel) opens on `scene` among `spots` (where it
+ * always opened first): the spot that hides least of the garden.
+ */
+export const placeClear = (scene: Phaser.Scene, spots: readonly Rect[]): Rect =>
+  choosePanel(spots, (sources.get(scene) ?? (() => NOTHING_TO_AVOID))());
+
 /** The player dropped a panel of `kind` with its corner at `at`: the next ones open there. */
 export function rememberDrop(kind: PanelKind, at: Point): void {
   memory = rememberPanel(memory, kind, at);
