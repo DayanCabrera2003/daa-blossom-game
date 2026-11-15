@@ -52,7 +52,7 @@
   "claim.countMismatch": "Hay {scarecrows} espantapájaros y {lanterns} faroles: para que sea una prueba tienen que ser los mismos.",
   "claim.countShort": "La cuenta dice que al menos {atLeast} duermen a oscuras, y hay {dark}: todavía no prueba nada.",
   "claim.searchNotOver": "Primero la búsqueda tiene que acabar sin cadena.",
-  "claim.notTheMoons": "Esas piedras no son las lunas de tu búsqueda.",
+  "claim.notTheMoons": "Esas piedras todavía no prueban nada. ¿Qué te dejó la búsqueda en cada brote?",
   "action.join": "juntar",
   "action.split": "separar",
   "action.passLantern": "pasar el farol",

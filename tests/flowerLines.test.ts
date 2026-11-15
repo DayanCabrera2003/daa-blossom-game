@@ -205,4 +205,12 @@ describe('who searches is said where the light stops searching', () => {
       expect(lineOf(line), id).toMatch(new RegExp(`[Bb]usca(s)? tú, con ${marks}`));
     }
   });
+
+  it('7.4: stones that are not the moons are answered without naming the moons', () => {
+    const text = stringOf('claim.notTheMoons');
+    expect(text).not.toMatch(/luna/i);
+    expect(text).toBe(
+      'Esas piedras todavía no prueban nada. ¿Qué te dejó la búsqueda en cada brote?',
+    );
+  });
 });
