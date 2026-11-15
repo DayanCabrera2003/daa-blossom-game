@@ -78,7 +78,7 @@ Add `?teacher` to the address to open every chapter, every secret garden and eve
 - `?teacher&codex=C8` opens the Códex at an entry, and `?teacher&codex=C8&tab=formal` at one of its tabs (`intuition`, `formal`, `bridge`).
 - `?teacher&level=1.10` opens a secret garden (`2.5`, `3.10`, `4.13`, `5.6`, `6.7`, `7.6` the others).
 
-`?level=` and `?codex=` only work together with `?teacher`; players always start at the hub.
+`?level=` and `?codex=` only work together with `?teacher`; players start at the title screen until they win a garden, and at the hub after that.
 
 ## Free mode
 
