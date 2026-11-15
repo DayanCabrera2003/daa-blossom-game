@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import { itemAt } from '@core/shared/itemAt';
 import { newCosmetics, openCosmetics } from '@services/cosmetics';
 import { catalogEntries } from '@services/progress';
 import { recordCosmeticsSeen } from '@services/save';
@@ -6,6 +7,7 @@ import { seeds } from '@services/seeds';
 import { totalStars } from '@services/starCount';
 import type { Rect } from '../../picture/boxDistance';
 import { hubCosmeticHomes } from '../../picture/hubCosmeticHomes';
+import { noticeTimes } from '../../picture/noticeTimes';
 import { MAX_SEEDLINGS } from '../../picture/seedlings';
 import { HubCrittersView } from '../../view/HubCrittersView';
 import { ToastView } from '../../view/ToastView';
@@ -15,8 +17,6 @@ import { sayAloud } from '../sayAloud';
 
 /** When the first notice of a new cosmetic shows after the hub opens, in milliseconds. */
 const FIRST_NOTICE_MS = 800;
-/** Between two notices: one has faded (`ToastView` keeps it 2.6 s) before the next shows. */
-const NOTICE_EVERY_MS = 3400;
 
 /** Where the cosmetics may go in the hub, as `HubScene` has laid it out. */
 export interface HubCosmeticsPlace {
@@ -53,9 +53,13 @@ export function addHubCosmetics(scene: Phaser.Scene, place: HubCosmeticsPlace): 
   if (teacherMode) return;
 
   const toast = new ToastView(scene, sayAloud(scene));
-  newCosmetics(open, save).forEach((id, i) => {
-    scene.time.delayedCall(FIRST_NOTICE_MS + i * NOTICE_EVERY_MS, () => {
-      toast.show(t(`cosmetic.${id}`));
+  // One notice after another, each once the one before has been read and has faded.
+  const fresh = newCosmetics(open, save);
+  const messages = fresh.map((id) => t(`cosmetic.${id}`));
+  const times = noticeTimes(messages, FIRST_NOTICE_MS);
+  fresh.forEach((id, i) => {
+    scene.time.delayedCall(itemAt(times, i), () => {
+      toast.show(itemAt(messages, i));
       saves.update((now) => recordCosmeticsSeen(now, [id]));
     });
   });
