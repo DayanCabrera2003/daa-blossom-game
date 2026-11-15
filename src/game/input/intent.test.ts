@@ -78,6 +78,21 @@ describe('lanterns tool', () => {
     ]);
   });
 
+  it('where passing the lantern is not open yet, a lit neighbor is a join: it already has one (1.1)', () => {
+    // 1.1 closes passing for the day; before it, the action is still locked. Either way, the
+    // natural gesture after the trap is answered with the rule the player knows.
+    const closed = createGardenState({
+      graph: path,
+      matching: unwrap(createMatching(path, [[1, 2]])),
+      allowed: EVERY.filter((action) => action !== 'passLantern'),
+      closed: ['passLantern'],
+    });
+    const actions = tapAll(closed, 'lanterns', [sprout(0), sprout(1)]);
+    expect(actions).toEqual([null, { type: 'join', u: 0, v: 1 }]);
+    const outcome = applyAction(closed, { type: 'join', u: 0, v: 1 });
+    expect(outcome.ok ? null : outcome.reason).toEqual({ code: 'alreadyLit', vertex: 1 });
+  });
+
   it('touching a lit vine puts its lantern out', () => {
     expect(tapAll(trap, 'lanterns', [vine(2, 1)])).toEqual([{ type: 'split', u: 2, v: 1 }]);
     expect(tapAll(trap, 'lanterns', [vine(0, 1)])).toEqual([null]);
