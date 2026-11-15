@@ -39,7 +39,7 @@
   "flow": [
     { "step": "say", "lines": ["ch4.6.sauce.00"] },
     { "step": "play" },
-    { "step": "say", "lines": ["ch4.6.sauce.04"] }
+    { "step": "say", "lines": ["ch4.6.sauce.04", "ch4.6.sauce.05"] }
   ],
   "solution": [
     { "type": "stepLight" },

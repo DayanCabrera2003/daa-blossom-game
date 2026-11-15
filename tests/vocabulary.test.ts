@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import lines from '@content/es/lines.json';
 import strings from '@content/es/strings.json';
 import glossary from '@content/es/codex/glossary.json';
+import { catalog } from '@levels/catalog';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -92,6 +93,24 @@ describe('one word, one meaning (plan 11, phase 11; GDD §3.3)', () => {
 
   it('what the fog spends are drops: «agua» is only ever said as «gotas de agua»', () => {
     expect(offending(/(?<!gotas? de )\bagua\b/i)).toEqual([]);
+  });
+
+  it('«base» is named when 4.6 is won, before any line asks for it', () => {
+    const BASE = /\bbase\b/i;
+    const before = Object.entries(lines as Record<string, string>)
+      .filter(([id]) => /^ch([0-3]\.|4\.[1-5]\.)/.test(id))
+      .filter(([, text]) => BASE.test(text))
+      .map(([id]) => id);
+    expect(before).toEqual([]);
+    const level = catalog().find((one) => one.data.id === '4.6');
+    const flow = level?.data.flow ?? [];
+    const play = flow.findIndex((step) => step.step === 'play');
+    const after = flow
+      .slice(play + 1)
+      .flatMap((step) => (step.step === 'say' ? step.lines : []))
+      .map((id) => (lines as Record<string, string>)[id] ?? '');
+    expect(play).toBeGreaterThanOrEqual(0);
+    expect(after.some((text) => BASE.test(text))).toBe(true);
   });
 
   it('a closed flower is a folded one: the loop of 4.10 that cannot fold is a loop', () => {
