@@ -10,7 +10,7 @@
     { "garden": "Jardín", "math": "Grafo $G=(V,E)$", "entry": "C1" },
     { "garden": "Farol compartido", "math": "Arista de un emparejamiento $M$", "entry": "C1" },
     {
-      "garden": "Brote con farol / a oscuras (solitario)",
+      "garden": "Brote con farol / a oscuras",
       "math": "Vértice cubierto / expuesto (libre)",
       "entry": "C1"
     },
@@ -41,6 +41,11 @@
       "entry": "C3"
     },
     {
+      "garden": "Hilo / bucle (las piezas de la maraña)",
+      "math": "Componente de $M\\oplus M^*$: camino / ciclo alternante",
+      "entry": "C3"
+    },
+    {
       "garden": "Caminar de noche con luz",
       "math": "Búsqueda de un camino $M$-aumentante, por capas desde los vértices expuestos",
       "entry": "C4"
@@ -51,7 +56,7 @@
       "entry": "C4"
     },
     {
-      "garden": "Cada brote solitario lanza su luz",
+      "garden": "Cada brote a oscuras lanza su luz",
       "math": "Bosque alternante con raíces en todos los vértices expuestos",
       "entry": "C4"
     },
@@ -94,6 +99,11 @@
     {
       "garden": "Girar el tallo",
       "math": "$M\\oplus E(S)$: mismo tamaño y la base queda expuesta",
+      "entry": "C8"
+    },
+    {
+      "garden": "Bucle que hoy no se pliega (4.10)",
+      "math": "Ciclo impar que no se contrae: solo lo cruza un camino alternante que empieza o acaba en su base",
       "entry": "C8"
     },
     {

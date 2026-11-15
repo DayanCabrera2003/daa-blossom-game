@@ -96,16 +96,17 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 | Enredadera | Arista |
 | Jardín | Grafo |
 | Farol compartido | Arista del emparejamiento M |
-| Brote con farol / a oscuras (solitario) | Vértice cubierto / expuesto (libre) |
+| Brote con farol / a oscuras | Vértice cubierto / expuesto (libre) |
 | Noche bien aprovechada | Emparejamiento máximo |
 | "No puedo añadir ningún farol sin mover nada" | Emparejamiento maximal |
 | Pasar el farol | Intercambiar (flip) a lo largo de un camino alternante |
 | Cadena (que gana un farol) | Camino aumentante |
 | Cadena que no gana nada | Camino alternante de longitud par |
 | El reflejo del estanque | Un emparejamiento alternativo M\*; la maraña es M ⊕ M\* |
+| Hilo / bucle (las piezas de la maraña) | Componente de M ⊕ M\*: camino / ciclo alternante |
 | Caminar de noche con luz | Búsqueda de camino aumentante (BFS alternante) |
 | Marca de sol / de luna | Vértice exterior (outer, par) / interior (inner, impar) |
-| Cada brote solitario lanza su luz | Bosque alternante con raíces en los vértices libres |
+| Cada brote a oscuras lanza su luz | Bosque alternante con raíces en los vértices libres |
 | Abejas y tréboles | Grafo bipartito |
 | Espantapájaros | Cobertura por vértices (König) |
 | Un brote que debe ser sol y luna | Arista exterior–exterior en el mismo árbol: ciclo impar |
@@ -115,6 +116,7 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 | Plegar la flor | Contraer el blossom a un único vértice |
 | Desplegar | Expandir la contracción al levantar el camino |
 | Girar el tallo | Intercambiar a lo largo del tallo para dejar la base libre |
+| Bucle que hoy no se pliega (4.10) | Ciclo impar cuya contracción se prohíbe; solo lo cruza un camino que empieza o acaba en su base |
 | Flor dentro de flor | Blossoms anidados |
 | La receta | Algoritmo de Edmonds |
 | El jardinero mecánico | Ejecución del algoritmo |
@@ -122,6 +124,17 @@ Esta tabla es la columna vertebral del proyecto: demuestra que cada mecánica es
 | Piedras | Conjunto U de Tutte–Berge |
 | Grupos impares | Componentes conexas de G − U de tamaño impar |
 | "Nadie más puede tener farol, y aquí está la prueba" | Certificado de optimalidad (Tutte–Berge) |
+
+**Una palabra, un sentido** (Plan 11, F11). Lo que se lee en el juego usa cada palabra de la tabla para una sola cosa:
+
+- **Hilo** es solo la pieza abierta de la maraña (2.1–2.5). Lo que le sale a un brote al tocarlo en el estanque son sus **faroles**: como mucho dos, uno tuyo y uno del reflejo.
+- El rival del capítulo 2 es **el reflejo**, nunca "el agua". El recurso de la niebla (capítulo 3 en adelante) son las **gotas**: "Gotas: 3/5", "con las gotas justas".
+- **Flor cerrada** es la flor plegada. El bucle de 4.10, que no se puede plegar, es "un bucle que hoy no se pliega".
+- **Base** se nombra al ganar 4.6 (el pétalo por el que la cadena entró, el que tenía su farol fuera de la flor), antes de que 4.7 pregunte por ella.
+- **Sol** y **luna** se atan a lo que el jugador hizo al cerrar 3.1: sol a quien sale con la mano libre, luna a quien se llega pidiendo.
+- Sin fórmulas ni letras sueltas en las frases ("k espantapájaros", "g − k"): se dicen con palabras ("tantos faroles como espantapájaros", "impares − piedras"). Sauce habla de tú (nada de "tenéis") y se le llama Sauce, no "el mentor".
+
+**Los nombres de los brotes.** Sauce llama por su nombre a algunos brotes del Huerto y del Prado (Hortensia en 0.4; Ana, Beto, Cleo y Dani en 1.1; Ana en 1.2; Sami en 1.3; Hugo en 1.4), y en esos jardines el rótulo del brote es su nombre entero, para que el jugador vea a quién se refiere. Desde los jardines secretos del Prado (1.10) y en los capítulos siguientes, donde los jardines son más densos, las frases dicen la letra del rótulo ("Intenta llegar a e"). Todo nombre propio que diga una línea es el rótulo de un brote de su nivel.
 
 ---
 
