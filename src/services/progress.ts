@@ -54,3 +54,20 @@ export function unlockedLevels(
   });
   return open;
 }
+
+/**
+ * The level the hub points the player to (GDD §6): the first level shown, in catalog order, that is
+ * open and not yet won, or null once every level shown is won. An earlier level left behind comes
+ * before a later one a win opened, so the path through the game is followed in order.
+ */
+export function nextLevel(
+  levels: readonly CatalogEntry[],
+  save: SaveData,
+  teacherMode: boolean,
+): string | null {
+  const open = unlockedLevels(levels, save, teacherMode);
+  const next = visibleLevels(levels, teacherMode).find(
+    ({ id }) => open.has(id) && save.levels[id] === undefined,
+  );
+  return next?.id ?? null;
+}

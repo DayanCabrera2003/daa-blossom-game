@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { festivalLevel, secretFlowerLevel } from '../../tests/support/fixtureLevels';
-import { catalogEntries, unlockedLevels, visibleLevels } from './progress';
+import { catalogEntries, nextLevel, unlockedLevels, visibleLevels } from './progress';
 import { emptySave, recordCompletion } from './save';
 
 /** A catalog entry that is not a draft. */
@@ -112,5 +112,40 @@ describe('which levels are shown', () => {
 
   it('teacher mode shows every level, in catalog order', () => {
     expect(visibleLevels(withDrafts, true)).toEqual(withDrafts);
+  });
+});
+
+describe('the next level to play', () => {
+  /** A save with every level of `entries` won. */
+  const allWon = (entries: readonly { id: string }[]) =>
+    entries.reduce((done, { id }) => recordCompletion(done, id, 1), emptySave());
+
+  it('for a new player it is the first level of the catalog', () => {
+    expect(nextLevel(levels, emptySave(), false)).toBe('0.1');
+  });
+
+  it('is the first open level not yet won, in catalog order', () => {
+    const save = recordCompletion(recordCompletion(emptySave(), '0.1', 1), '1.1', 2);
+    expect(nextLevel(levels, save, false)).toBe('4.1');
+  });
+
+  it('an earlier level left unwon comes before a later one a win opened', () => {
+    const save = recordCompletion(recordCompletion(emptySave(), '0.1', 1), '4.10', 1);
+    expect(nextLevel(levels, save, false)).toBe('1.1');
+  });
+
+  it('skips drafts, which never open, and secret flowers, which are never buttons', () => {
+    const catalog = [...withDrafts, level('0.3')];
+    expect(nextLevel(catalog, allWon([level('0.1'), level('0.2')]), false)).toBe('0.3');
+    const secret = { id: '1.10', draft: false, secret: { stars: 5 } };
+    expect(nextLevel([...levels, secret], allWon(levels), false)).toBeNull();
+  });
+
+  it('there is none once every level shown is won', () => {
+    expect(nextLevel(levels, allWon(levels), false)).toBeNull();
+  });
+
+  it('in teacher mode, with everything open, it is the first level not yet won', () => {
+    expect(nextLevel(withDrafts, allWon([level('0.1'), level('0.2')]), true)).toBe('4.1');
   });
 });
