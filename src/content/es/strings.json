@@ -462,7 +462,7 @@
   "tutorial.draw.title": "Dibujar un reflejo",
   "tutorial.draw.body": "Toca enredaderas para ponerles o quitarles un farol plateado. Cuando tu dibujo esté listo, pulsa Comprobar.",
   "tutorial.inspect.title": "Inspeccionar",
-  "tutorial.inspect.body": "Con Inspeccionar, toca un brote para quitar la niebla de sus enredaderas. Cada vistazo gasta una gota de agua.",
+  "tutorial.inspect.body": "Con Inspeccionar, toca un brote para quitar la niebla de sus enredaderas. Cada vistazo gasta una gota de agua. Deshacer devuelve la niebla, pero no la gota.",
   "tutorial.marks.title": "Soles y lunas",
   "tutorial.marks.body": "Con Marcas, toca un brote a oscuras para ponerle un sol. Luego toca ese sol y un vecino: el vecino recibe una luna, y su pareja un sol.",
   "tutorial.autoSearch.title": "La luz busca sola",
