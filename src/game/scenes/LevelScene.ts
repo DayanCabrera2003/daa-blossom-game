@@ -236,6 +236,7 @@ export class LevelScene extends Phaser.Scene {
       closeCard: () => this.presenter.closeCard(),
       answerKey: (key) => this.presenter.optionKey(key),
       dialogueOpen: () => this.views.dialogue.open,
+      questionOpen: () => this.presenter.questionOpen,
       advanceDialogue: () => this.views.dialogue.touch(),
       drawing: () => this.controller.pointer.chain !== null,
     });

@@ -13,7 +13,7 @@ import { FocusController } from '../focus/FocusController';
 export interface LevelInputTarget {
   /** An event of the player for the level controller. */
   readonly dispatch: (event: UiEvent) => void;
-  /** Escape: leaves for the hub. */
+  /** Escape with nothing open: leaves for the hub (or warns first, GDD §5.2). */
   readonly leave: () => void;
   /** Whether a flower is entered with the layers: then Escape leaves it instead (5.2). */
   readonly insideLayer: () => boolean;
@@ -31,8 +31,10 @@ export interface LevelInputTarget {
   readonly closeCard: () => void;
   /** A digit: answers the question open with the option it names, if any. */
   readonly answerKey: (key: string) => void;
-  /** Whether the dialogue box is open: it takes the touches meant for it. */
+  /** Whether the dialogue box is open: it takes the touches meant for it, and Escape moves it on. */
   readonly dialogueOpen: () => boolean;
+  /** Whether a question or the notebook's page is open: Escape leaves it waiting, not the level. */
+  readonly questionOpen: () => boolean;
   /**
    * Enter or Space with nothing in the keyboard's focus, or a touch anywhere off the buttons and
    * panels while the box is open: the dialogue moves on, as a touch on it does.
@@ -50,8 +52,9 @@ export interface LevelInputTarget {
  * (`input/keyBindings.ts`): the keyboard's focus walks the buttons, the tools, the sun and the
  * panels, and Enter or Space press what it is on, or move the dialogue on; a digit answers the
  * question open; Ctrl/Cmd+Z undoes and Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redo; Escape closes the
- * card of the keys, or the settings panel, or the mechanic card, or leaves the flower entered with the layers, or else the
- * level (`input/escape.ts`). The garden itself is played with the pointer or a touch only.
+ * card of the keys, or the settings panel, or the mechanic card, or moves the dialogue on, or does
+ * nothing under a question, or leaves the flower entered with the layers, or else the level
+ * (`input/escape.ts`). The garden itself is played with the pointer or a touch only.
  */
 export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): void => {
   const { dispatch } = target;
@@ -109,18 +112,21 @@ export const bindLevelInput = (scene: Phaser.Scene, target: LevelInputTarget): v
   });
 };
 
-/** Escape: the innermost thing open closes, or else the level is left. */
+/** Escape: the innermost thing open closes (the dialogue moves on), or else the level is left. */
 function escape(target: LevelInputTarget): void {
   const action = escapeAction({
     keysOpen: target.keysOpen(),
     settingsOpen: target.settingsOpen(),
     cardOpen: target.cardOpen(),
+    dialogueOpen: target.dialogueOpen(),
+    questionOpen: target.questionOpen(),
     insideLayer: target.insideLayer(),
     canLeave: true,
   });
   if (action === 'closeKeys') target.closeKeys();
   else if (action === 'closeSettings') target.closeSettings();
   else if (action === 'closeCard') target.closeCard();
+  else if (action === 'advanceDialogue') target.advanceDialogue();
   else if (action === 'leaveLayer') target.dispatch({ kind: 'leaveLayer' });
-  else target.leave();
+  else if (action === 'leave') target.leave();
 }

@@ -26,12 +26,25 @@ describe('what Escape does, the same on every screen', () => {
     expect(escapeAction({ ...LEVEL, keysOpen: true, settingsOpen: true })).toBe('closeKeys');
   });
 
+  it('moves the dialogue on, and keeps a question waiting, before ever leaving the level', () => {
+    expect(escapeAction({ ...LEVEL, dialogueOpen: true })).toBe('advanceDialogue');
+    expect(escapeAction({ ...LEVEL, questionOpen: true })).toBe('stay');
+    // A question with the mentor's hint beside it: the line is read first.
+    expect(escapeAction({ ...LEVEL, dialogueOpen: true, questionOpen: true })).toBe(
+      'advanceDialogue',
+    );
+    // A card shown over a dialogue closes first.
+    expect(escapeAction({ ...LEVEL, cardOpen: true, dialogueOpen: true })).toBe('closeCard');
+  });
+
   it('closes the innermost thing open, in one order for every screen', () => {
     const everything: EscapeContext = {
       canLeave: true,
       keysOpen: true,
       settingsOpen: true,
       cardOpen: true,
+      dialogueOpen: true,
+      questionOpen: true,
       menuOpen: true,
       selecting: true,
       insideLayer: true,
@@ -40,6 +53,8 @@ describe('what Escape does, the same on every screen', () => {
       ['keysOpen', 'closeKeys'],
       ['settingsOpen', 'closeSettings'],
       ['cardOpen', 'closeCard'],
+      ['dialogueOpen', 'advanceDialogue'],
+      ['questionOpen', 'stay'],
       ['menuOpen', 'closeMenu'],
       ['selecting', 'letGo'],
       ['insideLayer', 'leaveLayer'],

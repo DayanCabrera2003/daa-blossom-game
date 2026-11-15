@@ -1,7 +1,9 @@
 /**
  * What the Escape key does (plan 09, phase 4), one rule for every screen of the canvas: it closes
  * the innermost thing open, and only when nothing is open does it leave the screen. A player
- * closing a panel should never lose the level under it. The books over the canvas follow the same
+ * closing a panel should never lose the level under it; nor should one reading the mentor's lines
+ * or a question (GDD §5.2): Escape moves the dialogue on, and a question keeps waiting for its
+ * answer. The books over the canvas follow the same
  * rule on their own: Escape closes the book.
  */
 
@@ -10,6 +12,8 @@ export type EscapeAction =
   | 'closeKeys'
   | 'closeSettings'
   | 'closeCard'
+  | 'advanceDialogue'
+  | 'stay'
   | 'closeMenu'
   | 'letGo'
   | 'leaveLayer'
@@ -24,6 +28,10 @@ export interface EscapeContext {
   readonly settingsOpen?: boolean;
   /** A mechanic card. */
   readonly cardOpen?: boolean;
+  /** The dialogue box: Escape moves it on, as a touch does. */
+  readonly dialogueOpen?: boolean;
+  /** A question or the notebook's page, which only an answer closes: Escape leaves it open. */
+  readonly questionOpen?: boolean;
   /** The free mode's generate menu. */
   readonly menuOpen?: boolean;
   /** A sprout chosen in the free mode's editor, waiting for the second touch of a vine. */
@@ -36,13 +44,15 @@ export interface EscapeContext {
 
 /**
  * The innermost thing open, in one order for every screen: the card of the keys, the settings
- * panel, a mechanic card, the generate menu, the sprout chosen, the flower entered; then the screen
+ * panel, a mechanic card, the dialogue (moved on), a question (left waiting), the generate menu, the sprout chosen, the flower entered; then the screen
  * is left, or on the hub the keyboard's focus goes.
  */
 export function escapeAction(context: EscapeContext): EscapeAction {
   if (context.keysOpen === true) return 'closeKeys';
   if (context.settingsOpen === true) return 'closeSettings';
   if (context.cardOpen === true) return 'closeCard';
+  if (context.dialogueOpen === true) return 'advanceDialogue';
+  if (context.questionOpen === true) return 'stay';
   if (context.menuOpen === true) return 'closeMenu';
   if (context.selecting === true) return 'letGo';
   if (context.insideLayer === true) return 'leaveLayer';

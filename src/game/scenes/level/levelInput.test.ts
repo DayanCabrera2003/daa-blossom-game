@@ -14,13 +14,31 @@ vi.mock('../focus/FocusController', () => ({ FocusController: vi.fn() }));
 
 type Listener = (pointer: Phaser.Input.Pointer, over: Phaser.GameObjects.GameObject[]) => void;
 
-/** A scene that only keeps the pointer listeners, to call them as Phaser would. */
-function fakeScene(): { scene: Phaser.Scene; fire: (name: string, pointer: object) => void } {
+type KeyListener = (event: KeyboardEvent) => void;
+
+/** A scene that only keeps the pointer and key listeners, to call them as Phaser would. */
+function fakeScene(): {
+  scene: Phaser.Scene;
+  fire: (name: string, pointer: object) => void;
+  key: (key: string) => void;
+} {
   const listeners = new Map<string, Listener>();
-  const input = { on: (name: string, listener: Listener) => listeners.set(name, listener) };
+  const keys = new Map<string, KeyListener>();
+  const input = {
+    on: (name: string, listener: Listener) => listeners.set(name, listener),
+    keyboard: { on: (name: string, listener: KeyListener) => keys.set(name, listener) },
+  };
   const fire = (name: string, pointer: object): void =>
     listeners.get(name)?.(pointer as Phaser.Input.Pointer, []);
-  return { scene: { input } as unknown as Phaser.Scene, fire };
+  const key = (pressed: string): void =>
+    keys.get('keydown')?.({
+      key: pressed,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+      altKey: false,
+    } as KeyboardEvent);
+  return { scene: { input } as unknown as Phaser.Scene, fire, key };
 }
 
 /** A pointer at (x, y), pressed or not. */
@@ -35,16 +53,24 @@ let sent: UiEvent[];
 let dialogueOpen: boolean;
 let advanced: number;
 let fire: (name: string, pointer: object) => void;
+let key: (key: string) => void;
+let questionOpen: boolean;
+let left: number;
 
 beforeEach(() => {
   sent = [];
   dialogueOpen = false;
   advanced = 0;
+  questionOpen = false;
+  left = 0;
   const fake = fakeScene();
   fire = fake.fire;
+  key = fake.key;
   const target: LevelInputTarget = {
     dispatch: (event) => sent.push(event),
-    leave: () => undefined,
+    leave: () => {
+      left += 1;
+    },
     insideLayer: () => false,
     settingsOpen: () => false,
     closeSettings: () => undefined,
@@ -54,6 +80,7 @@ beforeEach(() => {
     closeCard: () => undefined,
     answerKey: () => undefined,
     dialogueOpen: () => dialogueOpen,
+    questionOpen: () => questionOpen,
     advanceDialogue: () => {
       advanced += 1;
       dialogueOpen = false;
@@ -122,6 +149,24 @@ describe('the pointer of the level screen', () => {
 
   it('ignores a release outside the screen whose press never reached the garden', () => {
     fire('pointerupoutside', pointer(1, 500, 20, false));
+    expect(sent).toEqual([]);
+  });
+});
+
+describe('Escape on the level screen', () => {
+  it('moves the dialogue on instead of leaving the level', () => {
+    dialogueOpen = true;
+    key('Escape');
+    expect(dialogueOpen).toBe(false);
+    expect(left).toBe(0);
+    key('Escape');
+    expect(left).toBe(1);
+  });
+
+  it('keeps the level while a question waits for its answer', () => {
+    questionOpen = true;
+    key('Escape');
+    expect(left).toBe(0);
     expect(sent).toEqual([]);
   });
 });

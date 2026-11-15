@@ -163,6 +163,11 @@ export class Presenter {
     return this.views.tutorial.open;
   }
 
+  /** Whether a question or the notebook's page is on screen, waiting for its answer. */
+  get questionOpen(): boolean {
+    return this.views.question.open || this.views.notebook.open;
+  }
+
   /** Dismisses the mechanic card on screen, as its button does (Escape). */
   closeCard(): void {
     this.views.tutorial.dismiss();
