@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { itemAt } from '@core/shared/itemAt';
+import { starsCeiling } from '@levels/starsCeiling';
 import { catalogEntries, unlockedLevels, visibleLevels } from '@services/progress';
 import { secretFlowers } from '@services/secretFlowers';
 import { groundOf, seedOf } from '../picture/backdrop';
@@ -87,14 +88,17 @@ export class HubScene extends Phaser.Scene {
     const shown = visibleLevels(catalogEntries(catalog), teacherMode);
     const open = unlockedLevels(shown, save, teacherMode);
     const chapters = [...new Set(shown.map((level) => level.id.split('.')[0] as string))];
+    const ceilings = new Map(catalog.map(({ data }) => [data.id, starsCeiling(data)]));
 
     // The buttons and titles are made first, to measure them; then the layout says where they go.
     const rows = chapters.map((chapter) =>
       shown
         .filter((level) => level.id.startsWith(`${chapter}.`))
         .map(({ id }) => {
-          // The pixel font has no star: the label leaves blank cells where its stars are drawn.
-          const { text, room } = levelButtonLabel(id, open.has(id), save.levels[id]?.stars ?? 0);
+          // The pixel font has no star: the label leaves blank cells where its stars are drawn,
+          // as many as the level can give, so a star won never widens the button.
+          const stars = save.levels[id]?.stars ?? 0;
+          const { text, room } = levelButtonLabel(id, open.has(id), stars, ceilings.get(id) ?? 0);
           const button = new Button(this, 0, 0, text, () => openLevel(this, { levelId: id }));
           return { button: button.setEnabled(open.has(id)), room };
         }),

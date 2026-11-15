@@ -1,8 +1,11 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
+import { catalog } from '@levels/catalog';
+import { starsCeiling } from '@levels/starsCeiling';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../scale/integerZoom';
 import { HUB_HEAD } from './hubGarden';
 import { epilogueSignAt, HUB, layoutHub } from './hubLayout';
+import { levelButtonLabel } from './levelButtonLabel';
 import { PIXEL_FONT } from './pixelFont';
 
 /** The height of a button: a line of the pixel font (12 px) and its panel. */
@@ -88,6 +91,51 @@ describe('the hub layout', () => {
     expect(HUB.topLineY + HEIGHT).toBeLessThanOrEqual(HUB.top);
     const { buttons, heads } = boxes(widths, TITLES);
     for (const head of heads) for (const button of buttons) expect(apart(head, button)).toBe(true);
+  });
+
+  it('winning stars, or opening a level, moves no button of the catalog', () => {
+    const shown = catalog().filter((level) => level.data.secret === undefined);
+    const chapters = [...new Set(shown.map((level) => level.data.id.split('.')[0]))];
+    // Every button's width as its label makes it: its text in the monospaced font, in its panel.
+    const widths = (open: boolean, stars: (ceiling: number) => number) =>
+      chapters.map((chapter) =>
+        shown
+          .filter((level) => level.data.id.startsWith(`${chapter}.`))
+          .map((level) => {
+            const ceiling = starsCeiling(level.data);
+            const label = levelButtonLabel(level.data.id, open, stars(ceiling), ceiling);
+            return text(label.text.length) + 4;
+          }),
+      );
+    const signed = TITLES.map((title) => title + HUB_HEAD);
+    const locked = layoutHub(
+      widths(false, () => 0),
+      HEIGHT,
+      signed,
+    );
+    expect(
+      layoutHub(
+        widths(true, () => 0),
+        HEIGHT,
+        signed,
+      ),
+    ).toEqual(locked);
+    expect(
+      layoutHub(
+        widths(true, () => 1),
+        HEIGHT,
+        signed,
+      ),
+    ).toEqual(locked);
+    expect(
+      layoutHub(
+        widths(true, (ceiling) => ceiling),
+        HEIGHT,
+        signed,
+      ),
+    ).toEqual(locked);
+    // And the hub with every star won still fits above the bed of its garden.
+    expect(locked.bottom + HUB.gap).toBeLessThanOrEqual(HUB.gardenTop);
   });
 
   it('buttons never overlap each other nor a title, and never leave the canvas sideways', () => {
