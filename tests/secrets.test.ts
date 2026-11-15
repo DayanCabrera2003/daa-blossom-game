@@ -1,3 +1,4 @@
+import lines from '@content/es/lines.json';
 import type { Blossom, GardenNode } from '@core/blossom/types';
 import { checkTutteBerge, tutteBergeBound } from '@core/certificates/tutteBerge';
 import { checkVertexCover } from '@core/certificates/vertexCover';
@@ -21,6 +22,7 @@ import { unwrap } from '@core/shared/result';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { racesOf } from '@levels/races';
+import { starsCeiling } from '@levels/starsCeiling';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -34,6 +36,15 @@ const FLOWERS = ['1.10', '2.5', '3.10', '4.13', '5.6', '6.7', '7.6'] as const;
 
 /** Closest two sprouts of a secret flower may sit, in pixels: twice a sprout's radius and air. */
 const MIN_SPACING = 18;
+
+const lineTable: Readonly<Record<string, string>> = lines;
+
+/** The text of a line of dialogue, which must exist. */
+const lineOf = (id: string): string => {
+  const said = lineTable[id];
+  if (said === undefined) throw new Error(`no line ${id}`);
+  return said;
+};
 
 const levelOf = (id: string): Level => {
   const level = catalog().find((candidate) => candidate.data.id === id);
@@ -293,6 +304,17 @@ describe('6.7: when is thinking worth it', () => {
     expect(races().every((race) => !race.asleep)).toBe(true);
   });
 
+  it('before the first race, an informal bet on who arrives first: no answer is wrong', () => {
+    const { flow, data } = level();
+    expect(flow.slice(0, 3).map((step) => step.step)).toEqual(['say', 'ask', 'race']);
+    const bet = flow[1];
+    if (bet?.step !== 'ask') throw new Error('6.7 bets before its first race');
+    expect(lineOf(bet.prompt)).toMatch(/^Antes de mirar: /);
+    expect(bet.retry).toBe(false);
+    expect(bet.options.every((option) => option.correct && option.reply === undefined)).toBe(true);
+    expect(starsCeiling(data)).toBe(2);
+  });
+
   it('Bruto takes fewer steps in the two tiny gardens, and more in the two larger ones', () => {
     const [first, second, third, fourth] = races();
     for (const race of [first, second]) expect(race?.bruto).toBeLessThan(race?.automaton ?? 0);
@@ -300,7 +322,9 @@ describe('6.7: when is thinking worth it', () => {
   });
 
   it('asks when thinking pays, and only "when the garden grows" is right', () => {
-    const ask = level().flow.find((step) => step.step === 'ask');
+    const ask = level()
+      .flow.filter((step) => step.step === 'ask')
+      .at(-1);
     if (ask?.step !== 'ask') throw new Error('6.7 asks when thinking pays');
     expect(ask.options.map((option) => option.correct)).toEqual([true, false, false]);
   });

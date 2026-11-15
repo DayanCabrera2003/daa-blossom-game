@@ -3,6 +3,7 @@ import { runOf, type RaceResult } from '@core/cost/benchmark';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { raceBetVerdict, racesOf } from '@levels/races';
+import { starsCeiling } from '@levels/starsCeiling';
 import { costChart } from '@game/picture/costChart';
 import { describe, expect, it } from 'vitest';
 
@@ -49,6 +50,17 @@ describe('6.4, race I: 6, 8 and 10 sprouts', () => {
     for (const race of races.values()) expect(runOf(race, 'bruto').asleep).toBe(false);
   });
 
+  it('before the first race, an informal bet on who arrives first: no answer is wrong', () => {
+    const steps = level.flow.map((step) => step.step);
+    expect(steps.slice(0, 3)).toEqual(['say', 'ask', 'race']);
+    const bet = level.flow[1];
+    if (bet?.step !== 'ask') throw new Error('6.4 bets before its first race');
+    expect(said(bet.prompt)).toMatch(/^Antes de mirar: .*seis brotes/);
+    expect(bet.retry).toBe(false);
+    expect(bet.options.every((option) => option.correct && option.reply === undefined)).toBe(true);
+    expect(starsCeiling(level.data)).toBe(2);
+  });
+
   it('at 6 sprouts, the two take about the same steps ("casi empatan")', () => {
     const ratio = brutoOverAutomaton(raceAt(races, 6));
     expect(ratio).toBeGreaterThan(2 / 3);
@@ -61,7 +73,7 @@ describe('6.4, race I: 6, 8 and 10 sprouts', () => {
 
   it('at 10, Bruto takes many more: the question after the races has him as its answer', () => {
     expect(brutoOverAutomaton(raceAt(races, 10))).toBeGreaterThan(20);
-    const ask = level.flow.find((step) => step.step === 'ask');
+    const ask = level.flow.filter((step) => step.step === 'ask').at(-1);
     if (ask?.step !== 'ask') throw new Error('6.4 asks who took more steps');
     expect(ask.options.filter((option) => option.correct).map((option) => option.line)).toEqual([
       'ch6.4.sauce.07',

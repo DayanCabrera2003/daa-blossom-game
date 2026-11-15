@@ -34,6 +34,14 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch6.3.bruto.00", "ch6.3.bruto.01"] },
+    {
+      "step": "ask",
+      "prompt": "ch6.3.sauce.10",
+      "options": [
+        { "line": "ch6.3.gardener.11", "correct": true },
+        { "line": "ch6.3.gardener.12", "correct": true }
+      ]
+    },
     { "step": "automaton", "missing": ["sameTree"] },
     { "step": "say", "lines": ["ch6.3.sauce.02", "ch6.3.sauce.03", "ch6.3.sauce.04"] },
     { "step": "recipe", "missing": ["sameTree"] },
@@ -41,6 +49,7 @@
     { "step": "say", "lines": ["ch6.3.sauce.08", "ch6.3.bruto.09"] }
   ],
   "solution": [
+    { "type": "answer", "option": 1 },
     {
       "type": "recipe",
       "cards": [

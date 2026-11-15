@@ -20,6 +20,7 @@ import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
 import { counterexampleAt } from '@levels/counterexample';
 import { cardTextKey, TAUGHT_IN } from '@levels/recipeCards';
+import { starsCeiling } from '@levels/starsCeiling';
 import { describe, expect, it } from 'vitest';
 import { chainLookMarks } from './support/chainLooks';
 
@@ -205,16 +206,37 @@ describe('6.3: the broken recipe', () => {
   });
 
   it('Bruto brings his shorter recipe, the mentor answers, and the player repairs it', () => {
-    expect(stepsOf(level)).toEqual(['say', 'automaton', 'say', 'recipe', 'automaton', 'say']);
-    expect(level.flow[1]).toEqual({ step: 'automaton', missing: ['sameTree'] });
-    expect(level.flow[3]).toEqual({ step: 'recipe', missing: ['sameTree'] });
-    expect(level.flow[4]).toEqual({ step: 'automaton' });
+    expect(stepsOf(level)).toEqual([
+      'say',
+      'ask',
+      'automaton',
+      'say',
+      'recipe',
+      'automaton',
+      'say',
+    ]);
+    expect(level.flow[2]).toEqual({ step: 'automaton', missing: ['sameTree'] });
+    expect(level.flow[4]).toEqual({ step: 'recipe', missing: ['sameTree'] });
+    expect(level.flow[5]).toEqual({ step: 'automaton' });
     const [bruto] = level.flow;
     const brutoSays = bruto?.step === 'say' ? bruto.lines.map(said) : [];
     expect(brutoSays).toContain('¡Menos pasos! ¡Más rápido!');
-    const answer = level.flow[2];
+    const answer = level.flow[3];
     const sauceSays = answer?.step === 'say' ? answer.lines.map(said) : [];
     expect(sauceSays).toContain('Más rápido para equivocarse.');
+  });
+
+  it('before looking, an informal bet on how many lanterns his recipe lights: no answer is wrong', () => {
+    const bet = level.flow[1];
+    if (bet?.step !== 'ask') throw new Error('6.3 bets before the automaton runs');
+    expect(said(bet.prompt)).toMatch(/^Antes de mirar: .*¿cuántos faroles/);
+    expect(bet.retry).toBe(false);
+    expect(bet.options.every((option) => option.correct && option.reply === undefined)).toBe(true);
+    expect(bet.options.map((option) => said(option.line))).toEqual([
+      'Cuatro, como yo.',
+      'Menos de cuatro.',
+    ]);
+    expect(starsCeiling(level.data)).toBe(2);
   });
 
   it('searches from every sprout in the dark, with every move the automaton makes allowed', () => {

@@ -25,6 +25,20 @@
       "lines": ["ch6.7.sauce.00", "ch6.7.bruto.01"]
     },
     {
+      "step": "ask",
+      "prompt": "ch6.7.sauce.13",
+      "options": [
+        {
+          "line": "ch6.7.gardener.14",
+          "correct": true
+        },
+        {
+          "line": "ch6.7.gardener.15",
+          "correct": true
+        }
+      ]
+    },
+    {
       "step": "race",
       "family": "half",
       "size": 4,
@@ -92,6 +106,10 @@
     }
   ],
   "solution": [
+    {
+      "type": "answer",
+      "option": 1
+    },
     {
       "type": "answer",
       "option": 0
