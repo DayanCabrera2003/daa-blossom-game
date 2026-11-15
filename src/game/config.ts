@@ -6,6 +6,7 @@ import { HubScene } from './scenes/HubScene';
 import { LevelGate } from './scenes/LevelGate';
 import { PreloadScene } from './scenes/PreloadScene';
 import { SandboxGate } from './scenes/SandboxGate';
+import { TitleScene } from './scenes/TitleScene';
 import { CreditsGate } from './scenes/CreditsGate';
 import { PALETTE } from './view/palette';
 
@@ -42,6 +43,7 @@ export function gameConfig(
     scene: [
       BootScene,
       PreloadScene,
+      TitleScene,
       HubScene,
       LevelGate,
       CounterexampleScene,

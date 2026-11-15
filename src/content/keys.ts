@@ -388,6 +388,7 @@ const UI = {
   'victory.hub': [],
   'victory.free': [],
   'hub.title': [],
+  'title.start': [],
   'hub.chapter': ['number'],
   'hub.locked': [],
   'hub.secret.bud': ['need', 'have'],

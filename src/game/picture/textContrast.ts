@@ -98,6 +98,21 @@ export const TEXTS: readonly TextOnSurface[] = [
     surface: fill('lit', 1, 'hub'),
     outlined: false,
   },
+  // The title screen, on the hub's grass.
+  {
+    file: 'scenes/TitleScene.ts',
+    what: 'name',
+    text: 'lit',
+    surface: backdrop('hub'),
+    outlined: true,
+  },
+  {
+    file: 'scenes/TitleScene.ts',
+    what: 'invitation',
+    text: 'label',
+    surface: backdrop('hub'),
+    outlined: true,
+  },
   {
     file: 'scenes/HubScene.ts',
     what: 'chapter title',

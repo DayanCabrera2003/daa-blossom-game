@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { startScreen } from '@services/startScreen';
 import type { AssetKey } from '../assets/keys';
 import { BOOT_KEYS, loadRequests, recolouredSheets } from '../assets/loadPlan';
 import { LOADING_TONES, loadingBar } from '../picture/loadingBar';
@@ -9,6 +10,7 @@ import { openLevel } from './LevelGate';
 import { queueLoads } from './queueLoads';
 import { SANDBOX_GATE, type SandboxSceneData } from './SandboxGate';
 import { paletteFrom, recolourSheets } from './recolourSheets';
+import { TITLE_SCENE } from './TitleScene';
 
 /** The palette swatch the Kenney sheets are recoloured to. */
 const PALETTE_KEY: AssetKey = 'image.palette';
@@ -17,7 +19,8 @@ const PALETTE_KEY: AssetKey = 'image.palette';
  * Loads the `boot` group (`game/assets/loadPlan.ts` says what it holds) behind a loading bar, which
  * takes over from the lantern the page drew before the script (it says so on the bus), then
  * recolours the Kenney sheets to the Ninja Adventure palette read from its swatch, and hands over
- * to the hub, or straight to a level when teacher mode asks for one (`?teacher&level=ID`), or to
+ * to the screen `services/startScreen.ts` chooses: the hub, or the title for a player with no
+ * garden won, or straight to a level when teacher mode asks for one (`?teacher&level=ID`), or to
  * the free mode when a shared link brings a garden (`?garden=CODE`; a teacher's level comes first).
  * A file that fails to load is left out; the game still starts, drawing what it has.
  */
@@ -53,13 +56,14 @@ export class PreloadScene extends Phaser.Scene {
         paletteFrom(this.textures, PALETTE_KEY),
       );
     }
-    const { startLevel, startGarden } = contextOf(this);
-    if (startLevel !== null) openLevel(this, { levelId: startLevel });
-    else if (startGarden !== null)
+    const { startLevel, startGarden, teacherMode, saves } = contextOf(this);
+    const first = startScreen({ startLevel, startGarden, teacherMode, save: saves.get() });
+    if (first.kind === 'level') openLevel(this, { levelId: first.levelId });
+    else if (first.kind === 'garden')
       this.scene.start(SANDBOX_GATE, {
-        garden: startGarden,
+        garden: first.code,
         returning: false,
       } satisfies SandboxSceneData);
-    else this.scene.start('hub');
+    else this.scene.start(first.kind === 'title' ? TITLE_SCENE : 'hub');
   }
 }
