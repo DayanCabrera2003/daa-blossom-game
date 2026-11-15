@@ -650,7 +650,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 #### 4.7 Flor con tallo largo
 - **Jardín:** `R–a=b–c=d` (tallo de longitud 4) y triángulo `d–e=f–d`, con salida `e–T`, T libre.
 - **Enseña:** la **base** es el pétalo cuyo farol sale de la flor (d, con `c=d`), y el **tallo** es el camino desde el solitario hasta la base. La cadena pasa por el tallo entero, entra por e, sale por la base.
-- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "La base de una flor es…" (a) "…el único pétalo sin pareja dentro de la flor: su farol va hacia fuera, o no tiene" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia (d) "…el pétalo cuyo farol va a otro pétalo de la flor" ✘ (dentro de la flor los faroles van de pétalo a pétalo; la base es la que se queda sin pareja dentro).
+- **Cuaderno** (antes del resumen de Sauce, que es la respuesta al acierto): "La base de una flor es…" (a) "…el único pétalo sin pareja dentro: su farol sale, o no tiene" ✔ (b) "…el pétalo más cercano a mí" ✘ (c) "…cualquier pétalo" ✘ contraejemplo: desplegar desde otro rompe la alternancia (d) "…el pétalo cuyo farol va a otro pétalo de la flor" ✘ (dentro de la flor los faroles van de pétalo a pétalo; la base es la que se queda sin pareja dentro).
 - **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en `d–f` hasta plegar). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 4.8 Dos flores
