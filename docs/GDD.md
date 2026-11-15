@@ -341,6 +341,8 @@ Las tarjetas explican el gesto, **nunca la idea**: "arrastra desde un brote a os
 
 Total: unos 55 niveles y unas 4 horas de juego para un jugador nuevo. Ningún nivel debería superar los 4 minutos si no hay atasco.
 
+**Entrada y hub.** Quien llega sin ningún jardín ganado ve primero una pantalla de título, sin arte nuevo (el césped del hub, la paleta y la fuente de siempre): «Florecer» y «Toca para empezar»; un toque, Intro o Espacio llevan a 0.1. Con algún jardín ganado se entra directo al hub. Los enlaces que piden otra cosa (modo profesor, `?level=`, un jardín compartido con `?garden=`) se saltan el título. En el hub, el siguiente jardín por jugar (el primero abierto y aún sin ganar, en el orden del catálogo) late con un brillo suave, quieto si el sistema pide menos movimiento. Tocar un jardín cerrado no lo abre: un aviso dice «Todavía cerrado». Cada botón guarda desde el principio el sitio de todas las estrellas que su nivel puede dar (§5.4), así que ganar estrellas no lo ensancha ni mueve a los demás.
+
 Formato de cada nivel en la sección 7:
 
 - **Jardín:** los brotes y enredaderas. Notación: `A–B` enredadera apagada, `A=B` farol ya encendido al empezar, `(libre)` brote solitario relevante.
