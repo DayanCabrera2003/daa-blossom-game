@@ -15,11 +15,16 @@
   "victory": { "type": "matchingSize", "value": 1 },
   "flow": [
     { "step": "bet", "prompt": "ch0.4.sauce.00", "range": 4, "informal": true },
-    { "step": "play" },
+    {
+      "step": "play",
+      "reactions": [{ "on": "lanterns", "value": 1, "say": ["ch0.4.sauce.02"] }],
+      "until": { "refused": "alreadyLit" }
+    },
     { "step": "say", "lines": ["ch0.4.sauce.01"] }
   ],
   "solution": [
     { "type": "bet", "value": 1 },
-    { "type": "join", "u": "Hortensia", "v": "L" }
+    { "type": "join", "u": "Hortensia", "v": "L" },
+    { "type": "refusedMove", "move": { "type": "join", "u": "M", "v": "Hortensia" } }
   ]
 }

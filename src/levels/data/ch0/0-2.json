@@ -12,6 +12,16 @@
   "goal": { "visible": true, "value": 1 },
   "victory": { "type": "matchingSize", "value": 1 },
   "hints": [{ "line": "ch0.2.sauce.01" }],
-  "flow": [{ "step": "play" }, { "step": "say", "lines": ["ch0.2.sauce.00"] }],
-  "solution": [{ "type": "join", "u": "A", "v": "B" }]
+  "flow": [
+    {
+      "step": "play",
+      "reactions": [{ "on": "lanterns", "value": 1, "say": ["ch0.2.sauce.02"] }],
+      "until": { "refused": "alreadyLit" }
+    },
+    { "step": "say", "lines": ["ch0.2.sauce.00"] }
+  ],
+  "solution": [
+    { "type": "join", "u": "A", "v": "B" },
+    { "type": "refusedMove", "move": { "type": "join", "u": "C", "v": "B" } }
+  ]
 }
