@@ -346,7 +346,7 @@ Cada uno crece junto al poste del cartel de su capítulo, en un hueco reservado 
 
 ### 5.11 Tarjetas de mecánica
 
-La primera vez que una mecánica está disponible, una ventana breve enseña **cómo se usa**: un título, dos o tres líneas sobre el gesto y una mini demostración animada (un jardín diminuto que hace el gesto solo, en bucle). Las herramientas se presentan al empezar el nivel, salvo si el nivel abre con una línea de Sauce (un `say`): entonces salen justo después de esa línea, para que lo primero sea la historia y el jardín que nombra; los pasos del guion (apuesta, Cuaderno, reflejo, dibujar el espejo) cuando llegan. Cada tarjeta se ve una sola vez por jugador y se puede volver a abrir con el botón "?" del HUD.
+La primera vez que una mecánica está disponible, una ventana breve enseña **cómo se usa**: un título, dos o tres líneas sobre el gesto y una mini demostración animada (un jardín diminuto que hace el gesto solo, en bucle). Las herramientas se presentan al empezar el nivel, salvo si el nivel abre con una línea de Sauce (un `say`): entonces salen justo después de esa línea, para que lo primero sea la historia y el jardín que nombra; los pasos del guion (apuesta, Cuaderno, reflejo, dibujar el espejo) cuando llegan. En un nivel que primero solo mira (3.1), cada herramienta espera a su paso: Inspeccionar sale al empezar el paso de mirar, y las marcas al empezar el de jugar. Cada tarjeta se ve una sola vez por jugador y se puede volver a abrir con el botón "?" del HUD.
 
 Las tarjetas explican el gesto, **nunca la idea**: "arrastra desde un brote a oscuras siguiendo las enredaderas" sí; "esto enciende un farol más porque…" no. Lo que una mecánica significa lo descubre el jugador y lo nombra Sauce después (principios 1, 2 y 4).
 
@@ -540,13 +540,14 @@ Tú: 5 faroles. Reflejo: 6.
 
 #### 2.4 Reto del espejo (adversario)
 - **Jardín:** una cuadrícula de 4 × 4 brotes (A–D, E–H, I–L, M–P) con tres enredaderas de menos: A no toca a E, y C no toca ni a D ni a G, así que A y C solo cuelgan de B. Tuyo: `A=B, F=J, G=H, I=M, K=L, N=O` (6 faroles; C, D, E y P a oscuras). El máximo es 7 y deja **dos brotes a oscuras** (A o C, que se disputan el farol de B, y uno más): ganarle al jardín final no es imposible "por contar" (16 brotes dan para 8 faroles), lo es porque ya no queda cadena.
+- **El borrador:** cada dibujo del reflejo empieza con tus faroles ya puestos en plateado; el jugador quita y pone desde ahí, en vez de construir a mano, dos veces, un jardín de 16 brotes.
 - **Enseña, en dos fases:**
   - **(a) Ganarle a tu jardín.** Ahora el jugador es el reflejo: "Juega a ser el agua: dibuja un reflejo que encienda más faroles que tu jardín." Cada reflejo mejor que comprueba: el juego superpone, separa y señala el hilo ganador, que resulta ser una cadena de tu jardín (dos reflejos mejores distintos). Sauce: "Quien te gana te deja una cadena. Úsala." El jugador la usa (7 faroles).
   - **(b) Intentarlo sin cadena.** En el mismo jardín, ya sin ninguna cadena: "Intenta ganarle otra vez." Cada comprobación dice "ese no te gana"; tras tres, Sauce: "No se puede. Si no tienes cadena, nadie te gana." y abre el Cuaderno.
 - **Por qué aquí:** el jugador vive las dos direcciones de Berge con sus manos: quien gana deja una cadena (ya visto en 2.1–2.3, ahora como autor del reflejo) y, sin cadena, la imposibilidad, que es la dirección difícil.
 - **Pistas:** (1) "Dibuja siete faroles plateados, sin que ningún brote cargue dos." (2) "Mira dónde gana el agua." (3) el mentor dibuja un reflejo mejor (en la fase (a)) o da el primer paso de la cadena. En la fase (b) no hay pistas: no hay nada que encontrar, y el paso termina tras tres comprobaciones.
 - **Victoria:** usar la cadena (7 faroles) y terminar las dos fases.
-- **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…cualquier otra disposición encenderá como mucho los mismos" ✔ (b) "…nadie gana mientras busque bien" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ contraejemplo: cadena escondida larga.
+- **Cuaderno:** "Si en mi jardín no queda ninguna cadena…" (a) "…cualquier otra disposición encenderá como mucho los mismos" ✔ (b) "…nadie gana mientras busque bien" ✘ (c) "…puede que alguien lo haga mejor con otra disposición" ✘ contraejemplo interactivo: se le pide encontrar esa disposición y aparece la cadena. (d) "…si busco tres veces y no la encuentro, terminé" ✘ Sauce: "Tres intentos no prueban nada. Lo que lo prueba es que ya no queda ninguna cadena.", y el contraejemplo: cadena escondida larga.
 - **Desbloquea:** Códex **C3 Lema de Berge**. Hub: el estanque.
 - **Al final** (tras el Cuaderno): Sauce: "En el Códex esto tiene nombre: lee «El hilo ganador»."
 
@@ -570,9 +571,12 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 
 #### 3.1 Niebla
 - **Jardín:** `R–a=b–c=d–T` en niebla. R libre (abeja), T libre (trébol).
-- **Enseña:** inspeccionar y marcar. R sol, a luna, b sol, c luna, d sol, T luna y solitaria → cadena.
+- **Enseña, en dos pasos de juego dentro del mismo nivel** (no estrena a la vez niebla, gotas, inspeccionar, soles, lunas y abejas/tréboles):
+  - **(a) Solo mirar.** Solo se puede inspeccionar; la tarjeta de Inspeccionar sale al empezar este paso. El paso acaba al inspeccionar a alguien a oscuras.
+  - **(b) Marcar.** Al empezar, la tarjeta de las marcas. R sol, a luna, b sol, c luna, d sol, T luna y solitaria → cadena.
+  - Deshacer y «Reiniciar» no cruzan de un paso a otro: en (b) vuelven al jardín con el que empezó (b), y la gota de (a) sigue gastada.
 - **Guion:** Sauce: "De noche no se ve el jardín entero. Se ve lo que tu luz alcanza. Sal de alguien a oscuras y camina."
-- **Pistas:** (1) "¿Dónde empieza siempre una cadena?" (2) R brilla. (3) el mentor inspecciona R y marca sol.
+- **Pistas:** en (a): (1) "¿Dónde empieza siempre una cadena?" (2) R brilla. (3) el mentor inspecciona R. En (b): (1) desde un sol, una enredadera apagada lleva a una luna (2) R brilla (3) el mentor marca el sol de R.
 - **Victoria:** cadena encontrada con las marcas y aplicada (regla `seen`).
 - **Desbloquea:** Inspeccionar, marcas.
 
@@ -662,7 +666,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 #### 4.4 Plegar
 - **Jardín:** el de 4.1.
 - **Enseña:** al tocar el conflicto `d–b`, el triángulo `b, c, d` **se pliega en una flor** con tres pétalos, marcada sol. Ahora, desde la flor, todas las enredaderas apagadas de cualquier pétalo cuentan: `c–e` se explora, e es luna y solitaria → **cadena a través de la flor**.
-- **Guion:** Sauce: "Si todos pueden ser sol, trátalos como un solo sol grande. Ciérralos como una flor."
+- **Guion:** abre con una pregunta sobre el jardín de 4.2, antes de que nadie diga qué es plegar: "Si cualquiera del bucle puede ser sol, ¿desde cuáles tiene que seguir mirando tu luz?" → "Desde todos" ✔ / "Solo desde el primero que encontró" ✘ contraejemplo jugable: el jardín de 4.1, donde la cadena sale del bucle por c y no por b, el primero / "Desde ninguno" ✘. La respuesta al acierto es la de Sauce: "Si todos pueden ser sol, trátalos como un solo sol grande. Ciérralos como una flor."
 - **Victoria:** plegar y encontrar la cadena (aún sin aplicarla: eso es 4.5). La luz busca desde R (§5.1, «La luz busca»): el jugador la avanza, la luz se para en `d–b` y solo sigue tras plegar. Hoy no se mueve ningún farol: juntar, separar, pasar el farol y cadena están cerrados.
 - **Desbloquea:** Plegar y «Avanzar la luz».
 
@@ -723,7 +727,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 - **Desbloquea:** Códex **C6 Bucles impares**, **C7 La flor** y **C8 Lema de la flor**.
 
 #### 4.12 Maestría del Festival
-- **Jardín:** 18 brotes en niebla, presupuesto de agua (el mínimo de inspecciones más dos, como en el Invernadero), faroles iniciales, dos flores necesarias en distintas rondas.
+- **Jardín:** 19 brotes en niebla, presupuesto de agua (el mínimo de inspecciones más dos, como en el Invernadero), faroles iniciales, dos flores necesarias en distintas rondas, y un brote colgante, W, que ningún máximo enciende: la última ronda sale de W y acaba en «Tu luz ya miró todas las enredaderas» con W a oscuras, así que «Terminé» pide fiarse de una búsqueda que fracasa.
 - **Objetivo:** oculto. Estrella extra: dentro del agua.
 - **Victoria:** máximo y "Terminé" (aún sin certificado general: eso es el capítulo 7). La luz busca desde los brotes a oscuras, en orden, y se para en cada flor y ante cada sol en la niebla. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados. Hub: el festival.
 - **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Bucles impares», «La flor» y «Plegar no esconde cadenas»."
@@ -759,7 +763,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 - **Victoria:** cadena aplicada, la que encontró la luz desde R (se para en las dos flores hasta plegarlas). Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.4 Jardín salvaje
-- **Jardín:** 16 brotes, dos anidamientos distintos, tres rondas de cadena.
+- **Jardín:** 17 brotes, dos anidamientos distintos, tres rondas de cadena, y un brote colgante, W (cuelga de a): tras la tercera cadena, la luz sale de W, no encuentra ninguna y W se queda a oscuras.
 - **Victoria:** máximo. La luz busca desde los brotes a oscuras, en orden, y pliega en cada ronda. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.5 Maestría del Jardín Salvaje
