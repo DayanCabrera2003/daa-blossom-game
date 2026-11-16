@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 526 líneas, 79 están tal cual en el GDD y 447 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 527 líneas, 70 están tal cual en el GDD y 457 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -37,7 +37,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 1.1
 
 - [ ] `ch1.1.sauce.00` · **Sauce** · GDD: Mira otra forma de ver lo que pasó: si Beto le da su farol a Ana, Cleo puede buscar a Dani. Eso es pasar el farol.
-- [ ] `ch1.1.sauce.01` · **Sauce** · GDD: ¿Ana puede hablar con alguien?
+- [ ] `ch1.1.sauce.01` · **Sauce** · plan: Beto y Cleo ya tienen farol. Un farol encendido también se puede apagar: tócalo.
 - [ ] `ch1.1.sauce.02` · **Sauce** · plan: Mira a Ana y a Dani, ahí en las esquinas.
 - [ ] `ch1.1.sauce.03` · **Sauce** · plan: Te ayudo. A veces hay que apagar un farol para encender dos.
 
@@ -114,7 +114,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch1.10.sauce.00` · **Sauce** · plan: Un jardín secreto, solo para ti. Esta noche caben diez faroles. Antes de tirar de una cadena, míralo bien: casi todas se quedan por el camino.
 - [ ] `ch1.10.sauce.01` · **Sauce** · plan: Ese farol acabó en un rincón sin salida. No pasa nada: prueba por otra rama.
 - [ ] `ch1.10.sauce.02` · **Sauce** · plan: Doce caminos se rinden. Uno llega.
-- [ ] `ch1.10.sauce.03` · **Sauce** · plan: Mira a Teo, al final de todo. Él también espera su farol.
+- [ ] `ch1.10.sauce.03` · **Sauce** · plan: Mira a T, al final de todo. Él también espera su farol.
 - [ ] `ch1.10.sauce.04` · **Sauce** · plan: Mira, te enseño por dónde va.
 - [ ] `ch1.10.sauce.05` · **Sauce** · plan: Doce rincones sin salida y una sola cadena de punta a punta. La encontraste tú. Este jardín secreto es tuyo.
 
@@ -122,81 +122,81 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 2.1
 
-- [ ] `ch2.1.sauce.00` · **Sauce** · GDD: El agua dice que se puede mejor. No te fíes del agua: mírala.
-- [ ] `ch2.1.sauce.01` · **Sauce** · plan: Ámbar, tus faroles. Plateados, los del agua. Toca un brote y mira cuántos hilos le salen.
-- [ ] `ch2.1.sauce.02` · **Sauce** · GDD: ¿Cuántos hilos puede tener un brote como máximo?
+- [ ] `ch2.1.sauce.00` · **Sauce** · plan: El reflejo dice que se puede mejor. No te fíes del reflejo: míralo.
+- [ ] `ch2.1.sauce.01` · **Sauce** · plan: Ámbar, tus faroles. Plateados, los del reflejo. Toca un brote y mira cuántos faroles carga.
+- [ ] `ch2.1.sauce.02` · **Sauce** · plan: ¿Cuántos faroles, de los dos colores, puede cargar un brote como máximo?
 - [ ] `ch2.1.gardener.03` · **Tú** · plan: Uno.
 - [ ] `ch2.1.gardener.04` · **Tú** · plan: Dos.
 - [ ] `ch2.1.gardener.05` · **Tú** · plan: Tres.
 - [ ] `ch2.1.gardener.06` · **Tú** · plan: Cuatro.
-- [ ] `ch2.1.sauce.07` · **Sauce** · plan: Dos: uno tuyo y uno del agua. Nadie carga dos faroles en la misma noche.
-- [ ] `ch2.1.sauce.08` · **Sauce** · plan: Mira otra vez. ¿Cuántos faroles tuyos puede cargar un brote? ¿Y del agua?
-- [ ] `ch2.1.sauce.09` · **Sauce** · plan: Entonces la maraña no puede enredarse mucho. Toca el agua y verás.
-- [ ] `ch2.1.sauce.10` · **Sauce** · plan: Hilos sueltos y bucles. Nada más. Y lo que tenéis en común se lo lleva el agua.
-- [ ] `ch2.1.sauce.11` · **Sauce** · plan: Toca un brote del medio y cuenta los hilos que le salen.
-- [ ] `ch2.1.sauce.12` · **Sauce** · plan: Mira a 3: un hilo ámbar y otro plateado.
+- [ ] `ch2.1.sauce.07` · **Sauce** · plan: Dos: uno tuyo y uno del reflejo. Nadie carga dos del mismo color.
+- [ ] `ch2.1.sauce.08` · **Sauce** · plan: Mira otra vez. ¿Cuántos faroles tuyos puede cargar un brote? ¿Y del reflejo?
+- [ ] `ch2.1.sauce.09` · **Sauce** · plan: Entonces la maraña no puede enredarse mucho. Toca el jardín y verás.
+- [ ] `ch2.1.sauce.10` · **Sauce** · plan: Hilos sueltos y bucles. Nada más. Y los faroles que compartes con el reflejo se desvanecen.
+- [ ] `ch2.1.sauce.11` · **Sauce** · plan: Toca un brote del medio y cuenta los faroles que carga.
+- [ ] `ch2.1.sauce.12` · **Sauce** · plan: Mira a 3: un farol ámbar y otro plateado.
 
 ### 2.2
 
-- [ ] `ch2.2.sauce.00` · **Sauce** · plan: Hoy el agua no se libra: vamos a contarle los faroles, pieza a pieza. Toca el agua para separar la maraña.
+- [ ] `ch2.2.sauce.00` · **Sauce** · plan: Hoy el reflejo no se libra: vamos a contarle los faroles, pieza a pieza. Toca el jardín para separar la maraña.
 - [ ] `ch2.2.sauce.01` · **Sauce** · plan: Empieza por el bucle. ¿Cuántos faroles tuyos tiene?
-- [ ] `ch2.2.sauce.02` · **Sauce** · plan: ¿Y cuántos del agua?
+- [ ] `ch2.2.sauce.02` · **Sauce** · plan: ¿Y cuántos del reflejo?
 - [ ] `ch2.2.sauce.03` · **Sauce** · plan: Empate. En un bucle nadie le gana a nadie.
 - [ ] `ch2.2.sauce.04` · **Sauce** · plan: Ahora el hilo. ¿Cuántos faroles tuyos tiene?
-- [ ] `ch2.2.sauce.05` · **Sauce** · plan: ¿Y cuántos del agua?
-- [ ] `ch2.2.sauce.06` · **Sauce** · plan: Ahí está la presunción del agua: en el hilo te gana por uno.
+- [ ] `ch2.2.sauce.05` · **Sauce** · plan: ¿Y cuántos del reflejo?
+- [ ] `ch2.2.sauce.06` · **Sauce** · plan: Ahí está la presunción del reflejo: en el hilo te gana por uno.
 - [ ] `ch2.2.sauce.07` · **Sauce** · GDD: ¿Puede un hilo ganar por dos?
 - [ ] `ch2.2.gardener.08` · **Tú** · plan: Sí.
 - [ ] `ch2.2.gardener.09` · **Tú** · plan: No.
-- [ ] `ch2.2.sauce.10` · **Sauce** · plan: Recórrelo con el dedo: tuyo, del agua, tuyo, del agua… Se turnan. ¿Cómo iba a sacarte dos?
-- [ ] `ch2.2.sauce.11` · **Sauce** · plan: Eso es. En un hilo los faroles se turnan, uno tuyo y uno del agua. El que empieza y termina lleva uno más. Nunca dos.
+- [ ] `ch2.2.sauce.10` · **Sauce** · plan: Recórrelo con el dedo: tuyo, del reflejo, tuyo, del reflejo… Se turnan. ¿Cómo iba a sacarte dos?
+- [ ] `ch2.2.sauce.11` · **Sauce** · plan: Eso es. En un hilo los faroles se turnan, uno tuyo y uno del reflejo. El que empieza y termina lleva uno más. Nunca dos.
 - [ ] `ch2.2.sauce.12` · **Sauce** · plan: Cuenta solo los faroles de esa pieza, uno a uno.
-- [ ] `ch2.2.sauce.13` · **Sauce** · plan: Ámbar son los tuyos; plateados, los del agua.
+- [ ] `ch2.2.sauce.13` · **Sauce** · plan: Ámbar son los tuyos; plateados, los del reflejo.
 
 ### 2.3
 
-- [ ] `ch2.3.sauce.00` · **Sauce** · plan: Mira el hilo de arriba, el que gana el agua. ¿Cómo empieza? ¿Cómo termina?
+- [ ] `ch2.3.sauce.00` · **Sauce** · plan: Mira el hilo de arriba, el que gana el reflejo. ¿Cómo empieza? ¿Cómo termina?
 - [ ] `ch2.3.sauce.01` · **Sauce** · plan: Con farol plateado en las dos puntas. ¿Y esas dos puntas, cómo duermen en tu jardín?
 - [ ] `ch2.3.sauce.02` · **Sauce** · GDD: Cuando alguien puede hacerlo mejor que tú, te ha dejado una cadena tirada en el suelo. Siempre.
 - [ ] `ch2.3.sauce.03` · **Sauce** · plan: ¿Quién está a oscuras en tu jardín?
 - [ ] `ch2.3.sauce.04` · **Sauce** · plan: Empieza por esta punta del hilo. ¿Dónde acaba?
-- [ ] `ch2.3.sauce.05` · **Sauce** · GDD: ¿Podría la punta de un hilo que gana el agua tener un farol tuyo?
+- [ ] `ch2.3.sauce.05` · **Sauce** · plan: ¿Podría la punta de un hilo que gana el reflejo tener un farol tuyo?
 - [ ] `ch2.3.gardener.06` · **Tú** · plan: Sí, a veces: depende del jardín.
 - [ ] `ch2.3.sauce.07` · **Sauce** · plan: Nunca. Una punta lleva farol plateado; si también tuviera uno tuyo, el hilo seguiría por él, y ya no sería una punta.
 - [ ] `ch2.3.gardener.08` · **Tú** · plan: No: si lo tuviera, el hilo seguiría por él.
 
 ### 2.4
 
-- [ ] `ch2.4.sauce.00` · **Sauce** · plan: Estos faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo que encienda más faroles que tu jardín.
+- [ ] `ch2.4.sauce.00` · **Sauce** · plan: Estos faroles son tuyos. Ahora el reflejo eres tú: dibuja uno que encienda más faroles que tu jardín.
 - [ ] `ch2.4.sauce.01` · **Sauce** · plan: Toca una enredadera para ponerle un farol plateado. Cuando lo tengas, pulsa «Comprobar».
 - [ ] `ch2.4.sauce.02` · **Sauce** · GDD: Quien te gana te deja una cadena. Úsala.
 - [ ] `ch2.4.sauce.03` · **Sauce** · plan: Esto merece quedar escrito. Abre tu Cuaderno y elige lo que es verdad.
 - [ ] `ch2.4.notebook.04` · **Cuaderno** · GDD: Si en mi jardín no queda ninguna cadena…
 - [ ] `ch2.4.notebook.05` · **Cuaderno** · plan: …cualquier otra disposición encenderá como mucho los mismos.
-- [ ] `ch2.4.notebook.06` · **Cuaderno** · plan: …nadie gana, salvo el agua.
+- [ ] `ch2.4.notebook.06` · **Cuaderno** · plan: …nadie gana, salvo el reflejo.
 - [ ] `ch2.4.notebook.07` · **Cuaderno** · plan: …puede que alguien lo haga mejor con otra disposición.
 - [ ] `ch2.4.notebook.08` · **Cuaderno** · plan: …si busco tres veces y no la encuentro, terminé.
-- [ ] `ch2.4.sauce.09` · **Sauce** · plan: Eso es. Sin cadena, nadie te gana. Ni el agua.
-- [ ] `ch2.4.sauce.10` · **Sauce** · plan: Ni el agua: su reflejo es otra disposición más. Si no queda ninguna cadena, ninguna te gana.
+- [ ] `ch2.4.sauce.09` · **Sauce** · plan: Eso es. Sin cadena, nadie te gana. Ni el reflejo.
+- [ ] `ch2.4.sauce.10` · **Sauce** · plan: Ni el reflejo: es otra disposición más. Si no queda ninguna cadena, ninguna te gana.
 - [ ] `ch2.4.sauce.11` · **Sauce** · plan: ¿Otra disposición mejor? Búscala: dibújala en plateado sobre este jardín y compruébala.
 - [ ] `ch2.4.sauce.12` · **Sauce** · plan: Ahí la tienes: quien te gana te deja una cadena. Sin cadena, no hay disposición mejor.
 - [ ] `ch2.4.sauce.13` · **Sauce** · plan: Aquí se esconde una cadena larga. Tres callejones te dirán que no hay. Síguela hasta el final.
 - [ ] `ch2.4.sauce.14` · **Sauce** · GDD: Dibuja siete faroles plateados, sin que ningún brote cargue dos.
-- [ ] `ch2.4.sauce.15` · **Sauce** · GDD: Mira dónde gana el agua.
+- [ ] `ch2.4.sauce.15` · **Sauce** · plan: Mira dónde gana el reflejo.
 - [ ] `ch2.4.sauce.16` · **Sauce** · plan: Ahora tu jardín no tiene ninguna cadena. Intenta ganarle otra vez.
 - [ ] `ch2.4.sauce.17` · **Sauce** · plan: No se puede.
 - [ ] `ch2.4.sauce.18` · **Sauce** · GDD: En el Códex esto tiene nombre: lee «El hilo ganador».
 
 ### 2.5
 
-- [ ] `ch2.5.sauce.00` · **Sauce** · plan: Un jardín secreto del Estanque. El agua vuelve a presumir, y esta vez solo te saca un farol.
-- [ ] `ch2.5.sauce.01` · **Sauce** · plan: Antes de separar la maraña: ¿en cuántos hilos te gana el agua?
-- [ ] `ch2.5.sauce.02` · **Sauce** · plan: En dos. Un farol de diferencia no quiere decir un solo hilo: uno de los hilos lo ganas tú. Toca el agua para separar la maraña y míralo.
-- [ ] `ch2.5.sauce.03` · **Sauce** · plan: Enciende lo que te enseñan los dos hilos del agua y pulsa «Terminé» cuando no quepa más.
-- [ ] `ch2.5.sauce.04` · **Sauce** · plan: ¿Qué hilos gana el agua? Cada uno esconde una cadena.
+- [ ] `ch2.5.sauce.00` · **Sauce** · plan: Un jardín secreto del Estanque. El reflejo vuelve a presumir, y esta vez solo te saca un farol.
+- [ ] `ch2.5.sauce.01` · **Sauce** · plan: Antes de separar la maraña: ¿en cuántos hilos gana el reflejo?
+- [ ] `ch2.5.sauce.02` · **Sauce** · plan: En dos. Un farol de diferencia no quiere decir un solo hilo: uno de los hilos lo ganas tú. Toca el jardín para separar la maraña y míralo.
+- [ ] `ch2.5.sauce.03` · **Sauce** · plan: Enciende lo que te enseñan los dos hilos del reflejo y pulsa «Terminé» cuando no quepa más.
+- [ ] `ch2.5.sauce.04` · **Sauce** · plan: ¿Qué hilos gana el reflejo? Cada uno esconde una cadena.
 - [ ] `ch2.5.sauce.05` · **Sauce** · plan: Mira este hilo desde esta punta. ¿Dónde acaba?
 - [ ] `ch2.5.sauce.06` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
-- [ ] `ch2.5.sauce.07` · **Sauce** · plan: Diez faroles, uno más que el agua. Restar no bastaba: había que mirar cada pieza.
+- [ ] `ch2.5.sauce.07` · **Sauce** · plan: Diez faroles, uno más que el reflejo. Restar no bastaba: había que mirar cada pieza.
 
 ## Capítulo 3
 
@@ -207,7 +207,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.1.sauce.02` · **Sauce** · GDD: ¿Dónde empieza siempre una cadena?
 - [ ] `ch3.1.sauce.03` · **Sauce** · plan: R lleva toda la noche a oscuras. Empieza por él.
 - [ ] `ch3.1.sauce.04` · **Sauce** · plan: Déjame: miro las enredaderas de R. Ahora ponle tú un sol.
-- [ ] `ch3.1.sauce.05` · **Sauce** · plan: Saliste con la mano libre, llegaste pidiendo, y al final alguien estaba solo. Esa era tu cadena.
+- [ ] `ch3.1.sauce.05` · **Sauce** · plan: A quien sale con la mano libre le pusiste un sol. A quien llegaste pidiendo, una luna. Y al final alguien estaba solo: esa era tu cadena.
 
 ### 3.2
 
@@ -219,7 +219,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.3
 
-- [ ] `ch3.3.sauce.00` · **Sauce** · plan: Esta noche no te pido una cadena: te pido que termines la búsqueda, haya cadena o no. Y que gastes poca agua.
+- [ ] `ch3.3.sauce.00` · **Sauce** · plan: Esta noche no te pido una cadena: te pido que termines la búsqueda, haya cadena o no. Y que gastes pocas gotas.
 - [ ] `ch3.3.sauce.01` · **Sauce** · plan: ¿Quién tiene sol y todavía no ha mirado sus enredaderas?
 - [ ] `ch3.3.sauce.02` · **Sauce** · plan: Desde aquí se llega dos veces al mismo sitio. Fíjate qué pasa la segunda vez.
 - [ ] `ch3.3.sauce.03` · **Sauce** · plan: Empiezo yo. Lo demás es seguir las reglas.
@@ -239,7 +239,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.4.sauce.01` · **Sauce** · plan: ¿Cuántos siguen a oscuras? Cada uno puede empezar su propia búsqueda.
 - [ ] `ch3.4.sauce.02` · **Sauce** · plan: Empieza aquí, con un sol. ¿Quién más podría empezar su propia búsqueda?
 - [ ] `ch3.4.sauce.03` · **Sauce** · plan: Empiezo yo por R1. El otro es tuyo.
-- [ ] `ch3.4.sauce.04` · **Sauce** · plan: Dos luces se tocaron: sol con sol, y cada uno de un árbol distinto. Eso es una cadena de un solitario al otro.
+- [ ] `ch3.4.sauce.04` · **Sauce** · plan: Dos luces se tocaron: sol con sol, y cada uno de un árbol distinto. Eso es una cadena de un brote a oscuras al otro.
 - [ ] `ch3.4.sauce.05` · **Sauce** · GDD: Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?
 - [ ] `ch3.4.gardener.06` · **Tú** · plan: Un bucle que vuelve al mismo brote.
 - [ ] `ch3.4.sauce.07` · **Sauce** · plan: No: cada camino acaba en su propio brote a oscuras, y son dos distintos. No se cierra nada.
@@ -249,10 +249,10 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.5
 
-- [ ] `ch3.5.sauce.00` · **Sauce** · plan: Hoy el agua viene contada: una gota por brote, y dos de regalo. No mires por mirar: mira a quien tiene sol.
+- [ ] `ch3.5.sauce.00` · **Sauce** · plan: Hoy las gotas vienen contadas: una por brote, y dos de regalo. No mires por mirar: mira a quien tiene sol.
 - [ ] `ch3.5.sauce.01` · **Sauce** · plan: ¿Quién sigue a oscuras? Por ahí empieza todo.
 - [ ] `ch3.5.sauce.02` · **Sauce** · plan: Estos cuatro esperan un farol. Sal de uno de ellos.
-- [ ] `ch3.5.sauce.03` · **Sauce** · plan: Te enseño el primer paso. El agua es tuya.
+- [ ] `ch3.5.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Las gotas son tuyas.
 - [ ] `ch3.5.sauce.04` · **Sauce** · plan: Siguiendo las reglas, cada gota sirvió para algo. Mirar sin orden es lo que sale caro.
 
 ### 3.6
@@ -280,9 +280,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.8.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Sigue buscando hasta el final.
 - [ ] `ch3.8.sauce.05` · **Sauce** · plan: Cada luna tiene su farol, así que hay tantos espantapájaros como faroles. Y de un sol solo se llega a lunas: no queda enredadera sin vigilar.
 - [ ] `ch3.8.sauce.06` · **Sauce** · plan: La búsqueda que fracasó te regala la prueba. Escríbelo en tu Cuaderno.
-- [ ] `ch3.8.notebook.07` · **Cuaderno** · GDD: Si k espantapájaros vigilan todas las enredaderas…
-- [ ] `ch3.8.notebook.08` · **Cuaderno** · plan: …no puede haber más de k faroles.
-- [ ] `ch3.8.notebook.09` · **Cuaderno** · plan: …hay exactamente k faroles.
+- [ ] `ch3.8.notebook.07` · **Cuaderno** · plan: Si unos cuantos espantapájaros vigilan todas las enredaderas…
+- [ ] `ch3.8.notebook.08` · **Cuaderno** · plan: …no puede haber más faroles que espantapájaros.
+- [ ] `ch3.8.notebook.09` · **Cuaderno** · plan: …hay exactamente tantos faroles como espantapájaros.
 - [ ] `ch3.8.notebook.10` · **Cuaderno** · plan: …siempre puedo poner los espantapájaros en las lunas.
 - [ ] `ch3.8.sauce.11` · **Sauce** · plan: Eso es. Cada farol necesita un espantapájaros propio, así que nunca hay más faroles que espantapájaros.
 - [ ] `ch3.8.sauce.12` · **Sauce** · plan: Pon un espantapájaros en A y otro en C: entre los dos lo vigilan todo. ¿Caben dos faroles?
@@ -318,7 +318,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch4.1.sauce.00` · **Sauce** · plan: Esta noche es el Festival, y aquí cualquier brote se junta con cualquiera. Tu luz va a buscar sola desde R, con las reglas del Invernadero. Mírala.
 - [ ] `ch4.1.sauce.01` · **Sauce** · GDD: El objetivo no miente. ¿Y si la luz sí?
-- [ ] `ch4.1.sauce.02` · **Sauce** · GDD: Intenta llegar a Elo sin marcas, solo pasando faroles.
+- [ ] `ch4.1.sauce.02` · **Sauce** · plan: Intenta llegar a e sin marcas, solo pasando faroles.
 - [ ] `ch4.1.sauce.03` · **Sauce** · plan: Mira por dónde va. Da la vuelta al bucle.
 - [ ] `ch4.1.sauce.04` · **Sauce** · GDD: Tu luz dijo que no había cadena. Y la había. ¿Qué pasó?
 - [ ] `ch4.1.sauce.05` · **Sauce** · plan: Tu luz dice que no hay ninguna cadena. Pero el objetivo dice 3. ¿Quién tiene razón?
@@ -332,7 +332,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.2.sauce.04` · **Sauce** · plan: Tu luz se equivocó en una enredadera. Señálala.
 - [ ] `ch4.2.sauce.05` · **Sauce** · plan: Ahí no. Busca dónde se tocaron dos soles.
 - [ ] `ch4.2.sauce.06` · **Sauce** · GDD: Rodea el bucle por el otro lado.
-- [ ] `ch4.2.sauce.07` · **Sauce** · plan: ¿Lo ves? Por un lado Cleo es luna; por el otro, sol. En este bucle, cada brote puede ser sol o luna según por dónde llegues.
+- [ ] `ch4.2.sauce.07` · **Sauce** · plan: ¿Lo ves? Por un lado c es luna; por el otro, sol. En este bucle, cada brote puede ser sol o luna según por dónde llegues.
 - [ ] `ch4.2.sauce.08` · **Sauce** · plan: ¿Cuántos brotes tiene el bucle?
 - [ ] `ch4.2.sauce.09` · **Sauce** · plan: Tres. Esto hay que escribirlo. Abre tu Cuaderno.
 - [ ] `ch4.2.notebook.10` · **Cuaderno** · GDD: La luz se confunde cuando…
@@ -363,7 +363,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 4.5
 
 - [ ] `ch4.5.sauce.00` · **Sauce** · plan: Avanza tu luz hasta encontrar otra vez la cadena a través de la flor. Luego ábrela y traza el camino por dentro para pasar los faroles.
-- [ ] `ch4.5.sauce.01` · **Sauce** · GDD: Llegaste a Cleo pidiendo. ¿Qué tiene que hacer Cleo?
+- [ ] `ch4.5.sauce.01` · **Sauce** · plan: Llegaste a c pidiendo. ¿Qué tiene que hacer c?
 - [ ] `ch4.5.sauce.02` · **Sauce** · plan: Mira este farol.
 - [ ] `ch4.5.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.5.sauce.04` · **Sauce** · plan: Dentro de la flor solo un lado funciona: el que pasa los faroles uno sí, uno no.
@@ -375,6 +375,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.6.sauce.02` · **Sauce** · plan: Mira este bucle de cinco. ¿Qué enredadera une dos soles?
 - [ ] `ch4.6.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.6.sauce.04` · **Sauce** · plan: A veces el lado que funciona da la vuelta casi entera. Largo o corto, solo hay uno.
+- [ ] `ch4.6.sauce.05` · **Sauce** · plan: Por b entró tu cadena en la flor: era el pétalo que tenía su farol fuera de ella. A ese pétalo lo llamaremos base.
 
 ### 4.7
 
@@ -387,7 +388,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.7.notebook.06` · **Cuaderno** · plan: …el único pétalo sin pareja dentro: su farol sale, o no tiene.
 - [ ] `ch4.7.notebook.07` · **Cuaderno** · plan: …el pétalo más cercano a mí.
 - [ ] `ch4.7.notebook.08` · **Cuaderno** · plan: …cualquier pétalo.
-- [ ] `ch4.7.sauce.10` · **Sauce** · plan: En la flor de cinco pétalos, el más cercano a Elo era Cleo, y la luz salía por b. Cerca no quiere decir base.
+- [ ] `ch4.7.sauce.10` · **Sauce** · plan: En la flor de cinco pétalos, el más cercano a e era c, y la luz salía por b. Cerca no quiere decir base.
 - [ ] `ch4.7.sauce.11` · **Sauce** · plan: Aquí la base es b: su farol sale hacia a. Pliega la flor, ábrela y traza la cadena como si la base fuera otro pétalo. Verás que no alterna.
 - [ ] `ch4.7.sauce.12` · **Sauce** · plan: Antes de que te lo cuente, escribe tú en tu Cuaderno qué es la base.
 - [ ] `ch4.7.notebook.13` · **Cuaderno** · plan: …el pétalo cuyo farol va a otro pétalo.
@@ -396,7 +397,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 ### 4.8
 
 - [ ] `ch4.8.sauce.00` · **Sauce** · plan: Dos ramas, y un bucle en cada una. Avanza tu luz desde R y enciende la cadena.
-- [ ] `ch4.8.sauce.01` · **Sauce** · plan: Pliega cada flor cuando aparezca. ¿Cuál de las dos lleva a Elo?
+- [ ] `ch4.8.sauce.01` · **Sauce** · plan: Pliega cada flor cuando aparezca. ¿Cuál de las dos lleva a e?
 - [ ] `ch4.8.sauce.02` · **Sauce** · plan: La cadena atraviesa esta flor. La otra puede quedarse cerrada.
 - [ ] `ch4.8.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.8.sauce.04` · **Sauce** · plan: Plegaste dos flores y solo abriste una: la que la cadena cruzaba. Al encenderla, el jardín entero se abrió otra vez.
@@ -411,7 +412,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.10
 
-- [ ] `ch4.10.sauce.00` · **Sauce** · plan: Hoy la flor está cerrada: no se puede plegar. Y aun así, este jardín puede encender tres faroles.
+- [ ] `ch4.10.sauce.00` · **Sauce** · plan: Hoy el bucle b-c-d no se puede plegar. Y aun así, este jardín puede encender tres faroles.
 - [ ] `ch4.10.sauce.01` · **Sauce** · GDD: Cuando una flor te estorba, prueba a mover los faroles del tallo.
 - [ ] `ch4.10.sauce.02` · **Sauce** · plan: ¿Puedes dejar a b a oscuras sin perder ningún farol?
 - [ ] `ch4.10.sauce.03` · **Sauce** · plan: ¿Qué brote tendría que quedar a oscuras?
@@ -432,7 +433,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.11.sauce.00` · **Sauce** · plan: A la izquierda, un jardín abierto, con el tallo ya girado: la base está a oscuras. A la derecha, el mismo jardín con la flor plegada.
 - [ ] `ch4.11.sauce.01` · **Sauce** · plan: Si el jardín plegado no tiene cadena, el abierto tampoco. Intenta llevarme la contraria: dibuja cualquier cadena en el jardín abierto.
 - [ ] `ch4.11.sauce.02` · **Sauce** · plan: Una cadena empieza en un brote a oscuras y termina en otro.
-- [ ] `ch4.11.sauce.03` · **Sauce** · plan: Prueba a salir desde Elo.
+- [ ] `ch4.11.sauce.03` · **Sauce** · plan: Prueba a salir desde e.
 - [ ] `ch4.11.sauce.04` · **Sauce** · plan: Te dibujo una. Mira dónde se corta.
 - [ ] `ch4.11.sauce.05` · **Sauce** · plan: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor.
 - [ ] `ch4.11.sauce.06` · **Sauce** · plan: Eso es. Plegar no esconde cadenas, y al revés ya lo viviste: una cadena del jardín plegado siempre se puede desplegar. Plegar no crea ni destruye cadenas.
@@ -447,7 +448,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.12
 
-- [ ] `ch4.12.sauce.00` · **Sauce** · plan: El último jardín del Festival, y con niebla. Enciende todos los faroles que puedas, cuida el agua y, cuando estés seguro, pulsa «Terminé».
+- [ ] `ch4.12.sauce.00` · **Sauce** · plan: El último jardín del Festival, y con niebla. Enciende todos los faroles que puedas, cuida las gotas y, cuando estés seguro, pulsa «Terminé».
 - [ ] `ch4.12.sauce.01` · **Sauce** · plan: Avanza tu luz. Si se para ante un brote en la niebla, inspecciónalo y sigue.
 - [ ] `ch4.12.sauce.02` · **Sauce** · plan: Cuatro rincones a oscuras. Si dos soles se tocan, ya sabes qué hacer.
 - [ ] `ch4.12.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás, hasta el final, es tuyo.
@@ -456,10 +457,10 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 4.13
 
-- [ ] `ch4.13.sauce.00` · **Sauce** · plan: Un jardín secreto del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta Teo. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
+- [ ] `ch4.13.sauce.00` · **Sauce** · plan: Un jardín secreto del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta T. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
 - [ ] `ch4.13.sauce.01` · **Sauce** · plan: Hay quien jura que, si pliegas en otro orden, se rompe todo.
 - [ ] `ch4.13.sauce.02` · **Sauce** · plan: No me creas a mí: pruébalo tú.
-- [ ] `ch4.13.sauce.03` · **Sauce** · plan: Pliega cada flor cuando aparezca, empezando por la que quieras. ¿Cuál toca a Teo?
+- [ ] `ch4.13.sauce.03` · **Sauce** · plan: Pliega cada flor cuando aparezca, empezando por la que quieras. ¿Cuál toca a T?
 - [ ] `ch4.13.sauce.04` · **Sauce** · plan: Esta flor tiene una salida. Las otras dos pueden quedarse cerradas.
 - [ ] `ch4.13.sauce.05` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.13.sauce.06` · **Sauce** · plan: Plegaste las tres en el orden que quisiste y la cadena llegó igual. Cada flor se pliega por su cuenta: el orden no cambia nada.
@@ -516,7 +517,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 5.5
 
-- [ ] `ch5.5.sauce.00` · **Sauce** · plan: Llegó la niebla al jardín salvaje. Cuida el agua: mira solo lo que necesites, enciende todos los faroles que puedas y pulsa «Terminé».
+- [ ] `ch5.5.sauce.00` · **Sauce** · plan: Llegó la niebla al jardín salvaje. Cuida las gotas: mira solo lo que necesites, enciende todos los faroles que puedas y pulsa «Terminé».
 - [ ] `ch5.5.sauce.01` · **Sauce** · plan: Una flor plegada es un brote más: también puede quedar dentro de otra. Pliega cada vez que tu luz se pare donde dos soles del mismo árbol se tocan.
 - [ ] `ch5.5.sauce.02` · **Sauce** · plan: Estos brotes siguen a oscuras: tu luz empieza por ellos, uno tras otro.
 - [ ] `ch5.5.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
@@ -612,9 +613,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch6.6.notebook.09` · **Cuaderno** · GDD: ¿Por qué termina cada búsqueda?
 - [ ] `ch6.6.notebook.10` · **Cuaderno** · plan: Cada brote se marca como mucho una vez y cada pliegue encoge el jardín.
 - [ ] `ch6.6.sauce.11` · **Sauce** · plan: Así es. Una marca no se borra a mitad de búsqueda, y cada flor plegada deja menos brotes: no hay sitio para dar vueltas para siempre.
-- [ ] `ch6.6.notebook.12` · **Cuaderno** · plan: Porque se acaba el agua.
-- [ ] `ch6.6.sauce.13` · **Sauce** · plan: El agua es para la niebla, y la receta no la necesita. Mira las marcas: ¿cuántas veces puede marcarse un brote?
-- [ ] `ch6.6.notebook.14` · **Cuaderno** · plan: Porque el mentor la para.
+- [ ] `ch6.6.notebook.12` · **Cuaderno** · plan: Porque se acaban las gotas.
+- [ ] `ch6.6.sauce.13` · **Sauce** · plan: Las gotas son para la niebla, y la receta no las necesita. Mira las marcas: ¿cuántas veces puede marcarse un brote?
+- [ ] `ch6.6.notebook.14` · **Cuaderno** · plan: Porque Sauce la para.
 - [ ] `ch6.6.sauce.15` · **Sauce** · plan: Yo no toco nada: el jardinero mecánico va solo. Algo de la propia búsqueda la obliga a acabar.
 - [ ] `ch6.6.sauce.16` · **Sauce** · plan: Termina siempre, y ya sabes por qué. En las carreras viste además cuánto tarda. El Recetario es tuyo.
 - [ ] `ch6.6.sauce.17` · **Sauce** · GDD: En el Códex tu receta tiene nombre: lee «La receta» y «El costo».
@@ -679,8 +680,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch7.3.sauce.04` · **Sauce** · plan: Te enseño el paso. Luego preséntalo.
 - [ ] `ch7.3.sauce.05` · **Sauce** · plan: Tres triángulos: tres grupos impares, y en cada uno alguien se queda sin pareja de su grupo. Pero la piedra puede iluminar a uno de ellos. Tres menos uno: al menos dos a oscuras. Tienes dos. Demostrado.
 - [ ] `ch7.3.sauce.06` · **Sauce** · plan: Escríbelo en tu Cuaderno.
-- [ ] `ch7.3.notebook.07` · **Cuaderno** · GDD: Si levanto k piedras y quedan g grupos impares…
-- [ ] `ch7.3.notebook.08` · **Cuaderno** · plan: …al menos g − k brotes duermen a oscuras.
+- [ ] `ch7.3.notebook.07` · **Cuaderno** · plan: Si levanto unas piedras y quedan más grupos impares que piedras…
+- [ ] `ch7.3.notebook.08` · **Cuaderno** · plan: …al menos «impares − piedras» brotes duermen a oscuras.
 - [ ] `ch7.3.notebook.09` · **Cuaderno** · plan: …exactamente g brotes duermen a oscuras.
 - [ ] `ch7.3.notebook.10` · **Cuaderno** · plan: …los grupos pares también dejan a alguien a oscuras.
 - [ ] `ch7.3.sauce.11` · **Sauce** · plan: Eso es. Cada grupo impar deja a alguien sin pareja dentro, y cada piedra puede iluminar como mucho a uno de ellos.

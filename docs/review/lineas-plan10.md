@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-167 líneas de diálogo y 69 textos de interfaz distintos de la versión 1.0.1.
+217 líneas de diálogo y 77 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.5
 
@@ -19,6 +19,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch1.1.sauce.00` · **Sauce** · cambiada
   - Antes: Mira lo que hiciste. Beto le dio su farol a Ana, y Cleo tuvo que buscar a Dani. Pasaste el farol.
   - Después: Mira otra forma de ver lo que pasó: si Beto le da su farol a Ana, Cleo puede buscar a Dani. Eso es pasar el farol.
+- [ ] `ch1.1.sauce.01` · **Sauce** · cambiada
+  - Antes: ¿Ana puede hablar con alguien?
+  - Después: Beto y Cleo ya tienen farol. Un farol encendido también se puede apagar: tócalo.
 
 ### 1.2
 
@@ -98,17 +101,77 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch1.10.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor escondida, solo para ti. Esta noche caben diez faroles. Antes de tirar de una cadena, míralo bien: casi todas se quedan por el camino.
   - Después: Un jardín secreto, solo para ti. Esta noche caben diez faroles. Antes de tirar de una cadena, míralo bien: casi todas se quedan por el camino.
+- [ ] `ch1.10.sauce.03` · **Sauce** · cambiada
+  - Antes: Mira a Teo, al final de todo. Él también espera su farol.
+  - Después: Mira a T, al final de todo. Él también espera su farol.
 - [ ] `ch1.10.sauce.05` · **Sauce** · cambiada
   - Antes: Doce rincones sin salida y una sola cadena de punta a punta. La encontraste tú. Esta flor es tuya.
   - Después: Doce rincones sin salida y una sola cadena de punta a punta. La encontraste tú. Este jardín secreto es tuyo.
 
+### 2.1
+
+- [ ] `ch2.1.sauce.00` · **Sauce** · cambiada
+  - Antes: El agua dice que se puede mejor. No te fíes del agua: mírala.
+  - Después: El reflejo dice que se puede mejor. No te fíes del reflejo: míralo.
+- [ ] `ch2.1.sauce.01` · **Sauce** · cambiada
+  - Antes: Ámbar, tus faroles. Plateados, los del agua. Toca un brote y mira cuántos hilos le salen.
+  - Después: Ámbar, tus faroles. Plateados, los del reflejo. Toca un brote y mira cuántos faroles carga.
+- [ ] `ch2.1.sauce.02` · **Sauce** · cambiada
+  - Antes: ¿Cuántos hilos puede tener un brote como máximo?
+  - Después: ¿Cuántos faroles, de los dos colores, puede cargar un brote como máximo?
+- [ ] `ch2.1.sauce.07` · **Sauce** · cambiada
+  - Antes: Dos: uno tuyo y uno del agua. Nadie carga dos faroles en la misma noche.
+  - Después: Dos: uno tuyo y uno del reflejo. Nadie carga dos del mismo color.
+- [ ] `ch2.1.sauce.08` · **Sauce** · cambiada
+  - Antes: Mira otra vez. ¿Cuántos faroles tuyos puede cargar un brote? ¿Y del agua?
+  - Después: Mira otra vez. ¿Cuántos faroles tuyos puede cargar un brote? ¿Y del reflejo?
+- [ ] `ch2.1.sauce.09` · **Sauce** · cambiada
+  - Antes: Entonces la maraña no puede enredarse mucho. Toca el agua y verás.
+  - Después: Entonces la maraña no puede enredarse mucho. Toca el jardín y verás.
+- [ ] `ch2.1.sauce.10` · **Sauce** · cambiada
+  - Antes: Hilos sueltos y bucles. Nada más. Y lo que tenéis en común se lo lleva el agua.
+  - Después: Hilos sueltos y bucles. Nada más. Y los faroles que compartes con el reflejo se desvanecen.
+- [ ] `ch2.1.sauce.11` · **Sauce** · cambiada
+  - Antes: Toca un brote del medio y cuenta los hilos que le salen.
+  - Después: Toca un brote del medio y cuenta los faroles que carga.
+- [ ] `ch2.1.sauce.12` · **Sauce** · cambiada
+  - Antes: Mira a 3: un hilo ámbar y otro plateado.
+  - Después: Mira a 3: un farol ámbar y otro plateado.
+
+### 2.2
+
+- [ ] `ch2.2.sauce.00` · **Sauce** · cambiada
+  - Antes: Hoy el agua no se libra: vamos a contarle los faroles, pieza a pieza. Toca el agua para separar la maraña.
+  - Después: Hoy el reflejo no se libra: vamos a contarle los faroles, pieza a pieza. Toca el jardín para separar la maraña.
+- [ ] `ch2.2.sauce.02` · **Sauce** · cambiada
+  - Antes: ¿Y cuántos del agua?
+  - Después: ¿Y cuántos del reflejo?
+- [ ] `ch2.2.sauce.05` · **Sauce** · cambiada
+  - Antes: ¿Y cuántos del agua?
+  - Después: ¿Y cuántos del reflejo?
+- [ ] `ch2.2.sauce.06` · **Sauce** · cambiada
+  - Antes: Ahí está la presunción del agua: en el hilo te gana por uno.
+  - Después: Ahí está la presunción del reflejo: en el hilo te gana por uno.
+- [ ] `ch2.2.sauce.10` · **Sauce** · cambiada
+  - Antes: Recórrelo con el dedo: tuyo, del agua, tuyo, del agua… Se turnan. ¿Cómo iba a sacarte dos?
+  - Después: Recórrelo con el dedo: tuyo, del reflejo, tuyo, del reflejo… Se turnan. ¿Cómo iba a sacarte dos?
+- [ ] `ch2.2.sauce.11` · **Sauce** · cambiada
+  - Antes: Eso es. En un hilo los faroles se turnan, uno tuyo y uno del agua. El que empieza y termina lleva uno más. Nunca dos.
+  - Después: Eso es. En un hilo los faroles se turnan, uno tuyo y uno del reflejo. El que empieza y termina lleva uno más. Nunca dos.
+- [ ] `ch2.2.sauce.13` · **Sauce** · cambiada
+  - Antes: Ámbar son los tuyos; plateados, los del agua.
+  - Después: Ámbar son los tuyos; plateados, los del reflejo.
+
 ### 2.3
 
+- [ ] `ch2.3.sauce.00` · **Sauce** · cambiada
+  - Antes: Mira el hilo de arriba, el que gana el agua. ¿Cómo empieza? ¿Cómo termina?
+  - Después: Mira el hilo de arriba, el que gana el reflejo. ¿Cómo empieza? ¿Cómo termina?
 - [ ] `ch2.3.sauce.04` · **Sauce** · cambiada
   - Antes: De una punta a la otra del hilo. Ya sabes andar ese camino.
   - Después: Empieza por esta punta del hilo. ¿Dónde acaba?
 - [ ] `ch2.3.sauce.05` · **Sauce** · nueva
-  - Después: ¿Podría la punta de un hilo que gana el agua tener un farol tuyo?
+  - Después: ¿Podría la punta de un hilo que gana el reflejo tener un farol tuyo?
 - [ ] `ch2.3.gardener.06` · **Tú** · nueva
   - Después: Sí, a veces: depende del jardín.
 - [ ] `ch2.3.sauce.07` · **Sauce** · nueva
@@ -120,7 +183,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch2.4.sauce.00` · **Sauce** · cambiada
   - Antes: Estos siete faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo con más faroles que no le deje a tu jardín ninguna cadena.
-  - Después: Estos faroles son tuyos. Ahora juega a ser el agua: dibuja un reflejo que encienda más faroles que tu jardín.
+  - Después: Estos faroles son tuyos. Ahora el reflejo eres tú: dibuja uno que encienda más faroles que tu jardín.
 - [ ] `ch2.4.sauce.02` · **Sauce** · cambiada
   - Antes: No se puede. Si no tienes cadena, nadie te gana.
   - Después: Quien te gana te deja una cadena. Úsala.
@@ -129,13 +192,19 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: …cualquier otra disposición encenderá como mucho los mismos.
 - [ ] `ch2.4.notebook.06` · **Cuaderno** · cambiada
   - Antes: …es porque lo probé todo.
-  - Después: …nadie gana, salvo el agua.
+  - Después: …nadie gana, salvo el reflejo.
+- [ ] `ch2.4.sauce.09` · **Sauce** · cambiada
+  - Antes: Eso es. Sin cadena, nadie te gana. Ni el agua.
+  - Después: Eso es. Sin cadena, nadie te gana. Ni el reflejo.
 - [ ] `ch2.4.sauce.10` · **Sauce** · cambiada
   - Antes: No hace falta probarlo todo. Basta con saber que no queda ninguna cadena.
-  - Después: Ni el agua: su reflejo es otra disposición más. Si no queda ninguna cadena, ninguna te gana.
+  - Después: Ni el reflejo: es otra disposición más. Si no queda ninguna cadena, ninguna te gana.
 - [ ] `ch2.4.sauce.14` · **Sauce** · cambiada
   - Antes: Dibuja ocho faroles plateados, sin que ningún brote cargue dos.
   - Después: Dibuja siete faroles plateados, sin que ningún brote cargue dos.
+- [ ] `ch2.4.sauce.15` · **Sauce** · cambiada
+  - Antes: Mira dónde gana el agua.
+  - Después: Mira dónde gana el reflejo.
 - [ ] `ch2.4.sauce.16` · **Sauce** · nueva
   - Después: Ahora tu jardín no tiene ninguna cadena. Intenta ganarle otra vez.
 - [ ] `ch2.4.sauce.17` · **Sauce** · nueva
@@ -147,22 +216,49 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch2.5.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor escondida del Estanque. El agua vuelve a presumir, y esta vez solo te saca un farol.
-  - Después: Un jardín secreto del Estanque. El agua vuelve a presumir, y esta vez solo te saca un farol.
+  - Después: Un jardín secreto del Estanque. El reflejo vuelve a presumir, y esta vez solo te saca un farol.
+- [ ] `ch2.5.sauce.01` · **Sauce** · cambiada
+  - Antes: Antes de separar la maraña: ¿en cuántos hilos te gana el agua?
+  - Después: Antes de separar la maraña: ¿en cuántos hilos gana el reflejo?
+- [ ] `ch2.5.sauce.02` · **Sauce** · cambiada
+  - Antes: En dos. Un farol de diferencia no quiere decir un solo hilo: uno de los hilos lo ganas tú. Toca el agua para separar la maraña y míralo.
+  - Después: En dos. Un farol de diferencia no quiere decir un solo hilo: uno de los hilos lo ganas tú. Toca el jardín para separar la maraña y míralo.
+- [ ] `ch2.5.sauce.03` · **Sauce** · cambiada
+  - Antes: Enciende lo que te enseñan los dos hilos del agua y pulsa «Terminé» cuando no quepa más.
+  - Después: Enciende lo que te enseñan los dos hilos del reflejo y pulsa «Terminé» cuando no quepa más.
+- [ ] `ch2.5.sauce.04` · **Sauce** · cambiada
+  - Antes: ¿Qué hilos gana el agua? Cada uno esconde una cadena.
+  - Después: ¿Qué hilos gana el reflejo? Cada uno esconde una cadena.
 - [ ] `ch2.5.sauce.05` · **Sauce** · cambiada
   - Antes: De una punta a la otra de este hilo.
   - Después: Mira este hilo desde esta punta. ¿Dónde acaba?
+- [ ] `ch2.5.sauce.07` · **Sauce** · cambiada
+  - Antes: Diez faroles, uno más que el agua. Restar no bastaba: había que mirar cada pieza.
+  - Después: Diez faroles, uno más que el reflejo. Restar no bastaba: había que mirar cada pieza.
 
 ### 3.1
 
 - [ ] `ch3.1.sauce.00` · **Sauce** · cambiada
   - Antes: Bienvenido al invernadero. Aquí viven abejas y flores, y una abeja solo se junta con una flor.
   - Después: Bienvenido al invernadero. Aquí viven abejas y tréboles, y una abeja solo se junta con un trébol.
+- [ ] `ch3.1.sauce.05` · **Sauce** · cambiada
+  - Antes: Saliste con la mano libre, llegaste pidiendo, y al final alguien estaba solo. Esa era tu cadena.
+  - Después: A quien sale con la mano libre le pusiste un sol. A quien llegaste pidiendo, una luna. Y al final alguien estaba solo: esa era tu cadena.
+
+### 3.3
+
+- [ ] `ch3.3.sauce.00` · **Sauce** · cambiada
+  - Antes: Esta noche no te pido una cadena: te pido que termines la búsqueda, haya cadena o no. Y que gastes poca agua.
+  - Después: Esta noche no te pido una cadena: te pido que termines la búsqueda, haya cadena o no. Y que gastes pocas gotas.
 
 ### 3.4
 
 - [ ] `ch3.4.sauce.02` · **Sauce** · cambiada
   - Antes: R1 y R2. Ponle un sol a cada uno.
   - Después: Empieza aquí, con un sol. ¿Quién más podría empezar su propia búsqueda?
+- [ ] `ch3.4.sauce.04` · **Sauce** · cambiada
+  - Antes: Dos luces se tocaron: sol con sol, y cada uno de un árbol distinto. Eso es una cadena de un solitario al otro.
+  - Después: Dos luces se tocaron: sol con sol, y cada uno de un árbol distinto. Eso es una cadena de un brote a oscuras al otro.
 - [ ] `ch3.4.sauce.05` · **Sauce** · nueva
   - Después: Cada sol llegó desde su brote a oscuras por un camino que alterna. Si dos soles de árboles distintos se tocan, ¿qué forman los dos caminos con la enredadera que los une?
 - [ ] `ch3.4.gardener.06` · **Tú** · nueva
@@ -175,6 +271,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Nada: hay que seguir buscando.
 - [ ] `ch3.4.sauce.10` · **Sauce** · nueva
   - Después: Mira bien: los dos caminos alternan, y la enredadera que los une está apagada. Ya no hace falta buscar más.
+
+### 3.5
+
+- [ ] `ch3.5.sauce.00` · **Sauce** · cambiada
+  - Antes: Hoy el agua viene contada: una gota por brote, y dos de regalo. No mires por mirar: mira a quien tiene sol.
+  - Después: Hoy las gotas vienen contadas: una por brote, y dos de regalo. No mires por mirar: mira a quien tiene sol.
+- [ ] `ch3.5.sauce.03` · **Sauce** · cambiada
+  - Antes: Te enseño el primer paso. El agua es tuya.
+  - Después: Te enseño el primer paso. Las gotas son tuyas.
 
 ### 3.7
 
@@ -193,6 +298,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.8.sauce.03` · **Sauce** · cambiada
   - Antes: Cada uno de estos brotes recibió una visita pidiendo. Ahí van los espantapájaros.
   - Después: Mira este grupo cuando acabe la búsqueda. ¿Qué brotes recibieron una visita pidiendo?
+- [ ] `ch3.8.notebook.07` · **Cuaderno** · cambiada
+  - Antes: Si k espantapájaros vigilan todas las enredaderas…
+  - Después: Si unos cuantos espantapájaros vigilan todas las enredaderas…
+- [ ] `ch3.8.notebook.08` · **Cuaderno** · cambiada
+  - Antes: …no puede haber más de k faroles.
+  - Después: …no puede haber más faroles que espantapájaros.
+- [ ] `ch3.8.notebook.09` · **Cuaderno** · cambiada
+  - Antes: …hay exactamente k faroles.
+  - Después: …hay exactamente tantos faroles como espantapájaros.
 - [ ] `ch3.8.sauce.13` · **Sauce** · cambiada
   - Antes: Solo si la búsqueda llegó a todos los brotes. Al que se queda sin marca también hay que vigilarlo.
   - Después: Busca aquí desde quien esté a oscuras hasta que no quede nada por mirar, y pon espantapájaros solo en las lunas. ¿Lo vigilan todo?
@@ -224,6 +338,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Antes: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Esta flor es tuya.
   - Después: Seis faroles, seis espantapájaros y ni una enredadera sin vigilar. Este jardín secreto es tuyo.
 
+### 4.1
+
+- [ ] `ch4.1.sauce.02` · **Sauce** · cambiada
+  - Antes: Intenta llegar a Elo sin marcas, solo pasando faroles.
+  - Después: Intenta llegar a e sin marcas, solo pasando faroles.
+
+### 4.2
+
+- [ ] `ch4.2.sauce.07` · **Sauce** · cambiada
+  - Antes: ¿Lo ves? Por un lado Cleo es luna; por el otro, sol. En este bucle, cada brote puede ser sol o luna según por dónde llegues.
+  - Después: ¿Lo ves? Por un lado c es luna; por el otro, sol. En este bucle, cada brote puede ser sol o luna según por dónde llegues.
+
 ### 4.3
 
 - [ ] `ch4.3.sauce.00` · **Sauce** · cambiada
@@ -244,6 +370,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.5.sauce.00` · **Sauce** · cambiada
   - Antes: Encuentra otra vez la cadena a través de la flor. Luego ábrela y traza el camino por dentro para pasar los faroles.
   - Después: Avanza tu luz hasta encontrar otra vez la cadena a través de la flor. Luego ábrela y traza el camino por dentro para pasar los faroles.
+- [ ] `ch4.5.sauce.01` · **Sauce** · cambiada
+  - Antes: Llegaste a Cleo pidiendo. ¿Qué tiene que hacer Cleo?
+  - Después: Llegaste a c pidiendo. ¿Qué tiene que hacer c?
 
 ### 4.6
 
@@ -253,6 +382,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.6.sauce.02` · **Sauce** · cambiada
   - Antes: Aquí. Pliega los cinco.
   - Después: Mira este bucle de cinco. ¿Qué enredadera une dos soles?
+- [ ] `ch4.6.sauce.05` · **Sauce** · nueva
+  - Después: Por b entró tu cadena en la flor: era el pétalo que tenía su farol fuera de ella. A ese pétalo lo llamaremos base.
 
 ### 4.7
 
@@ -270,6 +401,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: …el único pétalo sin pareja dentro: su farol sale, o no tiene.
 - [ ] `ch4.7.sauce.09` · **Sauce** · retirada
   - Antes: Eso es. Por la base entra el tallo, y por la base sale la luz.
+- [ ] `ch4.7.sauce.10` · **Sauce** · cambiada
+  - Antes: En la flor de cinco pétalos, el más cercano a Elo era Cleo, y la luz salía por b. Cerca no quiere decir base.
+  - Después: En la flor de cinco pétalos, el más cercano a e era c, y la luz salía por b. Cerca no quiere decir base.
 - [ ] `ch4.7.sauce.12` · **Sauce** · nueva
   - Después: Antes de que te lo cuente, escribe tú en tu Cuaderno qué es la base.
 - [ ] `ch4.7.notebook.13` · **Cuaderno** · nueva
@@ -282,6 +416,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.8.sauce.00` · **Sauce** · cambiada
   - Antes: Dos ramas, y un bucle en cada una. Busca desde R y enciende la cadena.
   - Después: Dos ramas, y un bucle en cada una. Avanza tu luz desde R y enciende la cadena.
+- [ ] `ch4.8.sauce.01` · **Sauce** · cambiada
+  - Antes: Pliega cada flor cuando aparezca. ¿Cuál de las dos lleva a Elo?
+  - Después: Pliega cada flor cuando aparezca. ¿Cuál de las dos lleva a e?
 
 ### 4.9
 
@@ -294,6 +431,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 4.10
 
+- [ ] `ch4.10.sauce.00` · **Sauce** · cambiada
+  - Antes: Hoy la flor está cerrada: no se puede plegar. Y aun así, este jardín puede encender tres faroles.
+  - Después: Hoy el bucle b-c-d no se puede plegar. Y aun así, este jardín puede encender tres faroles.
 - [ ] `ch4.10.sauce.01` · **Sauce** · cambiada
   - Antes: Cuando una flor te estorba, mueve la oscuridad hasta su base. No pierdes nada.
   - Después: Cuando una flor te estorba, prueba a mover los faroles del tallo.
@@ -317,6 +457,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 4.11
 
+- [ ] `ch4.11.sauce.03` · **Sauce** · cambiada
+  - Antes: Prueba a salir desde Elo.
+  - Después: Prueba a salir desde e.
 - [ ] `ch4.11.sauce.05` · **Sauce** · cambiada
   - Antes: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor. Plegar no esconde cadenas.
   - Después: Da igual la que dibujes: siempre le sobra un trozo que llega a la flor.
@@ -337,6 +480,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 4.12
 
+- [ ] `ch4.12.sauce.00` · **Sauce** · cambiada
+  - Antes: El último jardín del Festival, y con niebla. Enciende todos los faroles que puedas, cuida el agua y, cuando estés seguro, pulsa «Terminé».
+  - Después: El último jardín del Festival, y con niebla. Enciende todos los faroles que puedas, cuida las gotas y, cuando estés seguro, pulsa «Terminé».
 - [ ] `ch4.12.sauce.01` · **Sauce** · cambiada
   - Antes: ¿Quién sigue a oscuras? Busca desde ahí.
   - Después: Avanza tu luz. Si se para ante un brote en la niebla, inspecciónalo y sigue.
@@ -347,7 +493,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch4.13.sauce.00` · **Sauce** · cambiada
   - Antes: Una flor escondida del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta Teo. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
-  - Después: Un jardín secreto del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta Teo. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
+  - Después: Un jardín secreto del Festival. Tres flores salen en la misma búsqueda desde R, y solo una lleva hasta T. Pliégalas en el orden que quieras y, cuando acabes, pulsa «Terminé».
+- [ ] `ch4.13.sauce.03` · **Sauce** · cambiada
+  - Antes: Pliega cada flor cuando aparezca, empezando por la que quieras. ¿Cuál toca a Teo?
+  - Después: Pliega cada flor cuando aparezca, empezando por la que quieras. ¿Cuál toca a T?
 
 ### 5.1
 
@@ -419,6 +568,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 5.5
 
+- [ ] `ch5.5.sauce.00` · **Sauce** · cambiada
+  - Antes: Llegó la niebla al jardín salvaje. Cuida el agua: mira solo lo que necesites, enciende todos los faroles que puedas y pulsa «Terminé».
+  - Después: Llegó la niebla al jardín salvaje. Cuida las gotas: mira solo lo que necesites, enciende todos los faroles que puedas y pulsa «Terminé».
 - [ ] `ch5.5.sauce.01` · **Sauce** · cambiada
   - Antes: Una flor plegada es un brote más: también puede quedar dentro de otra. Pliega cada vez que dos soles del mismo árbol se toquen.
   - Después: Una flor plegada es un brote más: también puede quedar dentro de otra. Pliega cada vez que tu luz se pare donde dos soles del mismo árbol se tocan.
@@ -485,6 +637,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ### 6.6
 
+- [ ] `ch6.6.notebook.12` · **Cuaderno** · cambiada
+  - Antes: Porque se acaba el agua.
+  - Después: Porque se acaban las gotas.
+- [ ] `ch6.6.sauce.13` · **Sauce** · cambiada
+  - Antes: El agua es para la niebla, y la receta no la necesita. Mira las marcas: ¿cuántas veces puede marcarse un brote?
+  - Después: Las gotas son para la niebla, y la receta no las necesita. Mira las marcas: ¿cuántas veces puede marcarse un brote?
+- [ ] `ch6.6.notebook.14` · **Cuaderno** · cambiada
+  - Antes: Porque el mentor la para.
+  - Después: Porque Sauce la para.
 - [ ] `ch6.6.sauce.17` · **Sauce** · nueva
   - Después: En el Códex tu receta tiene nombre: lee «La receta» y «El costo».
 
@@ -529,6 +690,15 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch7.2.sauce.08` · **Sauce** · cambiada
   - Antes: La cuenta ya cuadra. Solo falta presentarla: pulsa «Terminé».
   - Después: La cuenta ya cuadra. Solo falta presentarla: pulsa «Presentar».
+
+### 7.3
+
+- [ ] `ch7.3.notebook.07` · **Cuaderno** · cambiada
+  - Antes: Si levanto k piedras y quedan g grupos impares…
+  - Después: Si levanto unas piedras y quedan más grupos impares que piedras…
+- [ ] `ch7.3.notebook.08` · **Cuaderno** · cambiada
+  - Antes: …al menos g − k brotes duermen a oscuras.
+  - Después: …al menos «impares − piedras» brotes duermen a oscuras.
 
 ### 7.4
 
@@ -586,7 +756,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `reason.chainNotSeen` · nueva
   - Después: Hoy los faroles solo se mueven por donde llegó tu luz. Avánzala hasta que encuentre la cadena.
 - [ ] `reason.flowerClosed` · nueva
-  - Después: La flor está cerrada por hoy: una cadena solo puede rodearla si sale de su base o llega a ella.
+  - Después: Hoy ese bucle no se pliega: una cadena solo puede pasar por él si empieza o acaba en su base.
 - [ ] `reason.lightAtFlower` · nueva
   - Después: Tu luz se ha parado: {u} y {v} son soles del mismo árbol. Pliega ese bucle tocando su enredadera con Marcas, y sigue.
 - [ ] `reason.lightFound` · nueva
@@ -615,13 +785,29 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `hud.prompt.sun` · cambiada
   - Antes: Arrastra el sol de arriba a la derecha
   - Después: Arrastra el día, arriba a la derecha
+- [ ] `hud.prompt.explore` · cambiada
+  - Antes: Toca un brote para ver sus hilos
+  - Después: Toca un brote para ver sus faroles
 - [ ] `hud.prompt.draw` · cambiada
   - Antes: Toca enredaderas para dibujar tu reflejo y pulsa Comprobar
   - Después: Dibuja tu reflejo tocando enredaderas y pulsa Comprobar
+- [ ] `hud.water` · cambiada
+  - Antes: Agua: {used}/{budget}
+  - Después: Gotas: {used}/{budget}
+- [ ] `hud.waterNoBudget` · cambiada
+  - Antes: Agua: {used}
+  - Después: Gotas: {used}
 - [ ] `hud.present` · nueva
   - Después: Presentar
 - [ ] `hud.stepLight` · nueva
   - Después: Avanzar la luz
+- [ ] `hud.council` · cambiada
+  - Antes: Impares {groups} − piedras {stones}: al menos {atLeast} a oscuras; hay {dark}
+  - Después: Impares {groups} − piedras {stones} = {atLeast} como poco; hay {dark}: aún no
+- [ ] `hud.councilProves` · nueva
+  - Después: Impares {groups} − piedras {stones} = {atLeast} como poco; hay {dark}: cuadra
+- [ ] `hud.councilNoBound` · nueva
+  - Después: Impares {groups} < piedras {stones}: aún no prueba nada. Hay {dark}.
 - [ ] `hud.councilHidden` · cambiada
   - Antes: La cuenta del Consejo sale al pulsar «Terminé»
   - Después: La cuenta del Consejo sale al pulsar «Presentar»
@@ -645,6 +831,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: «Terminé»: el jardinero dice que el jardín no puede hacerlo mejor.
 - [ ] `counterexample.backToQuestion` · nueva
   - Después: Volver a la pregunta
+- [ ] `pond.strands` · cambiada
+  - Antes: Hilos: {count}
+  - Después: Faroles: {count}
 - [ ] `mirror.spared` · cambiada
   - Antes: Calma: ganarle a tu jardín no es fácil. Y quien lo consigue siempre te deja una cadena.
   - Después: Sigamos. Para ganarte, un reflejo necesita más faroles plateados que los tuyos.
@@ -671,7 +860,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `victory.star.noHints` · nueva
   - Después: Sin pistas
 - [ ] `victory.star.water` · nueva
-  - Después: Con el agua justa
+  - Después: Con las gotas justas
 - [ ] `victory.star.bet` · nueva
   - Después: Apuesta acertada
 - [ ] `title.start` · nueva
@@ -707,6 +896,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Presentar
 - [ ] `tutorial.present.body` · nueva
   - Después: Cuando tu prueba esté puesta en el jardín, pulsa Presentar.
+- [ ] `tutorial.reflection.body` · cambiada
+  - Antes: Sobre tu jardín aparecen faroles plateados: los del reflejo. Cuando se te pida, toca un brote para ver sus hilos, o toca el jardín para separar la maraña.
+  - Después: Sobre tu jardín aparecen faroles plateados: los del reflejo. Cuando se te pida, toca un brote para ver sus faroles, o toca el jardín para separar la maraña.
 - [ ] `tutorial.light.title` · nueva
   - Después: Avanzar la luz
 - [ ] `tutorial.light.body` · nueva
