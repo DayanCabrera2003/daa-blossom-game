@@ -86,14 +86,14 @@ describe('3.3: already visited', () => {
     const level = levelOf('3.3');
     expect(level.data.victory).toEqual({ type: 'searchExhausted' });
     const won = (state: GardenState) => isVictory(state, { type: 'searchExhausted' });
-    const moves = level.solution.filter((move) => move.type !== 'answer');
+    const moves = level.solution;
     const done = moves.findIndex((move) => move.type === 'declareDone');
     expect(done).toBe(moves.length - 1);
     // The last mark does not win by itself; "Terminé" does, once the last sun is inspected.
     const marked = play(level.start, moves.slice(0, done));
     expect(won(marked)).toBe(false);
     expect(won({ ...marked, declaredDone: true })).toBe(true);
-    const lastLook = moves.findLastIndex((move) => move.type === 'inspect');
+    const lastLook = moves.map((move) => move.type).lastIndexOf('inspect');
     const unlooked = play(level.start, moves.slice(0, lastLook));
     expect(statusOf(unlooked)).toBe('exhausted');
     expect(won({ ...unlooked, declaredDone: true })).toBe(false);
@@ -108,7 +108,7 @@ describe('3.3: already visited', () => {
     };
     const searched = play(
       level.start,
-      level.solution.filter((move) => move.type !== 'answer' && move.type !== 'declareDone'),
+      level.solution.filter((move) => move.type !== 'declareDone'),
     );
     const again = applyAction(searched, { type: 'markMoon', from: id('b1'), to: id('m') });
     expect(again).toMatchObject({ ok: false, reason: { code: 'alreadyMarked' } });
