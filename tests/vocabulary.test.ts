@@ -75,7 +75,7 @@ describe('«flor» is only the flower that folds', () => {
   });
 });
 
-describe('one word, one meaning (plan 11, phase 11; GDD §3.3)', () => {
+describe('one word, one meaning (GDD §3.3)', () => {
   const AGUA = /\bagua\b/i;
 
   it('«hilo» is only a piece of the tangle: what a sprout carries are its lanterns', () => {
