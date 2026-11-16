@@ -102,6 +102,8 @@ export class HudView {
   private readonly traceOnTools: boolean;
   /** Whether "Avanzar la luz" is shown now. */
   private lightShown = false;
+  /** The text key on the light's button now: its name, or why the light stopped. */
+  private lightWords = 'hud.stepLight';
 
   constructor(
     scene: Phaser.Scene,
@@ -176,9 +178,30 @@ export class HudView {
     if (this.lightShown === shown) return;
     this.lightShown = shown;
     this.light.setVisible(shown);
+    this.placeTrace();
+  }
+
+  /** Puts the trace on the tools' row just before the light's button, or at its end. */
+  private placeTrace(): void {
     if (!this.traceOnTools) return;
+    const shown = this.lightShown;
     const widths = shown ? [this.trace.width, this.light.width] : [this.trace.width];
     this.trace.moveTo(itemAt(ordersRow(widths), 0), LAYOUT.toolbarY);
+  }
+
+  /**
+   * Shows "Avanzar la luz" as the picture says: switched off while the light stands still, its
+   * words saying why; with new words it keeps ending the row, and the trace stays just before it.
+   */
+  private renderLight(light: HudPicture['light']): void {
+    this.showLight(light !== null);
+    if (light === null) return;
+    this.light.setEnabled(light.on);
+    if (light.label === this.lightWords) return;
+    this.lightWords = light.label;
+    this.light.setLabel(this.t(light.label));
+    this.light.moveTo(traceButtonLeft(this.light.width), LAYOUT.toolbarY);
+    this.placeTrace();
   }
 
   /** Shows the trace button, in teacher mode. */
@@ -231,7 +254,7 @@ export class HudView {
     // The hint is always at hand while grades remain; on offer, it glows as the button in hand.
     hint?.setEnabled(hud.hintAvailable).setActive(hud.hintOffered);
     done?.setVisible(hud.canDeclareDone);
-    this.showLight(hud.canStepLight);
+    this.renderLight(hud.light);
     checkMirror?.setVisible(hud.canCheckMirror);
     leaveLayer?.setVisible(inside);
   }

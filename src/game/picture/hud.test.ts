@@ -2,7 +2,11 @@ import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
-import { closedFlowerLevel, helixLevel } from '../../../tests/support/fixtureLevels';
+import {
+  closedFlowerLevel,
+  foldingLightLevel,
+  helixLevel,
+} from '../../../tests/support/fixtureLevels';
 import { pondLevel } from '../../../tests/support/pondGarden';
 import { initialPointer } from '../input/pointer';
 import { HINT_DELAY_MS } from '../systems/hints';
@@ -13,6 +17,7 @@ import {
   respond,
   startSession,
   undoSession,
+  type LevelSession,
 } from '../systems/levelSession';
 import { hudPicture } from './hud';
 
@@ -32,7 +37,7 @@ describe('the picture of the HUD', () => {
       canUndo: false,
       canRedo: false,
       canDeclareDone: false,
-      canStepLight: false,
+      light: null,
       hintAvailable: true,
       hintOffered: false,
       sun: { fraction: 1, steps: 1, calling: false },
@@ -97,8 +102,22 @@ describe('the picture of the HUD', () => {
       ...base,
       start: { ...base.start, allowed: new Set([...base.start.allowed, 'stepLight']) },
     };
-    expect(hudPicture(startSession(base, 0), initialPointer('marks'), 0).canStepLight).toBe(false);
-    expect(hudPicture(startSession(lit, 0), initialPointer('marks'), 0).canStepLight).toBe(true);
+    expect(hudPicture(startSession(base, 0), initialPointer('marks'), 0).light).toBeNull();
+    expect(hudPicture(startSession(lit, 0), initialPointer('marks'), 0).light).not.toBeNull();
+  });
+
+  it('switches "Avanzar la luz" off where the light stopped, saying why, and on once resolved', () => {
+    const level = foldingLightLevel();
+    const picture = (session: LevelSession) =>
+      hudPicture(session, initialPointer('marks'), 0).light;
+    let session = respond(startSession(level, 0), { type: 'tap' }, 0).session;
+    expect(picture(session)).toEqual({ label: 'hud.stepLight', on: true });
+    for (let i = 0; i < 3; i++) session = act(session, { type: 'stepLight' }, 0).session;
+    expect(picture(session)).toEqual({ label: 'hud.light.flower', on: false });
+    session = act(session, { type: 'foldAt', from: 2, to: 4 }, 0).session;
+    expect(picture(session)).toEqual({ label: 'hud.stepLight', on: true });
+    session = act(session, { type: 'stepLight' }, 0).session;
+    expect(picture(session)).toEqual({ label: 'hud.light.found', on: false });
   });
 
   it('follows the day: undo, redo and the sun position move with the history', () => {

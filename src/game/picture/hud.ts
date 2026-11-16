@@ -11,6 +11,7 @@ import {
   stepNow,
   type LevelSession,
 } from '../systems/levelSession';
+import { lightLabel, lightStop } from '../systems/lightStop';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
 import { councilCount } from './council';
@@ -35,8 +36,11 @@ export interface HudPicture {
   readonly canUndo: boolean;
   readonly canRedo: boolean;
   readonly canDeclareDone: boolean;
-  /** Whether "Avanzar la luz" is at hand: in the levels where the light searches by itself. */
-  readonly canStepLight: boolean;
+  /**
+   * "Avanzar la luz", in the levels where the light searches by itself (null elsewhere): switched
+   * off while the light stands still, its words saying why (`systems/lightStop.ts`).
+   */
+  readonly light: { readonly label: string; readonly on: boolean } | null;
   /** Whether the hint button is at hand: in the steps that take hints, while grades remain. */
   readonly hintAvailable: boolean;
   /** Whether a hint is on offer (90 s without progress, three refusals): the button glows. */
@@ -137,7 +141,9 @@ export function hudPicture(
     canUndo: canUndo(history),
     canRedo: canRedo(history),
     canDeclareDone: offersDone(session.level),
-    canStepLight: state.allowed.has('stepLight'),
+    light: state.allowed.has('stepLight')
+      ? { label: lightLabel(state), on: lightStop(state) === null }
+      : null,
     hintAvailable: canAskHint(session),
     hintOffered: isHintAvailable(session, now),
     sun: isUiUnlocked('sun', interfaceAt)
