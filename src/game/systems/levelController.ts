@@ -17,7 +17,8 @@ import {
   type PointerState,
 } from '../input/pointer';
 import type { Point } from '../input/target';
-import { availableTools, type ToolId } from '../input/tools';
+import { startingTool } from '../input/startingTool';
+import type { ToolId } from '../input/tools';
 import { NO_FILLS, type LiftFills } from '../input/liftDrag';
 import { triedChain } from '../input/triedChain';
 import {
@@ -191,16 +192,15 @@ function shown(session: LevelSession, effects: readonly FlowEffect[]): Effect[] 
 }
 
 /**
- * A level screen as the level starts, holding the first tool it unlocks, and what its script opens
- * with; a garden of the free mode brings its `orders`.
+ * A level screen as the level starts, holding the tool its first move needs (`startingTool`), and
+ * what its script opens with; a garden of the free mode brings its `orders`.
  */
 export function openController(level: Level, now: number, orders: FreeOrders | null = null): Step {
-  const [first = 'lanterns'] = availableTools(level.start.allowed);
   const { session, effects } = openSession(level, now);
   return {
     controller: {
       session,
-      pointer: initialPointer(first),
+      pointer: initialPointer(startingTool(level)),
       highlight: [],
       vineGlow: null,
       positions: level.data.sprouts.map(({ x, y }) => ({ x, y })),
@@ -212,7 +212,7 @@ export function openController(level: Level, now: number, orders: FreeOrders | n
   };
 }
 
-/** A level screen as the level starts, holding the first tool it unlocks. */
+/** A level screen as the level starts, holding the tool its first move needs. */
 export const startController = (level: Level, now: number): Controller =>
   openController(level, now).controller;
 

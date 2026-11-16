@@ -73,10 +73,12 @@ describe('the level controller', () => {
   const trap = levelById('1.1');
   const at = (v: number) => spot(trap, v);
 
-  it('starts holding the first tool unlocked, with nothing glowing', () => {
+  it('starts holding the tool of its first move, with nothing glowing', () => {
     const controller = startController(trap, 0);
     expect(controller.pointer.tool).toBe('lanterns');
     expect(controller.highlight).toEqual([]);
+    // The greenhouse's first move is a look through the fog: the level hands Inspeccionar.
+    expect(startController(levelById('3.1'), 0).pointer.tool).toBe('inspect');
   });
 
   it('two touches join two sprouts: the move is applied, and animated with its events', () => {
@@ -112,7 +114,9 @@ describe('the level controller', () => {
   it('a wrong step while dragging a chain is reported at once', () => {
     const chainLevel = festivalLevel();
     const p = (v: number) => spot(chainLevel, v);
+    // The festival starts with the marks (its first move is a sun): the chain needs the lanterns.
     const { effects } = feed(startController(chainLevel, 0), [
+      { kind: 'tool', tool: 'lanterns' },
       { kind: 'press', point: p(0) },
       { kind: 'move', point: p(2) },
     ]);
@@ -122,7 +126,9 @@ describe('the level controller', () => {
   it('a drag let go outside the screen drops its chain and plays nothing', () => {
     const chainLevel = festivalLevel();
     const p = (v: number) => spot(chainLevel, v);
-    const start = startController(chainLevel, 0);
+    const start = feed(startController(chainLevel, 0), [
+      { kind: 'tool', tool: 'lanterns' },
+    ]).controller;
     const drag: UiEvent[] = [
       { kind: 'press', point: p(0) },
       { kind: 'move', point: p(1) },

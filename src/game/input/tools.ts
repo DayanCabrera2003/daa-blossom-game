@@ -28,3 +28,7 @@ export function availableTools(allowed: ReadonlySet<ActionType>, layers = false)
     tool === 'layers' ? layers : TOOL_ACTIONS[tool].some((action) => allowed.has(action)),
   );
 }
+
+/** The tool whose touches perform an action of `type`; null for the buttons ("Terminé", the light). */
+export const toolOf = (type: ActionType): ToolId | null =>
+  (Object.keys(TOOL_ACTIONS) as ToolId[]).find((tool) => TOOL_ACTIONS[tool].includes(type)) ?? null;

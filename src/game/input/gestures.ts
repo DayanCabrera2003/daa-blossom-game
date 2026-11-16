@@ -8,7 +8,7 @@ import { flowerOutline, interiorCandidates } from './flowerShape';
 import { FLOWER_PADDING, hitTest } from './HitTest';
 import { chooseTool, pressEnd, pressMove, pressStart, type PointerState } from './pointer';
 import type { Point } from './target';
-import { TOOL_ACTIONS, type ToolId } from './tools';
+import { toolOf, type ToolId } from './tools';
 
 /**
  * What a player does with hand and mouse: take a tool, press and drag through some points (a
@@ -21,11 +21,10 @@ export type Gesture =
   | { readonly kind: 'done' }
   | { readonly kind: 'light' };
 
-const toolOf = (action: Action): ToolId => {
-  const tool = (Object.keys(TOOL_ACTIONS) as ToolId[]).find((t) =>
-    TOOL_ACTIONS[t].includes(action.type),
-  );
-  invariant(tool !== undefined, `no tool performs ${action.type}`);
+/** The tool that performs `action` on the garden. */
+const toolFor = (action: Action): ToolId => {
+  const tool = toolOf(action.type);
+  invariant(tool !== null, `no tool performs ${action.type}`);
   return tool;
 };
 
@@ -75,7 +74,7 @@ export function gesturesFor(
   if (action.type === 'stepLight') return [{ kind: 'light' }];
   const at = (v: VertexId): Point => itemAt(positions, v);
   const touch = (point: Point): Gesture => ({ kind: 'press', points: [point] });
-  const tool: Gesture = { kind: 'tool', tool: toolOf(action) };
+  const tool: Gesture = { kind: 'tool', tool: toolFor(action) };
   switch (action.type) {
     case 'join':
       return [tool, touch(at(action.u)), touch(at(action.v))];
