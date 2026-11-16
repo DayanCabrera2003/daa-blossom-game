@@ -12,6 +12,7 @@
   "reason.invalidPath": "Por ahí los faroles no pueden deslizarse.",
   "reason.noFog": "Aquí no hay niebla: todo se ve.",
   "reason.darkVine": "Esa enredadera está apagada. Para encender un farol, toca un brote a oscuras y luego a su vecino.",
+  "reason.tryTool": "Prueba con {tool}.",
   "reason.alreadyInspected": "Ya miraste alrededor de {vertex}.",
   "reason.vineHidden": "La niebla todavía tapa las enredaderas de {vertex}.",
   "reason.notASun": "{vertex} no tiene sol: solo se mira desde un sol.",

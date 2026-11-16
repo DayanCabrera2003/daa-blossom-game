@@ -184,6 +184,7 @@ const UI = {
   'hud.councilProves': ['groups', 'stones', 'atLeast', 'dark'],
   'hud.councilNoBound': ['groups', 'stones', 'dark'],
   'hud.councilHidden': [],
+  'reason.tryTool': ['tool'],
   'tool.lanterns': [],
   'tool.marks': [],
   'tool.foldLoop': [],

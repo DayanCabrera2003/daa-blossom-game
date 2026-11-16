@@ -9,6 +9,7 @@ import { raceDurationAt } from '../../picture/racePanel';
 import { checkText } from '../../picture/mirrorDrawing';
 import { claimText } from '../../picture/claimText';
 import { reasonText } from '../../picture/reasonText';
+import { toolAdvice } from '../../picture/toolAdvice';
 import type { AssetKey } from '../../assets/keys';
 import { layerOf, type Controller, type Effect } from '../../systems/levelController';
 import { automatonDayOf, garden } from '../../systems/levelSession';
@@ -66,9 +67,13 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
     spokenLine(key, (id) => t(id, params));
   switch (effect.kind) {
     case 'rejected': {
-      // Before folding opens, the conflict of a search is not told apart (4.1).
+      // Before folding opens, the conflict of a search is not told apart (4.1); a refusal born of
+      // the tool in hand names the tool to try.
       const foldAllowed = stage.level.start.allowed.has('foldAt');
-      stage.toast.show(reasonText(effect.reason, effect.action, stage.labels, t, { foldAllowed }));
+      const why = reasonText(effect.reason, effect.action, stage.labels, t, { foldAllowed });
+      const tool = stage.controller().pointer.tool;
+      const advice = toolAdvice(effect.reason, tool, stage.level, t);
+      stage.toast.show(advice === null ? why : `${why} ${advice}`);
       break;
     }
     case 'claimRefused': {
