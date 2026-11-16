@@ -15,7 +15,7 @@ El modo profesor (`?teacher`) abre todos los niveles y el Códex entero: sirve p
 
 ## Antes de cada persona
 
-- **Datos limpios.** Un perfil nuevo del navegador, o borrar las claves `florecer.save` y `florecer.playtest` (herramientas de desarrollo → Almacenamiento → Local Storage) y recargar. Sin `?teacher`.
+- **Datos limpios.** Un perfil nuevo del navegador, o borrar las claves `florecer.save`, `florecer.save.bak` (si existe) y `florecer.playtest` (herramientas de desarrollo → Almacenamiento → Local Storage) y recargar: el juego tiene que abrir en la pantalla de título («Toca para empezar»), no en el hub. Sin `?teacher`.
 - **Sesión que empieza a mitad** (B o C sin haber jugado la anterior en ese navegador): en una terminal del repositorio, `npm run save -- after-ch2` (para B) o `npm run save -- after-ch4` (para C); copiar la última línea que imprime, pegarla en la consola del navegador con la página del juego abierta (herramientas de desarrollo → Consola) y pulsar Intro: el juego se recarga en ese punto. El registro de la prueba (`florecer.playtest`) empieza vacío. Comprobar en el hub que está abierto 3.1 (o 5.1) y no el siguiente capítulo.
 - **Sonido.** El juego ya tiene música, efectos y balbuceo: auriculares o altavoz al volumen de una conversación, el mismo para todas las personas. Los volúmenes se dejan como vienen.
 - **Pantalla completa** (F11 en el navegador).
@@ -32,7 +32,7 @@ Lo que el registro no ve; el detalle está en §4 de cada protocolo.
 | B | 4.1: ¿encuentra la cadena sin la pista 3? 4.2: ¿señala `d–b`? 4.11: ¿elige bien en el Cuaderno a la primera? Y, al acabar 4.11, la pregunta en voz alta | `B.md` §4 |
 | C | 7.4: ¿explica en voz alta por qué las lunas son las piedras? 6.1 / 6.3: ¿ordena y repara la receta? 7.5: ¿presenta un certificado que cuenta? | `C.md` §4 |
 
-Siempre: dónde duda, qué dice en voz alta, qué pistas abre, cuándo vuelve al hub sin ganar. Anotar la hora junto a cada nota, para cruzarla con el registro.
+Siempre: dónde duda, qué dice en voz alta, qué pistas abre, cuándo vuelve al hub sin ganar, y si usa «Reiniciar» (en los ajustes del nivel), que el registro no ve. Anotar la hora junto a cada nota, para cruzarla con el registro.
 
 ## Al terminar
 
