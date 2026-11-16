@@ -31,7 +31,7 @@
   "goal": { "visible": false },
   "fog": true,
   "water": 6,
-  "victory": { "type": "searchComplete" },
+  "victory": { "type": "searchExhausted" },
   "hints": [
     { "line": "ch3.3.sauce.01" },
     { "line": "ch3.3.sauce.02", "highlight": ["b1", "b2", "m"] },
@@ -91,6 +91,7 @@
     { "type": "inspect", "vertex": "n" },
     { "type": "markMoon", "from": "n", "to": "p" },
     { "type": "inspect", "vertex": "q" },
+    { "type": "declareDone" },
     { "type": "answer", "option": 0 }
   ]
 }

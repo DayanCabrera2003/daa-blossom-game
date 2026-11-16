@@ -1,3 +1,4 @@
+import strings from '@content/es/strings.json';
 import { checkVertexCover, koenigCover } from '@core/certificates/vertexCover';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
@@ -7,11 +8,13 @@ import { isMatchedEdge, size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
 import type { GardenState } from '@core/rules/state';
+import { isVictory } from '@core/rules/victory';
 import { searchStatus } from '@core/search/searchStatus';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { buildCounterexample, type Counterexample } from '@levels/counterexample';
+import { createTranslator } from '@services/i18n';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -21,6 +24,8 @@ import { describe, expect, it } from 'vitest';
  * moons are König's scarecrows, "k scarecrows, exactly k lanterns" is refuted by a spare one, and
  * "the scarecrows can always go on the moons" by a garden its search does not reach whole.
  */
+
+const t = createTranslator(strings);
 
 const levelOf = (id: string): Level => {
   const level = catalog().find((candidate) => candidate.data.id === id);
@@ -75,6 +80,40 @@ describe('3.3: already visited', () => {
         ).length >= 2,
     );
     expect(twice.length).toBeGreaterThan(0);
+  });
+
+  it('is won with "Terminé" once the search is over and every sun looked at, not by a mark', () => {
+    const level = levelOf('3.3');
+    expect(level.data.victory).toEqual({ type: 'searchExhausted' });
+    const won = (state: GardenState) => isVictory(state, { type: 'searchExhausted' });
+    const moves = level.solution.filter((move) => move.type !== 'answer');
+    const done = moves.findIndex((move) => move.type === 'declareDone');
+    expect(done).toBe(moves.length - 1);
+    // The last mark does not win by itself; "Terminé" does, once the last sun is inspected.
+    const marked = play(level.start, moves.slice(0, done));
+    expect(won(marked)).toBe(false);
+    expect(won({ ...marked, declaredDone: true })).toBe(true);
+    const lastLook = moves.findLastIndex((move) => move.type === 'inspect');
+    const unlooked = play(level.start, moves.slice(0, lastLook));
+    expect(statusOf(unlooked)).toBe('exhausted');
+    expect(won({ ...unlooked, declaredDone: true })).toBe(false);
+  });
+
+  it('a look at a moon already visited is refused without telling what to do with it', () => {
+    const level = levelOf('3.3');
+    const id = (name: string): VertexId => {
+      const vertex = idOf(level.labels, name);
+      if (vertex === undefined) throw new Error(`no sprout ${name}`);
+      return vertex;
+    };
+    const searched = play(
+      level.start,
+      level.solution.filter((move) => move.type !== 'answer' && move.type !== 'declareDone'),
+    );
+    const again = applyAction(searched, { type: 'markMoon', from: id('b1'), to: id('m') });
+    expect(again).toMatchObject({ ok: false, reason: { code: 'alreadyMarked' } });
+    // The notebook asks what to do with a marked sprout; the refusal only says it has its mark.
+    expect(t('reason.alreadyMarked', { vertex: 'm' })).toBe('m ya tiene su marca.');
   });
 
   it('(c): reaching a marked sprout again is no sign of a chain', () => {

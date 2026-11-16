@@ -18,7 +18,7 @@
   "reason.notASun": "{vertex} no tiene sol: solo se mira desde un sol.",
   "reason.litVine": "Entre {u} y {v} ya hay farol; por ahí no se llega a nadie nuevo.",
   "reason.insideOneFlower": "Esos dos son pétalos de la misma flor.",
-  "reason.alreadyMarked": "{vertex} ya tiene su marca. Déjala como está.",
+  "reason.alreadyMarked": "{vertex} ya tiene su marca.",
   "reason.sunMeetsSun": "{u} y {v} son soles del mismo árbol. Aquí pasa algo raro…",
   "reason.notSunsOfOneTree": "Solo se pliega donde se tocan dos soles del mismo árbol, y {u}–{v} no es ese sitio.",
   "reason.searchInProgress": "Con una búsqueda en marcha, las flores se pliegan donde chocan dos soles.",
