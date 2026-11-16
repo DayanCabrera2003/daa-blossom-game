@@ -24,7 +24,7 @@ const FEWEST: Readonly<Record<string, number>> = {
   '3.4': 3,
   '3.5': 7,
   '3.10': 4,
-  '4.12': 9,
+  '4.12': 11,
   '5.5': 14,
 };
 

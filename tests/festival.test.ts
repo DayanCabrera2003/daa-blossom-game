@@ -5,9 +5,10 @@ import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import { checkAugmentingPath } from '@core/matching/paths';
-import { size } from '@core/matching/queries';
+import { isExposed, size } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
+import { lightStep } from '@core/rules/lightStep';
 import type { GardenState } from '@core/rules/state';
 import { autoSearch } from '@core/search/autoSearch';
 import { searchStatus } from '@core/search/searchStatus';
@@ -357,8 +358,8 @@ describe('4.11: the flower challenge', () => {
 describe('4.12: mastery of the festival', () => {
   const level = levelOf('4.12');
 
-  it('18 sprouts in the fog, with water to count and lanterns already lit', () => {
-    expect(level.graph.n).toBe(18);
+  it('19 sprouts in the fog, with water to count and lanterns already lit', () => {
+    expect(level.graph.n).toBe(19);
     expect(level.data.fog).toBe(true);
     expect(level.data.water).not.toBeNull();
     expect(size(level.start.matching)).toBeGreaterThan(0);
@@ -373,5 +374,18 @@ describe('4.12: mastery of the festival', () => {
     expect(folds(0, first)).toBe(1);
     expect(folds(first, level.solution.length)).toBe(1);
     expect(maximumSize(level.graph)).toBe(size(level.start.matching) + 2);
+  });
+
+  it('ends with W in the dark, its light over without a chain: "Terminé" trusts a failed search', () => {
+    const solution = level.solution.filter((move) => move.type !== 'declareDone');
+    expect(solution).toHaveLength(level.solution.length - 1);
+    const end = play(level.start, solution);
+    expect(size(end.matching)).toBe(maximumSize(level.graph));
+    expect(isExposed(end.matching, sproutOf(level, 'W'))).toBe(true);
+    expect(lightStep(end)).toEqual({ kind: 'done' });
+    // The last round searches from W itself, after both chains are lit.
+    const chains = level.solution.flatMap((move, at) => (move.type === 'chain' ? [at] : []));
+    const after = level.solution.slice((chains.at(-1) ?? 0) + 1);
+    expect(after).toContainEqual({ type: 'inspect', vertex: sproutOf(level, 'W') });
   });
 });
