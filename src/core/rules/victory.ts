@@ -35,8 +35,10 @@ export type VictoryCondition =
    * Scarecrows guard every vine, exactly as many as lanterns: König's proof (3.7, 3.8). Like the
    * Tutte–Berge proof below, it counts only once presented with "Terminé" (GDD §5.2); otherwise a
    * level whose certificate already closes would be won before the player does anything (7.2).
+   * With `afterSearch`, it also asks for the search to be over without a chain (3.8, "the gift of
+   * the search"): without searching, there is no gift.
    */
-  | { readonly type: 'coverCertificate' }
+  | { readonly type: 'coverCertificate'; readonly afterSearch?: boolean | undefined }
   /**
    * Scarecrows guard every vine, however many they are, presented with "Terminé" (7.1): the
    * greenhouse proof tried where it does not close, so the player sees it take more scarecrows than
@@ -131,7 +133,8 @@ export function isVictory(state: GardenState, condition: VictoryCondition): bool
       return (
         state.declaredDone &&
         state.scarecrows.length === lanterns &&
-        checkVertexCover(state.graph, state.scarecrows).ok
+        checkVertexCover(state.graph, state.scarecrows).ok &&
+        (condition.afterSearch !== true || statusOf(state) === 'exhausted')
       );
     case 'coverComplete':
       return state.declaredDone && checkVertexCover(state.graph, state.scarecrows).ok;

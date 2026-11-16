@@ -28,7 +28,10 @@ export type ClaimVerdict =
    * these stones, and `dark` do.
    */
   | { readonly code: 'countShort'; readonly atLeast: number; readonly dark: number }
-  /** Stones from the moons are presented before the search is over without a chain. */
+  /**
+   * Stones from the moons (7.4), or scarecrows that must come from the search (3.8), are presented
+   * before the search is over without a chain.
+   */
   | { readonly code: 'searchNotOver' }
   /** The stones lifted are not the moons of the search. */
   | { readonly code: 'notTheMoons' };
@@ -81,6 +84,10 @@ export function claimVerdict(
       // A chain the marks already saw is no search left open: it is lanterns left to light.
       return state.chainSeen === null ? { code: 'searchOpen' } : { code: 'chainLeft' };
     case 'coverCertificate': {
+      if (victory.afterSearch === true && statusOf(state) !== 'exhausted')
+        return isMaximum(state.graph, state.matching)
+          ? { code: 'searchNotOver' }
+          : { code: 'chainLeft' };
       if (!checkVertexCover(state.graph, state.scarecrows).ok)
         return { code: 'unguarded', vine: unguardedVine(state) };
       const lanterns = size(state.matching);

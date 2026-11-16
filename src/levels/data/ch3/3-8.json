@@ -35,7 +35,7 @@
     ["e", "f"]
   ],
   "goal": { "visible": false },
-  "victory": { "type": "coverCertificate" },
+  "victory": { "type": "coverCertificate", "afterSearch": true },
   "hints": [
     { "line": "ch3.8.sauce.02" },
     { "line": "ch3.8.sauce.03", "highlight": ["S", "a", "b", "c", "d", "e", "f"] },

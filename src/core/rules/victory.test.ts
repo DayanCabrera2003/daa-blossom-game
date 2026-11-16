@@ -51,6 +51,35 @@ describe('victory conditions', () => {
     expect(certify([0, 1, 3])).toBe(false);
   });
 
+  it('coverCertificate after the search: the scarecrows count once the search is over (3.8)', () => {
+    // 1–2=3–4=5 as 0–1=2–3=4, with the lanterns 1=2 and 3=4: the search from 0 marks 1 and 3 moons.
+    const after = { type: 'coverCertificate', afterSearch: true } as const;
+    const start = createGardenState({
+      graph: path,
+      matching: unwrap(
+        createMatching(path, [
+          [1, 2],
+          [3, 4],
+        ]),
+      ),
+      allowed: ['markRoot', 'markMoon', 'placeScarecrow', 'declareDone'],
+    });
+    const guard: Action[] = [
+      { type: 'placeScarecrow', vertex: 1 },
+      { type: 'placeScarecrow', vertex: 3 },
+      { type: 'declareDone' },
+    ];
+    expect(isVictory(play(start, guard), { type: 'coverCertificate' })).toBe(true);
+    expect(isVictory(play(start, guard), after)).toBe(false);
+    const searched = play(start, [
+      { type: 'markRoot', vertex: 0 },
+      { type: 'markMoon', from: 0, to: 1 },
+      { type: 'markMoon', from: 2, to: 3 },
+      ...guard,
+    ]);
+    expect(isVictory(searched, after)).toBe(true);
+  });
+
   it('coverComplete: scarecrows guard every vine, however many, once presented (7.1)', () => {
     // Level 7.1: the five-cycle holds two lanterns, yet guarding its vines takes three scarecrows.
     const c5 = cycleGraph(5);

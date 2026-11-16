@@ -18,7 +18,7 @@ const victory = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('chainFound') }),
   z.strictObject({ type: z.literal('searchComplete') }),
   z.strictObject({ type: z.literal('searchExhausted') }),
-  z.strictObject({ type: z.literal('coverCertificate') }),
+  z.strictObject({ type: z.literal('coverCertificate'), afterSearch: z.boolean().optional() }),
   z.strictObject({ type: z.literal('tutteBergeCertificate') }),
   z.strictObject({ type: z.literal('coverComplete') }),
   z.strictObject({ type: z.literal('moonCertificate') }),

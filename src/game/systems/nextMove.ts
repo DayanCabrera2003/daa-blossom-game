@@ -291,6 +291,10 @@ function computedStep(goal: MentorGoal, state: GardenState): Action | null {
       );
     }
     case 'coverCertificate': {
+      // Where the scarecrows are the gift of the search (3.8), the search comes first.
+      if (goal.victory.afterSearch === true && statusOf(state) !== 'exhausted') {
+        return searchStep(state);
+      }
       const covers = checkVertexCover(state.graph, state.scarecrows).ok;
       if (covers && state.scarecrows.length === size(state.matching))
         return { type: 'declareDone' };

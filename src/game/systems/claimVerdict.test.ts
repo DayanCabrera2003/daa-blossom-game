@@ -133,6 +133,19 @@ describe('why a "Terminé" that does not win falls short', () => {
     expect(claimVerdict(state, level.data.victory)).toEqual({ code: 'notTheMoons' });
   });
 
+  it('3.8: scarecrows presented before the search is over are told to wait for it', () => {
+    const level = levelOf('3.8');
+    const scarecrows = ['2', '4', 'a', 'c', 'e'].map((label): Action => ({
+      type: 'placeScarecrow',
+      vertex: idOf(level, label),
+    }));
+    const early = claimed(level, scarecrows);
+    expect(checkVertexCover(early.graph, early.scarecrows).ok).toBe(true);
+    expect(claimVerdict(early, level.data.victory)).toEqual({ code: 'searchNotOver' });
+    const search = level.solution.filter((move) => move.type.startsWith('mark'));
+    expect(claimVerdict(claimed(level, [...search, ...scarecrows]), level.data.victory)).toBeNull();
+  });
+
   it('stones presented before the search is over without a chain are told to wait', () => {
     const level = levelOf('7.3');
     const state = claimed(level, [{ type: 'liftStone', vertex: idOf(level, 'C') }]);

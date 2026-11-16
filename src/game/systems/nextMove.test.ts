@@ -192,6 +192,15 @@ describe("the mentor's next step (hint grade 3)", () => {
     expect(nextMove(goal, { ...start, scarecrows: [1, 3] })).toEqual({ type: 'declareDone' });
   });
 
+  it('scarecrows from the search: searches to the end before guarding anything (3.8)', () => {
+    const level = levelById('3.8');
+    const goal = goalOf(level);
+    // Off the reference solution: a scarecrow on S before any mark.
+    const off = after(level, [{ type: 'placeScarecrow', vertex: 5 }]);
+    expect(nextMove(goal, off)).toMatchObject({ type: 'markRoot' });
+    mentorPlays(goal, off);
+  });
+
   it('scarecrows however many: guards each vine left unguarded, then says "Terminé" (7.1)', () => {
     // The five-cycle with its two lanterns: guarding every vine takes three scarecrows.
     const five = cycleGraph(5);
