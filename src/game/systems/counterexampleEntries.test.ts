@@ -21,7 +21,7 @@ describe('playtest entries of the counterexample screen', () => {
     const effects: CounterexampleEffect[] = [
       { kind: 'animate', action: { type: 'join', u: 0, v: 1 }, events: [] },
       { kind: 'rejected', reason: { code: 'notNow' }, action: { type: 'declareDone' } },
-      { kind: 'drawRefused', reason: { code: 'twoSilver', vertex: 1 } },
+      { kind: 'touchRefused', reason: { code: 'twoSilver', vertex: 1 } },
     ];
     expect(counterexampleEntries('1.5', effects, 0)).toEqual([]);
   });

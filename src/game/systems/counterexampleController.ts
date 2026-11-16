@@ -63,7 +63,7 @@ export type CounterexampleEvent =
 export type CounterexampleEffect =
   | { readonly kind: 'rejected'; readonly reason: Refusal; readonly action: Action }
   | { readonly kind: 'animate'; readonly action: Action; readonly events: readonly TraceEvent[] }
-  | { readonly kind: 'drawRefused'; readonly reason: Refusal }
+  | { readonly kind: 'touchRefused'; readonly reason: Refusal }
   | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
   | { readonly kind: 'say'; readonly line: string };
 
@@ -117,7 +117,7 @@ function handleDrawing(
     const drawn = drawVine(challenge, garden.graph, u, v);
     return drawn.ok
       ? { controller: { ...controller, challenge: drawn.value }, effects: [] }
-      : { controller, effects: [{ kind: 'drawRefused', reason: drawn.error }] };
+      : { controller, effects: [{ kind: 'touchRefused', reason: drawn.error }] };
   };
   switch (event.kind) {
     case 'press': {

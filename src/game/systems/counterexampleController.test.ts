@@ -149,7 +149,7 @@ describe('the screen of a counterexample', () => {
     ]);
     expect(touched.controller.challenge?.draft.mate).toEqual([1, 0, -1, -1, -1, -1]);
     expect(touched.effects).toEqual([
-      { kind: 'drawRefused', reason: { code: 'twoSilver', vertex: 1 } },
+      { kind: 'touchRefused', reason: { code: 'twoSilver', vertex: 1 } },
     ]);
   });
 

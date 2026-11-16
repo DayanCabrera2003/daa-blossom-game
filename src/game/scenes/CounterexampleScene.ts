@@ -207,7 +207,7 @@ export class CounterexampleScene extends Phaser.Scene {
         this.views.toast.show(reasonText(effect.reason, effect.action, this.labels, t));
         this.sfx.schedule(refusalCues());
         break;
-      case 'drawRefused':
+      case 'touchRefused':
         this.views.toast.show(reasonText(effect.reason, null, this.labels, t));
         this.sfx.schedule(refusalCues());
         break;

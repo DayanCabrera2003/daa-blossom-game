@@ -85,7 +85,7 @@ export function effectCues(effect: Effect, reduced = false): SoundCue[] {
     case 'animate':
       return planCues(planAnimation(effect.events, reduced));
     case 'rejected':
-    case 'drawRefused':
+    case 'touchRefused':
       return refusalCues();
     case 'flowerDrawn':
       return effect.attempt.kind === 'cut' ? [] : refusalCues();

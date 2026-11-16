@@ -130,7 +130,7 @@ describe('the sounds of the effects of the controller', () => {
   it('answers every refusal with the gentle back sound, never a buzzer', () => {
     const refusals: Effect[] = [
       { kind: 'rejected', reason: { code: 'notNow' }, action: ACTION },
-      { kind: 'drawRefused', reason: { code: 'notNow' } },
+      { kind: 'touchRefused', reason: { code: 'notNow' } },
       {
         kind: 'flowerDrawn',
         attempt: { kind: 'notAChain', path: [0, 1], error: { code: 'tooShort' }, spared: false },

@@ -160,8 +160,8 @@ export type Effect =
   | { readonly kind: 'hint'; readonly content: HintContent }
   /** A "Terminé" that did not win, and why it falls short (`claimVerdict.ts`), to tell gently. */
   | { readonly kind: 'claimRefused'; readonly verdict: ClaimVerdict }
-  /** A touch on the drawn reflection was refused (no move of the rules: no action to name). */
-  | { readonly kind: 'drawRefused'; readonly reason: Refusal }
+  /** A touch refused with no move of the rules to name: on the drawn reflection, for instance. */
+  | { readonly kind: 'touchRefused'; readonly reason: Refusal }
   /** The drawn reflection was checked: what the check found, to show over the garden. */
   | { readonly kind: 'mirrorChecked'; readonly check: MirrorCheck }
   /** A chain drawn in the flower challenge: cut at the flower, or refused as no chain. */
@@ -263,7 +263,7 @@ function drawToggle(controller: Controller, u: VertexId, v: VertexId): Step {
   const { session, refusal } = drawInMirror(controller.session, u, v);
   return {
     controller: { ...controller, session },
-    effects: refusal === null ? [] : [{ kind: 'drawRefused', reason: refusal }],
+    effects: refusal === null ? [] : [{ kind: 'touchRefused', reason: refusal }],
   };
 }
 

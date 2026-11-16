@@ -78,7 +78,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       stage.toast.show(t(key, params));
       break;
     }
-    case 'drawRefused':
+    case 'touchRefused':
       stage.toast.show(reasonText(effect.reason, null, stage.labels, t));
       break;
     case 'mirrorChecked': {

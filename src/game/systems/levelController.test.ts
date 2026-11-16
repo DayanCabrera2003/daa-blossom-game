@@ -413,7 +413,7 @@ describe('the level controller runs the script', () => {
       { kind: 'drawToggle', u: 0, v: 1 },
       { kind: 'drawToggle', u: 1, v: 2 },
     ]);
-    expect(effects).toEqual([{ kind: 'drawRefused', reason: { code: 'twoSilver', vertex: 1 } }]);
+    expect(effects).toEqual([{ kind: 'touchRefused', reason: { code: 'twoSilver', vertex: 1 } }]);
   });
 
   it('each check of the drawing is shown; a better one may finish the challenge', () => {
@@ -438,7 +438,7 @@ describe('the level controller runs the script', () => {
     // Once the challenge is over, the drawing is refused and checks show nothing.
     expect(handle(better.controller, { kind: 'checkMirror' }, 0).effects).toEqual([]);
     expect(handle(better.controller, { kind: 'drawToggle', u: 0, v: 1 }, 0).effects).toEqual([
-      { kind: 'drawRefused', reason: { code: 'notNow' } },
+      { kind: 'touchRefused', reason: { code: 'notNow' } },
     ]);
   });
 });

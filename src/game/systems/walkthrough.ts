@@ -256,7 +256,7 @@ function playDrawing(
     };
   }
   const played = feed(controller, events, now);
-  const refused = played.effects.find((effect) => effect.kind === 'drawRefused');
+  const refused = played.effects.find((effect) => effect.kind === 'touchRefused');
   return {
     ...played,
     problem:
