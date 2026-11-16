@@ -3,6 +3,7 @@ import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
 import { hitTest } from '../input/HitTest';
 import { extendLift, releaseLift, startsLift, type LiftFills } from '../input/liftDrag';
+import { dragsChains } from '../input/lightHand';
 import type { PointerState } from '../input/pointer';
 import { NO_SELECTION } from '../input/selection';
 import type { Point } from '../input/target';
@@ -49,14 +50,15 @@ const foundNow = (screen: LiftScreen): FoundChain | null =>
 const shown = (screen: LiftScreen): GardenState => current(screen.history);
 
 /**
- * A press of the lanterns tool on a lit end of an open gap of the found chain: the pointer that
+ * A press on a lit end of an open gap of the found chain, with a tool that drags chains there (any
+ * but the layers, since the gesture lives where the light searches by itself): the pointer that
  * starts a drag into that gap; null when the press is not one.
  */
 export function pressLift(screen: LiftScreen, point: Point): PointerState | null {
   const { pointer, view } = screen;
   const state = shown(screen);
   const target = hitTest(state, view.positions, point, view);
-  if (pointer.tool !== 'lanterns' || target.kind !== 'sprout') return null;
+  if (!dragsChains(state, pointer.tool) || target.kind !== 'sprout') return null;
   return startsLift(foundNow(screen), state, target.vertex)
     ? { ...pointer, chain: [target.vertex] }
     : null;

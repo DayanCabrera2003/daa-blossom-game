@@ -83,6 +83,13 @@ describe('the gesture of lifting on the level screen (4.5)', () => {
     expect(garden(controller.session)).toBe(garden(start.session));
   });
 
+  it('with Marcas in hand, the same drag lights it: the tool does not matter here (4.5)', () => {
+    const marks = feed(ready(), [{ kind: 'tool', tool: 'marks' }]).controller;
+    const { controller, effects } = feed(marks, drag('bdc'));
+    expect(effects.map((effect) => effect.kind)).toContain('animate');
+    expect(controller.pointer.tool).toBe('marks');
+  });
+
   it('the whole chain dragged from R still works', () => {
     const { controller } = feed(ready(), drag('Rabdce'));
     expect(garden(controller.session).chainSeen).toBeNull();

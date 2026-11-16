@@ -3,6 +3,7 @@ import { isExposed, isMatchedEdge } from '@core/matching/queries';
 import type { Action } from '@core/rules/actions';
 import type { GardenState } from '@core/rules/state';
 import { itemAt } from '@core/shared/itemAt';
+import { lightSearches } from './lightHand';
 import { extendLoop } from './loopSelection';
 import { NO_SELECTION, type Selection } from './selection';
 import type { Target } from './target';
@@ -85,6 +86,17 @@ function foldLoop(selection: Selection, target: Target): TapOutcome {
 }
 
 /**
+ * Whether the touch folds or opens whatever the tool in hand: where the light searches by itself,
+ * a vine in the dark (the clash, if it is there) and a folded flower answer every tool but the
+ * layers as the marks would.
+ */
+const foldsAnyway = (state: GardenState, tool: ToolId, target: Target): boolean =>
+  tool !== 'layers' &&
+  lightSearches(state) &&
+  (target.kind === 'flower' ||
+    (target.kind === 'vine' && !isMatchedEdge(state.matching, target.u, target.v)));
+
+/**
  * Turns one touch into an action of the rules, given the tool in hand and what was selected
  * before. It never decides whether the action is valid: that is the reducer's job, and its reason
  * is what the player reads. Tools that act on a single sprout toggle what is on it; the layers
@@ -96,6 +108,7 @@ export function resolveTap(
   selection: Selection,
   target: Target,
 ): TapOutcome {
+  if (foldsAnyway(state, tool, target)) return marks(state, selection, target);
   switch (tool) {
     case 'lanterns':
       return lanterns(state, selection, target);

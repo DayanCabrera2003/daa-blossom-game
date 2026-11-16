@@ -73,6 +73,22 @@ describe('pointer: touches and drags', () => {
     });
   });
 
+  it('where the light searches by itself, any tool but the layers drags a chain (4.5)', () => {
+    const lit = { ...garden, allowed: new Set([...garden.allowed, 'stepLight' as const]) };
+    for (const tool of ['marks', 'inspect'] as const) {
+      let pointer = pressStart(initialPointer(tool), lit, positions, at(0));
+      for (const v of [1, 2, 3]) pointer = pressMove(pointer, lit, positions, at(v)).pointer;
+      expect(pressEnd(pointer, lit, positions, at(3)).action, tool).toEqual({
+        type: 'chain',
+        path: [0, 1, 2, 3],
+      });
+    }
+    // A plain touch is still the tool's own; the layers never drag.
+    const looked = pressStart(initialPointer('inspect'), lit, positions, at(0));
+    expect(pressEnd(looked, lit, positions, at(0)).action).toEqual({ type: 'inspect', vertex: 0 });
+    expect(pressStart(initialPointer('layers'), lit, positions, at(0)).chain).toBeNull();
+  });
+
   it('within a scope (a layer, 5.2), only the sprouts it shows answer the pointer', () => {
     // A layer that shows B, C and D only: A is not there to press or to touch.
     const scope = {

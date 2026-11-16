@@ -13,7 +13,10 @@ import { NO_SELECTION, type Selection } from './selection';
 import type { Target } from './target';
 import type { ToolId } from './tools';
 
-const EVERY = Object.keys(UNLOCKED_AT) as (keyof typeof UNLOCKED_AT)[];
+// Every action but "Avanzar la luz": a garden that has it is one where the light searches by itself.
+const EVERY = (Object.keys(UNLOCKED_AT) as (keyof typeof UNLOCKED_AT)[]).filter(
+  (action) => action !== 'stepLight',
+);
 const sprout = (vertex: number): Target => ({ kind: 'sprout', vertex });
 const vine = (u: number, v: number): Target => ({ kind: 'vine', u, v });
 
@@ -219,5 +222,33 @@ describe('the other tools', () => {
     expect(tapAll(trap, 'layers', [sprout(0), sprout(1), vine(1, 2), { kind: 'nothing' }])).toEqual(
       [null, null, null, null],
     );
+  });
+});
+
+describe('where the light searches by itself (4.4–4.8, 4.12, chapter 5)', () => {
+  // The festival with "Avanzar la luz": the light searches, and marks by hand are closed.
+  const lit: GardenState = { ...festival, allowed: new Set([...EVERY, 'stepLight']) };
+  const folded = { ...lit, layer: contract(lit.layer, [2, 3, 4]).layer };
+
+  it('touching the vine where two suns meet folds there, whatever the tool in hand', () => {
+    for (const tool of ['lanterns', 'marks', 'inspect', 'scarecrows', 'stones'] as const) {
+      expect(tapAll(lit, tool, [vine(4, 2)]), tool).toEqual([{ type: 'foldAt', from: 4, to: 2 }]);
+    }
+  });
+
+  it('touching a folded flower opens it, whatever the tool in hand', () => {
+    for (const tool of ['lanterns', 'marks', 'inspect'] as const) {
+      expect(tapAll(folded, tool, [{ kind: 'flower', blossom: 0 }]), tool).toEqual([
+        { type: 'unfold', blossom: 0 },
+      ]);
+    }
+  });
+
+  it('a lit vine still puts its lantern out with the lanterns; the layers still only look', () => {
+    expect(tapAll(lit, 'lanterns', [vine(1, 2)])).toEqual([{ type: 'split', u: 1, v: 2 }]);
+    expect(tapAll(folded, 'layers', [{ kind: 'flower', blossom: 0 }, vine(4, 2)])).toEqual([
+      null,
+      null,
+    ]);
   });
 });

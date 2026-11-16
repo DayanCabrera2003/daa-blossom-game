@@ -5,6 +5,7 @@ import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
 import { extendChain, finishChain } from './dragChain';
 import { hitTest, type HitScope } from './HitTest';
+import { dragsChains } from './lightHand';
 import { resolveTap } from './intent';
 import { NO_SELECTION, type Selection } from './selection';
 import type { Point } from './target';
@@ -35,9 +36,10 @@ export const chooseTool = (_pointer: PointerState, tool: ToolId): PointerState =
   initialPointer(tool);
 
 /**
- * A press. With the lanterns tool, pressing a sprout in the dark may start a chain (GDD 1.3);
- * whether it was a drag or a touch is only known on release. Pressing a lit sprout starts nothing:
- * it may be the second touch of passing a lantern.
+ * A press. With the lanterns tool (with any tool but the layers where the light searches by
+ * itself), pressing a sprout in the dark may start a chain (GDD 1.3); whether it was a drag or a
+ * touch is only known on release. Pressing a lit sprout starts nothing: it may be the second touch
+ * of passing a lantern.
  */
 export function pressStart(
   pointer: PointerState,
@@ -48,7 +50,7 @@ export function pressStart(
 ): PointerState {
   const target = hitTest(garden, positions, point, scope);
   const startsChain =
-    pointer.tool === 'lanterns' &&
+    dragsChains(garden, pointer.tool) &&
     target.kind === 'sprout' &&
     isExposed(garden.matching, target.vertex);
   return { ...pointer, chain: startsChain ? [target.vertex] : null };
