@@ -438,12 +438,14 @@ describe('the level controller runs the script', () => {
     expect(answered.vineGlow).toBeNull();
   });
 
-  it('in the mirror challenge, touching a vine draws it in silver; nothing else moves', () => {
+  it('in the mirror challenge, touching a vine toggles its silver lantern; nothing else moves', () => {
     const level = scripted([{ step: 'draw', attempts: 1 }]);
-    const middle = { x: 150, y: 100 };
-    const { controller, effects } = feed(startController(level, 0), touch(middle));
+    // The drawing starts with your lantern B–C in silver; a touch on that vine takes it out.
+    const opened = startController(level, 0);
+    expect(opened.session.challenge.draft.mate).toEqual([-1, 2, 1, -1]);
+    const { controller, effects } = feed(opened, touch({ x: 250, y: 100 }));
     expect(effects).toEqual([]);
-    expect(controller.session.challenge.draft.mate).toEqual([1, 0, -1, -1]);
+    expect(controller.session.challenge.draft.mate).toEqual([-1, -1, -1, -1]);
     expect(garden(controller.session)).toBe(level.start);
     // A touch on a sprout or on nothing draws nothing.
     const still = feed(controller, [...touch({ x: 100, y: 100 }), ...touch({ x: 150, y: 200 })]);
@@ -462,6 +464,7 @@ describe('the level controller runs the script', () => {
   it('each check of the drawing is shown; a better one may finish the challenge', () => {
     const level = scripted([{ step: 'draw', attempts: 1 }]);
     const weak = feed(startController(level, 0), [
+      { kind: 'drawToggle', u: 1, v: 2 },
       { kind: 'drawToggle', u: 0, v: 1 },
       { kind: 'checkMirror' },
     ]);

@@ -113,7 +113,13 @@ describe('the picture of the pond', () => {
   });
   it('in the mirror challenge it shows the drawing, then each better check, separated', () => {
     const level = pondLevel([{ step: 'draw', attempts: 2 }]);
-    const drawing = drawInMirror(startSession(level, 0), id('1'), id('2')).session;
+    // The drawing starts with your lanterns in silver: touched away, it is blank.
+    const opened = startSession(level, 0);
+    const blank = opened.challenge.draft.mate.reduce(
+      (s, partner, v) => (partner > v ? drawInMirror(s, v, partner).session : s),
+      opened,
+    );
+    const drawing = drawInMirror(blank, id('1'), id('2')).session;
     expect(pondPicture(drawing, positions, labels)?.strands).toEqual([
       { a: positions[id('1')], b: positions[id('2')], side: 'mirror', piece: null },
     ]);

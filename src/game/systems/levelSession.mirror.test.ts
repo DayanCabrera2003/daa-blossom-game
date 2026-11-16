@@ -18,6 +18,7 @@ import {
   undoSession,
   type LevelSession,
 } from './levelSession';
+import { drawnPairs } from '../input/mirrorDraft';
 import { MISSES_BEFORE_SPARED } from './mirrorChallenge';
 import { tangleLevel } from '../../../tests/support/secretScripts';
 
@@ -114,7 +115,10 @@ const twoPhaseLevel = (): Level => {
 /** The session of `twoPhaseLevel` at its second, unbeatable, challenge. */
 const secondPhase = (): LevelSession => {
   // A check that does not beat the garden first: its miss stays behind with the first phase.
-  const missed = checkDrawnMirror(draw(startSession(twoPhaseLevel(), 0), [[0, 1]]), 0).session;
+  const missed = checkDrawnMirror(
+    draw(blank(startSession(twoPhaseLevel(), 0)), [[0, 1]]),
+    0,
+  ).session;
   const drawn = draw(missed, [
     [2, 3],
     [5, 6],
@@ -128,9 +132,25 @@ const secondPhase = (): LevelSession => {
 const draw = (session: LevelSession, vines: [number, number][]): LevelSession =>
   vines.reduce((s, [u, v]) => drawInMirror(s, u, v).session, session);
 
+/** Touches away every silver vine, so the drawing starts blank. */
+const blank = (session: LevelSession): LevelSession =>
+  session.challenge.draft.mate.reduce<LevelSession>(
+    (s, partner, v) => (partner > v ? drawInMirror(s, v, partner).session : s),
+    session,
+  );
+
 describe('a level session runs the mirror challenge', () => {
+  it('each drawing starts with your lanterns in silver, in both phases', () => {
+    const first = startSession(twoPhaseLevel(), 0);
+    expect(drawnPairs(first.challenge.draft)).toEqual(drawnPairs(garden(first).matching));
+    const second = secondPhase();
+    expect(stepNow(second)).toMatchObject({ step: 'draw', beatable: false });
+    expect(drawnPairs(second.challenge.draft)).toEqual(drawnPairs(garden(second).matching));
+    expect(size(second.challenge.draft)).toBe(4);
+  });
+
   it('a touch on a vine draws it in silver; a second silver lantern on a sprout is refused', () => {
-    const session = draw(startSession(mirrorLevel(), 0), [[0, 1]]);
+    const session = draw(blank(startSession(mirrorLevel(), 0)), [[0, 1]]);
     expect(size(session.challenge.draft)).toBe(1);
     const refused = drawInMirror(session, 1, 2);
     expect(refused.refusal).toEqual({ code: 'twoSilver', vertex: 1 });
@@ -138,14 +158,14 @@ describe('a level session runs the mirror challenge', () => {
   });
 
   it('your lanterns cannot change while you draw, nor can the day move', () => {
-    const session = startSession(mirrorLevel(), 0);
+    const session = blank(startSession(mirrorLevel(), 0));
     const moved = act(session, { type: 'split', u: 1, v: 2 }, 0);
     expect(moved.outcome).toEqual({ ok: false, reason: { code: 'notNow' } });
     expect(undoSession(session)).toBe(session);
   });
 
   it('three better reflections finish the step; checks that do not beat you never count', () => {
-    let session = startSession(mirrorLevel(), 0);
+    let session = blank(startSession(mirrorLevel(), 0));
     const weak = checkDrawnMirror(draw(session, [[0, 1]]), 0);
     expect(weak.check).toMatchObject({ kind: 'notBetter', drawn: 1, yours: 2 });
     expect(weak.effects).toEqual([]);
@@ -190,7 +210,7 @@ describe('a level session runs the mirror challenge', () => {
   });
 
   it('checking the same better reflection again is no new attempt', () => {
-    const drawn = draw(startSession(mirrorLevel(2), 0), [
+    const drawn = draw(blank(startSession(mirrorLevel(2), 0)), [
       [0, 1],
       [2, 3],
       [5, 6],
@@ -203,7 +223,7 @@ describe('a level session runs the mirror challenge', () => {
   });
 
   it(`after ${MISSES_BEFORE_SPARED} checks that do not win, the step is over anyway`, () => {
-    let session = startSession(mirrorLevel(), 0);
+    let session = blank(startSession(mirrorLevel(), 0));
     for (let k = 1; k < MISSES_BEFORE_SPARED; k++) {
       const checked = checkDrawnMirror(session, 0);
       expect(checked.effects).toEqual([]);
@@ -218,7 +238,7 @@ describe('a level session runs the mirror challenge', () => {
   });
 
   it('hints are offered while drawing; the grade-3 one draws a reflection the check accepts', () => {
-    let session = startSession(mirrorLevel(1), 0);
+    let session = blank(startSession(mirrorLevel(1), 0));
     expect(isHintAvailable(session, HINT_DELAY_MS)).toBe(true);
     let hint = null;
     for (let k = 1; k <= 3; k++) {
@@ -241,7 +261,7 @@ describe('a level session runs the mirror challenge', () => {
       ['E', 'F'],
       ['G', 'H'],
     ];
-    let session = startSession(mirrorLevel(1, full), 0);
+    let session = blank(startSession(mirrorLevel(1, full), 0));
     let hint = null;
     for (let k = 1; k <= 3; k++) {
       const opened = askHint(session, k * HINT_DELAY_MS);
@@ -255,7 +275,7 @@ describe('a level session runs the mirror challenge', () => {
   it('outside the mirror challenge, drawing is refused and checking does nothing', () => {
     const level = mirrorLevel(1);
     const done = checkDrawnMirror(
-      draw(startSession(level, 0), [
+      draw(blank(startSession(level, 0)), [
         [0, 1],
         [2, 3],
         [5, 6],
@@ -269,15 +289,15 @@ describe('a level session runs the mirror challenge', () => {
     expect(respond(done, { type: 'tap' }, 0).effects).toEqual([]);
   });
 
-  it('each challenge starts from a clean drawing, whatever the one before left', () => {
+  it('each challenge starts from your lanterns again, whatever the one before left', () => {
     const session = secondPhase();
     expect(stepNow(session)).toMatchObject({ step: 'draw', beatable: false });
-    expect(size(session.challenge.draft)).toBe(0);
+    expect(drawnPairs(session.challenge.draft)).toEqual(drawnPairs(garden(session).matching));
     expect(session.challenge).toMatchObject({ misses: 0, checked: [], shown: null });
   });
 
   it('where nobody can win, every check says it does not beat you and counts as an attempt', () => {
-    let session = secondPhase();
+    let session = blank(secondPhase());
     session = draw(session, [
       [0, 1],
       [2, 3],

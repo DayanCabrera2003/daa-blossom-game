@@ -234,9 +234,10 @@ describe('the picture of the HUD', () => {
   });
   it('in the mirror challenge, your lanterns against the drawing, and the check at hand', () => {
     const pointer = initialPointer('lanterns');
-    const drawing = drawInMirror(startSession(pondLevel([{ step: 'draw', attempts: 1 }]), 0), 0, 1);
+    // The drawing starts with your 5 lanterns in silver; a touch on 2–3 takes one out.
+    const drawing = drawInMirror(startSession(pondLevel([{ step: 'draw', attempts: 1 }]), 0), 1, 2);
     const hud = hudPicture(drawing.session, pointer, 0);
-    expect(hud.goal).toEqual({ key: 'hud.mirror', params: { yours: 5, mirror: 1 } });
+    expect(hud.goal).toEqual({ key: 'hud.mirror', params: { yours: 5, mirror: 4 } });
     expect(hud.canCheckMirror).toBe(true);
     expect(hudPicture(startSession(pondLevel(), 0), pointer, 0).canCheckMirror).toBe(false);
     expect(checkDrawnMirror(drawing.session, 0).check?.kind).toBe('notBetter');

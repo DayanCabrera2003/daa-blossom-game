@@ -212,7 +212,7 @@ export function openSession(
     won: null,
     flow,
     reactions: [],
-    challenge: startChallenge(level.start.graph),
+    challenge: startChallenge(level.start.graph, level.start.matching),
     flower: startFlowerChallenge(),
     recipe: null,
     certificates: [],

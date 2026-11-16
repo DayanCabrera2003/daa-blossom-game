@@ -56,9 +56,16 @@ export interface MirrorChallenge {
   readonly shown: MirrorCheck | null;
 }
 
-/** A challenge on `graph` with nothing drawn yet. */
-export const startChallenge = (graph: Graph): MirrorChallenge => ({
-  draft: emptyDraft(graph),
+/**
+ * A challenge on `graph` whose drawing starts as `draft`: nothing drawn yet by default; in a level,
+ * your own lanterns in silver (GDD 2.4), so a better reflection is a few touches away instead of a
+ * whole garden built by hand.
+ */
+export const startChallenge = (
+  graph: Graph,
+  draft: Matching = emptyDraft(graph),
+): MirrorChallenge => ({
+  draft,
   misses: 0,
   checked: [],
   shown: null,
