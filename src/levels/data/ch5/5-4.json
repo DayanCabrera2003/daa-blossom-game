@@ -16,7 +16,8 @@
     { "label": "q", "x": 355, "y": 185 },
     { "label": "o", "x": 420, "y": 185 },
     { "label": "s", "x": 420, "y": 85 },
-    { "label": "V", "x": 465, "y": 135 }
+    { "label": "V", "x": 465, "y": 135 },
+    { "label": "W", "x": 130, "y": 32 }
   ],
   "vines": [
     ["R", "a"],
@@ -37,7 +38,8 @@
     ["q", "o"],
     ["o", "s"],
     ["s", "p"],
-    ["o", "V"]
+    ["o", "V"],
+    ["a", "W"]
   ],
   "lanterns": [
     ["a", "b"],
@@ -53,7 +55,7 @@
   "victory": { "type": "maximum" },
   "hints": [
     { "line": "ch5.4.sauce.01" },
-    { "line": "ch5.4.sauce.02", "highlight": ["R", "U", "x"] },
+    { "line": "ch5.4.sauce.02", "highlight": ["R", "x", "U", "W"] },
     { "line": "ch5.4.sauce.03" }
   ],
   "flow": [
@@ -65,7 +67,7 @@
       "stop": ["b", "d"]
     },
     { "step": "play" },
-    { "step": "say", "lines": ["ch5.4.sauce.04"] }
+    { "step": "say", "lines": ["ch5.4.sauce.04", "ch5.4.sauce.05"] }
   ],
   "solution": [
     { "type": "pickVine", "u": "b", "v": "d" },
@@ -96,6 +98,8 @@
     { "type": "unfold", "blossom": 1 },
     { "type": "unfold", "blossom": 0 },
     { "type": "chain", "path": ["U", "q", "p", "s", "o", "V"] },
+    { "type": "stepLight" },
+    { "type": "stepLight" },
     { "type": "declareDone" }
   ]
 }

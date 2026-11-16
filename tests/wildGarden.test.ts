@@ -3,10 +3,11 @@ import type { Blossom, GardenNode } from '@core/blossom/types';
 import { maximumSize } from '@core/edmonds/fast/maximum';
 import { idOf } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
-import { size } from '@core/matching/queries';
+import { isExposed, size } from '@core/matching/queries';
 import { AUTOMATON_MOVES, runRecipe } from '@core/recipe/run';
 import type { Action } from '@core/rules/actions';
 import { applyAction } from '@core/rules/applyAction';
+import { lightStep } from '@core/rules/lightStep';
 import type { GardenState } from '@core/rules/state';
 import { isVictory } from '@core/rules/victory';
 import { itemAt } from '@core/shared/itemAt';
@@ -305,8 +306,8 @@ describe('5.4: wild garden', () => {
   const level = levelOf('5.4');
   const id = (name: string): VertexId => sproutOf(level, name);
 
-  it('16 sprouts, the goal hidden: the most lanterns, said with "Terminé"', () => {
-    expect(level.graph.n).toBe(16);
+  it('17 sprouts, the goal hidden: the most lanterns, said with "Terminé"', () => {
+    expect(level.graph.n).toBe(17);
     expect(level.data.goal.visible).toBe(false);
     expect(level.data.victory).toEqual({ type: 'maximum' });
   });
@@ -314,6 +315,21 @@ describe('5.4: wild garden', () => {
   it('three rounds of chains are needed, and the reference plays exactly three', () => {
     expect(maximumSize(level.graph) - size(level.start.matching)).toBe(3);
     expect(roundsOf(level)).toHaveLength(3);
+  });
+
+  it('ends with W in the dark, its light over without a chain: "Terminé" trusts a failed search', () => {
+    const solution = level.solution.filter((move) => move.type !== 'declareDone');
+    expect(solution).toHaveLength(level.solution.length - 1);
+    const end = play(level.start, solution);
+    expect(size(end.matching)).toBe(maximumSize(level.graph));
+    expect(isExposed(end.matching, id('W'))).toBe(true);
+    expect(lightStep(end)).toEqual({ kind: 'done' });
+    // The last round searches from W itself, after the three chains are lit.
+    const chains = level.solution.flatMap((move, at) => (move.type === 'chain' ? [at] : []));
+    expect(level.solution.slice((chains.at(-1) ?? 0) + 1)).toContainEqual({
+      type: 'stepLight',
+    });
+    expect(end.search?.label[id('W')]).toBe('outer');
   });
 
   it('two of the rounds fold a flower inside another, each nesting in its own way', () => {
