@@ -1,4 +1,3 @@
-import type { Edge } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { lightStep, type LightStep } from '@core/rules/lightStep';
 import type { RejectReason } from '@core/rules/reasons';
@@ -72,16 +71,12 @@ export interface LightStopped {
 
 /**
  * What a move that brings the light to a stop tells (`stopReached`): the stop, with the words its
- * refusal used to say, and at a flower the vine that glows; nothing, and nothing glowing, otherwise.
+ * refusal used to say; nothing otherwise. It points at nothing (GDD §5.1): at a flower no vine
+ * glows, the player finds where two suns meet, and that glow is the grade-2 hint.
  */
-export function stopTold(
-  before: GardenState,
-  after: GardenState,
-): { readonly told: readonly LightStopped[]; readonly glow: Edge | null } {
+export function stopTold(before: GardenState, after: GardenState): readonly LightStopped[] {
   const stop = stopReached(before, after);
-  if (stop === null) return { told: [], glow: null };
-  const told = [{ kind: 'lightStopped', reason: stopReason(stop) } as const];
-  return { told, glow: stop.kind === 'flower' ? [stop.from, stop.to] : null };
+  return stop === null ? [] : [{ kind: 'lightStopped', reason: stopReason(stop) }];
 }
 
 /** Whether the light of a garden stands still, its button switched off. */

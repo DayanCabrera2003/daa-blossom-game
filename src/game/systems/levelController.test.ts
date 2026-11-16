@@ -49,7 +49,7 @@ const touch = (point: { x: number; y: number }): UiEvent[] => [
 ];
 
 describe('the light that searches by itself (plan 10, section 2.4)', () => {
-  it('"Avanzar la luz" makes its next mark; where it stops, it says so once and the vine glows', () => {
+  it('"Avanzar la luz" makes its next mark; where it stops, it says so once, glowing nowhere', () => {
     const level = foldingLightLevel();
     const lit = feed(startController(level, 0), [{ kind: 'light' }, { kind: 'light' }]);
     expect(lit.effects.map((effect) => effect.kind)).toEqual(['animate', 'animate']);
@@ -59,13 +59,13 @@ describe('the light that searches by itself (plan 10, section 2.4)', () => {
       { kind: 'animate' },
       { kind: 'lightStopped', reason: { code: 'lightAtFlower', u: 2, v: 4 } },
     ]);
-    expect(stopped.controller.vineGlow).toEqual([2, 4]);
+    // The stop does not point (GDD §5.1): the player finds the vine where two suns meet.
+    expect(stopped.controller.vineGlow).toBeNull();
     // Pressed again, the button is off: nothing happens, no refusal, nothing toward the hints.
     const again = feed(stopped.controller, [{ kind: 'light' }, { kind: 'light' }]);
     expect(again.effects).toEqual([]);
     expect(again.controller.session).toBe(stopped.controller.session);
-    expect(again.controller.vineGlow).toEqual([2, 4]);
-    // Folding there is the way on, and puts the glow out.
+    // Folding there is the way on.
     const folded = feed(stopped.controller, [
       { kind: 'tool', tool: 'marks' },
       ...touch(vinePoint(garden(stopped.controller.session), placesOf(level), 2, 4)),

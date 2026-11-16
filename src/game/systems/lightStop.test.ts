@@ -116,23 +116,21 @@ describe('the stop of the light, as a state of the garden', () => {
     expect(stopReason({ kind: 'found' })).toEqual({ code: 'lightFound' });
   });
 
-  it('a stop reached is told once, and only a flower makes its vine glow', () => {
+  it('a stop reached is told once, pointing at nothing: not even a flower glows', () => {
     let state = foldingLightLevel().start;
     for (let i = 0; i < 2; i++) state = play(state, { type: 'stepLight' });
     const stopped = play(state, { type: 'stepLight' });
     expect(standsStill(state)).toBe(false);
     expect(standsStill(stopped)).toBe(true);
-    expect(stopTold(state, stopped)).toEqual({
-      told: [{ kind: 'lightStopped', reason: { code: 'lightAtFlower', u: 2, v: 4 } }],
-      glow: [2, 4],
-    });
-    expect(stopTold(stopped, stopped)).toEqual({ told: [], glow: null });
+    expect(stopTold(state, stopped)).toEqual([
+      { kind: 'lightStopped', reason: { code: 'lightAtFlower', u: 2, v: 4 } },
+    ]);
+    expect(stopTold(stopped, stopped)).toEqual([]);
     const folded = play(stopped, { type: 'foldAt', from: 2, to: 4 });
     const found = play(folded, { type: 'stepLight' });
-    expect(stopTold(folded, found)).toEqual({
-      told: [{ kind: 'lightStopped', reason: { code: 'lightFound' } }],
-      glow: null,
-    });
+    expect(stopTold(folded, found)).toEqual([
+      { kind: 'lightStopped', reason: { code: 'lightFound' } },
+    ]);
   });
 
   it('names each stop with its own words', () => {
