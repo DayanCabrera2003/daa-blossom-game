@@ -16,7 +16,7 @@ import { itemAt } from '@core/shared/itemAt';
 import { findConflict } from '@core/search/conflict';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
-import { buildCounterexample, type Counterexample } from '@levels/counterexample';
+import { buildCounterexample, refutationAt, type Counterexample } from '@levels/counterexample';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -201,6 +201,54 @@ describe('4.3: even loops do not get in the way', () => {
     expect(applyAction(searched, { type: 'markMoon', from: id('b'), to: id('e') })).toMatchObject({
       reason: { code: 'alreadyMarked' },
     });
+  });
+});
+
+describe('4.4: fold', () => {
+  const level = levelOf('4.4');
+  const asked = level.flow.findIndex((step) => step.step === 'ask');
+  const question = level.flow[asked];
+
+  it('asks from which petals the light must look before anyone says what folding is', () => {
+    expect(stepsOf(level)).toEqual(['say', 'ask', 'play', 'say']);
+    if (question?.step !== 'ask') throw new Error('4.4 asks nothing');
+    expect(question.retry).toBe(true);
+    expect(question.options.map((option) => option.correct)).toEqual([true, false, false]);
+    // «Ciérralos como una flor» is the reply to the right answer, and is said nowhere else.
+    expect(question.options[0]?.reply).toBe('ch4.4.sauce.01');
+    const said = level.flow.flatMap((step) => (step.step === 'say' ? step.lines : []));
+    expect(said).not.toContain('ch4.4.sauce.01');
+  });
+
+  it('(b): in the garden of 4.1 the chain leaves the loop by c, never by b, the first one met', () => {
+    const refuted = refutationAt(level, asked, 1);
+    if (refuted === null) throw new Error('"only from the first" has no garden');
+    const { start, labels } = refuted.counterexample;
+    const at = (name: string): VertexId => {
+      const vertex = idOf(labels, name);
+      if (vertex === undefined) throw new Error(`no sprout ${name}`);
+      return vertex;
+    };
+    // Searched from R, b is the first sprout of the loop the light meets: a sun by a's lantern.
+    const searched = play(start, [
+      { type: 'markRoot', vertex: at('R') },
+      { type: 'markMoon', from: at('R'), to: at('a') },
+    ]);
+    expect(searched.search?.label[at('b')]).toBe('outer');
+    // e touches the loop only at c: looking from b alone never reaches it.
+    expect(start.graph.edges).not.toContainEqual([at('b'), at('e')].sort((x, y) => x - y));
+    // Yet a chain from R to e is there, and it leaves the loop by c.
+    const path = ['R', 'a', 'b', 'd', 'c', 'e'].map(at);
+    expect(checkAugmentingPath(start.graph, start.matching, path).ok).toBe(true);
+    expect(
+      refuted.counterexample.data.mode === 'play' && refuted.counterexample.data.actions,
+    ).toEqual(['markRoot', 'markMoon', 'chain']);
+  });
+
+  it('"from none" is answered in words', () => {
+    if (question?.step !== 'ask') throw new Error('4.4 asks nothing');
+    expect(question.options[2]?.reply).toBeDefined();
+    expect(question.options[2]?.counterexample).toBeUndefined();
   });
 });
 
