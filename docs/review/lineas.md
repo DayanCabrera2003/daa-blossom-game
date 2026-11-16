@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 527 líneas, 70 están tal cual en el GDD y 457 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 529 líneas, 72 están tal cual en el GDD y 457 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -17,6 +17,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch0.2.sauce.00` · **Sauce** · GDD: Un farol es para dos. Hoy alguien duerme sin luz. No pasa nada; mañana será otra noche.
 - [ ] `ch0.2.sauce.01` · **Sauce** · GDD: ¿Cuántos brotes hay? ¿Cuántos caben en un farol?
+- [ ] `ch0.2.sauce.02` · **Sauce** · GDD: ¿Cabe otro farol? Pruébalo.
 
 ### 0.3
 
@@ -26,6 +27,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch0.4.sauce.00` · **Sauce** · GDD: Hortensia tiene muchos amigos. ¿Cuántos faroles crees que se encienden esta noche?
 - [ ] `ch0.4.sauce.01` · **Sauce** · plan: Hortensia solo puede llevar un farol, por muchos amigos que tenga.
+- [ ] `ch0.4.sauce.02` · **Sauce** · GDD: ¿Cabe otro farol? Pruébalo.
 
 ### 0.5
 

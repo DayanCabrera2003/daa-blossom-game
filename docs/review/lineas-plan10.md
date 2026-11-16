@@ -4,7 +4,17 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-217 líneas de diálogo y 77 textos de interfaz distintos de la versión 1.0.1.
+219 líneas de diálogo y 80 textos de interfaz distintos de la versión 1.0.1.
+
+### 0.2
+
+- [ ] `ch0.2.sauce.02` · **Sauce** · nueva
+  - Después: ¿Cabe otro farol? Pruébalo.
+
+### 0.4
+
+- [ ] `ch0.4.sauce.02` · **Sauce** · nueva
+  - Después: ¿Cabe otro farol? Pruébalo.
 
 ### 0.5
 
@@ -799,6 +809,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Gotas: {used}
 - [ ] `hud.present` · nueva
   - Después: Presentar
+- [ ] `hud.restart` · nueva
+  - Después: Reiniciar
+- [ ] `leave.confirm` · nueva
+  - Después: Si sales ahora, este jardín empieza de nuevo. Pulsa otra vez para salir.
 - [ ] `hud.stepLight` · nueva
   - Después: Avanzar la luz
 - [ ] `hud.council` · cambiada
@@ -899,6 +913,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `tutorial.reflection.body` · cambiada
   - Antes: Sobre tu jardín aparecen faroles plateados: los del reflejo. Cuando se te pida, toca un brote para ver sus hilos, o toca el jardín para separar la maraña.
   - Después: Sobre tu jardín aparecen faroles plateados: los del reflejo. Cuando se te pida, toca un brote para ver sus faroles, o toca el jardín para separar la maraña.
+- [ ] `tutorial.inspect.body` · cambiada
+  - Antes: Con Inspeccionar, toca un brote para quitar la niebla de sus enredaderas. Cada vistazo gasta una gota de agua.
+  - Después: Con Inspeccionar, toca un brote para quitar la niebla de sus enredaderas. Cada vistazo gasta una gota de agua. Deshacer devuelve la niebla, pero no la gota.
 - [ ] `tutorial.light.title` · nueva
   - Después: Avanzar la luz
 - [ ] `tutorial.light.body` · nueva

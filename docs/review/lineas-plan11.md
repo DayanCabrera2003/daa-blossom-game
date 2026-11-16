@@ -4,7 +4,17 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.1.0, con su texto de antes y de después. Las frases del Plan 11 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-83 líneas de diálogo y 24 textos de interfaz distintos de la versión 1.1.0.
+85 líneas de diálogo y 27 textos de interfaz distintos de la versión 1.1.0.
+
+### 0.2
+
+- [ ] `ch0.2.sauce.02` · **Sauce** · nueva
+  - Después: ¿Cabe otro farol? Pruébalo.
+
+### 0.4
+
+- [ ] `ch0.4.sauce.02` · **Sauce** · nueva
+  - Después: ¿Cabe otro farol? Pruébalo.
 
 ### 1.1
 
@@ -374,6 +384,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `hud.waterNoBudget` · cambiada
   - Antes: Agua: {used}
   - Después: Gotas: {used}
+- [ ] `hud.restart` · nueva
+  - Después: Reiniciar
+- [ ] `leave.confirm` · nueva
+  - Después: Si sales ahora, este jardín empieza de nuevo. Pulsa otra vez para salir.
 - [ ] `hud.council` · cambiada
   - Antes: Impares {groups} − piedras {stones}: al menos {atLeast} a oscuras; hay {dark}
   - Después: Impares {groups} − piedras {stones} = {atLeast} como poco; hay {dark}: aún no
@@ -416,5 +430,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `tutorial.reflection.body` · cambiada
   - Antes: Sobre tu jardín aparecen faroles plateados: los del reflejo. Cuando se te pida, toca un brote para ver sus hilos, o toca el jardín para separar la maraña.
   - Después: Sobre tu jardín aparecen faroles plateados: los del reflejo. Cuando se te pida, toca un brote para ver sus faroles, o toca el jardín para separar la maraña.
+- [ ] `tutorial.inspect.body` · cambiada
+  - Antes: Con Inspeccionar, toca un brote para quitar la niebla de sus enredaderas. Cada vistazo gasta una gota de agua.
+  - Después: Con Inspeccionar, toca un brote para quitar la niebla de sus enredaderas. Cada vistazo gasta una gota de agua. Deshacer devuelve la niebla, pero no la gota.
 - [ ] `victory.stars` · retirada
   - Antes: Estrellas: {count}
