@@ -92,6 +92,7 @@
         {
           "line": "ch2.4.notebook.08",
           "correct": false,
+          "reply": "ch2.4.sauce.19",
           "counterexample": {
             "mode": "play",
             "line": "ch2.4.sauce.13",

@@ -108,4 +108,13 @@ describe('the mirror challenge of 2.4', () => {
     const extra = most - normal.length;
     expect(levelOf('2.5').data.secret?.stars).toBe(normal.length + Math.ceil(extra / 2));
   });
+
+  it('"three tries and I am done" is answered in words before its long hidden chain opens', () => {
+    const tries = level.data.notebook?.[0]?.options[3];
+    expect(tries?.line).toBe('ch2.4.notebook.08');
+    expect(tries?.correct).toBe(false);
+    // «Tres intentos no prueban nada. Lo que lo prueba es que ya no queda ninguna cadena.»
+    expect(tries?.reply).toBe('ch2.4.sauce.19');
+    expect(tries?.counterexample?.mode).toBe('play');
+  });
 });
