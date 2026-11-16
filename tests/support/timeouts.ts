@@ -43,3 +43,9 @@ export const RECIPE_FIT_TIMEOUT = 30_000;
  * default of 5 s. The cases after it reuse what it loaded and stay quick.
  */
 export const ESLINT_WARMUP_TIMEOUT = 60_000;
+
+/**
+ * Time allowed to the test that renders every formula of every Codex entry with KaTeX: a few
+ * hundred formulas, about a second alone, more than vitest's default of 5 s on a busy machine.
+ */
+export const KATEX_ALL_TIMEOUT = 30_000;

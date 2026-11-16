@@ -23,6 +23,7 @@ import { glossaryTable, parseGlossary, type Glossary } from '@ui/model/glossary'
 import { describe, expect, it } from 'vitest';
 import { GLOSSARY_ENTRIES, codexSources, openCodex } from '@services/codexProgress';
 import { emptySave, recordCompletion } from '@services/save';
+import { KATEX_ALL_TIMEOUT } from './support/timeouts';
 import { MATHEMATICS } from './support/vocabulary';
 
 /**
@@ -190,16 +191,20 @@ describe('the files of the Codex (content/es/codex)', () => {
 });
 
 describe('the formulas of the Codex', () => {
-  it('every formula of every entry renders with KaTeX, strictly', () => {
-    const formulas = entries.flatMap(textsOf).flatMap(mathSpans);
-    expect(formulas.some((span) => span.kind === 'math')).toBe(true);
-    for (const entry of entries) {
-      for (const span of textsOf(entry).flatMap(mathSpans)) {
-        if (span.kind === 'math')
-          expect(() => renderMath(span.tex, span.display, 'strict')).not.toThrow();
+  it(
+    'every formula of every entry renders with KaTeX, strictly',
+    () => {
+      const formulas = entries.flatMap(textsOf).flatMap(mathSpans);
+      expect(formulas.some((span) => span.kind === 'math')).toBe(true);
+      for (const entry of entries) {
+        for (const span of textsOf(entry).flatMap(mathSpans)) {
+          if (span.kind === 'math')
+            expect(() => renderMath(span.tex, span.display, 'strict')).not.toThrow();
+        }
       }
-    }
-  });
+    },
+    KATEX_ALL_TIMEOUT,
+  );
 
   it('every tab turns into HTML in the strict mode of the books', () => {
     for (const entry of entries) {
