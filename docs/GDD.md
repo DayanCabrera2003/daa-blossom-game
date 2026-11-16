@@ -562,24 +562,30 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - Una luna tiene farol (si no, ¡cadena!); sigues su farol y llegas a un **sol**.
 - Un brote ya marcado no se vuelve a marcar.
 
+**Los faroles se mueven por donde llegó tu luz.** Los niveles del Invernadero que se ganan con una cadena (3.1, 3.2, 3.4, 3.5, 3.9 y su jardín secreto) usan la regla `seen` (§5.1): una cadena o una unión solo se enciende si es la que alcanzaron tus marcas, y separar y pasar el farol están cerrados. Así ningún nivel se gana con unos vistazos y un arrastre a ojo: hay que poner el sol y seguir las reglas hasta la luna solitaria. Un recorrido exhaustivo de las jugadas lo comprueba nivel a nivel: sin marcas no se gana; con ellas, sí.
+
+**La búsqueda no acaba en la niebla mientras quede un sol sin inspeccionar:** sin mirar sus enredaderas, nadie sabe si le queda alguna por seguir. «Terminé» lo juzga así (3.3).
+
+**Las gotas.** El presupuesto de cada nivel con niebla es el **mínimo de inspecciones** con que se gana con estas reglas (lo calcula el recorrido exhaustivo, que solo inspecciona soles: es lo único que las marcas necesitan ver), **más dos**. Como un brote no se inspecciona dos veces, un presupuesto de una gota por brote no se podría gastar de más: por eso se cuenta desde el mínimo, y mirar por mirar cuesta la estrella.
+
 #### 3.1 Niebla
 - **Jardín:** `R–a=b–c=d–T` en niebla. R libre (abeja), T libre (trébol).
 - **Enseña:** inspeccionar y marcar. R sol, a luna, b sol, c luna, d sol, T luna y solitaria → cadena.
 - **Guion:** Sauce: "De noche no se ve el jardín entero. Se ve lo que tu luz alcanza. Sal de alguien a oscuras y camina."
 - **Pistas:** (1) "¿Dónde empieza siempre una cadena?" (2) R brilla. (3) el mentor inspecciona R y marca sol.
-- **Victoria:** cadena encontrada y aplicada.
+- **Victoria:** cadena encontrada con las marcas y aplicada (regla `seen`).
 - **Desbloquea:** Inspeccionar, marcas.
 
 #### 3.2 Ramas
 - **Jardín:** desde R salen tres enredaderas a a1, a2, a3; cada ai tiene farol con bi; b2 tiene enredadera a T libre; b1 y b3 llevan a callejones.
 - **Enseña:** desde un sol pueden salir varias lunas; cada luna lleva a un sol; el árbol crece. Encuentras la luna solitaria por sistema, no por suerte.
-- **Victoria:** cadena.
+- **Victoria:** la cadena que encontraron tus marcas, aplicada (regla `seen`).
 
 #### 3.3 Ya visitado
 - **Jardín:** un brote luna alcanzable desde dos soles distintos.
-- **Enseña:** la segunda vez no se marca. Sauce: "Una luna ya tiene su camino. No necesita dos."
+- **Enseña:** la segunda vez no se marca. Sauce: "Una luna ya tiene su camino. No necesita dos." Al intentarlo, el juego solo constata «m ya tiene su marca.»: qué se hace con ella no lo dicta el rechazo, lo responde el jugador en el Cuaderno.
 - **Cuaderno:** "Cuando llego a un brote que ya tiene marca…" (a) "…lo dejo como está" ✔ (b) "…le cambio la marca" ✘ (c) "…es señal de que hay cadena" ✘ contraejemplo.
-- **Victoria:** completar la búsqueda con el mínimo de agua (presupuesto amable).
+- **Victoria:** pulsar «Terminé» con la búsqueda agotada: nada más por mirar y **todos los soles inspeccionados**, también el que solo lleva a la luna ya visitada. La búsqueda no gana sola al poner la última marca. Gotas: el mínimo más dos.
 
 #### 3.4 Dos jardineros
 - **Jardín:** dos brotes solitarios, R1 (abeja) y R2 (trébol), cuyas búsquedas crecen a la vez; una enredadera apagada une un sol del árbol de R1 con un sol del árbol de R2.
@@ -590,7 +596,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 
 #### 3.5 Agua justa
 - **Jardín:** 16 brotes bipartitos en niebla.
-- **Enseña:** el presupuesto de agua es exactamente el número de brotes más dos. Inspeccionar a lo loco no alcanza; seguir las reglas sí. Primera experiencia del **costo** como recurso.
+- **Enseña:** el presupuesto de agua es el mínimo de inspecciones con que se gana, más dos: solo se mira a quien tiene sol. Inspeccionar a lo loco no alcanza; seguir las reglas sí. Primera experiencia del **costo** como recurso.
 - **Estrella extra:** dentro del agua.
 - **Victoria:** máximo alcanzado.
 
@@ -612,6 +618,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 - **Jardín:** `1–2=3–4=5` (1 libre), y una segunda componente con la misma estructura ramificada. Diseñado para que la búsqueda alcance a todos los brotes.
 - **Enseña:** tras la búsqueda fallida, el mentor dice "pon espantapájaros en todas las lunas". Cada luna tiene exactamente un farol (con un sol), así que hay tantos espantapájaros como faroles, y vigilan todo: cada enredadera toca una luna (porque de un sol solo salen lunas y no hay sol–sol en abejas y tréboles). **La búsqueda que fracasó te regala la prueba.**
 - **Por qué aquí:** es el ensayo general del capítulo 7. La idea "el bosque fallido es el certificado" se ve primero en el caso bipartito donde es transparente.
+- **Victoria:** presentar los espantapájaros (tantos como faroles, vigilando todo) **con la búsqueda acabada sin cadena**. Antes de acabarla, «Presentar» responde «Primero la búsqueda tiene que acabar sin cadena.» (`claim.searchNotOver`): el regalo es de la búsqueda, y sin buscar no hay regalo.
 - **Pregunta** (tras la búsqueda, antes de que Sauce explique por qué las lunas lo vigilan todo): "Entre abejas y tréboles, ¿pueden tocarse dos soles del mismo árbol?" (a) "No: todos sus soles son de la misma especie" ✔ (la respuesta de Sauce añade que una enredadera nunca une dos de la misma especie, y que dos soles de árboles distintos serían una cadena) (b) "Sí, en un corro pueden tocarse" ✘ contraejemplo: un corro de abejas y tréboles donde el jugador busca y nunca consigue que dos soles se toquen. Las preguntas de Sauce refutan igual que el Cuaderno: con una respuesta o con un jardín que se toca, y la pregunta vuelve al salir.
 - **Cuaderno:** "Si k espantapájaros vigilan todas las enredaderas…" (a) "…no puede haber más de k faroles" ✔ (b) "…hay exactamente k faroles" ✘ contraejemplo: un espantapájaros de más (c) "…siempre puedo poner los espantapájaros en las lunas" ✘ contraejemplo: un jardín de abejas y tréboles donde la búsqueda acaba sin llegar a todos (una pareja con farol cuelga solo de una luna); los espantapájaros en las lunas dejan su enredadera sin vigilar. Es la idea de la flor secreta 3.10 en un nivel obligatorio; el Códex C5 la precisa.
 - **Desbloquea:** Códex **C4 La búsqueda** y **C5 Abejas, tréboles y espantapájaros (König)**.
@@ -619,7 +626,7 @@ Mecánica: de noche solo ves las enredaderas de los brotes que **inspeccionas**.
 #### 3.9 Maestría del Invernadero
 - **Jardín:** 20 brotes bipartitos en niebla, faroles iniciales mal puestos, dos cadenas, después certificado.
 - **Objetivo:** oculto. Para terminar hay que encender el máximo **y** colocar los espantapájaros.
-- **Victoria:** certificado válido. Hub: el invernadero.
+- **Victoria:** certificado válido, con las cadenas encontradas por las marcas (regla `seen`). Hub: el invernadero.
 - **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Caminar de noche» y «Abejas, tréboles y espantapájaros»."
 
 ---
@@ -650,7 +657,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 - **Enseña:** búsqueda: R sol, a luna, b sol, c luna, d sol, e luna (por `d–e`; `b–e` llega a e luna desde b sol: coherente), f sol, T luna libre → cadena. Sin conflicto. El bucle b–c–d–e tiene 4 brotes. **Solo los bucles impares confunden.**
 - **Por qué aquí:** refuta el distractor (b) del Cuaderno anterior con un jardín real y afina la idea.
 - **Guion:** al empezar, Sauce recuerda el bucle par de 1.7: "¿Te acuerdas del corro del Prado? Otro bucle. Antes de desconfiar de tu luz, busca desde R y cuéntale los brotes."
-- **Victoria:** cadena.
+- **Victoria:** la cadena que encontraron tus marcas desde R, aplicada (regla `seen`; separar y pasar el farol, cerrados): arrastrarla a ojo no vale, hay que buscar y ver que el bucle par no choca.
 
 #### 4.4 Plegar
 - **Jardín:** el de 4.1.
@@ -715,7 +722,7 @@ Noche de festival, banderines, faroles rojos. **Ya no hay especies**: cualquier 
 - **Desbloquea:** Códex **C6 Bucles impares**, **C7 La flor** y **C8 Lema de la flor**.
 
 #### 4.12 Maestría del Festival
-- **Jardín:** 18 brotes en niebla, presupuesto de agua, faroles iniciales, dos flores necesarias en distintas rondas.
+- **Jardín:** 18 brotes en niebla, presupuesto de agua (el mínimo de inspecciones más dos, como en el Invernadero), faroles iniciales, dos flores necesarias en distintas rondas.
 - **Objetivo:** oculto. Estrella extra: dentro del agua.
 - **Victoria:** máximo y "Terminé" (aún sin certificado general: eso es el capítulo 7). La luz busca desde los brotes a oscuras, en orden, y se para en cada flor y ante cada sol en la niebla. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados. Hub: el festival.
 - **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Bucles impares», «La flor» y «Plegar no esconde cadenas»."
@@ -755,7 +762,7 @@ Hojas cayendo, maleza. Los ciclos se enredan.
 - **Victoria:** máximo. La luz busca desde los brotes a oscuras, en orden, y pliega en cada ronda. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 
 #### 5.5 Maestría del Jardín Salvaje
-- **Jardín:** 20 brotes en niebla con presupuesto de agua.
+- **Jardín:** 20 brotes en niebla con presupuesto de agua (el mínimo de inspecciones más dos, como en el Invernadero).
 - **Victoria:** máximo dentro del agua para la estrella. La luz busca desde los brotes a oscuras, en orden, y se para en cada flor y ante cada sol en la niebla. Regla `seen`; separar, pasar el farol y girar el tallo, cerrados.
 - **Desbloquea:** Códex **C9 Flores anidadas**. Hub: el jardín salvaje.
 - **Al final:** Sauce: "En el Códex esto tiene nombre: lee «Flores anidadas»."
@@ -869,8 +876,8 @@ Crepúsculo. Robles enormes. El Consejo no acepta "la luz no encontró nada". Qu
 
 - **Prado:** una cadena de longitud 11 escondida entre 12 callejones.
 - **Estanque:** dado M y M\*, predecir cuántos hilos ganadores hay antes de separar la maraña (la maraña ya es la superposición; la tentación es restar los faroles).
-- **Invernadero:** certificar con espantapájaros un jardín donde la búsqueda no llega a todos los brotes (obliga a añadir los no visitados de un lado; enlaza con C5).
-- **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa). Aquí las marcas siguen siendo del jugador: la luz de los niveles de flor (§5.1), en su orden fijo, solo se encuentra con dos de las tres flores y no deja elegir el orden.
+- **Invernadero:** certificar con espantapájaros un jardín donde la búsqueda no llega a todos los brotes (obliga a añadir los no visitados de un lado; enlaza con C5). Regla `seen` y gotas contadas, como el resto del capítulo.
+- **Festival:** un jardín donde plegar en el orden equivocado no rompe nada (para convencerse de que el orden no importa). Aquí las marcas siguen siendo del jugador: la luz de los niveles de flor (§5.1), en su orden fijo, solo se encuentra con dos de las tres flores y no deja elegir el orden. Regla `seen` (separar, pasar el farol y girar el tallo, cerrados): la cadena que se enciende es la que encontraron las marcas, no una arrastrada a ojo.
 - **Salvaje:** cuatro flores anidadas. La luz busca desde R y se para en cada una hasta plegarla (§5.1).
 - **Invierno:** un jardín donde Bruto gana (muy pequeño) y la pregunta "¿cuándo compensa pensar?". Antes de la primera carrera, una apuesta informal: "Antes de mirar: en un jardín tan pequeño, ¿quién crees que llegará antes?" (a) "Mi receta, como siempre" (b) "Bruto". Sin respuesta mala, sin estrella ni semilla.
 - **Consejo:** encontrar dos conjuntos de piedras distintos que certifican el mismo jardín. Tras el primer certificado, un paso nuevo del guion ("otro certificado") solo termina con piedras distintas de las ya presentadas; repetir uno se contesta con amabilidad.
