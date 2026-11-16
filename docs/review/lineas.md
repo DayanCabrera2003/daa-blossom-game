@@ -2,7 +2,7 @@
 
 > Generada por `npm run lines` desde `src/content/es/lines.json`, `strings.json` y `docs/GDD.md`; no se edita a mano. Plan 09, fase 11 (Apéndice A, pregunta 12).
 
-Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 529 líneas, 72 están tal cual en el GDD y 457 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
+Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su id, quién la dice, de dónde sale la frase y el texto. **GDD**: el GDD cita la línea entera tal cual, entre comillas (sin contar el tipo de comillas ni los espacios; una frase corta dentro de una cita más larga no cuenta); **plan**: la escribió un plan. De 557 líneas, 82 están tal cual en el GDD y 475 las escribió un plan. Se marca la casilla de cada línea revisada; un cambio se anota debajo de la línea y se pasa a `lines.json` en su propio commit.
 
 ## Capítulo 0
 
@@ -188,6 +188,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch2.4.sauce.16` · **Sauce** · plan: Ahora tu jardín no tiene ninguna cadena. Intenta ganarle otra vez.
 - [ ] `ch2.4.sauce.17` · **Sauce** · plan: No se puede.
 - [ ] `ch2.4.sauce.18` · **Sauce** · GDD: En el Códex esto tiene nombre: lee «El hilo ganador».
+- [ ] `ch2.4.sauce.19` · **Sauce** · GDD: Tres intentos no prueban nada. Lo que lo prueba es que ya no queda ninguna cadena.
 
 ### 2.5
 
@@ -210,6 +211,10 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.1.sauce.03` · **Sauce** · plan: R lleva toda la noche a oscuras. Empieza por él.
 - [ ] `ch3.1.sauce.04` · **Sauce** · plan: Déjame: miro las enredaderas de R. Ahora ponle tú un sol.
 - [ ] `ch3.1.sauce.05` · **Sauce** · plan: A quien sale con la mano libre le pusiste un sol. A quien llegaste pidiendo, una luna. Y al final alguien estaba solo: esa era tu cadena.
+- [ ] `ch3.1.sauce.06` · **Sauce** · plan: Ya ves las enredaderas de quien miraste. Ahora camina por ellas, marcando a cada uno.
+- [ ] `ch3.1.sauce.07` · **Sauce** · plan: Empieza por quien miraste, el que estaba a oscuras.
+- [ ] `ch3.1.sauce.08` · **Sauce** · plan: Desde un sol, sigue una enredadera apagada: quien está al otro lado es luna. Y su farol te lleva a otro sol.
+- [ ] `ch3.1.sauce.09` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 
 ### 3.2
 
@@ -361,6 +366,12 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.4.sauce.03` · **Sauce** · plan: Mira este bucle. ¿Dónde se tocan dos soles del mismo árbol?
 - [ ] `ch4.4.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.4.sauce.05` · **Sauce** · plan: Una cadena que pasa a través de la flor. Todavía no la enciendas: mañana abrimos la flor.
+- [ ] `ch4.4.sauce.06` · **Sauce** · GDD: Si cualquiera del bucle puede ser sol, ¿desde cuáles tiene que seguir mirando tu luz?
+- [ ] `ch4.4.gardener.07` · **Tú** · plan: Desde todos.
+- [ ] `ch4.4.gardener.08` · **Tú** · plan: Solo desde el primero que encontró.
+- [ ] `ch4.4.sauce.09` · **Sauce** · plan: El jardín de antes. El primero del bucle que encontró tu luz fue b. Busca una cadena de R a e: ¿sale del bucle por b?
+- [ ] `ch4.4.gardener.10` · **Tú** · plan: Desde ninguno.
+- [ ] `ch4.4.sauce.11` · **Sauce** · plan: Si nadie del bucle sigue mirando, tu luz se para ahí y nunca llega a e.
 
 ### 4.5
 
@@ -378,6 +389,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.6.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.6.sauce.04` · **Sauce** · plan: A veces el lado que funciona da la vuelta casi entera. Largo o corto, solo hay uno.
 - [ ] `ch4.6.sauce.05` · **Sauce** · plan: Por b entró tu cadena en la flor: era el pétalo que tenía su farol fuera de ella. A ese pétalo lo llamaremos base.
+- [ ] `ch4.6.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch4.6.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 4.7
 
@@ -395,6 +408,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.7.sauce.12` · **Sauce** · plan: Antes de que te lo cuente, escribe tú en tu Cuaderno qué es la base.
 - [ ] `ch4.7.notebook.13` · **Cuaderno** · plan: …el pétalo cuyo farol va a otro pétalo.
 - [ ] `ch4.7.sauce.14` · **Sauce** · plan: Dentro de la flor, los faroles unen pétalos de dos en dos. La base es la única que no tiene pareja dentro.
+- [ ] `ch4.7.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch4.7.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 4.8
 
@@ -403,6 +418,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch4.8.sauce.02` · **Sauce** · plan: La cadena atraviesa esta flor. La otra puede quedarse cerrada.
 - [ ] `ch4.8.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás es tuyo.
 - [ ] `ch4.8.sauce.04` · **Sauce** · plan: Plegaste dos flores y solo abriste una: la que la cadena cruzaba. Al encenderla, el jardín entero se abrió otra vez.
+- [ ] `ch4.8.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch4.8.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 4.9
 
@@ -452,9 +469,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 - [ ] `ch4.12.sauce.00` · **Sauce** · plan: El último jardín del Festival, y con niebla. Enciende todos los faroles que puedas, cuida las gotas y, cuando estés seguro, pulsa «Terminé».
 - [ ] `ch4.12.sauce.01` · **Sauce** · plan: Avanza tu luz. Si se para ante un brote en la niebla, inspecciónalo y sigue.
-- [ ] `ch4.12.sauce.02` · **Sauce** · plan: Cuatro rincones a oscuras. Si dos soles se tocan, ya sabes qué hacer.
+- [ ] `ch4.12.sauce.02` · **Sauce** · plan: Cinco rincones a oscuras. Si dos soles se tocan, ya sabes qué hacer.
 - [ ] `ch4.12.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Lo demás, hasta el final, es tuyo.
-- [ ] `ch4.12.sauce.04` · **Sauce** · plan: Dos flores, dos rondas, y no quedó ninguna cadena. El Festival termina con el jardín lleno de luz.
+- [ ] `ch4.12.sauce.04` · **Sauce** · plan: Dos flores, dos rondas, y desde W tu luz ya no encontró ninguna cadena. W se queda a oscuras, y aun así no cabe ni un farol más.
 - [ ] `ch4.12.sauce.05` · **Sauce** · GDD: En el Códex esto tiene nombre: lee «Bucles impares», «La flor» y «Plegar no esconde cadenas».
 
 ### 4.13
@@ -477,6 +494,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.1.sauce.02` · **Sauce** · GDD: La flor pequeña ya es un brote más. ¿Dónde se tocan dos soles en este bucle?
 - [ ] `ch5.1.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Una flor también cabe dentro de otra.
 - [ ] `ch5.1.sauce.04` · **Sauce** · plan: Abriste la flor grande y luego la pequeña. La cadena toca la flor pequeña en dos pétalos, b y c; entre los dos, solo una vuelta alterna: la que pasa por d.
+- [ ] `ch5.1.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.1.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.2
 
@@ -491,6 +510,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.2.gardener.08` · **Tú** · plan: Plegada la grande, las de dentro son parte de sus pétalos.
 - [ ] `ch5.2.gardener.09` · **Tú** · plan: Porque la cadena entra antes en las de dentro.
 - [ ] `ch5.2.sauce.10` · **Sauce** · plan: Al revés: las de dentro están dentro de la grande, así que la cadena siempre entra antes en la grande.
+- [ ] `ch5.2.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.2.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.3
 
@@ -508,6 +529,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.3.sauce.12` · **Sauce** · plan: Antes de que te lo cuente, escribe tú en tu Cuaderno qué pasa al abrir la flor de dentro.
 - [ ] `ch5.3.notebook.13` · **Cuaderno** · plan: …solo alterna el lado corto.
 - [ ] `ch5.3.sauce.14` · **Sauce** · plan: En esta flor la cadena dio la vuelta larga: por el lado corto no alternaba. Lo corto no decide nada.
+- [ ] `ch5.3.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.3.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.4
 
@@ -516,6 +539,9 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.4.sauce.02` · **Sauce** · plan: Tu luz empieza por estos brotes, uno tras otro.
 - [ ] `ch5.4.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.4.sauce.04` · **Sauce** · plan: Tres rondas, y en dos de ellas una flor dentro de otra. Pero no se anidaban igual: junto a U, la flor pequeña guardaba la base de la grande.
+- [ ] `ch5.4.sauce.05` · **Sauce** · plan: Y desde W tu luz ya no encontró ninguna cadena. W se queda a oscuras, y aun así no cabe ni un farol más.
+- [ ] `ch5.4.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.4.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.5
 
@@ -533,6 +559,8 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch5.6.sauce.02` · **Sauce** · plan: Con las flores de dentro plegadas, mira la última vuelta. ¿Dónde se tocan dos soles?
 - [ ] `ch5.6.sauce.03` · **Sauce** · plan: Te enseño el siguiente paso. Lo demás es tuyo.
 - [ ] `ch5.6.sauce.04` · **Sauce** · plan: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Este jardín secreto es tuyo.
+- [ ] `ch5.6.sauce.20` · **Sauce** · GDD: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.6.sauce.21` · **Sauce** · plan: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ## Capítulo 6
 

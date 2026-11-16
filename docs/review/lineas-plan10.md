@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-220 líneas de diálogo y 87 textos de interfaz distintos de la versión 1.0.1.
+250 líneas de diálogo y 88 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.2
 
@@ -221,6 +221,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: No se puede.
 - [ ] `ch2.4.sauce.18` · **Sauce** · nueva
   - Después: En el Códex esto tiene nombre: lee «El hilo ganador».
+- [ ] `ch2.4.sauce.19` · **Sauce** · nueva
+  - Después: Tres intentos no prueban nada. Lo que lo prueba es que ya no queda ninguna cadena.
 
 ### 2.5
 
@@ -254,6 +256,14 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch3.1.sauce.05` · **Sauce** · cambiada
   - Antes: Saliste con la mano libre, llegaste pidiendo, y al final alguien estaba solo. Esa era tu cadena.
   - Después: A quien sale con la mano libre le pusiste un sol. A quien llegaste pidiendo, una luna. Y al final alguien estaba solo: esa era tu cadena.
+- [ ] `ch3.1.sauce.06` · **Sauce** · nueva
+  - Después: Ya ves las enredaderas de quien miraste. Ahora camina por ellas, marcando a cada uno.
+- [ ] `ch3.1.sauce.07` · **Sauce** · nueva
+  - Después: Empieza por quien miraste, el que estaba a oscuras.
+- [ ] `ch3.1.sauce.08` · **Sauce** · nueva
+  - Después: Desde un sol, sigue una enredadera apagada: quien está al otro lado es luna. Y su farol te lleva a otro sol.
+- [ ] `ch3.1.sauce.09` · **Sauce** · nueva
+  - Después: Te enseño el primer paso. Lo demás es tuyo.
 
 ### 3.3
 
@@ -377,6 +387,18 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.4.sauce.03` · **Sauce** · cambiada
   - Antes: En esa enredadera. Tócala y deja que el bucle se cierre.
   - Después: Mira este bucle. ¿Dónde se tocan dos soles del mismo árbol?
+- [ ] `ch4.4.sauce.06` · **Sauce** · nueva
+  - Después: Si cualquiera del bucle puede ser sol, ¿desde cuáles tiene que seguir mirando tu luz?
+- [ ] `ch4.4.gardener.07` · **Tú** · nueva
+  - Después: Desde todos.
+- [ ] `ch4.4.gardener.08` · **Tú** · nueva
+  - Después: Solo desde el primero que encontró.
+- [ ] `ch4.4.sauce.09` · **Sauce** · nueva
+  - Después: El jardín de antes. El primero del bucle que encontró tu luz fue b. Busca una cadena de R a e: ¿sale del bucle por b?
+- [ ] `ch4.4.gardener.10` · **Tú** · nueva
+  - Después: Desde ninguno.
+- [ ] `ch4.4.sauce.11` · **Sauce** · nueva
+  - Después: Si nadie del bucle sigue mirando, tu luz se para ahí y nunca llega a e.
 
 ### 4.5
 
@@ -397,6 +419,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Mira este bucle de cinco. ¿Qué enredadera une dos soles?
 - [ ] `ch4.6.sauce.05` · **Sauce** · nueva
   - Después: Por b entró tu cadena en la flor: era el pétalo que tenía su farol fuera de ella. A ese pétalo lo llamaremos base.
+- [ ] `ch4.6.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch4.6.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 4.7
 
@@ -423,6 +449,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: …el pétalo cuyo farol va a otro pétalo.
 - [ ] `ch4.7.sauce.14` · **Sauce** · nueva
   - Después: Dentro de la flor, los faroles unen pétalos de dos en dos. La base es la única que no tiene pareja dentro.
+- [ ] `ch4.7.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch4.7.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 4.8
 
@@ -432,6 +462,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.8.sauce.01` · **Sauce** · cambiada
   - Antes: Pliega cada flor cuando aparezca. ¿Cuál de las dos lleva a Elo?
   - Después: Pliega cada flor cuando aparezca. ¿Cuál de las dos lleva a e?
+- [ ] `ch4.8.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch4.8.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 4.9
 
@@ -499,6 +533,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch4.12.sauce.01` · **Sauce** · cambiada
   - Antes: ¿Quién sigue a oscuras? Busca desde ahí.
   - Después: Avanza tu luz. Si se para ante un brote en la niebla, inspecciónalo y sigue.
+- [ ] `ch4.12.sauce.02` · **Sauce** · cambiada
+  - Antes: Cuatro rincones a oscuras. Si dos soles se tocan, ya sabes qué hacer.
+  - Después: Cinco rincones a oscuras. Si dos soles se tocan, ya sabes qué hacer.
+- [ ] `ch4.12.sauce.04` · **Sauce** · cambiada
+  - Antes: Dos flores, dos rondas, y no quedó ninguna cadena. El Festival termina con el jardín lleno de luz.
+  - Después: Dos flores, dos rondas, y desde W tu luz ya no encontró ninguna cadena. W se queda a oscuras, y aun así no cabe ni un farol más.
 - [ ] `ch4.12.sauce.05` · **Sauce** · nueva
   - Después: En el Códex esto tiene nombre: lee «Bucles impares», «La flor» y «Plegar no esconde cadenas».
 
@@ -525,6 +565,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.1.sauce.04` · **Sauce** · cambiada
   - Antes: Abriste la flor grande y luego la pequeña. Por dentro, la cadena entró por b y salió por c, por el lado de d: el lado corto ponía dos enredaderas apagadas seguidas.
   - Después: Abriste la flor grande y luego la pequeña. La cadena toca la flor pequeña en dos pétalos, b y c; entre los dos, solo una vuelta alterna: la que pasa por d.
+- [ ] `ch5.1.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.1.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.2
 
@@ -546,6 +590,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Porque la cadena entra antes en las de dentro.
 - [ ] `ch5.2.sauce.10` · **Sauce** · nueva
   - Después: Al revés: las de dentro están dentro de la grande, así que la cadena siempre entra antes en la grande.
+- [ ] `ch5.2.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.2.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.3
 
@@ -569,6 +617,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: …solo alterna el lado corto.
 - [ ] `ch5.3.sauce.14` · **Sauce** · nueva
   - Después: En esta flor la cadena dio la vuelta larga: por el lado corto no alternaba. Lo corto no decide nada.
+- [ ] `ch5.3.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.3.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.4
 
@@ -578,6 +630,12 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.4.sauce.02` · **Sauce** · cambiada
   - Antes: Prueba a buscar desde estos brotes.
   - Después: Tu luz empieza por estos brotes, uno tras otro.
+- [ ] `ch5.4.sauce.05` · **Sauce** · nueva
+  - Después: Y desde W tu luz ya no encontró ninguna cadena. W se queda a oscuras, y aun así no cabe ni un farol más.
+- [ ] `ch5.4.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.4.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 5.5
 
@@ -604,6 +662,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `ch5.6.sauce.04` · **Sauce** · cambiada
   - Antes: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Esta flor es tuya.
   - Después: Cuatro capas, y se abrieron de fuera hacia dentro, una a una. La cadena las cruzó todas. Este jardín secreto es tuyo.
+- [ ] `ch5.6.sauce.20` · **Sauce** · nueva
+  - Después: Antes de avanzar: ¿en qué enredadera se parará tu luz?
+- [ ] `ch5.6.sauce.21` · **Sauce** · nueva
+  - Después: No es esa: tu luz se parará en la que brilla. Avánzala y compruébalo.
 
 ### 6.1
 
@@ -778,7 +840,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `reason.flowerClosed` · nueva
   - Después: Hoy ese bucle no se pliega: una cadena solo puede pasar por él si empieza o acaba en su base.
 - [ ] `reason.lightAtFlower` · nueva
-  - Después: Tu luz se ha parado: {u} y {v} son soles del mismo árbol. Pliega ese bucle tocando su enredadera con Marcas, y sigue.
+  - Después: Tu luz se ha parado. ¿Dónde se tocan dos soles del mismo árbol? Toca esa enredadera.
 - [ ] `reason.lightFound` · nueva
   - Después: Tu luz ya encontró una cadena: abre las flores que cruza y enciéndela.
 - [ ] `reason.lightDone` · nueva
@@ -843,6 +905,8 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 - [ ] `hud.councilHidden` · cambiada
   - Antes: La cuenta del Consejo sale al pulsar «Terminé»
   - Después: La cuenta del Consejo sale al pulsar «Presentar»
+- [ ] `hint.generic.flower` · nueva
+  - Después: Mira la enredadera que brilla: ahí se tocan dos soles del mismo árbol. Tócala para plegar ese bucle.
 - [ ] `bet.revealRight.one` · nueva
   - Después: ¡Lo adivinaste! Esta noche cabe {count} farol.
 - [ ] `bet.revealWrong.one` · nueva
