@@ -71,8 +71,24 @@ describe('the picture of the HUD', () => {
     const hud = hudPicture(startSession(closedFlowerLevel(), 0), initialPointer('marks'), 0);
     expect(hud.goal).toEqual({ key: 'hud.goalHidden', params: {} });
     expect(hud.canDeclareDone).toBe(true);
-    // No level folds a loop by hand: «Plegar a mano» is the free mode's alone.
-    expect(hud.tools).toEqual(['lanterns', 'marks', 'inspect', 'scarecrows']);
+    // No level folds a loop by hand: «Plegar a mano» is the free mode's alone. Without fog nor
+    // scarecrows to present, the bar keeps only what the search uses.
+    expect(hud.tools).toEqual(['lanterns', 'marks']);
+  });
+
+  it('a level shows only the tools it can use, and "Terminé" only where it wins (3.1, 3.6)', () => {
+    const fog = hudPicture(startSession(levelById('3.1'), 0), initialPointer('lanterns'), 0);
+    expect(fog.tools).toEqual(['lanterns', 'marks', 'inspect']);
+    expect(fog.canDeclareDone).toBe(false);
+    const search = hudPicture(startSession(levelById('3.6'), 0), initialPointer('marks'), 0);
+    expect(search.tools).toEqual(['lanterns', 'marks']);
+    expect(search.canDeclareDone).toBe(true);
+  });
+
+  it('a garden of the free mode keeps every tool the player has met', () => {
+    const session = startSession(closedFlowerLevel(), 0);
+    const free = hudPicture(session, initialPointer('marks'), 0, 0, '7.6');
+    expect(free.tools).toEqual(['lanterns', 'marks', 'inspect', 'scarecrows', 'layers']);
   });
 
   it('offers "Avanzar la luz" only where the light searches by itself', () => {

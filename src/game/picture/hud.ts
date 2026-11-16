@@ -1,5 +1,6 @@
 import { size } from '@core/matching/queries';
 import { isUiUnlocked } from '@levels/uiUnlocks';
+import { levelTools, offersDone } from '../input/levelTools';
 import type { PointerState } from '../input/pointer';
 import { availableTools, type ToolId } from '../input/tools';
 import { canRedo, canUndo } from '../systems/history';
@@ -111,6 +112,8 @@ function goalText(session: LevelSession): TextRef {
  * The picture of the HUD for a session, the tool in hand, at time `now`, `depth` flowers deep in
  * the layers. The sun, the layers and the Council's count show as from level `interfaceAt`: the
  * level itself, but for a garden of the free mode, which shows the interface the player has met.
+ * A level shows only the tools it can use, and "Terminé" only where it can win (`levelTools`); the
+ * free mode is a tool, and keeps every tool the player has met.
  */
 export function hudPicture(
   session: LevelSession,
@@ -125,6 +128,7 @@ export function hudPicture(
   const step = stepNow(session)?.step;
   const prompt = step === undefined ? undefined : PROMPTS[step];
   const layers = isUiUnlocked('layers', interfaceAt);
+  const free = interfaceAt !== data.id;
   return {
     goal: goalText(session),
     lanterns: size(state.matching),
@@ -132,7 +136,7 @@ export function hudPicture(
       data.fog || data.water !== null ? { used: session.waterSpent, budget: data.water } : null,
     canUndo: canUndo(history),
     canRedo: canRedo(history),
-    canDeclareDone: state.allowed.has('declareDone'),
+    canDeclareDone: offersDone(session.level),
     canStepLight: state.allowed.has('stepLight'),
     hintAvailable: canAskHint(session),
     hintOffered: isHintAvailable(session, now),
@@ -143,7 +147,7 @@ export function hudPicture(
           calling: step === 'sun',
         }
       : null,
-    tools: availableTools(state.allowed, layers),
+    tools: free ? availableTools(state.allowed, layers) : levelTools(session.level, layers),
     tool: pointer.tool,
     won: session.won,
     canCheckMirror: step === 'draw',

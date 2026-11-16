@@ -5,7 +5,11 @@ import type { Action } from '@core/rules/actions';
 import { itemAt } from '@core/shared/itemAt';
 import type { Level, WalkthroughEntry } from '@levels/build';
 import { isFlowInput, type FlowInput } from '@levels/flowInput';
+import { isUiUnlocked } from '@levels/uiUnlocks';
 import { gesturesFor, vinePoint, type Gesture } from '../input/gestures';
+import { levelTools, offersDone } from '../input/levelTools';
+import type { Point } from '../input/target';
+import type { ToolId } from '../input/tools';
 import { isFinished } from './flow';
 import {
   handle,
@@ -25,7 +29,9 @@ import type { Refusal } from './refusal';
  * cards and "Comprobar", the answer of a doubling bet as the option of its panel, a move written
  * as refused as the gestures that try it, and the end of
  * the light's own search, of the automaton's run or of a race as the scene reports it, with no
- * entry of its own. A level whose walkthrough does not
+ * entry of its own. It takes only the tools the level's bar shows, and presses "Terminé" only where
+ * the level offers it, so a reference solution never leans on a tool the player is not given. A
+ * level whose walkthrough does not
  * finish its script never reaches the browser (plan 03, §0): the playability test and
  * `check-levels` both run this.
  */
@@ -52,21 +58,31 @@ export interface WalkthroughResult {
   readonly problem: WalkthroughProblem | null;
 }
 
+/** What the player has at hand: the tools that may be taken, and whether "Terminé" is there. */
+interface Bar {
+  readonly tools: readonly ToolId[];
+  readonly done: boolean;
+}
+
 /**
  * The interface events of one gesture: a tool, "Terminé", "Avanzar la luz", or a press dragged
- * through points.
+ * through points. A tool or a "Terminé" the bar does not offer cannot be pressed: it gives none.
  */
-function gestureEvents(gesture: Gesture): UiEvent[] {
-  if (gesture.kind === 'tool') return [{ kind: 'tool', tool: gesture.tool }];
-  if (gesture.kind === 'done') return [{ kind: 'done' }];
+function gestureEvents(gesture: Gesture, bar: Bar): UiEvent[] {
+  if (gesture.kind === 'tool') {
+    return bar.tools.includes(gesture.tool) ? [{ kind: 'tool', tool: gesture.tool }] : [];
+  }
+  if (gesture.kind === 'done') return bar.done ? [{ kind: 'done' }] : [];
   if (gesture.kind === 'light') return [{ kind: 'light' }];
-  const { points } = gesture;
-  return [
-    { kind: 'press', point: itemAt(points, 0) },
-    ...points.slice(1).map((point): UiEvent => ({ kind: 'move', point })),
-    { kind: 'release', point: itemAt(points, points.length - 1) },
-  ];
+  return pressEvents(gesture.points);
 }
+
+/** A press on the first point, dragged through the others and let go on the last. */
+const pressEvents = (points: readonly Point[]): UiEvent[] => [
+  { kind: 'press', point: itemAt(points, 0) },
+  ...points.slice(1).map((point): UiEvent => ({ kind: 'move', point })),
+  { kind: 'release', point: itemAt(points, points.length - 1) },
+];
 
 /**
  * The interface events that give the script an input; a drawn reflection is touched where its vines
@@ -144,10 +160,10 @@ function feed(controller: Controller, events: readonly UiEvent[], now: number) {
 }
 
 /** The events that perform a move in the garden as it is now, or why there are none. */
-function moveEvents(controller: Controller, action: Action): UiEvent[] | string {
+function moveEvents(controller: Controller, action: Action, bar: Bar): UiEvent[] | string {
   try {
     const gestures = gesturesFor(garden(controller.session), controller.positions, action);
-    return gestures.flatMap(gestureEvents);
+    return gestures.flatMap((gesture) => gestureEvents(gesture, bar));
   } catch (error) {
     return error instanceof Error ? error.message : String(error);
   }
@@ -216,7 +232,7 @@ function playChain(
   now: number,
 ): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
   const points = path.map((v) => itemAt(controller.positions, v));
-  const played = feed(controller, gestureEvents({ kind: 'press', points }), now);
+  const played = feed(controller, pressEvents(points), now);
   const drawn = played.effects.find((effect) => effect.kind === 'flowerDrawn');
   if (drawn === undefined) return { ...played, problem: { code: 'inputIgnored', entry: index } };
   const { attempt } = drawn;
@@ -252,10 +268,11 @@ function playDrawing(
 function playRefused(
   controller: Controller,
   move: Action,
+  bar: Bar,
   index: number,
   now: number,
 ): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
-  const events = moveEvents(controller, move);
+  const events = moveEvents(controller, move, bar);
   if (typeof events === 'string') {
     return {
       controller,
@@ -272,13 +289,14 @@ function playRefused(
 function playEntry(
   controller: Controller,
   entry: WalkthroughEntry,
+  bar: Bar,
   index: number,
   now: number,
 ): { controller: Controller; effects: Effect[]; problem: WalkthroughProblem | null } {
   if (isFlowInput(entry)) {
     if (entry.type === 'drawMirror') return playDrawing(controller, entry.lanterns, index, now);
     if (entry.type === 'drawChain') return playChain(controller, entry.path, index, now);
-    if (entry.type === 'refusedMove') return playRefused(controller, entry.move, index, now);
+    if (entry.type === 'refusedMove') return playRefused(controller, entry.move, bar, index, now);
     const events =
       entry.type === 'pickVine'
         ? vineEvents(controller, entry.u, entry.v)
@@ -296,7 +314,7 @@ function playEntry(
     const ignored = ANSWERED.has(entry.type) && played.effects.length === 0;
     return { ...played, problem: ignored ? { code: 'inputIgnored', entry: index } : null };
   }
-  const events = moveEvents(controller, entry);
+  const events = moveEvents(controller, entry, bar);
   if (typeof events === 'string') {
     return {
       controller,
@@ -345,14 +363,22 @@ function showLight(
   return { controller: current, effects };
 }
 
-/** Plays the level's whole walkthrough from its start, at time `now`; stops at the first problem. */
-export function playWalkthrough(level: Level, now = 0): WalkthroughResult {
+/**
+ * Plays the level's whole walkthrough from its start, at time `now`, taking only `tools` (by default
+ * those on the level's bar); stops at the first problem.
+ */
+export function playWalkthrough(
+  level: Level,
+  now = 0,
+  tools: readonly ToolId[] = levelTools(level, isUiUnlocked('layers', level.data.id)),
+): WalkthroughResult {
+  const bar: Bar = { tools, done: offersDone(level) };
   const opened = openController(level, now);
   const shown = showLight(opened.controller, now);
   let controller = shown.controller;
   const effects: Effect[] = [...opened.effects, ...shown.effects];
   for (const [index, entry] of level.walkthrough.entries()) {
-    const played = playEntry(controller, entry, index, now);
+    const played = playEntry(controller, entry, bar, index, now);
     effects.push(...played.effects);
     if (played.problem !== null) {
       return { controller: played.controller, effects, problem: played.problem };

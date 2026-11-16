@@ -256,6 +256,26 @@ describe('playing the reference walkthrough of a level without a scene', () => {
     expect(garden(played.controller.session).matching.mate).toEqual([1, 0, -1]);
   });
 
+  it('plays only with the tools on the bar: a tool the level does not show makes no move', () => {
+    // Scarecrows serve only where they are presented: here a touch with them never happens.
+    const level = scripted(
+      [{ step: 'play' }],
+      [
+        { type: 'placeScarecrow', vertex: 'B' },
+        { type: 'join', u: 'A', v: 'B' },
+      ],
+      '3.7',
+    );
+    expect(playWalkthrough(level).problem).toEqual({ code: 'gestureMismatch', entry: 0 });
+  });
+
+  it('presses «Terminé» only where the level offers it', () => {
+    // Lighting a lantern wins here: «Terminé» would win nothing, so it is not on the bar.
+    const solution = [{ type: 'declareDone' }, { type: 'join', u: 'A', v: 'B' }];
+    const level = scripted([{ step: 'play' }], solution, '1.9');
+    expect(playWalkthrough(level).problem).toEqual({ code: 'gestureMismatch', entry: 0 });
+  });
+
   it('a move no gesture can make is reported, not thrown', () => {
     // C sits on the vine A–B, so the vine cannot be touched apart from its sprouts.
     const loaded = loadLevel({

@@ -6,7 +6,9 @@ import { describe, expect, it } from 'vitest';
  * Every level can be finished with the interface: its reference walkthrough, played through the
  * level controller the scene uses (moves as touches and drags where its sprouts really are,
  * answers, bets and touches as interface events), makes exactly the moves written, every one of
- * them accepted, and finishes the level's script.
+ * them accepted, and finishes the level's script. It takes only the tools the level's bar shows,
+ * and presses "Terminé" only where the level offers it, so the bar never hides what a solution
+ * needs.
  */
 describe.each(catalog().map((level) => [level.data.id, level] as const))('level %s', (_, level) => {
   it('is finished by playing its walkthrough with the interface', () => {
