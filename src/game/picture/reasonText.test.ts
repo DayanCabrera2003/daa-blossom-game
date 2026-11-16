@@ -29,6 +29,13 @@ describe("why a move was refused, in the garden's words", () => {
     expect(say(conflict, meeting)).toMatch(/raro/);
   });
 
+  it('where the light stops at a flower, it asks where two suns meet and names no sprout', () => {
+    const stopped = say({ code: 'lightAtFlower', u: 4, v: 2 }, { type: 'stepLight' });
+    expect(stopped).toBe(
+      'Tu luz se ha parado. ¿Dónde se tocan dos soles del mismo árbol? Toca esa enredadera.',
+    );
+  });
+
   it('answers a touch on the drawn reflection, which is no move of the rules', () => {
     expect(reasonText({ code: 'twoSilver', vertex: 3 }, null, labels, t)).toBe(
       'c ya tiene un farol plateado: quítaselo antes de darle otro.',

@@ -91,7 +91,7 @@ const REASONS = {
   chainNotSeen: [],
   flowerClosed: [],
   baseNotDark: [],
-  lightAtFlower: ['u', 'v'],
+  lightAtFlower: [],
   lightFound: [],
   lightDone: [],
 } as const satisfies Record<RefusalCode, Params>;

@@ -31,7 +31,7 @@
   "reason.twoSilver": "{vertex} ya tiene un farol plateado: quítaselo antes de darle otro.",
   "reason.chainNotSeen": "Hoy los faroles solo se mueven por donde llegó tu luz. Avánzala hasta que encuentre la cadena.",
   "reason.flowerClosed": "Hoy ese bucle no se pliega: una cadena solo puede pasar por él si empieza o acaba en su base.",
-  "reason.lightAtFlower": "Tu luz se ha parado: {u} y {v} son soles del mismo árbol. Pliega ese bucle tocando su enredadera con Marcas, y sigue.",
+  "reason.lightAtFlower": "Tu luz se ha parado. ¿Dónde se tocan dos soles del mismo árbol? Toca esa enredadera.",
   "reason.lightFound": "Tu luz ya encontró una cadena: abre las flores que cruza y enciéndela.",
   "reason.lightDone": "Tu luz ya miró todas las enredaderas que podía.",
   "reason.invalidPath.empty": "Arrastra desde un brote.",
