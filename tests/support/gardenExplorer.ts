@@ -40,7 +40,7 @@ export interface Exploration {
 }
 
 /** The parts of a garden the walked moves can change; equal keys are the same garden. */
-const keyOf = (state: GardenState): string =>
+export const keyOf = (state: GardenState): string =>
   JSON.stringify([
     state.matching.mate,
     state.layer.nodeOf,
@@ -49,8 +49,20 @@ const keyOf = (state: GardenState): string =>
     state.chainSeen,
   ]);
 
+/**
+ * The chains worth trying: every simple alternating path from a sprout in the dark, or, where the
+ * lanterns only move along the chain the marks reached (`seen`), that chain alone, both ways round,
+ * since the rules refuse every other one (`judgeLighting`) and listing them all is the slow part of
+ * the walk in the larger gardens.
+ */
+function chainsWorthTrying(state: GardenState): readonly (readonly VertexId[])[] {
+  if (state.chains.rule !== 'seen') return everyChain(state.graph, state.matching);
+  const seen = state.chainSeen;
+  return seen === null ? [] : [seen, [...seen].reverse()];
+}
+
 /** Every move worth trying in a garden, before the rules judge it. */
-function candidates(state: GardenState): Action[] {
+export function candidates(state: GardenState): Action[] {
   const moves: Action[] = [{ type: 'stepLight' }];
   for (const [u, v] of state.graph.edges) {
     moves.push({ type: 'join', u, v }, { type: 'split', u, v }, { type: 'foldAt', from: u, to: v });
@@ -62,7 +74,7 @@ function candidates(state: GardenState): Action[] {
     }
   }
   for (let vertex = 0; vertex < state.graph.n; vertex++) moves.push({ type: 'markRoot', vertex });
-  for (const path of everyChain(state.graph, state.matching)) {
+  for (const path of chainsWorthTrying(state)) {
     moves.push({ type: 'chain', path });
     if (path.length % 2 === 1 && !isExposed(state.matching, path[path.length - 1] as VertexId)) {
       moves.push({ type: 'rotateStem', stem: path });
