@@ -55,6 +55,7 @@ import {
   type MirrorCheck,
 } from './mirrorChallenge';
 import { lightRun } from './lightSearch';
+import { flowerVine } from './lightStop';
 import type { PlayedDay } from './playedDay';
 import { nextMove } from './nextMove';
 import { winningPiece } from './pond';
@@ -436,19 +437,16 @@ export function askHint(
   const { graph, matching, layer, search } = garden(session);
   const chain =
     current.step === 'flowerChallenge' && opened.grade >= 2 ? mentorChain(graph, matching) : null;
-  // When pointing at a vine, the conflict glows at grade 3; the touch is left to the player.
+  // When pointing at a vine, the conflict glows at grade 3; the touch is left to the player. Where
+  // the light stands at a flower, grade 2 makes the vine of its two suns glow.
   const vine = current.step === 'pickVine' ? (findConflict(layer, search)?.vine ?? null) : null;
   // In the recipe, the mentor places the right card of the first case that fails, at grade 3.
   const board = recipeBoardOf(session);
   const fix = board === null ? null : mentorFix(board.recipe);
-  const hint = hintContent(written, opened.grade, {
-    step,
-    option,
-    reflection: offer?.reflection ?? null,
-    chain,
-    vine,
-    card: fix?.card ?? null,
-  });
+  const reflection = offer?.reflection ?? null;
+  const flower = flowerVine(garden(session));
+  const help = { step, option, reflection, chain, vine, card: fix?.card ?? null, flower };
+  const hint = hintContent(written, opened.grade, help);
   const { challenge } = session;
   return {
     session: {

@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { lightLevel } from '../../../tests/support/fixtureLevels';
-import { act, garden, openSession, respond, stepNow } from './levelSession';
+import { foldingLightLevel, lightLevel } from '../../../tests/support/fixtureLevels';
+import {
+  act,
+  askHint,
+  garden,
+  openSession,
+  respond,
+  startSession,
+  stepNow,
+  type LevelSession,
+} from './levelSession';
 import { lightDay } from './lightSearch';
 import { NOT_NOW } from './refusal';
 
@@ -36,5 +45,29 @@ describe('a level session where the light searches by itself (4.1, 4.2)', () => 
     const again = respond(searched, { type: 'searched' }, 0);
     expect(again.session.history).toBe(searched.history);
     expect(again.effects).toEqual([]);
+  });
+});
+
+describe('the hints where the light stands at a flower (GDD §5.1, §5.3)', () => {
+  /** A hint asked for in `session`, which must offer one. */
+  const hinted = (session: LevelSession) => {
+    const opened = askHint(session, 0);
+    if (opened === null) throw new Error('no hint offered');
+    return opened;
+  };
+
+  it('the grade-2 hint makes the vine of the two suns glow, which the stop no longer points at', () => {
+    const light = { type: 'stepLight' } as const;
+    let session = startSession(foldingLightLevel(), 0);
+    for (let i = 0; i < 3; i++) session = act(session, light, 0).session;
+    const first = hinted(session);
+    expect(first.hint.vine).toBeNull();
+    const second = hinted(first.session);
+    expect(second.hint).toMatchObject({ line: 'hint.generic.flower', generic: true, vine: [2, 4] });
+  });
+
+  it('while the light can still move on, grade 2 is the level’s own, glowing no vine', () => {
+    const session = hinted(startSession(foldingLightLevel(), 0)).session;
+    expect(hinted(session).hint).toMatchObject({ line: 'ch4.1.sauce.02', vine: null });
   });
 });

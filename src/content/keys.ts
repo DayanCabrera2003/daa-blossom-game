@@ -201,6 +201,7 @@ const UI = {
   'hint.generic.1': [],
   'hint.generic.2': [],
   'hint.generic.3': [],
+  'hint.generic.flower': [],
   'dialogue.continue': [],
   'question.choose': [],
   'bet.choose': [],

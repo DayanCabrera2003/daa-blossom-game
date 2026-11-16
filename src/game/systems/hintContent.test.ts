@@ -65,6 +65,32 @@ describe('what each hint grade shows (GDD §5.3)', () => {
     });
   });
 
+  it('where the light stands at a flower, grade 2 makes the vine of its two suns glow instead', () => {
+    // The stop points at nothing (GDD §5.1): the glow is the direction of grade 2, in words of its own.
+    const flower = [4, 2] as const;
+    expect(hintContent(festivalHints, 2, { step, flower })).toEqual({
+      line: 'hint.generic.flower',
+      generic: true,
+      highlight: [],
+      move: null,
+      option: null,
+      mirror: null,
+      chain: null,
+      vine: flower,
+      card: null,
+    });
+    // The nudge and the mentor's step are the level's, as anywhere else.
+    expect(hintContent(festivalHints, 1, { flower })).toMatchObject({
+      line: 'ch4.1.sauce.01',
+      vine: null,
+    });
+    expect(hintContent(festivalHints, 3, { step, flower })).toMatchObject({
+      line: 'ch4.1.sauce.03',
+      move: step,
+      vine: null,
+    });
+  });
+
   it('under a question, grade 3 points at the option it is given, and no grade before it', () => {
     expect(hintContent(festivalHints, 3, { option: 2 })).toMatchObject({ move: null, option: 2 });
     expect(hintContent(festivalHints, 2, { option: 2 }).option).toBeNull();

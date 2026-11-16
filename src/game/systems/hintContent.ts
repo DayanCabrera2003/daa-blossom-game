@@ -17,7 +17,10 @@ export interface HintContent {
   readonly mirror: readonly Edge[] | null;
   /** Only at grade 3, in the flower challenge: the chain the mentor draws in the open garden. */
   readonly chain: readonly VertexId[] | null;
-  /** Only at grade 3, when pointing at a vine: the vine that glows, left for the player to touch. */
+  /**
+   * The vine that glows, left for the player to touch: at grade 3 when pointing at a vine, and at
+   * grade 2 where the light stands at a flower (its two suns).
+   */
   readonly vine: Edge | null;
   /** Only at grade 3, in the recipe: the right card the mentor places on it. */
   readonly card: RecipeCardId | null;
@@ -54,6 +57,8 @@ export interface MentorHelp {
   readonly chain?: readonly VertexId[] | null;
   readonly vine?: Edge | null;
   readonly card?: RecipeCardId | null;
+  /** Where the light that searches by itself stands at a flower: the vine of its two suns. */
+  readonly flower?: Edge | null;
 }
 
 /**
@@ -69,6 +74,22 @@ function startOf(
   return start === undefined ? [] : [start];
 }
 
+/** The words of grade 2 where the light stands at a flower, the same in every level. */
+const FLOWER_HINT = 'hint.generic.flower';
+
+/** A generic hint that shows nothing but its line. */
+const NOTHING: HintContent = {
+  line: '',
+  generic: true,
+  highlight: [],
+  move: null,
+  option: null,
+  mirror: null,
+  chain: null,
+  vine: null,
+  card: null,
+};
+
 /**
  * The content of hint grade `grade` (GDD §5.3: a nudge, a direction, the mentor's first step).
  * The k-th hint written in the level is grade k; when a level has fewer, the generic line of that
@@ -78,13 +99,17 @@ function startOf(
  * mirror challenge, a `reflection` the mentor offers: from grade 2 its chain glows, and grade 3
  * draws it; in the flower challenge the same goes for a `chain`. When the player points at a vine,
  * grade 3 makes the `vine` glow and leaves the touch to them; in the recipe, grade 3 places the
- * `card`.
+ * `card`. Where the light stands at a `flower`, grade 2 makes the vine of its two suns glow, with
+ * words of its own in place of the level's (GDD §5.3).
  */
 export function hintContent(
   hints: readonly LevelHint[],
   grade: number,
   help: MentorHelp = {},
 ): HintContent {
+  // The stop of the light points at nothing (GDD §5.1): its direction is the glow of the vine.
+  const flower = help.flower ?? null;
+  if (grade === 2 && flower !== null) return { ...NOTHING, line: FLOWER_HINT, vine: flower };
   const mentorStep = help.step ?? null;
   const option = help.option ?? null;
   const reflection = help.reflection ?? null;

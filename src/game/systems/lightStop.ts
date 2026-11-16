@@ -1,3 +1,4 @@
+import type { Edge } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
 import { lightStep, type LightStep } from '@core/rules/lightStep';
 import type { RejectReason } from '@core/rules/reasons';
@@ -81,3 +82,9 @@ export function stopTold(before: GardenState, after: GardenState): readonly Ligh
 
 /** Whether the light of a garden stands still, its button switched off. */
 export const standsStill = (state: GardenState): boolean => lightStop(state) !== null;
+
+/** The vine of the two suns where the light of a garden stands at a flower; null elsewhere. */
+export function flowerVine(state: GardenState): Edge | null {
+  const stop = lightStop(state);
+  return stop?.kind === 'flower' ? [stop.from, stop.to] : null;
+}
