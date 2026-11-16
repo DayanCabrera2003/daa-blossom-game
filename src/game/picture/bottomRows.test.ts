@@ -3,6 +3,7 @@ import { catalog } from '@levels/catalog';
 import { isUiUnlocked } from '@levels/uiUnlocks';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
+import { levelTools } from '../input/levelTools';
 import { availableTools, TOOL_ACTIONS, type ToolId } from '../input/tools';
 import { CANVAS_WIDTH } from '../scale/integerZoom';
 import { UNLOCKED_AT } from '@core/rules/permissions';
@@ -272,6 +273,32 @@ describe('the two bottom rows of the level HUD', () => {
       const widths = [...tools.map((tool) => toolWidth(tool)), trace];
       const lefts = [...toolbarRow(widths.slice(0, -1)), left];
       expect(fitsOnCanvas(lefts, widths), level.data.id).toBe(true);
+    }
+  });
+
+  it('«Avanzar la luz», whatever it says of where the light stopped, ends the tools of every light level, the trace beside it', () => {
+    const words = [
+      'hud.stepLight',
+      'hud.light.flower',
+      'hud.light.fog',
+      'hud.light.found',
+      'hud.light.done',
+    ];
+    const trace = estimatedButtonWidth(label('hud.trace'));
+    const lightLevels = catalog().filter((level) => level.data.light);
+    expect(lightLevels.length).toBeGreaterThan(0);
+    for (const level of lightLevels) {
+      const tools = levelTools(level, isUiUnlocked('layers', level.data.id)).map((tool) =>
+        toolWidth(tool),
+      );
+      for (const key of words) {
+        const light = estimatedButtonWidth(label(key));
+        // In teacher mode the trace sits just before the light, both at the end of the row.
+        for (const orders of [[light], [trace, light]]) {
+          const lefts = [...toolbarRow(tools), ...ordersRow(orders)];
+          expect(fitsOnCanvas(lefts, [...tools, ...orders]), `${level.data.id} ${key}`).toBe(true);
+        }
+      }
     }
   });
 });
