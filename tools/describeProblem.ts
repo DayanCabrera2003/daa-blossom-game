@@ -61,6 +61,10 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} bets the light stops at ${problem.stop}, but it first stops at ${problem.stops ?? 'no flower'}`;
     case 'drawUnbeatable':
       return `script step ${problem.step + 1} asks for a better reflection, but the lanterns already hold the most`;
+    case 'lookWithoutFog':
+      return `script step ${problem.step + 1} only looks, but the garden has no fog to inspect`;
+    case 'lookWithoutPlay':
+      return `script step ${problem.step + 1} only looks, and no play step after it opens the marks`;
     case 'drawBeatable':
       return `script step ${problem.step + 1} is a mirror challenge nobody should win, but the lanterns leave a chain`;
     case 'flowerMissing':

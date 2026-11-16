@@ -67,6 +67,11 @@ const flowStep = z.discriminatedUnion('step', [
     until: z.strictObject({ refused: refusedReason }).optional(),
   }),
   /**
+   * Look first (3.1): before its play step, the garden in the fog takes only inspections, and the
+   * step is over once a sprout in the dark has been inspected.
+   */
+  z.strictObject({ step: z.literal('look'), hints: stepHints }),
+  /**
    * After a play step won with a Tutte–Berge certificate (7.6): the garden goes on taking moves, and
    * the step is over once the victory holds again with stones different from all those presented.
    * `repeated` is the line the council says to a certificate whose stones it already knows.

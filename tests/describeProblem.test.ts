@@ -130,6 +130,8 @@ describe('readable level problems', () => {
       { code: 'sameCertificate', step: 1 },
       { code: 'drawUnbeatable', step: 5 },
       { code: 'drawBeatable', step: 5 },
+      { code: 'lookWithoutFog', step: 1 },
+      { code: 'lookWithoutPlay', step: 1 },
       { code: 'noConflict', step: 1 },
       { code: 'stopElsewhere', step: 1, stop: 'c–d', stops: 'b–d' },
       { code: 'stopElsewhere', step: 1, stop: 'c–d', stops: null },

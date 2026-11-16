@@ -77,6 +77,8 @@ export type FlowSignal =
 export type FlowEffect =
   /** The play step begins: the garden takes moves. */
   | { readonly kind: 'play' }
+  /** A step that only looks begins (3.1): the garden takes inspections alone. */
+  | { readonly kind: 'look' }
   /** The council asks for another certificate (7.6): the garden goes on taking moves. */
   | { readonly kind: 'certifyAgain'; readonly step: number }
   /**
@@ -249,6 +251,8 @@ function opening(step: LevelStep, index: number): FlowEffect {
   switch (step.step) {
     case 'play':
       return { kind: 'play' };
+    case 'look':
+      return { kind: 'look' };
     case 'certifyAgain':
       return { kind: 'certifyAgain', step: index };
     case 'say':
@@ -382,8 +386,9 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
         bet === null ? [] : [{ kind: 'reveal', bet: bet.value, right: bet.right }];
       return enter(flow, flow.index + 1, reveal);
     }
+    case 'look':
     case 'certifyAgain':
-      // The session tells a new certificate from one already presented; only a new one wins.
+      // The session tells when the look is over, and a new certificate from one already presented.
       return signal.type === 'won' ? enter(flow, flow.index + 1, []) : unchanged;
     case 'sun':
       return signal.type === 'sunMoved' ? enter(flow, flow.index + 1, []) : unchanged;

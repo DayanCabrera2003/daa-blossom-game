@@ -4,6 +4,7 @@ import type { LevelStep } from './flow';
 /** The steps in which a hint may be offered (never while the day replays, nor in plain waits). */
 const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
   'play',
+  'look',
   'certifyAgain',
   'ask',
   'count',
@@ -15,9 +16,10 @@ const HINT_STEPS: ReadonlySet<LevelStep['step']> = new Set([
 
 /**
  * The steps that play the garden: one that brings no hints of its own says the level's. The
- * council's call for another certificate (7.6) is played like the step it follows.
+ * council's call for another certificate (7.6) is played like the step it follows, and so is the
+ * look that comes before a play step (3.1).
  */
-const PLAYING: ReadonlySet<LevelStep['step']> = new Set(['play', 'certifyAgain']);
+const PLAYING: ReadonlySet<LevelStep['step']> = new Set(['play', 'look', 'certifyAgain']);
 
 /**
  * The hints script step `index` of `level` offers (GDD §5.3), in grade order, or null when it offers

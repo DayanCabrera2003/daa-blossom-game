@@ -52,6 +52,10 @@ export type FlowProblem =
       readonly stop: string;
       readonly stops: string | null;
     }
+  /** A step that only looks in a garden with no fog: there is nothing to inspect. */
+  | { readonly code: 'lookWithoutFog'; readonly step: number }
+  /** A step that only looks with no play step after it: the marks would never open. */
+  | { readonly code: 'lookWithoutPlay'; readonly step: number }
   /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
   | { readonly code: 'drawUnbeatable'; readonly step: number }
   /** A mirror challenge nobody should win, over lanterns that a better reflection can beat. */
@@ -230,6 +234,13 @@ export function checkFlow(level: Level): FlowProblem[] {
         }
         garden = replay(garden, level.solution).state;
         afterPlay = true;
+        break;
+      }
+      case 'look': {
+        if (!data.fog) problems.push({ code: 'lookWithoutFog', step });
+        if (!level.flow.slice(step).some((later) => later.step === 'play')) {
+          problems.push({ code: 'lookWithoutPlay', step });
+        }
         break;
       }
       case 'certifyAgain': {

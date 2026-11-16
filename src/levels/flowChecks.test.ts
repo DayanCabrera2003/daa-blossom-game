@@ -476,3 +476,35 @@ describe('the checks of a level script', () => {
     ]);
   });
 });
+
+describe('a step that only looks (3.1)', () => {
+  /** R–a=b–T, in the fog or not, with the script `flow`. */
+  const looking = (flow: unknown[], fog = true) => ({
+    id: '3.1',
+    sprouts: ['R', 'a', 'b', 'T'].map((label, i) => ({ label, x: 100 + 80 * i, y: 120 })),
+    vines: [
+      ['R', 'a'],
+      ['a', 'b'],
+      ['b', 'T'],
+    ],
+    lanterns: [['a', 'b']],
+    goal: { visible: true, value: 2 },
+    fog,
+    victory: { type: 'matchingSize', value: 2 },
+    flow,
+    solution: [{ type: 'chain', path: ['R', 'a', 'b', 'T'] }],
+  });
+
+  it('looks into the fog, before a play step', () => {
+    expect(flowProblemsOf(looking([{ step: 'look' }, { step: 'play' }]))).toEqual([]);
+  });
+
+  it('is a problem without fog to look into, or with no play step after it', () => {
+    expect(flowProblemsOf(looking([{ step: 'look' }, { step: 'play' }], false))).toEqual([
+      { code: 'lookWithoutFog', step: 0 },
+    ]);
+    expect(flowProblemsOf(looking([{ step: 'play' }, { step: 'look' }]))).toEqual([
+      { code: 'lookWithoutPlay', step: 1 },
+    ]);
+  });
+});

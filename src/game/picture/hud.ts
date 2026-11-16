@@ -12,6 +12,7 @@ import {
   type LevelSession,
 } from '../systems/levelSession';
 import { lightLabel, lightStop } from '../systems/lightStop';
+import { toolsNow } from '../systems/lookStep';
 import type { StarResult } from '../systems/stars';
 import { fractionOfStep } from '../systems/sun';
 import { councilCount } from './council';
@@ -153,7 +154,9 @@ export function hudPicture(
           calling: step === 'sun',
         }
       : null,
-    tools: free ? availableTools(state.allowed, layers) : levelTools(session.level, layers),
+    tools: free
+      ? availableTools(state.allowed, layers)
+      : toolsNow(levelTools(session.level, layers), stepNow(session)),
     tool: pointer.tool,
     won: session.won,
     canCheckMirror: step === 'draw',

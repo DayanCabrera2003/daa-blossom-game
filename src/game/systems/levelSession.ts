@@ -64,6 +64,7 @@ import { reactionsTo, type FiredReaction } from './reactions';
 import { checkBoard, mentorFix, startBoard, touchCard, type RecipeBoard } from './recipeBoard';
 import { NOT_NOW, type Refusal } from './refusal';
 import { refusalSignal } from './refusalSignal';
+import { lookRefusal } from './lookStep';
 import { startStep } from './stepStart';
 import { computeStars, type StarResult } from './stars';
 
@@ -146,13 +147,11 @@ export type ScriptInput =
 export const stepNow = (session: LevelSession): LevelStep | null => currentStep(session.flow);
 
 /**
- * Whether garden moves are taken now: while playing, while the council asks for another
+ * Whether garden moves are taken now: while playing or looking, while the council asks for another
  * certificate, or once the script is over.
  */
-export const takesMoves = (session: LevelSession): boolean => {
-  const step = stepNow(session);
-  return step === null || step.step === 'play' || step.step === 'certifyAgain';
-};
+export const takesMoves = (session: LevelSession): boolean =>
+  [undefined, 'play', 'look', 'certifyAgain'].includes(stepNow(session)?.step);
 
 /** Whether undo, redo and the sun are taken now: while moves are, and while waiting for the sun. */
 const takesHistory = (session: LevelSession): boolean =>
@@ -279,7 +278,7 @@ export function act(
     return { session, outcome: { ok: false, reason: NOT_NOW }, effects: [], claim: null };
   }
   const before = garden(session);
-  const outcome = applyAction(before, action);
+  const outcome = lookRefusal(stepNow(session), action) ?? applyAction(before, action);
   if (!outcome.ok) {
     const { hints, rejections } = session;
     const refused = { ...session, hints: afterRejected(hints), rejections: rejections + 1 };
@@ -425,7 +424,7 @@ export function askHint(
   const { victory } = level.data;
   // The mentor's step leads to the victory of the play step; other steps have no move to give.
   const step =
-    opened.grade >= 2 && current.step === 'play' && victory !== undefined
+    opened.grade >= 2 && ['play', 'look'].includes(current.step) && victory !== undefined
       ? nextMove({ start: level.start, solution: level.solution, victory }, garden(session))
       : null;
   // Under a question, the mentor points at a right option instead (never at a bet's).

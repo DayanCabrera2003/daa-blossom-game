@@ -30,7 +30,7 @@ export function gardenBefore(level: Level, index: number): GardenState {
   const { start } = level;
   let garden = start;
   for (const step of level.flow.slice(0, index)) {
-    if (step.step === 'play') break;
+    if (step.step === 'play' || step.step === 'look') break;
     if (step.step === 'autoSearch') {
       garden = playWhileAccepted(garden, autoSearch(garden.layer, garden.search, garden.roots));
     }

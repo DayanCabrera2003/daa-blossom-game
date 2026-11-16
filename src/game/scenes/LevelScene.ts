@@ -30,7 +30,7 @@ import { effectCues } from '../systems/soundCues';
 import { movesLess } from './motion';
 import { sayAloud } from './sayAloud';
 import type { StarResult } from '../systems/stars';
-import { levelStepCard } from '../systems/tutorials';
+import { levelStepCards } from '../systems/tutorials';
 import { SfxPlayer } from '../audio/SfxPlayer';
 import { panelAvoidance } from '../picture/panelAvoidance';
 import { fitCamera } from '../view/fitCamera';
@@ -313,8 +313,7 @@ export class LevelScene extends Phaser.Scene {
 
   private show(effect: Effect): void {
     // A step that brings a new gesture shows its card first, before whatever it opens.
-    const card = levelStepCard(this.level, effect.kind, this.cards.seen);
-    if (card !== null) this.cards.offer([card]);
+    this.cards.offer(levelStepCards(this.level, effect.kind, this.cards.seen));
     showEffect(effect, this.stage);
     this.sfx.schedule(effectCues(effect, movesLess(this)));
   }

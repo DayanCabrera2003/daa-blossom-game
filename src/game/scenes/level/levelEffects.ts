@@ -236,6 +236,7 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
       stage.presenter.present({ kind: 'lines', lines: [spokenLine(effect.line, line)] });
       break;
     case 'play':
+    case 'look':
     case 'certifyAgain':
     case 'sproutTapped':
       // Nothing to draw: the garden simply takes moves, or the touched sprout is painted.

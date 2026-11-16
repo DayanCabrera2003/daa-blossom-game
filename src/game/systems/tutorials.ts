@@ -46,6 +46,7 @@ export const ACTION_CARD: Readonly<Record<ActionType, CardId>> = {
  * the GDD names a single card for the reflection.
  */
 export const STEP_CARD: Readonly<Partial<Record<LevelStep['step'], CardId>>> = {
+  look: 'inspect',
   bet: 'bet',
   ask: 'question',
   notebook: 'notebook',
@@ -62,6 +63,20 @@ export const STEP_CARD: Readonly<Partial<Record<LevelStep['step'], CardId>>> = {
   race: 'race',
   raceBet: 'raceBet',
 };
+
+/** The cards of the tools a level has open: «Presentar» for "Terminé" where a certificate wins. */
+function toolCards(level: Level): CardId[] {
+  const presents = level.data.victory !== undefined && isCertificate(level.data.victory);
+  return [...level.start.allowed].map((action) =>
+    action === 'declareDone' && presents ? 'present' : ACTION_CARD[action],
+  );
+}
+
+/**
+ * Whether the level looks before it plays (3.1): then each of its tools waits for the step that
+ * opens it, inspecting for the look and the rest for the play step.
+ */
+const looksFirst = (level: Level): boolean => level.flow.some((step) => step.step === 'look');
 
 /**
  * Undo and redo are there from the first garden, but 0.1 lights a single lantern with nothing to
@@ -83,11 +98,7 @@ const inOrder = (cards: Iterable<CardId>): CardId[] => {
  */
 export function levelCards(level: Level, interfaceAt: string = level.data.id): CardId[] {
   const id = interfaceAt;
-  // Where a certificate ends the level, its button says «Presentar», and its card teaches that.
-  const presents = level.data.victory !== undefined && isCertificate(level.data.victory);
-  const tools = [...level.start.allowed].map((action) =>
-    action === 'declareDone' && presents ? 'present' : ACTION_CARD[action],
-  );
+  const tools = toolCards(level);
   const undo: CardId[] = compareLevelIds(id, UNDO_CARD_FROM) >= 0 ? ['undo'] : [];
   const sun: CardId[] = isUiUnlocked('sun', id) ? ['sun'] : [];
   const layers: CardId[] = isUiUnlocked('layers', id) ? ['layers'] : [];
@@ -105,12 +116,15 @@ const teaches = (level: Level): boolean => level.data.secret === undefined;
  * The cards a level shows as it starts: what it has open that the player has not seen; none in a
  * secret flower.
  */
-export const startCards = (
+export function startCards(
   level: Level,
   seen: ReadonlySet<string>,
   interfaceAt: string = level.data.id,
-): CardId[] =>
-  teaches(level) ? levelCards(level, interfaceAt).filter((card) => !seen.has(card)) : [];
+): CardId[] {
+  const waiting = new Set(looksFirst(level) ? toolCards(level) : []);
+  const due = levelCards(level, interfaceAt).filter((card) => !waiting.has(card));
+  return teaches(level) ? due.filter((card) => !seen.has(card)) : [];
+}
 
 /**
  * The card shown as a step opens, unless seen. `kind` is the step, or the kind of any effect the
@@ -121,12 +135,16 @@ export function stepCard(kind: string, seen: ReadonlySet<string>): CardId | null
   return card === undefined || seen.has(card) ? null : card;
 }
 
-/** The card shown in `level` as a step opens, as `stepCard` says; none in a secret flower. */
-export const levelStepCard = (
-  level: Level,
-  kind: string,
-  seen: ReadonlySet<string>,
-): CardId | null => (teaches(level) ? stepCard(kind, seen) : null);
+/**
+ * The cards shown in `level` as a step opens: the step's own, as `stepCard` says, and, in a level
+ * that looks first, the tools its play step opens; none in a secret flower.
+ */
+export function levelStepCards(level: Level, kind: string, seen: ReadonlySet<string>): CardId[] {
+  if (!teaches(level)) return [];
+  const own = stepCard(kind, seen);
+  const tools = kind === 'play' && looksFirst(level) ? toolCards(level) : [];
+  return inOrder([...(own === null ? [] : [own]), ...tools.filter((card) => !seen.has(card))]);
+}
 
 /**
  * Picks the cards to queue among `candidates`: those neither seen nor already offered, each once,

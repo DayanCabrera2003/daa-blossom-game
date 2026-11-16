@@ -5,6 +5,7 @@ import { unwrap } from '@core/shared/result';
 import type { Level } from '@levels/build';
 import { catalog, compareLevelIds } from '@levels/catalog';
 import { CARD_IDS, type CardId } from '@levels/cards/schema';
+import { loadLevel } from '@levels/loader';
 import { toPlayable } from '@levels/sandbox/toLevel';
 import { describe, expect, it } from 'vitest';
 import {
@@ -24,7 +25,7 @@ import {
   ACTION_CARD,
   helpCards,
   levelCards,
-  levelStepCard,
+  levelStepCards,
   offerCards,
   startCards,
   stepCard,
@@ -49,10 +50,10 @@ function walkLevels(played: readonly Level[]): Map<string, CardId[]> {
     const cards = [...startCards(level, seen)];
     for (const card of cards) seen.add(card);
     for (const step of level.flow) {
-      const card = levelStepCard(level, step.step, seen);
-      if (card === null) continue;
-      cards.push(card);
-      seen.add(card);
+      for (const card of levelStepCards(level, step.step, seen)) {
+        cards.push(card);
+        seen.add(card);
+      }
     }
     shown.set(level.data.id, cards);
   }
@@ -128,6 +129,41 @@ describe('mechanic cards: when each one shows (GDD §5.11)', () => {
   it('1.6 does not bring the bet back to a player who saw it in 0.4', () => {
     expect(walk(['0.4', '1.6']).get('1.6')).not.toContain('bet');
     expect(walk(['1.6']).get('1.6')).toContain('bet');
+  });
+
+  it('a level that looks first shows each tool as the step that opens it begins', () => {
+    const looking = unwrap(
+      loadLevel({
+        id: '3.1',
+        sprouts: ['R', 'a', 'b', 'T'].map((label, i) => ({ label, x: 100 + 80 * i, y: 120 })),
+        vines: [
+          ['R', 'a'],
+          ['a', 'b'],
+          ['b', 'T'],
+        ],
+        lanterns: [['a', 'b']],
+        goal: { visible: true, value: 2 },
+        fog: true,
+        victory: { type: 'matchingSize', value: 2 },
+        flow: [{ step: 'look' }, { step: 'play' }],
+        solution: [{ type: 'inspect', vertex: 'R' }],
+      }),
+    );
+    const seen = new Set<CardId>([
+      'lanterns',
+      'undo',
+      'chain',
+      'passLantern',
+      'sun',
+      'declareDone',
+    ]);
+    expect(startCards(looking, seen)).toEqual([]);
+    expect(levelStepCards(looking, 'look', seen)).toEqual(['inspect']);
+    expect(levelStepCards(looking, 'play', new Set([...seen, 'inspect']))).toEqual(['marks']);
+    // The "?" still shows every tool the level has open.
+    expect(helpCards(looking, 0)).toContain('marks');
+    // Elsewhere, a play step brings no card: its tools showed as the level started.
+    expect(levelStepCards(levelOf('1.3'), 'play', new Set())).toEqual([]);
   });
 
   it('a player who starts further on gets every card of what is open there, in order', () => {
@@ -299,7 +335,8 @@ describe('the secret flowers: no mechanic cards to teach (plan 08, section 1.1)'
     (_, level) => {
       // A new profile has seen no card; teacher mode plays the level with its own interface.
       expect(startCards(level, new Set())).toEqual([]);
-      for (const step of level.flow) expect(levelStepCard(level, step.step, new Set())).toBeNull();
+      for (const step of level.flow)
+        expect(levelStepCards(level, step.step, new Set())).toEqual([]);
       // "?" still opens the cards of what the garden has open.
       expect(helpCards(level, level.flow.length)).not.toEqual([]);
     },
@@ -307,7 +344,7 @@ describe('the secret flowers: no mechanic cards to teach (plan 08, section 1.1)'
 
   it('a level of the chapters still offers the cards of its steps', () => {
     const level = levelOf('1.8');
-    expect(levelStepCard(level, 'ask', new Set())).toBe('question');
-    expect(levelStepCard(level, 'ask', new Set(['question']))).toBeNull();
+    expect(levelStepCards(level, 'ask', new Set())).toEqual(['question']);
+    expect(levelStepCards(level, 'ask', new Set(['question']))).toEqual([]);
   });
 });
