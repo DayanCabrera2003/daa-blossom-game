@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.1.0, con su texto de antes y de después. Las frases del Plan 11 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-85 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.1.0.
+86 líneas de diálogo y 30 textos de interfaz distintos de la versión 1.1.0.
 
 ### 0.2
 
@@ -152,7 +152,7 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch3.3.sauce.00` · **Sauce** · cambiada
   - Antes: Esta noche no te pido una cadena: te pido que termines la búsqueda, haya cadena o no. Y que gastes poca agua.
-  - Después: Esta noche no te pido una cadena: te pido que termines la búsqueda, haya cadena o no. Y que gastes pocas gotas.
+  - Después: Esta noche no te pido una cadena: te pido que termines la búsqueda y, cuando ya no quede nada por mirar, pulses «Terminé». Y que gastes pocas gotas.
 
 ### 3.4
 
@@ -164,13 +164,16 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `ch3.5.sauce.00` · **Sauce** · cambiada
   - Antes: Hoy el agua viene contada: una gota por brote, y dos de regalo. No mires por mirar: mira a quien tiene sol.
-  - Después: Hoy las gotas vienen contadas: una por brote, y dos de regalo. No mires por mirar: mira a quien tiene sol.
+  - Después: Hoy las gotas vienen contadas. No mires por mirar: mira solo a quien tiene sol.
 - [ ] `ch3.5.sauce.03` · **Sauce** · cambiada
   - Antes: Te enseño el primer paso. El agua es tuya.
   - Después: Te enseño el primer paso. Las gotas son tuyas.
 
 ### 3.8
 
+- [ ] `ch3.8.sauce.05` · **Sauce** · cambiada
+  - Antes: Cada luna tiene su farol, así que hay tantos espantapájaros como faroles. Y de un sol solo se llega a lunas: no queda enredadera sin vigilar.
+  - Después: Cada luna tiene su farol, así que hay tantos espantapájaros como faroles. Y aquí tu luz llegó a todos los brotes: por eso no queda enredadera sin vigilar.
 - [ ] `ch3.8.notebook.07` · **Cuaderno** · cambiada
   - Antes: Si k espantapájaros vigilan todas las enredaderas…
   - Después: Si unos cuantos espantapájaros vigilan todas las enredaderas…
@@ -370,6 +373,9 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
   - Después: Esa enredadera está apagada. Para encender un farol, toca un brote a oscuras y luego a su vecino.
 - [ ] `reason.tryTool` · nueva
   - Después: Prueba con {tool}.
+- [ ] `reason.alreadyMarked` · cambiada
+  - Antes: {vertex} ya tiene su marca. Déjala como está.
+  - Después: {vertex} ya tiene su marca.
 - [ ] `reason.flowerClosed` · cambiada
   - Antes: La flor está cerrada por hoy: una cadena solo puede rodearla si sale de su base o llega a ella.
   - Después: Hoy ese bucle no se pliega: una cadena solo puede pasar por él si empieza o acaba en su base.

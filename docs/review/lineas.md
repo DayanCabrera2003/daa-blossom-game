@@ -221,7 +221,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.3
 
-- [ ] `ch3.3.sauce.00` · **Sauce** · plan: Esta noche no te pido una cadena: te pido que termines la búsqueda, haya cadena o no. Y que gastes pocas gotas.
+- [ ] `ch3.3.sauce.00` · **Sauce** · plan: Esta noche no te pido una cadena: te pido que termines la búsqueda y, cuando ya no quede nada por mirar, pulses «Terminé». Y que gastes pocas gotas.
 - [ ] `ch3.3.sauce.01` · **Sauce** · plan: ¿Quién tiene sol y todavía no ha mirado sus enredaderas?
 - [ ] `ch3.3.sauce.02` · **Sauce** · plan: Desde aquí se llega dos veces al mismo sitio. Fíjate qué pasa la segunda vez.
 - [ ] `ch3.3.sauce.03` · **Sauce** · plan: Empiezo yo. Lo demás es seguir las reglas.
@@ -251,7 +251,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 
 ### 3.5
 
-- [ ] `ch3.5.sauce.00` · **Sauce** · plan: Hoy las gotas vienen contadas: una por brote, y dos de regalo. No mires por mirar: mira a quien tiene sol.
+- [ ] `ch3.5.sauce.00` · **Sauce** · plan: Hoy las gotas vienen contadas. No mires por mirar: mira solo a quien tiene sol.
 - [ ] `ch3.5.sauce.01` · **Sauce** · plan: ¿Quién sigue a oscuras? Por ahí empieza todo.
 - [ ] `ch3.5.sauce.02` · **Sauce** · plan: Estos cuatro esperan un farol. Sal de uno de ellos.
 - [ ] `ch3.5.sauce.03` · **Sauce** · plan: Te enseño el primer paso. Las gotas son tuyas.
@@ -280,7 +280,7 @@ Cada línea de diálogo del juego, nivel por nivel y en el orden del guion: su i
 - [ ] `ch3.8.sauce.02` · **Sauce** · plan: ¿Dónde quedaron las lunas?
 - [ ] `ch3.8.sauce.03` · **Sauce** · plan: Mira este grupo cuando acabe la búsqueda. ¿Qué brotes recibieron una visita pidiendo?
 - [ ] `ch3.8.sauce.04` · **Sauce** · plan: Te enseño el primer paso. Sigue buscando hasta el final.
-- [ ] `ch3.8.sauce.05` · **Sauce** · plan: Cada luna tiene su farol, así que hay tantos espantapájaros como faroles. Y de un sol solo se llega a lunas: no queda enredadera sin vigilar.
+- [ ] `ch3.8.sauce.05` · **Sauce** · plan: Cada luna tiene su farol, así que hay tantos espantapájaros como faroles. Y aquí tu luz llegó a todos los brotes: por eso no queda enredadera sin vigilar.
 - [ ] `ch3.8.sauce.06` · **Sauce** · plan: La búsqueda que fracasó te regala la prueba. Escríbelo en tu Cuaderno.
 - [ ] `ch3.8.notebook.07` · **Cuaderno** · plan: Si unos cuantos espantapájaros vigilan todas las enredaderas…
 - [ ] `ch3.8.notebook.08` · **Cuaderno** · plan: …no puede haber más faroles que espantapájaros.
