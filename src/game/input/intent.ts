@@ -35,12 +35,11 @@ const isSun = (state: GardenState, v: VertexId): boolean =>
 
 /**
  * Lanterns (GDD §5.1, 0.1–1.1): touching a lit vine puts it out, and a vine in the dark is told
- * why it lights nothing; a sprout in the dark is touched
- * first, then a neighbor in the dark (join) or a lit neighbor (pass the lantern). Doubtful pairs
- * still become actions, so the rules answer with a gentle reason instead of silence. Where the
- * level cannot pass the lantern (before 1.1, and 1.1 itself after its trap), a lit neighbor is a
- * join too: the rules then answer that it already has a lantern, a rule the player knows, instead
- * of naming a move that is not there yet.
+ * why it lights nothing; a sprout in the dark is touched first, then a neighbor in the dark (join)
+ * or a lit neighbor (pass the lantern). Doubtful pairs still become actions, so the rules answer
+ * with a gentle reason instead of silence. Where the level cannot pass the lantern (before 1.1,
+ * and 1.1 itself after its trap), a lit neighbor is a join too: the rules then answer that it
+ * already has a lantern, a rule the player knows, instead of naming a move that is not there yet.
  */
 function lanterns(state: GardenState, selection: Selection, target: Target): TapOutcome {
   if (target.kind === 'vine') {
