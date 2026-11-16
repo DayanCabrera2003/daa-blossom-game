@@ -21,6 +21,10 @@ describe('the sprouts a line names', () => {
     expect(namedLabels(['Y al final, a oscuras.'], labels)).toEqual([]);
   });
 
+  it('names nobody in a line without words', () => {
+    expect(namedLabels(['…', ''], labels)).toEqual([]);
+  });
+
   it('gathers the names of every line of a run', () => {
     expect(namedLabels(['Empieza por X.', 'Ahora R.'], labels)).toEqual(['R', 'X']);
   });
