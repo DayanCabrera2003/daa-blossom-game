@@ -50,6 +50,8 @@
   "goal": { "visible": true, "value": 8 },
   "fog": true,
   "water": 18,
+  "forbid": ["split", "passLantern"],
+  "chains": { "rule": "seen" },
   "victory": { "type": "matchingSize", "value": 8 },
   "hints": [
     { "line": "ch3.5.sauce.01" },

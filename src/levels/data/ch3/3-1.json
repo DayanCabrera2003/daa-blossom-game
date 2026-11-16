@@ -22,6 +22,8 @@
   "goal": { "visible": true, "value": 3 },
   "fog": true,
   "water": 6,
+  "forbid": ["split", "passLantern"],
+  "chains": { "rule": "seen" },
   "victory": { "type": "matchingSize", "value": 3 },
   "hints": [
     { "line": "ch3.1.sauce.02" },

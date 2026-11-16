@@ -92,10 +92,18 @@ describe('the gaps of the chain the light found (plan 10, phase 2)', () => {
     expect(foundChain(day, day.length - 1)).toBeNull();
   });
 
-  it('where any chain may be lit, a chain seen draws no stretches (chapter 3)', () => {
+  it('where any chain may be lit, a chain seen draws no stretches', () => {
     const level = levelById('3.1');
-    const day = solutionDay(level).slice(0, -1);
+    const day = beforeLighting(level).map((state): GardenState => ({
+      ...state,
+      chains: { rule: 'any' },
+    }));
     expect(day[day.length - 1]?.chainSeen).not.toBeNull();
     expect(foundChain(day, day.length - 1)).toBeNull();
+  });
+
+  it('in the greenhouse, the chain the marks reached is drawn whole, with no gap (3.1)', () => {
+    const level = levelById('3.1');
+    expect(found(level, beforeLighting(level))).toEqual({ chain: 'RabcdT', gaps: [], open: [] });
   });
 });

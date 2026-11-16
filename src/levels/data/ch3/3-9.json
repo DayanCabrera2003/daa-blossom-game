@@ -58,6 +58,8 @@
   "goal": { "visible": false },
   "fog": true,
   "water": 20,
+  "forbid": ["split", "passLantern"],
+  "chains": { "rule": "seen" },
   "victory": { "type": "coverCertificate" },
   "hints": [
     { "line": "ch3.9.sauce.01" },
