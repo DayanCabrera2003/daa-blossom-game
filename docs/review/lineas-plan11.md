@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.1.0, con su texto de antes y de después. Las frases del Plan 11 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-85 líneas de diálogo y 27 textos de interfaz distintos de la versión 1.1.0.
+85 líneas de diálogo y 29 textos de interfaz distintos de la versión 1.1.0.
 
 ### 0.2
 
@@ -366,6 +366,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 ## Textos de interfaz
 
+- [ ] `reason.darkVine` · nueva
+  - Después: Esa enredadera está apagada. Para encender un farol, toca un brote a oscuras y luego a su vecino.
+- [ ] `reason.tryTool` · nueva
+  - Después: Prueba con {tool}.
 - [ ] `reason.flowerClosed` · cambiada
   - Antes: La flor está cerrada por hoy: una cadena solo puede rodearla si sale de su base o llega a ella.
   - Después: Hoy ese bucle no se pliega: una cadena solo puede pasar por él si empieza o acaba en su base.

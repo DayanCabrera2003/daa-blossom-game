@@ -4,7 +4,7 @@
 
 Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **retirado** desde la versión 1.0.1, con su texto de antes y de después. Las frases del Plan 10 son borradores: se marca la casilla de cada una revisada, un cambio se anota debajo y se pasa a `lines.json` o `strings.json` en su propio commit.
 
-219 líneas de diálogo y 80 textos de interfaz distintos de la versión 1.0.1.
+219 líneas de diálogo y 82 textos de interfaz distintos de la versión 1.0.1.
 
 ### 0.2
 
@@ -761,6 +761,10 @@ Cada línea de diálogo y cada texto de interfaz **nuevo**, **cambiado** o **ret
 
 - [ ] `reason.actionClosed` · nueva
   - Después: Hoy no se puede {action} en este jardín.
+- [ ] `reason.darkVine` · nueva
+  - Después: Esa enredadera está apagada. Para encender un farol, toca un brote a oscuras y luego a su vecino.
+- [ ] `reason.tryTool` · nueva
+  - Después: Prueba con {tool}.
 - [ ] `reason.baseNotDark` · nueva
   - Después: A mano solo se pliega una flor con la base a oscuras: gira antes su tallo. Así plegar no esconde ninguna cadena.
 - [ ] `reason.chainNotSeen` · nueva
