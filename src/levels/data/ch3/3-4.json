@@ -31,7 +31,7 @@
   ],
   "goal": { "visible": true, "value": 5 },
   "fog": true,
-  "water": 10,
+  "water": 5,
   "forbid": ["split", "passLantern"],
   "chains": { "rule": "seen" },
   "victory": { "type": "matchingSize", "value": 5 },

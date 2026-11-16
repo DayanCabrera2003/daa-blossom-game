@@ -57,7 +57,7 @@
   ],
   "goal": { "visible": false },
   "fog": true,
-  "water": 20,
+  "water": 14,
   "forbid": ["split", "passLantern"],
   "chains": { "rule": "seen" },
   "victory": { "type": "coverCertificate" },

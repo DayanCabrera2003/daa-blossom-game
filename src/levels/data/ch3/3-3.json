@@ -30,7 +30,7 @@
   ],
   "goal": { "visible": false },
   "fog": true,
-  "water": 6,
+  "water": 7,
   "victory": { "type": "searchExhausted" },
   "hints": [
     { "line": "ch3.3.sauce.01" },
