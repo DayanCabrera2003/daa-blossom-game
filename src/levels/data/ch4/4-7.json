@@ -78,11 +78,18 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch4.7.sauce.00"] },
+    {
+      "step": "pickVine",
+      "prompt": "ch4.7.sauce.20",
+      "reply": "ch4.7.sauce.21",
+      "stop": ["d", "f"]
+    },
     { "step": "play" },
     { "step": "say", "lines": ["ch4.7.sauce.12"] },
     { "step": "notebook" }
   ],
   "solution": [
+    { "type": "pickVine", "u": "d", "v": "f" },
     { "type": "stepLight" },
     { "type": "stepLight" },
     { "type": "stepLight" },

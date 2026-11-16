@@ -78,7 +78,7 @@ describe('5.1: a flower inside another', () => {
   it('is written, searched from R alone, and played between two of the mentor lines', () => {
     expect(level.data.draft).toBe(false);
     expect(level.start.roots).toEqual([id('R')]);
-    expect(stepsOf(level)).toEqual(['say', 'play', 'say']);
+    expect(stepsOf(level)).toEqual(['say', 'pickVine', 'play', 'say']);
   });
 
   it('first folds F1 = {b, c, d} with base b, at d–b', () => {
@@ -147,7 +147,7 @@ describe('5.2: layers', () => {
     expect(level.data.draft).toBe(false);
     expect(level.start.roots).toEqual([id('R')]);
     // After the chain, the mentor asks why the big flower opens first (plan 10, phase 7).
-    expect(stepsOf(level)).toEqual(['say', 'play', 'ask']);
+    expect(stepsOf(level)).toEqual(['say', 'pickVine', 'play', 'ask']);
     expect(isUiUnlocked('layers', level.data.id)).toBe(true);
     expect(isUiUnlocked('layers', levelOf('5.1').data.id)).toBe(false);
   });
@@ -205,7 +205,7 @@ describe('5.3: the wrong petal', () => {
   it('is searched from R alone and ends in the notebook', () => {
     expect(level.data.draft).toBe(false);
     expect(level.start.roots).toEqual([id('R')]);
-    expect(stepsOf(level)).toEqual(['say', 'play', 'say', 'notebook']);
+    expect(stepsOf(level)).toEqual(['say', 'pickVine', 'play', 'say', 'notebook']);
   });
 
   it('folds the five petals around b, then the loop through them around R', () => {

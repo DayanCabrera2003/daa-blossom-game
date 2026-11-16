@@ -90,11 +90,18 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch5.3.sauce.00"] },
+    {
+      "step": "pickVine",
+      "prompt": "ch5.3.sauce.20",
+      "reply": "ch5.3.sauce.21",
+      "stop": ["d", "e"]
+    },
     { "step": "play" },
     { "step": "say", "lines": ["ch5.3.sauce.12"] },
     { "step": "notebook" }
   ],
   "solution": [
+    { "type": "pickVine", "u": "d", "v": "e" },
     { "type": "stepLight" },
     { "type": "stepLight" },
     { "type": "stepLight" },

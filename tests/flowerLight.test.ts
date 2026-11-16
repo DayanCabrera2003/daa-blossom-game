@@ -6,6 +6,7 @@ import type { GardenState } from '@core/rules/state';
 import { isVictory } from '@core/rules/victory';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
+import { firstFlowerStop } from '@levels/lightBet';
 import { describe, expect, it } from 'vitest';
 import { explore } from './support/gardenExplorer';
 
@@ -148,5 +149,48 @@ describe.each(Object.entries(FLOWER_LEVELS))('%s: the light searches by itself',
     expect(level.solution.some((action) => action.type === 'foldAt')).toBe(true);
     const end = level.solution.reduce(play, level.start);
     expect(wins(level)(end)).toBe(true);
+  });
+});
+
+/**
+ * The levels that bet, before the light is advanced, where it will stop (from 4.6, GDD §5.1): the
+ * vine of its first flower, named in the light's order. 4.4 and 4.5 come before the bet; in 4.12
+ * and 5.5 the light first stops in the fog.
+ */
+const BETS: Readonly<Record<string, string>> = {
+  '4.6': 'd–f',
+  '4.7': 'd–f',
+  '4.8': 'b–d',
+  '5.1': 'b–d',
+  '5.2': 'd–f',
+  '5.3': 'd–e',
+  '5.4': 'b–d',
+  '5.6': 'f–h',
+};
+
+describe('the bet on where the light will stop (from 4.6)', () => {
+  /** A vine by its sprouts' names. */
+  const named = (level: Level, [u, v]: readonly [number, number]) =>
+    `${level.labels.names[u] ?? '?'}–${level.labels.names[v] ?? '?'}`;
+
+  it.each(Object.entries(BETS))(
+    '%s bets on its first flower, before the light moves',
+    (id, vine) => {
+      const level = levelById(id);
+      const play = level.flow.findIndex((step) => step.step === 'play');
+      const bet = level.flow[play - 1];
+      if (bet?.step !== 'pickVine' || bet.stop === undefined) throw new Error(`${id} makes no bet`);
+      expect(named(level, bet.stop)).toBe(vine);
+      // The light's walk from the garden the level starts with stops there first.
+      const stop = firstFlowerStop(level.start);
+      expect(stop === null ? null : named(level, stop)).toBe(vine);
+    },
+  );
+
+  it('no other level bets on the light', () => {
+    const betting = catalog()
+      .filter((level) => level.flow.some((step) => step.step === 'pickVine' && step.stop))
+      .map((level) => level.data.id);
+    expect(betting).toEqual(Object.keys(BETS));
   });
 });

@@ -62,10 +62,17 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch5.6.sauce.00"] },
+    {
+      "step": "pickVine",
+      "prompt": "ch5.6.sauce.20",
+      "reply": "ch5.6.sauce.21",
+      "stop": ["f", "h"]
+    },
     { "step": "play" },
     { "step": "say", "lines": ["ch5.6.sauce.04"] }
   ],
   "solution": [
+    { "type": "pickVine", "u": "f", "v": "h" },
     { "type": "stepLight" },
     { "type": "stepLight" },
     { "type": "stepLight" },
