@@ -6,7 +6,7 @@ import type { GardenState } from '@core/rules/state';
 import { extendChain, finishChain } from './dragChain';
 import { hitTest, type HitScope } from './HitTest';
 import { dragsChains } from './lightHand';
-import { resolveTap } from './intent';
+import { resolveTap, type TouchRefusal } from './intent';
 import { NO_SELECTION, type Selection } from './selection';
 import type { Point } from './target';
 import type { ToolId } from './tools';
@@ -73,7 +73,7 @@ export function pressMove(
 
 /**
  * A release: a chain through two sprouts or more is applied as dragged; anything else is a touch
- * on what lies under the release point.
+ * on what lies under the release point, which may make no move and say why (`refusal`).
  */
 export function pressEnd(
   pointer: PointerState,
@@ -81,7 +81,7 @@ export function pressEnd(
   positions: readonly Point[],
   point: Point,
   scope?: HitScope,
-): { pointer: PointerState; action: Action | null } {
+): { pointer: PointerState; action: Action | null; refusal?: TouchRefusal } {
   if (pointer.chain !== null && pointer.chain.length >= 2) {
     return {
       pointer: { ...pointer, selection: NO_SELECTION, chain: null },
@@ -97,5 +97,6 @@ export function pressEnd(
   return {
     pointer: { ...pointer, selection: outcome.selection, chain: null },
     action: outcome.action,
+    ...(outcome.refusal === undefined ? {} : { refusal: outcome.refusal }),
   };
 }

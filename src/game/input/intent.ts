@@ -9,21 +9,33 @@ import { NO_SELECTION, type Selection } from './selection';
 import type { Target } from './target';
 import type { ToolId } from './tools';
 
-/** What one touch does: an action for the rules (or none yet) and the selection after it. */
+/**
+ * Why a touch that makes no move does nothing, when the player may expect it to (GDD §5.1): the
+ * lanterns on a vine in the dark (lanterns are lit by touching its two sprouts).
+ */
+export type TouchRefusal = { readonly code: 'darkVine' };
+
+/**
+ * What one touch does: an action for the rules (or none yet) and the selection after it; a touch
+ * that makes no move may say why (`refusal`), so it is never silent where a move was expected.
+ */
 export interface TapOutcome {
   readonly action: Action | null;
   readonly selection: Selection;
+  readonly refusal?: TouchRefusal;
 }
 
 const act = (action: Action | null): TapOutcome => ({ action, selection: NO_SELECTION });
 const hold = (selection: Selection): TapOutcome => ({ action: null, selection });
+const refuse = (refusal: TouchRefusal): TapOutcome => ({ ...act(null), refusal });
 
 /** Whether the sprout belongs to a sun of the player's search (itself, or the flower holding it). */
 const isSun = (state: GardenState, v: VertexId): boolean =>
   state.search?.label[itemAt(state.layer.nodeOf, v)] === 'outer';
 
 /**
- * Lanterns (GDD §5.1, 0.1–1.1): touching a lit vine puts it out; a sprout in the dark is touched
+ * Lanterns (GDD §5.1, 0.1–1.1): touching a lit vine puts it out, and a vine in the dark is told
+ * why it lights nothing; a sprout in the dark is touched
  * first, then a neighbor in the dark (join) or a lit neighbor (pass the lantern). Doubtful pairs
  * still become actions, so the rules answer with a gentle reason instead of silence. Where the
  * level cannot pass the lantern (before 1.1, and 1.1 itself after its trap), a lit neighbor is a
@@ -33,7 +45,7 @@ const isSun = (state: GardenState, v: VertexId): boolean =>
 function lanterns(state: GardenState, selection: Selection, target: Target): TapOutcome {
   if (target.kind === 'vine') {
     const lit = isMatchedEdge(state.matching, target.u, target.v);
-    return act(lit ? { type: 'split', u: target.u, v: target.v } : null);
+    return lit ? act({ type: 'split', u: target.u, v: target.v }) : refuse({ code: 'darkVine' });
   }
   if (target.kind !== 'sprout') return act(null);
   const touched = target.vertex;

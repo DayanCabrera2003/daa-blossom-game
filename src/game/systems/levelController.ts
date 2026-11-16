@@ -58,6 +58,7 @@ import type { Refusal } from './refusal';
 import { restartController } from './restart';
 import type { StarResult } from './stars';
 import { stepAtFraction } from './sun';
+import { touchEffects } from './touchEffects';
 
 /** An interface text said after an order: its key, its parameters and who says it. */
 export interface OrderWords {
@@ -471,9 +472,8 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       if (lifted !== null) return lifted;
       const released = pressEnd(controller.pointer, state, positions, event.point, view);
       const next = { ...controller, pointer: released.pointer };
-      return released.action === null
-        ? { controller: next, effects: [] }
-        : apply(next, released.action, now);
+      if (released.action !== null) return apply(next, released.action, now);
+      return { controller: next, effects: touchEffects(released.refusal) };
     }
     case 'tool':
       return same({ pointer: chooseTool(controller.pointer, event.tool) });

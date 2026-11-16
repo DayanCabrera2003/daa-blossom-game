@@ -101,6 +101,14 @@ describe('lanterns tool', () => {
     expect(tapAll(trap, 'lanterns', [vine(0, 1)])).toEqual([null]);
   });
 
+  it('touching a vine in the dark says why nothing happens: lanterns are lit between sprouts', () => {
+    expect(resolveTap(trap, 'lanterns', NO_SELECTION, vine(0, 1))).toEqual({
+      action: null,
+      selection: NO_SELECTION,
+      refusal: { code: 'darkVine' },
+    });
+  });
+
   it('starting on a lit sprout selects nothing; touching the selected sprout again lets go', () => {
     expect(resolveTap(trap, 'lanterns', NO_SELECTION, sprout(1))).toEqual({
       action: null,

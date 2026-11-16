@@ -81,6 +81,14 @@ describe('the level controller', () => {
     expect(startController(levelById('3.1'), 0).pointer.tool).toBe('inspect');
   });
 
+  it('a touch on a vine in the dark is told why it lights nothing, and changes nothing', () => {
+    const start = startController(trap, 0);
+    const middle = { x: (at(0).x + at(1).x) / 2, y: (at(0).y + at(1).y) / 2 };
+    const { controller, effects } = feed(start, touch(middle));
+    expect(effects).toEqual([{ kind: 'touchRefused', reason: { code: 'darkVine' } }]);
+    expect(controller.session).toBe(start.session);
+  });
+
   it('two touches join two sprouts: the move is applied, and animated with its events', () => {
     const { controller, effects } = feed(startController(trap, 0), [
       ...touch(at(0)),

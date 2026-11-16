@@ -72,6 +72,7 @@ const REASONS = {
   flowersFolded: [],
   invalidPath: [],
   noFog: [],
+  darkVine: [],
   alreadyInspected: ['vertex'],
   vineHidden: ['vertex'],
   notASun: ['vertex'],
