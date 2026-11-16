@@ -9,7 +9,7 @@ import {
 import type { Rect } from '../../src/game/picture/boxDistance';
 import { BOOK_ICON, iconRoom, TOOL_ICONS } from '../../src/game/picture/buttonIcon';
 import { BUTTON_HEIGHT } from '../../src/game/picture/panelLayout';
-import { availableTools } from '../../src/game/input/tools';
+import { levelTools } from '../../src/game/input/levelTools';
 import { levelScreenOf } from '../../src/game/systems/levelScreenOf';
 import { GEAR_SIZE } from '../../src/game/view/GearButton';
 import { LAYOUT } from '../../src/game/view/layout';
@@ -45,7 +45,7 @@ const wood = (left: number, y: number, width: number): Rect => ({
 
 /** The buttons of `level`'s HUD, in teacher mode or not. */
 export function hudBoxes(level: Level, teacher: boolean): HudBox[] {
-  const tools = availableTools(level.start.allowed, isUiUnlocked('layers', level.data.id));
+  const tools = levelTools(level, isUiUnlocked('layers', level.data.id));
   const toolWidths = tools.map(
     (tool) => estimatedButtonWidth(t(`tool.${tool}`)) + iconRoom(TOOL_ICONS[tool] ?? []),
   );
