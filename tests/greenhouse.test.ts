@@ -14,6 +14,8 @@ import { itemAt } from '@core/shared/itemAt';
 import type { Level } from '@levels/build';
 import { catalog } from '@levels/catalog';
 import { buildCounterexample, type Counterexample } from '@levels/counterexample';
+import { act, openSession, stepNow } from '@game/systems/levelSession';
+import { levelStepCards, startCards } from '@game/systems/tutorials';
 import { createTranslator } from '@services/i18n';
 import { describe, expect, it } from 'vitest';
 
@@ -66,6 +68,39 @@ const marked = (state: GardenState, mark: 'outer' | 'inner'): VertexId[] =>
   [...Array(state.graph.n).keys()].filter(
     (v) => state.search?.label[itemAt(state.layer.nodeOf, v)] === mark,
   );
+
+describe('3.1: fog, in two steps', () => {
+  const level = levelOf('3.1');
+
+  it('first only looks, then marks, each step with its own hints', () => {
+    expect(level.flow.map((step) => step.step)).toEqual(['say', 'look', 'say', 'play', 'say']);
+    const played = level.flow.find((step) => step.step === 'play');
+    expect(played?.step === 'play' && played.hints?.length).toBe(3);
+  });
+
+  it('the look is over with the first sprout in the dark inspected, and the marks open then', () => {
+    let session = openSession(level, 0).session;
+    expect(stepNow(session)?.step).toBe('look');
+    const [first, ...rest] = level.solution;
+    expect(first).toEqual({ type: 'inspect', vertex: 0 });
+    if (first === undefined) throw new Error('3.1 has no walkthrough');
+    session = act(session, first, 0).session;
+    expect(stepNow(session)?.step).toBe('play');
+    for (const move of rest) {
+      const tried = act(session, move, 0);
+      expect(tried.outcome.ok).toBe(true);
+      session = tried.session;
+    }
+    expect(session.won).not.toBeNull();
+  });
+
+  it('shows the inspecting card as the look begins, and the marks card as the play step does', () => {
+    const seen = new Set(['lanterns', 'undo', 'passLantern', 'chain', 'sun', 'declareDone']);
+    expect(startCards(level, seen)).toEqual([]);
+    expect(levelStepCards(level, 'look', seen)).toEqual(['inspect']);
+    expect(levelStepCards(level, 'play', new Set([...seen, 'inspect']))).toEqual(['marks']);
+  });
+});
 
 describe('3.3: already visited', () => {
   it('its search ends without a chain, and some moon is reached from two suns', () => {

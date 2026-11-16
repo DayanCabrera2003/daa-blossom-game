@@ -32,7 +32,16 @@
   ],
   "flow": [
     { "step": "say", "lines": ["ch3.1.sauce.00", "ch3.1.sauce.01"] },
-    { "step": "play" },
+    { "step": "look" },
+    { "step": "say", "lines": ["ch3.1.sauce.06"] },
+    {
+      "step": "play",
+      "hints": [
+        { "line": "ch3.1.sauce.07" },
+        { "line": "ch3.1.sauce.08" },
+        { "line": "ch3.1.sauce.09" }
+      ]
+    },
     { "step": "say", "lines": ["ch3.1.sauce.05"] }
   ],
   "unlocks": { "actions": ["inspect", "markRoot", "markMoon"] },

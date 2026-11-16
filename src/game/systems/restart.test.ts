@@ -13,9 +13,9 @@ const levelOf = (id: string): Level => {
   return found;
 };
 
-/** `session` after the first `count` moves of its level's reference walkthrough. */
-const played = (session: LevelSession, count: number): LevelSession =>
-  session.level.solution.slice(0, count).reduce((now, move) => {
+/** `session` after `count` moves of its level's reference walkthrough, from the one at `from`. */
+const played = (session: LevelSession, count: number, from = 0): LevelSession =>
+  session.level.solution.slice(from, from + count).reduce((now, move) => {
     const tried = act(now, move, 0);
     expect(tried.outcome.ok).toBe(true);
     return tried.session;
@@ -23,17 +23,19 @@ const played = (session: LevelSession, count: number): LevelSession =>
 
 describe('restarting the play step (GDD §5.2)', () => {
   it('takes the garden back to where the play step began, and refills the water spent since', () => {
-    // 3.1 opens on its play step, with fog and water; its walkthrough starts by inspecting.
+    // 3.1 opens on a step that only looks; its play step begins once R, in the dark, is inspected.
     const level = levelOf('3.1');
-    const start = openSession(level, 0).session;
+    const start = played(openSession(level, 0).session, 1);
     expect(stepNow(start)?.step).toBe('play');
-    const moved = played(start, 4);
-    expect(moved.waterSpent).toBeGreaterThan(0);
+    expect(start.waterSpent).toBe(1);
+    const moved = played(start, 4, 1);
+    expect(moved.waterSpent).toBeGreaterThan(1);
     const restarted = restartSession(moved);
-    expect(garden(restarted)).toBe(level.start);
-    expect(restarted.waterSpent).toBe(0);
-    expect(restarted.history.states).toEqual([level.start]);
-    expect(restarted.dayEvents).toEqual([[]]);
+    // The drop of the look stays spent: restarting goes back to where the play step began.
+    expect(garden(restarted)).toBe(garden(start));
+    expect(restarted.waterSpent).toBe(1);
+    expect(restarted.history.states).toEqual(start.history.states);
+    expect(restarted.dayEvents).toEqual(start.dayEvents);
     // Restarting cannot be redone: the moves are gone, not undone.
     expect(canRedo(restarted.history)).toBe(false);
     // What the hints and the playtest counted stays.
@@ -60,7 +62,9 @@ describe('restarting the play step (GDD §5.2)', () => {
   it('through the controller: the half-drawn chain and the glows go, the tool in hand stays', () => {
     const level = levelOf('3.1');
     const opened = startController(level, 0);
-    const moved = { ...opened, session: played(opened.session, 2), highlight: [0], vineGlow: null };
+    // While 3.1 looks, inspecting a (who has a lantern) spends a drop and keeps the look going.
+    const looked = act(opened.session, { type: 'inspect', vertex: 1 }, 0).session;
+    const moved = { ...opened, session: looked, highlight: [0], vineGlow: null };
     const step = handle(moved, { kind: 'restart' }, 0);
     expect(step.effects).toEqual([]);
     expect(garden(step.controller.session)).toBe(level.start);

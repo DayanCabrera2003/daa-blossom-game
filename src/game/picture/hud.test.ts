@@ -82,9 +82,17 @@ describe('the picture of the HUD', () => {
   });
 
   it('a level shows only the tools it can use, and "Terminé" only where it wins (3.1, 3.6)', () => {
-    const fog = hudPicture(startSession(levelById('3.1'), 0), initialPointer('lanterns'), 0);
-    expect(fog.tools).toEqual(['lanterns', 'marks', 'inspect']);
+    // 3.1 looks first, with inspecting alone; its play step then shows every tool it uses.
+    const looking = startSession(levelById('3.1'), 0);
+    const fog = hudPicture(looking, initialPointer('inspect'), 0);
+    expect(fog.tools).toEqual(['inspect']);
     expect(fog.canDeclareDone).toBe(false);
+    const looked = act(looking, { type: 'inspect', vertex: 0 }, 0).session;
+    expect(hudPicture(looked, initialPointer('inspect'), 0).tools).toEqual([
+      'lanterns',
+      'marks',
+      'inspect',
+    ]);
     const search = hudPicture(startSession(levelById('3.6'), 0), initialPointer('marks'), 0);
     expect(search.tools).toEqual(['lanterns', 'marks']);
     expect(search.canDeclareDone).toBe(true);
