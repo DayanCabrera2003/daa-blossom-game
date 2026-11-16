@@ -8,9 +8,20 @@ Capítulos 0–2 en greybox (círculos y líneas, sin arte ni voz). Lo dirige el
 > - Un «Terminé» que no gana ya **recibe respuesta**: un aviso suave que no dice dónde está la cadena. En el registro, su entrada `claim` lleva `verdict` (en estos capítulos, `chainLeft`), y cuenta como un rechazo para ofrecer pistas.
 > - El botón **Pista** está **siempre a mano** mientras queden grados; el juego lo hace brillar tras 90 s sin progreso real (más faroles, una búsqueda que crece…; juntar y separar en bucle no cuenta) o tras tres rechazos seguidos. Abrir una pista sin oferta cuesta la estrella "sin pistas" igual que antes. De 1.5 a 1.9 los niveles tienen tres pistas propias, y ninguna de grado 2 señala la respuesta.
 > - Los Cuadernos de 1.5 y 2.4 se abren **antes** de que Sauce resuma la idea; la opción correcta no repite su frase.
-> - 2.3 termina con una pregunta («¿Podría la punta de un hilo que gana el agua tener un farol tuyo?»); su respuesta queda en `log` como una entrada `answer` y una equivocada suma en `wrongAnswers`.
+> - 2.3 termina con una pregunta («¿Podría la punta de un hilo que gana el reflejo tener un farol tuyo?»); su respuesta queda en `log` como una entrada `answer` y una equivocada suma en `wrongAnswers`.
 > - 2.4 se juega en **dos fases** sobre un jardín nuevo: primero dibuja dos reflejos que le ganan y usa la cadena que le dejan; luego, ya sin cadena, intenta ganarle tres veces y no puede (ver §6).
 > - 1.1 y 1.2 dicen «Mira otra forma de ver lo que pasó…»; 1.7 tiene una línea al ganar; el último nivel de cada capítulo invita a leer su página del Códex.
+
+> **Hoy (plan 11, versión 1.2.0):** lo que cambió para quien juega por primera vez y se ve en la sesión o en el registro. Los umbrales y criterios de §1 **no cambian**.
+> - **Entrada.** Con el guardado vacío el juego abre en una **pantalla de título** («Florecer», «Toca para empezar»); un toque lleva directo a 0.1. Con algún jardín ganado se entra al hub, donde el siguiente nivel por jugar late y un nivel cerrado responde «Todavía cerrado».
+> - **0.2 y 0.4 se ganan con un fallo.** Tras el primer farol Sauce pide «¿Cabe otro farol? Pruébalo.», y el nivel acaba cuando el jardín **rechaza** un segundo farol (`alreadyLit`); en 0.4 la apuesta se revela solo entonces. Ese rechazo es parte del nivel: en el registro, 0.2 y 0.4 tienen al menos una entrada `refused` con `alreadyLit` por diseño.
+> - **El objetivo** dice «Faroles que caben aquí: N». En 0.4 y 1.1–1.4 el rótulo de los brotes que Sauce nombra es su nombre entero (Hortensia, Ana, Beto…). En 1.1, tras la trampa, tocar el farol de un vecino responde que ya tiene farol (`alreadyLit`), y la pista 1 dice que un farol encendido se apaga tocándolo.
+> - **Diálogo y tarjetas.** El diálogo avanza con un toque en cualquier sitio (que no actúa sobre el jardín) y se coloca sin tapar los brotes que nombra; las tarjetas de una mecánica salen después de la primera línea de Sauce. El panel de victoria espera a que acabe la animación y enseña un renglón por cada estrella que el nivel puede dar («Jardín iluminado», «Sin pistas», «Apuesta acertada»), sin el recuento «Estrellas: N».
+> - **La barra** enseña solo las herramientas que el nivel usa, y el nivel empieza con la que pide su primera jugada; «Terminé» solo está donde decirlo puede ganar (1.8 en estos capítulos). Un rechazo por la herramienta equivocada dice «Prueba con…».
+> - **Pistas por paso.** Los grados vuelven a empezar con cada paso del guion y tras cada cadena encendida; la de grado 3 se puede repetir, así que `hints` puede pasar de 3 en un nivel. Una pregunta o un Cuaderno solo ofrecen Pista si traen las suyas. El reloj de los 90 s se para mientras hay un diálogo o una tarjeta abiertos.
+> - **Salir y reiniciar.** Con jugadas hechas, «Volver» (o Esc) avisa primero («Si sales ahora, este jardín empieza de nuevo…») y sale a la segunda pulsación; Esc con un diálogo o una pregunta abiertos ya no abandona el nivel. Si el paso de juego ya se ganó, salir guarda la victoria y no deja entrada `left`. **«Reiniciar»** está en el panel de ajustes del nivel (el engranaje); devuelve el paso de juego a su comienzo y **no queda en el registro**: si se usa, anotarlo a mano. Deshacer no baja de donde empezó el paso de juego.
+> - **Palabras.** En el estanque el rival es **el reflejo** y «hilo» es solo la pieza de la maraña. 2.4: cada dibujo del reflejo empieza con los faroles del jugador en plateado; el Cuaderno añade la frase falsa «si busco tres veces y no la encuentro, terminé», que Sauce responde: «Tres intentos no prueban nada…».
+> - Los avisos duran según su longitud (hasta 10 s).
 
 ---
 
@@ -75,7 +86,7 @@ El registro empieza vacío solo si el navegador no guarda datos del juego. Usar 
 | `florecer.playtest` | El registro de la prueba (lo que se exporta) |
 | `florecer.save` | El progreso: niveles abiertos, estrellas |
 
-Si se reutiliza el mismo perfil, borrar ambas claves (herramientas de desarrollo → Almacenamiento → Local Storage) y recargar. Comprobar que el hub solo muestra abierto el nivel 0.1.
+Si se reutiliza el mismo perfil, borrar ambas claves (herramientas de desarrollo → Almacenamiento → Local Storage) y recargar. Comprobar que el juego abre en la pantalla de título («Florecer», «Toca para empezar») y no en el hub: un toque lleva a 0.1. (Una copia `florecer.save.bak`, si existe, es un guardado ilegible apartado; también se borra.)
 
 ### Cómo abrir el juego
 
@@ -106,7 +117,7 @@ Se recomienda el build de producción o Pages: es lo que verá un jugador real.
 - Sentarse detrás o al lado, sin tocar el ratón ni señalar la pantalla.
 - No intervenir salvo un fallo técnico (el juego se cuelga, la página no carga).
 - Si la persona se queda en silencio, recordar una sola vez: "¿Qué estás pensando?"
-- Las pistas son parte del juego: el botón Pista está siempre a mano, y el juego lo hace brillar tras 90 segundos sin progreso real o tres rechazos seguidos (un «Terminé» que no gana cuenta como rechazo). El observador no las menciona; si la persona pregunta, se responde como a cualquier otra pregunta ("¿Qué crees tú?").
+- Las pistas son parte del juego: el botón Pista está siempre a mano mientras el paso admite pistas, y el juego lo hace brillar tras 90 segundos sin progreso real (el reloj se para mientras se lee un diálogo o una tarjeta) o tres rechazos seguidos (un «Terminé» que no gana cuenta como rechazo). El observador no las menciona; si la persona pregunta, se responde como a cualquier otra pregunta ("¿Qué crees tú?").
 
 ### Qué anotar a mano (el registro no lo ve)
 
@@ -119,6 +130,8 @@ Se recomienda el build de producción o Pages: es lo que verá un jugador real.
 | Momentos de descubrimiento | Cuándo entiende pasar el farol, cuándo usa la cadena sin dudar |
 | Sorpresas en el estanque | Qué dice al ver el reflejo, al separar hilos; en 2.4, al usar la cadena que le deja el reflejo y al no poder ganar en la segunda fase |
 | Tras un «Terminé» que no gana | Qué hace al leer el aviso: si vuelve a buscar o cree que el juego falló |
+| Reiniciar y salir | Si usa «Reiniciar» (en los ajustes del nivel; el registro no lo ve) y si el aviso de «Volver» le hace quedarse |
+| 0.2 y 0.4 | Qué dice cuando el jardín rechaza el segundo farol: si lo vive como fallo suyo o como descubrimiento |
 | Lectura del Cuaderno | Si lee las opciones enteras o elige rápido; qué dice ante el contraejemplo. El Cuaderno llega antes de que Sauce resuma: lo que elija no lo acaba de oír |
 
 Anotar la hora junto a cada nota para cruzarla después con el registro.
@@ -174,7 +187,7 @@ El JSON exportado tiene tres partes: `exportedAt` (fecha de la exportación), `s
 | `counterexamples` | Jardines contraejemplo abiertos desde el Cuaderno o desde una pregunta |
 | `mirrorChecks.beating` / `.notBeating` | En 2.4, reflejos dibujados que superaban al jardín, y los que no. La segunda fase no se puede ganar: cada partida que la acaba suma tres `notBeating` por diseño |
 
-En `log`, las entradas `levelEnd` con `outcome: "left"` indican que se volvió al hub sin ganar, y las `history` (`undo`, `redo`, `seek`) cuánto se usó deshacer y el día.
+En `log`, las entradas `levelEnd` con `outcome: "left"` indican que se volvió al hub sin ganar (salir con el paso de juego ya ganado guarda la victoria y no deja `left`), y las `history` (`undo`, `redo`, `seek`) cuánto se usó deshacer y el día; «Reiniciar» no deja entrada. En 0.2 y 0.4, el `refused` `alreadyLit` del segundo farol es la jugada que gana el nivel, no una regla mal entendida. `hints` cuenta todas las pistas abiertas: con los grados por paso y la de grado 3 repetible, puede pasar de 3.
 
 ### Qué campo responde a cada medida del Hito A
 
