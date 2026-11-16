@@ -6,7 +6,7 @@ import { unwrap } from '../shared/result';
 import type { Action } from './actions';
 import { applyAction } from './applyAction';
 import { createGardenState, type GardenState } from './state';
-import { isCertificate, isVictory, type VictoryCondition } from './victory';
+import { isCertificate, isVictory, wonByClaim, type VictoryCondition } from './victory';
 
 // Level 3.7, part I: 1–2–3–4–5 as 0..4, with its maximum of two lanterns.
 const path = pathGraph(5);
@@ -309,5 +309,25 @@ describe('which victories are certificates to present', () => {
     ];
     for (const victory of presented) expect(isCertificate(victory), victory.type).toBe(true);
     for (const victory of claimed) expect(isCertificate(victory), victory.type).toBe(false);
+  });
+});
+
+describe('which victories only «Terminé» can win', () => {
+  it('a claim or a certificate needs it; lanterns lit, a chain seen or a search done do not', () => {
+    const claimed: VictoryCondition[] = [
+      { type: 'maximum' },
+      { type: 'searchExhausted' },
+      { type: 'coverCertificate' },
+      { type: 'coverComplete' },
+      { type: 'tutteBergeCertificate' },
+      { type: 'moonCertificate' },
+    ];
+    const reached: VictoryCondition[] = [
+      { type: 'matchingSize', value: 2 },
+      { type: 'chainFound' },
+      { type: 'searchComplete' },
+    ];
+    for (const victory of claimed) expect(wonByClaim(victory), victory.type).toBe(true);
+    for (const victory of reached) expect(wonByClaim(victory), victory.type).toBe(false);
   });
 });

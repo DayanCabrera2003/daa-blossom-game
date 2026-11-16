@@ -84,6 +84,22 @@ export function isCertificate(condition: VictoryCondition): boolean {
   }
 }
 
+/**
+ * Whether only "Terminé" (or «Presentar») can win the condition: a claim about the lanterns or the
+ * search, or a certificate. Elsewhere the level is won by the move that reaches it, and the button
+ * would win nothing (GDD §5.1, «La barra de herramientas»).
+ */
+export function wonByClaim(condition: VictoryCondition): boolean {
+  switch (condition.type) {
+    case 'matchingSize':
+    case 'chainFound':
+    case 'searchComplete':
+      return false;
+    default:
+      return true;
+  }
+}
+
 /** Whether the garden meets the condition. */
 export function isVictory(state: GardenState, condition: VictoryCondition): boolean {
   const lanterns = size(state.matching);
