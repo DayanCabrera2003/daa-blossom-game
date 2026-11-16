@@ -1,4 +1,5 @@
 import lines from '@content/es/lines.json';
+import strings from '@content/es/strings.json';
 import { catalog } from '@levels/catalog';
 import { referencedLines } from '@levels/lines';
 import { describe, expect, it } from 'vitest';
@@ -11,6 +12,7 @@ import { describe, expect, it } from 'vitest';
  */
 
 const TABLE: Readonly<Record<string, string>> = lines;
+const STRINGS: Readonly<Record<string, string>> = strings;
 const levels = catalog();
 
 /** The proper nouns of the world that are not sprouts: places, characters, books. */
@@ -27,6 +29,10 @@ const WORLD = new Set([
   'Recetario',
   'Robles',
   'Sauce',
+  // The tools of the bar, which the lines name as the player sees them («con Marcas»).
+  ...Object.entries(STRINGS)
+    .filter(([key]) => key.startsWith('tool.'))
+    .map(([, name]) => name),
 ]);
 
 /** Whether a label is written as a name rather than a letter (with a digit or not). */
