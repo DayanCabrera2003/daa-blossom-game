@@ -6,7 +6,7 @@ import { unwrap } from '../shared/result';
 import type { Action } from './actions';
 import { applyAction } from './applyAction';
 import { createGardenState, type GardenState } from './state';
-import { isCertificate, isVictory, wonByClaim, type VictoryCondition } from './victory';
+import { isCertificate, isVictory, statusOf, wonByClaim, type VictoryCondition } from './victory';
 
 // Level 3.7, part I: 1–2–3–4–5 as 0..4, with its maximum of two lanterns.
 const path = pathGraph(5);
@@ -224,6 +224,29 @@ describe('the search as a victory (chapters 3 and 4)', () => {
       { type: 'declareDone' },
     ]);
     expect(isVictory(early, { type: 'searchExhausted' })).toBe(false);
+  });
+
+  it('searchExhausted: in the fog, a sun whose vines nobody looked at keeps the search open (3.3)', () => {
+    // R–a=b in the fog as 0–1=2: after R looks at a, b is a sun with nothing left to look at, but
+    // only inspecting b shows it.
+    const line = pathGraph(3);
+    const start = createGardenState({
+      graph: line,
+      matching: unwrap(createMatching(line, [[1, 2]])),
+      fog: true,
+      allowed: ['inspect', 'markRoot', 'markMoon', 'declareDone'],
+    });
+    const searched = play(start, [
+      { type: 'inspect', vertex: 0 },
+      { type: 'markRoot', vertex: 0 },
+      { type: 'markMoon', from: 0, to: 1 },
+      { type: 'declareDone' },
+    ]);
+    expect(statusOf(searched)).toBe('open');
+    expect(isVictory(searched, { type: 'searchExhausted' })).toBe(false);
+    const looked = play(searched, [{ type: 'inspect', vertex: 2 }, { type: 'declareDone' }]);
+    expect(statusOf(looked)).toBe('exhausted');
+    expect(isVictory(looked, { type: 'searchExhausted' })).toBe(true);
   });
 });
 

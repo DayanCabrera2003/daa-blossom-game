@@ -13,11 +13,10 @@ import type { ChainRule } from '@core/rules/chainRule';
 import { applyAction } from '@core/rules/applyAction';
 import { sameGarden } from '@core/rules/sameGarden';
 import type { GardenState } from '@core/rules/state';
-import { isVictory, type VictoryCondition } from '@core/rules/victory';
+import { isVictory, statusOf, type VictoryCondition } from '@core/rules/victory';
 import { lightStep } from '@core/rules/lightStep';
 import { itemAt } from '@core/shared/itemAt';
 import { bipartiteMatching } from '@core/search/bipartiteMatching';
-import { searchStatus } from '@core/search/searchStatus';
 import { createRecorder } from '@core/trace/recorder';
 
 /** What the mentor needs to know about a level: where it starts, how it is solved, how it is won. */
@@ -200,10 +199,7 @@ function searchStep(state: GardenState): Action | null {
  * which wipes the marks, and the search starts again on the new lanterns.
  */
 function toTheEndOfTheSearch(state: GardenState): Action | null {
-  const status = searchStatus(state.layer, state.search, {
-    roots: state.roots,
-    foldAllowed: state.allowed.has('foldAt'),
-  });
+  const status = statusOf(state);
   if (status === 'exhausted') return { type: 'declareDone' };
   return status === 'chain' ? lightMore(state) : searchStep(state);
 }
@@ -213,10 +209,7 @@ function toTheEndOfTheSearch(state: GardenState): Action | null {
  * lights a chain first if one is within reach; then exactly its moons lifted, and "Terminé".
  */
 function toTheMoons(state: GardenState): Action | null {
-  const status = searchStatus(state.layer, state.search, {
-    roots: state.roots,
-    foldAllowed: state.allowed.has('foldAt'),
-  });
+  const status = statusOf(state);
   if (status === 'chain') return lightMore(state);
   if (status !== 'exhausted' || state.search === null) return searchStep(state);
   const moons = stonesFromForest(state.layer, state.search);

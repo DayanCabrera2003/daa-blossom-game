@@ -90,6 +90,7 @@
     { "type": "inspect", "vertex": "b1" },
     { "type": "inspect", "vertex": "n" },
     { "type": "markMoon", "from": "n", "to": "p" },
+    { "type": "inspect", "vertex": "q" },
     { "type": "answer", "option": 0 }
   ]
 }

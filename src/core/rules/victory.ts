@@ -4,6 +4,7 @@ import { checkVertexCover } from '../certificates/vertexCover';
 import { isMaximum } from '../edmonds/fast/maximum';
 import { size } from '../matching/queries';
 import { searchStatus, type SearchStatus } from '../search/searchStatus';
+import { itemAt } from '../shared/itemAt';
 import type { GardenState } from './state';
 
 /**
@@ -52,12 +53,24 @@ export type VictoryCondition =
    */
   | { readonly type: 'moonCertificate' };
 
-/** Where the player's search stands, under the level's roots and with folding if it is allowed. */
-export const statusOf = (state: GardenState): SearchStatus =>
-  searchStatus(state.layer, state.search, {
+/**
+ * Where the player's search stands, under the level's roots and with folding if it is allowed. In
+ * the fog (chapter 3) a search the true garden would call over stays open while some sun has not
+ * been inspected: without looking at its vines, nobody can tell it has none left to look along
+ * (3.3, where the last sun only leads back to a moon already visited).
+ */
+export function statusOf(state: GardenState): SearchStatus {
+  const status = searchStatus(state.layer, state.search, {
     roots: state.roots,
     foldAllowed: state.allowed.has('foldAt'),
   });
+  const { revealed, search, layer } = state;
+  if (status !== 'exhausted' || revealed === null || search === null) return status;
+  const unlooked = revealed.some(
+    (seen, v) => !seen && search.label[itemAt(layer.nodeOf, v)] === 'outer',
+  );
+  return unlooked ? 'open' : status;
+}
 
 /** Whether the stones lifted are exactly the moons of a search that is over without a chain. */
 export function stonesAreTheMoons(state: GardenState): boolean {

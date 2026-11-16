@@ -423,17 +423,19 @@ describe("the mentor's next step, when the level is won by the search itself", (
   it('completes a search by itself, inspecting only the suns it looks from (3.3)', () => {
     const start = visitedTwice();
     const goal: MentorGoal = { start, solution: [], victory: { type: 'searchComplete' } };
-    // Only suns are inspected: R1, R2 and p. The moon m is never looked around, and y, the last
-    // sun, needs no look once every vine of the true garden is accounted for.
+    // Only suns are inspected: R1, R2, p and y. The moon m is never looked around; y, the last
+    // sun, has nothing left to look along, but in the fog only a look at it shows so.
     const { moves } = mentorFinishes(goal, start);
     const inspected = moves.flatMap((move) => (move.type === 'inspect' ? [move.vertex] : []));
-    expect(inspected).toEqual([0, 1, 3]);
+    expect(inspected).toEqual([0, 1, 3, 5]);
   });
 
-  it('says "Terminé" once the search is over without a chain (3.6)', () => {
+  it('says "Terminé" once the search is over without a chain, every sun looked at (3.3, 3.6)', () => {
     const start = visitedTwice();
     const goal: MentorGoal = { start, solution: [], victory: { type: 'searchExhausted' } };
-    expect(mentorFinishes(goal, start).moves.at(-1)).toEqual({ type: 'declareDone' });
+    const { moves } = mentorFinishes(goal, start);
+    expect(moves.at(-1)).toEqual({ type: 'declareDone' });
+    expect(moves.at(-2)).toEqual({ type: 'inspect', vertex: 5 });
   });
 
   it('after a lantern put out, it lights the chain again before searching to the end (3.6)', () => {
