@@ -194,7 +194,9 @@ F1 antes de F7 (un toque en cualquier sitio avanza el diálogo sin tocar el jard
 
 Las preguntas abiertas 1 (pulsación larga de la luz) y 4 (orden de 1.8 y 1.9) quedaron con su valor por defecto: no se tocó nada.
 
-Suite y revisión en pantalla: pendiente
+**Suite.** En local, al cerrar: lint, format:check, typecheck, check-levels, build y budget en verde; 6700 tests pasan (50 saltados: los de un solo nivel de luz que no aplican al resto). Con cobertura en la máquina cargada, siete tests pesados se pasan del tiempo; el CI de `develop` (con cobertura) está en verde en el último commit.
+
+**Revisión en pantalla** (un solo navegador, 960 × 540): arranque con guardado vacío → título «Florecer / Toca para empezar» → 0.1; en 0.1 la primera línea sale antes de la tarjeta, la caja no tapa A ni B, la barra solo tiene Faroles, «Faroles que caben aquí: 1», un toque sobre A con el diálogo abierto solo avanza el diálogo, el panel de victoria tiene dos renglones y no tapa la enredadera; 0.2 pregunta «¿Cabe otro farol?», rechaza C–B y se gana tras «Un farol es para dos…»; hub con 0.3 brillando, botones de ancho fijo y «Todavía cerrado» en un nivel cerrado; 4.5 entero solo con Faroles (parada con el botón «Tu luz se ha parado» y sin brillo, pliegue tocando la enredadera, «Tu luz encontró una cadena», abrir la flor tocándola, arrastrar la cadena, «Tu luz ya lo miró todo»); aperturas de 4.4, 4.6 (tarjeta de señalar), 3.1 (paso de solo mirar con Inspeccionar y «Gotas: 0/5»), 7.2 (cuenta del Consejo «… = 1 como poco; hay 1: cuadra» cabe), 1.3 (rótulo «Sami») y 6.1. Visto de paso: el título del panel de victoria «¡Jardín iluminado!» repite el primer renglón; en 4.5 la caja de diálogo tapa d; en 1.3 la caja de arriba tapa a medias un brote de la fila de arriba; en 3.1 la caja roza el rótulo de R. No se jugaron en pantalla: 3.5, 4.12 hasta el final, 6.3, salir a medias de 1.5, Reiniciar y la pista en la pregunta de 7.2.
 
 **Lo que es del autor:**
 
