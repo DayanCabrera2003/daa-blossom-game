@@ -18,9 +18,21 @@ Every night the sprouts of a garden want a lantern, and a lantern is for two nei
 
 ## How to play
 
-The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the day (the sun at the top right) to watch it again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit. Each level has three hints behind the **Pista** button, which is always at hand and glows when the game offers one (after 90 seconds without real progress, or three refusals in a row); the first two point where to look, never at the answer.
+The garden is played with the **mouse or a touch**: touch two neighbouring sprouts to give them a lantern, drag from a sprout in the dark to pass lanterns along a chain, drag the day (the sun at the top right) to watch it again, and use the tools each chapter adds (marks, scarecrows, folding a flower, stones…). The game never punishes a wrong move: it says, softly, why it does not fit, and names the tool to try when the one in hand is the wrong one. Hints come in three grades behind the **Pista** button, which is always at hand while a step offers hints and glows when the game offers one (after 90 seconds without real progress, not counted while reading, or three refusals in a row); the first two point where to look, never at the answer, and the grades start again with each step and each chain lit. **Reiniciar**, in the settings of a level, takes the play step back to its start.
 
 Every panel over the garden (a question, the notebook, a card, the recipe, the dialogue box, a message) opens where it hides least of the garden, never over what it asks about, and can be **dragged by its frame** wherever the player likes; it opens there again for the rest of the session, and a double touch on its frame sends it back.
+
+### New in 1.2.0
+
+What changed for the player since 1.1.0, after a review of the game through the eyes of someone who plays it for the first time. Every new or changed sentence is in the author's sheet, [`docs/review/lineas-plan11.md`](docs/review/lineas-plan11.md).
+
+- **A way in.** With nothing won yet the game opens on a title screen; in the hub the next garden to play glows, and a locked one says so.
+- **Stars that say what they are for.** Each level shows only the stars it can give, one row each: *Jardín iluminado*, *Sin pistas*, *Con el agua justa*, *Apuesta acertada*.
+- **Less friction.** A touch anywhere moves the dialogue on, and the touch that closes a panel never acts on the garden. The dialogue box keeps off the sprouts it names, and the victory panel waits for the last move to finish. The bar shows only the tools a level uses and starts with the one it needs. Leaving with moves made asks first, and a win already reached is kept. Undo never takes back the search the game showed.
+- **Failing kindly.** 0.2 and 0.4 end when the garden refuses a second lantern: the player finds the rule by trying it.
+- **Searching for real.** The greenhouse (and 4.3, 4.13) moves lanterns only along the chain the marks reached; 3.1 is played in two steps, first only looking into the fog; the drops of the fog are counted from the fewest looks that win, plus two.
+- **The light no longer points.** In the flower levels it stops without making the vine glow (that is now the second hint), and from 4.6 the player first bets where it will stop. 4.4 opens with a question, and 4.12 and 5.4 end with someone in the dark.
+- **Words that hold.** The meadow's sprouts carry the names Sauce says, the pond's rival is *el reflejo*, the fog spends *gotas*, and lines and hints that did not match their gardens were rewritten.
 
 ### New in 1.1.0
 
