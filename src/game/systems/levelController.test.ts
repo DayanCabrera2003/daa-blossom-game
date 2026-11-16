@@ -49,16 +49,22 @@ const touch = (point: { x: number; y: number }): UiEvent[] => [
 ];
 
 describe('the light that searches by itself (plan 10, section 2.4)', () => {
-  it('"Avanzar la luz" makes its next mark; where it stops, the vine of the flower glows', () => {
+  it('"Avanzar la luz" makes its next mark; where it stops, it says so once and the vine glows', () => {
     const level = foldingLightLevel();
     const lit = feed(startController(level, 0), [{ kind: 'light' }, { kind: 'light' }]);
     expect(lit.effects.map((effect) => effect.kind)).toEqual(['animate', 'animate']);
-    const stopped = feed(lit.controller, [{ kind: 'light' }, { kind: 'light' }]);
-    expect(stopped.effects.at(-1)).toMatchObject({
-      kind: 'rejected',
-      reason: { code: 'lightAtFlower', u: 2, v: 4 },
-    });
+    // The third mark reaches the flower: the stop is told with the move, not as a refusal.
+    const stopped = feed(lit.controller, [{ kind: 'light' }]);
+    expect(stopped.effects).toMatchObject([
+      { kind: 'animate' },
+      { kind: 'lightStopped', reason: { code: 'lightAtFlower', u: 2, v: 4 } },
+    ]);
     expect(stopped.controller.vineGlow).toEqual([2, 4]);
+    // Pressed again, the button is off: nothing happens, no refusal, nothing toward the hints.
+    const again = feed(stopped.controller, [{ kind: 'light' }, { kind: 'light' }]);
+    expect(again.effects).toEqual([]);
+    expect(again.controller.session).toBe(stopped.controller.session);
+    expect(again.controller.vineGlow).toEqual([2, 4]);
     // Folding there is the way on, and puts the glow out.
     const folded = feed(stopped.controller, [
       { kind: 'tool', tool: 'marks' },
@@ -66,6 +72,13 @@ describe('the light that searches by itself (plan 10, section 2.4)', () => {
     ]);
     expect(folded.effects.map((effect) => effect.kind)).toEqual(['animate']);
     expect(folded.controller.vineGlow).toBeNull();
+    // The next mark sees the chain: told once, without a glow.
+    const found = feed(folded.controller, [{ kind: 'light' }]);
+    expect(found.effects).toMatchObject([
+      { kind: 'animate' },
+      { kind: 'lightStopped', reason: { code: 'lightFound' } },
+    ]);
+    expect(found.controller.vineGlow).toBeNull();
   });
 });
 

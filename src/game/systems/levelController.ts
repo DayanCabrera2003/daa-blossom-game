@@ -55,6 +55,7 @@ import {
 } from './levelSession';
 import type { MirrorCheck } from './mirrorChallenge';
 import type { Refusal } from './refusal';
+import { LIGHT, standsStill, stopTold, type LightStopped } from './lightStop';
 import { restartController } from './restart';
 import type { StarResult } from './stars';
 import { stepAtFraction } from './sun';
@@ -152,6 +153,7 @@ export type UiEvent =
 export type Effect =
   | Exclude<FlowEffect, { readonly kind: 'finished' }>
   | { readonly kind: 'rejected'; readonly reason: Refusal; readonly action: Action }
+  | LightStopped
   | {
       readonly kind: 'animate';
       /** The move accepted, for the playtest log. */
@@ -234,28 +236,24 @@ function travel(controller: Controller, session: LevelSession, now: number): Ste
 }
 
 /**
- * Tries a move: refused, it is reported, then what it moves the script on to (where the light stops
- * at a flower, its vine glows until the next move); accepted, it is animated, puts out hint glows,
- * and may win the play step, which moves the script on. A "Terminé" that does not win is told why
- * after its animation, and a vine nobody guards glows until the next move.
+ * Tries a move: refused, it is reported, then what it moves the script on to; accepted, it is
+ * animated, puts out hint glows, may win the play step, and tells a stop it brings the light to, or
+ * why a "Terminé" falls short: a flower's vine, or one nobody guards, glows until the next move.
  */
 function apply(controller: Controller, action: Action, now: number): Step {
-  const { session, outcome, effects: flowEffects, claim } = act(controller.session, action, now);
+  const { session, outcome, effects: flow, claim } = act(controller.session, action, now);
   if (!outcome.ok) {
-    const { reason } = outcome;
-    const vineGlow: Edge | null =
-      reason.code === 'lightAtFlower' ? [reason.u, reason.v] : controller.vineGlow;
-    return {
-      controller: { ...controller, session, vineGlow },
-      effects: [{ kind: 'rejected', reason, action }, ...shown(session, flowEffects)],
-    };
+    const rejected: Effect = { kind: 'rejected', reason: outcome.reason, action };
+    return { controller: { ...controller, session }, effects: [rejected, ...shown(session, flow)] };
   }
+  const stop = stopTold(garden(controller.session), outcome.state);
   const effects: Effect[] = [
     { kind: 'animate', action, events: outcome.events },
     ...(claim === null ? [] : [{ kind: 'claimRefused', verdict: claim } as const]),
-    ...shown(session, flowEffects),
+    ...stop.told,
+    ...shown(session, flow),
   ];
-  const vineGlow = claim?.code === 'unguarded' ? claim.vine : null;
+  const vineGlow = claim?.code === 'unguarded' ? claim.vine : stop.glow;
   return { controller: { ...controller, session, highlight: [], vineGlow }, effects };
 }
 
@@ -514,8 +512,8 @@ function respondTo(controller: Controller, event: UiEvent, now: number): Step {
       return checkRecipe(controller, now);
     case 'done':
       return apply(controller, { type: 'declareDone' }, now);
-    case 'light':
-      return apply(controller, { type: 'stepLight' }, now);
+    case 'light': // Switched off while the light stands still, the button does nothing.
+      return standsStill(garden(controller.session)) ? same({}) : apply(controller, LIGHT, now);
     case 'solve':
     case 'certify':
       return order(controller, event.kind);

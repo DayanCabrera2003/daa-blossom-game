@@ -14,6 +14,7 @@ import type { AssetKey } from '../../assets/keys';
 import { layerOf, type Controller, type Effect } from '../../systems/levelController';
 import { automatonDayOf, garden } from '../../systems/levelSession';
 import { lightDay } from '../../systems/lightSearch';
+import { LIGHT } from '../../systems/lightStop';
 import { effectJingle } from '../../systems/musicFor';
 import { questionAt } from '../../systems/question';
 import { dayToReplay } from '../../systems/replayDay';
@@ -66,11 +67,14 @@ export const showEffect = (effect: Effect, stage: EffectStage): void => {
   const said = (key: string, params?: Readonly<Record<string, string | number>>) =>
     spokenLine(key, (id) => t(id, params));
   switch (effect.kind) {
-    case 'rejected': {
+    case 'rejected':
+    case 'lightStopped': {
       // Before folding opens, the conflict of a search is not told apart (4.1); a refusal born of
-      // the tool in hand names the tool to try.
+      // the tool in hand names the tool to try. Where the light stops, it is told in the very
+      // words its refusal used to say, with no sound of a refusal (`systems/soundCues.ts`).
       const foldAllowed = stage.level.start.allowed.has('foldAt');
-      const why = reasonText(effect.reason, effect.action, stage.labels, t, { foldAllowed });
+      const action = effect.kind === 'rejected' ? effect.action : LIGHT;
+      const why = reasonText(effect.reason, action, stage.labels, t, { foldAllowed });
       const tool = stage.controller().pointer.tool;
       const advice = toolAdvice(effect.reason, tool, stage.level, t);
       stage.toast.show(advice === null ? why : `${why} ${advice}`);

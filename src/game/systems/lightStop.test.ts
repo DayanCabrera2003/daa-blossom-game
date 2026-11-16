@@ -6,7 +6,7 @@ import { catalog } from '@levels/catalog';
 import { describe, expect, it } from 'vitest';
 import { foldingLightLevel, lightLevel } from '../../../tests/support/fixtureLevels';
 import { explore } from '../../../tests/support/gardenExplorer';
-import { lightLabel, lightStop, stopReached, stopReason } from './lightStop';
+import { lightLabel, lightStop, standsStill, stopReached, stopReason, stopTold } from './lightStop';
 
 /** Applies a move the rules must accept. */
 const play = (state: GardenState, action: Action): GardenState => {
@@ -114,6 +114,25 @@ describe('the stop of the light, as a state of the garden', () => {
     expect(lightStop(found)).toEqual({ kind: 'found' });
     expect(lightLabel(found)).toBe('hud.light.found');
     expect(stopReason({ kind: 'found' })).toEqual({ code: 'lightFound' });
+  });
+
+  it('a stop reached is told once, and only a flower makes its vine glow', () => {
+    let state = foldingLightLevel().start;
+    for (let i = 0; i < 2; i++) state = play(state, { type: 'stepLight' });
+    const stopped = play(state, { type: 'stepLight' });
+    expect(standsStill(state)).toBe(false);
+    expect(standsStill(stopped)).toBe(true);
+    expect(stopTold(state, stopped)).toEqual({
+      told: [{ kind: 'lightStopped', reason: { code: 'lightAtFlower', u: 2, v: 4 } }],
+      glow: [2, 4],
+    });
+    expect(stopTold(stopped, stopped)).toEqual({ told: [], glow: null });
+    const folded = play(stopped, { type: 'foldAt', from: 2, to: 4 });
+    const found = play(folded, { type: 'stepLight' });
+    expect(stopTold(folded, found)).toEqual({
+      told: [{ kind: 'lightStopped', reason: { code: 'lightFound' } }],
+      glow: null,
+    });
   });
 
   it('names each stop with its own words', () => {

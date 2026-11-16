@@ -1,3 +1,5 @@
+import type { Edge } from '@core/graph/types';
+import type { Action } from '@core/rules/actions';
 import { lightStep, type LightStep } from '@core/rules/lightStep';
 import type { RejectReason } from '@core/rules/reasons';
 import type { GardenState } from '@core/rules/state';
@@ -9,6 +11,9 @@ import type { GardenState } from '@core/rules/state';
  * lasts, and comes back once the player resolves it (folds, inspects, lights the chain). Pure.
  */
 export type LightStop = Exclude<LightStep, { readonly kind: 'move' }>;
+
+/** The move «Avanzar la luz» makes while the light can move on. */
+export const LIGHT: Action = { type: 'stepLight' };
 
 /** The words on «Avanzar la luz» for each stop. */
 const STOP_LABELS: Readonly<Record<LightStop['kind'], string>> = {
@@ -58,3 +63,26 @@ export function stopReached(before: GardenState, after: GardenState): LightStop 
   if (stop === null) return null;
   return JSON.stringify(stop) === JSON.stringify(lightStop(before)) ? null : stop;
 }
+
+/** The light that searches by itself has just stopped, told once with what stopped it. */
+export interface LightStopped {
+  readonly kind: 'lightStopped';
+  readonly reason: RejectReason;
+}
+
+/**
+ * What a move that brings the light to a stop tells (`stopReached`): the stop, with the words its
+ * refusal used to say, and at a flower the vine that glows; nothing, and nothing glowing, otherwise.
+ */
+export function stopTold(
+  before: GardenState,
+  after: GardenState,
+): { readonly told: readonly LightStopped[]; readonly glow: Edge | null } {
+  const stop = stopReached(before, after);
+  if (stop === null) return { told: [], glow: null };
+  const told = [{ kind: 'lightStopped', reason: stopReason(stop) } as const];
+  return { told, glow: stop.kind === 'flower' ? [stop.from, stop.to] : null };
+}
+
+/** Whether the light of a garden stands still, its button switched off. */
+export const standsStill = (state: GardenState): boolean => lightStop(state) !== null;

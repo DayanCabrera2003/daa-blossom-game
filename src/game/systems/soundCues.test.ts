@@ -148,6 +148,11 @@ describe('the sounds of the effects of the controller', () => {
     ];
     for (const effect of silent) expect(effectCues(effect)).toEqual([]);
   });
+
+  it('is silent where the light stops: a state of its button, not a refusal', () => {
+    const stopped: Effect = { kind: 'lightStopped', reason: { code: 'lightAtFlower', u: 2, v: 4 } };
+    expect(effectCues(stopped)).toEqual([]);
+  });
 });
 
 describe('the sound of a refusal elsewhere', () => {
