@@ -5,12 +5,20 @@ Capítulos 5–7 en greybox (círculos, rombos y líneas, sin arte ni voz). Lo d
 > **Hoy (plan 09):** el protocolo se escribió para el greybox; el juego ya tiene arte, música, efectos y balbuceo. Lo que cambia en la preparación está en §3; los umbrales y criterios no cambian (Apéndice A del plan 09, preguntas 10 y 11, pendientes del autor). La hoja de una página para cada sesión es [`kit.md`](kit.md).
 
 > **Hoy (plan 10, versión 1.1.0):** lo que cambió en los capítulos 5–7 y se ve en la sesión o en el registro. Los umbrales y criterios de §1 **no cambian**. Las pistas, los avisos de un «Terminé» que no gana, los Cuadernos, la luz que busca sola y el gesto de levantar funcionan como se cuenta al principio de `A.md` y de `B.md`.
-> - **En 5.1–5.5 (y en el jardín secreto 5.6) la luz busca sola** desde sus raíces, con «Avanzar la luz», y se para en cada flor hasta que se pliega, también cuando la flor está dentro de otra flor plegada. Los faroles solo se mueven por la cadena que encontró (`chainNotSeen`); separar, pasar el farol y girar el tallo están cerrados (`actionClosed`). En la niebla de 5.5, la luz se para ante un sol cuyas enredaderas aún no se ven (`vineHidden` de `stepLight`): hay que regarlo.
+> - **En 5.1–5.5 (y en el jardín secreto 5.6) la luz busca sola** desde sus raíces, con «Avanzar la luz», y se para en cada flor hasta que se pliega, también cuando la flor está dentro de otra flor plegada. Los faroles solo se mueven por la cadena que encontró (`chainNotSeen`); separar, pasar el farol y girar el tallo están cerrados (`actionClosed`). En la niebla de 5.5, la luz se para ante un sol cuyas enredaderas aún no se ven: hay que regarlo (desde la 1.2.0 es una parada del botón, «La niebla para tu luz», y no deja rechazo `vineHidden`).
 > - 5.2 termina con una pregunta: por qué se abrió primero la flor grande. El Cuaderno de 5.3 se abre antes de que Sauce diga qué lado alternó.
 > - La receta (6.1, 6.3) ya no tiene la tarjeta del vecino sin marca a oscuras, que la búsqueda nunca encuentra, y sus textos nombran x. Las apuestas de 6.5, como se describen en §1 y §6.
 > - En 7.2–7.5 el botón de acabar se llama **«Presentar»**, y una presentación que no gana recibe su aviso: `countShort` (la cuenta del Consejo, con sus números), `searchNotOver` o `notTheMoons` (7.4).
 > - 7.4: Sauce ya no dice «levanta las lunas como piedras»; dice que lo que dejó la búsqueda guarda las piedras. Al ganar hace la cuenta y **pregunta** «Al quitar las lunas, ¿con qué brotes puede seguir unido un sol?»; su explicación (`ch7.4.sauce.08`) es la respuesta al acierto.
 > - El último nivel de cada capítulo invita a leer su página del Códex; 7.5 termina con el amanecer.
+
+> **Hoy (plan 11, versión 1.2.0):** lo que cambió en los capítulos 5–7 y se ve en la sesión o en el registro. Los umbrales y criterios de §1 **no cambian**. La entrada, los diálogos, la barra, las pistas por paso, «Reiniciar» y el aviso al salir funcionan como en la nota de la 1.2.0 de `A.md`; la parada de la luz sin señal, las apuestas de la luz y las gotas, como en la de `B.md`.
+> - **En el capítulo 5 la luz se para sin señalar** dónde se tocan los dos soles; el brillo es la pista de grado 2. Pulsar el botón apagado no deja rechazo; un toque en la enredadera equivocada deja `notSunsOfOneTree`. La pista 1 de 5.1 dice «La flor pequeña ya brilla como un sol. ¿Toca a otro sol?».
+> - **Apuesta de la parada** antes de avanzar la luz en 5.1–5.4 y en el jardín secreto 5.6: entradas `pickVine` en `log`, y `vinePicks` / `firstPickRight` en el resumen.
+> - **5.4 acaba con W a oscuras:** tras la tercera cadena la luz sale de W, no encuentra ninguna y hay que pulsar «Terminé». 5.5 tiene las gotas contadas desde el mínimo de inspecciones, más dos.
+> - **La receta (6.1, 6.3):** la tarjeta de la cadena dice que abre las flores que cruza, de fuera hacia dentro, por el lado que alterna; las distractoras tienen la misma forma que las buenas, así que ya no se delatan por cómo están escritas.
+> - **Apuestas informales** antes de mirar en 6.3, 6.4 y el jardín secreto 6.7: preguntas sin respuesta mala, que quedan como entradas `answer` con `right: true` y nunca suman en `wrongAnswers`. 6.5 dice al empezar que cada apuesta acertada da una semilla.
+> - **Capítulo 7.** La cuenta del Consejo dice cuándo cuadra («Impares 3 − piedras 1 = 2 como poco; hay 2: cuadra») y nunca resta por debajo de cero. En 7.1 las líneas ya no dicen «tres espantapájaros» (se gana también con cuatro): dicen «más espantapájaros que faroles». 7.4: unas piedras que no son las lunas reciben «Esas piedras todavía no prueban nada. ¿Qué te dejó la búsqueda en cada brote?», sin nombrar las lunas. 7.5 dice al empezar «Busca tú, con Marcas.».
 
 ---
 
@@ -96,16 +104,19 @@ El papel del observador es el del playtest A: sin tocar ni señalar, sin pistas,
 
 ### Capítulo 5 (5.1–5.5)
 
-- 5.1: cuando la luz se para por segunda vez, si ve que la flor plegada forma parte de otro bucle impar ("La flor pequeña ya brilla como un sol. ¿Toca a otro sol?") y la pliega sin la pista 3 (rechazos `lightAtFlower` seguidos indican que no).
+- 5.1: cuando la luz se para por segunda vez, si ve que la flor plegada forma parte de otro bucle impar ("La flor pequeña ya brilla como un sol. ¿Toca a otro sol?") y la pliega sin la pista 3 (rechazos `notSunsOfOneTree` seguidos, o la pista 2 que hace brillar el choque, indican que no lo ve).
+- 5.1–5.4: qué enredadera apuesta antes de avanzar la luz y si acierta más a medida que avanza el capítulo.
 - 5.1–5.3: al levantar la cadena, si abre las flores de fuera hacia dentro y arrastra solo el tramo de dentro; los rechazos `invalidPath.*` de `chain` tras desplegar son lados equivocados.
 - 5.2: si usa las capas para entrar y salir de las flores, o si las ignora y se pierde. **La pregunta del final** ("¿Por qué no una de las de dentro?"): qué opción elige primero y qué dice. Si responde algo como "porque la pequeña no se ve", es una restricción de la pantalla, no la idea (la flor plegada es un brote más).
 - 5.3: si prueba primero el lado corto de la flor interior; cómo lee el Cuaderno ("Al desplegar una flor que está dentro de otra…"), que ahora llega antes del resumen de Sauce.
-- 5.5: si gasta el agua mirando al azar o con método: con la luz, el agua se gasta sobre todo donde la luz se para ante la niebla (`vineHidden`).
+- 5.4: al final, con W a oscuras y la luz sin nada que mirar, si pulsa «Terminé» con confianza o sigue buscando.
+- 5.5: si gasta las gotas mirando al azar o con método: con la luz, se gastan sobre todo donde la luz se para ante la niebla («La niebla para tu luz»); el presupuesto deja solo dos de margen sobre el mínimo.
 
 ### Capítulo 6 (6.1–6.6)
 
 - 6.1: cómo ordena las tarjetas; si reconoce cada caso como algo que ya hizo a mano; qué tarjetas distractoras elige y qué dice al ver la que falla.
 - 6.2: si sigue al jardinero mecánico con el día o lo deja correr.
+- 6.3 y 6.4: qué responde a la apuesta informal antes de mirar, y si lo comenta al ver el resultado.
 - 6.3: su reacción cuando el autómata sigue la receta de Bruto y declara "terminé" con 3 faroles (Sauce le recuerda que él encendió 4): ¿sabe qué tarjeta falta y por qué, antes de comprobar?
 - 6.4 y 6.5: si mira los contadores y la gráfica; qué dice cuando Bruto se duerme. En las apuestas de 6.5, si cambia de respuesta de una carrera a otra a la vista de los datos.
 - 6.6: si las dos preguntas del Cuaderno le parecen obvias o si duda; qué contraejemplos abre.
@@ -203,10 +214,10 @@ Copiar una vez por persona. Tiempo en minutos, redondeado. La columna "Registro"
 
 | Nivel | Tiempo | Pistas (grados) | Respuestas incorrectas | Registro | Notas |
 |---|---|---|---|---|---|
-| 5.1 | | | — | — | |
+| 5.1 | | | | — | |
 | 5.2 | | | | — | |
 | 5.3 | | | | — | |
-| 5.4 | | | — | — | |
+| 5.4 | | | | — | |
 | 5.5 | | | — | — | |
 | 6.1 | | | — | | |
 | 6.2 | | — | — | — | |
@@ -220,7 +231,7 @@ Copiar una vez por persona. Tiempo en minutos, redondeado. La columna "Registro"
 | 7.4 | | | | | |
 | 7.5 | | | — | | |
 
-"Respuestas incorrectas" suma `wrongAnswers` y `notebookWrong`. Un guion (—) marca los niveles donde esa medida no aplica.
+"Respuestas incorrectas" suma `wrongAnswers`, `notebookWrong` y `vinePicks.wrong` (las apuestas de la parada de la luz en 5.1–5.4). Un guion (—) marca los niveles donde esa medida no aplica.
 
 ### 7.4 en voz alta
 
