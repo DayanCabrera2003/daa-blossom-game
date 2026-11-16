@@ -13,7 +13,7 @@ import type { TraceEvent } from '@core/trace/events';
 import type { Level } from '@levels/build';
 import type { LevelStep } from '@levels/flow';
 import { hintsAt } from '@levels/stepHints';
-import { countAnswer, rightBet, rightRaceBet, rightVine } from './answerKey';
+import { countAnswer, rightBet, rightPick, rightRaceBet } from './answerKey';
 import { automatonRun } from './automaton';
 import { judgeVictory } from './certifyAgain';
 import { claimVerdict, type ClaimVerdict } from './claimVerdict';
@@ -351,7 +351,7 @@ export function respond(
     case 'bet':
       return advance(session, { type: 'bet', value: input.value, right: rightBet(level) }, now);
     case 'pickVine': {
-      const right = rightVine(garden(session), input.u, input.v);
+      const right = rightPick(stepNow(session), garden(session), input.u, input.v);
       return advance(session, { ...input, right }, now);
     }
     case 'searched': {

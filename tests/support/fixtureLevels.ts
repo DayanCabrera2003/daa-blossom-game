@@ -634,6 +634,23 @@ const FOLDING_LIGHT = {
 /** The level built from `FOLDING_LIGHT`. */
 export const foldingLightLevel = (): Level => load(FOLDING_LIGHT);
 
+/**
+ * `FOLDING_LIGHT` with a bet before the light is advanced (from 4.6, GDD §5.1): where will it stop?
+ * At b–d, where it meets the flower.
+ */
+const BET_LIGHT = {
+  ...FOLDING_LIGHT,
+  id: '4.6',
+  flow: [
+    { step: 'pickVine', prompt: 'ch4.5.sauce.00', reply: 'ch4.5.sauce.01', stop: ['d', 'b'] },
+    { step: 'play' },
+  ],
+  solution: [{ type: 'pickVine', u: 'b', v: 'd' }, ...FOLDING_LIGHT.solution],
+};
+
+/** The level built from `BET_LIGHT`. */
+export const betLightLevel = (): Level => load(BET_LIGHT);
+
 /** The level built from `BLOOM`. */
 export const bloomLevel = (): Level => load(BLOOM);
 

@@ -6,7 +6,8 @@ import type { GardenState } from '@core/rules/state';
 import { findConflict, isConflictVine } from '@core/search/conflict';
 import { invariant } from '@core/shared/invariant';
 import type { Level } from '@levels/build';
-import type { CountStep } from '@levels/flow';
+import type { CountStep, LevelStep } from '@levels/flow';
+import { sameVine } from '@levels/lightBet';
 import { raceBetVerdict } from '@levels/races';
 import { winningThreads } from '@levels/winningThreads';
 import { lanternsOn, pieceOf, pondPieces } from './pond';
@@ -48,6 +49,15 @@ export const rightLoopCount = (state: GardenState): number =>
  */
 export const rightVine = (state: GardenState, u: VertexId, v: VertexId): boolean =>
   isConflictVine(state.layer, state.search, u, v);
+
+/**
+ * Whether the vine u–v answers the `pickVine` step `step`: in a bet on where the light will stop
+ * (from 4.6), the vine its level declares, either way round; otherwise the conflict (`rightVine`).
+ */
+export const rightPick = (step: LevelStep | null, state: GardenState, u: VertexId, v: VertexId) =>
+  step?.step === 'pickVine' && step.stop !== undefined
+    ? sameVine(step.stop, [u, v])
+    : rightVine(state, u, v);
 
 /**
  * The right count of the winning threads (2.5): how many threads of the tangle `yours ⊕ mirror`

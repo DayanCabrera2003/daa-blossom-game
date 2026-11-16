@@ -7,6 +7,7 @@ import {
   isFinished,
   isPast,
   startFlow,
+  stopShown,
   type FlowEffect,
   type FlowSignal,
   type FlowState,
@@ -398,6 +399,30 @@ describe('the script engine', () => {
     expect(
       advanceFlow(silent.flow, { type: 'pickVine', u: 2, v: 3, right: false }).effects,
     ).toEqual([{ kind: 'vinePicked', step: 0, u: 2, v: 3, correct: false }, opening]);
+  });
+
+  it('a bet on where the light will stop goes on whatever the vine, and shows the right one', () => {
+    const bet: LevelStep = {
+      step: 'pickVine',
+      prompt: 'ch4.5.sauce.00',
+      reply: 'ch4.5.sauce.01',
+      stop: [4, 2],
+    };
+    const started = start([bet]);
+    expect(stopShown(started.effects)).toBeNull();
+    // A wrong vine costs nothing: the mentor answers, the right vine is shown, and the script goes on.
+    const wrong = advanceFlow(started.flow, { type: 'pickVine', u: 2, v: 3, right: false });
+    expect(wrong.effects).toEqual([
+      { kind: 'vinePicked', step: 0, u: 2, v: 3, correct: false, stop: [4, 2] },
+      { kind: 'say', lines: ['ch4.5.sauce.01'] },
+      { kind: 'finished' },
+    ]);
+    expect(stopShown(wrong.effects)).toEqual([4, 2]);
+    const right = advanceFlow(started.flow, { type: 'pickVine', u: 2, v: 4, right: true });
+    expect(right.effects).toEqual([
+      { kind: 'vinePicked', step: 0, u: 2, v: 4, correct: true, stop: [4, 2] },
+      { kind: 'finished' },
+    ]);
   });
 
   it('the notebook ends only with a right option, which is written down', () => {

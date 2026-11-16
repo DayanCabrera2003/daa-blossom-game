@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { foldingLightLevel, lightLevel } from '../../../tests/support/fixtureLevels';
+import { betLightLevel, foldingLightLevel, lightLevel } from '../../../tests/support/fixtureLevels';
 import {
   act,
   askHint,
@@ -69,5 +69,20 @@ describe('the hints where the light stands at a flower (GDD §5.1, §5.3)', () =
   it('while the light can still move on, grade 2 is the level’s own, glowing no vine', () => {
     const session = hinted(startSession(foldingLightLevel(), 0)).session;
     expect(hinted(session).hint).toMatchObject({ line: 'ch4.1.sauce.02', vine: null });
+  });
+});
+
+describe('a bet on where the light will stop, before it is advanced (from 4.6)', () => {
+  it('is judged against the vine the level declares, either way round, and goes on to play', () => {
+    const session = startSession(betLightLevel(), 0);
+    expect(stepNow(session)?.step).toBe('pickVine');
+    const right = respond(session, { type: 'pickVine', u: 2, v: 4 }, 0);
+    expect(right.effects[0]).toMatchObject({ kind: 'vinePicked', correct: true, stop: [4, 2] });
+    expect(stepNow(right.session)?.step).toBe('play');
+    const wrong = respond(session, { type: 'pickVine', u: 2, v: 3 }, 0);
+    expect(wrong.effects[0]).toMatchObject({ kind: 'vinePicked', correct: false, stop: [4, 2] });
+    expect(stepNow(wrong.session)?.step).toBe('play');
+    // Nothing moved in the garden: the bet is only a guess.
+    expect(garden(wrong.session)).toBe(garden(session));
   });
 });

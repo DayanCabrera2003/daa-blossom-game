@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { betrayalLevel, festivalLevel } from '../../../tests/support/fixtureLevels';
+import { betLightLevel, betrayalLevel, festivalLevel } from '../../../tests/support/fixtureLevels';
 import {
   act,
   respond,
@@ -34,6 +34,14 @@ describe('the split badge: half sun, half moon, over the loop of the conflict (4
     const counted = respond(pointed, { type: 'answer', option: 3 }, 0).session;
     expect(counted.won).not.toBeNull();
     expect(splitBadges(undoSession(counted))).toEqual([]);
+  });
+
+  it('a bet on where the light will stop shows no split badge, even once the light stops there', () => {
+    const level = betLightLevel();
+    const bet = respond(startSession(level, 0), { type: 'pickVine', u: 2, v: 4 }, 0).session;
+    const light = { type: 'stepLight' } as const;
+    const stopped = [light, light, light].reduce((s, move) => act(s, move, 0).session, bet);
+    expect(splitBadges(stopped)).toEqual([]);
   });
 
   it('a level that never points at a conflict shows no split badge', () => {

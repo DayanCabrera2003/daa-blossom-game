@@ -3,6 +3,7 @@ import { catalog } from '@levels/catalog';
 import { loadLevel } from '@levels/loader';
 import { describe, expect, it } from 'vitest';
 import {
+  betLightLevel,
   betrayalLevel,
   closedFlowerLevel,
   festivalLevel,
@@ -79,6 +80,27 @@ describe('the light that searches by itself (plan 10, section 2.4)', () => {
       { kind: 'lightStopped', reason: { code: 'lightFound' } },
     ]);
     expect(found.controller.vineGlow).toBeNull();
+  });
+});
+
+describe('a bet on where the light will stop (from 4.6)', () => {
+  /** The middle of the vine u–v of the bet garden, as drawn at the start. */
+  const level = betLightLevel();
+  const middle = (u: number, v: number) =>
+    vinePoint(garden(startController(level, 0).session), placesOf(level), u, v);
+
+  it('a touch on a vine is the bet; a wrong one shows the right vine until the light moves', () => {
+    const wrong = feed(startController(level, 0), touch(middle(2, 3)));
+    expect(wrong.effects).toContainEqual({ kind: 'say', lines: ['ch4.5.sauce.01'] });
+    expect(wrong.controller.vineGlow).toEqual([4, 2]);
+    const advanced = feed(wrong.controller, [{ kind: 'light' }]);
+    expect(advanced.controller.vineGlow).toBeNull();
+  });
+
+  it('a right one glows too, the vine the light is about to reach', () => {
+    const right = feed(startController(level, 0), touch(middle(4, 2)));
+    expect(right.effects).not.toContainEqual(expect.objectContaining({ kind: 'say' }));
+    expect(right.controller.vineGlow).toEqual([4, 2]);
   });
 });
 

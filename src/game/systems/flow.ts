@@ -1,6 +1,6 @@
 import type { Runner } from '@core/cost/benchmark';
 import { DOUBLING_ANSWERS } from '@core/cost/doubling';
-import type { VertexId } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import type { RecipeCase } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import type { RejectReason } from '@core/rules/reasons';
@@ -129,13 +129,17 @@ export type FlowEffect =
   | { readonly kind: 'draw'; readonly attempts: number }
   /** Waiting for a touch on the vine where the light went wrong. */
   | { readonly kind: 'pickVine'; readonly step: number; readonly prompt: string }
-  /** A vine was pointed at; for the playtest log and the split badge. */
+  /**
+   * A vine was pointed at; for the playtest log and the split badge. In a bet on where the light
+   * will stop, `stop` is the right vine, which the garden then shows.
+   */
   | {
       readonly kind: 'vinePicked';
       readonly step: number;
       readonly u: VertexId;
       readonly v: VertexId;
       readonly correct: boolean;
+      readonly stop?: Edge;
     }
   /** Waiting for chains drawn in the open garden, cut at the flower and never applied. */
   | { readonly kind: 'flowerChallenge'; readonly step: number; readonly attempts: number }
@@ -229,6 +233,12 @@ export const isFinished = (flow: FlowState): boolean => flow.index >= flow.steps
 /** Whether a step of this kind is behind: before the current step, or anywhere once it is over. */
 export const isPast = (flow: FlowState, kind: LevelStep['step']): boolean =>
   flow.steps.slice(0, flow.index).some((step) => step.step === kind);
+
+/** The vine a bet on the stop of the light shows among `effects`, once made; null otherwise. */
+export function stopShown(effects: readonly FlowEffect[]): Edge | null {
+  for (const effect of effects) if (effect.kind === 'vinePicked') return effect.stop ?? null;
+  return null;
+}
 
 /** Whether a formal bet was right; null without a bet, or with an informal one (GDD §5.4). */
 export const betRight = (flow: FlowState): boolean | null =>
@@ -429,14 +439,18 @@ export function advanceFlow(flow: FlowState, signal: FlowSignal): FlowTurn {
     }
     case 'pickVine': {
       // Only the conflict ends the step; any other vine hears the reply, if any, and is asked again.
+      // A bet on where the light will stop (`stop`) is free: any vine ends it, the right one shown.
       if (signal.type !== 'pickVine') return unchanged;
       const { u, v, right } = signal;
+      const { stop } = step;
+      const shown = stop === undefined ? {} : { stop };
       const picked: FlowTurn = {
         flow,
-        effects: [{ kind: 'vinePicked', step: flow.index, u, v, correct: right }],
+        effects: [{ kind: 'vinePicked', step: flow.index, u, v, correct: right, ...shown }],
       };
       if (right) return next(picked);
       if (step.reply !== undefined) picked.effects.push({ kind: 'say', lines: [step.reply] });
+      if (stop !== undefined) return next(picked);
       picked.effects.push(opening(step, flow.index));
       return picked;
     }

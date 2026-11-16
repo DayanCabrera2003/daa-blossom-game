@@ -30,7 +30,7 @@ import {
   type LayerView,
 } from '../picture/layers';
 import type { ClaimVerdict } from './claimVerdict';
-import type { FlowEffect } from './flow';
+import { stopShown, type FlowEffect } from './flow';
 import type { FlowerAttempt } from './flowerChallenge';
 import type { HintContent } from './hintContent';
 import { touchLayers } from './layerTouch';
@@ -219,11 +219,11 @@ export function openController(level: Level, now: number, orders: FreeOrders | n
 export const startController = (level: Level, now: number): Controller =>
   openController(level, now).controller;
 
-/** Gives the script an input of the player; an answer puts out the vine a hint made glow. */
+/** Gives the script an input; an answer puts out a hint's glow, a bet on the stop shows its vine. */
 function tell(controller: Controller, input: ScriptInput, now: number): Step {
   const { session, effects } = respond(controller.session, input, now);
   return {
-    controller: { ...controller, session, vineGlow: null },
+    controller: { ...controller, session, vineGlow: stopShown(effects) },
     effects: shown(session, effects),
   };
 }
