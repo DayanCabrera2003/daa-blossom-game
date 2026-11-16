@@ -1,11 +1,11 @@
 import { RUNNERS } from '@core/cost/benchmark';
 import { RACE_FAMILIES } from '@core/generators/raceGarden';
-import type { VertexId } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import { RECIPE_CASES } from '@core/recipe/recipe';
 import type { Action } from '@core/rules/actions';
 import type { RejectReason } from '@core/rules/reasons';
 import { z } from 'zod';
-import { label, levelAction, lineId, stepHints } from './fields';
+import { label, levelAction, lineId, stepHints, vine } from './fields';
 import { statementSchema } from './notebook';
 
 /**
@@ -150,12 +150,16 @@ const flowStep = z.discriminatedUnion('step', [
   ]),
   /**
    * The player points at the vine where the light went wrong: the conflict of their search (4.2),
-   * as the core finds it. A wrong vine is answered with `reply`, if any, and asked again.
+   * as the core finds it. A wrong vine is answered with `reply`, if any, and asked again. With
+   * `stop`, it is a bet before the light is advanced (from 4.6, GDD §5.1): the vine where the light
+   * will first stop at a flower, which integrity checks with the light's walk. Any vine ends a bet;
+   * a wrong one is answered with `reply` and the right one is shown.
    */
   z.strictObject({
     step: z.literal('pickVine'),
     prompt: lineId,
     reply: lineId.optional(),
+    stop: vine.optional(),
     hints: stepHints,
   }),
   /**
@@ -236,9 +240,10 @@ export type FlowStep = z.infer<typeof flowStep>;
 
 /** One step of a built script: the sprouts it names are ids. */
 export type LevelStep =
-  | Exclude<FlowStep, { of: 'yours' | 'mirror' } | { step: 'replay' }>
+  | Exclude<FlowStep, { of: 'yours' | 'mirror' } | { step: 'replay' | 'pickVine' }>
   | (Omit<Extract<FlowStep, { of: 'yours' | 'mirror' }>, 'piece'> & { readonly piece: VertexId })
-  | { readonly step: 'replay'; readonly demo?: readonly Action[] };
+  | { readonly step: 'replay'; readonly demo?: readonly Action[] }
+  | (Omit<Extract<FlowStep, { step: 'pickVine' }>, 'stop'> & { readonly stop?: Edge });
 
 /** A `count` step of a built script: lanterns on a piece of the tangle, or sprouts of the loop. */
 export type CountStep = Extract<LevelStep, { step: 'count' }>;

@@ -84,6 +84,17 @@ const betrayal = {
   ],
 };
 
+/** 4.5's walk once the light searches by itself: three marks, the fold, the chain through it. */
+const FOLDING = [
+  { type: 'stepLight' },
+  { type: 'stepLight' },
+  { type: 'stepLight' },
+  { type: 'foldAt', from: 'b', to: 'd' },
+  { type: 'stepLight' },
+  { type: 'unfold', blossom: 0 },
+  { type: 'chain', path: ['R', 'a', 'b', 'd', 'c', 'e'] },
+];
+
 const loopCount = { step: 'count', prompt: 'ch4.2.sauce.01', of: 'loop', range: 6 };
 
 describe('the checks of a level script', () => {
@@ -339,6 +350,29 @@ describe('the checks of a level script', () => {
       solution: [{ type: 'pickVine', u: 'd', v: 'b' }],
     };
     expect(flowProblemsOf({ ...lit, flow: [{ step: 'autoSearch' }, pick, loopCount] })).toEqual([]);
+  });
+
+  it('a bet names the vine where the light, advanced alone, first stops at a flower (4.6)', () => {
+    // 4.5's garden: the light from R stops where b and d, suns of one tree, meet.
+    const lit = {
+      ...betrayal,
+      id: '4.6',
+      light: true,
+      chains: { rule: 'seen' },
+      forbid: ['split', 'passLantern'],
+      victory: { type: 'matchingSize', value: 3 },
+      solution: [{ type: 'pickVine', u: 'b', v: 'd' }, ...FOLDING],
+    };
+    const bet = (stop: string[]) => ({ step: 'pickVine', prompt: 'ch4.6.sauce.06', stop });
+    expect(flowProblemsOf({ ...lit, flow: [bet(['d', 'b']), { step: 'play' }] })).toEqual([]);
+    expect(flowProblemsOf({ ...lit, flow: [bet(['c', 'd']), { step: 'play' }] })).toEqual([
+      { code: 'stopElsewhere', step: 0, stop: 'c–d', stops: 'b–d' },
+    ]);
+    // Where the search is the player's, the light never stops anywhere.
+    const byHand = { ...betrayal, solution: [{ type: 'pickVine', u: 'b', v: 'd' }] };
+    expect(flowProblemsOf({ ...byHand, victory: undefined, flow: [bet(['b', 'd'])] })).toEqual([
+      { code: 'stopElsewhere', step: 0, stop: 'b–d', stops: null },
+    ]);
   });
 
   it('the light searches with the moves the level allows, from the garden it has', () => {

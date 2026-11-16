@@ -1,6 +1,7 @@
 import { idOf, toEdges, type LabelError, type Labels } from '@core/graph/labels';
 import type { VertexId } from '@core/graph/types';
 import type { Action } from '@core/rules/actions';
+import { itemAt } from '@core/shared/itemAt';
 import { err, ok, type Result } from '@core/shared/result';
 import type { LevelAction } from './fields';
 import type { FlowStep, LevelStep } from './flow';
@@ -93,8 +94,8 @@ export function toActions(
 }
 
 /**
- * Translates one step of a script: the sprout a `count` of lanterns asks about and the moves of a
- * demo.
+ * Translates one step of a script: the sprout a `count` of lanterns asks about, the moves of a
+ * demo and the vine of a bet on where the light will stop.
  */
 export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, LabelError> {
   switch (step.step) {
@@ -108,6 +109,13 @@ export function toLevelStep(labels: Labels, step: FlowStep): Result<LevelStep, L
       if (step.demo === undefined) return ok({ step: 'replay' });
       const demo = toActions(labels, step.demo);
       return demo.ok ? ok({ step: 'replay', demo: demo.value }) : demo;
+    }
+    case 'pickVine': {
+      // Only a bet names a vine: where the light will stop.
+      const { stop, ...rest } = step;
+      if (stop === undefined) return ok(rest);
+      const vine = toEdges(labels, [stop]);
+      return vine.ok ? ok({ ...rest, stop: itemAt(vine.value, 0) }) : vine;
     }
     default:
       return ok(step);

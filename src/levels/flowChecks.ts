@@ -3,7 +3,7 @@ import { isMaximum, maximumSize } from '@core/edmonds/fast/maximum';
 import { RECIPE_CASES, RIGHT_RECIPE, withoutCases } from '@core/recipe/recipe';
 import { runOptionsOf, runRecipe } from '@core/recipe/run';
 import { nameOf } from '@core/graph/labels';
-import type { VertexId } from '@core/graph/types';
+import type { Edge, VertexId } from '@core/graph/types';
 import { decomposeSymmetricDifference } from '@core/matching/symmetricDifference';
 import type { Matching } from '@core/matching/types';
 import type { Action } from '@core/rules/actions';
@@ -16,6 +16,7 @@ import { findConflict } from '@core/search/conflict';
 import type { Level } from './build';
 import { compareLevelIds } from './catalog';
 import { demoStart } from './demoStart';
+import { firstFlowerStop, sameVine } from './lightBet';
 import type { LevelStep } from './flow';
 import { raceBetVerdict, racesAround } from './races';
 import { TAUGHT_IN } from './recipeCards';
@@ -41,6 +42,16 @@ export type FlowProblem =
     }
   /** A step about the conflict of the search, where the reference search has met no conflict. */
   | { readonly code: 'noConflict'; readonly step: number }
+  /**
+   * A bet on the stop of the light (`stop`, from 4.6) where the light, advanced alone, first stops
+   * at another flower (`stops`), or at none (null). Vines are named `u–v`.
+   */
+  | {
+      readonly code: 'stopElsewhere';
+      readonly step: number;
+      readonly stop: string;
+      readonly stops: string | null;
+    }
   /** A mirror challenge over lanterns that already hold the most: no reflection can beat them. */
   | { readonly code: 'drawUnbeatable'; readonly step: number }
   /** A mirror challenge nobody should win, over lanterns that a better reflection can beat. */
@@ -289,9 +300,20 @@ export function checkFlow(level: Level): FlowProblem[] {
         if (flowStep.step === 'mirror') mirrorShown = true;
         if (flowStep.step === 'separate') separated = true;
         break;
-      case 'pickVine':
-        if (!conflictNow()) problems.push({ code: 'noConflict', step });
+      case 'pickVine': {
+        if (flowStep.stop === undefined) {
+          if (!conflictNow()) problems.push({ code: 'noConflict', step });
+          break;
+        }
+        // A bet is right on the vine where the light, advanced alone, first stops at a flower.
+        const stops = firstFlowerStop(garden);
+        if (stops === null || !sameVine(stops, flowStep.stop)) {
+          const name = ([u, v]: Edge) => `${nameOf(level.labels, u)}–${nameOf(level.labels, v)}`;
+          const stop = name(flowStep.stop);
+          problems.push({ code: 'stopElsewhere', step, stop, stops: stops && name(stops) });
+        }
         break;
+      }
       case 'count': {
         if (flowStep.of === 'loop') {
           if (!conflictNow()) problems.push({ code: 'noConflict', step });

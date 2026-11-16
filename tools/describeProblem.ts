@@ -57,6 +57,8 @@ export function describeProblem(problem: IntegrityProblem): string {
       return `script step ${problem.step + 1} offers 0 to ${problem.range} winning threads, but the reflection wins ${problem.answer}`;
     case 'noConflict':
       return `script step ${problem.step + 1} is about the conflict of the search, but the reference search meets none there`;
+    case 'stopElsewhere':
+      return `script step ${problem.step + 1} bets the light stops at ${problem.stop}, but it first stops at ${problem.stops ?? 'no flower'}`;
     case 'drawUnbeatable':
       return `script step ${problem.step + 1} asks for a better reflection, but the lanterns already hold the most`;
     case 'drawBeatable':

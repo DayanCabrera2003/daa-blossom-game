@@ -131,6 +131,8 @@ describe('readable level problems', () => {
       { code: 'drawUnbeatable', step: 5 },
       { code: 'drawBeatable', step: 5 },
       { code: 'noConflict', step: 1 },
+      { code: 'stopElsewhere', step: 1, stop: 'c–d', stops: 'b–d' },
+      { code: 'stopElsewhere', step: 1, stop: 'c–d', stops: null },
       { code: 'counterexampleLocked', question: 0, option: 1, action: 'fold' },
       { code: 'counterexampleUnbeatable', question: 0, option: 2 },
       { code: 'sameKindVine', u: 'a', v: 'b', kind: 'bee' },

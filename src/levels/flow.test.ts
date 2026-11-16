@@ -120,6 +120,14 @@ describe('the script of a level (flow)', () => {
     expect(parse(flow)).toEqual(flow);
   });
 
+  it('reads a bet on where the light will stop: a vine pointed at before advancing it (4.6)', () => {
+    const bet = [
+      { step: 'pickVine', prompt: 'ch4.6.sauce.06', reply: 'ch4.6.sauce.07', stop: ['d', 'f'] },
+    ];
+    expect(parse(bet)).toEqual(bet);
+    expect(accepts([{ step: 'pickVine', prompt: 'ch4.6.sauce.06', stop: ['d'] }])).toBe(false);
+  });
+
   it('a loop is counted without a piece, and the lanterns of a piece are not', () => {
     expect(
       accepts([{ step: 'count', prompt: 'ch4.2.sauce.03', piece: 'b', of: 'loop', range: 6 }]),

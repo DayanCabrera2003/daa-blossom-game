@@ -247,7 +247,7 @@ describe('the script of a level', () => {
     expect(unwrapLevel(rotate).flow).toEqual([{ step: 'play', reactions: [] }]);
   });
 
-  it('names sprouts by id: the piece a count asks about and the moves of a demo', () => {
+  it('names sprouts by id: the piece a count asks about, the moves of a demo, a bet’s vine', () => {
     const scripted = levelSchema.parse({
       ...rotate,
       flow: [
@@ -255,6 +255,7 @@ describe('the script of a level', () => {
         { step: 'replay', demo: [{ type: 'join', u: 'R', v: 'a' }] },
         { step: 'replay' },
         { step: 'count', prompt: 'ch4.10.sauce.02', piece: 'c', of: 'yours', range: 3 },
+        { step: 'pickVine', prompt: 'ch4.10.sauce.02', stop: ['b', 'd'] },
         { step: 'play' },
       ],
     });
@@ -263,6 +264,7 @@ describe('the script of a level', () => {
       { step: 'replay', demo: [{ type: 'join', u: 0, v: 1 }] },
       { step: 'replay' },
       { step: 'count', prompt: 'ch4.10.sauce.02', piece: 3, of: 'yours', range: 3 },
+      { step: 'pickVine', prompt: 'ch4.10.sauce.02', stop: [2, 4] },
       { step: 'play', reactions: [] },
     ]);
   });
@@ -275,6 +277,10 @@ describe('the script of a level', () => {
     const demo = { step: 'replay', demo: [{ type: 'join', u: 'R', v: 'k' }] };
     expect(buildLevel(levelSchema.parse({ ...rotate, flow: [demo] }))).toMatchObject({
       error: { code: 'badLabel', error: { name: 'k' } },
+    });
+    const bet = { step: 'pickVine', prompt: 'ch4.10.sauce.02', stop: ['b', 'z'] };
+    expect(buildLevel(levelSchema.parse({ ...rotate, flow: [bet] }))).toMatchObject({
+      error: { code: 'badLabel', error: { name: 'z' } },
     });
   });
 });
