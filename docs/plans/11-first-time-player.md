@@ -166,3 +166,61 @@ F1 antes de F7 (un toque en cualquier sitio avanza el diálogo sin tocar el jard
 **F13.** `reason.alreadyMarked`: «{vertex} ya tiene su marca.» · `ch3.5.sauce.00`: «Hoy las gotas vienen contadas. No mires por mirar: mira solo a quien tiene sol.» · `ch3.8.sauce.05`: «…Y aquí tu luz llegó a todos los brotes: por eso no queda enredadera sin vigilar.»
 **F14.** 4.4: «Si cualquiera del bucle puede ser sol, ¿desde cuáles tiene que seguir mirando tu luz?» — «Desde todos» ✔ / «Solo desde el primero que encontró» ✘ (contraejemplo) / «Desde ninguno» ✘ · 2.4: «Tres intentos no prueban nada. Lo que lo prueba es que ya no queda ninguna cadena.»
 **F15.** `recipe.card.chainRootToRoot`: «Si x es sol de otro árbol: cadena de un brote a oscuras a otro. Abre las flores que cruza, de fuera hacia dentro, por el lado que alterna; pasa los faroles y vuelve al paso 1.» · `ch4.7.sauce.00`: «…fíjate en qué pétalo tiene su farol fuera de la flor.» · Cuaderno de 4.7, correcta: «…el único pétalo sin pareja dentro de la flor: su farol va hacia fuera, o no tiene.» · `ch4.10.sauce.01`: «Cuando una flor te estorba, prueba a mover los faroles del tallo.» · 4.11, correcta: «…no cambia la respuesta: si había cadena, sigue habiéndola; si no, no aparece ninguna.» · `ch5.1.sauce.04` / `ch5.3.sauce.04`: «La cadena toca la flor pequeña en dos pétalos; entre los dos, solo una vuelta alterna.» · `ch4.9.sauce.00`: «Hoy buscas tú, con Marcas, como en el Invernadero…» · `ch7.5.sauce.01` añade «Busca tú, con Marcas.» · `claim.notTheMoons`, primer fallo: «Esas piedras todavía no prueban nada. ¿Qué te dejó la búsqueda en cada brote?»
+
+---
+
+## Cierre del plan
+
+**Hecho (2026-11-16).** Las dieciocho fases, F0–F16. Se ejecutaron en este orden, que respeta las dependencias de «Orden»: F0, F1, F2, F1 bis, F6, F3, F10, F15, F4, F11, F7, F5, F12a, F8, F13, F9, F12b, F14 y F16. Versión `1.2.0` en `package.json`; el merge a `main` y el tag `v1.2.0` quedan para el autor.
+
+- **F0.** La hoja `docs/review/lineas-plan11.md`, generada por `npm run lines` contra las copias de `v1.1.0`.
+- **F1 (B4, B5).** Solo llega al jardín el `release` que casa con un `press` despachado del mismo puntero, y soltar fuera del lienzo acaba el arrastre sin cadena. **F1 bis:** el mismo arreglo en la pantalla de contraejemplo del modo libre (`CounterexampleScene`), que compartía el defecto; su entrada salió de la escena a un archivo propio.
+- **F2 (B1–B3).** El panel de victoria dibuja tantos huecos como `starsCeiling` y un renglón por estrella, ganada o no («Jardín iluminado», «Sin pistas», «Con el agua justa», «Apuesta acertada»); `StarResult` dice si la apuesta formal se acertó. Un test comprueba que el guardado admite el máximo de estrellas de cualquier nivel. Desviación: **el recuento «Estrellas: N» se quitó** (los renglones lo sustituyen), recomendación del auditor sin respuesta del autor.
+- **F3 (B6–B8).** «Faroles que caben aquí: {count}» y las revelaciones de apuesta con singular; las líneas de 1.2, 1.4, 5.1, 5.2 y 7.1 dicen solo lo que su jardín tiene (7.1, pregunta 3 por defecto: la línea deja de contar espantapájaros); la pista de 6.3 resalta b y d, con un check nuevo: un brote que una pista resalta como sol lo es en el estado del paso que la ofrece.
+- **F4 (B9, B10).** `hints` opcional por paso en el JSON; un paso que no es de juego solo ofrece Pista si trae las suyas, y la tarjeta de preguntas dejó de invitar a pedirla; la de grado 3 se repite; los grados vuelven a empezar con cada paso y tras cada cadena encendida; el reloj de los 90 s se para con diálogo o tarjeta abiertos.
+- **F5 (B11–B13).** Suelo de Deshacer donde empieza el `play`; «Reiniciar» rellena el agua del paso; según `bottomRows` no cabía en la barra y **está en el panel de ajustes del nivel**; Esc avanza el diálogo y no abandona una pregunta; «Volver» con jugadas hechas avisa y sale a la segunda pulsación; salir con el paso ya ganado guarda la victoria; la tarjeta de Inspeccionar dice que la gota no vuelve.
+- **F6 (B14).** El guardado se relee y se fusiona antes de cada escritura y escucha el evento `storage` de otra pestaña; un guardado ilegible se copia a `florecer.save.bak`; los avisos duran según su longitud (**14 caracteres por segundo, 10 s como mucho**) y los del hub se espacian para leerse uno tras otro.
+- **F7 (U1–U3).** Un toque en cualquier sitio fuera de botones y paneles avanza el diálogo; la caja de diálogo prefiere no tapar el jardín y, si no puede, no tapa los brotes que nombran sus líneas (antes que las enredaderas); el panel de victoria espera a la última animación y se pone en el rincón que menos tapa; las tarjetas salen tras el `say` de apertura. Desviación: la caja conserva su ancho completo, así que **en 1.3 X e Y pueden quedar tapados**.
+- **F8 (U4–U6).** La barra enseña solo lo que el nivel usa, derivado de sus datos; cada nivel empieza con la herramienta de la primera jugada de su `solution`; en los niveles de luz, tocar el choque, una flor cerrada y arrastrar funcionan con cualquier herramienta; un rechazo por la herramienta equivocada añade «Prueba con {tool}.» y la enredadera apagada tiene su motivo (`reason.darkVine`).
+- **F9 (U7).** La parada de la luz es un estado: el botón se apaga, dice por qué (`hud.light.*`), lo que la para se cuenta una vez, y pulsarlo apagado no hace nada (ni rechazo ni cuenta para las pistas).
+- **F10 (U8).** Pantalla de título con el guardado vacío, el siguiente nivel late en el hub, un nivel cerrado dice «Todavía cerrado», y el botón de un nivel ya no se ensancha con las estrellas. Los enlaces con `?teacher`, `?level=` o `?garden=` **se saltan el título**.
+- **F11 (U9–U12).** Pregunta 2 por defecto: nombres enteros en los rótulos de 0.4 y 1.1–1.4, letras desde 1.10 y el capítulo 3, con un check de que todo nombre propio de una línea es un rótulo de su nivel; «hilo» solo la pieza, el rival es «el reflejo», la niebla gasta «gotas»; el bucle de 4.10 «hoy no se pliega»; «base» al ganar 4.6; sol y luna atados a «mano libre» y «pidiendo» al cerrar 3.1; en 1.1 el gesto de la trampa responde `alreadyLit` y la pista 1 dice cómo apagar. Desviación: la cuenta del Consejo se acortó para caber («Impares 3 − piedras 1 = 2 como poco; hay 2: cuadra»), y nunca resta por debajo de cero.
+- **F12a (T1).** 0.2 y 0.4 se ganan con el segundo farol rechazado (`alreadyLit`), dato nuevo del paso `play`; el recorrido de jugabilidad prueba jugadas que las reglas deben rechazar. Sauce dice «Un farol es para dos» justo después del rechazo.
+- **F12b (T4).** La luz se para sin señalar; el brillo del choque es la pista de grado 2; apuesta de un toque (`pickVine`, que no cuesta nada y enseña la buena) en 4.6, 4.7, 4.8, 5.1–5.4 y 5.6, comprobada con el recorrido de la luz. No en 4.12 ni 5.5, donde la luz se para antes en la niebla.
+- **F13 (T2, T3).** Regla `seen` en 3.1, 3.2, 3.4, 3.5, 3.9, 3.10, 4.3 y 4.13; una búsqueda en la niebla sigue abierta mientras quede un sol sin inspeccionar; 3.3 se gana con «Terminé» y la búsqueda agotada; 3.8 pide la búsqueda acabada (`claim.searchNotOver`). Gotas = mínimo del recorrido + 2: 3.1 → 5, 3.2 → 4, 3.3 → 7, 3.4 → 5, 3.5 → 9, 3.9 → 14, 3.10 → 6 (4.12 → 13 y 5.5 → 16). Desviaciones: el recorrido de **3.9** no acaba en tiempo razonable y su mínimo (12) se **acota**: la cota de abajo de 11 se comprueba y la gota más se argumenta, la de arriba la da la solución de referencia; y en **3.4** ganar con las gotas justas **no obliga a hacer dos árboles**.
+- **F14 (T5–T7).** 4.4 abre con la pregunta (contraejemplo: el jardín de 4.1) y `ch4.4.sauce.01` es la respuesta al acierto; W colgante en 4.12 (de s) y en 5.4 (de a), sin mover los demás brotes (pregunta 5 por defecto); 3.1 en dos pasos con un paso `look` nuevo; 2.4 con el borrador en plateado y la frase (d) del Cuaderno.
+- **F15 (T8, T9).** La tarjeta de cadena abre las flores; distractoras con la misma forma; apuestas informales de 6.3, 6.4 y 6.7 como pasos `ask` con todas las opciones buenas; una línea sobre las semillas en 6.5; las frases del Apéndice A para 4.7, 4.9, 4.10, 4.11, 5.1, 5.3 y 7.5; `claim.notTheMoons` ya no nombra las lunas.
+- **F16.** Los protocolos A, B y C y el kit con los hechos nuevos, sin tocar umbrales; el README con lo nuevo de la 1.2.0; versión 1.2.0.
+
+Las preguntas abiertas 1 (pulsación larga de la luz) y 4 (orden de 1.8 y 1.9) quedaron con su valor por defecto: no se tocó nada.
+
+Suite y revisión en pantalla: pendiente
+
+**Lo que es del autor:**
+
+- Revisar `docs/review/lineas-plan11.md`: **152 casillas** (116 líneas de diálogo y 36 textos de interfaz distintos de la 1.1.0); los cambios entran en `lines.json` / `strings.json` en commits propios y la hoja se regenera.
+- Confirmar o cambiar los valores por defecto de las preguntas abiertas 1–5 (arriba).
+- Las preguntas que dejaron abiertas las fases:
+  - **Estrellas:** cada nivel enseña solo las que puede dar y se quitó el recuento «Estrellas: N». El autor no respondió a la pregunta de las estrellas; se siguió la recomendación del auditor.
+  - **B5:** soltar fuera del lienzo deja caer la cadena; es la lectura del auditor, no una decisión del autor.
+  - El caso raro de una pulsación hecha durante una repetición o una carrera y soltada después de que acabe queda sin cubrir.
+  - Los avisos se quedan 14 caracteres por segundo, 10 s como mucho: ¿son buenas cifras?
+  - «Reiniciar» rellena el agua del paso: un posible atajo para la estrella del agua (mirar, reiniciar y jugar ya sabiendo).
+  - 1.3: X e Y pueden seguir tapados por la caja de diálogo, que conserva su ancho completo.
+  - El texto del Consejo se acortó para caber: «Impares 3 − piedras 1 = 2 como poco; hay 2: cuadra».
+  - 0.2 y 0.4: el eco «un farol es para dos» llega justo después del rechazo, ¿sobra?
+  - Las apuestas informales del capítulo 6 son pasos `ask`: el lector de pantalla dice «correcto» a cualquier respuesta.
+  - 7.4: la respuesta a unas piedras que no son las lunas nunca escala hasta nombrarlas.
+  - `ch4.7.sauce.04` y `.10` siguen diciendo «la luz sale».
+  - 2.4: la pista de grado 1 se ofrece también en el paso de jugar.
+  - 7.6: la pista de grado 3 promete un paso que el nivel no tiene.
+  - Los conteos de 2.5 y 4.2 no tienen pistas.
+  - 3.4: ganar con las gotas justas no obliga a hacer dos árboles.
+  - 3.9: la cota del agua no es exacta (acotada, no recorrida).
+  - El modo profesor se salta la pantalla de título.
+  - La tarjeta `tutorial.pickVine` dice «puedes probar otra», que no es verdad en una apuesta de la luz.
+  - Una apuesta de la luz acertada no dice nada.
+  - 3.1: el paso de solo mirar responde a las marcas con «Hoy…» (acción cerrada), no con algo propio del paso.
+  - 2.4: pulsar «Comprobar» tres veces acaba la fase (b), sea cual sea el dibujo.
+- El hito III en pantalla, con todo visto: merge `develop → main` (con el CI de `develop` en verde), comprobar el despliegue y poner el tag `v1.2.0`.
+- Siguen pendientes los umbrales de los playtests y los playtests con personas.
