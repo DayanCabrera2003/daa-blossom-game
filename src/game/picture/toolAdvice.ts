@@ -11,9 +11,6 @@ import type { Refusal } from '../systems/refusal';
  * after. Only some refusals come from the wrong tool; the rest point nowhere.
  */
 
-/** The tools that act on a sprout, each the other's alternative. */
-const SPROUT_TOOLS: readonly ToolId[] = ['lanterns', 'marks'];
-
 /** The actions on sprouts a level may close for the day, which the other sprout tool may do. */
 const SPROUT_ACTIONS: ReadonlySet<ActionType> = new Set([
   'join',
@@ -25,7 +22,8 @@ const SPROUT_ACTIONS: ReadonlySet<ActionType> = new Set([
 
 /** The tool the refusal points to, before checking that the bar shows it. */
 function wanted(reason: Refusal, inHand: ToolId, level: Level): ToolId | null {
-  const other = SPROUT_TOOLS.find((tool) => tool !== inHand) ?? null;
+  // The tools that act on a sprout are each the other's alternative.
+  const other: ToolId = inHand === 'lanterns' ? 'marks' : 'lanterns';
   switch (reason.code) {
     case 'vineHidden':
       return 'inspect';
@@ -35,7 +33,7 @@ function wanted(reason: Refusal, inHand: ToolId, level: Level): ToolId | null {
       // Only where the player searches by hand do the marks reach the chain.
       return level.start.allowed.has('markRoot') ? 'marks' : null;
     case 'noFog':
-      return inHand === 'lanterns' ? 'marks' : 'lanterns';
+      return other;
     case 'actionClosed':
     case 'actionLocked':
       return SPROUT_ACTIONS.has(reason.action) ? other : null;

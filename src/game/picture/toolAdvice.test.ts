@@ -41,6 +41,9 @@ describe('the tool a refusal points to, when the tool in hand was the wrong one'
     const split = { code: 'actionClosed', action: 'split' } as const;
     expect(toolToTry(split, 'lanterns', festival)).toBeNull();
     expect(toolToTry({ code: 'noFog' }, 'inspect', greenhouse)).toBe('lanterns');
+    // Where the lanterns move nothing (4.9), a chain tried with them points to the marks.
+    const chain = { code: 'actionClosed', action: 'chain' } as const;
+    expect(toolToTry(chain, 'lanterns', levelById('4.9'))).toBe('marks');
   });
 
   it('a tool the bar does not show is never pointed to; other reasons point nowhere', () => {
